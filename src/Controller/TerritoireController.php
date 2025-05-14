@@ -29,6 +29,7 @@ use App\Form\Territoire\TerritoireStrategieForm;
 use App\Repository\TerritoireRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\GeoJson;
+use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -90,7 +91,7 @@ class TerritoireController extends AbstractController
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
-            ).FolderType::Photos->value.DocumentType::Blason->value.'/';
+                ).FolderType::Photos->value.DocumentType::Blason->value.'/';
             $filename = $path.$territoire->getBlason();
 
             if (!file_exists($filename)) {
@@ -387,7 +388,7 @@ class TerritoireController extends AbstractController
      */
     #[Route('/territoire/fief', name: 'territoire.fief')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE, Role::CARTOGRAPHE))]
-    public function fiefAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function fiefAction(Request $request): Response
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -397,18 +398,18 @@ class TerritoireController extends AbstractController
         $criteria = [];
 
         $formData = $request->query->get('personnageFind');
-        $pays = isset($formData['pays']) ? $entityManager->find(Territoire::class, $formData['pays']) : null;
-        $province = isset($formData['provinces']) ? $entityManager->find(
+        $pays = isset($formData['pays']) ? $this->entityManager->find(Territoire::class, $formData['pays']) : null;
+        $province = isset($formData['provinces']) ? $this->entityManager->find(
             Territoire::class,
             $formData['provinces'],
         ) : null;
-        $groupe = isset($formData['groupe']) ? $entityManager->find(Groupe::class, $formData['groupe']) : null;
+        $groupe = isset($formData['groupe']) ? $this->entityManager->find(Groupe::class, $formData['groupe']) : null;
         $optionalParameters = '';
 
         // $listeGroupes = $entityManager->getRepository('\\'.Groupe::class)->findList(null, null, ['by' => 'nom', 'dir' => 'ASC'], 1000, 0);
-        $listeGroupes = $entityManager->getRepository(Groupe::class)->findBy([], ['nom' => 'ASC']);
-        $listePays = $entityManager->getRepository(Territoire::class)->findRoot();
-        $listeProvinces = $entityManager->getRepository(Territoire::class)->findProvinces();
+        $listeGroupes = $this->entityManager->getRepository(Groupe::class)->findBy([], ['nom' => 'ASC']);
+        $listePays = $this->entityManager->getRepository(Territoire::class)->findRoot();
+        $listeProvinces = $this->entityManager->getRepository(Territoire::class)->findProvinces();
 
         $form = $this->createForm(
             FiefForm::class,
@@ -433,9 +434,9 @@ class TerritoireController extends AbstractController
             $data = $form->getData();
             $type = $data['type'];
             $value = $data['value'];
-            $pays = $data['pays'] ? $data['pays'] : null;
-            $province = $data['province'] ? $data['province'] : null;
-            $groupe = $data['groupe'] ? $data['groupe'] : null;
+            $pays = $data['pays'] ?? null;
+            $province = $data['province'] ?? null;
+            $groupe = $data['groupe'] ?? null;
 
             if ($type && $value) {
                 switch ($type) {
@@ -465,7 +466,7 @@ class TerritoireController extends AbstractController
         }
 
         /* @var TerritoireRepository $repo */
-        $repo = $entityManager->getRepository(Territoire::class);
+        $repo = $this->entityManager->getRepository(Territoire::class);
         $fiefs = $repo->findFiefsList(
             $limit,
             $offset,
@@ -481,7 +482,7 @@ class TerritoireController extends AbstractController
 
         $paginator = $repo->findPaginatedQuery(
             $fiefs,
-            $this->getRequestLimit(),
+            $this->getRequestLimit(50),
             $this->getRequestPage(),
         );
 
@@ -505,9 +506,13 @@ class TerritoireController extends AbstractController
         PagerService $pagerService,
         TerritoireRepository $territoireRepository,
     ): Response {
-        // Set order by nom by default TODO add a setDefaultOrder ...
+        // Set order by nom by default
+        // New way (not working)
+        // $pagerService->setOrdersBy(['nom' => OrderBy::ASC]); // test default overwrite from request
+        /* OLD WAY (working) **/
         $request->request->set('order_by', $request->request->get('order_by', 'nom'));
         $pagerService->setRequest($request)->setRepository($territoireRepository);
+
 
         $alias = $territoireRepository->getAlias();
 
@@ -590,18 +595,18 @@ class TerritoireController extends AbstractController
         echo 'Comparons la proximité Géo de Asgard avec Hyperborée : <br />';
         foreach ($pointsCorrespondants as $match) {
             echo sprintf(
-                "<br />Points trouvés : [%f, %f] et [%f, %f] - Distance : %.2f km\n",
-                $match['point1'][0],
-                $match['point1'][1],
-                $match['point2'][0],
-                $match['point2'][1],
-                $match['distance'],
-            ).PHP_EOL;
+                    "<br />Points trouvés : [%f, %f] et [%f, %f] - Distance : %.2f km\n",
+                    $match['point1'][0],
+                    $match['point1'][1],
+                    $match['point2'][0],
+                    $match['point2'][1],
+                    $match['distance'],
+                ).PHP_EOL;
         }
 
         echo '<br /><br />Soit un total de '.count(
-            $pointsCorrespondants,
-        ).' points géographiquement proches de moins de '.$mDist.'km';
+                $pointsCorrespondants,
+            ).' points géographiquement proches de moins de '.$mDist.'km';
 
         return new Response();
     }

@@ -181,9 +181,6 @@ class HomepageController extends AbstractController
         ]);
     }
 
-    /**
-     * Page d'acceuil pour les utilisateurs non connecté.
-     */
     public function notConnectedIndexAction(): Response
     {
         return $this->render('homepage/not_connected.twig');

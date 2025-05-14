@@ -18,7 +18,9 @@ class SortRepository extends BaseRepository
     public function findByNiveau($niveau)
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT s FROM App\Entity\Sort s Where s.niveau = ?1 AND (s.secret = 0 OR s.secret IS NULL) ORDER BY s.label ASC')
+            ->createQuery(
+                'SELECT s FROM App\Entity\Sort s Where s.niveau = ?1 AND (s.secret = 0 OR s.secret IS NULL) ORDER BY s.label ASC',
+            )
             ->setParameter(1, $niveau)
             ->getResult();
     }
@@ -32,19 +34,6 @@ class SortRepository extends BaseRepository
         $qb->select($qb->expr()->count('s'));
 
         return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    /**
-     * Trouve les sorts correspondant aux critères de recherche.
-     */
-    public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
-    {
-        $qb = $this->getQueryBuilder($type, $value);
-        $qb->setFirstResult($offset);
-        $qb->setMaxResults($limit);
-        $qb->orderBy('s.'.$order['by'], $order['dir']);
-
-        return $qb->getQuery()->getResult();
     }
 
     protected function getQueryBuilder(?string $type, $value): QueryBuilder
@@ -82,23 +71,47 @@ class SortRepository extends BaseRepository
         return $qb;
     }
 
+    /**
+     * Trouve les sorts correspondant aux critères de recherche.
+     */
+    public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
+    {
+        $qb = $this->getQueryBuilder($type, $value);
+        $qb->setFirstResult($offset);
+        $qb->setMaxResults($limit);
+        $qb->orderBy('s.'.$order['by'], $order['dir']);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getPersonnages(Sort $sort): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $personnageRepository->createQueryBuilder('p')
+            ->innerJoin('p.sorts', 's')
+            ->where('s.id = :sid')
+            ->setParameter('sid', $sort);
+    }
+
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $orderBy ??= $this->orderBy;
 
         if ('secret' === $attributes) {
-            $query = $this->createQueryBuilder($alias)
-                ->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
+            $query = $this->createQueryBuilder($alias);
+            $orderBy->addOrderToQuery($query);
 
             return $this->secret(
                 $query,
-                filter_var($search, FILTER_VALIDATE_BOOLEAN)
+                filter_var($search, FILTER_VALIDATE_BOOLEAN),
             );
         }
 
@@ -130,21 +143,22 @@ class SortRepository extends BaseRepository
 
         return [
             ...parent::sortAttributes($alias),
-            'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
-            'description' => [OrderBy::ASC => [$alias.'.description' => OrderBy::ASC], OrderBy::DESC => [$alias.'.description' => OrderBy::DESC]],
-            'secret' => [OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC], OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC]],
-            'niveau' => [OrderBy::ASC => [$alias.'.niveau' => OrderBy::ASC], OrderBy::DESC => [$alias.'.niveau' => OrderBy::DESC]],
+            'label' => [
+                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+            ],
+            'description' => [
+                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            ],
+            'secret' => [
+                OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC],
+            ],
+            'niveau' => [
+                OrderBy::ASC => [$alias.'.niveau' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.niveau' => OrderBy::DESC],
+            ],
         ];
-    }
-
-    public function getPersonnages(Sort $sort): QueryBuilder
-    {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
-
-        return $personnageRepository->createQueryBuilder('p')
-            ->innerJoin('p.sorts', 's')
-            ->where('s.id = :sid')
-            ->setParameter('sid', $sort);
     }
 }

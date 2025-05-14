@@ -462,7 +462,6 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/materielUpdate', name: 'groupeSecondaire.materiel.update')]
     public function materielUpdateAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): RedirectResponse|Response {
         $form = $this->createForm(GroupeSecondaireMaterielForm::class, $groupeSecondaire);
@@ -470,8 +469,8 @@ class GroupeSecondaireController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $groupeSecondaire = $form->getData();
-            $entityManager->persist($groupeSecondaire);
-            $entityManager->flush();
+            $this->entityManager->persist($groupeSecondaire);
+            $this->entityManager->flush();
             $this->addFlash('success', 'Le groupe secondaire a été mis à jour.');
 
             return $this->redirectToRoute(

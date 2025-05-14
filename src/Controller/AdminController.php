@@ -9,6 +9,7 @@ use App\Repository\ExperienceGainRepository;
 use App\Repository\ExperienceUsageRepository;
 use App\Repository\PersonnageRepository;
 use App\Repository\UserRepository;
+use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -336,7 +337,7 @@ class AdminController extends AbstractController
         ExperienceGainRepository $experienceGainRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($experienceGainRepository)->setLimit(50);
-        $pagerService->getOrderBy()->setDefaultOrderDir('DESC');
+        $pagerService->getOrderBy()->setDefaultOrderDir(OrderBy::DESC);
 
         return $this->render(
             'admin/xpGain.twig',
@@ -358,7 +359,7 @@ class AdminController extends AbstractController
             ->setRepository($experienceUsageRepository)
             ->setLimit(50);
 
-        $pagerService->getOrderBy()->setDefaultOrderDir('DESC');
+        $pagerService->getOrderBy()->setDefaultOrderDir(OrderBy::DESC);
 
         return $this->render(
             'admin/xpUsage.twig',

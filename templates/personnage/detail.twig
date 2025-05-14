@@ -82,37 +82,37 @@
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'general' %} active{% endif %}"
-                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'general'})) }}"
+                               href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'general'})) }}"
                             >Générale</a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'competences' %} active{% endif %}"
-                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'competences'})) }}"
+                               href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'competences'})) }}"
                             >Compétences</a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'religions' %} active{% endif %}"
-                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'religions'})) }}"
+                               href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'religions'})) }}"
                             >Religions</a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'biographie' %} active{% endif %}"
-                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'biographie'})) }}"
+                               href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'biographie'})) }}"
                             >Biographie</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'groupes' %} active{% endif %}"
-                               href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'groupes'})) }}"
+                               href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'groupes'})) }}"
                             >Groupes</a>
                         </li>
 
                         {% if isAdmin %}
                             <li class="nav-item">
                                 <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
-                                   href="{{ path('personnage.detail',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'enveloppe'})) }}"
+                                   href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'enveloppe'})) }}"
                                 >Enveloppe</a>
                             </li>
                         {% endif %}

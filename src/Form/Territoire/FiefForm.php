@@ -3,15 +3,15 @@
 
 namespace App\Form\Territoire;
 
+use App\Entity\Groupe;
+use App\Entity\Territoire;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\GroupFindForm.
- *
- * @author kevin
- */
 class FiefForm extends AbstractType
 {
     /**
@@ -19,37 +19,37 @@ class FiefForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('value', TextType::class, [
             'required' => false,
             'attr' => [
                 'placeholder' => 'Votre recherche',
             ],
-            ])
-            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+        ])
+            ->add('type', ChoiceType::class, [
                 'required' => false,
                 'choices' => [
-                    'idFief' => 'Id du fief',
-                    'nomFief' => 'Nom du fief',
+                    'Id du fief' => 'idFief',
+                    'Nom du fief' => 'nomFief',
                 ],
             ])
-            ->add('pays', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('pays', EntityType::class, [
                 'required' => false,
                 'label' => 'Par pays',
-                'class' => \App\Entity\Territoire::class,
+                'class' => Territoire::class,
                 'choices' => $options['listePays'],
                 'placeholder' => 'Filtrer par pays',
             ])
-            ->add('province', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('province', EntityType::class, [
                 'required' => false,
                 'label' => 'Par province',
-                'class' => \App\Entity\Territoire::class,
+                'class' => Territoire::class,
                 'choices' => $options['listeProvinces'],
                 'placeholder' => 'Filtrer par province',
             ])
-            ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            ->add('groupe', EntityType::class, [
                 'required' => false,
                 'label' => 'Par groupe',
-                'class' => \App\Entity\Groupe::class,
+                'class' => Groupe::class,
                 'choices' => $options['listeGroupes'],
                 'placeholder' => 'Filtrer par groupe',
             ]);
@@ -65,7 +65,7 @@ class FiefForm extends AbstractType
                 'listeGroupes' => '',
                 'listePays' => '',
                 'listeProvinces' => '',
-            ]
+            ],
         );
     }
 

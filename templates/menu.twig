@@ -24,10 +24,10 @@
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item text-body-emphasis"
-                                   href="{{ path('app_logout') }}">Déconnection</a></li>
+                                   href="{{ path('app_logout') }}">Déconnexion</a></li>
                         {% else %}
                             <li><a class="dropdown-item text-body-emphasis"
-                                   href="{{ path('app_login') }}">Connection</a></li>
+                                   href="{{ path('app_login') }}">Connexion</a></li>
                             <li><a class="dropdown-item text-body-emphasis" href="{{ path('user.register') }}">S'enregistrer</a>
                             </li>
                             <li><a class="dropdown-item text-body-emphasis" href="{{ path('user.forgot-password') }}">Mot
@@ -199,7 +199,8 @@
                             </li>
                             <li><a class="dropdown-item" href="{{ path('bonus.list') }}">Bonus</a></li>
                             <li><a class="dropdown-item" href="{{ path('merveille.list') }}">Merveilles</a></li>
-                            <li><a class="dropdown-item" href="{{ path('espece.list') }}">Espèces, races, créatures</a></li>
+                            <li><a class="dropdown-item" href="{{ path('espece.list') }}">Espèces, races, créatures</a>
+                            </li>
                         {% endif %}
                     </ul>
                 </li>

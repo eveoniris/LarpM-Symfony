@@ -84,7 +84,7 @@
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'detail' %} active{% endif %}"
-                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'detail', 'groupeGn': groupeGn.id|default()})) }}"
+                               href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'detail', 'groupeGn': groupeGn.id|default()})) }}"
                             >Détail</a>
                         </li>
 
@@ -97,7 +97,7 @@
                                 {% for session in groupe.groupeGns|reverse %}
                                     <li class="d-grid gap-2{% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}">
                                         <a class="dropdown-item {% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}"
-                                           href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'membres', 'gn': session.gn.id, 'groupeGn': session.id})) }}"
+                                           href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'membres', 'gn': session.gn.id, 'groupeGn': session.id})) }}"
                                         >{{ session.gn }}</a></li>
                                 {% else %}
                                     <li class="d-grid gap-2 rounded-top-2">
@@ -113,7 +113,7 @@
                             {% if isAdmin %}
                                 <li class="nav-item">
                                     <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
-                                       href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'enveloppe', 'groupeGn': groupeGnId|default()})) }}"
+                                       href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'enveloppe', 'groupeGn': groupeGnId|default()})) }}"
                                     >Enveloppe</a>
                                 </li>
                             {% endif %}
@@ -127,7 +127,7 @@
                                     {% for session in groupe.groupeGns|reverse %}
                                         <li class="d-grid gap-2{% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}">
                                             <a class="dropdown-item {% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}"
-                                               href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'domaine', 'gn': session.gn.id, 'groupeGn': session.id})) }}"
+                                               href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'domaine', 'gn': session.gn.id, 'groupeGn': session.id})) }}"
                                             >{{ session.gn }}</a></li>
                                     {% endfor %}
 
@@ -136,13 +136,13 @@
 
                             <li class="nav-item">
                                 <a class="nav-link{% if tab == 'backgrounds' %} active{% endif %}"
-                                   href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'backgrounds', 'groupeGn': groupeGn.id|default()})) }}"
+                                   href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'backgrounds', 'groupeGn': groupeGn.id|default()})) }}"
                                 >Backgrounds</a>
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link{% if tab == 'debriefings' %} active{% endif %}"
-                                   href="{{ path('groupe.detail',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'debriefings', 'groupeGn': groupeGn.id|default()})) }}"
+                                   href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'debriefings', 'groupeGn': groupeGn.id|default()})) }}"
                                 >Debriefings</a>
                             </li>
                         {% endif %}
@@ -151,7 +151,7 @@
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" role="tabpanel">
-                            {% include "groupe/fragment/#{tab|default('detail')}.twig" with {'groupe': groupe, 'groupeGn': groupeGn} %}
+                            {% include "groupe/fragment/#{tab|default('detail')}.twig" with {'groupe': groupe, 'groupeGn': groupeGn, 'tab' : tab} %}
                         </div>
                     </div>
                 </div>

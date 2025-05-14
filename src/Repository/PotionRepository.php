@@ -18,7 +18,9 @@ class PotionRepository extends BaseRepository
     public function findByNiveau($niveau)
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT p FROM App\Entity\Potion p Where p.niveau = ?1 and (p.secret = false or p.secret is null) ORDER BY p.label ASC')
+            ->createQuery(
+                'SELECT p FROM App\Entity\Potion p Where p.niveau = ?1 and (p.secret = false or p.secret is null) ORDER BY p.label ASC',
+            )
             ->setParameter(1, $niveau)
             ->getResult();
     }
@@ -32,19 +34,6 @@ class PotionRepository extends BaseRepository
         $qb->select($qb->expr()->count('p'));
 
         return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    /**
-     * Trouve les potions correspondant aux critères de recherche.
-     */
-    public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
-    {
-        $qb = $this->getQueryBuilder($type, $value);
-        $qb->setFirstResult($offset);
-        $qb->setMaxResults($limit);
-        $qb->orderBy('p.'.$order['by'], $order['dir']);
-
-        return $qb->getQuery()->getResult();
     }
 
     protected function getQueryBuilder(?string $type, $value): QueryBuilder
@@ -81,23 +70,47 @@ class PotionRepository extends BaseRepository
         return $qb;
     }
 
+    /**
+     * Trouve les potions correspondant aux critères de recherche.
+     */
+    public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
+    {
+        $qb = $this->getQueryBuilder($type, $value);
+        $qb->setFirstResult($offset);
+        $qb->setMaxResults($limit);
+        $qb->orderBy('p.'.$order['by'], $order['dir']);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getPersonnages(Potion $potion): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $personnageRepository->createQueryBuilder('perso')
+            ->innerJoin('perso.potions', 'p')
+            ->where('p.id = :pid')
+            ->setParameter('pid', $potion->getId());
+    }
+
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $orderBy ??= $this->orderBy;
 
         if ('secret' === $attributes) {
-            $query = $this->createQueryBuilder($alias)
-                ->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
+            $query = $this->createQueryBuilder($alias);
+            $orderBy->addOrderToQuery($query);
 
             return $this->secret(
                 $query,
-                filter_var($search, FILTER_VALIDATE_BOOLEAN)
+                filter_var($search, FILTER_VALIDATE_BOOLEAN),
             );
         }
 
@@ -130,11 +143,26 @@ class PotionRepository extends BaseRepository
 
         return [
             ...parent::sortAttributes($alias),
-            'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
-            'description' => [OrderBy::ASC => [$alias.'.description' => OrderBy::ASC], OrderBy::DESC => [$alias.'.description' => OrderBy::DESC]],
-            'secret' => [OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC], OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC]],
-            'niveau' => [OrderBy::ASC => [$alias.'.niveau' => OrderBy::ASC], OrderBy::DESC => [$alias.'.niveau' => OrderBy::DESC]],
-            'numero' => [OrderBy::ASC => [$alias.'.numero' => OrderBy::ASC], OrderBy::DESC => [$alias.'.numero' => OrderBy::DESC]],
+            'label' => [
+                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+            ],
+            'description' => [
+                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            ],
+            'secret' => [
+                OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC],
+            ],
+            'niveau' => [
+                OrderBy::ASC => [$alias.'.niveau' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.niveau' => OrderBy::DESC],
+            ],
+            'numero' => [
+                OrderBy::ASC => [$alias.'.numero' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.numero' => OrderBy::DESC],
+            ],
         ];
     }
 
@@ -147,16 +175,5 @@ class PotionRepository extends BaseRepository
             'niveau' => $this->translator->trans('Niveau', domain: 'repository'),
             'numero' => $this->translator->trans('Numero', domain: 'repository'),
         ];
-    }
-
-    public function getPersonnages(Potion $potion): QueryBuilder
-    {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
-
-        return $personnageRepository->createQueryBuilder('perso')
-            ->innerJoin('perso.potions', 'p')
-            ->where('p.id = :pid')
-            ->setParameter('pid', $potion->getId());
     }
 }

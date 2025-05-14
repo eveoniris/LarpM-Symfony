@@ -10,19 +10,6 @@ use Doctrine\ORM\QueryBuilder;
 
 class ConnaissanceRepository extends BaseRepository
 {
-    /**
-     * @return ArrayCollection $Connaissance
-     */
-    public function findByNiveau($niveau)
-    {
-        return $this->getEntityManager()
-            ->createQuery(
-                'SELECT c FROM App\Entity\Connaissance c Where c.niveau = ?1 AND (c.secret = 0 OR c.secret IS NULL) ORDER BY c.label ASC'
-            )
-            ->setParameter(1, $niveau)
-            ->getResult();
-    }
-
     public function findAllOrderedByLabel()
     {
         return $this->getEntityManager()
@@ -40,23 +27,47 @@ class ConnaissanceRepository extends BaseRepository
             ->getResult();
     }
 
+    /**
+     * @return ArrayCollection $Connaissance
+     */
+    public function findByNiveau($niveau)
+    {
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT c FROM App\Entity\Connaissance c Where c.niveau = ?1 AND (c.secret = 0 OR c.secret IS NULL) ORDER BY c.label ASC',
+            )
+            ->setParameter(1, $niveau)
+            ->getResult();
+    }
+
+    public function getPersonnages(Connaissance $connaissance): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $personnageRepository->createQueryBuilder('p')
+            ->innerJoin('p.connaissances', 'c')
+            ->where('c.id = :cid')
+            ->setParameter('cid', $connaissance->getId());
+    }
+
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $orderBy ??= $this->orderBy;
 
         if ('secret' === $attributes) {
-            $query = $this->createQueryBuilder($alias)
-                ->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
+            $query = $this->createQueryBuilder($alias);
+            $orderBy->addOrderToQuery($query);
 
             return $this->secret(
                 $query,
-                filter_var($search, FILTER_VALIDATE_BOOLEAN)
+                filter_var($search, FILTER_VALIDATE_BOOLEAN),
             );
         }
 
@@ -111,16 +122,5 @@ class ConnaissanceRepository extends BaseRepository
             'label' => $this->translator->trans('Libellé', domain: 'repository'),
             'contraintes' => $this->translator->trans('Contraintes', domain: 'repository'),
         ];
-    }
-
-    public function getPersonnages(Connaissance $connaissance): QueryBuilder
-    {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
-
-        return $personnageRepository->createQueryBuilder('p')
-            ->innerJoin('p.connaissances', 'c')
-            ->where('c.id = :cid')
-            ->setParameter('cid', $connaissance->getId());
     }
 }

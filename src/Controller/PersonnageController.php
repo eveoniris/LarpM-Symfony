@@ -255,7 +255,7 @@ class PersonnageController extends AbstractController
                 $this->log($competence, 'competence_add', true);
 
                 return $this->redirectToRoute(
-                    'personnage.detail',
+                    'personnage.detail.tab',
                     ['personnage' => $personnage->getId(), 'tab' => 'competences'],
                     303,
                 );
@@ -466,7 +466,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le background a été sauvegardé.');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'biographie'],
                 303,
             );
@@ -517,7 +517,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'L\'évènement a été ajouté à la chronologie.');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'biographie'],
                 303,
             );
@@ -590,7 +590,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'La lignée a été ajoutée.');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'biographie'],
                 303,
             );
@@ -895,7 +895,7 @@ class PersonnageController extends AbstractController
             $background,
             'Supprimer un background',
             'La background a été supprimé',
-            $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'biographie']),
+            $this->generateUrl('personnage.detail.tab', ['personnage' => $personnage->getId(), 'tab' => 'biographie']),
             [
                 // it's an admin view, do not need to test role for this breadcrumb
                 ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
@@ -926,7 +926,7 @@ class PersonnageController extends AbstractController
             $personnageChronologie,
             'Supprimer une chronologie',
             'La chronologie a été supprimée',
-            $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'biographie']),
+            $this->generateUrl('personnage.detail.tab', ['personnage' => $personnage->getId(), 'tab' => 'biographie']),
             [
                 // it's an admin view, do not need to test role for this breadcrumb
                 ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
@@ -960,7 +960,7 @@ class PersonnageController extends AbstractController
             $personnageLignee,
             'Supprimer une lignée',
             'La lignée a été supprimée',
-            $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'biographie']),
+            $this->generateUrl('personnage.detail.tab', ['personnage' => $personnage->getId(), 'tab' => 'biographie']),
             [
                 // it's an admin view, do not need to test role for this breadcrumb
                 ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
@@ -1021,7 +1021,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le personnage a été sauvegardé');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'],
                 303,
             );
@@ -1201,13 +1201,13 @@ class PersonnageController extends AbstractController
             $personnageReligion,
             'Supprimer une religion',
             'La religion a été supprimée',
-            $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'religions']),
+            $this->generateUrl('personnage.detail.tab', ['personnage' => $personnage->getId(), 'tab' => 'religions']),
             [
                 // it's an admin view, do not need to test role for this breadcrumb
                 ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
                 [
                     'route' => $this->generateUrl(
-                        'personnage.detail',
+                        'personnage.detail.tab',
                         ['personnage' => $personnage->getId(), 'tab' => 'religions'],
                     ),
                     'name' => $personnage->getPublicName(),
@@ -1520,7 +1520,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le background a été sauvegardé.');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'biographie'],
                 303,
             );
@@ -1728,7 +1728,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'],
                 303,
             );
@@ -2034,7 +2034,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'],
                 303,
             );
@@ -2071,7 +2071,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'],
                 303,
             );
@@ -2386,7 +2386,7 @@ class PersonnageController extends AbstractController
                 $this->addFlash('success', "l'apprentissage a été ajouté");
 
                 return $this->redirectToRoute(
-                    'personnage.detail',
+                    'personnage.detail.tab',
                     ['personnage' => $personnage->getId(), 'tab' => 'competences'],
                     303,
                 );
@@ -2416,7 +2416,7 @@ class PersonnageController extends AbstractController
             $apprentissage,
             'Supprimer un apprentissage',
             "L'apprentissage a été supprimé",
-            $this->generateUrl('personnage.detail', ['personnage' => $personnage->getId(), 'tab' => 'competences']),
+            $this->generateUrl('personnage.detail.tab', ['personnage' => $personnage->getId(), 'tab' => 'competences']),
             [
                 // it's an admin view, do not need to test role for this breadcrumb
                 ['route' => $this->generateUrl('personnage.list'), 'name' => 'Liste des personnages'],
@@ -2447,14 +2447,16 @@ class PersonnageController extends AbstractController
         );
     }
 
-    #[Route('/{personnage}/admin', name: 'detail', requirements: ['personnage' => Requirement::DIGITS])]
+    #[Route('/{personnage}/detail/{tab}', name: 'detail.tab', requirements: [
+        'personnage' => Requirement::DIGITS,
+        'tab' => Requirement::ASCII_SLUG,
+    ])]
     #[Route('/{personnage}', name: 'detail', requirements: ['personnage' => Requirement::DIGITS])]
     #[IsGranted(Role::USER->value)]
     public function detailAction(
         Request $request,
         #[MapEntity] Personnage $personnage,
-        PersonnageService $personnageService,
-        Environment $twig,
+        string $tab = 'general',
     ): Response {
         // Fiche publique: Disabled for now
         // $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
@@ -2473,14 +2475,13 @@ class PersonnageController extends AbstractController
 
         // Ensure human
         if (!$personnage->getEspeces()) {
-            $personnage->addEspece($personnageService->getHumanEspece());
+            $personnage->addEspece($this->personnageService->getHumanEspece());
             $this->entityManager->persist($personnage);
             $this->entityManager->flush();
         }
 
         $descendants = $this->entityManager->getRepository(Personnage::class)->findDescendants($personnage);
-        $tab = $request->get('tab', 'general');
-        if (!$twig->getLoader()->exists('personnage/fragment/tab_'.$tab.'.twig')) {
+        if (!$this->twig->getLoader()->exists('personnage/fragment/tab_'.$tab.'.twig')) {
             $tab = 'general';
         }
         if (!$this->can(self::IS_ADMIN) && 'enveloppe' === $tab) {
@@ -2525,7 +2526,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'Le document a été ajouté au personnage.');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'],
                 303,
             );
@@ -2551,10 +2552,7 @@ class PersonnageController extends AbstractController
      * Exporte la fiche d'un personnage.
      */
     #[Route('/{personnage}/export', name: 'export')]
-    public function exportAction(
-        Request $request,
-
-        #[MapEntity] Personnage $personnage,
+    public function exportAction(#[MapEntity] Personnage $personnage,
     ): Response {
         $participant = $personnage->getParticipants()->last();
         $groupe = null;
@@ -2678,7 +2676,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'L\'objet a été ajouté au personnage.');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'enveloppe'],
                 303,
             );
@@ -2903,7 +2901,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('error', 'Désolé, le personnage n\'a pas encore acquis de compétences');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'competences'],
                 303,
             );
@@ -2931,7 +2929,7 @@ class PersonnageController extends AbstractController
             $this->addFlash('success', 'La compétence a été retirée');
 
             return $this->redirectToRoute(
-                'personnage.detail',
+                'personnage.detail.tab',
                 ['personnage' => $personnage->getId(), 'tab' => 'competences'],
                 303,
             );
@@ -2994,13 +2992,14 @@ class PersonnageController extends AbstractController
                 ],
             ],
         ];
-        dump(json_encode($a));
-        dump(
-            $competenceService
-                ->setPersonnage($personnage)
-                ->setCompetence($protectionApprenti)
-                ->getCompetenceCout(),
-        );
+
+        /* dump(json_encode($a));
+         dump(
+             $competenceService
+                 ->setPersonnage($personnage)
+                 ->setCompetence($protectionApprenti)
+                 ->getCompetenceCout(),
+         );*/
 
         return $this->render('personnage/test.twig', [
             'personnage' => $personnage,

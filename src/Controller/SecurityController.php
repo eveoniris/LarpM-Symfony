@@ -65,7 +65,7 @@ class SecurityController extends AbstractController
         ContainerBagInterface $params,
         UserRepository $userRepository,
     ): void {
-        $user->setTimePasswordResetRequested(time());
+        $user->setTimePasswordResetRequested(Carbon::now()->getTimestamp());
         if (!$user->getConfirmationToken()) {
             $user->setConfirmationToken($user->generateToken());
         }
@@ -78,9 +78,10 @@ class SecurityController extends AbstractController
             ['token' => $user->getConfirmationToken()],
             UrlGeneratorInterface::ABSOLUTE_URL,
         );
-        $resetExpireAt = Carbon::createFromTimestamp($user->getTimePasswordResetRequested())
+        $resetExpireAt = Carbon::createFromTimestamp($user->getTimePasswordResetRequested(), 'Europe/Paris')
             ->addSeconds($params->get('passwordTokenTTL'))
             ->format('Y-m-d H:i:s');
+
         $context = [
             'resetUrl' => $url,
             'resetExpireAt' => $resetExpireAt,

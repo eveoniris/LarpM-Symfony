@@ -113,7 +113,7 @@ class SecondaryGroupRepository extends BaseRepository
         $query->select($this->alias, 'sgtype');
 
         if ('secret' === $attributes) {
-            $query->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
+            $orderBy->addOrderToQuery($query);
 
             return $this->secret(
                 $query,

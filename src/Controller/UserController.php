@@ -423,6 +423,7 @@ class UserController extends AbstractController
         MailerInterface $mailer,
         ContainerBagInterface $params,
     ): RedirectResponse|Response {
+
         if (false !== $this->isGranted('ROLE_USER') && null !== $this->getUser()?->getId()) {
             $this->addFlash(
                 'alert',
@@ -470,7 +471,7 @@ class UserController extends AbstractController
 
             if ($user) {
                 // Initialize and send the password reset request.
-                $user->setTimePasswordResetRequested(time());
+                $user->setTimePasswordResetRequested(Carbon::now()->getTimestamp());
                 if (!$user->getConfirmationToken()) {
                     $user->setConfirmationToken($user->generateToken());
                 }
@@ -483,7 +484,8 @@ class UserController extends AbstractController
                     ['token' => $user->getConfirmationToken()],
                     UrlGeneratorInterface::ABSOLUTE_URL,
                 );
-                $resetExpireAt = Carbon::createFromTimestamp($user->getTimePasswordResetRequested())
+
+                $resetExpireAt = Carbon::createFromTimestamp($user->getTimePasswordResetRequested(), 'Europe/Paris')
                     ->addSeconds($params->get('passwordTokenTTL'))
                     ->format('Y-m-d H:i:s');
                 $context = [
@@ -516,7 +518,7 @@ class UserController extends AbstractController
                 return $this->redirectToRoute('app_login');
             }
 
-            $error = 'No user account was found with that email address.';
+            $this->addFlash('error', 'No user account was found with that email address.');
         }
 
         return $this->render('user/forgot-password.twig', [
@@ -899,7 +901,7 @@ class UserController extends AbstractController
 
         $user = $userRepository->findOneByConfirmationToken($token);
 
-        if (!$user || $user->isPasswordResetRequestExpired((int)$params->get('passwordTokenTTL'))) {
+        if (!$user || $user->isPasswordResetRequestExpired((int) $params->get('passwordTokenTTL'))) {
             $this->addFlash('alert', 'Sorry, your password reset link has expired.');
 
             // throw new GoneHttpException('This action is expired');
