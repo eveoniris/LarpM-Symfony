@@ -15,7 +15,7 @@
 {% elseif participant is defined and participant.gn is defined %}
     {% set breadcrumb = breadcrumb|merge([{'name' : participant.gn.label, 'route': path('gn.detail', {'gn' : participant.gn.id}) }]) %}
 {% endif %}
-{% set breadcrumb = breadcrumb|merge([{'name' : "Detail de #{personnage.nom}", 'route': path('personnage.detail', {'personnage' : personnage.id, 'tab': tab})}]) %}
+{% set breadcrumb = breadcrumb|merge([{'name' : "Detail de #{personnage.nom}", 'route': path('personnage.detail.tab', {'personnage' : personnage.id, 'tab': tab})}]) %}
 
 {% if name is defined %}
     {% set breadcrumb = breadcrumb|merge([{'name': name}]) %}

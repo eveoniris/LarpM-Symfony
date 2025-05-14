@@ -57,13 +57,20 @@ final class PagerService
         return $this->limit;
     }
 
+    public function setLimit(int $limit): PagerService
+    {
+        $this->limit = $limit;
+
+        return $this;
+    }
+
     public function getRequest(): ?Request
     {
         if (isset($this->request)) {
             return $this->request;
         }
 
-        $this->request = $this->requestStack?->getCurrentRequest();
+        $this->request = $this->requestStack->getCurrentRequest();
 
         return $this->request;
     }
@@ -109,18 +116,6 @@ final class PagerService
         $this->page = max(1, $page);
 
         return $this->page;
-    }
-
-    public function getRepository(): ?BaseRepository
-    {
-        return $this->repository;
-    }
-
-    public function setRepository(BaseRepository $repository): PagerService
-    {
-        $this->repository = $repository;
-
-        return $this;
     }
 
     public function getSearchType(): string|array|null
@@ -203,7 +198,7 @@ final class PagerService
         $this->form = $this->formFactory->create(
             type: $type ?? ListFindForm::class,
             data: $data,
-            options: $options
+            options: $options,
         );
 
         if ($request = $this->getRequest()) {
@@ -211,6 +206,18 @@ final class PagerService
         }
 
         return $this->form;
+    }
+
+    public function getRepository(): ?BaseRepository
+    {
+        return $this->repository;
+    }
+
+    public function setRepository(BaseRepository $repository): PagerService
+    {
+        $this->repository = $repository;
+
+        return $this;
     }
 
     public function getSearchValue(): mixed
@@ -225,9 +232,16 @@ final class PagerService
         return $this->searchValue;
     }
 
-    public function setLimit(int $limit): PagerService
+    public function setDefaultOrderBy(string $orderBy): PagerService
     {
-        $this->limit = $limit;
+        $this->orderBy->setDefaultOrderDir($orderBy);
+
+        return $this;
+    }
+
+    public function setOrdersBy(array $orders): PagerService
+    {
+        $this->orderBy->setOrders($orders);
 
         return $this;
     }

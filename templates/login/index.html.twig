@@ -9,7 +9,7 @@
 
     {% if app.user %}
         <p>Bonjour, {{ app.user.displayName }}.</p>
-        <p><a href="{{ path('app_logout') }}">Déconnection</a></p>
+        <p><a href="{{ path('app_logout') }}">Déconnexion</a></p>
     {% else %}
         {{ form_start(form) }}
         <div class="form-group">

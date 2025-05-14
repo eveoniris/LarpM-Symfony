@@ -131,7 +131,7 @@ trait EntityFileUploadTrait
 
     #[NoReturn] public function getOldV1Document(?string $projectDir = null): string
     {
-        dump($this->getDocumentFilePath($projectDir, true), $this->getDocumentUrl());
+        //dump($this->getDocumentFilePath($projectDir, true), $this->getDocumentUrl());
 
 
         return $this->getDocumentFilePath($projectDir, true).$this->getDocumentUrl();

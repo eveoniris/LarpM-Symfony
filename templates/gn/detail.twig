@@ -142,7 +142,7 @@
                     {{ gn.adresse|markdown_to_html }}
                     <strong>Quand ?</strong>
                     <p>Du {{ gn.dateDebut|date('d-m-Y') }} au {{ gn.dateFin|date('d-m-Y') }}.<br/>
-                        L'acceuil des joueurs débutera le {{ gn.dateInstallationJoueur|date('d-m-Y') }}
+                        L'accueil des joueurs débutera le {{ gn.dateInstallationJoueur|date('d-m-Y') }}
                         à {{ gn.dateInstallationJoueur|date('H:i') }} heure.</p>
 
                     <ul>
@@ -310,7 +310,7 @@
                                     secondaire</a></li>
                             {% if participant.session %}
                                 <li>
-                                    <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id, 'tab': 'biographie'}) }}"><i
+                                    <a href="{{ path('personnage.detail.tab', {'personnage': participant.personnage.id, 'tab': 'biographie'}) }}"><i
                                                 class="fa fa-book" aria-hidden="true"></i> Votre background</a></li>
                             {% endif %}
                         </ul>

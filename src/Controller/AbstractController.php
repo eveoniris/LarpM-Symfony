@@ -37,6 +37,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
@@ -69,6 +70,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected LoggerInterface $logger,
         protected PersonnageService $personnageService,
         protected GroupeService $groupeService,
+        protected Environment $twig,
         // Cache $cache, // TODO : later
     )
     {
@@ -655,7 +657,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if (!file_exists($filename) && method_exists($entity, 'getOldV1Document')) {
             $filename = $entity->getOldV1Document();
         }
-        dump($filename);
 
         if (!$documentUrl || !file_exists($filename)) {
             throw new NotFoundHttpException("Le document n'existe pas".$filename);

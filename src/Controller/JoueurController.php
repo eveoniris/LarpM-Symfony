@@ -12,22 +12,10 @@ use Symfony\Component\Routing\Requirement\Requirement;
 class JoueurController extends AbstractController
 {
     /**
-     * Affiche la vue index.twig.
-     */
-    #[Route('', name: 'list')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $repo = $entityManager->getRepository('\App\Entity\Joueur');
-        $joueurs = $repo->findAll();
-
-        return $this->render('joueur/index.twig', ['joueurs' => $joueurs]);
-    }
-
-    /**
      * Affiche le formulaire d'ajout d'un joueur.
      */
     #[Route('/add', name: 'add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addAction(Request $request, EntityManagerInterface $entityManager)
     {
         $joueur = new \App\Entity\Joueur();
 
@@ -44,7 +32,7 @@ class JoueurController extends AbstractController
             $entityManager->persist($joueur);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Vos informations ont été enregistrés.');
+            $this->addFlash('success', 'Vos informations ont été enregistrés.');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -58,25 +46,33 @@ class JoueurController extends AbstractController
      * Detail d'un joueur.
      */
     #[Route('/{joueur}', name: 'detail', requirements: ['joueur' => Requirement::DIGITS])]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Joueur $joueur)
+    public function detailAction(Request $request, #[MapEntity] Joueur $joueur, string $tab = 'generale')
     {
-        $id = $request->get('index');
-
-        $joueur = $entityManager->find('\App\Entity\Joueur', $id);
-
         if ($joueur) {
             return $this->render('joueur/detail.twig', ['joueur' => $joueur]);
-        } else {
-           $this->addFlash('error', 'Le joueur n\'a pas été trouvé.');
-
-            return $this->redirectToRoute('joueur');
         }
+
+        $this->addFlash('error', 'Le joueur n\'a pas été trouvé.');
+
+        return $this->redirectToRoute('joueur');
+    }
+
+    /**
+     * Affiche la vue index.twig.
+     */
+    #[Route('', name: 'list')]
+    public function indexAction(Request $request, EntityManagerInterface $entityManager)
+    {
+        $repo = $entityManager->getRepository('\App\Entity\Joueur');
+        $joueurs = $repo->findAll();
+
+        return $this->render('joueur/index.twig', ['joueurs' => $joueurs]);
     }
 
     /**
      * Met à jour les informations d'un joueur.
      */
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager)
+    public function updateAction(Request $request, EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
@@ -92,7 +88,7 @@ class JoueurController extends AbstractController
 
             $entityManager->persist($joueur);
             $entityManager->flush();
-           $this->addFlash('success', 'Le joueur a été mis à jour.');
+            $this->addFlash('success', 'Le joueur a été mis à jour.');
 
             return $this->redirectToRoute('joueur.detail', ['index' => $id]);
         }
@@ -106,7 +102,7 @@ class JoueurController extends AbstractController
     /**
      * Met a jours les points d'expérience des joueurs.
      */
-    public function xpAction( EntityManagerInterface $entityManager, Request $request)
+    public function xpAction(EntityManagerInterface $entityManager, Request $request)
     {
         $repo = $entityManager->getRepository('\App\Entity\Joueur');
         $joueurs = $repo->findAll();
@@ -136,7 +132,7 @@ class JoueurController extends AbstractController
 
             $entityManager->flush();
 
-           $this->addFlash('success', 'Les points d\'expérience ont été sauvegardés');
+            $this->addFlash('success', 'Les points d\'expérience ont été sauvegardés');
         }
 
         return $this->render('joueur/xp.twig', [

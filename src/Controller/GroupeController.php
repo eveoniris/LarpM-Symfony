@@ -228,7 +228,7 @@ class GroupeController extends AbstractController
 
             $this->addFlash('success', 'Votre groupe a été sauvegardé.');
 
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId(), 'tab' => 'enveloppe']);
+            return $this->redirectToRoute('groupe.detail.tab', ['groupe' => $groupe->getId(), 'tab' => 'enveloppe']);
         }
 
         return $this->render('groupe/ingredient.twig', [
@@ -574,13 +574,14 @@ class GroupeController extends AbstractController
      * Affiche le détail d'un groupe.
      */
     #[Route('/{groupe}', name: 'detail')]
+    #[Route('/{groupe}.detail/{tab}', name: 'detail.tab')]
     #[Route('/{groupe}/gn/{gn}', name: 'detail.gn')]
     #[Route('/{groupe}/gn/{gn}/{groupeGn}', name: 'groupeGn')]
     public function detailAction(
-        Request $request,
         #[MapEntity] ?Groupe $groupe,
         #[MapEntity] ?Gn $gn = null,
         #[MapEntity] ?GroupeGn $groupeGn = null,
+        string $tab = 'detail',
     ): RedirectResponse|Response {
         /*
          * Si le groupe existe, on affiche son détail
@@ -600,7 +601,7 @@ class GroupeController extends AbstractController
                 'groupe' => $groupe,
                 'gn' => $gn,
                 'groupeGn' => $groupeGn,
-                'tab' => $request->get('tab', 'detail'),
+                'tab' => $tab,
             ],
         );
     }
@@ -1251,7 +1252,7 @@ class GroupeController extends AbstractController
 
             $this->addFlash('success', 'Votre groupe a été sauvegardé.');
 
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId(), 'tab' => 'enveloppe']);
+            return $this->redirectToRoute('groupe.detail.tab', ['groupe' => $groupe->getId(), 'tab' => 'enveloppe']);
         }
 
         return $this->render('groupe/ressource.twig', [

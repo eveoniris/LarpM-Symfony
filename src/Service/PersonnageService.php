@@ -274,13 +274,21 @@ class PersonnageService
             // On récupère les éventuelles données de bonus à donner de type "competence"
             $competencesBonus = $bonus->getDataAsList('competence');
 
+            // itself
+            if (empty($competencesBonus)) {
+                $competencesBonus = [$bonus];
+            }
+
             // On résoud chaque possibilité
             foreach ($competencesBonus as $competenceBonus) {
+                $isItSelf = $competenceBonus instanceof Bonus;
+                $conditionsDataSet = $isItSelf ? $competenceBonus->getConditions() : $competenceBonus;
+
                 if (!$this->conditionsService->isValidConditions(
                     $personnage,
-                    $competenceBonus,
+                    $conditionsDataSet,
                     $this,
-                    isDataSet: true,
+                    isDataSet: !$isItSelf, // looking a condition key in an array
                 )) {
                     continue;
                 }
@@ -296,15 +304,15 @@ class PersonnageService
 
                 // cas spéciaux description
                 $competence->setDescription($bonus->getDescription());
-                if ($description = $this->conditionsService->getKeyValue('description', $competenceBonus)) {
+                if ($description = $this->conditionsService->getKeyValue('description', $conditionsDataSet)) {
                     $competence->setDescription($description);
                 }
 
                 // cas spéciaux index/level
                 $index = $bonus->getData('index', Level::NIVEAU_1);
-                if ($level = $this->conditionsService->getKeyValue('level', $competenceBonus)) {
+                if ($level = $this->conditionsService->getKeyValue('level', $conditionsDataSet)) {
                     $index = $level;
-                } elseif ($level = $this->conditionsService->getKeyValue('index', $competenceBonus)) {
+                } elseif ($level = $this->conditionsService->getKeyValue('index', $conditionsDataSet)) {
                     $index = $level;
                 }
 
@@ -319,7 +327,7 @@ class PersonnageService
                 }
 
                 $materiel = $bonus->getData('materiel', null);
-                if ($mat = $this->conditionsService->getKeyValue('materiel', $competenceBonus)) {
+                if ($mat = $this->conditionsService->getKeyValue('materiel', $conditionsDataSet)) {
                     $materiel = $mat;
                 }
                 if (empty($materiel) || !is_string($materiel)) {
@@ -331,7 +339,7 @@ class PersonnageService
                 $family->setId($bonus->getId() * -1);
 
                 $titre = $bonus->getTitre();
-                if ($tit = $this->conditionsService->getKeyValue('titre', $competenceBonus)) {
+                if ($tit = $this->conditionsService->getKeyValue('titre', $conditionsDataSet)) {
                     $titre = $tit;
                 }
                 if ($bonus->getOrigine()) {
@@ -1055,7 +1063,7 @@ class PersonnageService
 
         // trie des competences disponibles
         $iterator = $availableCompetences->getIterator();
-        $iterator->uasort(static fn($a, $b) => $a->getLabel() <=> $b->getLabel());
+        $iterator->uasort(static fn ($a, $b) => $a->getLabel() <=> $b->getLabel());
 
         return new ArrayCollection(iterator_to_array($iterator));
     }

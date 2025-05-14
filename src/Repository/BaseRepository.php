@@ -2,11 +2,9 @@
 
 namespace App\Repository;
 
-use App\Entity\User;
 use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Entity;
@@ -14,16 +12,12 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\Proxy;
 use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @extends ServiceEntityRepository<Entity>
- *
- * @implements PasswordUpgraderInterface<User>
- *
  * @method Entity|null find($id, $lockMode = null, $lockVersion = null)
  * @method Entity|null findOneBy(array $criteria, array $orderBy = null)
  * @method Entity[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
@@ -116,6 +110,24 @@ abstract class BaseRepository extends ServiceEntityRepository
         $orderBy ??= $this->orderBy;
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
+
+        // NEO MULTI
+        //dump($orderBy->getOrders());
+        if (!empty($orderBy->getOrders())) {
+            foreach ($orderBy->getOrders() as $by => $sort) {
+                if (!$this->isAllowedAttribute($sort, $this->sortAttributes($alias))) {
+                    continue;
+                }
+                if (!str_contains($by, '.')) {
+                    $by = $alias.'.'.$by;
+                }
+                $query->addOrderBy($by, $sort);
+            }
+
+            return $query;
+        }
+
+        // SOLO ORDER (old)
         if (
             $orderBy->getOrderBy()
             && $this->isAllowedAttribute($orderBy->getOrderBy(), $this->sortAttributes($alias))
@@ -125,18 +137,21 @@ abstract class BaseRepository extends ServiceEntityRepository
                 $by = $alias.'.'.$by;
             }
             $query->orderBy($by, $orderBy->getSort());
-        } else {
-            $asAttributes = $this->searchAttributesAs($alias);
-            foreach ($this->sortAttributes($alias) as $sortDefinitions) {
-                $attributeSort = $sortDefinitions[$orderBy->getSort()];
-                $query->addOrderBy(key($attributeSort), current($attributeSort));
 
-                // handle aliased fields
-                if (isset($asAttributes[key($attributeSort)])) {
-                    $query->addSelect(
-                        $asAttributes[key($attributeSort)].' AS '.key($attributeSort),
-                    );
-                }
+            return $query;
+        }
+
+        // Default order
+        $asAttributes = $this->searchAttributesAs($alias);
+        foreach ($this->sortAttributes($alias) as $sortDefinitions) {
+            $attributeSort = $sortDefinitions[$orderBy->getSort()];
+            $query->addOrderBy(key($attributeSort), current($attributeSort));
+
+            // handle aliased fields
+            if (isset($asAttributes[key($attributeSort)])) {
+                $query->addSelect(
+                    $asAttributes[key($attributeSort)].' AS '.key($attributeSort),
+                );
             }
         }
 
