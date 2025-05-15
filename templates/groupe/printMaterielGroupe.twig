@@ -122,6 +122,9 @@
             {# if session.intendant() is not null #}
             <li>Intendant<strong>: {{ session.intendant().nom|default('Aucun') }}</strong></li>
 
+            {# if session.diplomate() is not null #}
+            <li>Diplomate<strong>: {{ session.diplomate().nom|default('Aucun') }}</strong></li>
+
         </ul>
     {% endif %}
 
