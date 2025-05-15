@@ -11,21 +11,6 @@ class PretriseService extends CompetenceService
 {
     protected bool $hasBonus = true;
 
-    public function validateApprendre(): void
-    {
-        // le personnage doit avoir une religion au niveau fervent ou fanatique
-        if (
-            !$this->getPersonnage()->isCreation(
-            ) // Todo voir pour forcer le choix de religion et niveau si la classe offre Prêtrise
-            && !$this->getPersonnage()->isFervent() && !$this->getPersonnage()->isFanatique()
-        ) {
-            $this->addError(
-                'Pour obtenir la compétence Prêtrise, vous devez être FERVENT ou FANATIQUE',
-                self::ERR_CODE_LEARN
-            );
-        }
-    }
-
     /**
      * Ajoute toutes les prières de niveau de sa compétence
      * liées aux sphères de sa religion fervente ou fanatique.
@@ -58,6 +43,20 @@ class PretriseService extends CompetenceService
         $this->applyRules($this->getRules());
     }
 
+    public function getRules(): array
+    {
+        return [
+            // TODO
+            // Initié : Vous connaissez le niveau fervent  d'une Religion supplémentaire.
+            // Expert : Vous connaissez le niveau Fervent de deux Religions supplémentaires.
+
+            // Permet à un prêtre de choisir des infos, 3 descriptions de religions qu'il ne connait pas
+            Level::NIVEAU_2 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
+            Level::NIVEAU_3 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
+            Level::NIVEAU_4 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
+        ];
+    }
+
     public function remove(): void
     {
         // TODO remove priere ?
@@ -65,12 +64,18 @@ class PretriseService extends CompetenceService
         $this->removeRules($this->getRules());
     }
 
-    public function getRules(): array
+    public function validateApprendre(): void
     {
-        return [
-            Level::NIVEAU_2 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
-            Level::NIVEAU_3 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
-            Level::NIVEAU_4 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
-        ];
+        // le personnage doit avoir une religion au niveau fervent ou fanatique
+        if (
+            !$this->getPersonnage()->isCreation(
+            ) // Todo voir pour forcer le choix de religion et niveau si la classe offre Prêtrise
+            && !$this->getPersonnage()->isFervent() && !$this->getPersonnage()->isFanatique()
+        ) {
+            $this->addError(
+                'Pour obtenir la compétence Prêtrise, vous devez être FERVENT ou FANATIQUE',
+                self::ERR_CODE_LEARN,
+            );
+        }
     }
 }

@@ -121,6 +121,7 @@ abstract class BaseRepository extends ServiceEntityRepository
                 if (!str_contains($by, '.')) {
                     $by = $alias.'.'.$by;
                 }
+                dump('ADD ORDER BY TO QUERY ', $by, $sort);
                 $query->addOrderBy($by, $sort);
             }
 

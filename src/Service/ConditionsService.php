@@ -108,7 +108,7 @@ class ConditionsService
         }
 
         if (empty($conditions)) {
-            return null;
+            return []; // No conditions a null mean invalide condition, an array empty mean no one to test
         }
 
         // For 1 condition without array

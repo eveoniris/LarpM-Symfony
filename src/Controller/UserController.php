@@ -423,7 +423,6 @@ class UserController extends AbstractController
         MailerInterface $mailer,
         ContainerBagInterface $params,
     ): RedirectResponse|Response {
-
         if (false !== $this->isGranted('ROLE_USER') && null !== $this->getUser()?->getId()) {
             $this->addFlash(
                 'alert',
@@ -634,8 +633,6 @@ class UserController extends AbstractController
             'allowRememberMe' => isset($app['security.remember_me.response_listener']),
         ]);
     }
-
-    // TODO CHECK #[Route('/user', name: 'user.login')]
 
     #[Route('/user/new/step1', name: 'user.new-step1')]
     public function newUserStep1Action(EntityManagerInterface $entityManager): Response
@@ -872,7 +869,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/user/reset-password/{token}', name: 'user.reset-password', requirements: ['token' => Requirement::ASCII_SLUG])]
+    #[Route('/user/reset-password/{token}', name: 'user.reset-password')]
     public function resetPasswordAction(
         UserRepository $userRepository,
         Request $request,

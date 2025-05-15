@@ -405,7 +405,7 @@ readonly class GroupeService
             // this condition is tested before JSON value if we use bonus value only
             if (!$this->conditionsService->isValidConditions(
                 $groupe,
-                $bonus->getJsonData()['condition'] ?? [],
+                $bonus->getConditions()['condition'] ?? [],
             )) {
                 // on passe au bonus suivant
                 continue;
@@ -419,6 +419,7 @@ readonly class GroupeService
                     continue;
                 }
 
+                // TODO enhance like we do for other with getConditions and multi bonus
                 if (!$this->conditionsService->isValidConditions($groupe, $row['condition'] ?? [])) {
                     // on passe à l'item suivant
                     continue;
