@@ -73,6 +73,7 @@ use App\Repository\DomaineRepository;
 use App\Repository\GnRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageApprentissageRepository;
+use App\Repository\PersonnageRepository;
 use App\Repository\PotionRepository;
 use App\Repository\PriereRepository;
 use App\Repository\SortRepository;
@@ -1772,7 +1773,7 @@ class PersonnageController extends AbstractController
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' === $personnageLangue->getSource(
-                ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
+                    ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $this->entityManager->remove($personnageLangue);
                 }
@@ -2136,7 +2137,7 @@ class PersonnageController extends AbstractController
         $limit = 1;
         foreach ($competences as $competence) {
             if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily(
-            )?->getCompetenceFamilyType()?->value) {
+                )?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                     $errorLevel = 0;
@@ -2246,7 +2247,7 @@ class PersonnageController extends AbstractController
                 'autocomplete' => true,
                 'label' => 'Enseignant',
                 'class' => Personnage::class,
-                'choice_label' => static fn (Personnage $personnage) => $personnage->getIdName(),
+                'choice_label' => static fn(Personnage $personnage) => $personnage->getIdName(),
             ])
             ->add('competence', ChoiceType::class, [
                 'required' => true,
@@ -2254,7 +2255,7 @@ class PersonnageController extends AbstractController
                 'autocomplete' => true,
                 'label' => 'Compétence étudiée',
                 'choices' => $availableCompetences,
-                'choice_label' => static fn (Competence $competence) => $competence->getLabel(),
+                'choice_label' => static fn(Competence $competence) => $competence->getLabel(),
             ]);
 
         /** @var GnRepository $gnRepository */
@@ -2573,6 +2574,43 @@ class PersonnageController extends AbstractController
         ]);
     }
 
+    #[Route('/fixpriest', name: 'fix.priest')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
+    public function fixAction(
+        PersonnageRepository $pr,
+    ): RedirectResponse {
+
+        $ids = [
+            // List of priest with no prayer
+        ];
+
+        /** @var Personnage $personnage */
+        foreach ($pr->findByIds($ids) as $personnage) {
+            $religion = $personnage?->getMainReligion();
+
+            if (!$religion) {
+                continue;
+            }
+
+            foreach ($religion->getSpheres() as $sphere) {
+                /** @var Priere $priere */
+                foreach ($sphere->getPrieres() as $priere) {
+                    if (!$personnage?->hasPriere($priere) && $priere->getNiveau() === 1) {
+                        $priere->addPersonnage($personnage);
+                        $personnage?->addPriere($priere);
+                        $this->entityManager->persist($personnage);
+                        $this->entityManager->persist($priere);
+                    }
+                }
+                $this->entityManager->flush();
+            }
+        }
+
+        dd('ok');
+
+        return $this->render('personnage/list.twig', []);
+    }
+
     /**
      * Obtenir une image protégée.
      */
@@ -2594,7 +2632,7 @@ class PersonnageController extends AbstractController
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
-            ).FolderType::Private->value.DocumentType::Image->value.'/';
+                ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
 
             if (!file_exists($filename)) {
@@ -3042,9 +3080,9 @@ class PersonnageController extends AbstractController
                 'label' => 'Nouveau propriétaire',
                 'help' => 'Il doit avoir une participation, et ne pas avoir de personnage associé à celle-ci',
                 'class' => Participant::class,
-                'choice_label' => static fn (Participant $participant) => $participant->getGn()->getLabel(
-                ).' - '.$participant->getUser()?->getFullname(),
-                'query_builder' => static fn (ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
+                'choice_label' => static fn(Participant $participant) => $participant->getGn()->getLabel(
+                    ).' - '.$participant->getUser()?->getFullname(),
+                'query_builder' => static fn(ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
                     ->select('prt')
                     ->innerJoin('prt.user', 'u')
                     ->innerJoin('prt.gn', 'gn')
@@ -3228,8 +3266,8 @@ class PersonnageController extends AbstractController
                 'class' => Espece::class,
                 'choices' => $especes,
                 'label_html' => true,
-                'choice_label' => static fn (Espece $espece) => ($espece->isSecret(
-                ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
+                'choice_label' => static fn(Espece $espece) => ($espece->isSecret(
+                    ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
                 'data' => $originalEspeces,
             ])
             ->add(
