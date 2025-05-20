@@ -1,5 +1,9 @@
 {% if session is not defined %}
-    {% set session = groupe.getGroupeGnById(app.request.query.get('gn')) %}
+    {% if groupeGn is  defined %}
+        {% set session =groupeGn %}
+    {% else %}
+        {% set session = groupe.getGroupeGnById(app.request.query.get('gn')) %}
+    {% endif %}
 {% endif %}
 
 {% if session %}
@@ -118,7 +122,7 @@
                     <div class="card text-bg mb-3 overflow-auto">
                         <div class="card-header d-flex justify-content-between">
                             <h4>
-                               Navigateur :
+                                Navigateur :
                                 {% if session.navigateur(false) is not null %}
                                     <a href="{{ path('personnage.detail', {'personnage':session.navigateur(false).id}) }}">{{ session.navigateur(false).nom }}</a>
                                 {% else %}Aucun{% endif %}

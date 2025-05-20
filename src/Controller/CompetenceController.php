@@ -177,7 +177,7 @@ class CompetenceController extends AbstractController
         PagerService $pagerService,
         CompetenceRepository $competenceRepository,
     ): Response {
-        $pagerService->setRequest($request)->setRepository($competenceRepository)->setLimit(50);
+        $pagerService->setRequest($request)->setRepository($competenceRepository)->setLimit(100);
 
         $alias = $competenceRepository->getAlias();
         $queryBuilder = $competenceRepository->createQueryBuilder($alias)

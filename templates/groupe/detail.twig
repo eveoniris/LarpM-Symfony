@@ -127,7 +127,7 @@
                                     {% for session in groupe.groupeGns|reverse %}
                                         <li class="d-grid gap-2{% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}">
                                             <a class="dropdown-item {% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}"
-                                               href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'domaine', 'gn': session.gn.id, 'groupeGn': session.id})) }}"
+                                               href="{{ path('groupe.detail.groupeGn',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'domaine', 'gn': session.gn.id, 'groupeGn': session.id})) }}"
                                             >{{ session.gn }}</a></li>
                                     {% endfor %}
 
@@ -151,7 +151,7 @@
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" role="tabpanel">
-                            {% include "groupe/fragment/#{tab|default('detail')}.twig" with {'groupe': groupe, 'groupeGn': groupeGn, 'tab' : tab} %}
+                            {% include "groupe/fragment/#{tab|default('detail')}.twig" with {'groupe': groupe, 'groupeGn': groupeGn, 'gn': gn, 'tab' : tab} %}
                         </div>
                     </div>
                 </div>

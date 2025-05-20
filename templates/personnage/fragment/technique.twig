@@ -58,7 +58,7 @@
             <div class="list-group">
                 {% for trigger in personnage.personnageTriggers %}
                     <div class="list-group-item d-flex justify-content-between">
-                        <div>{{ trigger.tag }}</div>
+                        <div>{{ trigger.tag.value }}</div>
                         {% if isAdmin %}
                             <div>
                                 <a class="btn btn-sm btn-secondary"
