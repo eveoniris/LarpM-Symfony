@@ -33,7 +33,6 @@ use App\Repository\TerritoireRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -574,9 +573,10 @@ class GroupeController extends AbstractController
      * Affiche le détail d'un groupe.
      */
     #[Route('/{groupe}', name: 'detail')]
-    #[Route('/{groupe}.detail/{tab}', name: 'detail.tab')]
+    #[Route('/{groupe}/detail/{tab}', name: 'detail.tab')]
     #[Route('/{groupe}/gn/{gn}', name: 'detail.gn')]
     #[Route('/{groupe}/gn/{gn}/{groupeGn}', name: 'groupeGn')]
+    #[Route('/{groupe}/detail/{tab}/gn/{gn}/groupeGn/{groupeGn}', name: 'detail.groupeGn')]
     public function detailAction(
         #[MapEntity] ?Groupe $groupe,
         #[MapEntity] ?Gn $gn = null,
@@ -1532,7 +1532,6 @@ class GroupeController extends AbstractController
     #[Route('/update/{groupe}', name: 'update')]
     public function updateAction(
         Request $request,
-
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
         $this->checkGroupeLocked($groupe);
@@ -1541,7 +1540,7 @@ class GroupeController extends AbstractController
         $originalTerritoires = new ArrayCollection();
 
         /*
-         *  Crée un tableau contenant les objets GroupeClasse du groupe
+         * Créer un tableau contenant les objets GroupeClasse du groupe
          */
         foreach ($groupe->getGroupeClasses() as $groupeClasse) {
             $originalGroupeClasses->add($groupeClasse);
@@ -1571,7 +1570,7 @@ class GroupeController extends AbstractController
             }
 
             /*
-             *  supprime la relation entre le groupeClasse et le groupe
+             * supprime la relation entre le groupeClasse et le groupe
              */
             foreach ($originalGroupeClasses as $groupeClasse) {
                 if (false == $groupe->getGroupeClasses()->contains($groupeClasse)) {
@@ -1580,7 +1579,7 @@ class GroupeController extends AbstractController
             }
 
             /*
-             * Pour tous les territoire du groupe
+             * Pour tous les territoires du groupe
              */
             foreach ($groupe->getTerritoires() as $territoire) {
                 $territoire->setGroupe($groupe);
@@ -1593,8 +1592,8 @@ class GroupeController extends AbstractController
             }
 
             /*
-             * Si l'utilisateur a cliquer sur "update", on met à jour le groupe
-             * Si l'utilisateur a cliquer sur "delete", on supprime le groupe
+             * Si l'utilisateur a cliqué sur "update", on met à jour le groupe
+             * Si l'utilisateur a cliqué sur "delete", on supprime le groupe
              */
             if ($form->get('update')->isClicked()) {
                 $this->entityManager->persist($groupe);
@@ -1629,6 +1628,7 @@ class GroupeController extends AbstractController
                 $this->entityManager->remove($groupe);
                 $this->entityManager->flush();
                 $this->addFlash('success', 'Le groupe a été supprimé.');
+
 
                 return $this->redirectToRoute('groupe.list');
             }

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\TriggerType;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -17,13 +19,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageTrigger', 'extended' => 'PersonnageTrigger'])]
 abstract class BasePersonnageTrigger
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
-    protected string $tag = '';
+    #[Column(type: Types::STRING, length: 45)]
+    protected ?string $tag = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
+    #[Column(type: Types::BOOLEAN)]
     protected bool $done = false;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageTriggers')]
@@ -31,39 +33,11 @@ abstract class BasePersonnageTrigger
     protected Personnage $personnage;
 
     /**
-     * Set the value of id.
+     * Get the value of done.
      */
-    public function setId(int $id): static
+    public function getDone(): bool
     {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of tag.
-     */
-    public function setTag(string $tag): static
-    {
-        $this->tag = $tag;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of tag.
-     */
-    public function getTag(): string
-    {
-        return $this->tag ?? '';
+        return $this->done;
     }
 
     /**
@@ -77,19 +51,19 @@ abstract class BasePersonnageTrigger
     }
 
     /**
-     * Get the value of done.
+     * Get the value of id.
      */
-    public function getDone(): bool
+    public function getId(): int
     {
-        return $this->done;
+        return $this->id;
     }
 
     /**
-     * Set Personnage entity (many to one).
+     * Set the value of id.
      */
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setId(int $id): static
     {
-        $this->personnage = $personnage;
+        $this->id = $id;
 
         return $this;
     }
@@ -102,8 +76,37 @@ abstract class BasePersonnageTrigger
         return $this->personnage;
     }
 
-    /* public function __sleep()
+    /**
+     * Set Personnage entity (many to one).
+     */
+    public function setPersonnage(?Personnage $personnage = null): static
     {
-        return ['id', 'personnage_id', 'tag', 'done'];
-    } */
+        $this->personnage = $personnage;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of tag.
+     */
+    public function getTag(): ?TriggerType
+    {
+        return TriggerType::tryFrom($this->tag);
+    }
+
+    /**
+     * Set the value of tag.
+     */
+    public function setTag(string|TriggerType|null $tag): static
+    {
+        if ($tag instanceof TriggerType) {
+            $this->tag = $tag->value;
+
+            return $this;
+        }
+
+        $this->tag = $tag;
+
+        return $this;
+    }
 }

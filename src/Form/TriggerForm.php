@@ -1,17 +1,15 @@
 <?php
 
-
 namespace App\Form;
 
+use App\Entity\PersonnageTrigger;
+use App\Enum\TriggerType;
+use Doctrine\DBAL\Types\TextType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\TriggerForm.
- *
- * @author kevin
- */
 class TriggerForm extends AbstractType
 {
     /**
@@ -19,19 +17,21 @@ class TriggerForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('tag', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
-            'required' => true,
-            'label' => 'Tag',
-        ]);
+        $builder
+            ->add('tag', EnumType::class, [
+                'class' => TriggerType::class,
+                'label' => 'Tag',
+            ]);
+        /*->add('tag', TextType::class, [
+        'required' => true,
+        'label' => 'Tag',
+    ]);*/
     }
-
-    /**
-     * Définition de l'entité concerné.
-     */
+    
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\PersonnageTrigger::class,
+            'data_class' => PersonnageTrigger::class,
         ]);
     }
 

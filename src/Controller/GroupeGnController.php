@@ -504,7 +504,7 @@ class GroupeGnController extends AbstractController
             $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
             if ($redirect) {
-                return $this->redirect($redirect.'&tab=domaine');
+                return $this->redirect($redirect);
             }
 
             return $this->redirectToRoute(

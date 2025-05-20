@@ -25,11 +25,12 @@ class PretriseService extends CompetenceService
         }
 
         foreach ($religion->getSpheres() as $sphere) {
+            $competenceIndex = $this->getCompetence()->getLevel()?->getIndex();
             /** @var Priere $priere */
             foreach ($sphere->getPrieres() as $priere) {
                 if (
                     !$this->getPersonnage()->hasPriere($priere)
-                    && $priere->getNiveau() === $this->getCompetence()->getLevel()?->getIndex()
+                    && $priere->getNiveau() === $competenceIndex
                 ) {
                     // TODO test if priere is really added
                     $priere->addPersonnage($this->getPersonnage());
@@ -47,13 +48,13 @@ class PretriseService extends CompetenceService
     {
         return [
             // TODO
-            // Initié : Vous connaissez le niveau fervent  d'une Religion supplémentaire.
+            // Initié : Vous connaissez le niveau fervent d'une Religion supplémentaire.
             // Expert : Vous connaissez le niveau Fervent de deux Religions supplémentaires.
 
             // Permet à un prêtre de choisir des infos, 3 descriptions de religions qu'il ne connait pas
-            Level::NIVEAU_2 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
-            Level::NIVEAU_3 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
-            Level::NIVEAU_4 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
+            Level::NIVEAU_2 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 1],
+            Level::NIVEAU_3 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 2],
+            // Level::NIVEAU_4 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
         ];
     }
 

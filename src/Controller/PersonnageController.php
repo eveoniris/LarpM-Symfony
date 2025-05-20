@@ -104,7 +104,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Twig\Environment;
 
 #[Route('/personnage', name: 'personnage.')]
 class PersonnageController extends AbstractController
@@ -1191,6 +1190,7 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}/religion/{personnageReligion}/delete', name: 'delete.religion')]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminRemoveReligionAction(
+        Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] PersonnagesReligions $personnageReligion,
     ): RedirectResponse|Response {
@@ -1427,7 +1427,11 @@ class PersonnageController extends AbstractController
         $trigger->setDone(false);
 
         $form = $this->createForm(TriggerForm::class, $trigger)
-            ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
+            ->add(
+                'save',
+                SubmitType::class,
+                ['label' => 'Valider les modifications', 'attr' => ['class' => 'btn btn-secondary']],
+            );
 
         $form->handleRequest($request);
 
@@ -1768,7 +1772,7 @@ class PersonnageController extends AbstractController
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' === $personnageLangue->getSource(
-                    ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
+                ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $this->entityManager->remove($personnageLangue);
                 }
@@ -2132,7 +2136,7 @@ class PersonnageController extends AbstractController
         $limit = 1;
         foreach ($competences as $competence) {
             if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily(
-                )?->getCompetenceFamilyType()?->value) {
+            )?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                     $errorLevel = 0;
@@ -2242,7 +2246,7 @@ class PersonnageController extends AbstractController
                 'autocomplete' => true,
                 'label' => 'Enseignant',
                 'class' => Personnage::class,
-                'choice_label' => static fn(Personnage $personnage) => $personnage->getIdName(),
+                'choice_label' => static fn (Personnage $personnage) => $personnage->getIdName(),
             ])
             ->add('competence', ChoiceType::class, [
                 'required' => true,
@@ -2250,7 +2254,7 @@ class PersonnageController extends AbstractController
                 'autocomplete' => true,
                 'label' => 'Compétence étudiée',
                 'choices' => $availableCompetences,
-                'choice_label' => static fn(Competence $competence) => $competence->getLabel(),
+                'choice_label' => static fn (Competence $competence) => $competence->getLabel(),
             ]);
 
         /** @var GnRepository $gnRepository */
@@ -2590,7 +2594,7 @@ class PersonnageController extends AbstractController
         if (!file_exists($filename)) {
             // get old ?
             $path = $this->fileUploader->getProjectDirectory(
-                ).FolderType::Private->value.DocumentType::Image->value.'/';
+            ).FolderType::Private->value.DocumentType::Image->value.'/';
             $filename = $path.$personnage->getTrombineUrl();
 
             if (!file_exists($filename)) {
@@ -3038,9 +3042,9 @@ class PersonnageController extends AbstractController
                 'label' => 'Nouveau propriétaire',
                 'help' => 'Il doit avoir une participation, et ne pas avoir de personnage associé à celle-ci',
                 'class' => Participant::class,
-                'choice_label' => static fn(Participant $participant) => $participant->getGn()->getLabel(
-                    ).' - '.$participant->getUser()?->getFullname(),
-                'query_builder' => static fn(ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
+                'choice_label' => static fn (Participant $participant) => $participant->getGn()->getLabel(
+                ).' - '.$participant->getUser()?->getFullname(),
+                'query_builder' => static fn (ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
                     ->select('prt')
                     ->innerJoin('prt.user', 'u')
                     ->innerJoin('prt.gn', 'gn')
@@ -3224,8 +3228,8 @@ class PersonnageController extends AbstractController
                 'class' => Espece::class,
                 'choices' => $especes,
                 'label_html' => true,
-                'choice_label' => static fn(Espece $espece) => ($espece->isSecret(
-                    ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
+                'choice_label' => static fn (Espece $espece) => ($espece->isSecret(
+                ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
                 'data' => $originalEspeces,
             ])
             ->add(
