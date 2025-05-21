@@ -1,0 +1,46 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Objet{% endblock title %}
+
+{% block body %}
+
+    {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Detail d'un objet"} %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Détail d'un objet</h5>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <h4> Détail de {{ item.numero }} - {{ item.label }}</h4>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <div class="list-group">
+                    {#
+                    <div class="item-header">
+                        {{ item.numero }}
+                        <span class="pull-right">{{ item.quality.numero }}{{ item.identification }}</span>
+                    </div>
+                    #}
+                    <div class="list-group-item">
+                        {{ item.description|markdown_to_html }}
+                    </div>
+                </div>
+                {# Photo ?
+                <img src="{{ path('stockObjet.photo', {'objet': item.objet.id, 'miniature': true}) }}"
+                     alt="{{ item.label }}"/>
+                #}
+
+
+                {# PJ ? Ritualiste
+                {{ item.special|markdown_to_html }}
+                #}
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

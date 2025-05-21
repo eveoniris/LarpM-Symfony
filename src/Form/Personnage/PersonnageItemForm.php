@@ -37,7 +37,7 @@ class PersonnageItemForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.Personnage::class,
+            'data_class' => Personnage::class,
         ]);
     }
 

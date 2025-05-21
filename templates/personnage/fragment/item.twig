@@ -16,14 +16,17 @@
         <div class="list-group">
             {% for item in personnage.items %}
                 <div class="list-group-item  d-flex justify-content-between">
-                    <div class="list-group-item-text"><strong>{{ item.numero }}</strong> - {{ item.label }}
+                    <div class="list-group-item-text">
+                        <a href="{{ path('personnage.item.detail', {'personnage':personnage.id, 'item':item.id}) }}">
+                            <strong>{{ item.numero }}</strong> - {{ item.label }}
+                        </a>
                     </div>
                     {% if isAdmin %}
                         <div class="btn-group" role="group">
                             <a class="btn btn-sm btn-secondary"
-                                    href="{{ path('item.detail', {'item':item.id}) }}"
-                                    aria-expanded="false"
-                                    role="button">
+                               href="{{ path('item.detail', {'item':item.id}) }}"
+                               aria-expanded="false"
+                               role="button">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                         </div>

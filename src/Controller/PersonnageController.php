@@ -12,9 +12,11 @@ use App\Entity\ExperienceGain;
 use App\Entity\Gn;
 use App\Entity\HeroismeHistory;
 use App\Entity\Ingredient;
+use App\Entity\Item;
 use App\Entity\Langue;
 use App\Entity\Level;
 use App\Entity\LogAction;
+use App\Entity\Objet;
 use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\PersonnageApprentissage;
@@ -2580,7 +2582,6 @@ class PersonnageController extends AbstractController
     public function fixAction(
         PersonnageRepository $pr,
     ): RedirectResponse {
-
         $ids = [
             // List of priest with no prayer
         ];
@@ -2596,7 +2597,7 @@ class PersonnageController extends AbstractController
             foreach ($religion->getSpheres() as $sphere) {
                 /** @var Priere $priere */
                 foreach ($sphere->getPrieres() as $priere) {
-                    if (!$personnage?->hasPriere($priere) && $priere->getNiveau() === 1) {
+                    if (!$personnage?->hasPriere($priere) && 1 === $priere->getNiveau()) {
                         $priere->addPersonnage($personnage);
                         $personnage?->addPriere($priere);
                         $this->entityManager->persist($personnage);
@@ -2700,7 +2701,6 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}/items', name: 'items')]
     public function itemAction(
         Request $request,
-
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
@@ -2728,6 +2728,31 @@ class PersonnageController extends AbstractController
         return $this->render('personnage/items.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{personnage}/item/{item}', name: 'item.detail')]
+    public function itemDetailAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Item $item,
+    ): RedirectResponse|Response {
+
+        // TODO IS RITUALIST LIMIT
+        $canSee = $personnage->hasCompetenceLevel(
+            CompetenceFamilyType::RITUALISM,
+            LevelType::INITIATED,
+        );
+
+        if ($canSee || !$personnage->isKnownItem($item)) {
+            $this->addFlash('error', 'Désolé, vous ne pouvez pas consulter cet objet.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/item.twig', [
+            'personnage' => $personnage,
+            'item' => $item,
         ]);
     }
 
