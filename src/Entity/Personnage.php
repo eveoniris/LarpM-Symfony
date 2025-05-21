@@ -1443,6 +1443,18 @@ class Personnage extends BasePersonnage implements \Stringable
         return false;
     }
 
+    public function isKnownItem(Item $item): bool
+    {
+        /** @var Item $items */
+        foreach ($this->getItems() as $items) {
+            if ($items->getId() === $item->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Vérifie si le personnage connait cette langue.
      *
