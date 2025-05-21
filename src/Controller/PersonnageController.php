@@ -41,6 +41,7 @@ use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Enum\LevelType;
 use App\Enum\Role;
+use App\Enum\TriggerType;
 use App\Form\Personnage\PersonnageChronologieForm;
 use App\Form\Personnage\PersonnageDocumentForm;
 use App\Form\Personnage\PersonnageIngredientForm;
@@ -2921,6 +2922,61 @@ class PersonnageController extends AbstractController
         return $this->render('personnage/new.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{personnage}/religion/description', name: 'religion.description')]
+    public function religionDescriptionAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+    ): RedirectResponse|Response {
+        if (!$personnage->hasTrigger(TriggerType::PRETRISE_INITIE)) {
+            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de descriptif de religion supplémentaire.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $availableDescriptionReligion = $this->personnageService->getAvailableDescriptionReligion($personnage);
+
+        $form = $this->createFormBuilder()
+            ->add('religion', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre nouveau descriptif religion',
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => $availableDescriptionReligion,
+                'choice_label' => 'label',
+            ])
+            ->add('save', SubmitType::class, [
+                'label' => 'Valider',
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                ],
+            ])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $religion = $data['religion'];
+
+            $personnage->addReligion($religion);
+
+            $trigger = $personnage->getTrigger(TriggerType::PRETRISE_INITIE);
+            if (!$trigger) {
+                $this->entityManager->remove($trigger);
+            }
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/descriptionReligion.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
         ]);
     }
 

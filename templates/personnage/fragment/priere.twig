@@ -34,7 +34,7 @@
                      'content' : 'La compétence Prêtrise permet de connaitre les informations des religions du pays d\'origine.'
                  } %}
 
-                 {% if  personnage.territoire.religion %}
+                 {% if personnage.territoire.religion %}
 
                      <div class="card">
                          <div class="card-header card-title">
@@ -145,6 +145,7 @@
 
              {# Peuvent choisir 3 religions pour acceder à leur description pour pratiquants #}
              {# LH7 prêtre initié : Vous connaissez le niveau fervent d'une Religion supplémentaire. #}
+             {# TODO possiblement erroné personnage.religion est via pretrise personnage.personnaeReligions par les choix du PJ. #}
              {% if personnage.hasCompetenceLevel(
                  constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD'),
                  constant('App\\Enum\\LevelType::INITIATED'),

@@ -13,9 +13,10 @@ class Religion extends BaseReligion implements \Stringable
         return $this->getLabel();
     }
 
-    public function isSans(): bool
+    public function getBlasonFileUrl()
     {
-        return 'sans' === strtolower($this->getLabel());
+        // TODO params ?
+        return 'img/religions/'.$this->getBlason();
     }
 
     /**
@@ -26,9 +27,13 @@ class Religion extends BaseReligion implements \Stringable
         return $this->getTerritoires();
     }
 
-    public function getBlasonFileUrl()
+    public function isSans(): bool
     {
-        // TODO params ?
-        return 'img/religions/'.$this->getBlason();
+        return 'sans' === strtolower($this->getLabel());
+    }
+
+    public function isSecret(): bool
+    {
+        return (bool) $this->getSecret();
     }
 }

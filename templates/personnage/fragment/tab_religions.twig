@@ -1,7 +1,9 @@
 <div class="row ">
     <div class="col-md-12 ">
 
-        {% if personnage.personnagesReligions|length>0 %}
+        {# Sommaire #}
+        {# Religions du personnage #}
+        {% if personnage.personnagesReligions|length>0 or personnage.isPriest() %}
             <div class="card mb-2 border-0 rounded-top-0">
 
                 <div class="card-header">
@@ -37,7 +39,9 @@
                                 {# principal du pays d'origine #}
                                 {% if personnage.territoire.religion %}
                                     <div class="list-group-item border-0">
-                                        <a href="#territory_religion_principale">Religion principale du pays d'origine</a>
+                                        <a href="#territory_religion_principale">
+                                            Religion principale du pays d'origine
+                                        </a>
                                     </div>
                                     <div class="list-group-item border-0 ms-2">
                                         {% if personnage.territoire.religion.secret %}
@@ -64,28 +68,42 @@
                                     </div>
                                 {% endfor %}
                             {% endif %}
-                        {% if personnage.hasCompetenceLevel(
-                            constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD'),
-                            constant('App\\Enum\\LevelType::INITIATED'),
-                        ) %}
-                            {# Via choix de prêtrise #}
+
+                            {# Description d'autre religion supplémentaire choisie #}
                             {% for religion in personnage.religions %}
                                 {% if loop.first %}
                                     <div class="list-group-item border-0">
-                                        <a href="#priest_religions">Religions choisies par la prêtrise</a>
+                                        <a href="#priest_religions">Description de religions choisies en prêtrise</a>
                                     </div>
                                 {% endif %}
                                 <div class="list-group-item border-0 ms-2">
                                     {% if religion.secret %}
                                         <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
                                            data-placement="top"
-                                           title="Secret"></i> - {% endif %}
-                                    <a href="#priest_{{ religion.id }}">{{ religion.label }}</a>
+                                           title="Secret"></i> -
+                                    {% endif %}
+                                    <a href="#priest_religion_h_{{ religion.id }}">{{ religion.label }}</a>
                                 </div>
                             {% endfor %}
-                        {% endif %}
-                        {% endif %}
 
+                            {% if personnage.hasCompetenceLevel(
+                                constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD'),
+                                constant('App\\Enum\\LevelType::APPRENTICE'),
+                            ) %}
+                                {# Prière #}
+                                {% for priere in personnage.prieres %}
+                                    {% if loop.first %}
+                                        <div class="list-group-item border-0">
+                                            <a href="#priest_religions">Prières</a>
+                                        </div>
+                                    {% endif %}
+                                    <div class="list-group-item border-0 ms-2">
+                                        <a href="#pray_{{ priere.id }}">{{ priere.label }}</a>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                        {% endif %}
                     </div>
                 </div>
 
