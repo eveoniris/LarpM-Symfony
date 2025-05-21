@@ -1063,7 +1063,7 @@ class PersonnageService
 
         // trie des competences disponibles
         $iterator = $availableCompetences->getIterator();
-        $iterator->uasort(static fn ($a, $b) => $a->getLabel() <=> $b->getLabel());
+        $iterator->uasort(static fn($a, $b) => $a->getLabel() <=> $b->getLabel());
 
         return new ArrayCollection(iterator_to_array($iterator));
     }
@@ -1105,16 +1105,16 @@ class PersonnageService
      *
      * @return ArrayCollection $competenceNiveaux
      */
-    public function getAvailableDescriptionReligion(
-        Personnage $personnage,
-    ): ArrayCollection {
+    public function getAvailableDescriptionReligion(Personnage $personnage): ArrayCollection
+    {
         $availableDescriptionReligions = new ArrayCollection();
 
-        $repo = $this->app['orm.em']->getRepository('\LarpManager\Entities\Religion');
+        $repo = $this->entityManager->getRepository(Religion::class);
         $religions = $repo->findAll();
 
+        /** @var Religion $religion */
         foreach ($religions as $religion) {
-            if (!$personnage->getReligions()->contains($religion)) {
+            if (!$personnage->getReligions()->contains($religion) && $religion->isSecret()) {
                 $availableDescriptionReligions[] = $religion;
             }
         }

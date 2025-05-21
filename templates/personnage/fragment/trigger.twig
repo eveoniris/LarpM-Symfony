@@ -90,7 +90,7 @@
                    {% endif %}
                    {% if trigger.tag.value == 'PRETRISE INITIE' %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.religionDescription', {'participant': participant.id}) }}">
+                                   href="{{ path('personnage.religion.description', {'personnage': participant.personnage.id}) }}">
                                Choisir une description de religion</a></li>
                    {% endif %}
                    {% if trigger.tag.value == 'TECHNOLOGIE' %}

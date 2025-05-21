@@ -6,6 +6,7 @@ use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Enum\LevelType;
+use App\Enum\TriggerType;
 use App\Repository\PersonnageRepository;
 use App\Service\FileUploader;
 use App\Trait\EntityFileUploadTrait;
@@ -980,13 +981,18 @@ class Personnage extends BasePersonnage implements \Stringable
 
     /**
      * Fourni le trigger correspondant au tag.
-     *
-     * @param unknown $tag
      */
-    public function getTrigger($tag)
+    public function getTrigger(TriggerType|string $tag): ?PersonnageTrigger
     {
+        /** @var PersonnageTrigger $personnageTrigger */
         foreach ($this->getPersonnageTriggers() as $personnageTrigger) {
-            if ($personnageTrigger->getTag() == $tag) {
+            if (is_string($tag)) {
+                if ($personnageTrigger->getTag()->value === $tag) {
+                    return $personnageTrigger;
+                }
+                continue;
+            }
+            if ($personnageTrigger->getTag()->value === $tag->value) {
                 return $personnageTrigger;
             }
         }
@@ -1319,13 +1325,19 @@ class Personnage extends BasePersonnage implements \Stringable
 
     /**
      * Vérifie si le personnage dispose d'un trigger.
-     *
-     * @param unknown $tag
      */
-    public function hasTrigger($tag): bool
+    public function hasTrigger(string|TriggerType $tag): bool
     {
+        /** @var PersonnageTrigger $personnageTrigger */
         foreach ($this->getPersonnageTriggers() as $personnageTrigger) {
-            if ($personnageTrigger->getTag() === $tag) {
+            if ($tag instanceof TriggerType) {
+                if ($personnageTrigger->getTag()->value === $tag->value) {
+                    return true;
+                }
+                continue;
+            }
+
+            if ($personnageTrigger->getTag()->value === $tag) {
                 return true;
             }
         }
@@ -1641,12 +1653,12 @@ class Personnage extends BasePersonnage implements \Stringable
     public function setBaseGroupeGn(?BaseGroupeGn $baseGroupeGn): static
     {
         // unset the owning side of the relation if necessary
-        if ($baseGroupeGn === null && $this->baseGroupeGn !== null) {
+        if (null === $baseGroupeGn && null !== $this->baseGroupeGn) {
             $this->baseGroupeGn->setDiplomate(null);
         }
 
         // set the owning side of the relation if necessary
-        if ($baseGroupeGn !== null && $baseGroupeGn->getDiplomate() !== $this) {
+        if (null !== $baseGroupeGn && $baseGroupeGn->getDiplomate() !== $this) {
             $baseGroupeGn->setDiplomate($this);
         }
 

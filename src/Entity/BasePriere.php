@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BasePriere', 'extended' => 'Priere'])]
 abstract class BasePriere
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -49,65 +49,12 @@ abstract class BasePriere
     }
 
     /**
-     * Set the value of id.
+     * Add Personnage entity to collection.
      */
-    public function setId(int $id): static
+    public function addPersonnage(Personnage $personnage): static
     {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of label.
-     */
-    public function setLabel(string $label): static
-    {
-        $this->label = $label;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of label.
-     */
-    public function getLabel(): string
-    {
-        return $this->label ?? '';
-    }
-
-    /**
-     * Set the value of description.
-     */
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of description.
-     */
-    public function getDescription(): string
-    {
-        return $this->description ?? '';
-    }
-
-    /**
-     * Set the value of annonce.
-     */
-    public function setAnnonce(string $annonce): static
-    {
-        $this->annonce = $annonce;
+        $personnage->addPriere($this);
+        $this->personnages[] = $personnage;
 
         return $this;
     }
@@ -121,11 +68,29 @@ abstract class BasePriere
     }
 
     /**
-     * Set the value of documentUrl.
+     * Set the value of annonce.
      */
-    public function setDocumentUrl(string $documentUrl): static
+    public function setAnnonce(string $annonce): static
     {
-        $this->documentUrl = $documentUrl;
+        $this->annonce = $annonce;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of description.
+     */
+    public function getDescription(): string
+    {
+        return $this->description ?? '';
+    }
+
+    /**
+     * Set the value of description.
+     */
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
@@ -136,6 +101,60 @@ abstract class BasePriere
     public function getDocumentUrl(): string
     {
         return $this->documentUrl ?? '';
+    }
+
+    /**
+     * Set the value of documentUrl.
+     */
+    public function setDocumentUrl(string $documentUrl): static
+    {
+        $this->documentUrl = $documentUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id.
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the value of id.
+     */
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of label.
+     */
+    public function getLabel(): string
+    {
+        return $this->label ?? '';
+    }
+
+    /**
+     * Set the value of label.
+     */
+    public function setLabel(string $label): static
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of niveau.
+     */
+    public function getNiveau(): int
+    {
+        return $this->niveau;
     }
 
     /**
@@ -151,21 +170,11 @@ abstract class BasePriere
     }
 
     /**
-     * Get the value of niveau.
+     * Get Personnage entity collection.
      */
-    public function getNiveau(): int
+    public function getPersonnages(): Collection
     {
-        return $this->niveau;
-    }
-
-    /**
-     * Set Sphere entity (many to one).
-     */
-    public function setSphere(?Sphere $sphere = null): static
-    {
-        $this->sphere = $sphere;
-
-        return $this;
+        return $this->personnages;
     }
 
     /**
@@ -177,12 +186,11 @@ abstract class BasePriere
     }
 
     /**
-     * Add Personnage entity to collection.
+     * Set Sphere entity (many to one).
      */
-    public function addPersonnage(Personnage $personnage): static
+    public function setSphere(?Sphere $sphere = null): static
     {
-        $personnage->addPriere($this);
-        $this->personnages[] = $personnage;
+        $this->sphere = $sphere;
 
         return $this;
     }
@@ -197,17 +205,4 @@ abstract class BasePriere
 
         return $this;
     }
-
-    /**
-     * Get Personnage entity collection.
-     */
-    public function getPersonnages(): Collection
-    {
-        return $this->personnages;
-    }
-
-    /* public function __sleep()
-    {
-        return ['id', 'label', 'description', 'annonce', 'documentUrl', 'niveau', 'sphere_id'];
-    } */
 }

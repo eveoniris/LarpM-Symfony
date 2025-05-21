@@ -39,6 +39,7 @@ use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\Role;
+use App\Enum\TriggerType;
 use App\Form\AcceptAllianceForm;
 use App\Form\AcceptPeaceForm;
 use App\Form\BreakAllianceForm;
@@ -841,10 +842,10 @@ class ParticipantController extends AbstractController
 
         $niveau = $request->get('sort');
 
-        if (!$personnage->hasTrigger('SORT APPRENTI')
-            && !$personnage->hasTrigger('SORT INITIE')
-            && !$personnage->hasTrigger('SORT EXPERT')
-            && !$personnage->hasTrigger('SORT MAITRE')) {
+        if (!$personnage->hasTrigger(TriggerType::SORT_APPRENTI)
+            && !$personnage->hasTrigger(TriggerType::SORT_INITIE)
+            && !$personnage->hasTrigger(TriggerType::SORT_EXPERT)
+            && !$personnage->hasTrigger(TriggerType::SORT_MAITRE)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de sorts supplémentaires.');
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
@@ -3879,8 +3880,6 @@ class ParticipantController extends AbstractController
     /**
      * Choix d'une nouvelle description de religion.
      */
-    #[Route('/participant/{participant}/religionDescription', name: 'participant.religionDescription')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function religionDescriptionAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -4442,7 +4441,6 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/technologie', name: 'participant.technologie')]
     public function technologieAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
@@ -4484,7 +4482,7 @@ class ParticipantController extends AbstractController
             $this->entityManager->persist($personnage);
 
             // suppression du trigger
-            $trigger = $personnage->getTrigger('TECHNOLOGIE');
+            $trigger = $personnage->getTrigger(TriggerType::TECHNOLOGIE);
             $this->entityManager->remove($trigger);
 
             $this->entityManager->flush();
