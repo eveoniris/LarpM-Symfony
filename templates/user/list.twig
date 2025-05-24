@@ -26,7 +26,7 @@
     <table class="table table-striped table-bordered table-condensed table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'user.list', 'rows': [
             {'name' : '#', 'field' : 'user.id', 'css' : 'text-center'},
-            {'name' : 'Pseudo', 'field' : 'user.pseudo', 'css' : 'text-center'},
+            {'name' : 'Pseudo', 'field' : 'user.username', 'css' : 'text-center'},
             {'name' : 'Email', 'field' : 'user.email', 'css' : 'text-center'},
             {'name' : 'Etat-civil', 'css' : 'text-center'},
             {'name' : 'Droits', 'css' : 'text-center'},

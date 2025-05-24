@@ -502,18 +502,11 @@ class TerritoireController extends AbstractController
      */
     #[Route('/territoire', name: 'territoire.list')]
     public function listAction(
-        Request $request,
         PagerService $pagerService,
         TerritoireRepository $territoireRepository,
     ): Response {
         // Set order by nom by default
-        // New way (not working)
-        // $pagerService->setOrdersBy(['nom' => OrderBy::ASC]); // test default overwrite from request
-        /* OLD WAY (working) **/
-        $request->request->set('order_by', $request->request->get('order_by', 'nom'));
-        $pagerService->setRequest($request)->setRepository($territoireRepository);
-
-
+        $pagerService->setOrdersBy(['nom' => OrderBy::ASC]); // test default overwrite from request
         $alias = $territoireRepository->getAlias();
 
         // Got only main territory

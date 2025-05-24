@@ -129,6 +129,10 @@
                                             <a class="dropdown-item {% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}"
                                                href="{{ path('groupe.detail.groupeGn',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'domaine', 'gn': session.gn.id, 'groupeGn': session.id})) }}"
                                             >{{ session.gn }}</a></li>
+                                    {% else %}
+                                        <li class="d-grid gap-2 rounded-top-2">
+                                            <div class="dropdown-item rounded-top-2">Aucun</div>
+                                        </li>
                                     {% endfor %}
 
                                 </ul>

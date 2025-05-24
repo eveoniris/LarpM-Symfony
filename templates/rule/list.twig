@@ -11,16 +11,18 @@
             <h5>Liste des règles</h5>
         </div>
 
-        <div class="d-flex justify-content-end">
-            <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
-                <div class="btn-group" role="group">
-                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Ajouter"
-                       href="{{ path('rule.add') }}"><i
-                                class="fa fa-plus"></i> Ajouter</a>
+        {% if isAdmin %}
+            <div class="d-flex justify-content-end">
+                <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                    <div class="btn-group" role="group">
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Ajouter"
+                           href="{{ path('rule.add') }}"><i
+                                    class="fa fa-plus"></i> Ajouter</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        {% endif %}
 
         <blockquote>Les fichiers ci-dessous contiennent les règles spécifiques à certains aspects du jeu. Lisez-les avec
             attention.
