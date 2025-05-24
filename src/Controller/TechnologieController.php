@@ -9,6 +9,7 @@ use App\Form\Technologie\TechnologieForm;
 use App\Form\Technologie\TechnologiesRessourcesForm;
 use App\Repository\TechnologieRepository;
 use App\Security\MultiRolesExpression;
+use App\Service\OrderBy;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -198,11 +199,10 @@ class TechnologieController extends AbstractController
     #[Route(name: 'list')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function indexAction(
-        Request $request,
         PagerService $pagerService,
         TechnologieRepository $technologieRepository,
     ): Response {
-        $pagerService->setRequest($request)->setRepository($technologieRepository);
+        $pagerService->setDefaultOrdersBy(['label' => OrderBy::ASC]); // test default overwrite from request
 
         return $this->render('technologie/list.twig', [
             'pagerService' => $pagerService,

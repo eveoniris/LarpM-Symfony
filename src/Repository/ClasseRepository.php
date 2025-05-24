@@ -1,22 +1,25 @@
 <?php
 
-
 namespace App\Repository;
 
 use App\Entity\Classe;
 use App\Entity\Personnage;
 use App\Service\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
-/**
- * LarpManager\Repository\ClasseRepository.
- *
- * @author kevin
- */
 class ClasseRepository extends BaseRepository
 {
+    /**
+     * Trouve toutes les classes disponibles à la création d'un personnage.
+     */
+    public function findAllCreation()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT c FROM App\Entity\Classe c WHERE c.creation = true ORDER BY c.label_masculin ASC')
+            ->getResult();
+    }
+
     /**
      * Find all classes ordered by label.
      *
@@ -29,6 +32,17 @@ class ClasseRepository extends BaseRepository
             ->getResult();
     }
 
+    public function getPersonnages(Classe $classe): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $personnageRepository->createQueryBuilder('p')
+            ->innerJoin('p.classe', 'c')
+            ->where('c.id = :cid')
+            ->setParameter('cid', $classe->getId());
+    }
+
     /**
      * Returns a query builder to find all competences ordered by label.
      */
@@ -37,19 +51,9 @@ class ClasseRepository extends BaseRepository
         return $this->getEntityManager()
             ->createQueryBuilder()
             ->select('c')
-            ->from(\App\Entity\Classe::class, 'c')
+            ->from(Classe::class, 'c')
             ->addOrderBy('c.label_feminin')
             ->addOrderBy('c.label_masculin');
-    }
-
-    /**
-     * Trouve toutes les classes disponibles à la création d'un personnage.
-     */
-    public function findAllCreation()
-    {
-        return $this->getEntityManager()
-            ->createQuery('SELECT c FROM App\Entity\Classe c WHERE c.creation = true ORDER BY c.label_masculin ASC')
-            ->getResult();
     }
 
     public function search(
@@ -57,7 +61,7 @@ class ClasseRepository extends BaseRepository
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $orderBy ??= $this->orderBy;
@@ -68,7 +72,7 @@ class ClasseRepository extends BaseRepository
 
             return $this->creation(
                 $query,
-                filter_var($search, FILTER_VALIDATE_BOOLEAN)
+                filter_var($search, FILTER_VALIDATE_BOOLEAN),
             );
         }
 
@@ -82,14 +86,28 @@ class ClasseRepository extends BaseRepository
         return $query->setParameter('value', $creation);
     }
 
-    public function getPersonnages(Classe $classe): QueryBuilder
+    public function sortAttributes(?string $alias = null): array
     {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+        $alias ??= static::getEntityAlias();
 
-        return $personnageRepository->createQueryBuilder('p')
-            ->innerJoin('p.classe', 'c')
-            ->where('c.id = :cid')
-            ->setParameter('cid', $classe->getId());
+        return [
+            ...parent::sortAttributes($alias),
+            $alias.'.label_masculin' => [
+                OrderBy::ASC => [$alias.'.label_masculin' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.label_masculin' => OrderBy::DESC],
+            ],
+            $alias.'.label_feminin' => [
+                OrderBy::ASC => [$alias.'.label_feminin' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.label_feminin' => OrderBy::DESC],
+            ],
+            $alias.'.description' => [
+                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            ],
+            'creation' => [
+                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+            ],
+        ];
     }
 }

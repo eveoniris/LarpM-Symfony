@@ -80,16 +80,15 @@ final class OrderBy
         }
 
         $alias ??= $this->alias;
-
         $multiOrder = explode(',', $this->orderBy);
-        if (count($multiOrder) > 1) {
+        if (!empty($multiOrder)) {
             // reset default
             $this->orders = [];
 
             foreach ($multiOrder as $order) {
                 $this->addOrderBy(
-                    ($alias ? $alias.'.' : '').$order,
-                    trim($order, '-'),
+                    ($alias ? $alias.'.' : '').trim($order, '-'),
+                    str_starts_with($order, '-') ? self::DESC : $this->sort,
                 );
             }
         }
@@ -101,10 +100,14 @@ final class OrderBy
         return $this->orderBy;
     }
 
-    public function addOrderBy(string $orderBy, string $sort = null): self
+    public function addOrderBy(string $orderBy, ?string $sort = null): self
     {
         $sort ??= $this->sort;
-        '-' === $sort ?: $sort = self::DESC;
+
+        if ('-' === $sort) {
+            $sort = self::DESC;
+        }
+
         $this->orders[$orderBy] = $this->isAllowed($sort) ? $sort : self::ASC;
 
         return $this;
@@ -127,6 +130,22 @@ final class OrderBy
         $this->alias = $alias;
 
         return $this;
+    }
+
+    /**
+     * Default is ASC, then is DESC, then is "not in order".
+     */
+    public function getNextDirForLink(?string $value): ?string
+    {
+        if (self::ASC === $value) {
+            return self::DESC;
+        }
+
+        if (self::DESC === $value || '-' === $value) {
+            return null;
+        }
+
+        return self::ASC;
     }
 
     public function getOrderBy(): ?string
@@ -153,6 +172,20 @@ final class OrderBy
         }
 
         return $this->sort ?? self::ASC;
+    }
+
+    public function invertDirForLink(string $value): string
+    {
+        return self::ASC === $this->invertDir($value) ? '' : '-';
+    }
+
+    public function invertDir($value): string
+    {
+        if (empty($value) || self::DESC === $value || '-' === $value) {
+            return self::ASC;
+        }
+
+        return self::DESC;
     }
 
     public function removeOrderBy(string $orderBy): self

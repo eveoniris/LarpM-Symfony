@@ -79,7 +79,7 @@ class GroupeSecondaireController extends AbstractController
         string $lowestCan = self::CAN_READ,
     ): void {
         $this->loadAccess($secondaryGroup, $roles);
-        $this->checkHasAccess($roles, fn() => $this->can($lowestCan));
+        $this->checkHasAccess($roles, fn () => $this->can($lowestCan));
     }
 
     protected function loadAccess(
@@ -300,7 +300,6 @@ class GroupeSecondaireController extends AbstractController
         Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): RedirectResponse|Response {
-
         if ($groupeSecondaire->isSecret()) {
             $this->addFlash(
                 'error',

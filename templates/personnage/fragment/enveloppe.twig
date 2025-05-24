@@ -1,7 +1,8 @@
 <div class="print-center">
     <h2>#{{ personnage.id }} - {{ personnage.identity }}</h2>
 </div>
-{# <br/>
+
+{# Not used anymore
 
     {% if personnage.user %}
         {% set participant = personnage.user.participants|last %}
@@ -12,7 +13,8 @@
             PAS DE PERSONNAGE SECONDAIRE
         {% endif %}
     {% endif %} #}
-<br/>
+
+
 {% if personnageService.allRenomme(personnage)|default(0) > 4 %}
     <strong>Renommée :</strong> {{ personnageService.allRenomme(personnage)|default(0) }}<br/>
 {% endif %}
@@ -54,27 +56,34 @@
     {% endif %}
     #}
 
-<strong>Lié aux langues</strong>
-<ul>
-    {% set bracelets = [] %}
-    {% if personnage.bracelet %}
-        Géré par l'interprète du personnage
-    {% else %}
-        {% for personnageLangue in personnageService.allLangues(personnage) %}
-            {% if personnageLangue.langue.diffusion > 0 and personnageLangue.langue.secret == 0 %}
-                {% set mykey = personnageLangue.langue.groupeLangue.couleur %}
-                {% if mykey not in bracelets|keys %}
-                    {% set bracelets = bracelets|merge({(mykey): (personnageLangue.langue.label)}) %}
-                    <li>Bracelet {{ personnageLangue.langue.groupeLangue.couleur }}
-                        ({{ personnageLangue.langue.label }})
-                    </li>
+    {% set materielHtml %}
+        {% set bracelets = [] %}
+        {% if personnage.bracelet %}
+            <li>Géré par l'interprète du personnage
+            <li>
+        {% else %}
+            {% for personnageLangue in personnageService.allLangues(personnage) %}
+                {% if personnageLangue.langue.diffusion > 0 and personnageLangue.langue.secret == 0 %}
+                    {% set mykey = personnageLangue.langue.groupeLangue.couleur %}
+                    {% if mykey not in bracelets|keys %}
+                        {% set bracelets = bracelets|merge({(mykey): (personnageLangue.langue.label)}) %}
+                        <li>Bracelet {{ personnageLangue.langue.groupeLangue.couleur }}
+                            ({{ personnageLangue.langue.label }})
+                        </li>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-</ul>
+            {% endfor %}
+        {% endif %}
+    {% endset %}
 
-{# documents #}
+    {% if materielHtml %}
+        <strong>Lié aux langues</strong>
+        <ul>
+            {{ materielHtml }}
+        </ul>
+    {% endif %}
+
+    {# documents #}
     {% if personnage.documents|length > 0 %}
         <strong>Documents</strong>
         <ul>

@@ -10,6 +10,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class PagerService
 {
@@ -26,6 +27,7 @@ final class PagerService
         protected readonly OrderBy $orderBy,
         protected readonly FormFactoryInterface $formFactory,
         protected readonly EntityManagerInterface $entityManager,
+        protected readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -83,11 +85,6 @@ final class PagerService
         return $this;
     }
 
-    public function getOrderBy(): OrderBy
-    {
-        return $this->orderBy;
-    }
-
     public function getPage(int $defPage = 1): int
     {
         if (isset($this->page)) {
@@ -116,6 +113,49 @@ final class PagerService
         $this->page = max(1, $page);
 
         return $this->page;
+    }
+
+    /**
+     * Return all orders as a string for link.
+     * First link will order by ASC
+     * Second will order by DESC
+     * Third will not order by
+     */
+    public function getSearchOrderPathLinkForField(string $field, ?string $route = null, ?array $params = null): string
+    {
+        $request = $this->getRequest();
+
+        $route ??= $request?->attributes->get('_route') ?? 'homepage';
+        $params ??= $request?->attributes->get('_route_params') ?? [];
+
+        $orders = $this->getOrderBy()->getOrders();
+
+        if ($orders[$field] ?? false) {
+
+        } else {
+
+        }
+
+        $orders[$field] = $this->getOrderBy()->getNextDirForLink($orders[$field] ?? null);
+
+        if (null === $orders[$field]) {
+            unset($orders[$field]);
+        }
+
+        $s = '';
+        foreach ($orders as $by => $sort) {
+            $s .= (OrderBy::ASC === $sort || '' === $sort) ? '' : '-';
+            $s .= $by.',';
+        }
+
+        $params['order_by'] = trim($s, ',');
+
+        return $this->urlGenerator->generate($route, $params);
+    }
+
+    public function getOrderBy(): OrderBy
+    {
+        return $this->orderBy;
     }
 
     public function getSearchType(): string|array|null
@@ -232,9 +272,32 @@ final class PagerService
         return $this->searchValue;
     }
 
+    public function isAsc(string $field): bool
+    {
+        $dir = $this->getOrderBy()->getOrders()[$field] ?? OrderBy::ASC;
+
+        return !('-' === $dir || OrderBy::DESC === $dir);
+    }
+
+    public function isInOrder(string $field): bool
+    {
+        return $this->orderBy->getOrders()[$field] ?? false;
+    }
+
     public function setDefaultOrderBy(string $orderBy): PagerService
     {
         $this->orderBy->setDefaultOrderDir($orderBy);
+
+        return $this;
+    }
+
+    public function setDefaultOrdersBy(array $orders): PagerService
+    {
+        if (!empty($this->orderBy->getOrders())) {
+            return $this;
+        }
+
+        $this->orderBy->setOrders($orders);
 
         return $this;
     }

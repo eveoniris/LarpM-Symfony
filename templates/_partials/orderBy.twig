@@ -1,8 +1,9 @@
 {% if orderDir is not defined %}
+    {% set orderDir = 'ASC' %}
     {% if pagerService is defined %}
         {% set orderDir = pagerService.getOrderBy.getSort() %}
     {% else %}
-        {% set orderDir = 'ASC' %}
+        {% set orderDir = 'DESC' %}
     {% endif %}
 {% endif %}
 
@@ -10,13 +11,16 @@
     {% set routeOptions = {} %}
 {% endif %}
 
-{% set routeOptions = routeOptions|merge({'order_by': field, 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')}) %}
+
 {% if pagerService is defined %}
-    {% set routeOptions = routeOptions|merge({"search":pagerService.getSearchValue}) %}
+    {% set path = pagerService.getSearchOrderPathLinkForField(field) %}
+{% else %}
+    {% set routeOptions = routeOptions|merge({'order_by': order}) %}
+    {% if pagerService is defined %}
+        {% set routeOptions = routeOptions|merge({"search":pagerService.getSearchValue}) %}
+    {% endif %}
 {% endif %}
 
-{% if pagerService is not defined %}
-{% endif %}
 
 {% if path is not defined and route is defined %}
     {% set path = path( route, routeOptions ) %}
@@ -26,7 +30,7 @@
 
 <a href="{{ path }}">
     {{ name }}
-    {% if app.request.get('order_by') == field %}
-        <i class="fa-solid fa-caret-{{ orderDir == 'ASC' ? 'down' : 'up' }}"></i>
+    {% if pagerService is defined and pagerService.isInOrder(field) %}
+        <i class="fa-solid fa-caret-{{ pagerService.isAsc(field) ? 'up' : 'down' }}"></i>
     {% endif %}
 </a>

@@ -112,17 +112,29 @@ abstract class BaseRepository extends ServiceEntityRepository
         $query ??= $this->createQueryBuilder($alias);
 
         // NEO MULTI
-        //dump($orderBy->getOrders());
         if (!empty($orderBy->getOrders())) {
+            dump($orderBy->getOrders());
             foreach ($orderBy->getOrders() as $by => $sort) {
-                if (!$this->isAllowedAttribute($sort, $this->sortAttributes($alias))) {
+                if (!$this->isAllowedAttribute($by, $this->sortAttributes($alias))) {
+                    dump($by.' not allowed');
                     continue;
                 }
-                if (!str_contains($by, '.')) {
-                    $by = $alias.'.'.$by;
+
+                $byAlias = $by;
+                // Handle aliased select
+                if (!str_contains($by, '.') && $byAlias = $this->sortAttributes($alias)[$by][$sort] ?? null) {
+                    $byAlias = key($byAlias);
+                    // handle alias for field
+                    $asAttributes = $this->searchAttributesAs($alias);
+                    $asAttribute = $asAttributes[$by] ?? $asAttributes[$byAlias] ?? null;
+                    if ($asAttribute) {
+                        $query->addSelect(
+                            $asAttribute.' AS '.$by,
+                        );
+                    }
                 }
-                dump('ADD ORDER BY TO QUERY ', $by, $sort);
-                $query->addOrderBy($by, $sort);
+
+                $query->addOrderBy($byAlias, $sort);
             }
 
             return $query;
@@ -141,18 +153,20 @@ abstract class BaseRepository extends ServiceEntityRepository
 
             return $query;
         }
-
         // Default order
         $asAttributes = $this->searchAttributesAs($alias);
         foreach ($this->sortAttributes($alias) as $sortDefinitions) {
             $attributeSort = $sortDefinitions[$orderBy->getSort()];
-            $query->addOrderBy(key($attributeSort), current($attributeSort));
+            $attribute = key($attributeSort);
+            $query->addOrderBy($attribute, current($attributeSort));
 
-            // handle aliased fields
-            if (isset($asAttributes[key($attributeSort)])) {
-                $query->addSelect(
-                    $asAttributes[key($attributeSort)].' AS '.key($attributeSort),
-                );
+            // handle aliased fields with possible HIDDEN keyword
+            foreach ([$attribute, 'HIDDEN '.$attribute] as $attr) {
+                if (isset($asAttributes[$attr])) {
+                    $query->addSelect(
+                        $asAttributes[$attr].' AS '.$attr,
+                    );
+                }
             }
         }
 
@@ -252,7 +266,13 @@ abstract class BaseRepository extends ServiceEntityRepository
                 continue;
             }
 
-            $asAttributes[$this->getAttributeAsName($attribute)] = $this->getAttributeWhereName($attribute);
+            $value = $this->getAttributeAsName($attribute);
+            /*
+                        if (str_contains($value, 'HIDDEN')) {
+                            $value = substr($value, 7);
+                        }*/
+
+            $asAttributes[$value] = $this->getAttributeWhereName($attribute);
         }
 
         return $asAttributes;
@@ -468,7 +488,6 @@ abstract class BaseRepository extends ServiceEntityRepository
     ): QueryBuilder {
         $orderBy ??= $this->orderBy;
         $alias ??= static::getEntityAlias();
-
         $query ??= $this->createQueryBuilder($alias);
         // Order only if allowed and if exists
         $this->addOrderBy($query, $orderBy, $alias);

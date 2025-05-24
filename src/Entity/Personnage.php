@@ -1457,10 +1457,8 @@ class Personnage extends BasePersonnage implements \Stringable
 
     /**
      * Vérifie si le personnage connait cette langue.
-     *
-     * @param unknown $langue
      */
-    public function isKnownLanguage($langue): bool
+    public function isKnownLanguage(?Langue $langue): bool
     {
         foreach ($this->getPersonnageLangues() as $personnageLangue) {
             if ($personnageLangue->getLangue() === $langue) {

@@ -39,230 +39,241 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 pt-2">
-
-                    <div class="card text-bg mb-3 overflow-auto">
-                        <div class="card-header d-flex justify-content-between">
-                            <h4>
-                                Suzerain : <small>
-                                    {% if session.suzerin(false) is not null %}
-                                        <a href="{{ path('personnage.detail', {'personnage':session.suzerin(false).id}) }}">{{ session.suzerin(false).nom }}</a>
-                                    {% else %}Aucun{% endif %}
-                                </small>
-                            </h4>
-                            <div>
-
-                            </div>
-                            <a class="btn btn-secondary"
-                               data-bs-toggle="collapse"
-                               href="#renommee-{{ session.gn }}"
-                               aria-expanded="false" aria-controls="renommee-{{ session.gn }}"
-                               role="button">
-                                <i class="fa-solid fa-circle-info text-info"></i>
-                            </a>
-                        </div>
-
-                        <div class="card-body collapse p-0" id="renommee-{{ session.gn }}">
-                            <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
-                                <thead>
-                                <tr>
-                                    <th>Nombre de fiefs du domaine</th>
-                                    <th>Renommée requise pour ne pas que tous ses fiefs soient instables</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>5</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>8</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>11</td>
-                                </tr>
-                                <tr>
-                                    <td>4</td>
-                                    <td>15</td>
-                                </tr>
-                                <tr>
-                                    <td>5+</td>
-                                    <td>20</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
+            {% set commonHtml %}
+                <div class="card text-bg mb-3 overflow-auto">
+                    <div class="card-header">
+                        <h4>Nombre d'armes de siège : {{ session.sieges }}</h4>
                     </div>
-
-                    <div class="card text-bg mb-3 overflow-auto">
-                        <div class="card-header d-flex justify-content-between">
-                            <h4>
-                                Intendant :
-                                {% if session.intendant(false) is not null %}
-                                    <a href="{{ path('personnage.detail', {'personnage':session.intendant(false).id}) }}">{{ session.intendant(false).nom }}</a>
-                                {% else %}Aucun{% endif %}
-                            </h4>
-                        </div>
-                    </div>
-
-                    <div class="card text-bg mb-3 overflow-auto">
-                        <div class="card-header d-flex justify-content-between">
-                            <h4>
-                                Chef de guerre :
-                                {% if session.connetable(false) is not null %}
-                                    <a href="{{ path('personnage.detail', {'personnage':session.connetable(false).id}) }}">{{ session.connetable(false).nom }}</a>
-                                {% else %}Aucun{% endif %}
-                            </h4>
-                        </div>
-                    </div>
-
-                    <div class="card text-bg mb-3 overflow-auto">
-                        <div class="card-header d-flex justify-content-between">
-                            <h4>
-                                Navigateur :
-                                {% if session.navigateur(false) is not null %}
-                                    <a href="{{ path('personnage.detail', {'personnage':session.navigateur(false).id}) }}">{{ session.navigateur(false).nom }}</a>
-                                {% else %}Aucun{% endif %}
-                            </h4>
-                        </div>
-                    </div>
-
-                    <div class="card text-bg mb-3 overflow-auto">
-                        <div class="card-header d-flex justify-content-between">
-                            <h4>
-                                Eminence grise :
-                                {% if session.camarilla(false) is not null %}
-                                    <a href="{{ path('personnage.detail', {'personnage':session.camarilla(false).id}) }}">{{ session.camarilla(false).nom }}</a>
-                                {% else %}Aucun{% endif %}
-                            </h4>
-                        </div>
-                    </div>
-
                 </div>
 
-                <div class="col-md-6 pt-2">
-
-                    <div class="card text-bg mb-3 overflow-auto">
-                        <div class="card-header d-flex justify-content-between">
-                            <h4>Initiative : {{ session.initiative }}</h4>
+                <div class="card text-bg mb-3 overflow-auto">
+                    <div class="card-header d-flex justify-content-between">
+                        <h4>Nombre d'agents : {{ session.agents }}</h4>
+                        {% if session.agents > 0 %}
                             <a class="btn btn-secondary"
                                data-bs-toggle="collapse"
-                               href="#initiative-{{ session.gn }}"
-                               aria-expanded="false" aria-controls="initiative-{{ session.gn }}"
+                               href="#agents-{{ session.gn }}"
+                               aria-expanded="false" aria-controls="agents-{{ session.gn }}"
                                role="button">
                                 <i class="fa-solid fa-circle-info text-info"></i>
                             </a>
-                        </div>
-
-                        <div class="card-body collapse p-0" id="initiative-{{ session.gn }}">
-                            <p class="m-2">1 point d’initiative par carte ressource (les
-                                Poissons
-                                comptent double), carte d'Ingrédient ou pièce d’or inutilisée à autre chose
-                                dans
-                                l’enveloppe de retour du groupe.</p>
-                        </div>
+                        {% endif %}
                     </div>
+                </div>
 
-                    <div class="card text-bg mb-3 overflow-auto">
-                        <div class="card-header d-flex justify-content-between">
-                            <h4>Nombre de fiefs : {{ groupe.territoires|length }}</h4>
-                            <a class="btn btn-secondary"
-                               data-bs-toggle="collapse"
-                               href="#fiefs-{{ session.gn }}"
-                               aria-expanded="false" aria-controls="fiefs-{{ session.gn }}"
-                               role="button">
-                                <i class="fa-solid fa-circle-info text-info"></i>
-                            </a>
-                        </div>
-
-                        <div class="card-body collapse" id="fiefs-{{ session.gn }}">
-                            <ul class="list-group-flush list-group">
-                                {% for fief in groupe.territoires %}
-                                    <li class="list-group-item m-0 p-0 g-0">
-                                        <a href="{{ path('territoire.detail', {'territoire': fief.id}) }}">{{ fief.nom }}</a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="card text-bg mb-3 overflow-auto">
-                        <div class="card-header">
-                            <h4>Nombre d'armes de siège : {{ session.sieges }}</h4>
-                        </div>
-                    </div>
-
-                    <div class="card text-bg mb-3 overflow-auto">
-                        <div class="card-header d-flex justify-content-between">
-                            <h4>Nombre d'agents : {{ session.agents }}</h4>
-                            {% if session.agents > 0 %}
-                                <a class="btn btn-secondary"
-                                   data-bs-toggle="collapse"
-                                   href="#agents-{{ session.gn }}"
-                                   aria-expanded="false" aria-controls="agents-{{ session.gn }}"
-                                   role="button">
-                                    <i class="fa-solid fa-circle-info text-info"></i>
-                                </a>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="card text-bg mb-3 overflow-auto">
-                        <div class="card-header d-flex justify-content-between">
-                            <h4>Nombre de bateaux : {{ session.bateaux }}</h4>
-                            {% if session.bateaux > 0 %}
-                                <a class="btn btn-secondary"
-                                   data-bs-toggle="collapse"
-                                   href="#bateaux-{{ session.gn }}"
-                                   aria-expanded="false" aria-controls="bateaux-{{ session.gn }}"
-                                   role="button">
-                                    <i class="fa-solid fa-circle-info text-info"></i>
-                                </a>
-                            {% endif %}
-                        </div>
-
+                <div class="card text-bg mb-3 overflow-auto">
+                    <div class="card-header d-flex justify-content-between">
+                        <h4>Nombre de bateaux : {{ session.bateaux }}</h4>
                         {% if session.bateaux > 0 %}
-                            <div class="card-body collapse collapse" id="bateaux-{{ session.gn }}">
-                                {% if session.BateauxLocalisation is not empty %}
-                                    {{ session.BateauxLocalisation }}
-                                {% else %}
-                                    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Aucune localisation connue"} %}
-                                {% endif %}
-                            </div>
+                            <a class="btn btn-secondary"
+                               data-bs-toggle="collapse"
+                               href="#bateaux-{{ session.gn }}"
+                               aria-expanded="false" aria-controls="bateaux-{{ session.gn }}"
+                               role="button">
+                                <i class="fa-solid fa-circle-info text-info"></i>
+                            </a>
                         {% endif %}
                     </div>
 
-                    <div class="card text-bg mb-3 overflow-auto">
-                        <div class="card-header d-flex justify-content-between">
-                            <h4>Nombre d'ordres : 0{# {session.|length } #}</h4>
-                            <a class="btn btn-secondary"
-                               data-bs-toggle="collapse"
-                               href="#ordres-{{ session.gn }}"
-                               aria-expanded="false" aria-controls="ordres-{{ session.gn }}"
-                               role="button">
-                                <i class="fa-solid fa-circle-info text-info"></i>
-                            </a>
+                    {% if session.bateaux > 0 %}
+                        <div class="card-body collapse collapse" id="bateaux-{{ session.gn }}">
+                            {% if session.BateauxLocalisation is not empty %}
+                                {{ session.BateauxLocalisation }}
+                            {% else %}
+                                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Aucune localisation connue"} %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endset %}
+
+            {% if groupe.territoires|length > 0 %}
+
+
+                <div class="row">
+                    <div class="col-md-6 pt-2">
+
+                        <div class="card text-bg mb-3 overflow-auto">
+                            <div class="card-header d-flex justify-content-between">
+                                <h4>
+                                    Suzerain : <small>
+                                        {% if session.suzerin(false) is not null %}
+                                            <a href="{{ path('personnage.detail', {'personnage':session.suzerin(false).id}) }}">{{ session.suzerin(false).nom }}</a>
+                                        {% else %}Aucun{% endif %}
+                                    </small>
+                                </h4>
+                                <div>
+
+                                </div>
+                                <a class="btn btn-secondary"
+                                   data-bs-toggle="collapse"
+                                   href="#renommee-{{ session.gn }}"
+                                   aria-expanded="false" aria-controls="renommee-{{ session.gn }}"
+                                   role="button">
+                                    <i class="fa-solid fa-circle-info text-info"></i>
+                                </a>
+                            </div>
+
+                            <div class="card-body collapse p-0" id="renommee-{{ session.gn }}">
+                                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                                    <thead>
+                                    <tr>
+                                        <th>Nombre de fiefs du domaine</th>
+                                        <th>Renommée requise pour ne pas que tous ses fiefs soient instables</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>5</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>8</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>11</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>15</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5+</td>
+                                        <td>20</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
-                        <div class="card-body collapse p-0 collapse" id="ordres-{{ session.gn }}">
-                            <p class="m-2 text-info">La fonctionnalité d'ordre de groupe est en cours de
-                                développement.</p>
-                            {# % if session.getGroupeGnOrdres|length > 0 %}
+                        <div class="card text-bg mb-3 overflow-auto">
+                            <div class="card-header d-flex justify-content-between">
+                                <h4>
+                                    Intendant :
+                                    {% if session.intendant(false) is not null %}
+                                        <a href="{{ path('personnage.detail', {'personnage':session.intendant(false).id}) }}">{{ session.intendant(false).nom }}</a>
+                                    {% else %}Aucun{% endif %}
+                                </h4>
+                            </div>
+                        </div>
+
+                        <div class="card text-bg mb-3 overflow-auto">
+                            <div class="card-header d-flex justify-content-between">
+                                <h4>
+                                    Chef de guerre :
+                                    {% if session.connetable(false) is not null %}
+                                        <a href="{{ path('personnage.detail', {'personnage':session.connetable(false).id}) }}">{{ session.connetable(false).nom }}</a>
+                                    {% else %}Aucun{% endif %}
+                                </h4>
+                            </div>
+                        </div>
+
+                        <div class="card text-bg mb-3 overflow-auto">
+                            <div class="card-header d-flex justify-content-between">
+                                <h4>
+                                    Navigateur :
+                                    {% if session.navigateur(false) is not null %}
+                                        <a href="{{ path('personnage.detail', {'personnage':session.navigateur(false).id}) }}">{{ session.navigateur(false).nom }}</a>
+                                    {% else %}Aucun{% endif %}
+                                </h4>
+                            </div>
+                        </div>
+
+                        <div class="card text-bg mb-3 overflow-auto">
+                            <div class="card-header d-flex justify-content-between">
+                                <h4>
+                                    Eminence grise :
+                                    {% if session.camarilla(false) is not null %}
+                                        <a href="{{ path('personnage.detail', {'personnage':session.camarilla(false).id}) }}">{{ session.camarilla(false).nom }}</a>
+                                    {% else %}Aucun{% endif %}
+                                </h4>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 pt-2">
+
+                        <div class="card text-bg mb-3 overflow-auto">
+                            <div class="card-header d-flex justify-content-between">
+                                <h4>Initiative : {{ session.initiative }}</h4>
+                                <a class="btn btn-secondary"
+                                   data-bs-toggle="collapse"
+                                   href="#initiative-{{ session.gn }}"
+                                   aria-expanded="false" aria-controls="initiative-{{ session.gn }}"
+                                   role="button">
+                                    <i class="fa-solid fa-circle-info text-info"></i>
+                                </a>
+                            </div>
+
+                            <div class="card-body collapse p-0" id="initiative-{{ session.gn }}">
+                                <p class="m-2">1 point d’initiative par carte ressource (les
+                                    Poissons
+                                    comptent double), carte d'Ingrédient ou pièce d’or inutilisée à autre chose
+                                    dans
+                                    l’enveloppe de retour du groupe.</p>
+                            </div>
+                        </div>
+
+                        <div class="card text-bg mb-3 overflow-auto">
+                            <div class="card-header d-flex justify-content-between">
+                                <h4>Nombre de fiefs : {{ groupe.territoires|length }}</h4>
+                                <a class="btn btn-secondary"
+                                   data-bs-toggle="collapse"
+                                   href="#fiefs-{{ session.gn }}"
+                                   aria-expanded="false" aria-controls="fiefs-{{ session.gn }}"
+                                   role="button">
+                                    <i class="fa-solid fa-circle-info text-info"></i>
+                                </a>
+                            </div>
+
+                            <div class="card-body collapse" id="fiefs-{{ session.gn }}">
+                                <ul class="list-group-flush list-group">
+                                    {% for fief in groupe.territoires %}
+                                        <li class="list-group-item m-0 p-0 g-0">
+                                            <a href="{{ path('territoire.detail', {'territoire': fief.id}) }}">{{ fief.nom }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+
+                        {{ commonHtml }}
+
+                        <div class="card text-bg mb-3 overflow-auto">
+                            <div class="card-header d-flex justify-content-between">
+                                <h4>Nombre d'ordres : 0{# {session.|length } #}</h4>
+                                <a class="btn btn-secondary"
+                                   data-bs-toggle="collapse"
+                                   href="#ordres-{{ session.gn }}"
+                                   aria-expanded="false" aria-controls="ordres-{{ session.gn }}"
+                                   role="button">
+                                    <i class="fa-solid fa-circle-info text-info"></i>
+                                </a>
+                            </div>
+
+                            <div class="card-body collapse p-0 collapse" id="ordres-{{ session.gn }}">
+                                <p class="m-2 text-info">La fonctionnalité d'ordre de groupe est en cours de
+                                    développement.</p>
+                                {# % if session.getGroupeGnOrdres|length > 0 %}
                                 {% for ordre in session.getGroupeGnOrdres %}
                                     <p class="list-group-item"><strong>{{ ordre.ordre }}</strong> => {{ ordre.cible.nomComplet }} {% if ordre.ordre == 'CONSTRUCTION' or ordre.ordre == 'DESTRUCTION' %} => <strong>{{ ordre.extra }}</strong>{% endif %}</p>
                                 {% endfor %}
                             {% else %}
                                 <p class="list-group-item">Pas d'ordres passés ou historisés pour le {{ session.gn }}.</p>
                             {% endif % #}
+                            </div>
                         </div>
+
                     </div>
-
                 </div>
-            </div>
 
+            {% else %}
+                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Le groupe de dispose d'aucun fief ce qui le limite dans les actions possibles du jeu de domaine"} %}
+                {{ commonHtml }}
+            {% endif %}
         </div>
     </div>
 {% endif %}

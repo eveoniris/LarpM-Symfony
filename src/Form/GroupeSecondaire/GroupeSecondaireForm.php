@@ -34,7 +34,7 @@ class GroupeSecondaireForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        if ($this->security->isGranted(Role::ROLE_GROUPE_TRANSVERSE)) {
+        if ($this->security->isGranted(Role::ROLE_GROUPE_TRANSVERSE->value)) {
             $builder->add('label', TextType::class)
                 ->add('description', TextareaType::class, [
                     'required' => true,
