@@ -100,7 +100,6 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     public function addBackgroundAction(
         Request $request,
-
     ): RedirectResponse|Response {
         $id = $request->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
@@ -135,7 +134,6 @@ class GroupeController extends AbstractController
 
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-
         $this->checkGroupeLocked($groupe);
 
         $form = $this->createForm(GroupeDocumentForm::class, $groupe)
@@ -276,7 +274,6 @@ class GroupeController extends AbstractController
     // TODO
     public function adminParticipantAddAction(
         Request $request,
-
     ): RedirectResponse|Response {
         $groupe = $request->get('groupe');
 
@@ -336,7 +333,6 @@ class GroupeController extends AbstractController
     // TODO
     public function adminParticipantRemoveAction(
         Request $request,
-
     ): RedirectResponse|Response {
         $participantId = $request->get('participant');
         $groupe = $request->get('groupe');
@@ -545,7 +541,7 @@ class GroupeController extends AbstractController
     ): RedirectResponse|Response {
         $this->checkHasAccess(
             [Role::ORGA, Role::SCENARISTE],
-            fn() => $this->personnageService->isUserIsGroupeResponsable($groupe),
+            fn () => $this->personnageService->isUserIsGroupeResponsable($groupe),
         );
 
         $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
@@ -625,6 +621,7 @@ class GroupeController extends AbstractController
 
         $hasTitle = false;
         if ($groupeGn) {
+            dump($groupeGn->hasTitle($this->getUser()));
             $hasTitle = $groupeGn->hasTitle($this->getUser());
         }
 
@@ -639,7 +636,7 @@ class GroupeController extends AbstractController
 
         $this->checkHasAccess(
             $roles,
-            fn() => $this->can(self::CAN_READ),
+            fn () => $this->can(self::CAN_READ),
         );
     }
 
@@ -891,7 +888,6 @@ class GroupeController extends AbstractController
     // TODO
     public function placeAction(
         Request $request,
-
     ): RedirectResponse|Response {
         $id = $request->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
@@ -1051,7 +1047,6 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/quete', name: 'quete')]
     public function queteAction(
-
         #[MapEntity] Groupe $groupe,
     ): Response {
         $ressourceRares = new ArrayCollection($this->entityManager->getRepository(Ressource::class)->findRare());
@@ -1290,7 +1285,7 @@ class GroupeController extends AbstractController
         foreach ($participants as $participant) {
             $formBuilder->add($participant->getId(), 'choice', [
                 'label' => $participant->getUser()->getEtatCivil()->getNom().' '.$participant->getUser()->getEtatCivil(
-                    )->getPrenom().' '.$participant->getUser()->getEmail(),
+                )->getPrenom().' '.$participant->getUser()->getEmail(),
                 'choices' => $availableTaverns,
                 'data' => $participant->getTavernId(),
                 'multiple' => false,
@@ -1629,7 +1624,6 @@ class GroupeController extends AbstractController
                 $this->entityManager->flush();
                 $this->addFlash('success', 'Le groupe a été supprimé.');
 
-
                 return $this->redirectToRoute('groupe.list');
             }
         }
@@ -1650,7 +1644,6 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     public function updateBackgroundAction(
         Request $request,
-
     ): RedirectResponse|Response {
         $id = $request->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
@@ -1676,7 +1669,6 @@ class GroupeController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
 
     public function usersAction(Request $request, Groupe $groupe): Response
     {

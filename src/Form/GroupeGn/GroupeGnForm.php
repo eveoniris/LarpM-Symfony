@@ -126,8 +126,7 @@ class GroupeGnForm extends AbstractType
                             /** @var GroupeGnRepository $groupeGnRepository */
                             $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
 
-                            // TODO : allow on it self ;
-
+                            // Has titres in other groupe
                             $titres = $groupeGnRepository->getTitres(
                                 $personnage,
                                 $groupeGn?->getGn(),
@@ -142,6 +141,30 @@ class GroupeGnForm extends AbstractType
                                             [
                                                 '%personnageName%' => $personnage->getIdName(),
                                                 '%titres%' => $titres,
+                                            ],
+                                        ),
+                                    )
+                                    ->atPath('['.$child.']')
+                                    ->addViolation();
+                            }
+
+                            // has more than one title
+                            $nbTitresInGroupe = $groupeGnRepository->countTitres(
+                                $personnage,
+                                $groupeGn?->getGn(),
+                            );
+
+                            if ($nbTitresInGroupe > 1) {
+                                $context
+                                    ->buildViolation(
+                                        $this->translator->trans(
+                                            'groupeGn.titre.unique',
+                                            [
+                                                '%personnageName%' => $personnage->getIdName(),
+                                                '%titres%' => $groupeGnRepository->getTitres(
+                                                    $personnage,
+                                                    $groupeGn?->getGn(),
+                                                ),
                                             ],
                                         ),
                                     )
