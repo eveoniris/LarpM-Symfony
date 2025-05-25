@@ -86,20 +86,22 @@ class TerritoireController extends AbstractController
     #[Route('/territoire/{territoire}/blason', name: 'territoire.blason', methods: ['GET'])]
     public function blasonAction(#[MapEntity] Territoire $territoire): Response
     {
-        $filename = __DIR__.'/../../assets/img/blasons/'.$territoire->getBlason();
+        $projectDir = $this->fileUploader->getProjectDirectory();
+        $paths = [
+            'first' => __DIR__.'/../../assets/img/blasons/',
+            'v2' => $projectDir.FolderType::Photos->value.DocumentType::Blason->value.'/',
+            'v1' => $projectDir.'/../larpmanager/private/img/blasons/',
+            'last' => $projectDir.'/../larpm/private/img/blasons/',
+        ];
 
-        if (!file_exists($filename)) {
-            // get old ?
-            $path = $this->fileUploader->getProjectDirectory(
-                ).FolderType::Photos->value.DocumentType::Blason->value.'/';
+        foreach ($paths as $type => $path) {
             $filename = $path.$territoire->getBlason();
 
-            if (!file_exists($filename)) {
-                $path = $this->fileUploader->getProjectDirectory().'/../larpmanager/private/img/blasons/';
-                $filename = $path.$territoire->getBlason();
-                if (!file_exists($filename)) {
-                    return $this->sendNoImageAvailable($filename);
-                }
+            if (file_exists($filename)) {
+                break;
+            }
+            if ('last' === $type) {
+                return $this->sendNoImageAvailable($filename);
             }
         }
 

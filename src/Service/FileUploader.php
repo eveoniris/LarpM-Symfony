@@ -64,7 +64,7 @@ final class FileUploader
         DocumentType $docType,
         ?string $filename = null,
         ?int $filenameMaxLength = null,
-        bool $useUniqueId = true
+        bool $useUniqueId = true,
     ): self {
         $this->extension = $file->guessExtension();
         $filenameMaxLength ??= mb_strlen($this->getOriginalFilename($file));
@@ -73,7 +73,7 @@ final class FileUploader
             '%s%s.%s',
             $filename ?? mb_substr($this->getOriginalFilename($file), 0, $filenameMaxLength),
             $useUniqueId ? str_replace('.', '-', '-'.uniqid('', true)) : '',
-            $this->extension
+            $this->extension,
         );
 
         $this->filePath = $this->getDirectory($folderType, $docType);
@@ -81,7 +81,13 @@ final class FileUploader
         try {
             $file->move($this->filePath, $this->storedFileName);
             // Keep for V1
-            $mainProdFile = $this->getProjectDirectory().'../larpmanager/'.$folderType->value.$docType->value.'/'.$this->storedFileName;
+            if (str_contains(__FILE__, 'larpm')) {
+                $mainProdFile = $this->getProjectDirectory(
+                    ).'../larpmanager/'.$folderType->value.$docType->value.'/'.$this->storedFileName;
+            } else {
+                $mainProdFile = $this->getProjectDirectory(
+                    ).'../larpm/'.$folderType->value.$docType->value.'/'.$this->storedFileName;
+            }
 
             if (!file_exists($mainProdFile)) {
                 $filesystem = new Filesystem();
