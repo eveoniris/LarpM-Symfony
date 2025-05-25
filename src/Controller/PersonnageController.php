@@ -2623,23 +2623,23 @@ class PersonnageController extends AbstractController
         // PROD path https://larpmanager.eveoniris.com/ => ???
         // PROD lARPV2 https://larpm.eveoniris.com/ => ???
         $miniature = $request->get('miniature');
+        $projectDir = $this->fileUploader->getProjectDirectory();
 
-        $trombine = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
-        if (!$trombine) {
-            return $this->sendNoImageAvailable();
-        }
-
-        $filename = $personnage->getTrombine($this->fileUploader->getProjectDirectory());
+        $filename = $personnage->getTrombine($projectDir);
         if (!file_exists($filename)) {
             // get old ?
-            $path = $this->fileUploader->getProjectDirectory(
-                ).FolderType::Private->value.DocumentType::Image->value.'/';
-            $filename = $path.$personnage->getTrombineUrl();
+            $paths = [
+                'v2' => $projectDir.FolderType::Private->value.DocumentType::Image->value.'/',
+                'v1' => $projectDir.'/../larpmanager/private/img/',
+                'last' => $projectDir.'/../larpm/private/img/',
+            ];
 
-            if (!file_exists($filename)) {
-                $path = $this->fileUploader->getProjectDirectory().'/../larpmanager/private/img/';
+            foreach ($paths as $type => $path) {
                 $filename = $path.$personnage->getTrombineUrl();
-                if (!file_exists($filename)) {
+                if (file_exists($filename)) {
+                    break;
+                }
+                if ('last' === $type) {
                     return $this->sendNoImageAvailable($filename);
                 }
             }
