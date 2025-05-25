@@ -126,11 +126,12 @@ abstract class BaseRepository extends ServiceEntityRepository
                     $byAlias = key($byAlias);
                     // handle alias for field
                     $asAttributes = $this->searchAttributesAs($alias);
-                    $asAttribute = $asAttributes[$by] ?? $asAttributes[$byAlias] ?? null;
-                    if ($asAttribute) {
-                        $query->addSelect(
-                            $asAttribute.' AS '.$by,
-                        );
+                    foreach ([$by, $byAlias, 'HIDEEN '.$by, 'HIDDEN '.$byAlias] as $attr) {
+                        if (isset($asAttributes[$attr])) {
+                            $query->addSelect(
+                                $asAttributes[$attr].' AS '.$attr,
+                            );
+                        }
                     }
                 }
 

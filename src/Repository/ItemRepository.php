@@ -35,7 +35,7 @@ class ItemRepository extends BaseRepository
         $query->join($alias.'.quality', 'quality');
 
         // Ad Paginator didn't like a dynamic concat we add it here and in SearchAttributes with doctrine HIDDEN keywork
-        $query->addSelect('CONCAT(quality.numero, item.identification) AS HIDDEN qualident');
+        // $query->addSelect('CONCAT(quality.numero, item.identification) AS HIDDEN qualident');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }

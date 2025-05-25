@@ -20,6 +20,9 @@ enum TriggerType: string
     case LITTERATURE_EXPERT = 'LITTERATURE EXPERT';
     case PRETRISE_INITIE = 'PRETRISE INITIE';
     case TECHNOLOGIE = 'TECHNOLOGIE';
+    case DOMAINE_MAGIE = 'DOMAINE MAGIE';
+    case LANGUE_COURANTE = 'LANGUE COURANTE';
+    case LANGUE_ANCIENNE = 'LANGUE ANCIENNE';
 
     public function getDescription(): string
     {
@@ -38,6 +41,9 @@ enum TriggerType: string
             self::LITTERATURE_EXPERT => 'permet de choisir trois langues supplémentaires dont 1 ancienne',
             self::PRETRISE_INITIE => 'permet de choisir trois descriptifs de religion',
             self::TECHNOLOGIE => 'permet de choisir une technologie',
+            self::DOMAINE_MAGIE => 'permet de choisir un domaine de magie',
+            self::LANGUE_COURANTE => 'permet de choisir une langue commune',
+            self::LANGUE_ANCIENNE => 'permet de choisir une langue ancienne',
             default => throw new \Exception('Unexpected match value '.$this->value),
         };
     }

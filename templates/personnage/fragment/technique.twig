@@ -58,7 +58,11 @@
             <div class="list-group">
                 {% for trigger in personnage.personnageTriggers %}
                     <div class="list-group-item d-flex justify-content-between">
-                        <div>{{ trigger.tag.value }}</div>
+                        {% if trigger.tag.value is defined %}
+                            <div>{{ trigger.tag.value }}</div>
+                        {% else %}
+                            <div>{{ trigger.tag|default('-') }}</div>
+                        {% endif %}
                         {% if isAdmin %}
                             <div>
                                 <a class="btn btn-sm btn-secondary"
