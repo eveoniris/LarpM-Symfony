@@ -87,7 +87,7 @@
 
     {% set isReligion = groupeSecondaire.isReligion %}
     {% set religionHtml %}
-        {% if isReligion %}
+        {% if isReligion and canManage %}
             <ul class="list-group list-group-flush w-100 m-0 p-0">
                 {% for personnageReligion in personnage.personnagesReligions %}
                     <li class="list-group-item w-100 m-0 p-0 d-flex justify-content-between">
@@ -101,6 +101,10 @@
         {% else %}
             Aucune
         {% endif %}
+    {% endset %}
+    {% set religionTitleHtml %}
+        <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+           title="Secrets"></i> Religion
     {% endset %}
 
     {% set manageHtml %}
@@ -117,7 +121,7 @@
     {% include '_partials/listItems.twig'
         with { 'head' : false, 'items' : [
         {'title': 'Surnom', 'text': surnameHtml},
-        {'title': 'Religion', 'text': religionHtml, 'visible': isReligion},
+        {'title': 'Religion', 'text': religionHtml, 'visible': isReligion and canManage},
         {'title': 'Statut', 'text': statutHtml },
         {'title': 'Rang', 'text': rankHtml},
         {'title': 'Accès', 'text': accessHtml, visible: canManage },

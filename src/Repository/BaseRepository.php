@@ -113,10 +113,10 @@ abstract class BaseRepository extends ServiceEntityRepository
 
         // NEO MULTI
         if (!empty($orderBy->getOrders())) {
-            dump($orderBy->getOrders());
+            // dump($orderBy->getOrders());
             foreach ($orderBy->getOrders() as $by => $sort) {
                 if (!$this->isAllowedAttribute($by, $this->sortAttributes($alias))) {
-                    dump($by.' not allowed');
+                    //  dump($by.' not allowed');
                     continue;
                 }
 
@@ -126,7 +126,7 @@ abstract class BaseRepository extends ServiceEntityRepository
                     $byAlias = key($byAlias);
                     // handle alias for field
                     $asAttributes = $this->searchAttributesAs($alias);
-                    foreach ([$by, $byAlias, 'HIDEEN '.$by, 'HIDDEN '.$byAlias] as $attr) {
+                    foreach ([$by, $byAlias, 'HIDDEN '.$by, 'HIDDEN '.$byAlias] as $attr) {
                         if (isset($asAttributes[$attr])) {
                             $query->addSelect(
                                 $asAttributes[$attr].' AS '.$attr,

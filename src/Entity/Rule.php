@@ -29,6 +29,26 @@ class Rule extends BaseRule implements \Stringable
         return $this;
     }
 
+    /**
+     * Affichage.
+     */
+    public function __toString(): string
+    {
+        return (string) $this->getLabel();
+    }
+
+    public function getPrintLabel(): string
+    {
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->filename ?: time()));
+    }
+
+    protected function afterUpload(FileUploader $fileUploader): FileUploader
+    {
+        $this->setUrl($fileUploader->getStoredFileName());
+
+        return $fileUploader;
+    }
+
     public function getDocument(string $projectDir): string
     {
         return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
@@ -39,18 +59,8 @@ class Rule extends BaseRule implements \Stringable
         return $this->getUrl() ?? '';
     }
 
-    protected function afterUpload(FileUploader $fileUploader): FileUploader
+    public function getFilename(): ?string
     {
-        $this->setUrl($fileUploader->getStoredFileName());
-
-        return $fileUploader;
-    }
-
-    /**
-     * Affichage.
-     */
-    public function __toString(): string
-    {
-        return (string) $this->getLabel();
+        return $this->getLabel() ?? (string) time();
     }
 }

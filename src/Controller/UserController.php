@@ -1038,7 +1038,6 @@ class UserController extends AbstractController
     #[Route('/self', name: 'user.self')]
     public function viewSelfAction(): Response|RedirectResponse
     {
-        dump(__FILE__);
         /** @var User $user */
         $user = $this->getUser();
 

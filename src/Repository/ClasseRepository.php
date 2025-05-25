@@ -105,8 +105,8 @@ class ClasseRepository extends BaseRepository
                 OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
             ],
             'creation' => [
-                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+                OrderBy::ASC => [$alias.'.creation' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.creation' => OrderBy::DESC],
             ],
         ];
     }

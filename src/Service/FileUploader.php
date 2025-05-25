@@ -81,12 +81,12 @@ final class FileUploader
         try {
             $file->move($this->filePath, $this->storedFileName);
             // Keep for V1
-            if (str_contains(__FILE__, 'larpm')) {
-                $mainProdFile = $this->getProjectDirectory(
-                    ).'../larpmanager/'.$folderType->value.$docType->value.'/'.$this->storedFileName;
-            } else {
+            if (str_contains(__FILE__, 'larpmanager')) {
                 $mainProdFile = $this->getProjectDirectory(
                     ).'../larpm/'.$folderType->value.$docType->value.'/'.$this->storedFileName;
+            } else {
+                $mainProdFile = $this->getProjectDirectory(
+                    ).'../larpmanager/'.$folderType->value.$docType->value.'/'.$this->storedFileName;
             }
 
             if (!file_exists($mainProdFile)) {

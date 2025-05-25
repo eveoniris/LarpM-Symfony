@@ -508,7 +508,7 @@ class TerritoireController extends AbstractController
         TerritoireRepository $territoireRepository,
     ): Response {
         // Set order by nom by default
-        $pagerService->setOrdersBy(['nom' => OrderBy::ASC]); // test default overwrite from request
+        //$pagerService->setOrdersBy(['nom' => OrderBy::ASC]); // test default overwrite from request
         $alias = $territoireRepository->getAlias();
 
         // Got only main territory

@@ -145,7 +145,7 @@ class ClasseController extends AbstractController
     ): Response {
         $pagerService->setRequest($request)->setRepository($classeRepository)->setLimit(50);
 
-        $pagerService->setDefaultOrdersBy(['creation' => 'DESC', 'label_masculin' => 'ASC']);
+        // TODO $pagerService->setDefaultOrdersBy(['creation' => 'DESC', 'label_masculin' => 'ASC']);
 
         $alias = $classeRepository->getAlias();
         $queryBuilder = $classeRepository->createQueryBuilder($alias);
