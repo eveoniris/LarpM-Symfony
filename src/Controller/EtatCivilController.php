@@ -23,7 +23,9 @@ class EtatCivilController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$user || $user->getEtatCivil()?->getId() !== $etatCivil->getId() || !$this->isGranted(Role::ORGA->value)) {
+        if (!$user || ($user->getEtatCivil()?->getId() !== $etatCivil->getId() && !$this->isGranted(
+                    Role::ORGA->value,
+                ))) {
             throw new AccessDeniedException();
         }
 

@@ -14,11 +14,6 @@ class Document extends BaseDocument implements \Stringable
 {
     use EntityFileUploadTrait;
 
-    public function __toString(): string
-    {
-        return (string) $this->getIdentity();
-    }
-
     public function __construct()
     {
         parent::__construct();
@@ -37,6 +32,20 @@ class Document extends BaseDocument implements \Stringable
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return (string) $this->getIdentity();
+    }
+
+    /**
+     * Fourni l'identité d'un document (code + titre).
+     */
+    public function getIdentity(): string
+    {
+        return $this->getCode().' '.$this->getTitre();
+    }
+
     /**
      * Fourni la description du document au bon format pour impression.
      */
@@ -50,17 +59,16 @@ class Document extends BaseDocument implements \Stringable
         return $this->getIdentity();
     }
 
-    /**
-     * Fourni l'identité d'un document (code + titre).
-     */
-    public function getIdentity(): string
-    {
-        return $this->getCode().' '.$this->getTitre();
-    }
-
     public function getPrintLabel(): ?string
     {
-        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getCode()));
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->filename ?: $this->getCode()));
+    }
+
+    protected function afterUpload(FileUploader $fileUploader): FileUploader
+    {
+        $this->setDocumentUrl($fileUploader->getStoredFileName());
+
+        return $fileUploader;
     }
 
     public function getDocument(?string $projectDir = null): string
@@ -71,12 +79,5 @@ class Document extends BaseDocument implements \Stringable
     public function getOldV1Document(?string $projectDir = null): string
     {
         return $this->getDocumentFilePath($projectDir, true).$this->getDocumentUrl();
-    }
-
-    protected function afterUpload(FileUploader $fileUploader): FileUploader
-    {
-        $this->setDocumentUrl($fileUploader->getStoredFileName());
-
-        return $fileUploader;
     }
 }

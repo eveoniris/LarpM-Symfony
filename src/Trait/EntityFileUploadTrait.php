@@ -44,7 +44,7 @@ trait EntityFileUploadTrait
         $projectDir ??= $this->projectDir ?? '';
 
         if ($oldV1Prod) {
-            $projectDir .= str_contains(__FILE__, 'larpm') ? '../larpmanager/' : '../larpm/';
+            $projectDir .= str_contains(__FILE__, 'larpmanager') ? '../larpm/' : '../larpmanager/';
         }
 
         return $projectDir.$this->getFolderType()->value.$this->getDocumentType()->value.DIRECTORY_SEPARATOR;

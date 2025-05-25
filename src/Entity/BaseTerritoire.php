@@ -492,7 +492,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of color.
      */
-    public function setColor(string $color): static
+    public function setColor(?string $color): static
     {
         $this->color = $color;
 
