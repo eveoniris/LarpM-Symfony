@@ -17,6 +17,7 @@
             <div class="d-flex btn-group{% if css is defined %} {{ css|join(' ') }}{% endif %}" role="group">
 
                 {% for button in buttons %}
+
                     {# may only some button are admin reserved #}
                     {% if button.isAdmin is not defined or not button.isAdmin or (button.isAdmin and isAdmin) %}
                         <a class="btn {% if button.css is defined %} {{ button.css|join(' ') }}{% else %}btn-secondary{% endif %} align-self-center"

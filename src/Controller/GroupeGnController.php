@@ -20,6 +20,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -462,6 +463,7 @@ class GroupeGnController extends AbstractController
     public function updateAction(
         Request $request,
         #[MapEntity] GroupeGn $groupeGn,
+        GroupeGnRepository $groupeGnRepository,
     ): RedirectResponse|Response {
         $redirect = $request->get('redirect');
 
@@ -480,6 +482,31 @@ class GroupeGnController extends AbstractController
 
         $form->handleRequest($request);
 
+        // ONLY ONE per personnage
+        if ($form->isSubmitted()) {
+            $ids = [];
+
+            $idsArray = [
+                'suzerin' => $groupeGn->getSuzerin()?->getId(),
+                'intendant' => $groupeGn->getIntendant()?->getId(),
+                'camarilla' => $groupeGn->getCamarilla()?->getId(),
+                'connetable' => $groupeGn->getConnetable()?->getId(),
+                'navigateur' => $groupeGn->getNavigateur()?->getId(),
+                'diplomate' => $groupeGn->getDiplomate()?->getId(),
+            ];
+
+            foreach ($idsArray as $child => $id) {
+                if ($id) {
+                    if (isset($ids[$id])) {
+                        $ids[$id]++;
+                        $form->get($child)->addError(new FormError("Un personnage ne peut avoir qu'un seul titre"));
+                    } else {
+                        $ids[$id] = 1;
+                    }
+                }
+            }
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var GroupeGn $groupeGn */
             $groupeGn = $form->getData();
@@ -487,7 +514,7 @@ class GroupeGnController extends AbstractController
             // Titre si territoire
             if (null === $groupeGn->getGroupe()->getTerritoire()) {
                 if ($groupeGn->getSuzerin() || $groupeGn->getIntendant() || $groupeGn->getCamarilla(
-                    ) || $groupeGn->getConnetable() || $groupeGn->getNavigateur()) {
+                    ) || $groupeGn->getConnetable() || $groupeGn->getNavigateur() || $groupeGn->getDiplomate()) {
                     $this->addFlash('error', 'Les titres ne sont possibles que si le groupe à un territoire');
                 }
                 $groupeGn->setSuzerin(null);
@@ -495,6 +522,7 @@ class GroupeGnController extends AbstractController
                 $groupeGn->setCamarilla(null);
                 $groupeGn->setConnetable(null);
                 $groupeGn->setNavigateur(null);
+                $groupeGn->setDiplomate(null);
             }
 
             $this->entityManager->persist($groupeGn);

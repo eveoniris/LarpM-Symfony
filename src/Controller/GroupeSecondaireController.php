@@ -79,7 +79,7 @@ class GroupeSecondaireController extends AbstractController
         string $lowestCan = self::CAN_READ,
     ): void {
         $this->loadAccess($secondaryGroup, $roles);
-        $this->checkHasAccess($roles, fn () => $this->can($lowestCan));
+        $this->checkHasAccess($roles, fn() => $this->can($lowestCan));
     }
 
     protected function loadAccess(
@@ -368,13 +368,24 @@ class GroupeSecondaireController extends AbstractController
                 $postulant->setWaiting(false);
 
                 $this->entityManager->persist($postulant);
-                $this->entityManager->flush();
+
 
                 // envoi d'un mail au chef du groupe secondaire
-                if ($groupeSecondaire->getResponsable()) {
-                    // envoyer une notification au responsable
-                    // TODO NOTIFY $app['notify']->joinGroupeSecondaire($groupeSecondaire->getResponsable(), $groupeSecondaire);
+                if ($responsable = $groupeSecondaire->getResponsable()) {
+                    $message = new Message();
+                    $message->setTitle('Candidature pour le groupe '.$groupeSecondaire->getLabel());
+                    $message->setUserRelatedByAuteur($this->getUser());
+                    $message->setUserRelatedByDestinataire($responsable->getUser());
+                    $message->setCreationDate(new \DateTime('NOW'));
+                    $message->setUpdateDate(new \DateTime('NOW'));
+                    $message->setText($data['explanation']);
+
+                    $this->entityManager->persist($message);
+
+                    $this->mailer->notify($message);
                 }
+
+                $this->entityManager->flush();
 
                 $this->addFlash('success', 'Votre candidature a été enregistrée, et transmise au chef de groupe.');
 
@@ -431,8 +442,6 @@ class GroupeSecondaireController extends AbstractController
     #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     #[Route('/groupeSecondaire/{groupeSecondaire}/print', name: 'groupeSecondaire.materiel.print')]
     public function materielPrintAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): Response {
         return $this->render('groupeSecondaire/print.twig', [

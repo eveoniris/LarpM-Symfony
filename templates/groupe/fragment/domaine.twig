@@ -192,6 +192,17 @@
                             </div>
                         </div>
 
+                        <div class="card text-bg mb-3 overflow-auto">
+                            <div class="card-header d-flex justify-content-between">
+                                <h4>
+                                    Diplomate :
+                                    {% if session.diplomate(false) is not null %}
+                                        <a href="{{ path('personnage.detail', {'personnage':session.diplomate(false).id}) }}">{{ session.diplomate(false).nom }}</a>
+                                    {% else %}Aucun{% endif %}
+                                </h4>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div class="col-md-6 pt-2">

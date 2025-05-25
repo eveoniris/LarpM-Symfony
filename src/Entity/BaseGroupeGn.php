@@ -186,36 +186,6 @@ abstract class BaseGroupeGn
         return $this;
     }
 
-    /**
-     * Get the value of code.
-     */
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    /**
-     * Set the value of code.
-     */
-    public function setCode(?string $code): static
-    {
-        $this->code = $code;
-
-        return $this;
-    }
-
-    public function getConnetable(bool $strict = true): ?Personnage
-    {
-        return $this->connetable ?? ($strict ? null : $this->getSuzerin($strict));
-    }
-
-    public function setConnetable(?Personnage $connetable): static
-    {
-        $this->connetable = $connetable;
-
-        return $this;
-    }
-
     public function getSuzerin(bool $strict = true): ?Personnage
     {
         // Par défaut le chef de groupe
@@ -247,9 +217,39 @@ abstract class BaseGroupeGn
         return $this;
     }
 
-    public function getDiplomate(): ?Personnage
+    /**
+     * Get the value of code.
+     */
+    public function getCode(): ?string
     {
-        return $this->diplomate;
+        return $this->code;
+    }
+
+    /**
+     * Set the value of code.
+     */
+    public function setCode(?string $code): static
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    public function getConnetable(bool $strict = true): ?Personnage
+    {
+        return $this->connetable ?? ($strict ? null : $this->getSuzerin($strict));
+    }
+
+    public function setConnetable(?Personnage $connetable): static
+    {
+        $this->connetable = $connetable;
+
+        return $this;
+    }
+
+    public function getDiplomate(bool $strict = true): ?Personnage
+    {
+        return $this->diplomate ?? ($strict ? null : $this->getSuzerin($strict));
     }
 
     public function setDiplomate(?Personnage $diplomate): static

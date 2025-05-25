@@ -12,6 +12,58 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class GroupeGnRepository extends BaseRepository
 {
+    public function countTitres(Personnage $personnage, ?Gn $gn = null, ?GroupeGn $excludeGroupeGn = null): int
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('titre', 'titre', 'string');
+
+        $pid = $personnage->getId();
+        $sql = <<<SQL
+                SELECT 
+                    SUM(
+                        IF(suzerin_id = $pid, 1, 0) + 
+                        IF(connetable_id = $pid, 1, 0) + 
+                        IF(intendant_id = $pid, 1, 0) + 
+                        IF(navigateur_id = $pid, 1, 0) + 
+                        IF(camarilla_id = $pid, 1, 0) + 
+                        IF(diplomate_id = $pid, 1, 0) 
+                        ) AS total
+                FROM groupe_gn as ggn  
+                INNER JOIN groupe as g ON g.id = ggn.groupe_id
+                WHERE (suzerin_id = :pid 
+                    OR connetable_id = :pid 
+                    OR intendant_id = :pid 
+                    OR navigateur_id = :pid 
+                    OR camarilla_id = :pid
+                    OR diplomate_id = :pid)
+                SQL;
+
+        if ($gn) {
+            $sql .= ' AND ggn.gn_id = :gnid';
+        }
+
+        if ($excludeGroupeGn) {
+            $sql .= ' AND ggn.id <> :ggnid';
+        }
+
+        $sql .= ' ORDER BY ggn.gn_id DESC LIMIT 1';
+        $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
+        if ($gn) {
+            $query->setParameter('gnid', $gn->getId());
+        }
+        if ($excludeGroupeGn) {
+            $query->setParameter('ggnid', $excludeGroupeGn->getId());
+        }
+
+        try {
+            return (int) $query
+                ->setParameter('pid', $personnage->getId())
+                ->getSingleScalarResult() ?: 0;
+        } catch (NoResultException $e) {
+            return 0;
+        }
+    }
+
     public function findByGn($gnId)
     {
         return $this->getEntityManager()
@@ -43,6 +95,7 @@ class GroupeGnRepository extends BaseRepository
         $rsm->addScalarResult('titre', 'titre', 'string');
 
         $pid = $personnage->getId();
+        // Attention le concat ne prendra qu'un titre car un pj ne peut en avoir qu'un
         $sql = <<<SQL
                 SELECT 
                     CONCAT(
@@ -52,6 +105,7 @@ class GroupeGnRepository extends BaseRepository
                            when intendant_id = $pid then 'Intendant'
                            when navigateur_id = $pid then 'Navigateur'
                            when camarilla_id  = $pid then 'Eminence grise'
+                           when diplomate_id  = $pid then 'Diplomate'
                        end,
                        ' - ',
                        g.numero,
@@ -64,7 +118,8 @@ class GroupeGnRepository extends BaseRepository
                     OR connetable_id = :pid 
                     OR intendant_id = :pid 
                     OR navigateur_id = :pid 
-                    OR camarilla_id = :pid)
+                    OR camarilla_id = :pid
+                    OR diplomate_id = :pid)
                 SQL;
 
         if ($gn) {

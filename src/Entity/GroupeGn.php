@@ -20,30 +20,18 @@ class GroupeGn extends BaseGroupeGn
         $this->bateaux ??= 0;
     }
 
-    /**
-     * Défini le responsable de cette session de jeu.
-     */
-    public function setResponsable(Participant $participant): static
+    public function addAgent(): static
     {
-        $this->setParticipant($participant);
+        ++$this->agents;
 
         return $this;
     }
 
-    /**
-     * Fourni le responsable de cette session de jeu.
-     */
-    public function getResponsable(): ?Participant
+    public function addBateau(): static
     {
-        return $this->getParticipant();
-    }
+        ++$this->bateaux;
 
-    /**
-     * Supprime le responsable de cette session de jeu.
-     */
-    public function setResponsableNull(): static
-    {
-        return $this->setParticipant();
+        return $this;
     }
 
     /**
@@ -62,42 +50,21 @@ class GroupeGn extends BaseGroupeGn
         return $personnages;
     }
 
+    /**
+     * Fourni le responsable de cette session de jeu.
+     */
+    public function getResponsable(): ?Participant
+    {
+        return $this->getParticipant();
+    }
+
     public function hasTitle(User|UserInterface $user): bool
     {
-        return $this->getSuzerin(false)?->getId() === $user->getId()
-            || $this->getConnetable(false)?->getId() === $user->getId()
-            || $this->getIntendant(false)?->getId() === $user->getId()
-            || $this->getCamarilla(false)?->getId() === $user->getId()
-            || $this->getNavigateur(false)?->getId() === $user->getId();
-    }
-
-    public function addAgent(): static
-    {
-        ++$this->agents;
-
-        return $this;
-    }
-
-    public function isSuzerin(Personnage|Participant $personnage): bool
-    {
-        if ($personnage instanceof Participant) {
-            $personnage = $personnage->getPersonnage();
-        }
-
-        if (null === $this->getSuzerin(false)) {
-            return false;
-    }
-
-        return $this->getSuzerin(false)?->getId() === $personnage?->getId();
-    }
-
-    public function isConnetable(Personnage|Participant $personnage): bool
-    {
-        if ($personnage instanceof Participant) {
-            $personnage = $personnage->getPersonnage();
-        }
-
-        return $this->getConnetable(false)?->getId() === $personnage->getId();
+        return ($this->getSuzerin(false)?->getId() === $user->getId())
+            || ($this->getConnetable(false)?->getId() === $user->getId())
+            || ($this->getIntendant(false)?->getId() === $user->getId())
+            || ($this->getCamarilla(false)?->getId() === $user->getId())
+            || ($this->getNavigateur(false)?->getId() === $user->getId());
     }
 
     public function isCamarilla(Personnage|Participant $personnage): bool
@@ -107,6 +74,15 @@ class GroupeGn extends BaseGroupeGn
         }
 
         return $this->getCamarilla(false)?->getId() === $personnage->getId();
+    }
+
+    public function isConnetable(Personnage|Participant $personnage): bool
+    {
+        if ($personnage instanceof Participant) {
+            $personnage = $personnage->getPersonnage();
+        }
+
+        return $this->getConnetable(false)?->getId() === $personnage->getId();
     }
 
     public function isIntendant(Personnage|Participant $personnage): bool
@@ -136,10 +112,34 @@ class GroupeGn extends BaseGroupeGn
         return $this->getParticipant(false)?->getPersonnage()?->getId() === $personnage->getId();
     }
 
-    public function addBateau(): static
+    public function isSuzerin(Personnage|Participant $personnage): bool
     {
-        ++$this->bateaux;
+        if ($personnage instanceof Participant) {
+            $personnage = $personnage->getPersonnage();
+        }
+
+        if (null === $this->getSuzerin(false)) {
+            return false;
+        }
+
+        return $this->getSuzerin(false)?->getId() === $personnage?->getId();
+    }
+
+    /**
+     * Défini le responsable de cette session de jeu.
+     */
+    public function setResponsable(Participant $participant): static
+    {
+        $this->setParticipant($participant);
 
         return $this;
+    }
+
+    /**
+     * Supprime le responsable de cette session de jeu.
+     */
+    public function setResponsableNull(): static
+    {
+        return $this->setParticipant();
     }
 }
