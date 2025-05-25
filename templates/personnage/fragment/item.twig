@@ -23,11 +23,13 @@
                     </div>
                     {% if isAdmin %}
                         <div class="btn-group" role="group">
-                            <a class="btn btn-sm btn-secondary"
+                            <a class="btn btn-sm btn-secondary border-1 border-secondary-subtle"
+                               data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Vue orga"
                                href="{{ path('item.detail', {'item':item.id}) }}"
                                aria-expanded="false"
                                role="button">
-                                <i class="fa-solid fa-eye"></i>
+                                <i class="fa-solid fa-eye text-warning"></i>
                             </a>
                         </div>
                     {% endif %}

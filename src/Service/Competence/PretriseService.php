@@ -5,6 +5,7 @@ namespace App\Service\Competence;
 use App\Entity\Level;
 use App\Entity\PersonnageTrigger;
 use App\Entity\Priere;
+use App\Enum\TriggerType;
 use App\Service\CompetenceService;
 
 class PretriseService extends CompetenceService
@@ -52,8 +53,8 @@ class PretriseService extends CompetenceService
             // Expert : Vous connaissez le niveau Fervent de deux Religions supplémentaires.
 
             // Permet à un prêtre de choisir des infos, 3 descriptions de religions qu'il ne connait pas
-            Level::NIVEAU_2 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 1],
-            Level::NIVEAU_3 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 2],
+            Level::NIVEAU_2 => [TriggerType::PRETRISE_INITIE->value => 1],
+            Level::NIVEAU_3 => [TriggerType::PRETRISE_INITIE->value => 2],
             // Level::NIVEAU_4 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
         ];
     }

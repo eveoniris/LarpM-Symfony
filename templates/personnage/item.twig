@@ -1,5 +1,126 @@
 {% extends "base.html.twig" %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style type="text/css">
+
+        .item {
+            color: #000;
+            /*font-weight: bold;*/
+            width: 400px;
+            padding: 5px 5px 5px 5px;
+            border: 1px solid #000;
+            display: inline-block;
+            margin: 0;
+            font-size: 10px;
+            height: 80px;
+            overflow: hidden;
+        }
+
+        .item_bleu {
+            background-color: DodgerBlue;
+        }
+
+        .item_orange {
+            background-color: orange;
+        }
+
+        .item-header {
+        }
+
+        .item-text {
+            text-align: center;
+        }
+
+        .item .pull-right {
+            float: right !important;
+        }
+
+        .item .recto {
+            border-right: 1px dashed #000;
+            font-size: 14px;
+            overflow: hidden;
+        }
+
+        .item .verso {
+            overflow: hidden;
+        }
+
+        .item .item_left {
+            font-size: 15px;
+        }
+
+        .item img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .item table {
+            border-collapse: collapse;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .item table th, .item table td {
+            border: 0;
+            padding: 0;
+            vertical-align: top;
+            min-height: 40px;
+            height: 34px;
+        }
+
+        .item table.item_left, .item .item_left td, .item .item_left tr {
+            margin: 0;
+            padding: 0;
+        }
+
+        .item table td {
+            vertical-align: top;
+            width: 200px;
+            padding-right: 10px;
+            padding-left: 10px;
+            border: 0;
+            overflow: hidden;
+        }
+
+        .item p {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .item span {
+            margin: 0;
+        }
+
+        .m0 {
+            margin: 0;
+        }
+
+        .p0 {
+            padding: 0;
+        }
+
+        .w33 {
+            width: 33%
+        }
+
+        .text-r {
+            text-align: right
+        }
+
+        .text-c {
+            text-align: center
+        }
+
+        .vam {
+            vertical-align: middle
+        }
+    </style>
+{% endblock stylesheets %}
+
 {% block title %}Objet{% endblock title %}
 
 {% block body %}
@@ -11,29 +132,36 @@
             <h5>Détail d'un objet</h5>
         </div>
 
-        <div class="d-flex justify-content-between">
-            <h4> Détail de {{ item.numero }} - {{ item.label }}</h4>
-        </div>
 
         <div class="panel panel-default">
             <div class="panel-body">
 
                 <div class="list-group">
-                    {#
-                    <div class="item-header">
-                        {{ item.numero }}
-                        <span class="pull-right">{{ item.quality.numero }}{{ item.identification }}</span>
+                    <div class="list-group-item item-header">
+                        <h5>Nom</h5>
+                        {{ item.label }}
                     </div>
-                    #}
+
                     <div class="list-group-item">
+                        <h5>Numéro</h5>
+                        {{ item.numero }}
+                    </div>
+
+                    <div class="list-group-item">
+                        <h5>Identification</h5>
+                        {{ item.quality.numero }}{{ item.identification }}
+                    </div>
+
+                    <div class="list-group-item">
+                        <h5>Etiquette</h5>
+                        {% include 'objet/fragment/etiquette.twig' with {'item': item} %}
+                    </div>
+
+                    <div class="list-group-item">
+                        <h5>Description</h5>
                         {{ item.description|markdown_to_html }}
                     </div>
                 </div>
-                {# Photo ?
-                <img src="{{ path('stockObjet.photo', {'objet': item.objet.id, 'miniature': true}) }}"
-                     alt="{{ item.label }}"/>
-                #}
-
 
                 {# PJ ? Ritualiste
                 {{ item.special|markdown_to_html }}

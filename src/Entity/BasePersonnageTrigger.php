@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageTrigger', 'extended' => 'PersonnageTrigger'])]
 abstract class BasePersonnageTrigger
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -89,9 +89,9 @@ abstract class BasePersonnageTrigger
     /**
      * Get the value of tag.
      */
-    public function getTag(): ?TriggerType
+    public function getTag(): string|TriggerType|null
     {
-        return TriggerType::tryFrom($this->tag);
+        return TriggerType::tryFrom($this->tag) ?? $this->tag;
     }
 
     /**

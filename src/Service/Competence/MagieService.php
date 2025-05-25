@@ -5,6 +5,7 @@ namespace App\Service\Competence;
 use App\Entity\Level;
 use App\Entity\PersonnageTrigger;
 use App\Entity\Sort;
+use App\Enum\TriggerType;
 use App\Service\CompetenceService;
 
 class MagieService extends CompetenceService
@@ -33,29 +34,28 @@ class MagieService extends CompetenceService
         $this->applyRules($this->getRules());
     }
 
-    public function remove(): void
-    {
-        $this->removeRules($this->getRules());
-    }
-
-
     public function getRules(): array
     {
         return [
             // le personnage doit choisir un domaine de magie et un sort de niveau 1
             Level::NIVEAU_1 => [
-                PersonnageTrigger::TAG_DOMAINE_MAGIE => 1,
-                PersonnageTrigger::TAG_SORT_APPRENTI => 1,
+                TriggerType::MAGIE_APPRENTI->value => 1,
+                TriggerType::SORT_APPRENTI->value => 1,
             ],
             // le personnage peut choisir un nouveau domaine de magie et un sort de niveau 2
-            Level::NIVEAU_2 => [PersonnageTrigger::TAG_SORT_INITIE => 1],
+            Level::NIVEAU_2 => [TriggerType::SORT_INITIE->value => 1],
             // il obtient aussi la possibilité de choisir un sort de niveau 3
             Level::NIVEAU_3 => [
-                PersonnageTrigger::TAG_DOMAINE_MAGIE => 1,
-                PersonnageTrigger::TAG_SORT_EXPERT => 1,
+                TriggerType::MAGIE_EXPERT->value => 1,
+                TriggerType::SORT_EXPERT->value => 1,
             ],
             //  il obtient aussi la possibilité de choisir un sort de niveau 4
-            Level::NIVEAU_4 => [PersonnageTrigger::TAG_SORT_MAITRE => 1],
+            Level::NIVEAU_4 => [TriggerType::SORT_MAITRE->value => 1],
         ];
+    }
+
+    public function remove(): void
+    {
+        $this->removeRules($this->getRules());
     }
 }

@@ -23,6 +23,48 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ObjetController extends AbstractController
 {
     /**
+     * Suppression d'un objet de jeu.
+     */
+    #[Route('/{item}/delete', name: 'delete')]
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Item $item,
+    ): RedirectResponseAlias|Response {
+        $form = $this->createForm(ItemDeleteForm::class, $item);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->remove($item);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'L\'objet de jeu a été supprimé');
+
+            return $this->redirectToRoute('item.index', [], 303);
+        }
+
+        return $this->render('objet/delete.twig', [
+            'item' => $item,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Détail d'un objet de jeu.
+     */
+    #[Route('/{item}', name: 'detail')]
+    #[Route('/{item}/detail', name: 'detail')]
+    #[Route('/objet/{item}/detail', name: 'detail')] // Larp v1 route
+    public function detailAction(
+        #[MapEntity] Item $item,
+    ): Response {
+        return $this->render('objet/detail.twig', [
+            'item' => $item,
+        ]);
+    }
+
+    /**
      * Présentation des objets de jeu.
      */
     #[Route('/', name: 'index')]
@@ -38,119 +80,42 @@ class ObjetController extends AbstractController
     }
 
     /**
-     * Impression d'une etiquette.
+     * Lier un objet de jeu à un groupe/personnage/lieu.
      */
-    #[Route('/{item}/print', name: 'print')]
-    public function printAction(Request $request, EntityManagerInterface $entityManager, Item $item): Response
-    {
-        return $this->render('objet/print.twig', [
-            'item' => $item,
-        ]);
-    }
+    #[Route('/{item}/link', name: 'link')]
+    public function linkAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Item $item,
+    ): RedirectResponseAlias|Response {
+        $form = $this->createForm(ItemLinkForm::class, $item);
 
-    /**
-     * Impression de toutes les etiquettes.
-     */
-    #[Route('/print-all', name: 'print-all')]
-    public function printAllAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $repo = $entityManager->getRepository('\\'.Item::class);
-        $items = $repo->findAll();
+        $form->handleRequest($request);
 
-        return $this->render('objet/printAll.twig', [
-            'items' => $items,
-        ]);
-    }
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($item);
+            $entityManager->flush();
 
-    /**
-     * Impression de tous les objets avec photo.
-     */
-    #[Route('/print-photo', name: 'print-photo')]
-    public function printPhotoAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $repo = $entityManager->getRepository('\\'.Item::class);
-        $items = $repo->findAll();
+            $this->addFlash('success', 'L\'objet de jeu a été créé');
 
-        return $this->render('objet/printPhoto.twig', [
-            'items' => $items,
-        ]);
-    }
-
-    /**
-     * Sortie CSV.
-     */
-    #[Route('/print-csv', name: 'print-csv')]
-    public function printCsvAction(Request $request, EntityManagerInterface $entityManager): void
-    {
-        $repo = $entityManager->getRepository('\\'.Item::class);
-        $items = $repo->findAll();
-
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_objets_'.date('Ymd').'.csv');
-        header('Pragma: no-cache');
-        header('Expires: 0');
-
-        $output = fopen('php://output', 'w');
-
-        // header
-        fputcsv($output,
-            [
-                'numéro',
-                'identification',
-                'label',
-                'description',
-                'special',
-                'groupe',
-                'personnage',
-                'rangement',
-                'proprietaire',
-            ], ';');
-
-        foreach ($items as $item) {
-            $line = [];
-            $line[] = mb_convert_encoding((string) $item->getNumero(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding($item->getQuality()->getNumero().$item->getIdentification(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding((string) $item->getlabel(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding(html_entity_decode(strip_tags((string) $item->getDescription())), 'ISO-8859-1');
-            $line[] = mb_convert_encoding(html_entity_decode(strip_tags((string) $item->getSpecial())), 'ISO-8859-1');
-
-            $groupes = '';
-            foreach ($item->getGroupes() as $groupe) {
-                $groupes = $groupe->getNom().', ';
-            }
-
-            $line[] = mb_convert_encoding($groupes, 'ISO-8859-1');
-
-            $personnages = '';
-            foreach ($item->getPersonnages() as $personnage) {
-                $personnages = $personnage->getNom().', ';
-            }
-
-            $line[] = mb_convert_encoding($personnages, 'ISO-8859-1');
-
-            $objet = $item->getObjet();
-            if ($objet) {
-                $line[] = $objet->getRangement() ? mb_convert_encoding((string) $objet->getRangement()->getAdresse(), 'ISO-8859-1') : '';
-
-                $line[] = $objet->getProprietaire() ? mb_convert_encoding((string) $objet->getProprietaire()->getNom(), 'ISO-8859-1') : '';
-            } else {
-                $line[] = '';
-                $line[] = '';
-            }
-
-            fputcsv($output, $line, ';');
+            return $this->redirectToRoute('objet', [], 303);
         }
 
-        fclose($output);
-        exit;
+        return $this->render('objet/link.twig', [
+            'item' => $item,
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
      * Création d'un nouvel objet de jeu.
      */
     #[Route('/new/{objet}', name: 'new')]
-    public function newAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet): RedirectResponseAlias|Response
-    {
+    public function newAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Objet $objet,
+    ): RedirectResponseAlias|Response {
         $item = new Item();
         $item->setObjet($objet);
 
@@ -195,8 +160,7 @@ class ObjetController extends AbstractController
 
             $this->addFlash('success', 'L\'objet de jeu a été créé');
 
-            // todo handle "referer" or "redirectUrl"
-            return $this->redirectToRoute('index', [], 303);
+            return $this->redirectToRoute('item.index', [], 303);
         }
 
         return $this->render('objet/new.twig', [
@@ -207,15 +171,122 @@ class ObjetController extends AbstractController
     }
 
     /**
-     * Détail d'un objet de jeu.
+     * Impression d'une etiquette.
      */
-    #[Route('/{item}', name: 'detail')]
-    #[Route('/{item}/detail', name: 'detail')]
-    #[Route('/objet/{item}/detail', name: 'detail')] // Larp v1 route
-    public function detailAction(#[MapEntity] Item $item): Response
+    #[Route('/{item}/print', name: 'print')]
+    public function printAction(Request $request, EntityManagerInterface $entityManager, Item $item): Response
     {
-        return $this->render('objet/detail.twig', [
+        return $this->render('objet/print.twig', [
             'item' => $item,
+        ]);
+    }
+
+    /**
+     * Impression de toutes les etiquettes.
+     */
+    #[Route('/print-all', name: 'print-all')]
+    public function printAllAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $repo = $entityManager->getRepository('\\'.Item::class);
+        $items = $repo->findAll();
+
+        return $this->render('objet/printAll.twig', [
+            'items' => $items,
+        ]);
+    }
+
+    /**
+     * Sortie CSV.
+     */
+    #[Route('/print-csv', name: 'print-csv')]
+    public function printCsvAction(Request $request, EntityManagerInterface $entityManager): void
+    {
+        $repo = $entityManager->getRepository('\\'.Item::class);
+        $items = $repo->findAll();
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename=eveoniris_objets_'.date('Ymd').'.csv');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        $output = fopen('php://output', 'w');
+
+        // header
+        fputcsv(
+            $output,
+            [
+                'numéro',
+                'identification',
+                'label',
+                'description',
+                'special',
+                'groupe',
+                'personnage',
+                'rangement',
+                'proprietaire',
+            ],
+            ';',
+        );
+
+        foreach ($items as $item) {
+            $line = [];
+            $line[] = mb_convert_encoding((string) $item->getNumero(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding($item->getQuality()->getNumero().$item->getIdentification(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $item->getlabel(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding(
+                html_entity_decode(strip_tags((string) $item->getDescription())),
+                'ISO-8859-1',
+            );
+            $line[] = mb_convert_encoding(html_entity_decode(strip_tags((string) $item->getSpecial())), 'ISO-8859-1');
+
+            $groupes = '';
+            foreach ($item->getGroupes() as $groupe) {
+                $groupes = $groupe->getNom().', ';
+            }
+
+            $line[] = mb_convert_encoding($groupes, 'ISO-8859-1');
+
+            $personnages = '';
+            foreach ($item->getPersonnages() as $personnage) {
+                $personnages = $personnage->getNom().', ';
+            }
+
+            $line[] = mb_convert_encoding($personnages, 'ISO-8859-1');
+
+            $objet = $item->getObjet();
+            if ($objet) {
+                $line[] = $objet->getRangement() ? mb_convert_encoding(
+                    (string) $objet->getRangement()->getAdresse(),
+                    'ISO-8859-1',
+                ) : '';
+
+                $line[] = $objet->getProprietaire() ? mb_convert_encoding(
+                    (string) $objet->getProprietaire()->getNom(),
+                    'ISO-8859-1',
+                ) : '';
+            } else {
+                $line[] = '';
+                $line[] = '';
+            }
+
+            fputcsv($output, $line, ';');
+        }
+
+        fclose($output);
+        exit;
+    }
+
+    /**
+     * Impression de tous les objets avec photo.
+     */
+    #[Route('/print-photo', name: 'print-photo')]
+    public function printPhotoAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $repo = $entityManager->getRepository('\\'.Item::class);
+        $items = $repo->findAll();
+
+        return $this->render('objet/printPhoto.twig', [
+            'items' => $items,
         ]);
     }
 
@@ -223,8 +294,11 @@ class ObjetController extends AbstractController
      * Mise à jour d'un objet de jeu.
      */
     #[Route('/{item}/update', name: 'update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Item $item): RedirectResponseAlias|Response
-    {
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Item $item,
+    ): RedirectResponseAlias|Response {
         $form = $this->createForm(ItemForm::class, $item);
 
         $form->handleRequest($request);
@@ -252,60 +326,10 @@ class ObjetController extends AbstractController
 
             $this->addFlash('success', 'L\'objet de jeu a été sauvegardé');
 
-            return $this->redirectToRoute('index', [], 303);
+            return $this->redirectToRoute('item.index', [], 303);
         }
 
         return $this->render('objet/update.twig', [
-            'item' => $item,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Suppression d'un objet de jeu.
-     */
-    #[Route('/{item}/delete', name: 'delete')]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Item $item): RedirectResponseAlias|Response
-    {
-        $form = $this->createForm(ItemDeleteForm::class, $item);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->remove($item);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'L\'objet de jeu a été supprimé');
-
-            return $this->redirectToRoute('index', [], 303);
-        }
-
-        return $this->render('objet/delete.twig', [
-            'item' => $item,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Lier un objet de jeu à un groupe/personnage/lieu.
-     */
-    #[Route('/{item}/link', name: 'link')]
-    public function linkAction(Request $request, EntityManagerInterface $entityManager, Item $item): RedirectResponseAlias|Response
-    {
-        $form = $this->createForm(ItemLinkForm::class, $item);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($item);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'L\'objet de jeu a été créé');
-
-            return $this->redirectToRoute('objet', [], 303);
-        }
-
-        return $this->render('objet/link.twig', [
             'item' => $item,
             'form' => $form->createView(),
         ]);

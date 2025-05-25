@@ -4,6 +4,7 @@ namespace App\Service\Competence;
 
 use App\Entity\Level;
 use App\Entity\PersonnageTrigger;
+use App\Enum\TriggerType;
 use App\Service\CompetenceService;
 
 class ArtisantService extends CompetenceService
@@ -15,17 +16,17 @@ class ArtisantService extends CompetenceService
         $this->applyRules($this->getRules());
     }
 
-    public function remove(): void
-    {
-        $this->removeRules($this->getRules());
-    }
-
     public function getRules(): array
     {
         return [
             // le personnage doit choisir 1 technologie
-            Level::NIVEAU_3 => [PersonnageTrigger::TAG_TECHNOLOGIE => 1],
-            Level::NIVEAU_4 => [PersonnageTrigger::TAG_TECHNOLOGIE => 1],
+            Level::NIVEAU_3 => [TriggerType::TECHNOLOGIE->value => 1],
+            Level::NIVEAU_4 => [TriggerType::TECHNOLOGIE->value => 1],
         ];
+    }
+
+    public function remove(): void
+    {
+        $this->removeRules($this->getRules());
     }
 }
