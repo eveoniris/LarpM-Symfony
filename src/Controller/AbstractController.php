@@ -244,7 +244,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $entity,
         string $title,
         string $successMsg,
-        string $redirect,
+        string|array $redirect,
         array $breadcrumb,
         string $content = '',
     ): RedirectResponse|Response {
@@ -273,7 +273,13 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $this->addFlash('success', $successMsg);
 
             try {
-                return $this->redirectToRoute($redirect, [], 303);
+                $redirectParams = [];
+                if (is_array($redirect)) {
+                    $redirectParams = $redirect['params'];
+                    $redirect = $redirect['route'];
+                }
+
+                return $this->redirectToRoute($redirect, $redirectParams, 303);
             } catch (\Exception $e) {
                 return $this->redirect($redirect, '303');
             }

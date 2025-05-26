@@ -246,7 +246,7 @@ class GroupeSecondaireController extends AbstractController
         $message->setUpdateDate(new \DateTime('NOW'));
 
         $form = $this->createForm(MessageForm::class, $message)
-            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre réponse']);
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre message']);
 
         $form->handleRequest($request);
 
@@ -259,6 +259,71 @@ class GroupeSecondaireController extends AbstractController
             $this->mailer->notify($message);
 
             $this->addFlash('success', 'Votre message a été envoyé au joueur concerné.');
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        return $this->render('groupeSecondaire/contact.twig', [
+            'groupeSecondaire' => $groupeSecondaire,
+            'personnage' => $personnage,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/groupeSecondaire/{groupeSecondaire}/contact/membre/{membre}', name: 'groupeSecondaire.contact.membre')]
+    public function contactMembreAction(
+        Request $request,
+        #[MapEntity] SecondaryGroup $groupeSecondaire,
+        #[MapEntity] $membre,
+    ): Response {
+        $this->loadAccess($groupeSecondaire);
+
+        $personnage = $this->getPersonnage();
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir un personnage actif pour contacter ce membre.');
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        if (!$groupeSecondaire->isMembre($personnage) && !$this->can(self::CAN_READ)) {
+            $this->addFlash('error', 'Vous devez être membre pour contacter un autre membre.');
+
+            return $this->redirectToRoute(
+                'groupeSecondaire.detail',
+                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                303,
+            );
+        }
+
+        $message = new Message();
+        $message->setTitle('Message du membre du groupe '.$groupeSecondaire->getLabel());
+        $message->setUserRelatedByAuteur($this->getUser());
+        $message->setUserRelatedByDestinataire($membre->getUser());
+        $message->setCreationDate(new \DateTime('NOW'));
+        $message->setUpdateDate(new \DateTime('NOW'));
+
+        $form = $this->createForm(MessageForm::class, $message)
+            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre message']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $message = $form->getData();
+
+            $this->entityManager->persist($message);
+            $this->entityManager->flush();
+
+            $this->mailer->notify($message);
+
+            $this->addFlash('success', 'Votre message a été envoyé au membre concerné.');
 
             return $this->redirectToRoute(
                 'groupeSecondaire.detail',
@@ -368,7 +433,6 @@ class GroupeSecondaireController extends AbstractController
                 $postulant->setWaiting(false);
 
                 $this->entityManager->persist($postulant);
-
 
                 // envoi d'un mail au chef du groupe secondaire
                 if ($responsable = $groupeSecondaire->getResponsable()) {
@@ -509,7 +573,16 @@ class GroupeSecondaireController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form['personnage']->getData();
-            // $personnage = $data['personnage'];
+
+            if (!$personnage) {
+                $this->addFlash('warning', "Vous n'avez pas de personnage");
+
+                return $this->redirectToRoute(
+                    'groupeSecondaire.detail',
+                    ['groupeSecondaire' => $groupeSecondaire->getId()],
+                    303,
+                );
+            }
 
             $membre = new Membre();
 
@@ -639,21 +712,31 @@ class GroupeSecondaireController extends AbstractController
         ]);
     }
 
-    #[Route('/groupeSecondaire/{groupeSecondaire}/removeMember/{membre}', name: 'groupeSecondaire.member.remove')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/membre/{membre}/remove', name: 'groupeSecondaire.member.remove')]
     public function removeMembreAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Membre $membre,
     ): Response {
         $this->canManageGroup($groupeSecondaire);
 
-        $this->entityManager->remove($membre);
-        $this->entityManager->flush();
-
-        $this->addFlash('success', 'le membre a été retiré.');
-
-        return $this->render(
-            'groupeSecondaire/detail.twig',
-            $this->buildContextDetailTwig($groupeSecondaire, ['isAdmin' => true]),
+        return $this->genericDelete(
+            $membre,
+            'Retirer un membre',
+            'Le membre a été retiré',
+            ['route' => 'groupeSecondaire.detail', 'params' => ['groupeSecondaire' => $groupeSecondaire->getId()]],
+            [
+                ['route' => $this->generateUrl('groupeSecondaire.list'), 'name' => 'Liste des groupes secondaires'],
+                [
+                    'route' => $this->generateUrl(
+                        'groupeSecondaire.detail',
+                        ['groupeSecondaire' => $groupeSecondaire->getId()],
+                    ),
+                    'membre' => $membre->getId(),
+                    'name' => $membre->getPersonnage()->getPublicName(),
+                ],
+                ['name' => 'Supprimer un membre'],
+            ],
+            content: $membre->getPersonnage()->getPublicName(),
         );
     }
 
