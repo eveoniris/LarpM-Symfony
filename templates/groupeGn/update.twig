@@ -4,16 +4,31 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("groupe.list") }}">Liste des groupes</a></li>
-		<li><a href="{{ path("groupe.detail", {'groupe': groupe.id}) }}">{{ groupe.nom }}</a></li>
-		<li class="active">Faire participer le groupe à un jeu</li>
-	</ol>
-	
-	<div class="well well-sm">
-		{{ form_start(form, {"action": path('groupeGn.update',{'groupe': groupe.id, 'groupeGn': groupeGn.id})}) }}		
-			{{ form(form) }}
-		{{ form_end(form) }}
-	</div>
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path("groupe.list") }}">Liste des groupes</a></li>
+        <li><a href="{{ path("groupe.detail", {'groupe': groupe.id}) }}">{{ groupe.nom }}</a></li>
+        <li class="active">Session de jeu d'un groupe</li>
+    </ol>
+
+    {% set descriptionHtml %}
+        <h6>Fonctionnement des titres</h6>
+
+        <ul class="list-group">
+            <li class="list-group-item">Sans Suzerain nommé, le responsable administratif du groupe est considéré
+                Suzerain
+            </li>
+            <li class="list-group-item">Seul le Suzerain (ou un scénariste) peu distribuer des titres</li>
+            <li class="list-group-item">Le Suzerain doit être un membre du groupe</li>
+            <li class="list-group-item">Le Suzerain peu nommer n'importe quel personnage qui participe au GN</li>
+            <li class="list-group-item">Chaque personnage ne peut avoir qu'un seul titre</li>
+            <li class="list-group-item">Une fois un titre distribué. Le Suzerain reste l'autorité suprême sur celui-ci. Il peut mener les actions que requiert la détention du titre comme s'il l'avait repris</li>
+        </ul>
+    {% endset %}
+
+    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : descriptionHtml } %}
+
+    <div class="well well-sm">
+        {{ form(form) }}
+    </div>
 {% endblock %}
