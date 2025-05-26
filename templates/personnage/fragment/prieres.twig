@@ -38,18 +38,18 @@
                         {% endif %}
                         {% if priere.documentUrl %}
                             {% if isAdmin %}
-                                <button class="btn btn-sm btn-secondary"
-                                        href="{{ path('magie.priere.document',{'priere':potion.id, 'document': priere.documentUrl}) }}"
-                                        aria-expanded="false"
-                                        role="button">
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('magie.priere.document',{'priere':priere.id, 'document': priere.documentUrl}) }}"
+                                   aria-expanded="false"
+                                >
                                     <i class="fa-solid fa-file"></i>
-                                </button>
+                                </a>
                             {% elseif participant is defined %}
-                                <button class="btn btn-sm btn-secondary"
-                                        href="{{ path('participant.priere.document',{'priere':priere.id, 'participant': participant.id,'document': priere.documentUrl}) }}"
-                                        role="button">
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('participant.priere.document',{'priere':priere.id, 'participant': participant.id,'document': priere.documentUrl}) }}"
+                                >
                                     <i class="fa-solid fa-file"></i>
-                                </button>
+                                </a>
                             {% endif %}
                         {% endif %}
                     </div>
@@ -59,6 +59,10 @@
                     <div class="list-group-item bg-body-secondary collapse p-2"
                          id="priere_{{ priere.id }}">
                         {{ priere.description|markdown_to_html }}
+                        {% if priere.annonce %}
+                            <h6>Annonce</h6>
+                            {{ priere.annonce|markdown_to_html }}
+                        {% endif %}
                     </div>
                 {% endif %}
             {% endfor %}

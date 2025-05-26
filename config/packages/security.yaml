@@ -71,7 +71,7 @@ security:
   access_control:
     - { path: ^/admin, roles: ROLE_ADMIN }
     - { path: ^/api/login, roles: PUBLIC_ACCESS }
-    - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+    - { path: ^/api,       roles: [ IS_AUTHENTICATED_FULLY, IS_AUTHENTICATED_REMEMBERED ] }
     # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:

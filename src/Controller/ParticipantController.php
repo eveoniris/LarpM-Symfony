@@ -963,7 +963,7 @@ class ParticipantController extends AbstractController
         $choices = [];
         foreach ($availableCompetences as $competence) {
             $choices[$competence->getId()] = $competence->getLabel(
-                ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+            ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
         $form = $this->createFormBuilder($participant)
@@ -1062,8 +1062,8 @@ class ParticipantController extends AbstractController
                     foreach ($religion->getSpheres() as $sphere) {
                         foreach ($sphere->getPrieres() as $priere) {
                             if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere(
-                                    $priere,
-                                )) {
+                                $priere,
+                            )) {
                                 $priere->addPersonnage($personnage);
                                 $personnage->addPriere($priere);
                             }
@@ -2982,7 +2982,7 @@ class ParticipantController extends AbstractController
 
                 // Noblesse expert : +2 Renommee
                 if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId(
-                    )) {
+                )) {
                     $renomme_history = new RenommeHistory();
                     $renomme_history->setRenomme(2);
                     $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
@@ -3169,7 +3169,7 @@ class ParticipantController extends AbstractController
         }
 
         // recherche de tous les groupes participant au prochain GN
-        //$gn = GroupeManager::getGnActif($this->entityManager);
+        // $gn = GroupeManager::getGnActif($this->entityManager);
         $gn = $gnRepository->findNext();
         $groupeGns = $gn->getGroupeGns();
         $groupes = new ArrayCollection();
@@ -3180,7 +3180,6 @@ class ParticipantController extends AbstractController
                 $groupes[] = $groupe;
             }
         }
-
 
         return $this->render('personnage/politique.twig', [
             'personnage' => $personnage,
@@ -3525,8 +3524,6 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/priere/{priere}/detail', name: 'participant.priere.detail')]
     public function priereDetailAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
         Priere $priere,
     ): RedirectResponse|Response {
@@ -3555,7 +3552,7 @@ class ParticipantController extends AbstractController
      * Obtenir le document lié à une priere.
      */
     #[Route('/participant/{participant}/priere/{priere}/document', name: 'participant.priere.document')]
-    #[isGranted(Role::USER->value)]
+    #[IsGranted(Role::USER->value)]
     public function priereDocumentAction(
         Participant $participant,
         Priere $priere,
@@ -3839,8 +3836,8 @@ class ParticipantController extends AbstractController
                     }
                 }
 
-                // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
-                // n'autoriser qu'un Fervent que si l'utilisateur n'a pas encore Fervent.
+            // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
+            // n'autoriser qu'un Fervent que si l'utilisateur n'a pas encore Fervent.
             } elseif (3 === $personnageReligion->getReligionLevel()?->getIndex()) {
                 $personnagesReligions = $personnage->getPersonnagesReligions();
                 foreach ($personnagesReligions as $oldReligion) {

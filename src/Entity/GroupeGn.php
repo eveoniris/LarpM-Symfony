@@ -58,15 +58,6 @@ class GroupeGn extends BaseGroupeGn
         return $this->getParticipant();
     }
 
-    public function hasTitle(User|UserInterface $user): bool
-    {
-        return ($this->getSuzerin(false)?->getId() === $user->getId())
-            || ($this->getConnetable(false)?->getId() === $user->getId())
-            || ($this->getIntendant(false)?->getId() === $user->getId())
-            || ($this->getCamarilla(false)?->getId() === $user->getId())
-            || ($this->getNavigateur(false)?->getId() === $user->getId());
-    }
-
     public function isCamarilla(Personnage|Participant $personnage): bool
     {
         if ($personnage instanceof Participant) {

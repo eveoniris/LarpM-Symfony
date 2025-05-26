@@ -32,18 +32,18 @@
                                 </button>
                                 {% if technologie.documentUrl %}
                                     {% if isAdmin %}
-                                        <button class="btn btn-sm btn-secondary"
-                                                href="{{ path('technologie.document',{'technologie':technologie.id, 'document': technologie.documentUrl}) }}"
-                                                aria-expanded="false"
-                                                role="button">
+                                        <a class="btn btn-sm btn-secondary"
+                                           href="{{ path('technologie.document',{'technologie':technologie.id, 'document': technologie.documentUrl}) }}"
+                                           aria-expanded="false"
+                                        >
                                             <i class="fa-solid fa-file"></i>
-                                        </button>
+                                        </a>
                                     {% elseif participant is defined %}
-                                        <button class="btn btn-sm btn-secondary"
-                                                href="{{ path('participant.technologie.document',{'technologie':technologie.id, 'participant': participant.id,'document': technologie.documentUrl}) }}"
-                                                role="button">
+                                        <a class="btn btn-sm btn-secondary"
+                                           href="{{ path('participant.technologie.document',{'technologie':technologie.id, 'participant': participant.id,'document': technologie.documentUrl}) }}"
+                                        >
                                             <i class="fa-solid fa-file"></i>
-                                        </button>
+                                        </a>
                                     {% endif %}
                                 {% endif %}
                             </div>
