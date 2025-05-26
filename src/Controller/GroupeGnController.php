@@ -559,6 +559,7 @@ class GroupeGnController extends AbstractController
 
         $isMembre = $isResponsable;
         if (!$isMembre) {
+            /** @var Participant $participant */
             foreach ($groupeGn->getParticipants() as $participant) {
                 if ($participant->getUser()?->getId() === $this->getUser()->getId()) {
                     $isMembre = true;
@@ -566,7 +567,10 @@ class GroupeGnController extends AbstractController
             }
         }
 
-        $hasTitle = $groupeGn->hasTitle($this->getUser());
+        $isSuzerin = false;
+        if ($this->getPersonnage() && $this->getPersonnage()->getId() === $groupeGn?->getSuzerin()?->getId()) {
+            $isSuzerin = true;
+        }
 
         // TODO check if membre can read secret
 
@@ -574,8 +578,8 @@ class GroupeGnController extends AbstractController
         $this->setCan(self::CAN_MANAGE, $isResponsable);
         $this->setCan(self::CAN_READ_PRIVATE, $isResponsable || $isMembre);
         $this->setCan(self::CAN_READ_SECRET, $isResponsable);
-        $this->setCan(self::CAN_WRITE, $isResponsable || $hasTitle);
-        $this->setCan(self::CAN_READ, $isMembre);
+        $this->setCan(self::CAN_WRITE, $isResponsable || $isSuzerin);
+        $this->setCan(self::CAN_READ, $isMembre || $isSuzerin);
 
         $this->checkHasAccess(
             $roles,

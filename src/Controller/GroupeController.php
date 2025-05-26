@@ -541,7 +541,7 @@ class GroupeController extends AbstractController
     ): RedirectResponse|Response {
         $this->checkHasAccess(
             [Role::ORGA, Role::SCENARISTE],
-            fn () => $this->personnageService->isUserIsGroupeResponsable($groupe),
+            fn() => $this->personnageService->isUserIsGroupeResponsable($groupe),
         );
 
         $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
@@ -591,6 +591,11 @@ class GroupeController extends AbstractController
 
         $this->hasAccess($groupe, $gn, $groupeGn, [Role::WARGAME]);
 
+        if (('domaine' === $tab) && $this->getPersonnage() && $this->getPersonnage()->getId(
+            ) === $groupeGn?->getSuzerin()?->getId()) {
+            $this->setCan(self::CAN_WRITE, true);
+        }
+
         return $this->render(
             'groupe/detail.twig',
             [
@@ -619,24 +624,18 @@ class GroupeController extends AbstractController
             }
         }
 
-        $hasTitle = false;
-        if ($groupeGn) {
-            dump($groupeGn->hasTitle($this->getUser()));
-            $hasTitle = $groupeGn->hasTitle($this->getUser());
-        }
-
         // TODO check if membre can read secret
-
+        // TODO limit WARGAME to .. WARGAME ... ADD a GROUPE_ROLE
         $this->setCan(self::IS_ADMIN, $this->isGranted(Role::WARGAME->value));
         $this->setCan(self::CAN_MANAGE, $isResponsable);
         $this->setCan(self::CAN_READ_PRIVATE, $isResponsable || $isMembre);
         $this->setCan(self::CAN_READ_SECRET, $isResponsable);
-        $this->setCan(self::CAN_WRITE, $isResponsable || $hasTitle);
+        $this->setCan(self::CAN_WRITE, $isResponsable);
         $this->setCan(self::CAN_READ, $isMembre);
 
         $this->checkHasAccess(
             $roles,
-            fn () => $this->can(self::CAN_READ),
+            fn() => $this->can(self::CAN_READ),
         );
     }
 
@@ -1285,7 +1284,7 @@ class GroupeController extends AbstractController
         foreach ($participants as $participant) {
             $formBuilder->add($participant->getId(), 'choice', [
                 'label' => $participant->getUser()->getEtatCivil()->getNom().' '.$participant->getUser()->getEtatCivil(
-                )->getPrenom().' '.$participant->getUser()->getEmail(),
+                    )->getPrenom().' '.$participant->getUser()->getEmail(),
                 'choices' => $availableTaverns,
                 'data' => $participant->getTavernId(),
                 'multiple' => false,
