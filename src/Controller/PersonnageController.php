@@ -190,6 +190,18 @@ class PersonnageController extends AbstractController
         return $this->render('personnage/accueil.twig', []);
     }
 
+    #[Deprecated]
+    #[Route('/admin/{personnage}', name: 'legacy.detail', requirements: ['personnage' => Requirement::DIGITS])]
+    #[IsGranted(Role::USER->value)]
+    public function actionLegacyDetail(#[MapEntity] Personnage $personnage)
+    {
+        return $this->redirectToRoute(
+            'personnage.detail.tab',
+            ['personnage' => $personnage->getId(), 'tab' => 'general'],
+            301,
+        );
+    }
+
     #[Route('/{personnage}/competence/add', name: 'add.competence')]
     #[IsGranted(Role::USER->value)]
     public function addCompetenceAction(
@@ -1069,6 +1081,11 @@ class PersonnageController extends AbstractController
         );
     }
 
+    /**
+     * Affiche le détail d'un personnage (pour les orgas).
+     */
+    // #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
+
     #[Route('/{personnage}/domaine/{domaine}/delete', name: 'delete.domaine')]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminRemoveDomaineAction(
@@ -1093,10 +1110,6 @@ class PersonnageController extends AbstractController
         );
     }
 
-    /**
-     * Affiche le détail d'un personnage (pour les orgas).
-     */
-    // #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     /**
      * Retire une langue d'un personnage.
      */
@@ -2459,9 +2472,9 @@ class PersonnageController extends AbstractController
         'tab' => Requirement::ASCII_SLUG,
     ])]
     #[Route('/{personnage}', name: 'detail', requirements: ['personnage' => Requirement::DIGITS])]
+    #[Route('/{personnage}/detail', name: 'detailAlias', requirements: ['personnage' => Requirement::DIGITS])]
     #[IsGranted(Role::USER->value)]
     public function detailAction(
-        Request $request,
         #[MapEntity] Personnage $personnage,
         string $tab = 'general',
     ): Response {

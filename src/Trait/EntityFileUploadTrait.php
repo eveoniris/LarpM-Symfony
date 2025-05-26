@@ -26,7 +26,7 @@ trait EntityFileUploadTrait
     protected ?UploadedFile $file;
     protected ?int $filenameMaxLength;
     protected bool $useUniqueId = true;
-    protected ?string $filename;
+    protected ?string $filename = null;
     protected DocumentType $documentType;
     protected FolderType $folderType;
 

@@ -21,11 +21,11 @@
 
                     <div class="btn-group" role="group">
                         {% if participant is defined %}
-                            <button class="btn btn-sm btn-secondary"
+                            <a class="btn btn-sm btn-secondary"
                                     href="{{ path('participant.document',{'document':document.id, 'participant': participant.id,'document': document.id}) }}"
-                                    role="button">
+                                    >
                                 <i class="fa-solid fa-file"></i>
-                            </button>
+                            </a>
                         {% endif %}
                     </div>
                 </div>
