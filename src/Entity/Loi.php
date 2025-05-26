@@ -23,7 +23,7 @@ class Loi extends BaseLoi
 
     public function initFile(): static
     {
-        $this->setDocumentType(DocumentType::Documents)
+        $this->setDocumentType(DocumentType::Doc)
             ->setFolderType(FolderType::Private);
 
         return $this;

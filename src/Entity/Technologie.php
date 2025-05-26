@@ -23,15 +23,20 @@ class Technologie extends BaseTechnologie implements \Stringable
 
     public function initFile(): static
     {
-        return $this->setDocumentType(DocumentType::Documents)
+        return $this->setDocumentType(DocumentType::Doc)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4);
     }
 
-    public function getDocument(string $projectDir): string
+    public function __toString(): string
     {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+        return $this->getLabel() ?? '';
+    }
+
+    public function getPrintLabel(): ?string
+    {
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
     }
 
     protected function afterUpload(FileUploader $fileUploader): FileUploader
@@ -41,13 +46,8 @@ class Technologie extends BaseTechnologie implements \Stringable
         return $fileUploader;
     }
 
-    public function getPrintLabel(): ?string
+    public function getDocument(string $projectDir): string
     {
-        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
-    }
-
-    public function __toString(): string
-    {
-        return $this->getLabel() ?? '';
+        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
     }
 }

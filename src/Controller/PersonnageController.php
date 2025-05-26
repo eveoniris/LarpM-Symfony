@@ -191,9 +191,9 @@ class PersonnageController extends AbstractController
     }
 
     #[Deprecated]
-    #[Route('/admin/{personnage}', name: 'legacy.detail', requirements: ['personnage' => Requirement::DIGITS])]
+    #[Route('/admin/{personnage}/detail', name: 'legacy.detail', requirements: ['personnage' => Requirement::DIGITS])]
     #[IsGranted(Role::USER->value)]
-    public function actionLegacyDetail(#[MapEntity] Personnage $personnage)
+    public function actionLegacyDetail(#[MapEntity] Personnage $personnage): RedirectResponse
     {
         return $this->redirectToRoute(
             'personnage.detail.tab',

@@ -629,7 +629,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             throw new \RuntimeException('Entity must be an object');
         }
 
-        if (method_exists($entity, 'getHasDocument')) {
+        if (!$entity instanceof Document && method_exists($entity, 'getHasDocument')) {
             // Ensure folder type and filetype
             if (method_exists($entity, 'initFile')) {
                 $entity->initFile();
@@ -657,7 +657,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $entity->setProjectDir($projectDir);
         $filename = $entity->getDocument();
         $documentUrl = $entity->getDocumentUrl();
-        $documentLabel = $entity->getPrintLabel() ?: time();
+        $documentLabel = $entity->getPrintLabel() ?: $documentUrl ?: time();
 
         // TRY FROM 1 on first failed
         if (!file_exists($filename) && method_exists($entity, 'getOldV1Document')) {
@@ -665,7 +665,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         if (!$documentUrl || !file_exists($filename)) {
-            throw new NotFoundHttpException("Le document n'existe pas".$filename);
+            throw new NotFoundHttpException(
+                "Le document n'existe pas ".$filename.' - '.$documentUrl.' - '.$documentLabel,
+            );
         }
 
         $response = (new BinaryFileResponse($filename, Response::HTTP_OK));

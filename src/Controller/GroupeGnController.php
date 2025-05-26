@@ -561,7 +561,7 @@ class GroupeGnController extends AbstractController
         if (!$isMembre) {
             /** @var Participant $participant */
             foreach ($groupeGn->getParticipants() as $participant) {
-                if ($participant->getUser()?->getId() === $this->getUser()->getId()) {
+                if ($participant->getUser()?->getId() === $this->getUser()?->getId()) {
                     $isMembre = true;
                 }
             }
