@@ -137,13 +137,12 @@ class MagieController extends AbstractController
     /**
      * Obtenir le document lié a une potion.
      */
-    #[Route('/potion/{potion}/document/{document}', name: 'potion.document', requirements: [
+    #[Route('/potion/{potion}/document', name: 'potion.document', requirements: [
         'potion' => Requirement::DIGITS,
         // 'document' => Requirement::ASCII_SLUG, // todo may be a string
     ])]
     public function getPotionDocumentAction(
         #[MapEntity] Potion $potion,
-        #[MapEntity] Document $document,
     ): Response {
         $this->checkHasAccess(
             [Role::ORGA, Role::REGLE, Role::SCENARISTE],
@@ -189,8 +188,8 @@ class MagieController extends AbstractController
         return $this->sendDocument($priere);
     }
 
-    #[Route('/sort/{sort}/document/{document}', name: 'sort.document', requirements: ['sort' => Requirement::DIGITS])]
-    public function getSortDocumentAction(#[MapEntity] Sort $sort, #[MapEntity] Document $document): BinaryFileResponse
+    #[Route('/sort/{sort}/document', name: 'sort.document', requirements: ['sort' => Requirement::DIGITS])]
+    public function getSortDocumentAction(#[MapEntity] Sort $sort): BinaryFileResponse
     {
         $this->checkHasAccess(
             [Role::ORGA, Role::REGLE, Role::SCENARISTE],

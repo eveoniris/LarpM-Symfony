@@ -56,18 +56,18 @@
                         </button>
                         {% if sort.documentUrl %}
                             {% if isAdmin %}
-                                <button class="btn btn-sm btn-secondary"
-                                        href="{{ path('magie.sort.document',{'sort':sort.id, 'document': sort.documentUrl}) }}"
-                                        aria-expanded="false" aria-controls="sort_{{ sort.id }}"
-                                        role="button">
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('magie.sort.document',{'sort':sort.id, 'document': sort.documentUrl}) }}"
+                                   aria-expanded="false" aria-controls="sort_{{ sort.id }}"
+                                   role="button">
                                     <i class="fa-solid fa-file"></i>
-                                </button>
+                                </a>
                             {% elseif participant is defined %}
-                                <button class="btn btn-sm btn-secondary"
-                                        href="{{ path('participant.sort.document',{'sort':sort.id, 'participant': participant.id,'document': sort.documentUrl}) }}"
-                                        role="button">
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('participant.sort.document',{'sort':sort.id, 'participant': participant.id,'document': sort.documentUrl}) }}"
+                                   role="button">
                                     <i class="fa-solid fa-file"></i>
-                                </button>
+                                </a>
                             {% endif %}
                         {% endif %}
                     </div>

@@ -36,18 +36,56 @@ trait EntityFileUploadTrait
     {
         $projectDir ??= $this->projectDir ?? '';
 
+        $legacies = [
+            ['old' => false, 'doc' => false],
+            ['old' => false, 'doc' => true],
+            ['old' => true, 'doc' => true],
+            ['old' => true, 'doc' => false],
+        ];
+        foreach ($legacies as $legacy) {
+            $filename = $this->getDocumentFilePath($projectDir, $legacy['old'], $legacy['doc']).$this->getDocumentUrl();
+            if (file_exists($filename)) {
+                return $filename;
+            }
+        }
+
         return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
     }
 
-    public function getDocumentFilePath(?string $projectDir = null, bool $oldV1Prod = false): string
-    {
+    public function getDocumentFilePath(
+        ?string $projectDir = null,
+        bool $oldV1Prod = false,
+        bool $inDocInsteadOfDocuments = false,
+    ): string {
         $projectDir ??= $this->projectDir ?? '';
 
         if ($oldV1Prod) {
             $projectDir .= str_contains(__FILE__, 'larpmanager') ? '../larpm/' : '../larpmanager/';
         }
 
-        return $projectDir.$this->getFolderType()->value.$this->getDocumentType()->value.DIRECTORY_SEPARATOR;
+        $type = $this->getDocumentType()->value;
+        if ($inDocInsteadOfDocuments) {
+            $type = DocumentType::Doc->value;
+        }
+
+        return $projectDir.$this->getFolderType()->value.$type.DIRECTORY_SEPARATOR;
+    }
+
+    public function getDocumentType(): DocumentType
+    {
+        return $this->documentType ?? $this->initFile()?->documentType ?? DocumentType::Doc;
+    }
+
+    public function setDocumentType(DocumentType $documentType): static
+    {
+        $this->documentType = $documentType;
+
+        return $this;
+    }
+
+    public function initFile(): self
+    {
+        return $this;
     }
 
     public function getFolderType(): FolderType
@@ -62,23 +100,6 @@ trait EntityFileUploadTrait
         return $this;
     }
 
-    public function initFile(): self
-    {
-        return $this;
-    }
-
-    public function getDocumentType(): DocumentType
-    {
-        return $this->documentType ?? $this->initFile()?->documentType ?? DocumentType::Documents;
-    }
-
-    public function setDocumentType(DocumentType $documentType): static
-    {
-        $this->documentType = $documentType;
-
-        return $this;
-    }
-
     public function getHasDocument(): Document
     {
         $document = new Document();
@@ -87,6 +108,7 @@ trait EntityFileUploadTrait
         $document->setFolderType($this->getFolderType());
         $document->setProjectDir($this->getProjectDir());
         $document->setFilename($this->getFilename());
+        $document->setLabel($this->getLabel());
         $document->setFilenameMaxLength($this->getFilenameMaxLength());
         $document->setDocumentUrl($this->getDocumentUrl());
 
@@ -129,12 +151,18 @@ trait EntityFileUploadTrait
         return $this;
     }
 
-    #[NoReturn] public function getOldV1Document(?string $projectDir = null): string
+    #[NoReturn]
+    public function getOldV1Document(?string $projectDir = null): string
     {
-        //dump($this->getDocumentFilePath($projectDir, true), $this->getDocumentUrl());
+        $filename = $this->getDocumentFilePath($projectDir, true).$this->getDocumentUrl();
+        if (DocumentType::Document->value === $this->getDocumentType()->value && !file_exists($filename)) {
+            $filename = $this->getDocumentFilePath($projectDir, true, true).$this->getDocumentUrl();
+        }
+        if (DocumentType::Doc->value === $this->getDocumentType()->value && !file_exists($filename)) {
+            $filename = $this->getDocumentFilePath($projectDir, true, false).$this->getDocumentUrl();
+        }
 
-
-        return $this->getDocumentFilePath($projectDir, true).$this->getDocumentUrl();
+        return $filename;
     }
 
     public function handleUpload(FileUploader $fileUploader): static

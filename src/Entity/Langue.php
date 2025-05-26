@@ -30,7 +30,7 @@ class Langue extends BaseLangue implements \Stringable
 
     public function initFile(): static
     {
-        $this->setDocumentType(DocumentType::Documents)
+        $this->setDocumentType(DocumentType::Doc)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4);
@@ -38,27 +38,17 @@ class Langue extends BaseLangue implements \Stringable
         return $this;
     }
 
-    public function getDocument(string $projectDir): string
-    {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
-    }
-
     public function __toString(): string
     {
         return $this->getLabel();
     }
 
-    public function getFullDescription(): string
-    {
-        return $this->getLabel().' : '.$this->getDescription();
-    }
-
     /**
-     * Fourni la liste des territoires ou la langue est la langue principale.
+     * Renvoie le libellé de diffusion, incluant la catégorie.
      */
-    public function getTerritoirePrincipaux()
+    public function getDiffusionLabel(): string
     {
-        return $this->getTerritoires();
+        return (null !== $this->getDiffusion() ? $this->getDiffusion().' - ' : '').$this->getCategorie();
     }
 
     /**
@@ -74,12 +64,9 @@ class Langue extends BaseLangue implements \Stringable
         };
     }
 
-    /**
-     * Renvoie le libellé de diffusion, incluant la catégorie.
-     */
-    public function getDiffusionLabel(): string
+    public function getFullDescription(): string
     {
-        return (null !== $this->getDiffusion() ? $this->getDiffusion().' - ' : '').$this->getCategorie();
+        return $this->getLabel().' : '.$this->getDescription();
     }
 
     public function getPrintLabel(): ?string
@@ -87,10 +74,23 @@ class Langue extends BaseLangue implements \Stringable
         return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
     }
 
+    /**
+     * Fourni la liste des territoires ou la langue est la langue principale.
+     */
+    public function getTerritoirePrincipaux()
+    {
+        return $this->getTerritoires();
+    }
+
     protected function afterUpload(FileUploader $fileUploader): FileUploader
     {
         $this->setDocumentUrl($fileUploader->getStoredFileName());
 
         return $fileUploader;
+    }
+
+    public function getDocument(string $projectDir): string
+    {
+        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
     }
 }

@@ -116,18 +116,18 @@
                             </button>
                             {% if potion.documentUrl %}
                                 {% if isAdmin %}
-                                    <button class="btn btn-sm btn-secondary"
+                                    <a class="btn btn-sm btn-secondary"
                                             href="{{ path('magie.potion.document',{'potion':potion.id, 'document': potion.documentUrl}) }}"
                                             aria-expanded="false"
                                             role="button">
                                         <i class="fa-solid fa-file"></i>
-                                    </button>
+                                    </a>
                                 {% elseif participant is defined %}
-                                    <button class="btn btn-sm btn-secondary"
+                                    <a class="btn btn-sm btn-secondary"
                                             href="{{ path('participant.potion.document',{'potion':potion.id, 'participant': participant.id,'document': potion.documentUrl}) }}"
                                             role="button">
                                         <i class="fa-solid fa-file"></i>
-                                    </button>
+                                    </a>
                                 {% endif %}
                             {% endif %}
                         </div>

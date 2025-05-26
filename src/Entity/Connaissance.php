@@ -26,9 +26,12 @@ class Connaissance extends BaseConnaissance
         $this->setNiveau(1);
     }
 
-    public function getDocument(string $projectDir): string
+    public function initFile(): static
     {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+        $this->setDocumentType(DocumentType::Doc)
+            ->setFolderType(FolderType::Private);
+
+        return $this;
     }
 
     public function getFullLabel(): string
@@ -41,18 +44,15 @@ class Connaissance extends BaseConnaissance
         return (new AsciiSlugger())->slug($this->getLabel());
     }
 
-    public function initFile(): static
-    {
-        $this->setDocumentType(DocumentType::Documents)
-            ->setFolderType(FolderType::Private);
-
-        return $this;
-    }
-
     protected function afterUpload(FileUploader $fileUploader): FileUploader
     {
         $this->setDocumentUrl($fileUploader->getStoredFileName());
 
         return $fileUploader;
+    }
+
+    public function getDocument(string $projectDir): string
+    {
+        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
     }
 }

@@ -20,9 +20,12 @@ class Priere extends BasePriere
         $this->initFile();
     }
 
-    public function getDocument(string $projectDir): string
+    public function initFile(): static
     {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+        return $this->setDocumentType(DocumentType::Doc)
+            ->setFolderType(FolderType::Private)
+            // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
+            ->setFilenameMaxLength(45 - 24 - 4);
     }
 
     public function getPrintLabel(): ?string
@@ -35,18 +38,15 @@ class Priere extends BasePriere
         return $this->getSphere()?->getLabel().' - '.$this->getNiveau().' - '.$this->getLabel();
     }
 
-    public function initFile(): static
-    {
-        return $this->setDocumentType(DocumentType::Documents)
-            ->setFolderType(FolderType::Private)
-            // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
-            ->setFilenameMaxLength(45 - 24 - 4);
-    }
-
     protected function afterUpload(FileUploader $fileUploader): FileUploader
     {
         $this->setDocumentUrl($fileUploader->getStoredFileName());
 
         return $fileUploader;
+    }
+
+    public function getDocument(string $projectDir): string
+    {
+        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
     }
 }

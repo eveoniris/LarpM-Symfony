@@ -1114,7 +1114,7 @@ class PersonnageService
 
         /** @var Religion $religion */
         foreach ($religions as $religion) {
-            if (!$personnage->getReligions()->contains($religion) && $religion->isSecret()) {
+            if (!$personnage->getReligions()->contains($religion) && !$religion->isSecret()) {
                 $availableDescriptionReligions[] = $religion;
             }
         }

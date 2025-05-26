@@ -24,7 +24,7 @@ class Competence extends BaseCompetence implements \Stringable
 
     public function initFile(): static
     {
-        $this->setDocumentType(DocumentType::Documents)
+        $this->setDocumentType(DocumentType::Doc)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4);
@@ -37,42 +37,46 @@ class Competence extends BaseCompetence implements \Stringable
         return $this->getLabel();
     }
 
-    public function getPersonnagesGn(int $gnId): Collection
-    {
-        $liste = new ArrayCollection();
-        foreach ($this->getPersonnages() as $personnage) {
-            foreach ($personnage->getParticipants() as $participant) {
-                $gn = $participant->getGn();
-                if ($gn && $gn->getId() === $gnId) {
-                    $liste[] = $participant;
-                }
-            }
-        }
-
-        return $liste;
-    }
-
     public function getLabel(): string
     {
         return $this->getCompetenceFamily()?->getLabel().' - '.$this->getLevel()?->getLabel();
     }
 
-    // TODO use a StringHelper
-    public function getPrintLabel(): array|string|null
+    public function getAttributeValue($key)
     {
-        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
+        foreach ($this->getCompetenceAttributes() as $attr) {
+            if ($attr->getAttributeType()->getLabel() === $key) {
+                return $attr->getValue();
+            }
+        }
+
+        return null;
     }
 
     // TODO use a StringHelper
-    public function getMaterielRaw(): string
+
+    public function getCompetenceAttributesAsString(): string
     {
-        return html_entity_decode(strip_tags($this->getMateriel()));
+        $r = '';
+        foreach ($this->getCompetenceAttributes() as $attribute) {
+            $r .= $attribute->getAttributeTypeId().':'.$attribute->getValue().';';
+        }
+
+        return $r;
     }
 
     // TODO use a StringHelper
+
     public function getDescriptionRaw(): string
     {
         return html_entity_decode(strip_tags($this->getDescription()));
+    }
+
+    // TODO use a StringHelper
+
+    public function getMaterielRaw(): string
+    {
+        return html_entity_decode(strip_tags($this->getMateriel()));
     }
 
     /**
@@ -108,25 +112,25 @@ class Competence extends BaseCompetence implements \Stringable
     }
 
     // TODO : use __toString call ?
-    public function getCompetenceAttributesAsString(): string
-    {
-        $r = '';
-        foreach ($this->getCompetenceAttributes() as $attribute) {
-            $r .= $attribute->getAttributeTypeId().':'.$attribute->getValue().';';
-        }
 
-        return $r;
-    }
-
-    public function findAttributeByTypeId($typeId)
+    public function getPersonnagesGn(int $gnId): Collection
     {
-        foreach ($this->getCompetenceAttributes() as $attr) {
-            if ($attr->getAttributeTypeId() === $typeId) {
-                return $attr;
+        $liste = new ArrayCollection();
+        foreach ($this->getPersonnages() as $personnage) {
+            foreach ($personnage->getParticipants() as $participant) {
+                $gn = $participant->getGn();
+                if ($gn && $gn->getId() === $gnId) {
+                    $liste[] = $participant;
+                }
             }
         }
 
-        return null;
+        return $liste;
+    }
+
+    public function getPrintLabel(): array|string|null
+    {
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
     }
 
     public function setCompetenceAttributesAsString(?int $value, $ormEm, $attributeRepos): static
@@ -175,20 +179,15 @@ class Competence extends BaseCompetence implements \Stringable
         return $this;
     }
 
-    public function getAttributeValue($key)
+    public function findAttributeByTypeId($typeId)
     {
         foreach ($this->getCompetenceAttributes() as $attr) {
-            if ($attr->getAttributeType()->getLabel() === $key) {
-                return $attr->getValue();
+            if ($attr->getAttributeTypeId() === $typeId) {
+                return $attr;
             }
         }
 
         return null;
-    }
-
-    public function getDocument(string $projectDir): string
-    {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
     }
 
     protected function afterUpload(FileUploader $fileUploader): FileUploader
@@ -196,5 +195,10 @@ class Competence extends BaseCompetence implements \Stringable
         $this->setDocumentUrl($fileUploader->getStoredFileName());
 
         return $fileUploader;
+    }
+
+    public function getDocument(string $projectDir): string
+    {
+        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
     }
 }
