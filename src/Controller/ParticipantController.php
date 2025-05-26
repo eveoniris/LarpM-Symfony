@@ -934,7 +934,6 @@ class ParticipantController extends AbstractController
     /**
      * Ajoute une compétence au personnage.
      */
-    #[Route('/participant/{participant}/competence/add', name: 'participant.competence.add')]
     #[Deprecated]
     public function competenceAddAction(
         Request $request,
@@ -963,7 +962,7 @@ class ParticipantController extends AbstractController
         $choices = [];
         foreach ($availableCompetences as $competence) {
             $choices[$competence->getId()] = $competence->getLabel(
-            ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+                ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
         $form = $this->createFormBuilder($participant)
@@ -1062,8 +1061,8 @@ class ParticipantController extends AbstractController
                     foreach ($religion->getSpheres() as $sphere) {
                         foreach ($sphere->getPrieres() as $priere) {
                             if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere(
-                                $priere,
-                            )) {
+                                    $priere,
+                                )) {
                                 $priere->addPersonnage($personnage);
                                 $personnage->addPriere($priere);
                             }
@@ -1433,8 +1432,6 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/competence/{competence}/document', name: 'participant.competence.document')]
     public function competenceDocumentAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
         Competence $competence,
     ): BinaryFileResponse|RedirectResponse {
@@ -1528,7 +1525,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $this->sendDocument($connaissance);
+        return $this->sendDocument($connaissance);
     }
 
     /**
@@ -2982,7 +2979,7 @@ class ParticipantController extends AbstractController
 
                 // Noblesse expert : +2 Renommee
                 if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId(
-                )) {
+                    )) {
                     $renomme_history = new RenommeHistory();
                     $renomme_history->setRenomme(2);
                     $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
@@ -3836,8 +3833,8 @@ class ParticipantController extends AbstractController
                     }
                 }
 
-            // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
-            // n'autoriser qu'un Fervent que si l'utilisateur n'a pas encore Fervent.
+                // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
+                // n'autoriser qu'un Fervent que si l'utilisateur n'a pas encore Fervent.
             } elseif (3 === $personnageReligion->getReligionLevel()?->getIndex()) {
                 $personnagesReligions = $personnage->getPersonnagesReligions();
                 foreach ($personnagesReligions as $oldReligion) {
@@ -4429,7 +4426,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $this->sendDocument($sort);
+        return $this->sendDocument($sort);
     }
 
     /**
@@ -4523,7 +4520,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $this->sendDocument($technologie);
+        return $this->sendDocument($technologie);
     }
 
     /**

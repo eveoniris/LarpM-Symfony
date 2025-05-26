@@ -5,6 +5,7 @@ namespace App\Form\GroupeGn;
 use App\Entity\Gn;
 use App\Entity\GroupeGn;
 use App\Entity\Personnage;
+use App\Entity\User;
 use App\Enum\Role;
 use App\Repository\GroupeGnRepository;
 use App\Repository\PersonnageRepository;
@@ -92,19 +93,27 @@ class GroupeGnForm extends AbstractType
             return;
         }
 
+        // Seul le Suzerain OU un admin peut éditer cela
+        /** @var User $user */
+        $user = $this->security->getUser();
+        if (!$this->security->isGranted(Role::WARGAME->value) && $groupeGn->getSuzerin(false)?->getId(
+        ) !== $user?->getPersonnage()?->getId()) {
+            return;
+        }
+
         $builder->add(
             'suzerin',
             EntityType::class,
             [
-                'choice_label' => static fn(Personnage $personnage, $key, $index) => $personnage->getId(
-                    ).' - '.$personnage->getNameSurname(),
+                'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId(
+                ).' - '.$personnage->getNameSurname(),
                 'autocomplete' => true,
                 'required' => false,
                 'class' => Personnage::class,
                 'placeholder' => 'Choisissez un personnage',
                 'empty_data' => null,
                 // On veut tous les personnages vivant du GN (pas que ceux du groupe)
-                'query_builder' => static fn(PersonnageRepository $personnageRepository,
+                'query_builder' => static fn (PersonnageRepository $personnageRepository,
                 ) => $personnageRepository // TODO? and PID not IN groupeGn titres
                 ->createQueryBuilder('p')
                     ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
@@ -179,15 +188,15 @@ class GroupeGnForm extends AbstractType
 
         $fieldCallback = function (string $child, string $label) use ($groupeGn) {
             return [
-                'choice_label' => static fn(Personnage $personnage, $key, $index) => $personnage->getId(
-                    ).' - '.$personnage->getNameSurname(),
+                'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId(
+                ).' - '.$personnage->getNameSurname(),
                 'autocomplete' => true,
                 'required' => false,
                 'class' => Personnage::class,
                 'placeholder' => 'Choisissez un personnage',
                 'empty_data' => null,
                 // On veut tous les personnages vivant du GN (pas que ceux du groupe)
-                'query_builder' => static fn(PersonnageRepository $personnageRepository,
+                'query_builder' => static fn (PersonnageRepository $personnageRepository,
                 ) => $personnageRepository // TODO? and PID not IN groupeGn titres
                 ->createQueryBuilder('p')
                     ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
