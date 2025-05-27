@@ -413,11 +413,14 @@ class PersonnageService
             }
 
             // TODO ? tant que on a pas fait de reprise pour les placer en création dans personnage_bonus
+            // Seulement les bonus "NATIVE"
+            if (BonusPeriode::NATIVE->value !== $bonus->getPeriode()?->value) {
+                continue;
+            }
+
             // Le bonus n'est actif que si le personnage est natif d'un territoire dont son 1er groupe est à l'origine.
-            if (BonusPeriode::NATIVE->value !== $bonus->getPeriode()?->value
-                && $personnage->getFirstParticipantGnGroupe()?->getTerritoire()?->getId() !== $personnage->getOrigine(
-                )?->getId()
-            ) {
+            $firstGroupOrigin = $personnage->getFirstParticipantGnGroupe()?->getTerritoire()?->getId();
+            if ($firstGroupOrigin && $firstGroupOrigin !== $personnage->getOrigine()?->getId()) {
                 continue;
             }
             unset($origineBonus);

@@ -157,7 +157,7 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
             'nom' => $this->translator->trans('Nom', domain: 'repository'),
             'etatCivil.prenom',
             'prenom' => $this->translator->trans('Prenom', domain: 'repository'),
-            'nomPrenom' => $this->translator->trans('Nom prénom', domain: 'repository'),
+            'nomPrenom', 'HIDDEN nomPrenom' => $this->translator->trans('Nom prénom', domain: 'repository'),
         ];
     }
 

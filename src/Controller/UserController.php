@@ -342,10 +342,8 @@ class UserController extends AbstractController
             }
         }
 
-        $availableLabels = [];
-        foreach (User::getAvailableRoles() as $availableLabel) {
-            $availableLabels[] = ['label' => $availableLabel, 'value' => $availableLabel];
-        }
+        $availableLabels = Role::getLabels();
+
 
         return $this->render(
             'user/update.twig',

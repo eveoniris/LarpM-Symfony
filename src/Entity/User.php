@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\Role;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -69,8 +70,16 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     /**
      * Test whether the User has the given role.
      */
-    public function hasRole(string $role): bool
+    public function hasRole(Role|string|null $role): bool
     {
+        if (empty($role)) {
+            return false;
+        }
+
+        if ($role instanceof Role) {
+            $role = $role->value;
+        }
+
         return in_array(strtoupper($role), $this->getRoles(), true);
     }
 
@@ -126,18 +135,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
 
     public static function getAvailableRoles(): array
     {
-        return [
-            self::ROLE_ADMIN,
-            self::ROLE_CARTOGRAPHE,
-            self::ROLE_MODERATOR,
-            self::ROLE_REDACTEUR,
-            self::ROLE_REGLE,
-            self::ROLE_SCENARISTE,
-            self::ROLE_STOCK,
-            self::ROLE_USER,
-            self::ROLE_ORGA,
-            self::ROLE_WARGAME,
-        ];
+        return Role::toArray();
     }
 
     public static function getAvailableRolesLabels(): array

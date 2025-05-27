@@ -36,7 +36,8 @@
                 <div class="col-sm-8">
                     <input class="form-control" name="email" type="email" id="input-email" placeholder="Email" required
                            value="{{ user.email }}">
-                    <p class="help-block">N'est affiché qu'aux scénaristes, membre de votre groupe de jeu. Si vous êtes scénariste : à vos joueurs</p>
+                    <p class="help-block">N'est affiché qu'aux scénaristes, membre de votre groupe de jeu. Si vous êtes
+                        scénariste : à vos joueurs</p>
                 </div>
             </div>
 
@@ -88,9 +89,10 @@
                         <span class="text-muted" style="font-weight: normal;">(Admin-only)</span>
                     </label>
                     <div class="col-sm-8">
-                        {% for role in available_roles %}
-                            <label class="control-label"><input name="roles[]" type="checkbox" value="{{ role.label }}"
-                                                                {% if user.hasRole(role.label) %}checked{% endif %}>&nbsp;{{ role.label }}
+                        {% for role, label in available_roles %}
+                            <label class="control-label">
+                                <input name="roles[]" type="checkbox" value="{{ role }}"
+                                       {% if user.hasRole(role) %}checked{% endif %}> {{ role }}&nbsp;- {{ label }}
                             </label><br/>
                         {% endfor %}
                     </div>

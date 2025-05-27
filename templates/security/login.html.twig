@@ -4,7 +4,7 @@
 
 {% block body %}
 
-    <div class="row d-flex justify-content-center">
+    <div class="row d-flex justify-content-center" data-turbo="false">
         <div class="card p-0 mb-2 col-sm-4">
 
             <div class="header">
@@ -33,7 +33,7 @@
                        autocomplete="current-password" required>
                 <label>
                     <input type="checkbox" name="_remember_me" checked>
-                    Se rappeler de moi sur cet ordinateur
+                    Se rappeler de moi sur cet ordinaateur
                 </label>
 
                 <input type="hidden" name="_csrf_token"
