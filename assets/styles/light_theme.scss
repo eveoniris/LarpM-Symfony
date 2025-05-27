@@ -14,17 +14,17 @@
     border-radius: 4px
   }
 
-  .breadcrumb>li {
+  .breadcrumb > li {
     display: inline-block
   }
 
-  .breadcrumb>li+li:before {
+  .breadcrumb > li + li:before {
     content: "/\00a0";
     padding: 0 5px;
     color: #ffffff
   }
 
-  .breadcrumb>.active {
+  .breadcrumb > .active {
     color: #888888
   }
 
@@ -66,7 +66,12 @@
     background-color: #{orange};
   }
 
-  ul.detail li .head,   ul.detail li>strong {
+  ul.detail li .head, ul.detail li > strong {
     background-color: #{$dark-bg-subtle};
+  }
+
+  .btn-gamemaster, .border-gamemaster, text-gamemaster {
+    background-color: #{$purple-100};
+    color: #{$indigo-100};
   }
 }

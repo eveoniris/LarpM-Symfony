@@ -76,4 +76,10 @@
   ul.detail li .head, ul.detail li > strong {
     background-color: #{$body-emphasis-color};
   }
+
+
+  .btn-gamemaster, .border-gamemaster, text-gamemaster {
+    background-color: #{$indigo};
+    color: #{$purple};
+  }
 }

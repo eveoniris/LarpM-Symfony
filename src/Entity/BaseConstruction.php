@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -17,16 +18,16 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseConstruction', 'extended' => 'Construction'])]
 abstract class BaseConstruction
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected ?string $label = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $defense;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'constructions')]
@@ -37,45 +38,9 @@ abstract class BaseConstruction
         $this->territoires = new ArrayCollection();
     }
 
-    public function setId(int $id): static
+    public function addTerritoire(Territoire $territoire): static
     {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function setLabel(string $label): static
-    {
-        $this->label = $label;
-
-        return $this;
-    }
-
-    public function getLabel(): string
-    {
-        return $this->label ?? '';
-    }
-
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function getDescription(): string
-    {
-        return $this->description ?? '';
-    }
-
-    public function setDefense(int $defense): static
-    {
-        $this->defense = $defense;
+        $this->territoires[] = $territoire;
 
         return $this;
     }
@@ -85,16 +50,45 @@ abstract class BaseConstruction
         return $this->defense;
     }
 
-    public function addTerritoire(Territoire $territoire): static
+    public function setDefense(int $defense): static
     {
-        $this->territoires[] = $territoire;
+        $this->defense = $defense;
 
         return $this;
     }
 
-    public function removeTerritoire(Territoire $territoire): static
+    public function getDescription(): string
     {
-        $this->territoires->removeElement($territoire);
+        return $this->description ?? '';
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label ?? '';
+    }
+
+    public function setLabel(string $label): static
+    {
+        $this->label = $label;
 
         return $this;
     }
@@ -102,6 +96,13 @@ abstract class BaseConstruction
     public function getTerritoires(): Collection
     {
         return $this->territoires;
+    }
+
+    public function removeTerritoire(Territoire $territoire): static
+    {
+        $this->territoires->removeElement($territoire);
+
+        return $this;
     }
 
     /* public function __sleep()
