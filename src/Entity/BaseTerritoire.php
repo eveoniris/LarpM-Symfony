@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Enum\TerritoireStatut;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -907,16 +908,20 @@ abstract class BaseTerritoire
     /**
      * Get the value of statut.
      */
-    public function getStatut(): string
+    public function getStatut(): string|TerritoireStatut
     {
-        return $this->statut ?? '';
+        return TerritoireStatut::tryFrom($this->statut) ?? TerritoireStatut::NORMAL;
     }
 
     /**
      * Set the value of statut.
      */
-    public function setStatut(?string $statut): static
+    public function setStatut(TerritoireStatut|string|null $statut): static
     {
+        if ($statut instanceof TerritoireStatut) {
+            $statut = $statut->value;
+        }
+
         $this->statut = $statut;
 
         return $this;

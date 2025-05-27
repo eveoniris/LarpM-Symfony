@@ -16,6 +16,7 @@ enum Role: string
     case REDACTEUR = 'ROLE_REDACTEUR';
     case REGLE = 'ROLE_REGLE';
     case WARGAME = 'ROLE_WARGAME';
+    case TERRITOIRE = 'ROLE_TERRITOIRE';
     case SCENARISTE = 'ROLE_SCENARISTE';
     case STOCK = 'ROLE_STOCK';
     case USER = 'ROLE_USER';
@@ -42,6 +43,7 @@ enum Role: string
             self::USER->value => 'Utilisateur de larpManager',
             self::WARGAME->value => 'Jeu de domaine de larpManager',
             self::ROLE_GROUPE_TRANSVERSE->value => 'Gestion groupe transverse',
+            self::TERRITOIRE->value => 'Gestion des territoires',
         ];
     }
 

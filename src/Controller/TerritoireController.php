@@ -114,11 +114,10 @@ class TerritoireController extends AbstractController
     /**
      * Ajoute une construction dans un territoire.
      */
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(new MultiRolesExpression(Role::TERRITOIRE))]
     #[Route('/territoire/{territoire}/constructionAdd', name: 'territoire.constructionAdd')]
     public function constructionAddAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
     ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireConstructionForm::class, $territoire)
@@ -130,24 +129,12 @@ class TerritoireController extends AbstractController
             $territoire = $form->getData();
 
             // $territoire->addConstruction($data['constructions']);
-            $entityManager->persist($territoire);
-            $entityManager->flush();
+            $this->entityManager->persist($territoire);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'La construction a été ajoutée.');
 
             return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
-        }
-
-        $canSeePrivateDetail = $this->isGranted(Role::REGLE->value);
-
-        if (!$canSeePrivateDetail && $this->isGranted(Role::USER->value)) {
-            // Visible des membres du groupe
-            /** @var Personnage $personnage */
-            foreach ($territoire->getGroupe()?->getPersonnages() as $personnage) {
-                if ($personnage->getUser()?->getId() === $this->getUser()?->getId()) {
-                    $canSeePrivateDetail = true;
-                }
-            }
         }
 
         $isMappingInitiated = false;
@@ -164,7 +151,6 @@ class TerritoireController extends AbstractController
         return $this->render('territoire/addConstruction.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
-            'canSeePrivateDetail' => $canSeePrivateDetail,
             'isMappingInitiated' => $isMappingInitiated,
         ]);
     }
@@ -508,7 +494,7 @@ class TerritoireController extends AbstractController
         TerritoireRepository $territoireRepository,
     ): Response {
         // Set order by nom by default
-        //$pagerService->setOrdersBy(['nom' => OrderBy::ASC]); // test default overwrite from request
+        // $pagerService->setOrdersBy(['nom' => OrderBy::ASC]); // test default overwrite from request
         $alias = $territoireRepository->getAlias();
 
         // Got only main territory
@@ -548,7 +534,7 @@ class TerritoireController extends AbstractController
     #[Route('/territoire/print', name: 'territoire.print')]
     public function printAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $territoires = $entityManager->getRepository('\\'.Territoire::class)->findFiefs();
+        $territoires = $entityManager->getRepository(Territoire::class)->findFiefs();
 
         return $this->render('territoire/print.twig', ['territoires' => $territoires]);
     }
@@ -901,5 +887,29 @@ class TerritoireController extends AbstractController
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
+    }
+
+    protected function hasAccess(?Territoire $territoire = null, array $roles = []): void
+    {
+        $isMembreOfGroupeOwner = false;
+        if ($groupe = $territoire?->getGroupe()) {
+            $isMembreOfGroupeOwner = $this->groupeService->isUserIsGroupeMember($groupe);
+        }
+
+        // Visible des cartographes initiés (pour les merveilles)
+        $isMappingInitiated = $this->getPersonnage()
+            ?->hasCompetenceLevel(CompetenceFamilyType::MAPPING, LevelType::INITIATED);
+
+        $this->setCan(self::IS_ADMIN, $this->isGranted(Role::TERRITOIRE->value));
+        $this->setCan(self::CAN_MANAGE, false); // not used?
+        $this->setCan(self::CAN_READ_PRIVATE, $isMembreOfGroupeOwner);
+        $this->setCan(self::CAN_READ_SECRET, $isMappingInitiated);
+        $this->setCan(self::CAN_WRITE, false); // not used?
+        $this->setCan(self::CAN_READ, $this->isGranted(Role::USER->value)); // public page
+
+        $this->checkHasAccess(
+            $roles,
+            fn() => $this->can(self::CAN_READ),
+        );
     }
 }

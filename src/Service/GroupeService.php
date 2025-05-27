@@ -18,6 +18,7 @@ use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
+use App\Enum\TerritoireStatut;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -612,6 +613,46 @@ readonly class GroupeService
     public function getPersonnages(GroupeGn $groupeGn): Collection
     {
         return $groupeGn->getPersonnages();
+    }
+
+    public function getStatutTerritoire(Territoire $territoire): TerritoireStatut
+    {
+        $renommeByNbFiefs = [
+            1 => 5,
+            2 => 8,
+            3 => 11,
+            4 => 15,
+            5 => 20,
+        ];
+
+        $statut = $territoire->getStatut();
+        // TODO a check anomalie for update
+        // TODO handle ordre attaque
+
+        if ($statut) {
+            return $statut;
+        }
+
+        /** @var GroupeGn $lastGroupeGn */
+        $lastGroupeGn = $territoire->getGroupe()?->getGroupeGns()?->last();
+        $dirigeant = $lastGroupeGn->getSuzerin(false);
+        if (!$dirigeant) {
+            return TerritoireStatut::INSTABLE;
+        }
+
+        $renomme = $dirigeant->getRenomme();
+        if (!$renomme) {
+            return TerritoireStatut::INSTABLE;
+        }
+
+        $nbTerritoires = $territoire->getTerritoires()->count();
+
+        $renommeRequired = $renommeByNbFiefs[$nbTerritoires] ?? 20;
+        if ($renommeRequired > $renomme) {
+            return TerritoireStatut::INSTABLE;
+        }
+
+        return TerritoireStatut::NORMAL;
     }
 
     public function isUserIsGroupeMember(Groupe $groupe): bool
