@@ -1,4 +1,4 @@
-{% extends "layout.twig"  %}
+{% extends "layout.twig" %}
 
 {% block title %}Connexion{% endblock %}
 
@@ -8,46 +8,50 @@
         <p>Hello, {{ app.user.displayName }}.</p>
         <p><a href="{{ path('user.logout') }}">Sign out</a></p>
     {% else %}
-    	<div class="row">
-    		<div class="col-md-4">&nbsp;</div>
-			<div class="col-md-4">
-				<div class="well well-sm">
-						
-					<div class="header">
-			        	<h5>Connexion à LarpManager</h5>
-			        </div>
+        <div class="row" data-turbo="false">
+            <div class="col-md-4">&nbsp;</div>
+            <div class="col-md-4">
+                <div class="well well-sm">
 
-			        {% if error %}
-			            <div class="alert alert-danger">{{ error|nl2br }}</div>
-			        {% endif %}
-		
-			        <form class="form" method="POST" action="{{ path('user.login_check') }}">
-						<div class="form-group">
-			                <input class="form-control" name="_username" type="text" id="inputEmail" placeholder="Email" required value="{{ last_username }}">
-			            </div>
-			
-			            <div class="form-group">
-			                <input class="form-control" name="_password" type="password" id="inputPassword" required placeholder="Mot de passe">
-			            </div>
-			
-			            {% if allowRememberMe %}
-			                <div class="form-group">
-		                        <label>
-		                            <input type="checkbox" name="_remember_me" value="true" checked> Se rappeler de moi sur cet ordinateur
-		                        </label>	                    
-			                </div>
-			            {% endif %}
-			
-			            <div class="form-group">
-							<button type="submit" class="btn btn-primary">Se connecter</button>
-							<a style="margin-left: 10px;" href="{{ path('user.forgot-password') }}">Mot de passe oublié ?</a>
-			            </div>			
-			        {{ form_end(form) }}
-		    	</div>
-		    </div>
-		    <div class="col-md-4">&nbsp;</div>
-		    
-	    </div>
+                    <div class="header">
+                        <h5>Connexion à LarpManager</h5>
+                    </div>
+
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error|nl2br }}</div>
+                    {% endif %}
+
+                    <form class="form" method="POST" action="{{ path('user.login_check') }}">
+                        <div class="form-group">
+                            <input class="form-control" name="_username" type="text" id="inputEmail" placeholder="Email"
+                                   required value="{{ last_username }}">
+                        </div>
+
+                        <div class="form-group">
+                            <input class="form-control" name="_password" type="password" id="inputPassword" required
+                                   placeholder="Mot de passe">
+                        </div>
+
+                        {% if allowRememberMe %}
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" name="_remember_me" value="true" checked> Se rappeler de moi
+                                    sur cet ordinateur
+                                </label>
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Se connecter</button>
+                            <a style="margin-left: 10px;" href="{{ path('user.forgot-password') }}">Mot de passe oublié
+                                ?</a>
+                        </div>
+                        {{ form_end(form) }}
+                </div>
+            </div>
+            <div class="col-md-4">&nbsp;</div>
+
+        </div>
 
     {% endif %}
 {% endblock %}

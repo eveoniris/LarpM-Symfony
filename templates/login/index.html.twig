@@ -3,40 +3,42 @@
 {% block title %}Connexion{% endblock %}
 
 {% block block %}
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
-
-    {% if app.user %}
-        <p>Bonjour, {{ app.user.displayName }}.</p>
-        <p><a href="{{ path('app_logout') }}">Déconnexion</a></p>
-    {% else %}
-        {{ form_start(form) }}
-        <div class="form-group">
-            <label for="username">Email:</label>
-            <input type="text" id="username" name="_username" value="{{ last_username }}">
-        </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="_password">
-        </div>
-        {# If you want to control the URL the user is redirected to on success #}
-        <!--input type="hidden" name="_target_path" value="/account"-->
-
-        {% if allowRememberMe %}
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" name="_remember_me" value="true" checked> Se rappeler de moi sur cet
-                    ordinateur
-                </label>
-            </div>
+    <div data-turbo="false">
+        {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
         {% endif %}
 
-        <div class="form-group">
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-            <button type="submit" class="btn btn-primary">Se connecter</button>
-            <a style="margin-left: 10px" href="{{ path('user.forgot-password') }}">Mot de passe oublié ?</a>
-        </div>
-        {{ form_end(form) }}
-    {% endif %}
+        {% if app.user %}
+            <p>Bonjour, {{ app.user.displayName }}.</p>
+            <p><a href="{{ path('app_logout') }}">Déconnexion</a></p>
+        {% else %}
+            {{ form_start(form) }}
+            <div class="form-group">
+                <label for="username">Email:</label>
+                <input type="text" id="username" name="_username" value="{{ last_username }}">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="_password">
+            </div>
+            {# If you want to control the URL the user is redirected to on success #}
+            <!--input type="hidden" name="_target_path" value="/account"-->
+
+            {% if allowRememberMe %}
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="_remember_me" value="true" checked> Se rappeler de moi sur cet
+                        ordinateur
+                    </label>
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <button type="submit" class="btn btn-primary">Se connecter</button>
+                <a style="margin-left: 10px" href="{{ path('user.forgot-password') }}">Mot de passe oublié ?</a>
+            </div>
+            {{ form_end(form) }}
+        {% endif %}
+    </div>
 {% endblock %}
