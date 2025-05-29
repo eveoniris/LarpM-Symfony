@@ -35,6 +35,9 @@ class Espece
     #[ORM\ManyToMany(targetEntity: Personnage::class, inversedBy: 'especes')]
     private Collection $personnages;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description_secrete = null;
+
     public function __construct()
     {
         $this->personnages = new ArrayCollection();
@@ -141,6 +144,18 @@ class Espece
     public function setSecret(bool $secret): static
     {
         $this->secret = $secret;
+
+        return $this;
+    }
+
+    public function getDescriptionSecrete(): ?string
+    {
+        return $this->description_secrete;
+    }
+
+    public function setDescriptionSecrete(?string $description_secrete): static
+    {
+        $this->description_secrete = $description_secrete;
 
         return $this;
     }

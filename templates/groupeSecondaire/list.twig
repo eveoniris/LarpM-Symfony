@@ -82,11 +82,16 @@
                 <td class="text-center">
                     <div class="d-flex justify-content-center">
 
+                        {% set displayPostuler = true %}
+                        {% set displayVoir = false %}
+                        {% if groupeSecondaire.isPostulant(app.user.personnage) %}
+                        {% endif %}
+
                         {% include '_partials/btnGroup.twig' with { 'css': 'btn-group-vertical', 'display': true, 'buttons' :
                             [
-                                {'title': 'Voir le groupe secondaire', 'route':path('groupeSecondaire.detail', {'groupeSecondaire':groupeSecondaire.id}), 'icon': 'fa-eye', 'isAdmin': true, 'label': 'Voir' },
+                                {'title': 'Voir le groupe secondaire', 'route':path('groupeSecondaire.detail', {'groupeSecondaire':groupeSecondaire.id}), 'icon': 'fa-eye', 'visible': displayVoir, 'label': 'Voir' },
                                 {'title': 'Modifier le groupe secondaire', 'route':path('groupeSecondaire.update', {'groupeSecondaire':groupeSecondaire.id}), 'icon': 'fa-pencil', 'isAdmin': true, 'label': 'Modifier' },
-                                {'title': 'Postuler pour rejoindre le groupe', 'route':path('groupeSecondaire.postuler', {'groupeSecondaire':groupeSecondaire.id}), 'icon': 'fa-hand-point-up', 'label': 'Postuler' }
+                                {'title': 'Postuler pour rejoindre le groupe', 'route':path('groupeSecondaire.postuler', {'groupeSecondaire':groupeSecondaire.id}), 'icon': 'fa-hand-point-up', 'label': 'Postuler', 'visible': displayPostuler }
                             ]
                         } %}
                     </div>

@@ -176,7 +176,7 @@ abstract class BaseGroupeGn
 
     public function getCamarilla(bool $strict = true): ?Personnage
     {
-        return $this->camarilla ?? ($strict ? null : $this->getSuzerin($strict));
+        return $this->camarilla ?? ($strict ? null : $this->getSuzerain($strict));
     }
 
     public function setCamarilla(?Personnage $camarilla): static
@@ -186,17 +186,12 @@ abstract class BaseGroupeGn
         return $this;
     }
 
-    public function getSuzerin(bool $strict = true): ?Personnage
+    // Until we change database
+
+    public function getSuzerain(bool $strict = true): ?Personnage
     {
         // Par défaut le chef de groupe
         return $this->suzerin ?? ($strict ? null : $this->getParticipant()?->getPersonnage());
-    }
-
-    public function setSuzerin(?Personnage $suzerin): static
-    {
-        $this->suzerin = $suzerin;
-
-        return $this;
     }
 
     /**
@@ -237,7 +232,7 @@ abstract class BaseGroupeGn
 
     public function getConnetable(bool $strict = true): ?Personnage
     {
-        return $this->connetable ?? ($strict ? null : $this->getSuzerin($strict));
+        return $this->connetable ?? ($strict ? null : $this->getSuzerain($strict));
     }
 
     public function setConnetable(?Personnage $connetable): static
@@ -249,7 +244,7 @@ abstract class BaseGroupeGn
 
     public function getDiplomate(bool $strict = true): ?Personnage
     {
-        return $this->diplomate ?? ($strict ? null : $this->getSuzerin($strict));
+        return $this->diplomate ?? ($strict ? null : $this->getSuzerain($strict));
     }
 
     public function setDiplomate(?Personnage $diplomate): static
@@ -340,24 +335,6 @@ abstract class BaseGroupeGn
     }
 
     /**
-     * Set Personnage entity (many to one).
-     */
-    /*public function setSuzerain(Personnage $suzerain = null): GroupeGn
-    {
-        $this->suzerain = $suzerain;
-
-        return $this;
-    }*/
-
-    /**
-     * Get Personnage entity (many to one).
-     */
-    /*public function getSuzerain(): ?Personnage
-    {
-        return $this->suzerain;
-    }*/
-
-    /**
      * Get the value of initiative.
      */
     public function getInitiative(): int
@@ -377,8 +354,26 @@ abstract class BaseGroupeGn
 
     public function getIntendant(bool $strict = true): ?Personnage
     {
-        return $this->intendant ?? ($strict ? null : $this->getSuzerin($strict));
+        return $this->intendant ?? ($strict ? null : $this->getSuzerain($strict));
     }
+
+    /**
+     * Set Personnage entity (many to one).
+     */
+    /*public function setSuzerain(Personnage $suzerain = null): GroupeGn
+    {
+        $this->suzerain = $suzerain;
+
+        return $this;
+    }*/
+
+    /**
+     * Get Personnage entity (many to one).
+     */
+    /*public function getSuzerain(): ?Personnage
+    {
+        return $this->suzerain;
+    }*/
 
     public function setIntendant(?Personnage $intendant): static
     {
@@ -425,7 +420,7 @@ abstract class BaseGroupeGn
 
     public function getNavigateur(bool $strict = true): ?Personnage
     {
-        return $this->navigateur ?? ($strict ? null : $this->getSuzerin($strict));
+        return $this->navigateur ?? ($strict ? null : $this->getSuzerain($strict));
     }
 
     public function setNavigateur(?Personnage $navigateur): static
@@ -475,6 +470,24 @@ abstract class BaseGroupeGn
     public function setSieges(?int $sieges): static
     {
         $this->sieges = $sieges ?? 0;
+
+        return $this;
+    }
+
+    public function getSuzerin(bool $strict = true): ?Personnage
+    {
+        // Par défaut le chef de groupe
+        return $this->getSuzerain();
+    }
+
+    public function setSuzerin(?Personnage $suzerin): static
+    {
+        return $this->setSuzerain($suzerin);
+    }
+
+    public function setSuzerain(?Personnage $suzerain): static
+    {
+        $this->suzerin = $suzerain;
 
         return $this;
     }

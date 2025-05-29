@@ -22,7 +22,8 @@
     {% if isAdmin %}
         <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
             <div class="btn-group" role="group">
-                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                <a class="btn btn-secondary" data-bs-toggle="tooltip"
+                   data-bs-placement="bottom"
                    title="Modifier"
                    href="{{ path('territoire.update', {'territoire' : territoire.id}) }}"><i
                             class="fa fa-pencil"></i> Modifier</a>
@@ -39,23 +40,26 @@
             <h5>Détail d'un territoire</h5>
         </div>
 
-        <div class="d-flex justify-content-between">
-            <div>
-                <h1>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="w-50 text-center align-middle">
+                <h1 class="fs-1">
                     {{ territoire.nom }}
                 </h1>
             </div>
 
-            <div class="text-center">
+            <div class="text-center w-50 align-middle">
                 {% if territoire.blason %}
-                    <img width="160" height="200"
-                         src="{{ path('territoire.blason', {'territoire' : territoire.id }) }}"/><br/>
+                    <img height="200" class="rounded-2 border border-2 border-secondary"
+                         src="{{ path('territoire.blason', {'territoire' : territoire.id }) }}"
+                         alt="Blason {{ territoire.nom }}"/><br/>
                 {% endif %}
                 {% if isAdmin %}
-                    <a class="btn btn-small btn-secondary border-warning mt-1"
+                    <a class="btn btn-sm btn-outline-gamemaster mt-1"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
                        href="{{ path('territoire.updateBlason', {'territoire': territoire.id}) }}">
-                        <i class="fa-solid fa-feather text-warning"></i>
-                        Modifier
+                        <i class="fa-solid fa-feather"></i>
+                        Modifier Blason
                     </a>
                 {% endif %}
             </div>
@@ -69,7 +73,19 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="card mb-2">
-                                <h4 class="card-header">Quêtes commerciales</h4>
+                                <div class="card-header d-flex justify-content-between">
+                                    <h5 class="align-content-center">Quêtes commerciales</h5>
+                                    {% if isAdmin %}
+                                        <div class="d-flex justify-content-end">
+                                            <a class="btn btn-sm btn-outline-gamemaster"
+                                               data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                               title="Modifier"
+                                               href="{{ path('territoire.updateCibles', {'territoire': territoire.id }) }}">
+                                                <i class="fa-solid fa-feather"></i>
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </div>
                                 <div class="card-body">
 
                                     <strong>Liste des pays cibles : </strong>
@@ -80,46 +96,36 @@
                                             <li>Aucune cibles définies</li>
                                         {% endfor %}
                                     </ul>
-                                    {% if isAdmin %}
-                                        <div class="d-flex justify-content-end">
 
-                                            <a class="btn btn-small btn-secondary border-warning"
-                                               href="{{ path('territoire.updateCibles', {'territoire': territoire.id }) }}">
-                                                <i class="fa-solid fa-feather text-warning"></i>
-                                                Modifier
-                                            </a>
-                                        </div>
-                                    {% endif %}
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-sm-6">
                             <div class="card mb-2 ">
-                                <h4 class="card-header ">Jeu stratégique
-                                </h4>
-                                <div class="card-body">
-                                    <ul>
-                                        <li>Resistance de base : {{ territoire.resistance|default(0) }}</li>
-                                        <li>Defense du territoire : {{ territoire.defense|default(0) }} (prend en compte
-                                            les
-                                            constructions)
-                                        </li>
-                                        <li>Trésor de base : {{ territoire.tresor|default(0) }}</li>
-                                        <li>Richesse réelle : {{ territoire.richesse|default(0) }} (prend en compte les
-                                            constructions et le statut du territoire)
-                                        </li>
-                                    </ul>
-
+                                <div class="card-header d-flex justify-content-between">
+                                    <h5 class="align-content-center">Jeu stratégique</h5>
                                     {% if isAdmin %}
                                         <div class="d-flex justify-content-end">
-                                            <a class="btn btn-small btn-secondary border-warning"
+                                            <a class="btn btn-sm btn-outline-gamemaster"
+                                               data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                               title="Modifier"
                                                href="{{ path('territoire.updateStrategie', {'territoire': territoire.id}) }}">
-                                                <i class="fa-solid fa-feather text-warning"></i>
-                                                Modifier
+                                                <i class="fa-solid fa-feather"></i>
                                             </a>
                                         </div>
                                     {% endif %}
+                                </div>
+                                <div class="card-body">
+                                    {% include '_partials/listItems.twig'
+                                        with { 'items' : [
+                                        {'title': 'Resistance de base', 'text': territoire.resistance|default(0) },
+                                        {'title': 'Defense du territoire', 'text': territoire.defense|default(0) ~ '(prend en compte les constructions)' },
+                                        {'title': 'Trésor de base', 'text': territoire.tresor|default(0) },
+                                        {'title': 'Richesse réelle', 'text': territoire.richesse|default(0) ~ '(prend en compte les
+                                            constructions et le statut du territoire)' },
+                                    ]
+                                    } %}
                                 </div>
                             </div>
                         </div>
@@ -135,27 +141,39 @@
 
                     <div class="col-sm-6">
                         <div class="card mb-2">
-                            <h4 class="card-header">Culture</h4>
+                            <div class="card-header d-flex justify-content-between">
+                                <h5 class="align-content-center">Culture</h5>
+                                {% if isAdmin %}
+                                    <a class="btn btn-sm btn-outline-gamemaster"
+                                       data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Modifier"
+                                       href="{{ path('territoire.updateCulture', {'territoire': territoire.id }) }}">
+                                        <i class="fa-solid fa-feather"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
                             <div class="card-body">
                                 <ul>
                                     <li>{{ territoire.culture.label|default('Non définie') }}</li>
                                 </ul>
-                                {% if isAdmin %}
-                                    <a class="btn btn-small btn-secondary border-warning pull-right"
-                                       href="{{ path('territoire.updateCulture', {'territoire': territoire.id }) }}">
-                                        <i class="fa-solid fa-feather text-warning"></i>
-                                        Modifier
-                                    </a>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
 
                     <div class="col-sm-6">
                         <div class="card mb-2">
-                            <h4 class="card-header">Loi</h4>
+                            <div class="card-header d-flex justify-content-between">
+                                <h5 class="align-content-center">Loi</h5>
+                                {% if isAdmin %}
+                                    <a class="btn btn-sm btn-outline-gamemaster mt-2"
+                                       data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Modifier"
+                                       href="{{ path('territoire.updateLoi', {'territoire': territoire.id }) }}">
+                                        <i class="fa-solid fa-feather"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
                             <div class="card-body">
-
                                 <ul class="list-group">
                                     {% for loi in territoire.lois %}
                                         <li class="list-group-item d-flex justify-content-between">
@@ -195,66 +213,58 @@
                                         <li class="list-group-item">Aucune loi définie</li>
                                     {% endfor %}
                                 </ul>
-                                {% if isAdmin %}
-                                    <a class="btn btn-small btn-secondary border-warning pull-right mt-2"
-                                       href="{{ path('territoire.updateLoi', {'territoire': territoire.id }) }}">
-                                        <i class="fa-solid fa-feather text-warning"></i>
-                                        Modifier
-                                    </a>
-                                {% endif %}
-
                             </div>
                         </div>
                     </div>
 
                     <div class="col-sm-6">
                         <div class="card mb-2">
-                            <h4 class="card-header">Informations politiques</h4>
+                            <div class="card-header d-flex justify-content-between">
+                                <h5 class="align-content-center">Informations politiques</h5>
+                            </div>
                             <div class="card-body">
-
-                                <ul>
-                                    <li><strong>Capitale : </strong>{{ territoire.capitale|default('Aucune') }}</li>
-                                    <li><strong>Système politique
-                                            : </strong>{{ territoire.politique|default('Inconnu') }}
-                                    </li>
-                                    <li><strong>Dirigeant : </strong>{{ territoire.dirigeant|default('Aucun') }}</li>
-                                </ul>
-
+                                {% include '_partials/listItems.twig'
+                                    with { 'items' : [
+                                    {'title': 'Capitale', 'text': territoire.capitale|default('Aucune') },
+                                    {'title': 'Système politique', 'text': territoire.politique|default('Inconnu') },
+                                    {'title': 'Dirigeant', 'text': territoire.dirigeant|default('Aucun') },
+                                ]
+                                } %}
                             </div>
                         </div>
                     </div>
 
                     <div class="col-sm-6">
                         <div class="card mb-2">
-                            <h4 class="card-header">Cultes</h4>
+                            <div class="card-header d-flex justify-content-between">
+                                <h5 class="align-content-center">Cultes</h5>
+                            </div>
                             <div class="card-body">
-                                <ul>
-                                    <li><strong>Religion dominante
-                                            : </strong>{{ territoire.religion|default('Aucune') }}</li>
-                                    <li><strong>Religions secondaires
-                                            : </strong>{{ territoire.religions|join(', ')|default('Aucunes') }}</li>
-                                </ul>
+                                {% include '_partials/listItems.twig'
+                                    with { 'items' : [
+                                    {'title': 'Religion dominante', 'text': territoire.religion|default('Aucune') },
+                                    {'title': 'Religions secondaires', 'text':territoire.religions|join(', ')|default('Aucunes')  },
+                                ]
+                                } %}
                             </div>
                         </div>
                     </div>
 
-
                     <div class="col-sm-6">
                         <div class="card mb-2">
-                            <h4 class="card-header">Autres informations</h4>
+                            <div class="card-header d-flex justify-content-between">
+                                <h5 class="align-content-center">Autres informations</h5>
+                            </div>
                             <div class="card-body">
-                                <ul>
-                                    <li><strong>Population : </strong>{{ territoire.population|default('Inconnue') }}
-                                    </li>
-                                    <li><strong>Symbole : </strong>{{ territoire.symbole|default('Aucun') }}</li>
-                                    <li><strong>Niveau technologique
-                                            : </strong>{{ territoire.techLevel|default('Aucun') }}</li>
-                                    <li><strong>Langues parlées
-                                            : </strong>{{ territoire.langues|join(', ')|default('Aucunes') }}
-                                    </li>
-                                    <li><strong>Langue principale : </strong>{{ territoire.langue|default('Aucune') }}
-                                    </li>
-                                </ul>
+                                {% include '_partials/listItems.twig'
+                                    with { 'items' : [
+                                    {'title': 'Population', 'text': territoire.population|default('Inconnue') },
+                                    {'title': 'Symbole', 'text': territoire.symbole|default('Aucun')  },
+                                    {'title': 'Niveau technologique', 'text': territoire.techLevel|default('Aucun') },
+                                    {'title': 'Langues parlées', 'text': territoire.langues|join(', ')|default('Aucunes') },
+                                    {'title': 'Langue principal', 'text': territoire.langue|default('Aucune') },
+                                ]
+                                } %}
                             </div>
                         </div>
                     </div>
@@ -262,28 +272,27 @@
 
                     <div class="col-sm-6">
                         <div class="card mb-2">
-                            <h4 class="card-header">Economie</h4>
-                            <div class="card-body">
-                                <ul>
-                                    <li><strong>Exportation
-                                            : </strong>{{ territoire.importations|join(', ')|default('Rien') }}
-                                    </li>
-                                    <li><strong>Production
-                                            : </strong>{{ territoire.exportations|join(', ')|default('Rien') }}
-                                    </li>
-                                    <li><strong>Ingrédients
-                                            : </strong>{{ territoire.ingredients|join(', ')|default('Rien') }}
-                                    </li>
-                                </ul>
+                            <div class="card-header d-flex justify-content-between">
+                                <h5 class="align-content-center">Economie</h5>
                                 {% if isAdmin %}
 
-                                    <a class="btn btn-small btn-secondary border-warning pull-right"
+                                    <a class="btn btn-sm btn-outline-gamemaster"
+                                       data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Modifier"
                                        href="{{ path('territoire.updateIngredients', {'territoire': territoire.id}) }}">
-                                        <i class="fa-solid fa-feather text-warning"></i>
-                                        Modifier
+                                        <i class="fa-solid fa-feather"></i>
                                     </a>
 
                                 {% endif %}
+                            </div>
+                            <div class="card-body">
+                                {% include '_partials/listItems.twig'
+                                    with { 'items' : [
+                                    {'title': 'Exportation', 'text': territoire.importations|join(', ')|default('Rien') },
+                                    {'title': 'Production', 'text': territoire.exportations|join(', ')|default('Rien') },
+                                    {'title': 'Ingrédients', 'text': territoire.ingredients|join(', ')|default('Rien')},
+                                ]
+                                } %}
                             </div>
                         </div>
                     </div>
@@ -291,7 +300,9 @@
                     {% if territoire.territoire %}
                         <div class="col-sm-6">
                             <div class="card mb-2">
-                                <h4 class="card-header">Ce territoire dépend de</h4>
+                                <div class="card-header d-flex justify-content-between">
+                                    <h5 class="align-content-center">Ce territoire dépend de</h5>
+                                </div>
                                 <div class="card-body">
                                     <p class="list-group-item-text">
                                         <a href="{{ path('territoire.detail',{'territoire': territoire.territoire.id}) }}">{{ territoire.territoire.nom }}</a>
@@ -301,7 +312,6 @@
                         </div>
                     {% endif %}
 
-
                 </div>
             </div>
 
@@ -310,37 +320,90 @@
 
                 <div class="col-sm-6">
                     <div class="card mb-2">
-                        <h4 class="card-header">Statut</h4>
-                        <div class="card-body">
-                            {% if territoire.statut.value|default('normal')|lower == 'normal' %}
-                                <i class="fa-solid fa-hand-peace text-success"></i>
-                            {% elseif territoire.statut.value|default('normal')|lower == 'attack' %}
-                                <i class="fa-solid fa-bell text-danger"></i>
-                            {% else %}
-                                <i class="fa-solid fa-hand-fist text-warning"></i>
+                        <div class="card-header d-flex justify-content-between">
+                            <h5 class="align-content-center">Statut</h5>
+                            {% if isAdmin %}
+                                <a class="btn btn-sm btn-outline-gamemaster"
+                                   data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Modifier"
+                                   href="{{ path('territoire.updateStatut', {'territoire': territoire.id}) }}">
+                                    <i class="fa-solid fa-feather"></i>
+                                </a>
                             {% endif %}
-                            {{ territoire.statut.value|default('Normal') }}
+                        </div>
+                        <div class="card-body">
+                            <div class="fs-2 text-center">
+                                {% if territoire.statut.value|default('stable')|lower == 'stable' %}
+                                    <i class="fa-solid fa-hand-peace text-success"></i>
+                                {% elseif territoire.statut.value|default('stable')|lower == 'attack' %}
+                                    <i class="fa-solid fa-bell text-danger"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-hand-fist text-gamemaster"></i>
+                                {% endif %}
+                                {{ territoire.statut.value|default('stable') }}
+                            </div>
 
                             {% if isAdmin %}
-                                <div class="mt-2 fst-italic">
-                                    <i class="fa fa-feather text-warning"></i>
-                                    Statut au regard de la renommée du Suzerain
-                                    : {{ groupeService.statutTerritoire(territoire).value }}
-                                </div>
-                                <a class="btn btn-small btn-secondary border-warning pull-right"
-                                   href="{{ path('territoire.updateStatut', {'territoire': territoire.id}) }}">
-                                    <i class="fa-solid fa-feather text-warning"></i>
-                                    Modifier
-                                </a>
+                                {% set suzerain = groupeService.getSuzerain(territoire) %}
+                                {% set checkStatutHtml %}
+
+                                    {% if not suzerain %}
+                                        Il n'y a aucun suzerain nommé par le groupe rattaché à ce territoire.
+                                    {% else %}
+                                        Statut au regard de la renommée du Suzerain<br/>
+                                        <a href="{{ path('personnage.detail', {'personnage': suzerain.id}) }}">
+                                            {{ suzerain.idName }}
+                                        </a>
+                                        <br/>
+                                        Renommée de <span
+                                            class="badge text-bg-secondary rounded-pill">
+                                            {{ suzerain.renomme }}</span> pour <span
+                                            class="badge text-bg-secondary rounded-pill">
+                                            {{ groupeService.getRenommeRequired(territoire) }}</span> requise pour {{ max(territoire.territoires|length|default(1), 1) }} fiefs.
+                                        <br/>
+                                        {% set infoStatut = groupeService.statutTerritoire(territoire).value %}
+                                        {% if infoStatut == 'stable' %}
+                                            <span class="badge text-bg-success rounded-pill">
+                                                <i class="fa-solid fa-hand-peace"></i>
+                                                {{ infoStatut }}
+                                            </span>
+                                        {% elseif infoStatut == 'instable' %}
+                                            <span class="badge text-bg-gamemaster rounded-pill">
+                                             <i class="fa-solid fa-bell border-danger "></i>
+                                                {{ infoStatut }}
+                                            </span>
+                                        {% elseif infoStatut == 'attaque' %}
+                                            <span class="badge text-bg-danger rounded-pill">
+                                                <i class="fa-solid fa-bell"></i>
+                                                {{ infoStatut }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge text-bg-secondary rounded-pill">{{ infoStatut }}</span>
+                                        {% endif %}
+
+                                    {% endif %}
+
+                                {% endset %}
+                                {% include '_partials/cardNotif.twig' with {'type' : 'gamemaster', 'content' : checkStatutHtml, 'css' : 'mt-2 text-center'} %}
+
                             {% endif %}
                         </div>
                     </div>
                 </div>
 
-
                 <div class="col-sm-6">
                     <div class="card mb-2">
-                        <h4 class="card-header">Constructions</h4>
+                        <div class="card-header d-flex justify-content-between">
+                            <h5 class="align-content-center">Constructions</h5>
+                            {% if isAdmin %}
+                                <a class="btn btn-sm btn-outline-gamemaster"
+                                   data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Modifier"
+                                   href="{{ path('territoire.constructionAdd', {'territoire': territoire.id}) }}">
+                                    <i class="fa-solid fa-feather"></i>
+                                </a>
+                            {% endif %}
+                        </div>
                         <div class="card-body">
                             <table class="table table-condensed table-striped table-bordered table-hover">
                                 {% include '_partials/thead.twig' with  { 'route': 'connaissance.list', 'rows': [
@@ -356,9 +419,9 @@
                                         {% if isAdmin %}
                                             <td class="text-center">
                                                 <a
-                                                        class="btn btn-sm btn-secondary border-warning"
+                                                        class="btn btn-sm btn-secondary border-gamemaster"
                                                         href="{{ path('territoire.constructionRemove', {'territoire': territoire.id, 'construction': construction.id}) }}">
-                                                    <i class="fa fa-eraser text-warning"></i>
+                                                    <i class="fa fa-eraser text-gamemaster"></i>
                                                     Retirer
                                                 </a>
                                             </td>
@@ -369,13 +432,7 @@
                                 {% endfor %}
                                 </tbody>
                             </table>
-                            {% if isAdmin %}
-                                <a class="btn btn-small btn-secondary border-warning pull-right"
-                                   href="{{ path('territoire.constructionAdd', {'territoire': territoire.id}) }}">
-                                    <i class="fa-solid fa-feather text-warning"></i>
-                                    Modifier
-                                </a>
-                            {% endif %}
+
                         </div>
                     </div>
                 </div>
@@ -384,9 +441,11 @@
 
             <div class="col-sm-6">
                 <div class="card mb-2">
-                    <h4 class="card-header">
-                        Groupe rattaché
-                    </h4>
+                    <div class="card-header d-flex justify-content-between">
+                        <h5 class="align-content-center">
+                            Groupe rattaché
+                        </h5>
+                    </div>
                     <div class="card-body">
                         <ul>
                             {% if territoire.groupe.id is defined %}
@@ -401,9 +460,11 @@
 
             <div class="col-sm-6">
                 <div class="card mb-2">
-                    <h4 class="card-header">
-                        Merveille
-                    </h4>
+                    <div class="card-header d-flex justify-content-between">
+                        <h5 class="align-content-center">
+                            Merveille
+                        </h5>
+                    </div>
                     <div class="card-body">
                         <ul>
                             {% for merveille in territoire.merveilles %}
@@ -437,10 +498,12 @@
 
             <div class="col-sm-6">
                 <div class="card mb-2">
-                    <h4 class="card-header">
-                        Territoires rattachés
-                        <span class="rounded-pill">{{ territoire.territoires|length }} territoires</span>
-                    </h4>
+                    <div class="card-header d-flex justify-content-between">
+                        <h5 class="align-content-center">
+                            Territoires rattachés
+                            <span class="rounded-pill">{{ territoire.territoires|length }} territoires</span>
+                        </h5>
+                    </div>
                     <div class="card-body">
                         <ul>
                             {% for territoire in territoire.territoires %}
@@ -458,36 +521,46 @@
             {% if canReadPrivate %}
                 <div class="col-sm-6">
                     <div class="card mb-2">
-                        <h4 class="card-header border-warning">
-                            <i class="fa fa-user-secret text-warning"></i>
-                            Bonus d'origine des personnages
-                        </h4>
+                        <div class="card-header d-flex justify-content-between border-warning">
+                            <h5 class="align-content-center">
+                                <i data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   class="fa fa-user-secret text-warning" title="Secret"></i>
+                                Bonus d'origine des personnages
+                            </h5>
+                        </div>
                         <div class="card-body">
                             {% if territoire.getValideOrigineBonus()|length > 0 %}
                                 <div class="list-group">
                                     {% for origineBonus in territoire.getValideOrigineBonus() %}
                                         <div class="list-item">
-                                            <h6><a href="{{ path('bonus.detail',{'bonus': origineBonus.bonus.id}) }}">
-                                                    {{ origineBonus.bonus.titre|markdown_to_html }}
-                                                </a>
-                                            </h6>
+                                            <div class="d-flex justify-content-between">
+                                                <h6>
+                                                    <a href="{{ path('bonus.detail',{'bonus': origineBonus.bonus.id}) }}">
+                                                        {{ origineBonus.bonus.titre|markdown_to_html }}
+                                                    </a>
+                                                </h6>
+                                                {# TODO
+                                                <div>
+                                                    <a class="btn btn-sm btn-outline-gamemaster"
+                                                       data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                       title="Modifier"
+                                                       href="{{ path('territoire.updateBonus', {'territoire': territoire.id}) }}">
+                                                        <i class="fa fa-feather"></i>
+                                                    </a>
+                                                </div> #}
+                                            </div>
                                             <div>
                                                 {{ origineBonus.bonus.description|markdown_to_html }}
                                             </div>
-                                            <div>
-                                                <a class="btn btn-small btn-secondary border-warning pull-right"
-                                                   href="{{ path('territoire.updateBonus', {'territoire': territoire.id}) }}">
-                                                    Modifier
-                                                </a>
-                                            </div>
+
                                         </div>
                                     {% endfor %}
                                 </div>
                             {% else %}
                                 Aucun - <a
-                                    class="btn btn-small btn-secondary border-warning pull-right"
+                                    class="btn btn-sm btn-outline-gamemaster"
                                     href="{{ path('territoire.updateBonus', {'territoire': territoire.id}) }}">
-                                <i class="fa-solid fa-feather text-warning"></i> Modifier
+                                <i class="fa-solid fa-feather text-gamemaster"></i> Modifier
                             </a>
                             {% endif %}
                         </div>
@@ -500,24 +573,23 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="card mb-2">
-                    <h4 class="card-header">Informations d'interprétation</h4>
+                    <div class="card-header d-flex justify-content-between">
+                        <h5 class="align-content-center">
+                            Informations d'interprétation
+                        </h5>
+                    </div>
                     <div class="card-body">
-                        <ul>
-                            <li><strong>Type racial : </strong>{{ territoire.typeRacial|default('Non défini') }}
-                            </li>
-                            <li><strong>Inspiration
-                                    : </strong>{{ territoire.inspiration|default('Non défini') }}</li>
-                            <li><strong>Armes de prédilection
-                                    : </strong>{{ territoire.armesPredilection|default('Non défini') }}</li>
-                            <li><strong>Vétements : </strong>{{ territoire.vetements|default('Non défini') }}
-                            </li>
-                            <li><strong>Nom masculin
-                                    : </strong>{{ territoire.nomsMasculin|default('Non défini') }}</li>
-                            <li><strong>Nom féminin
-                                    : </strong>{{ territoire.nomsFeminin|default('Non défini') }}</li>
-                            <li><strong>Fontières : </strong>{{ territoire.frontieres|default('Non défini') }}
-                            </li>
-                        </ul>
+
+                        {% include '_partials/listItems.twig'
+                            with { 'items' : [
+                            {'title': 'Type racial', 'text':  territoire.typeRacial|default('Non défini') },
+                            {'title': 'Inspiration', 'text': territoire.armesPredilection|default('Non défini') },
+                            {'title': 'Vêtements', 'text': territoire.vetements|default('Non défini') },
+                            {'title': 'Nom masculin', 'text': territoire.nomsMasculin|default('Non défini') },
+                            {'title': 'Nom féminin', 'text': territoire.nomsFeminin|default('Non défini') },
+                            {'title': 'Fontières', 'text': territoire.frontieres|default('Non défini') },
+                        ]
+                        } %}
                     </div>
                 </div>
             </div>
@@ -525,7 +597,9 @@
             <div class="col-sm-12 pt2 mb-2">
                 <div class="card">
                     <div class="list-group-item">
-                        <h4 class="card-header">Description</h4>
+                        <div class="card-header d-flex justify-content-between">
+                            <h5 class="align-content-center">Description</h5>
+                        </div>
                         <div class="card-body">
 
                             <div class="list-group-item-text">
@@ -545,18 +619,24 @@
                 <div class="col-sm-12 pt2">
                     <div class="card">
                         <div class="list-group-item">
-                            <h4 class="card-header border-warning">
-                                <i class="fa fa-user-secret text-warning"></i>
-                                Description secrète
-                            </h4>
+                            <div class="card-header d-flex justify-content-between border-warning">
+                                <h5 class="align-content-center">
+                                    <i class="fa fa-user-secret text-warning"></i>
+                                    Description secrète
+                                </h5>
+                            </div>
 
                             <div class="card-body">
                                 <div class="list-group-item-text">
                                     {% if not territoire.descriptionSecrete %}
-                                        {% set noDescriptionHtml %}
-                                            Attention, ce territoire n'a pas de description connue des seuls habitants.
-                                        {% endset %}
-                                        {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : noDescriptionHtml} %}
+                                        {% if isAdmin %}
+                                            {% set noDescriptionHtml %}
+                                                Attention, ce territoire n'a pas de description connue des seuls habitants.
+                                            {% endset %}
+                                            {% include '_partials/cardNotif.twig' with {'type' : 'gamemaster', 'content' : noDescriptionHtml} %}
+                                        {% else %}
+                                            Aucune
+                                        {% endif %}
                                     {% else %}
                                         {{ territoire.descriptionSecrete|markdown_to_html }}
                                     {% endif %}

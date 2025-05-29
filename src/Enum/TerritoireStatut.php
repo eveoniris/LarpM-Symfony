@@ -6,7 +6,7 @@ enum TerritoireStatut: string
 {
     use EnumTraits;
 
-    case NORMAL = 'normal';
+    case STABLE = 'stable';
     case ATTAQUE = 'attaque';
     case INSTABLE = 'instable';
 

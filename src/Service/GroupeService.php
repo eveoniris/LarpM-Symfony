@@ -12,8 +12,10 @@ use App\Entity\Ingredient;
 use App\Entity\Item;
 use App\Entity\Loi;
 use App\Entity\Merveille;
+use App\Entity\Personnage;
 use App\Entity\Rarete;
 use App\Entity\Ressource;
+use App\Entity\SecondaryGroup;
 use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\BonusPeriode;
@@ -360,7 +362,6 @@ readonly class GroupeService
                 $bonus->getTitre(),
                 ' '.$bonus->getDescription(),
             );
-
         }
 
         return $all;
@@ -454,7 +455,6 @@ readonly class GroupeService
                     '<strong>'.$ressource->getLabel().'</strong> fourni(e)s par <strong>'.$source.'</strong>',
                 );
 
-
                 $ressourceGroupe = new GroupeHasRessource();
                 $ressourceGroupe->setQuantite(((int) $data['nombre']) ?: 1);
                 $ressourceGroupe->setRessource($ressource);
@@ -534,7 +534,7 @@ readonly class GroupeService
                 }
             }
 
-            $isInstable = 'instable' === strtolower($territoire->getStatut());
+            $isInstable = TerritoireStatut::INSTABLE->value === strtolower($territoire->getStatut()?->value ?? '');
             $value = $tresor / ($isInstable ? 2 : 1);
 
             $label = sprintf(
@@ -610,32 +610,9 @@ readonly class GroupeService
         return $lois;
     }
 
-    public function getPersonnages(GroupeGn $groupeGn): Collection
-    {
-        return $groupeGn->getPersonnages();
-    }
-
     public function getStatutTerritoire(Territoire $territoire): TerritoireStatut
     {
-        $renommeByNbFiefs = [
-            1 => 5,
-            2 => 8,
-            3 => 11,
-            4 => 15,
-            5 => 20,
-        ];
-
-        $statut = $territoire->getStatut();
-        // TODO a check anomalie for update
-        // TODO handle ordre attaque
-
-        if ($statut) {
-            return $statut;
-        }
-
-        /** @var GroupeGn $lastGroupeGn */
-        $lastGroupeGn = $territoire->getGroupe()?->getGroupeGns()?->last();
-        $dirigeant = $lastGroupeGn->getSuzerin(false);
+        $dirigeant = $this->getSuzerain($territoire);
         if (!$dirigeant) {
             return TerritoireStatut::INSTABLE;
         }
@@ -645,14 +622,89 @@ readonly class GroupeService
             return TerritoireStatut::INSTABLE;
         }
 
-        $nbTerritoires = $territoire->getTerritoires()->count();
-
-        $renommeRequired = $renommeByNbFiefs[$nbTerritoires] ?? 20;
-        if ($renommeRequired > $renomme) {
+        if ($renomme < $this->getRenommeRequired($territoire)) {
             return TerritoireStatut::INSTABLE;
         }
 
-        return TerritoireStatut::NORMAL;
+        return TerritoireStatut::STABLE;
+    }
+
+    public function getSuzerain(Territoire $territoire): ?Personnage
+    {
+        /** @var GroupeGn $lastGroupeGn */
+        $lastGroupeGn = $territoire->getGroupe()?->getGroupeGns()?->last();
+        if (!$lastGroupeGn) {
+            return null;
+        }
+        $dirigeant = $lastGroupeGn->getSuzerain(false);
+        if (!$dirigeant) {
+            return null;
+        }
+
+        return $dirigeant;
+    }
+
+    public function getRenommeRequired(Territoire $territoire): int
+    {
+        // NbFief => Min renommé
+        $renommeByNbFiefs = [
+            0 => 0,
+            1 => 5,
+            2 => 8,
+            3 => 11,
+            4 => 15,
+            5 => 20,
+        ];
+
+        return $renommeByNbFiefs[max($territoire->getTerritoires()->count(), 1)] ?? 20;
+    }
+
+    public function hasOnePersonnageSuzerain(GroupeGn $groupeGn, ?User $user = null): bool
+    {
+        $user ??= $this->security->getUser();
+        foreach ($user?->getPersonnages() as $personnage) {
+            if ($personnage->getId() === $groupeGn->getSuzerain()?->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getPersonnages(GroupeGn $groupeGn): Collection
+    {
+        return $groupeGn->getPersonnages();
+    }
+
+    public function hasPersonnageInSecondaryGroup(
+        SecondaryGroup $secondaryGroup,
+        User $user = null,
+    ): bool {
+        foreach ($user?->getPersonnages() as $personnage) {
+            if ($this->isInSecondaryGroup($secondaryGroup, $personnage)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isInSecondaryGroup(
+        SecondaryGroup $secondaryGroup,
+        ?Personnage $personnage = null,
+        ?User $user = null,
+    ): bool {
+        // On se basera sur le personnage actif
+        if ($user && !$personnage) {
+            $personnage = $user->getPersonnage();
+        }
+
+        if (!$personnage) {
+            return false;
+        }
+
+        return $secondaryGroup->isMembre($personnage)
+            ?: $secondaryGroup->isResponsable($personnage);
     }
 
     public function isUserIsGroupeMember(Groupe $groupe): bool

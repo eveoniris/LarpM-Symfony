@@ -26,7 +26,7 @@
             {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : 'Ce groupe est anonyme, seul le chef peut voir les personnages. Vous pouvez contacter le chef sans savoir qui il est'} %}
         {% endif %}
 
-        {% if isAdmin %}
+        {% if canManage %}
             <div class="panel-heading d-flex justify-content-end mb-2">
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier"
                    href="{{ path('groupeSecondaire.update', {'groupeSecondaire': groupeSecondaire.id}) }}"><i

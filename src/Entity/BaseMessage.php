@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity]
 #[ORM\Table(name: 'message')]
@@ -18,9 +19,10 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseMessage', 'extended' => 'Message'])]
 class BaseMessage
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
+    #[Assert\Length(45)]
     #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $title = null;
 
@@ -50,57 +52,11 @@ class BaseMessage
     }
 
     /**
-     * Set the value of id.
+     * Get the value of creation_date.
      */
-    public function setId(int $id): static
+    public function getCreationDate(): \DateTime
     {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of title.
-     */
-    public function setTitle(string $title): static
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of title.
-     */
-    public function getTitle(): string
-    {
-        return $this->title ?? '';
-    }
-
-    /**
-     * Set the value of text.
-     */
-    public function setText(string $text): static
-    {
-        $this->text = $text;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of text.
-     */
-    public function getText(): string
-    {
-        return $this->text ?? '';
+        return $this->creation_date;
     }
 
     /**
@@ -114,29 +70,29 @@ class BaseMessage
     }
 
     /**
-     * Get the value of creation_date.
+     * Get the value of id.
      */
-    public function getCreationDate(): \DateTime
+    public function getId(): int
     {
-        return $this->creation_date;
+        return $this->id;
     }
 
     /**
-     * Set the value of update_date.
+     * Set the value of id.
      */
-    public function setUpdateDate(\DateTime $update_date): static
+    public function setId(int $id): static
     {
-        $this->update_date = $update_date;
+        $this->id = $id;
 
         return $this;
     }
 
     /**
-     * Get the value of update_date.
+     * Get the value of lu.
      */
-    public function getUpdateDate(): \DateTime
+    public function getLu(): bool
     {
-        return $this->update_date;
+        return $this->lu ?? false;
     }
 
     /**
@@ -150,16 +106,55 @@ class BaseMessage
     }
 
     /**
-     * Get the value of lu.
+     * Get the value of text.
      */
-    public function getLu(): bool
+    public function getText(): string
     {
-        return $this->lu ?? false;
+        return $this->text ?? '';
     }
 
-    public function setUserRelatedByAuteur(?User $User = null): static
+    /**
+     * Set the value of text.
+     */
+    public function setText(string $text): static
     {
-        $this->userRelatedByAuteur = $User;
+        $this->text = $text;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of title.
+     */
+    public function getTitle(): string
+    {
+        return $this->title ?? '';
+    }
+
+    /**
+     * Set the value of title.
+     */
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of update_date.
+     */
+    public function getUpdateDate(): \DateTime
+    {
+        return $this->update_date;
+    }
+
+    /**
+     * Set the value of update_date.
+     */
+    public function setUpdateDate(\DateTime $update_date): static
+    {
+        $this->update_date = $update_date;
 
         return $this;
     }
@@ -172,9 +167,9 @@ class BaseMessage
         return $this->userRelatedByAuteur;
     }
 
-    public function setUserRelatedByDestinataire(?User $user = null): static
+    public function setUserRelatedByAuteur(?User $User = null): static
     {
-        $this->userRelatedByDestinataire = $user;
+        $this->userRelatedByAuteur = $User;
 
         return $this;
     }
@@ -182,5 +177,12 @@ class BaseMessage
     public function getUserRelatedByDestinataire(): ?User
     {
         return $this->userRelatedByDestinataire;
+    }
+
+    public function setUserRelatedByDestinataire(?User $user = null): static
+    {
+        $this->userRelatedByDestinataire = $user;
+
+        return $this;
     }
 }

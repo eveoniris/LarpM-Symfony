@@ -34,6 +34,24 @@ class ItemForm extends AbstractType
                     'help' => 'Quelques mots pour décrire votre objet, c\'est le texte décrivant ce que la personne voit, situé au centre de l\'étiquette',
                 ],
             ])
+            ->add('description_secrete', TextareaType::class, [
+                // TinyMce may bug here if let 'required' => true,
+                'label' => 'Description secrete',
+                'attr' => [
+                    'rows' => 9,
+                    'class' => 'tinymce',
+                    'help' => "Texte réservé aux initiés ou détenteur de l'objet",
+                ],
+            ])
+            ->add('description_scenariste', TextareaType::class, [
+                // TinyMce may bug here if let 'required' => true,
+                'label' => 'Description scénaristes',
+                'attr' => [
+                    'rows' => 9,
+                    'class' => 'tinymce',
+                    'help' => 'Texte réservé aux scénaristes',
+                ],
+            ])
             ->add('numero', IntegerType::class, [
                 'required' => false,
                 'label' => 'Numéro',
@@ -95,7 +113,7 @@ class ItemForm extends AbstractType
                     '56',
                     '57',
                 ],
-                'choice_label' => static fn ($value) => match ($value) {
+                'choice_label' => static fn($value) => match ($value) {
                     '81' => 'Rien de spécial',
                     '01' => 'Objet spécial mais non enchanté',
                     '11' => 'Objet enchanté par la compétence Magie',
@@ -162,7 +180,8 @@ class ItemForm extends AbstractType
                 'label' => 'Couleur de l\'étiquette',
                 'choices' => [
                     'orange' => "Orange : Ne prendre que l'etiquette",
-                    'bleu' => 'Bleu: Cet objet, indissociable de son etiquette, peut être physiquement volé.'],
+                    'bleu' => 'Bleu: Cet objet, indissociable de son etiquette, peut être physiquement volé.',
+                ],
                 'attr' => [
                     'help' => 'La couleur de l\'étiquette indique si l\'on peux prendre l\'objet en lui-même ou seulement l\'étiquette',
                 ],

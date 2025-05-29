@@ -97,8 +97,8 @@
                             <div class="card-header d-flex justify-content-between">
                                 <h4>
                                     Suzerain : <small>
-                                        {% if session.suzerin(false) is not null %}
-                                            <a href="{{ path('personnage.detail', {'personnage':session.suzerin(false).id}) }}">{{ session.suzerin(false).nom }}</a>
+                                        {% if session.suzerain(false) is not null %}
+                                            <a href="{{ path('personnage.detail', {'personnage':session.suzerain(false).id}) }}">{{ session.suzerain(false).nom }}</a>
                                         {% else %}Aucun{% endif %}
                                     </small>
                                 </h4>

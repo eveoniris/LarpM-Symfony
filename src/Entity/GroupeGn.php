@@ -6,7 +6,6 @@ use App\Repository\GroupeGnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 #[Entity(repositoryClass: GroupeGnRepository::class)]
 class GroupeGn extends BaseGroupeGn
@@ -103,17 +102,19 @@ class GroupeGn extends BaseGroupeGn
         return $this->getParticipant(false)?->getPersonnage()?->getId() === $personnage->getId();
     }
 
-    public function isSuzerin(Personnage|Participant $personnage): bool
+    public function isSuzerain(Personnage|Participant $personnage): bool
     {
         if ($personnage instanceof Participant) {
             $personnage = $personnage->getPersonnage();
         }
 
-        if (null === $this->getSuzerin(false)) {
+        $suzerain = $this->getSuzerain(false);
+
+        if (null === $suzerain) {
             return false;
         }
 
-        return $this->getSuzerin(false)?->getId() === $personnage?->getId();
+        return $suzerain?->getId() === $personnage?->getId();
     }
 
     /**

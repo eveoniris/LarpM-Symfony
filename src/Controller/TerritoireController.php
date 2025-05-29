@@ -5,9 +5,12 @@ namespace App\Controller;
 use App\Entity\Chronologie;
 use App\Entity\Construction;
 use App\Entity\Groupe;
+use App\Entity\OrigineBonus;
 use App\Entity\Personnage;
 use App\Entity\Territoire;
 use App\Entity\User;
+use App\Enum\BonusPeriode;
+use App\Enum\BonusType;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
@@ -16,7 +19,6 @@ use App\Enum\Role;
 use App\Form\ChronologieForm;
 use App\Form\Territoire\FiefForm;
 use App\Form\Territoire\TerritoireBlasonForm;
-use App\Form\Territoire\TerritoireBonusForm;
 use App\Form\Territoire\TerritoireCiblesForm;
 use App\Form\Territoire\TerritoireConstructionForm;
 use App\Form\Territoire\TerritoireCultureForm;
@@ -26,13 +28,14 @@ use App\Form\Territoire\TerritoireIngredientsForm;
 use App\Form\Territoire\TerritoireLoiForm;
 use App\Form\Territoire\TerritoireStatutForm;
 use App\Form\Territoire\TerritoireStrategieForm;
+use App\Repository\BonusRepository;
 use App\Repository\TerritoireRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\GeoJson;
-use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -599,7 +602,6 @@ class TerritoireController extends AbstractController
     #[Route('/territoire/{territoire}/update', name: 'territoire.update')]
     public function updateAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
     ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireForm::class, $territoire)
@@ -610,8 +612,8 @@ class TerritoireController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $territoire = $form->getData();
 
-            $entityManager->persist($territoire);
-            $entityManager->flush();
+            $this->entityManager->persist($territoire);
+            $this->entityManager->flush();
             $this->addFlash('success', 'Le territoire a été mis à jour.');
 
             return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
@@ -680,19 +682,46 @@ class TerritoireController extends AbstractController
     #[Route('/territoire/{territoire}/updateBonus', name: 'territoire.updateBonus')]
     public function updateBonusAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
+        BonusRepository $bonusRepository,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireBonusForm::class, $territoire)
+        /*$form = $this->createForm(TerritoireBonusForm::class, $territoire->getOriginesBonus())
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder', 'attr' => ['class' => 'btn btn-secondary']]);
+*/
+        // TODO auto selected existing and check why it's not working
+        $bonusChoices = $bonusRepository->findBy(['periode' => BonusPeriode::NATIVE->value], ['titre' => 'ASC']);
+        $currentOrigineBonus = $territoire->getOriginesBonus()?->last() ?: null;
+        $currentBonus = $currentOrigineBonus?->getBonus();
+        $form = $this->createFormBuilder()
+            ->add('bonus', ChoiceType::class, [
+                'label' => 'Choisissez vos bonus',
+                'multiple' => false,
+                // 'autocomplete' => true,
+                'expanded' => true,
+                'choices' => $bonusChoices,
+                'choice_label' => 'titre',
+                'data' => $currentBonus,
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider '])
+            ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $territoire = $form->getData();
+            $bonus = $form->getData()['bonus'] ?? null;
 
-            $entityManager->persist($territoire);
-            $entityManager->flush();
+            $origineBonus = new OrigineBonus();
+            $origineBonus->setBonus($bonus);
+            $origineBonus->setTerritoire($territoire);
+
+            foreach ($territoire->getOriginesBonus() as $currentOriginesBonus) {
+                $this->entityManager->remove($currentOriginesBonus);
+            }
+
+
+            $this->entityManager->persist($origineBonus);
+            $this->entityManager->persist($territoire);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le territoire a été mis à jour');
 
@@ -835,7 +864,6 @@ class TerritoireController extends AbstractController
     #[Route('/territoire/{territoire}/updateStatut', name: 'territoire.updateStatut')]
     public function updateStatutAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Territoire $territoire,
     ): RedirectResponse|Response {
         $form = $this->createForm(TerritoireStatutForm::class, $territoire)
@@ -844,8 +872,8 @@ class TerritoireController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($territoire);
-            $entityManager->flush();
+            $this->entityManager->persist($territoire);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le territoire a été mis à jour');
 
