@@ -108,16 +108,12 @@ class GroupeSecondaireForm extends AbstractType
                 'help' => 'https://discord.gg/xxxx',
                 'constraints' => [
                     new Assert\Callback([
-                        'callback' => function (?Groupe $groupe, ExecutionContextInterface $context) {
-                            if (!$groupe) {
+                        'callback' => function (?string $data, ExecutionContextInterface $context) {
+                            if (empty($data)) {
                                 return;
                             }
 
-                            if (empty($groupe->getDiscord())) {
-                                return;
-                            }
-
-                            if (!str_starts_with($groupe->getDiscord(), 'https://discord.gg/')) {
+                            if (!str_starts_with($data, 'https://discord.gg/')) {
                                 $context
                                     ->buildViolation($this->translator->trans('groupe.discord.link'))
                                     ->atPath('[discord]')

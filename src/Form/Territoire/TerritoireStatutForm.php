@@ -3,15 +3,13 @@
 
 namespace App\Form\Territoire;
 
+use App\Entity\Territoire;
+use App\Enum\TerritoireStatut;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Territoire\TerritoireStatutForm.
- *
- * @author kevin
- */
 class TerritoireStatutForm extends AbstractType
 {
     /**
@@ -19,10 +17,10 @@ class TerritoireStatutForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('statut', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+        $builder->add('statut', EnumType::class, [
             'label' => 'Statut',
             'required' => false,
-            'choices' => ['Normal' => 'Normal', 'Instable' => 'Instable'],
+            'class' => TerritoireStatut::class,
         ]);
     }
 
@@ -32,7 +30,7 @@ class TerritoireStatutForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Territoire::class,
+            'data_class' => Territoire::class,
         ]);
     }
 

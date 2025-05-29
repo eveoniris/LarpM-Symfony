@@ -41,31 +41,46 @@
             </div>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-body">
 
-                <div class="list-group">
+        <div class="card">
+
+            <div class="list-group">
 
 
+                <div class="list-group-item">
+                    <div class="list-group-item-heading fw-bold mb-1">Nom</div>
+                    <div class="list-group-item-text ps-1">{% if espece.secret %}<i
+                                class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+                                title="Secret"></i> - {% endif %}{{ espece.nom }}</div>
+                </div>
+
+                <div class="list-group-item">
+                    <div class="list-group-item-heading fw-bold mb-1">Type</div>
+                    <div class="list-group-item-text ps-1">{{ espece.type|trans }}</div>
+                </div>
+
+                <div class="list-group-item">
+                    <div class="list-group-item-heading fw-bold mb-1">Description</div>
+                    <div class="list-group-item-text ps-1">{{ espece.description|markdown_to_html }}</div>
+                </div>
+
+                {% if isAdmin %}
                     <div class="list-group-item">
-                        <div class="list-group-item-heading fw-bold mb-1">Nom</div>
-                        <div class="list-group-item-text ps-1">{% if espece.secret %}<i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
-                                                                                        title="Secret"></i> - {% endif %}{{ espece.nom }}</div>
-                    </div>
+                        <div class="list-group-item-heading fw-bold mb-1 border-warning border-bottom">
 
-                    <div class="list-group-item">
-                        <div class="list-group-item-heading fw-bold mb-1">Description</div>
+                            <i data-bs-toggle="tooltip"
+                               data-bs-placement="bottom"
+                               class="fa fa-user-secret text-warning"
+                               title="Secret"></i>
+                            Description secrète
+                        </div>
                         <div class="list-group-item-text ps-1">{{ espece.description|markdown_to_html }}</div>
                     </div>
+                {% endif %}
 
-                    <div class="list-group-item">
-                        <div class="list-group-item-heading fw-bold mb-1">Type</div>
-                        <div class="list-group-item-text ps-1">{{ espece.type|trans }}</div>
-                    </div>
-
-                </div>
             </div>
         </div>
     </div>
+
 
 {% endblock body %}

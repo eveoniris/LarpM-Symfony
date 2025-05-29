@@ -24,20 +24,12 @@ class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
     }
 
     /**
-     * Fourni le personnage responsable du groupe.
-     */
-    public function getResponsable()
-    {
-        return $this->getPersonnage();
-    }
-
-    /**
      * Vérifie si un personnage est membre du groupe.
      */
     public function isMembre(Personnage $personnage): bool
     {
         foreach ($this->getMembres() as $membre) {
-            if ($membre->getPersonnage() == $personnage) {
+            if ($membre->getPersonnage()->getId() === $personnage->getId()) {
                 return true;
             }
         }
@@ -62,6 +54,19 @@ class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
     public function isReligion(): bool
     {
         return $this->secondaryGroupType->isReligion();
+    }
+
+    public function isResponsable(Personnage $personnage): bool
+    {
+        return $personnage->getId() === $this->getResponsable()?->getId();
+    }
+
+    /**
+     * Fourni le personnage responsable du groupe.
+     */
+    public function getResponsable()
+    {
+        return $this->getPersonnage();
     }
 
     /**

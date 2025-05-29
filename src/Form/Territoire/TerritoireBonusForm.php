@@ -3,7 +3,7 @@
 namespace App\Form\Territoire;
 
 use App\Entity\Bonus;
-use App\Entity\Territoire;
+use App\Entity\OrigineBonus;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -16,7 +16,7 @@ class TerritoireBonusForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('originesBonus', EntityType::class, [
+        $builder->add('bonus', EntityType::class, [
             'required' => false,
             'label' => 'Bonus',
             'class' => Bonus::class,
@@ -25,7 +25,8 @@ class TerritoireBonusForm extends AbstractType
             'expanded' => true,
             'mapped' => true,
             'label_html' => true,
-            'choice_label' => static fn (Bonus $bonus, $currentKey) => '<strong>'.$bonus->getTitre().'</strong> - '.$bonus->getDescription(),
+            'choice_label' => static fn(Bonus $bonus, $currentKey) => '<strong>'.$bonus->getTitre(
+                ).'</strong> - '.$bonus->getDescription(),
         ]);
     }
 
@@ -34,9 +35,7 @@ class TerritoireBonusForm extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            'data_class' => Territoire::class,
-        ]);
+     
     }
 
     /**

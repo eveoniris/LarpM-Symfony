@@ -27,7 +27,7 @@ class AgeForm extends AbstractType
             ])
             ->add('enableCreation', ChoiceType::class, [
                 'required' => true,
-                'choices' => ['Oui' => true, false => 'Non'],
+                'choices' => ['Oui' => true, 'Non' => false],
                 'label' => 'Disponible lors de la création d\'un personnage',
             ])
             ->add('bonus', IntegerType::class, [

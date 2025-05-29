@@ -60,6 +60,13 @@
         </div>
     {% endfor %}
 
+    {% for message in app.session.getFlashBag.get('gamemaster') %}
+        <div class="alert alert-gamemaster d-flex align-items-center" role="alert">
+            <div class="p-2 flex-grow-1"><i class="fa-solid fa-feather"></i> {{ message|raw }}</div>
+            <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
     {% block body %}{% endblock body %}
 
     {# Modal #}

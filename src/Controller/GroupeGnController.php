@@ -463,7 +463,6 @@ class GroupeGnController extends AbstractController
     public function updateAction(
         Request $request,
         #[MapEntity] GroupeGn $groupeGn,
-        GroupeGnRepository $groupeGnRepository,
     ): RedirectResponse|Response {
         $redirect = $request->get('redirect');
 
@@ -487,7 +486,7 @@ class GroupeGnController extends AbstractController
             $ids = [];
 
             $idsArray = [
-                'suzerin' => $groupeGn->getSuzerin()?->getId(),
+                'suzerin' => $groupeGn->getSuzerain()?->getId(),
                 'intendant' => $groupeGn->getIntendant()?->getId(),
                 'camarilla' => $groupeGn->getCamarilla()?->getId(),
                 'connetable' => $groupeGn->getConnetable()?->getId(),
@@ -513,11 +512,11 @@ class GroupeGnController extends AbstractController
 
             // Titre si territoire
             if (null === $groupeGn->getGroupe()->getTerritoire()) {
-                if ($groupeGn->getSuzerin() || $groupeGn->getIntendant() || $groupeGn->getCamarilla(
+                if ($groupeGn->getSuzerain() || $groupeGn->getIntendant() || $groupeGn->getCamarilla(
                     ) || $groupeGn->getConnetable() || $groupeGn->getNavigateur() || $groupeGn->getDiplomate()) {
                     $this->addFlash('error', 'Les titres ne sont possibles que si le groupe à un territoire');
                 }
-                $groupeGn->setSuzerin(null);
+                $groupeGn->setSuzerain(null);
                 $groupeGn->setIntendant(null);
                 $groupeGn->setCamarilla(null);
                 $groupeGn->setConnetable(null);
@@ -567,9 +566,9 @@ class GroupeGnController extends AbstractController
             }
         }
 
-        $isSuzerin = false;
-        if ($this->getPersonnage() && $this->getPersonnage()->getId() === $groupeGn?->getSuzerin()?->getId()) {
-            $isSuzerin = true;
+        $isSuzerain = false;
+        if ($this->getPersonnage() && $this->getPersonnage()->getId() === $groupeGn?->getSuzerain()?->getId()) {
+            $isSuzerain = true;
         }
 
         // TODO check if membre can read secret
@@ -578,8 +577,8 @@ class GroupeGnController extends AbstractController
         $this->setCan(self::CAN_MANAGE, $isResponsable);
         $this->setCan(self::CAN_READ_PRIVATE, $isResponsable || $isMembre);
         $this->setCan(self::CAN_READ_SECRET, $isResponsable);
-        $this->setCan(self::CAN_WRITE, $isResponsable || $isSuzerin);
-        $this->setCan(self::CAN_READ, $isMembre || $isSuzerin);
+        $this->setCan(self::CAN_WRITE, $isResponsable || $isSuzerain);
+        $this->setCan(self::CAN_READ, $isMembre || $isSuzerain);
 
         $this->checkHasAccess(
             $roles,

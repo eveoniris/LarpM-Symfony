@@ -79,7 +79,7 @@
                             </div>
                         </div>
                     </div>
-                    <ul class="nav nav-tabs">
+                    <ul class="nav nav-tabs" data-turbo="false">
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'general' %} active{% endif %}"
                                href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'general'})) }}"
@@ -125,7 +125,7 @@
     </div>
 
     <!-- Tab panes -->
-    <div class="tab-content">
+    <div class="tab-content" data-turbo="false">
         <div role="tabpanel" class="tab-pane active" role="tabpanel">
             {% include "personnage/fragment/tab_#{tab|default('detail')}.twig" with {'personnage': personnage, 'css': 'panel'} %}
         </div>

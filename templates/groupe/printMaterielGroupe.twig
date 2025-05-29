@@ -107,8 +107,8 @@
     {% if groupe.territoires|length > 0 %}
         <strong>Titres</strong><br/>
         <ul>
-            {# if session.suzerin(false) is not null #}
-            <li>Suzerain: <strong>{{ session.suzerin(false).nom|default('Aucun') }}</strong></li>
+            {# if session.suzerain(false) is not null #}
+            <li>Suzerain: <strong>{{ session.suzerain(false).nom|default('Aucun') }}</strong></li>
 
             {#  if session.connetable() is not null #}
             <li>Chef de guerre<strong>: {{ session.connetable().nom|default('Aucun') }}</strong></li>

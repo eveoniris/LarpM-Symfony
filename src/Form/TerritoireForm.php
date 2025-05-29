@@ -8,9 +8,10 @@ use App\Entity\Langue;
 use App\Entity\Religion;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
+use App\Enum\TerritoireStatut;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -45,19 +46,21 @@ class TerritoireForm extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
-                    'rows' => 10],
+                    'rows' => 10,
+                ],
             ])
             ->add('description_secrete', TextareaType::class, [
                 'label' => 'Description connue des habitants',
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
-                    'rows' => 10],
+                    'rows' => 10,
+                ],
             ])
-            ->add('statut', ChoiceType::class, [
+            ->add('statut', EnumType::class, [
                 'label' => 'Statut',
                 'required' => false,
-                'choices' => ['Normal' => 'Normal', 'Instable' => 'Instable'],
+                'clasBos' => TerritoireStatut::class,
             ])
             ->add('geojson', TextareaType::class, [
                 'label' => 'GeoJSON',

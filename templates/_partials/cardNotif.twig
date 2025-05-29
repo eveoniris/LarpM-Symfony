@@ -1,38 +1,56 @@
-
 {% if type == 'danger' %}
-<div class="card mb-3 border-danger{% if css is defined %} {{ css }}{% endif %}">
-    <div class="card-header "><i class="fa fa-circle-xmark text-danger"></i> {% if title is defined %}{{ title }}{% else %}Erreur !{% endif %}</div>
-    <div class="card-body">
-        <p class="card-text">
-            {{ content|markdown_to_html }}
-        </p>
+    <div class="card mb-3 border-danger{% if css is defined %} {{ css }}{% endif %}">
+        <div class="card-header "><i
+                    class="fa fa-circle-xmark text-danger"></i> {% if title is defined %}{{ title }}{% else %}Erreur !{% endif %}
+        </div>
+        <div class="card-body">
+            <div class="card-text">
+                {{ content|markdown_to_html }}
+            </div>
+        </div>
     </div>
-</div>
 {% elseif type == 'warning' %}
     <div class="card mb-3 border-warning{% if css is defined %} {{ css }}{% endif %}">
-        <div class="card-header "><i class="fa fa-warning text-warning"></i> {% if title is defined %}{{ title }}{% else %}Attention !{% endif %}</div>
+        <div class="card-header "><i
+                    class="fa fa-warning text-warning"></i> {% if title is defined %}{{ title }}{% else %}Attention !{% endif %}
+        </div>
         <div class="card-body">
-            <p class="card-text">
+            <div class="card-text">
                 {{ content|markdown_to_html }}
-            </p>
+            </div>
         </div>
     </div>
 {% elseif type == 'info' %}
     <div class="card mb-3 border-info{% if css is defined %} {{ css }}{% endif %}">
-        <div class="card-header "><i class="fa-regular fa-circle-info text-info"></i> {% if title is defined %}{{ title }}{% else %}Information{% endif %}</div>
+        <div class="card-header "><i
+                    class="fa-regular fa-circle-info text-info"></i> {% if title is defined %}{{ title }}{% else %}Information{% endif %}
+        </div>
         <div class="card-body">
-            <p class="card-text">
+            <div class="card-text">
                 {{ content|markdown_to_html }}
-            </p>
+            </div>
         </div>
     </div>
 {% elseif type == 'success' %}
     <div class="card mb-3 border-success{% if css is defined %} {{ css }}{% endif %}">
-        <div class="card-header "><i class="fa-regular fa-circle-check text-success"></i> {% if title is defined %}{{ title }}{% else %}Confirmation{% endif %}</div>
+        <div class="card-header "><i
+                    class="fa-regular fa-circle-check text-success"></i> {% if title is defined %}{{ title }}{% else %}Confirmation{% endif %}
+        </div>
         <div class="card-body">
-            <p class="card-text">
+            <div class="card-text">
                 {{ content|markdown_to_html }}
-            </p>
+            </div>
+        </div>
+    </div>
+{% elseif type == 'gamemaster' %}
+    <div class="card mb-3 border-gamemaster{% if css is defined %} {{ css }}{% endif %}">
+        <div class="card-header "><i
+                    class="fa-regular fa-feather text-gamemaster"></i> {% if title is defined %}{{ title }}{% else %}Scénarisation{% endif %}
+        </div>
+        <div class="card-body">
+            <div class="card-text">
+                {{ content|markdown_to_html }}
+            </div>
         </div>
     </div>
 {% endif %}

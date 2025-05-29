@@ -169,14 +169,6 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         return $billets;
     }
 
-    public function setPassword(string $password): static
-    {
-        // we use a different password column until we switch the new larp
-        $this->pwd = $password;
-
-        return $this;
-    }
-
     /**
      * Returns the name, if set, or else "Anonymous {id}".
      *
@@ -252,6 +244,22 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         }
 
         return $last?->getPersonnage();
+    }
+
+    public function getPersonnage(): ?Personnage
+    {
+        return parent::getPersonnage() // actif
+            ?? $this->getPersonnages()->last()
+            ?? $this->getParticipants()->last()?->getPersonnage();
+
+    }
+
+    public function setPassword(string $password): static
+    {
+        // we use a different password column until we switch the new larp
+        $this->pwd = $password;
+
+        return $this;
     }
 
     /**

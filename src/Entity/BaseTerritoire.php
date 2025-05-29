@@ -908,9 +908,13 @@ abstract class BaseTerritoire
     /**
      * Get the value of statut.
      */
-    public function getStatut(): string|TerritoireStatut
+    public function getStatut(): ?TerritoireStatut
     {
-        return TerritoireStatut::tryFrom($this->statut) ?? TerritoireStatut::NORMAL;
+        if (!$this->statut) {
+            return TerritoireStatut::STABLE;
+        }
+
+        return TerritoireStatut::tryFrom($this->statut);
     }
 
     /**

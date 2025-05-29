@@ -372,8 +372,8 @@ class GroupeSecondaireController extends AbstractController
             );
 
             return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                'groupeSecondaire.list',
+                [],
                 303,
             );
         }
@@ -396,8 +396,8 @@ class GroupeSecondaireController extends AbstractController
             $this->addFlash('error', 'Vous avez déjà postulé dans ce groupe. Inutile d\'en refaire la demande.');
 
             return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
+                'groupeSecondaire.list',
+                [],
                 303,
             );
         }
@@ -437,7 +437,7 @@ class GroupeSecondaireController extends AbstractController
                 // envoi d'un mail au chef du groupe secondaire
                 if ($responsable = $groupeSecondaire->getResponsable()) {
                     $message = new Message();
-                    $message->setTitle('Candidature pour le groupe '.$groupeSecondaire->getLabel());
+                    $message->setTitle(substr('Candidat - '.$groupeSecondaire->getLabel(), 0, 45));
                     $message->setUserRelatedByAuteur($this->getUser());
                     $message->setUserRelatedByDestinataire($responsable->getUser());
                     $message->setCreationDate(new \DateTime('NOW'));
@@ -454,8 +454,8 @@ class GroupeSecondaireController extends AbstractController
                 $this->addFlash('success', 'Votre candidature a été enregistrée, et transmise au chef de groupe.');
 
                 return $this->redirectToRoute(
-                    'groupeSecondaire.detail',
-                    ['groupeSecondaire' => $groupeSecondaire->getId()],
+                    'groupeSecondaire.list',
+                    [],
                     303,
                 );
             }

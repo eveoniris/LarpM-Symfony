@@ -36,6 +36,14 @@ class EspeceForm extends AbstractType
                     'class' => 'tinymce',
                 ],
             ])
+            ->add('description_secrete', TextareaType::class, [
+                'required' => false,
+                'label' => 'Description secrète',
+                'attr' => [
+                    'rows' => 9,
+                    'class' => 'tinymce',
+                ],
+            ])
             ->add('secret', ChoiceType::class, [
                 'required' => true,
                 'choices' => [
@@ -61,8 +69,7 @@ class EspeceForm extends AbstractType
                 'choice_translation_domain' => 'enum',
                 // 'choice_label' => fn (EspeceType $type) => $type->trans($this->translator),
                 'label' => 'Type',
-            ])
-            /* TODO ?
+            ])/* TODO ?
             ->add('bonus', EntityType::class, [
                 'required' => false,
                 'label' => 'Bonus',

@@ -71,6 +71,12 @@ abstract class BaseItem
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'items')]
     protected Collection $personnages;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description_secrete = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description_scenariste = null;
+
     public function __construct()
     {
         $this->groupes = new ArrayCollection();
@@ -375,4 +381,28 @@ abstract class BaseItem
     {
         return ['id', 'label', 'description', 'numero', 'identification', 'quality_id', 'special', 'couleur', 'date_creation', 'date_update', 'statut_id', 'objet_id', 'quantite'];
     } */
+
+    public function getDescriptionSecrete(): ?string
+    {
+        return $this->description_secrete;
+    }
+
+    public function setDescriptionSecrete(?string $description_secrete): static
+    {
+        $this->description_secrete = $description_secrete;
+
+        return $this;
+    }
+
+    public function getDescriptionScenariste(): ?string
+    {
+        return $this->description_scenariste;
+    }
+
+    public function setDescriptionScenariste(?string $description_scenariste): static
+    {
+        $this->description_scenariste = $description_scenariste;
+
+        return $this;
+    }
 }
