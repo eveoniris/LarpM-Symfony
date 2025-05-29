@@ -229,6 +229,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 return $participant->getPersonnage();
             }
 
+            if ($personnage = $this->getUser()?->getPersonnage()) {
+                return $personnage;
+            }
+
             /** @var GnRepository $gnRepository */
             $gnRepository = $this->entityManager->getRepository(Gn::class);
             $gnActif = $gnRepository->findNext();

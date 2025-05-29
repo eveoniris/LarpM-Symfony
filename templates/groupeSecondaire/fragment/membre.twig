@@ -41,14 +41,14 @@
                    data-bs-title="Mort"></i>
             {% endif %}
             {% if isAdmin %}
-                <i class="fa fa-eye text-danger" data-toggle="tooltip"
-                   data-placement="top"
-                   title="Lien scénariste"></i>
-                <a href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">
+                <a class="link-gamemaster" href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">
+                    <i class="fa fa-feather" data-toggle="tooltip"
+                       data-placement="top"
+                       title="Lien scénariste"></i>
                     {{ personnage.identityByLabel(gn.getLabel()) }}
                 </a>
             {% else %}
-                {{ personnage.getPublicName }}
+                {{ personnage.idName }}
             {% endif %}
         </div>
     {% endset %}

@@ -442,8 +442,12 @@ class PersonnageService
         ?BonusPeriode $periode = null,
         ?Collection &$all = null,
     ): ArrayCollection {
+        if (!$groupe = $personnage->getLastParticipantGnGroupe()) {
+            return new ArrayCollection();
+        }
+
         return $this->groupeService->getGroupeBonus(
-            $personnage->getLastParticipantGnGroupe(),
+            $groupe,
             $type,
             $withDisabled,
             $periode,
@@ -460,8 +464,12 @@ class PersonnageService
     ): ArrayCollection {
         $all ??= new ArrayCollection();
 
+        if (!$groupe = $personnage->getLastParticipantGnGroupe()) {
+            return $all;
+        }
+        
         return $this->groupeService->getMerveilleBonus(
-            $personnage->getLastParticipantGnGroupe(),
+            $groupe,
             $type,
             $withDisabled,
             $periode,

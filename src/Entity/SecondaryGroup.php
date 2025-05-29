@@ -23,6 +23,11 @@ class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
         return $count_actifs;
     }
 
+    public function isMembreOrResponsable(Personnage $personnage): bool
+    {
+        return $this->isMembre($personnage) || $this->isResponsable($personnage);
+    }
+
     /**
      * Vérifie si un personnage est membre du groupe.
      */
@@ -37,25 +42,6 @@ class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
         return false;
     }
 
-    /**
-     * Vérifie si un personnage est postulant à ce groupe.
-     */
-    public function isPostulant(Personnage $personnage): bool
-    {
-        foreach ($this->getPostulants() as $postulant) {
-            if ($postulant->getPersonnage() == $personnage) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public function isReligion(): bool
-    {
-        return $this->secondaryGroupType->isReligion();
-    }
-
     public function isResponsable(Personnage $personnage): bool
     {
         return $personnage->getId() === $this->getResponsable()?->getId();
@@ -67,6 +53,25 @@ class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
     public function getResponsable()
     {
         return $this->getPersonnage();
+    }
+
+    /**
+     * Vérifie si un personnage est postulant à ce groupe.
+     */
+    public function isPostulant(Personnage $personnage): bool
+    {
+        foreach ($this->getPostulants() as $postulant) {
+            if ($postulant->getPersonnage()->getId() === $personnage->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isReligion(): bool
+    {
+        return $this->secondaryGroupType->isReligion();
     }
 
     /**

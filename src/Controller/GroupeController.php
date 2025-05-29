@@ -946,8 +946,6 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/print/background', name: 'print.background')]
     public function printBackgroundAction(
-        Request $request,
-
         #[MapEntity] Groupe $groupe,
     ): Response {
         return $this->render('groupe/printBackground.twig', [

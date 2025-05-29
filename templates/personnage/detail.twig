@@ -45,37 +45,41 @@
                     <div class="pull-right">
                         <div class="btn-toolbar" role="toolbar" aria-label="...">
                             <div class="btn-group" role="group" aria-label="...">
-                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Choisir une nouvelle religion"
-                                   href="{{ path('participant.religion.add',{'participant': participant.id}) }}"><i
-                                            class="fa fa-cloud"
-                                            aria-hidden="true"></i></a>
-                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Acheter une compétence"
-                                   href="{{ path('personnage.add.competence', {'personnage': personnage.id}) }}"><i
-                                            class="fa fa-graduation-cap" aria-hidden="true"></i></a>
-                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Modifier votre personnage"
-                                   href="{{ path('personnage.update', {'personnage': personnage.id}) }}"><i
-                                            class="fa fa-pencil" aria-hidden="true"></i>
-                                    {% if personnage.isBraceletSetted == false %}
-                                        <span class="position-absolute top-0 end-0 translate-middle badge z-3 p-1 bg-danger border border-light rounded-circle">
-									        <span class="visually-hidden">!</span>
-									    </span>
-                                    {% endif %}
-                                </a>
-                                {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::MAGIC')) %}
+                                {% if participant %}
                                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                       title="Découvrir la magie"
-                                       href="{{ path('personnage.magie', {'personnage': personnage.id}) }}"><i
-                                                class="fa fa-magic"
+                                       title="Choisir une nouvelle religion"
+                                       href="{{ path('participant.religion.add',{'participant': participant.id}) }}"><i
+                                                class="fa fa-cloud"
                                                 aria-hidden="true"></i></a>
                                 {% endif %}
-                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Imprimer votre personnage"
-                                   href="{{ path('personnage.export', {'personnage':personnage.id}) }}"><i
-                                            class="fa fa-print"
-                                            aria-hidden="true"></i></a>
+                                {% if personnage %}
+                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Acheter une compétence"
+                                       href="{{ path('personnage.add.competence', {'personnage': personnage.id}) }}"><i
+                                                class="fa fa-graduation-cap" aria-hidden="true"></i></a>
+                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Modifier votre personnage"
+                                       href="{{ path('personnage.update', {'personnage': personnage.id}) }}"><i
+                                                class="fa fa-pencil" aria-hidden="true"></i>
+                                        {% if personnage.isBraceletSetted == false %}
+                                            <span class="position-absolute top-0 end-0 translate-middle badge z-3 p-1 bg-danger border border-light rounded-circle">
+									        <span class="visually-hidden">!</span>
+									    </span>
+                                        {% endif %}
+                                    </a>
+                                    {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::MAGIC')) %}
+                                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                           title="Découvrir la magie"
+                                           href="{{ path('personnage.magie', {'personnage': personnage.id}) }}"><i
+                                                    class="fa fa-magic"
+                                                    aria-hidden="true"></i></a>
+                                    {% endif %}
+                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Imprimer votre personnage"
+                                       href="{{ path('personnage.export', {'personnage':personnage.id}) }}"><i
+                                                class="fa fa-print"
+                                                aria-hidden="true"></i></a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

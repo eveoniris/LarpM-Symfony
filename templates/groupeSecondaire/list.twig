@@ -69,7 +69,13 @@
 
                 <td>
                     {% if isAdmin %}
-                        <a href="{{ path('groupeSecondaire.detail', {'groupeSecondaire':groupeSecondaire.id}) }}">{{ groupeSecondaire.label }} </a>
+                        <a class="link-gamemaster"
+                           href="{{ path('groupeSecondaire.detail', {'groupeSecondaire':groupeSecondaire.id}) }}">
+                            <i class="fa fa-feather" data-toggle="tooltip"
+                               data-placement="top"
+                               title="Info scénariste"></i>
+                            {{ groupeSecondaire.label }}
+                        </a>
                     {% else %}
                         {{ groupeSecondaire.label }}
                     {% endif %}
@@ -80,13 +86,23 @@
                     <td class="text-center">{{ groupeSecondaire.membres|length }}</td>
                 {% endif %}
                 <td class="text-center">
-                    <div class="d-flex justify-content-center">
-
-                        {% set displayPostuler = true %}
-                        {% set displayVoir = false %}
-                        {% if groupeSecondaire.isPostulant(app.user.personnage) %}
+                    {% set displayPostuler = true %}
+                    {% set isMembreOrPostulant = groupeSecondaire.isMembreOrResponsable(app.user.personnage) %}
+                    {% if groupeSecondaire.isPostulant(app.user.personnage) or isMembreOrPostulant %}
+                        {% set displayPostuler = false %}
+                        {% if not isMembreOrPostulant %}
+                            <div class="mb-2">
+                                <span class="badge rounded-pill bg-secondary">demande en cours</span>
+                            </div>
                         {% endif %}
+                    {% endif %}
 
+                    {% set displayVoir = false or isAdmin %}
+                    {% if groupeSecondaire.isMembreOrResponsable(app.user.personnage) or isAdmin %}
+                        {% set displayVoir = true %}
+                    {% endif %}
+
+                    <div class="d-flex justify-content-center">
                         {% include '_partials/btnGroup.twig' with { 'css': 'btn-group-vertical', 'display': true, 'buttons' :
                             [
                                 {'title': 'Voir le groupe secondaire', 'route':path('groupeSecondaire.detail', {'groupeSecondaire':groupeSecondaire.id}), 'icon': 'fa-eye', 'visible': displayVoir, 'label': 'Voir' },

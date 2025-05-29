@@ -1,4 +1,4 @@
-{% extends "layout.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}{{ personnage.publicName }}{% endblock title %}
 
@@ -13,9 +13,9 @@
 		<li class="active">Choix d'une nouvelle langue</li>
 	</ol>
 	
-	<div class="well bs-component">
+	<div class="well well-sm bs-component">
 			<blockquote>Votre compétence vous permet de choisir une nouvelle langue ancienne.</blockquote>
-	{{ form(form) }}
+			{{ form(form) }}
 	</div>
 </div>
 

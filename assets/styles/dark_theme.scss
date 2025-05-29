@@ -95,15 +95,15 @@
   }
 
   .link-gamemaster {
-    color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-opacity, 1)) !important;
-    -webkit-text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity, 1)) !important;
-    text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity, 1)) !important
+    color: var(--bs-gamemaster) !important;
+    -webkit-text-decoration-color: var(--bs-gamemaster) !important;
+    text-decoration-color: var(--bs-gamemaster) !important;
   }
 
   .link-gamemaster:focus, .link-gamemaster:hover {
-    color: RGBA(255, 205, 57, var(--bs-link-opacity, 1)) !important;
-    -webkit-text-decoration-color: RGBA(255, 205, 57, var(--bs-link-underline-opacity, 1)) !important;
-    text-decoration-color: RGBA(255, 205, 57, var(--bs-link-underline-opacity, 1)) !important
+    color: var(--bs-gamemaster-text-emphasis) !important;
+    -webkit-text-decoration-color: var(--bs-gamemaster-text-emphasis) !important;
+    text-decoration-color: var(--bs-gamemaster-text-emphasis) !important;
   }
 
   .text-bg-gamemaster {
