@@ -18,6 +18,9 @@ enum TriggerType: string
     case SORT_MAITRE = 'SORT MAITRE';
     case LITTERATURE_INITIE = 'LITTERATURE INITIE';
     case LITTERATURE_EXPERT = 'LITTERATURE EXPERT';
+    case LITTERATURE_COURANTE = 'LITTERATURE COURANTE';
+    case LITTERATURE_COURANT = 'LITTERATURE COURANT';
+    case LITTERATURE_COMMUNE = 'LITTERATURE COMMUNE';
     case PRETRISE_INITIE = 'PRETRISE INITIE';
     case TECHNOLOGIE = 'TECHNOLOGIE';
     case DOMAINE_MAGIE = 'DOMAINE MAGIE';
@@ -37,6 +40,7 @@ enum TriggerType: string
             self::SORT_INITIE => 'permet de choisir un sort de niveau Initié',
             self::SORT_EXPERT => 'permet de choisir un sort de niveau Expert',
             self::SORT_MAITRE => 'permet de choisir un sort de niveau Maître',
+            self::LITTERATURE_COURANTE, self::LITTERATURE_COURANT, self::LITTERATURE_COMMUNE => 'permet de choisir une langue supplémentaire sauf parmis les anciennes',
             self::LITTERATURE_INITIE => 'permet de choisir trois langues supplémentaires sauf parmis les anciennes',
             self::LITTERATURE_EXPERT => 'permet de choisir trois langues supplémentaires dont 1 ancienne',
             self::PRETRISE_INITIE => 'permet de choisir trois descriptifs de religion',
@@ -46,5 +50,21 @@ enum TriggerType: string
             self::LANGUE_ANCIENNE => 'permet de choisir une langue ancienne',
             default => throw new \Exception('Unexpected match value '.$this->value),
         };
+    }
+
+    public function isLangueAncienne(): bool
+    {
+        return $this->value === self::LANGUE_ANCIENNE->value;
+    }
+
+    public function isLitreratureCommune(): bool
+    {
+        return $this->value === self::LITTERATURE_COMMUNE->value;
+    }
+
+    public function isLitreratureCourante(): bool
+    {
+        return $this->value === self::LITTERATURE_COURANTE->value
+            || $this->value === self::LITTERATURE_COURANT->value;
     }
 }

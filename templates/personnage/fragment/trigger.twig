@@ -28,17 +28,17 @@
 
            <ul class="list-group">
                {% for trigger in personnage.personnageTriggers %}
-                   {% if  trigger.tag and trigger.tag.value == 'LANGUE COMMUNE' %}
+                   {% if  trigger.tag and trigger.tag.isLitreratureCommune %}
                        <li class="list-group-item"><a
                                    href="{{ path('participant.langueCommune', {'participant': participant.id}) }}">
                                Choisir une langue commune supplémentaire</a></li>
                    {% endif %}
-                   {% if  trigger.tag and trigger.tag.value == 'LANGUE COURANTE' %}
+                   {% if  trigger.tag and trigger.tag.isLitreratureCourante %}
                        <li class="list-group-item"><a
                                    href="{{ path('participant.langueCourante', {'participant': participant.id}) }}">
                                Choisir une langue courante supplémentaire</a></li>
                    {% endif %}
-                   {% if  trigger.tag and trigger.tag.value == 'LANGUE ANCIENNE' %}
+                   {% if  trigger.tag and trigger.tag.isLangueAncienne %}
                        <li class="list-group-item"><a
                                    href="{{ path('participant.langueAncienne', {'participant': participant.id}) }}">
                                Choisir une langue ancienne supplémentaire</a></li>
