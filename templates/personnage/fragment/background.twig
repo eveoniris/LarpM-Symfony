@@ -20,34 +20,43 @@
     {% endif %}
 
     {# Gestion du background du personnage #}
+    {% set hasOne = false %}
     {% for background in personnage.personnageBackgrounds %}
-        <div class="card{% if not loop.last %} mb-4{% endif %}">
-            <div class="card-header">
-                <div class="d-flex justify-content-between card-title">
-                    <h6 class="list-group-item-heading">Background ({{ background.gn.label }}) -
-                        <strong>{{ background.visibility }}</strong></h6>
-                    {% if isAdmin %}
-                        <div class="btn-group">
-                            <a class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Modifier"
-                               href="{{ path('personnage.update.background', {'personnage': personnage.id, 'background': background.id}) }}"><i
-                                        class="fa fa-pencil"></i> Modifier</a>
-                            <a class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Supprimer"
-                               href="{{ path('personnage.delete.background', {'personnage': personnage.id, 'background': background.id}) }}"><i
-                                        class="fa fa-eraser"></i> Supprimer</a>
-                        </div>
-                    {% endif %}
+        {% if not background.isPrivate or isAdmin %}
+            {% set hasOne = true %}
+            <div class="card{% if not loop.last %} mb-4{% endif %}">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between card-title">
+                        <h6 class="list-group-item-heading">Background ({{ background.gn.label }}) -
+                            <strong>{{ background.visibility }}</strong></h6>
+                        {% if isAdmin %}
+                            <div class="btn-group">
+                                <a class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Modifier"
+                                   href="{{ path('personnage.update.background', {'personnage': personnage.id, 'background': background.id}) }}"><i
+                                            class="fa fa-pencil"></i> Modifier</a>
+                                <a class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Supprimer"
+                                   href="{{ path('personnage.delete.background', {'personnage': personnage.id, 'background': background.id}) }}"><i
+                                            class="fa fa-eraser"></i> Supprimer</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-text">
+                        {{ background.text|markdown_to_html }}
+                    </div>
                 </div>
             </div>
-            <div class="card-body">
-                <div class="card-text">
-                    {{ background.text|markdown_to_html }}
-                </div>
-            </div>
-        </div>
+        {% endif %}
     {% else %}
+        {% set hasOne = true %}
         {% include '_partials/noResult.twig' with {'content' : "Ce personnage n'a pas de background individuel."} %}
     {% endfor %}
+
+    {% if not hasOne %}
+        {% include '_partials/noResult.twig' with {'content' : "Ce personnage n'a pas de background individuel."} %}
+    {% endif %}
 
 </div>
