@@ -13,13 +13,18 @@ class PersonnageBackground extends BasePersonnageBackground
         $this->setUpdateDate(new \DateTime('NOW'));
     }
 
+    public function getDescription(): string
+    {
+        return $this->getText() ?? '';
+    }
+
     public function getLabel(): string
     {
         return $this->getGn();
     }
 
-    public function getDescription(): string
+    public function isPrivate(): bool
     {
-        return $this->getText() ?? '';
+        return strtolower($this->visibility) === 'private';
     }
 }

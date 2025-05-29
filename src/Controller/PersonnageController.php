@@ -289,6 +289,28 @@ class PersonnageController extends AbstractController
 
     protected function hasAccess(Personnage $personnage, array $roles = []): void
     {
+        $isAdmin = false;
+        foreach ($roles as $role) {
+            if ($this->isGranted($role->value)) {
+                $isAdmin = true;
+            }
+        }
+
+        $isPersonnage = false;
+        foreach ($this->getUser()?->getPersonnages() as $personnageUser) {
+            if ($personnageUser->getId() === $personnage->getId()) {
+                $isPersonnage = true;
+            }
+        }
+
+        $this->setCan(self::IS_ADMIN, $isAdmin);
+        $this->setCan(self::IS_MEMBRE, $isPersonnage);
+        $this->setCan(self::CAN_MANAGE, $isAdmin);
+        $this->setCan(self::CAN_READ_PRIVATE, $isPersonnage || $isAdmin);
+        $this->setCan(self::CAN_READ_SECRET, $isPersonnage || $isAdmin);
+        $this->setCan(self::CAN_WRITE, $isPersonnage || $isAdmin);
+        $this->setCan(self::CAN_READ, $isPersonnage || $this->can(self::CAN_READ));
+
         /** @var User $user */
         $user = $this->getUser();
         // Doit être connecté
@@ -550,6 +572,7 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}/connaissance/{connaissance}/add', name: 'add.connaissance')]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminAddConnaissanceAction(
+        Request $request,
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Connaissance $connaissance,
     ): RedirectResponse {
@@ -2620,8 +2643,6 @@ class PersonnageController extends AbstractController
             }
         }
 
-        dd('ok');
-
         return $this->render('personnage/list.twig', []);
     }
 
@@ -2971,7 +2992,6 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-
         // TEMP UNTIL FIX
         $this->addFlash(
             'error',
@@ -2979,7 +2999,6 @@ class PersonnageController extends AbstractController
         );
 
         return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-
 
         $availableDescriptionReligion = $this->personnageService->getAvaReliilableDescriptionReligion($personnage);
 
