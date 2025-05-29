@@ -131,7 +131,7 @@
         {% endif %}
 
         {% set scenaristeHtml %}
-            {% if participant.personnage %}
+            {% if participant.personnage is defined %}
                 {% if participant.groupeGn %}
                     {% if participant.groupeGn.groupe %}
                         {% if not participant.groupeGn.groupe.scenariste %}
@@ -335,7 +335,7 @@
                         <i class="fa fa-edit" aria-hidden="true"></i>
                     </a>
                 </div>
-            {% elseif isAdmin %}
+            {% elseif isAdmin and participant %}
                 <a class="text-danger"
                    href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">
                     Choisir son personnage secondaire

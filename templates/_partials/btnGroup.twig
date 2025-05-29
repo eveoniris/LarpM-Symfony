@@ -18,17 +18,21 @@
 
                 {% for button in buttons %}
 
-                    {# may only some button are admin reserved #}
-                    {% if button.isAdmin is not defined or not button.isAdmin or (button.isAdmin and isAdmin) %}
-                        <a class="btn {% if button.css is defined %} {{ button.css|join(' ') }}{% else %}btn-secondary{% endif %} align-self-center"
-                           data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                {% if button.title is defined %} title="{{ button.title }}" {% endif %}
-                                {% if button.target is defined %}target="{{ button.target }}"{% endif %}
-                                {% if button.route is defined %}href="{{ button.route }}"{% endif %}>
-                            {% if button.icon is defined %}<i class="fa {{ button.icon }}"></i>{% endif %}
-                            {% if button.label is defined %}{{ button.label }}{% endif %}
-                        </a>
+                    {% if button.visible is not defined or (button.visible is defined and button.visible) %}
+
+                        {# may only some button are admin reserved #}
+                        {% if button.isAdmin is not defined or not button.isAdmin or (button.isAdmin and isAdmin) %}
+                            <a class="btn {% if button.css is defined %} {{ button.css|join(' ') }}{% else %}btn-secondary{% endif %} align-self-center"
+                               data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                    {% if button.title is defined %} title="{{ button.title }}" {% endif %}
+                                    {% if button.target is defined %}target="{{ button.target }}"{% endif %}
+                                    {% if button.route is defined %}href="{{ button.route }}"{% endif %}>
+                                {% if button.icon is defined %}<i class="fa {{ button.icon }}"></i>{% endif %}
+                                {% if button.label is defined %}{{ button.label }}{% endif %}
+                            </a>
+                        {% endif %}
                     {% endif %}
+
                 {% endfor %}
 
             </div>

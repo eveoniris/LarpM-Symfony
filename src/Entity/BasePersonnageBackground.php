@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'personnage_background')]
@@ -19,10 +20,11 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageBackground', 'extended' => 'PersonnageBackground'])]
 abstract class BasePersonnageBackground
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, nullable: true)]
+    #[Assert\NotNull]
     protected ?string $text = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
@@ -44,60 +46,15 @@ abstract class BasePersonnageBackground
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'personnageBackgrounds')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
-    protected $gn;
+    #[Assert\NotNull]
+    protected ?Gn $gn = null;
 
     /**
-     * Set the value of id.
+     * Get the value of creation_date.
      */
-    public function setId(int $id): static
+    public function getCreationDate(): \DateTime
     {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of text.
-     */
-    public function setText(string $text): static
-    {
-        $this->text = $text;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of text.
-     */
-    public function getText(): string
-    {
-        return $this->text ?? '';
-    }
-
-    /**
-     * Set the value of visibility.
-     */
-    public function setVisibility(string $visibility): static
-    {
-        $this->visibility = $visibility;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of visibility.
-     */
-    public function getVisibility(): string
-    {
-        return $this->visibility ?? '';
+        return $this->creation_date;
     }
 
     /**
@@ -111,65 +68,11 @@ abstract class BasePersonnageBackground
     }
 
     /**
-     * Get the value of creation_date.
+     * Get Gn entity (many to one).
      */
-    public function getCreationDate(): \DateTime
+    public function getGn(): ?Gn
     {
-        return $this->creation_date;
-    }
-
-    /**
-     * Set the value of update_date.
-     */
-    public function setUpdateDate(\DateTime $update_date): static
-    {
-        $this->update_date = $update_date;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of update_date.
-     */
-    public function getUpdateDate(): \DateTime
-    {
-        return $this->update_date;
-    }
-
-    /**
-     * Set Personnage entity (many to one).
-     */
-    public function setPersonnage(?Personnage $personnage = null): static
-    {
-        $this->personnage = $personnage;
-
-        return $this;
-    }
-
-    /**
-     * Get Personnage entity (many to one).
-     */
-    public function getPersonnage(): Personnage
-    {
-        return $this->personnage;
-    }
-
-    /**
-     * Set User entity (many to one).
-     */
-    public function setUser(?User $User = null): static
-    {
-        $this->user = $User;
-
-        return $this;
-    }
-
-    /**
-     * Get User entity (many to one).
-     */
-    public function getUser(): ?User
-    {
-        return $this->user;
+        return $this->gn;
     }
 
     /**
@@ -183,11 +86,111 @@ abstract class BasePersonnageBackground
     }
 
     /**
-     * Get Gn entity (many to one).
+     * Get the value of id.
      */
-    public function getGn(): ?Gn
+    public function getId(): int
     {
-        return $this->gn;
+        return $this->id;
+    }
+
+    /**
+     * Set the value of id.
+     */
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get Personnage entity (many to one).
+     */
+    public function getPersonnage(): Personnage
+    {
+        return $this->personnage;
+    }
+
+    /**
+     * Set Personnage entity (many to one).
+     */
+    public function setPersonnage(?Personnage $personnage = null): static
+    {
+        $this->personnage = $personnage;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of text.
+     */
+    public function getText(): string
+    {
+        return $this->text ?? '';
+    }
+
+    /**
+     * Set the value of text.
+     */
+    public function setText(string $text): static
+    {
+        $this->text = $text;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of update_date.
+     */
+    public function getUpdateDate(): \DateTime
+    {
+        return $this->update_date;
+    }
+
+    /**
+     * Set the value of update_date.
+     */
+    public function setUpdateDate(\DateTime $update_date): static
+    {
+        $this->update_date = $update_date;
+
+        return $this;
+    }
+
+    /**
+     * Get User entity (many to one).
+     */
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set User entity (many to one).
+     */
+    public function setUser(?User $User = null): static
+    {
+        $this->user = $User;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of visibility.
+     */
+    public function getVisibility(): string
+    {
+        return $this->visibility ?? '';
+    }
+
+    /**
+     * Set the value of visibility.
+     */
+    public function setVisibility(string $visibility): static
+    {
+        $this->visibility = $visibility;
+
+        return $this;
     }
 
     /* public function __sleep()

@@ -27,10 +27,18 @@
         {% endif %}
 
         {% if canManage %}
-            <div class="panel-heading d-flex justify-content-end mb-2">
-                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier"
-                   href="{{ path('groupeSecondaire.update', {'groupeSecondaire': groupeSecondaire.id}) }}"><i
-                            class="fa fa-pencil"></i> Modifier</a>
+
+            <div class="d-flex justify-content-end">
+
+                <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                    <div class="btn-group" role="group">
+
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Modifier"
+                           href="{{ path('groupeSecondaire.update',{'groupeSecondaire':groupeSecondaire.id}) }}"><i
+                                    class="fa fa-pencil"></i> Modifier</a>
+                    </div>
+                </div>
             </div>
         {% endif %}
 
@@ -44,9 +52,12 @@
 
                 {% if canReadSecret %}
                     <div class="list-group-item">
-                        <h6><i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
-                               title="Secret"></i> Description (secrete)</h6>
-                        <p>{{ groupeSecondaire.descriptionSecrete|markdown_to_html }}</p>
+                        <h6 class="border-warning border-bottom pb-1">
+                            <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+                               title="Secret"></i> Description secrète</h6>
+                        <div>
+                            {{ groupeSecondaire.descriptionSecrete|markdown_to_html }}
+                        </div>
                     </div>
                 {% endif %}
 
@@ -161,6 +172,23 @@
         <div class="header">
             <h5>Liste des membres</h5>
         </div>
+
+        {% if canManage %}
+
+            <div class="d-flex justify-content-end">
+
+                <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                    <div class="btn-group" role="group">
+
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Ajouter un membre"
+                           href="{{ path('groupeSecondaire.newMembre',{'groupeSecondaire':groupeSecondaire.id}) }}"><i
+                                    class="fa fa-plus"></i> Ajouter</a>
+
+                    </div>
+                </div>
+            </div>
+        {% endif %}
 
         <div class="panel-body">
 

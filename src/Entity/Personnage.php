@@ -648,7 +648,7 @@ class Personnage extends BasePersonnage implements \Stringable
             $lastParticipantGn = $lastParticipant->getGn();
             $lastParticipantGroupeGn = $lastParticipant->getGroupeGn();
             if (!empty($lastParticipantGroupeGn)
-                && $lastParticipantGn->getLabel() == $lastParticipantGroupeGn->getGn()->getLabel()) {
+                && $lastParticipantGn->getId() === $lastParticipantGroupeGn->getGn()->getId()) {
                 return $lastParticipantGroupeGn->getGroupe();
             }
         }

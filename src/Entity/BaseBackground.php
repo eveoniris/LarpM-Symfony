@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'background')]
@@ -19,22 +21,23 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseBackground', 'extended' => 'Background'])]
 class BaseBackground
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(name: 'titre', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(name: 'titre', type: Types::STRING, length: 45)]
+    #[Assert\NotNull]
     protected string $titre = '';
 
-    #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(name: 'text', type: Types::TEXT, nullable: true)]
     protected ?string $text = null;
 
-    #[Column(name: 'visibility', type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(name: 'visibility', type: Types::STRING, nullable: true)]
     protected ?string $visibility = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $creation_date;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTime $update_date;
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'backgrounds')]
@@ -47,58 +50,16 @@ class BaseBackground
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'backgrounds')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id')]
+    #[Assert\NotNull]
     protected ?Gn $gn = null;
 
     public function __construct()
     {
     }
 
-    public function setId(int $id): self
+    public function getCreationDate(): ?\DateTime
     {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setTitre(string $titre): self
-    {
-        $this->titre = $titre;
-
-        return $this;
-    }
-
-    public function getTitre(): string
-    {
-        return $this->titre;
-    }
-
-    public function setText(string $text): self
-    {
-        $this->text = $text;
-
-        return $this;
-    }
-
-    public function getText(): ?string
-    {
-        return $this->text;
-    }
-
-    public function setVisibility(string $visibility): self
-    {
-        $this->visibility = $visibility;
-
-        return $this;
-    }
-
-    public function getVisibility(): ?string
-    {
-        return $this->visibility;
+        return $this->creation_date;
     }
 
     public function setCreationDate(?\DateTime $creation_date): self
@@ -108,26 +69,14 @@ class BaseBackground
         return $this;
     }
 
-    public function getCreationDate(): ?\DateTime
+    public function getGn(): ?Gn
     {
-        return $this->creation_date;
+        return $this->gn;
     }
 
-    public function setUpdateDate(?\DateTime $update_date): self
+    public function setGn(?Gn $gn = null): self
     {
-        $this->update_date = $update_date;
-
-        return $this;
-    }
-
-    public function getUpdateDate(): ?\DateTime
-    {
-        return $this->update_date;
-    }
-
-    public function setGroupe(Groupe $groupe = null): self
-    {
-        $this->groupe = $groupe;
+        $this->gn = $gn;
 
         return $this;
     }
@@ -137,9 +86,57 @@ class BaseBackground
         return $this->groupe;
     }
 
-    public function setUser(User $User = null)
+    public function setGroupe(?Groupe $groupe = null): self
     {
-        $this->user = $User;
+        $this->groupe = $groupe;
+
+        return $this;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getText(): ?string
+    {
+        return $this->text;
+    }
+
+    public function setText(string $text): self
+    {
+        $this->text = $text;
+
+        return $this;
+    }
+
+    public function getTitre(): string
+    {
+        return $this->titre;
+    }
+
+    public function setTitre(string $titre): self
+    {
+        $this->titre = $titre;
+
+        return $this;
+    }
+
+    public function getUpdateDate(): ?\DateTime
+    {
+        return $this->update_date;
+    }
+
+    public function setUpdateDate(?\DateTime $update_date): self
+    {
+        $this->update_date = $update_date;
 
         return $this;
     }
@@ -149,16 +146,23 @@ class BaseBackground
         return $this->user;
     }
 
-    public function setGn(Gn $gn = null): self
+    public function setUser(?User $User = null)
     {
-        $this->gn = $gn;
+        $this->user = $User;
 
         return $this;
     }
 
-    public function getGn(): ?Gn
+    public function getVisibility(): ?string
     {
-        return $this->gn;
+        return $this->visibility;
+    }
+
+    public function setVisibility(string $visibility): self
+    {
+        $this->visibility = $visibility;
+
+        return $this;
     }
 
     /* public function __sleep()

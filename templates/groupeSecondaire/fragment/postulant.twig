@@ -21,15 +21,44 @@
         <div class="list-group-item">
             Personnage :
             {% if isAdmin %}
-                <i class="fa fa-eye text-danger" data-toggle="tooltip"
-                   data-placement="top"
-                   title="Lien scénariste"></i>
-                <a
-                        href="{{ path('personnage.detail', {'personnage':postulant.personnage.id}) }}">{{ postulant.personnage.publicname }}</a>
+                <a class="link-gamemaster"
+                   href="{{ path('personnage.detail', {'personnage':postulant.personnage.id}) }}">
+                    <i class="fa fa-feather" data-toggle="tooltip"
+                       data-placement="top"
+                       title="Lien scénariste"></i> {{ postulant.personnage.publicname }}
+                </a>
             {% else %}
                 {{ postulant.personnage.publicname }}
             {% endif %}
         </div>
+
+        {% if isAdmin %}
+            {% if postulant.personnage.groupe %}
+                <div class="list-group-item">
+                    Groupe :
+                    <a class="link-gamemaster"
+                       href="{{ path('groupe.detail', {'groupe': postulant.personnage.groupe.id}) }}">
+                        <i class="fa fa-feather" data-toggle="tooltip"
+                           data-placement="top"
+                           title="Info scénariste"></i>
+                        {{ postulant.personnage.groupe.nom }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if postulant.personnage.user %}
+                <div class="list-group-item">
+                    Utilisateur :
+                    <a class="link-gamemaster"
+                       href="{{ path('user.view', {'user': postulant.personnage.user.id}) }}">
+                        <i class="fa fa-feather" data-toggle="tooltip"
+                           data-placement="top"
+                           title="Info scénariste"></i>
+                        {{ postulant.personnage.user.username }}
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
 
         {% if groupeSecondaire.secondaryGroupType.isReligion %}
             <div class="list-group-item">
@@ -47,10 +76,12 @@
             </div>
         {% endif %}
 
-        <div class="list-group-item">
-            Date de la demande
-            : {{ postulant.date|date('Y-m-d') }}
-        </div>
+        {% if postulant.date %}
+            <div class="list-group-item">
+                Date de la demande
+                : {{ postulant.date|date('Y-m-d') }}
+            </div>
+        {% endif %}
 
         {% if postulant.waiting %}
             <div class="list-group-item">
@@ -68,32 +99,6 @@
                                         <i class="fa fa-warning"></i> Ne participe pas à {{ gn.label }}
                                     </span>
             </div>
-        {% endif %}
-
-        {% if isAdmin %}
-            {% if postulant.personnage.groupe %}
-                <div class="list-group-item">
-                    <i class="fa fa-eye text-danger" data-toggle="tooltip"
-                       data-placement="top"
-                       title="Info scénariste"></i>
-                    Groupe :
-                    <a
-                            href="{{ path('groupe.detail', {'groupe': postulant.personnage.groupe.id}) }}">
-                        {{ postulant.personnage.groupe.nom }}
-                    </a>
-                </div>
-            {% endif %}
-
-            {% if postulant.personnage.user %}
-                <div class="list-group-item">
-                    <i class="fa fa-eye text-danger" data-toggle="tooltip"
-                       data-placement="top"
-                       title="Info scénariste"></i>
-                    Utilisateur :
-                    <a
-                            href="{{ path('user.view', {'user': postulant.personnage.user.id}) }}">{{ postulant.personnage.user.username }}</a>
-                </div>
-            {% endif %}
         {% endif %}
 
         <div class="list-group-item">

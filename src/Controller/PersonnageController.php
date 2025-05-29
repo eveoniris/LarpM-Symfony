@@ -2973,7 +2973,11 @@ class PersonnageController extends AbstractController
 
 
         // TEMP UNTIL FIX
-        $this->addFlash('error', 'Par Crom ! Un rituel est en cours, veuillez ne pas importuner. Vous pourrez revenir sous peu une fois que tout aura été nettoyé');
+        $this->addFlash(
+            'error',
+            'Par Crom ! Un rituel est en cours, veuillez ne pas importuner. Vous pourrez revenir sous peu une fois que tout aura été nettoyé',
+        );
+
         return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
 
 

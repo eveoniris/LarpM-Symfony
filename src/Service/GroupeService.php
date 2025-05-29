@@ -704,7 +704,7 @@ readonly class GroupeService
         }
 
         return $secondaryGroup->isMembre($personnage)
-            ?: $secondaryGroup->isResponsable($personnage);
+            || $secondaryGroup->isResponsable($personnage);
     }
 
     public function isUserIsGroupeMember(Groupe $groupe): bool
