@@ -593,11 +593,12 @@ class ParticipantController extends AbstractController
 
     protected function hasAccess(Participant $participant, array $roles = []): void
     {
+
         $this->setCan(self::IS_ADMIN, $this->isGranted(Role::SCENARISTE->value));
 
         $this->checkHasAccess(
             $roles,
-            fn() => $participant->getPersonnage()?->getUser()?->getId() !== $this->getUser()?->getId(),
+            fn() => $participant->getPersonnage()?->getUser()?->getId() === $this->getUser()?->getId(),
         );
     }
 
@@ -2248,7 +2249,7 @@ class ParticipantController extends AbstractController
         if (!$personnage->hasTrigger('LANGUE ANCIENNE')) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue ancienne supplémentaire.');
 
-                return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         $availableLangues = $personnageService->getAvailableLangues($personnage, 0);

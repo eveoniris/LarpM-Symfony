@@ -75,7 +75,7 @@ class GroupeSecondaireController extends AbstractController
         string $lowestCan = self::CAN_READ,
     ): void {
         $this->loadAccess($secondaryGroup, $roles);
-        $this->checkHasAccess($roles, fn () => $this->can($lowestCan));
+        $this->checkHasAccess($roles, fn() => $this->can($lowestCan));
     }
 
     protected function loadAccess(
@@ -514,9 +514,9 @@ class GroupeSecondaireController extends AbstractController
      */
     #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     #[Route('/groupeSecondaire/printAll', name: 'groupeSecondaire.materiel.printAll')]
-    public function materielPrintAllAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function materielPrintAllAction(): Response
     {
-        $groupeSecondaires = $entityManager->getRepository(SecondaryGroup::class)->findAll();
+        $groupeSecondaires = $this->entityManager->getRepository(SecondaryGroup::class)->findAll();
 
         return $this->render('groupeSecondaire/printAll.twig', [
             'groupeSecondaires' => $groupeSecondaires,
