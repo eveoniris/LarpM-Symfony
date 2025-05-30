@@ -4,20 +4,17 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("annonce.list") }}">Liste des annonces</a></li>
-		<li class="active">Ajout d'une annonce</li>
-	</ol>
-	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('annonce.add') }}) }}
-			<fieldset>
-				<legend>Ajout d'une annonce</legend>
-					
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>
-	
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path("annonce.list") }}">Liste des annonces</a></li>
+        <li class="active">Ajout d'une annonce</li>
+    </ol>
+
+    <div class="well bs-component">
+        <div class="header">
+            <h5>Ajouter une annonce</h5>
+        </div>
+        {{ form(form) }}
+    </div>
+
 {% endblock body %}
