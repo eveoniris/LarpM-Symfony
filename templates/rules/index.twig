@@ -4,41 +4,86 @@
 
 {% block body %}
 
-<div class="well">
-	
-	<div class="row">
-		<div class="col-md-6">
-			<div class="header"><h5>Ajouter un fichier de règle</h5></div>
-			
-			<blockquote>Choisissez votre fichier pdf et téléversez le dans larpManager. Vous devez spécifier son label ainsi qu'une petite description.</blockquote>
-			
-			{{ form_start(form, {"attr": {"action": path('rules') }}) }}			
-					
-					{{ form(form) }}
-					{{ form_rest(form) }}
-			{{ form_end(form) }}
-		</div>
-		<div class="col-md-6">
-	
-			<div class="header"><h5>Liste des règles</h5></div>
-			
-			<blockquote>Les fichiers suivants sont disponibles pour tous les joueurs</blockquote>
-			
-			<div class="list-group">
-				{% for regle in regles %}
-						<div class="list-group-item">
-							<h5 class="list-group-item-heading">{{ regle.label }}
-								<div class="pull-right">
-									<small><a target="_blank" href="{{ path('rule.document',{'rule': regle.id}) }}"><i class="fa fa-download"></i> Téléchargez le fichier</a></small>
-								</div>
-							</h5>
-							<p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
-							<p class="list-group-item-text"><a href="{{ path('rule.delete',{'rule': regle.id}) }}"><i class="fa fa-remove"></i> Supprimer le fichier</a></p>
-						</div>
-				{% endfor %}
-			</div>
-		</div>
-	</div>
-</div>
+    <div class="well">
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="header"><h5>Ajouter un fichier de règle</h5></div>
+
+                <blockquote>Choisissez votre fichier pdf et téléversez le dans larpManager. Vous devez spécifier son
+                    label ainsi qu'une petite description.
+                </blockquote>
+
+                {{ form_start(form, {"attr": {"action": path('rules') }}) }}
+
+                {{ form(form) }}
+                {{ form_rest(form) }}
+                {{ form_end(form) }}
+            </div>
+
+            <div class="well bs-component">
+
+                <div class="header"><h5>Liste des vidéos</h5></div>
+
+                <h6>Vidéos d'exemples de règles</h6>
+
+                <p>
+                    Vous pourrez retrouver ici quelques vidéos de règles : <a
+                            href="https://www.youtube.com/playlist?list=PLf4sB0v9r7NEAbDJME9RoWadn4mOGIKF3">Playlists
+                        des règles
+                        LH7</a>.
+                </p>
+
+                <ul>
+                    <li>
+                        LH7 : Remplacez les itérations de "Charme" par "Charisme" pour la vidéo en question à partir du
+                        LH6.
+                    </li>
+                    <li>
+                        LH6 : Remplacez les itérations de "Charme" par "Charisme" pour la vidéo en question à partir du
+                        LH6.
+                    </li>
+                </ul>
+
+                <div class="list-group">
+                    {% for regle in regles %}
+                        <div class="list-group-item">
+                            <h5 class="list-group-item-heading">{{ regle.label }}
+                                <div class="pull-right">
+                                    <small><a target="_blank" href="{{ path('rules.get',{'rule': regle.url}) }}"><i
+                                                    class="fa fa-download"></i> Téléchargez le fichier</a></small>
+                                </div>
+                            </h5>
+                            <p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div class="col-md-6">
+
+                <div class="header"><h5>Liste des règles</h5></div>
+
+                <blockquote>Les fichiers suivants sont disponibles pour tous les joueurs</blockquote>
+
+                <div class="list-group">
+                    {% for regle in regles %}
+                        <div class="list-group-item">
+                            <h5 class="list-group-item-heading">{{ regle.label }}
+                                <div class="pull-right">
+                                    <small><a target="_blank" href="{{ path('rule.document',{'rule': regle.id}) }}"><i
+                                                    class="fa fa-download"></i> Téléchargez le fichier</a></small>
+                                </div>
+                            </h5>
+                            <p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
+                            <p class="list-group-item-text"><a href="{{ path('rule.delete',{'rule': regle.id}) }}"><i
+                                            class="fa fa-remove"></i> Supprimer le fichier</a></p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock body %}
