@@ -4,29 +4,69 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
-		<li class="active">Règles</li>
-	</ol>
-	
-	<div class="well bs-component">
-								
-		<div class="header"><h5>Liste des règles</h5></div>
-		
-		<blockquote>Les fichiers ci-dessous contiennent les règles spécifiques à certains aspect du jeu. Lisez-les avec attention.</blockquote>
-		
-		<div class="list-group">
-			{% for regle in regles %}
-				<div class="list-group-item">
-					<h5 class="list-group-item-heading">{{ regle.label }}
-						<div class="pull-right">
-							<small><a target="_blank" href="{{ path('rules.get',{'rule': regle.url}) }}"><i class="fa fa-download"></i> Téléchargez le fichier</a></small>
-						</div>
-					</h5>
-					<p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
-				</div>
-		{% endfor %}
-		</div>
-	</div>
-	
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
+        <li class="active">Règles</li>
+    </ol>
+
+    <div class="well bs-component">
+
+
+        <div class="header"><h5>Liste des vidéos</h5></div>
+
+        <h6>Vidéos d'exemples de règles</h6>
+
+        <p>
+            Vous pourrez retrouver ici quelques vidéos de règles : <a
+                    href="https://www.youtube.com/playlist?list=PLf4sB0v9r7NEAbDJME9RoWadn4mOGIKF3">Playlists des règles
+                LH7</a>.
+        </p>
+
+        <div class="list-group list-group-flush">
+            <div class="list-group-item">
+                LH7 : Remplacez les itérations de "Charme" par "Charisme" pour la vidéo en question à partir du LH6.
+            </div>
+            <div class="list-group-item">
+                LH6 : Remplacez les itérations de "Charme" par "Charisme" pour la vidéo en question à partir du LH6.
+            </div>
+        </div>
+    </div>
+
+    <div class="list-group">
+        {% for regle in regles %}
+            <div class="list-group-item">
+                <h5 class="list-group-item-heading">{{ regle.label }}
+                    <div class="pull-right">
+                        <small><a target="_blank" href="{{ path('rules.get',{'rule': regle.url}) }}"><i
+                                        class="fa fa-download"></i> Téléchargez le fichier</a></small>
+                    </div>
+                </h5>
+                <p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="well bs-component">
+
+        <div class="header"><h5>Liste des règles</h5></div>
+
+        <blockquote>Les fichiers ci-dessous contiennent les règles spécifiques à certains aspect du jeu. Lisez-les avec
+            attention.
+        </blockquote>
+
+        <div class="list-group">
+            {% for regle in regles %}
+                <div class="list-group-item">
+                    <h5 class="list-group-item-heading">{{ regle.label }}
+                        <div class="pull-right">
+                            <small><a target="_blank" href="{{ path('rules.get',{'rule': regle.url}) }}"><i
+                                            class="fa fa-download"></i> Téléchargez le fichier</a></small>
+                        </div>
+                    </h5>
+                    <p class="list-group-item-text">{{ regle.description|markdown_to_html }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
 {% endblock body %}
