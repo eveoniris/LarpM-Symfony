@@ -1,14 +1,39 @@
 <div class="header">
-	<h5>Vos groupes à scénariser</h5>
+    <h5>Vos groupes à scénariser</h5>
 </div>
 
-{% if user.groupeScenariste|length > 0 %}				
-	<ul class="list-group">
-		{% for groupe in app.user.groupeScenariste %}
-			<li class="list-group-item"><a href="{{ path('groupe.detail', {'groupe': groupe.id}) }}">{{ groupe.nom }}</a></li>
-		{% endfor %}
-	</ul>
+{% if user.groupeScenariste|length > 0 %}
+    <ul class="list-group">
+        {% for groupe in app.user.groupeScenariste %}
+            <li class="list-group-item"><a
+                        href="{{ path('groupe.detail', {'groupe': groupe.id}) }}">{{ groupe.nom }}</a></li>
+        {% endfor %}
+    </ul>
 {% else %}
-	Aucun groupe ne vous a été alloué. Rapprochez vous d'un membre du pentagone si vous pensez que la situation
-	doit être corrigée.
-{%  endif %}
+    Aucun groupe ne vous a été alloué. Rapprochez vous d'un membre du pentagone si vous pensez que la situation
+    doit être corrigée.
+{% endif %}
+
+<hr/>
+
+<div class="header">
+    <h5>Intrigues liées à vos groupes</h5>
+</div>
+<a href="{{ path('intrigue.list') }}">Liste de toutes les intrigues actives</a>
+<div class="list-group">
+    {% for groupe in app.user.groupeScenariste %}
+        {% for intrigueHasGroupe in groupe.intrigueHasGroupes %}
+            {% if intrigueHasGroupe.intrigue.state ==  "ACTIF" %}
+                <a class="list-group-item text-success"
+                   href="{{ path('intrigue.detail', {'intrigue': intrigueHasGroupe.intrigue.id}) }}">{{ groupe.nom }}
+                    -- {{ intrigueHasGroupe.intrigue.titre }}</a>
+            {% endif %}
+        {% else %}
+            <a class="list-group-item text-danger" href="{{ path('intrigue.add') }}">Attention, aucune
+                intrigue active ne concerne votre groupe {{ groupe.nom }}. Vous devriez peut-être en
+                définir une.</a>
+        {% endfor %}
+    {% endfor %}
+</div>
+
+<hr/>

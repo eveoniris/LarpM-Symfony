@@ -65,7 +65,7 @@
             </div>
         </div>
 
-        {% if canRead %}
+        {% if canReadPrivate %}
             <div class="row">
 
                 <div class="col-sm-12 pt-2">
@@ -73,8 +73,13 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="card mb-2">
-                                <div class="card-header d-flex justify-content-between">
-                                    <h5 class="align-content-center">Quêtes commerciales</h5>
+                                <div class="card-header border-warning d-flex justify-content-between">
+                                    <h5 class="align-content-center">
+                                        <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Secret"></i>
+                                        Quêtes commerciales
+                                    </h5>
                                     {% if isAdmin %}
                                         <div class="d-flex justify-content-end">
                                             <a class="btn btn-sm btn-outline-gamemaster"
@@ -103,8 +108,13 @@
 
                         <div class="col-sm-6">
                             <div class="card mb-2 ">
-                                <div class="card-header d-flex justify-content-between">
-                                    <h5 class="align-content-center">Jeu stratégique</h5>
+                                <div class="card-header border-warning d-flex justify-content-between">
+                                    <h5 class="align-content-center">
+                                        <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Secret"></i>
+                                        Jeu stratégique
+                                    </h5>
                                     {% if isAdmin %}
                                         <div class="d-flex justify-content-end">
                                             <a class="btn btn-sm btn-outline-gamemaster"
@@ -153,9 +163,23 @@
                                 {% endif %}
                             </div>
                             <div class="card-body">
-                                <ul>
-                                    <li>{{ territoire.culture.label|default('Non définie') }}</li>
-                                </ul>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item">{{ territoire.culture.label|default('Non définie') }}</div>
+                                    <div class="list-group-item">
+                                        <h6>Description</h6>
+                                        {{ territoire.culture.description|default('Non définie') }}
+                                    </div>
+                                    {% if true or canReadPrivate %}
+                                        <div class="list-group-item">
+                                            <h6 class="border-bottom border-warning">
+                                                <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                                   data-placement="top"
+                                                   title="Secret"></i> Description secrète
+                                            </h6>
+                                            {{ territoire.culture.descriptionComplete|default('Non définie') }}
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -316,12 +340,16 @@
             </div>
 
 
-            {% if canSeeDetail %}
+            {% if canReadPrivate %}
 
                 <div class="col-sm-6">
                     <div class="card mb-2">
-                        <div class="card-header d-flex justify-content-between">
-                            <h5 class="align-content-center">Statut</h5>
+                        <div class="card-header border-warning d-flex justify-content-between">
+                            <h5 class="align-content-center">
+                                <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+                                   title="Secret"></i>
+                                Statut
+                            </h5>
                             {% if isAdmin %}
                                 <a class="btn btn-sm btn-outline-gamemaster"
                                    data-bs-toggle="tooltip" data-bs-placement="bottom"
@@ -466,12 +494,16 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <ul>
+                        <ul class="list-group list-unstyled">
                             {% for merveille in territoire.merveilles %}
                                 <li>
                                     <strong>
                                         {% if isAdmin %}
-                                            <a href="{{ path('merveille.detail',{'merveille': merveille.id}) }}">{{ merveille.label }}</a>
+                                            <a class="link-gamemaster"
+                                               href="{{ path('merveille.detail',{'merveille': merveille.id}) }}">
+                                                <i class="fa fa-feather"></i>
+                                                {{ merveille.label }}
+                                            </a>
                                         {% else %}
                                             {{ merveille.label }}
                                         {% endif %}
@@ -479,12 +511,13 @@
                                     <br/>
                                     <div>
                                         {% if canReadPrivate or isMappingInitiated %}
-                                            {{ merveille.descriptionCartographe|markdown_to_html }}
+                                            {{ merveille.descriptionCartographe|markdown_to_html|default('Description non connue') }}
                                         {% endif %}
                                         {% if isAdmin %}
                                             <hr>
-                                            <h6>Description scénariste</h6>
-                                            {{ merveille.descriptionScenariste|markdown_to_html }}
+                                            <h6 class="text-gamemaster"><i class="fa fa-feather"></i> Description
+                                                scénariste</h6>
+                                            {{ merveille.descriptionScenariste|markdown_to_html|default('Aucune') }}
                                         {% endif %}
                                     </div>
                                 </li>

@@ -19,30 +19,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AnnonceController extends AbstractController
 {
     /**
-     * Présentation des annonces.
-     */
-    #[Route('/annonce', name: 'annonce.list')]
-    public function listAction(Request $request, AnnonceRepository $repository): Response
-    {
-        $orderBy = $this->getRequestOrder(
-            alias: 'a',
-            allowedFields: $repository->getFieldNames()
-        );
-
-        $query = $repository->createQueryBuilder('a')
-            ->orderBy(key($orderBy), current($orderBy));
-
-        $paginator = $repository->findPaginatedQuery(
-            $query->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
-        );
-
-        return $this->render('annonce/list.twig', ['paginator' => $paginator]);
-    }
-
-    /**
      * Ajout d'une annonce.
      */
-    #[Route('/annonce', name: 'annonce.add')]
+    #[Route('/annonce/add', name: 'annonce.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponseAlias|Response
     {
         $form = $this->createForm(AnnonceForm::class, new Annonce())
@@ -73,11 +52,77 @@ class AnnonceController extends AbstractController
     }
 
     /**
+     * Suppression d'une annonce.
+     */
+    #[Route('/annonce/{annonce}/delete', name: 'annonce.delete')]
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Annonce $annonce,
+    ): RedirectResponseAlias|Response {
+        $form = $this->createForm(AnnonceDeleteForm::class, $annonce)
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $annonce = $form->getData();
+
+            $entityManager->remove($annonce);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'L\'annonce a été supprimée.');
+
+            return $this->redirectToRoute('annonce.list');
+        }
+
+        return $this->render('annonce/delete.twig', [
+            'annonce' => $annonce,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Détail d'une annonce.
+     */
+    #[Route('/annonce/{annonce}/detail', name: 'annonce.detail')]
+    public function detailAction(Request $request, #[MapEntity] Annonce $annonce): Response
+    {
+        return $this->render('annonce/detail.twig', ['annonce' => $annonce]);
+    }
+
+    /**
+     * Présentation des annonces.
+     */
+    #[Route('/annonce', name: 'annonce.list')]
+    public function listAction(AnnonceRepository $repository): Response
+    {
+        $orderBy = $this->getRequestOrder(
+            alias: 'a',
+            allowedFields: $repository->getFieldNames(),
+        );
+
+        $query = $repository->createQueryBuilder('a')
+            ->orderBy(key($orderBy), current($orderBy));
+
+        $paginator = $repository->findPaginatedQuery(
+            $query->getQuery(),
+            $this->getRequestLimit(),
+            $this->getRequestPage(),
+        );
+
+        return $this->render('annonce/list.twig', ['paginator' => $paginator]);
+    }
+
+    /**
      * Mise à jour d'une annnonce.
      */
     #[Route('/annonce/{annonce}/update', name: 'annonce.update')]
-    public function updateAction(Request $request, #[MapEntity] Annonce $annonce, EntityManagerInterface $entityManager): RedirectResponseAlias|Response
-    {
+    public function updateAction(
+        Request $request,
+        #[MapEntity] Annonce $annonce,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponseAlias|Response {
         $form = $this->createForm(AnnonceForm::class, $annonce)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -96,43 +141,6 @@ class AnnonceController extends AbstractController
         }
 
         return $this->render('annonce/update.twig', [
-            'annonce' => $annonce,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Détail d'une annonce.
-     */
-    #[Route('/annonce/{annonce}/detail', name: 'annonce.detail')]
-    public function detailAction(Request $request, #[MapEntity] Annonce $annonce): Response
-    {
-        return $this->render('annonce/detail.twig', ['annonce' => $annonce]);
-    }
-
-    /**
-     * Suppression d'une annonce.
-     */
-    #[Route('/annonce/{annonce}/delete', name: 'annonce.delete')]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Annonce $annonce): RedirectResponseAlias|Response
-    {
-        $form = $this->createForm(AnnonceDeleteForm::class, $annonce)
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $annonce = $form->getData();
-
-            $entityManager->remove($annonce);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'L\'annonce a été supprimée.');
-
-            return $this->redirectToRoute('annonce.list');
-        }
-
-        return $this->render('annonce/delete.twig', [
             'annonce' => $annonce,
             'form' => $form->createView(),
         ]);

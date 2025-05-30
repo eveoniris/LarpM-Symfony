@@ -10,7 +10,6 @@ use App\Entity\Personnage;
 use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\BonusPeriode;
-use App\Enum\BonusType;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
@@ -249,31 +248,47 @@ class TerritoireController extends AbstractController
     public function detailAction(
         #[MapEntity] Territoire $territoire,
     ): Response {
-        $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::CARTOGRAPHE->value);
-        $canSeeDetail = $isAdmin;
+        $this->hasAccess(null, [Role::ORGA, Role::SCENARISTE, Role::CARTOGRAPHE]);
 
-        if (!$canSeeDetail) {
-            foreach ($territoire->getGroupe()?->getPersonnages() ?? [] as $personnage) {
-                if ($personnage->getUser()?->getId() === $this->getUser()?->getId()) {
-                    $canSeeDetail = true;
-                }
-            }
-        }
-
-        return $this->render(
-            'territoire/detail.twig',
-            [
-                'territoire' => $territoire,
-                'isAdmin' => $isAdmin,
-                'canSeeDetail' => $canSeeDetail,
-            ],
-        );
+        return $this->render('territoire/detail.twig', ['territoire' => $territoire]);
     }
 
     /**
      * Ajoute un événement à un territoire.
      */
     // TODO
+    protected function hasAccess(?Territoire $territoire = null, array $roles = []): void
+    {
+        $isMembreOfGroupeOwner = false;
+        if ($groupe = $territoire?->getGroupe()) {
+            $isMembreOfGroupeOwner = $this->groupeService->isUserIsGroupeMember($groupe);
+        }
+
+        // Visible des cartographes initiés (pour les merveilles)
+        $isMappingInitiated = $this->getPersonnage()
+            ?->hasCompetenceLevel(CompetenceFamilyType::MAPPING, LevelType::INITIATED);
+
+        $canSeeDetail = false;
+        foreach ($territoire?->getGroupe()?->getPersonnages() ?? [] as $personnage) {
+            if ($personnage->getUser()?->getId() === $this->getUser()?->getId()) {
+                $canSeeDetail = true;
+            }
+        }
+
+        $this->setCan(self::IS_ADMIN, $this->isGranted(Role::TERRITOIRE->value));
+        $this->setCan(self::CAN_MANAGE, false); // not used?
+        $this->setCan(self::CAN_READ_PRIVATE, $isMembreOfGroupeOwner || $canSeeDetail);
+        $this->setCan(self::CAN_READ_SECRET, $isMappingInitiated);
+        $this->setCan(self::CAN_WRITE, false); // not used?
+        $this->setCan(self::CAN_READ, $this->isGranted(Role::USER->value)); // public page
+
+        $this->checkHasAccess(
+            $roles,
+            fn() => $this->can(self::CAN_READ),
+        );
+    }
+
+
     #[Route('/territoire/{territoire}/eventAdd', name: 'territoire.eventAdd')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function eventAddAction(
@@ -718,7 +733,6 @@ class TerritoireController extends AbstractController
                 $this->entityManager->remove($currentOriginesBonus);
             }
 
-
             $this->entityManager->persist($origineBonus);
             $this->entityManager->persist($territoire);
             $this->entityManager->flush();
@@ -915,29 +929,5 @@ class TerritoireController extends AbstractController
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);
-    }
-
-    protected function hasAccess(?Territoire $territoire = null, array $roles = []): void
-    {
-        $isMembreOfGroupeOwner = false;
-        if ($groupe = $territoire?->getGroupe()) {
-            $isMembreOfGroupeOwner = $this->groupeService->isUserIsGroupeMember($groupe);
-        }
-
-        // Visible des cartographes initiés (pour les merveilles)
-        $isMappingInitiated = $this->getPersonnage()
-            ?->hasCompetenceLevel(CompetenceFamilyType::MAPPING, LevelType::INITIATED);
-
-        $this->setCan(self::IS_ADMIN, $this->isGranted(Role::TERRITOIRE->value));
-        $this->setCan(self::CAN_MANAGE, false); // not used?
-        $this->setCan(self::CAN_READ_PRIVATE, $isMembreOfGroupeOwner);
-        $this->setCan(self::CAN_READ_SECRET, $isMappingInitiated);
-        $this->setCan(self::CAN_WRITE, false); // not used?
-        $this->setCan(self::CAN_READ, $this->isGranted(Role::USER->value)); // public page
-
-        $this->checkHasAccess(
-            $roles,
-            fn() => $this->can(self::CAN_READ),
-        );
     }
 }
