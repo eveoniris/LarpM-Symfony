@@ -265,22 +265,21 @@
                                     </button>
                                 </div>
                             {% else %}
-                                <div class="list-group-item d-flex justify-content-between">
-                                    <div class="list-group-item-text">
-                                        {{ priere.label }}
-                                    </div>
-
-                                    <div class="btn-group" role="group">
-                                        <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
-                                                href="#religion_pray_{{ priere.id }}"
-                                                aria-expanded="false"
-                                                aria-controls="religion_pray_{{ priere.id }}"
-                                                role="button">
-                                            <i class="fa-solid fa-circle-info"></i>
-                                        </button>
-                                    </div>
-
+                                <div class="list-group-item-text">
+                                    {{ priere.label }}
                                 </div>
+
+
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse"
+                                            href="#religion_pray_{{ priere.id }}"
+                                            aria-expanded="false"
+                                            aria-controls="religion_pray_{{ priere.id }}"
+                                            role="button">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                    </button>
+                                </div>
+                                
                             {% endif %}
                         </div>
                         <div class="list-group-item bg-body-secondary collapse p-0"
