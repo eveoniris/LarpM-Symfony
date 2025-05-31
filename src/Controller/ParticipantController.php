@@ -591,10 +591,9 @@ class ParticipantController extends AbstractController
         ));
     }*/
 
-    protected function hasAccess(Participant $participant, array $roles = []): void
+    protected function hasAccess(Participant $participant, array $roles = [Role::ORGA]): void
     {
-
-        $this->setCan(self::IS_ADMIN, $this->isGranted(Role::SCENARISTE->value));
+        $this->setCan(self::IS_ADMIN, $this->isGranted(Role::ORGA->value));
 
         $this->checkHasAccess(
             $roles,
@@ -1637,7 +1636,6 @@ class ParticipantController extends AbstractController
         $this->addFlash('error', 'Le participant n\'a pas été trouvé.');
 
         return $this->redirectToRoute('homepage');
-
     }
 
     #[Route('/participant/{participant}/document/{document}', name: 'participant.document')]
@@ -1770,7 +1768,9 @@ class ParticipantController extends AbstractController
         Request $request,
         #[MapEntity] Participant $participant,
     ): RedirectResponse|Response {
+
         $this->hasAccess($participant);
+
 
         // il faut un billet pour rejoindre un groupe
         /* Commenté parce que ça gène la manière de faire d'Edaelle.
