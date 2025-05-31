@@ -151,6 +151,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
         $route ??= 'groupe.detail';
         $routeParams ??= ['groupe' => $groupe->getId()];
+        dump($route, $routeParams);
 
         return $this->redirectToRoute($route, $routeParams, 303);
     }

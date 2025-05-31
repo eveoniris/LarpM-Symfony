@@ -464,9 +464,12 @@ class GroupeGnController extends AbstractController
         Request $request,
         #[MapEntity] GroupeGn $groupeGn,
     ): RedirectResponse|Response {
+        $this->checkGroupeLocked($groupeGn->getGroupe());
+
         $redirect = $request->get('redirect');
 
         $this->hasAccess($groupeGn, [Role::WARGAME]);
+
 
         $form = $this->createForm(
             GroupeGnForm::class,
