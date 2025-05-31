@@ -33,38 +33,27 @@
 {# corps de la page #}
 <div id="content" class="container-fluid" data-turbo="false">
     {% for message in app.session.getFlashBag.get('info') %}
-        <div class="alert alert-info d-flex align-items-center" role="alert">
-            <div class="p-2 flex-grow-1"><i class="fa-solid fa-circle-info"></i> {{ message|raw }}</div>
-            <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        {% include '_partials/alert.twig' with {'type' : 'info', 'message' : message} %}
     {% endfor %}
 
     {% for message in app.session.getFlashBag.get('success') %}
-        <div class="alert alert-success d-flex flex-row align-items-center" role="alert">
-            <div class="p-2 flex-grow-1"><i class="fa-solid fa-circle-check"></i> {{ message|raw }}</div>
-            <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        {% include '_partials/alert.twig' with {'type' : 'success', 'message' : message} %}
+
     {% endfor %}
 
     {% for message in app.session.getFlashBag.get('alert') %}
-        <div class="alert alert-warning d-flex align-items-center" role="alert">
-            <div class="p-2 flex-grow-1"><i class="fa-solid fa-triangle-exclamation"></i> {{ message|raw }}</div>
-            <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        {% include '_partials/alert.twig' with {'type' : 'alert', 'message' : message} %}
+
     {% endfor %}
 
     {% for message in app.session.getFlashBag.get('error') %}
-        <div class="alert alert-danger d-flex align-items-center" role="alert">
-            <div class="p-2 flex-grow-1"><i class="fa-solid fa-circle-exclamation"></i> {{ message|raw }}</div>
-            <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        {% include '_partials/alert.twig' with {'type' : 'error', 'message' : message} %}
+
     {% endfor %}
 
     {% for message in app.session.getFlashBag.get('gamemaster') %}
-        <div class="alert alert-gamemaster d-flex align-items-center" role="alert">
-            <div class="p-2 flex-grow-1"><i class="fa-solid fa-feather"></i> {{ message|raw }}</div>
-            <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        {% include '_partials/alert.twig' with {'type' : 'gamemaster', 'message' : message} %}
+
     {% endfor %}
 
     {% block body %}{% endblock body %}

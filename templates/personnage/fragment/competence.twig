@@ -56,7 +56,8 @@
                 </h5>
             {% endif %}
 
-            <h6 class="__{{ competence.competenceFamily.id }}__{{ currentFamillyId }}">{{ competence.level.label }}</h6>
+            <h6 class="__{{ competence.competenceFamily.id }}__{{ currentFamillyId }}"
+                id="comp_{{ competence.id }}">{{ competence.level.label }}</h6>
             <div class="list-group-item-text border-top mt-1">{{ competence.description|markdown_to_html }}</div>
             <p class="list-group-item-text">
                 {% if competence.documentUrl %}
