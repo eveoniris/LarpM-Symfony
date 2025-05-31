@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Bonus;
+use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Entity\GroupeBonus;
 use App\Entity\GroupeGn;
@@ -21,6 +22,7 @@ use App\Entity\User;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Enum\TerritoireStatut;
+use App\Repository\GnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -578,7 +580,7 @@ readonly class GroupeService
 
             $histories[] = [
                 'label' => '<strong>'.$bonus->getTitre(
-                    ).'</strong> fourni(e)s par <strong>'.$source.'</strong></strong> fourni(e)s par <strong>'.$source.'</strong>',
+                ).'</strong> fourni(e)s par <strong>'.$source.'</strong></strong> fourni(e)s par <strong>'.$source.'</strong>',
                 'value' => (int) $bonus->getValeur(),
             ];
         }
@@ -608,6 +610,14 @@ readonly class GroupeService
         }
 
         return $lois;
+    }
+
+    public function getNextSessionGn()
+    {
+        /** @var GnRepository $gnRepo */
+        $gnRepo = $this->entityManager->getRepository(Gn::class);
+
+        return $gnRepo->findNext();
     }
 
     public function getStatutTerritoire(Territoire $territoire): TerritoireStatut
@@ -678,7 +688,7 @@ readonly class GroupeService
 
     public function hasPersonnageInSecondaryGroup(
         SecondaryGroup $secondaryGroup,
-        User $user = null,
+        ?User $user = null,
     ): bool {
         foreach ($user?->getPersonnages() as $personnage) {
             if ($this->isInSecondaryGroup($secondaryGroup, $personnage)) {

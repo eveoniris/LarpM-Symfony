@@ -24,6 +24,7 @@ use JetBrains\PhpStorm\Deprecated;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpClient\Exception\RedirectionException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -127,13 +128,13 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ?string $route = null,
         ?array $routeParams = null,
         ?string $msg = null,
-    ): ?Response {
+    ): void {
         if (!$groupe) {
-            return null;
+            return;
         }
 
         if (!$groupe->getLock()) {
-            return null;
+            return;
         }
 
         $href = $this->generateUrl('groupe.detail', ['groupe' => $groupe->getId()]).'#groupe_lock';
@@ -151,9 +152,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
         $route ??= 'groupe.detail';
         $routeParams ??= ['groupe' => $groupe->getId()];
-        dump($route, $routeParams);
 
-        return $this->redirectToRoute($route, $routeParams, 303);
+        $this->redirectToRoute($route, $routeParams, 303);
+
+        return;
     }
 
     protected function checkHasAccess(array $roles, ?callable $callable): void

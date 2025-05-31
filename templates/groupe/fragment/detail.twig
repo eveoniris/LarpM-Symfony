@@ -240,12 +240,14 @@
 
     </div>
     <div class="col-md-6 pt-2">
+        {% if groupeGn is not defined or not groupeGn %}
+            {% set groupeGn = groupe.nextSession %}
+        {% endif %}
 
-        {% if groupeGn.gn is defined %}
+        {% if groupeGn.gn is defined and groupeGn.gn.id == groupeService.nextSessionGn.id %}
             <div class="card text-bg mb-3 overflow-auto">
                 <div class="header"><h5>Résume pour {{ groupeGn.gn.label }}</h5></div>
                 <div class="card-body">
-                    {# Card notif si groupe VEROUILLE  #}
                     {% set nbPlace = groupe.placeTotal|default(0) %}
                     {% set nbMembres =  groupeGn.participants|length|default(0) %}
                     {% set nbLibre =  nbPlace - nbMembres %}
@@ -432,41 +434,51 @@
             <div class="header"><h5>Jeux</h5></div>
             <div class="card-body">
 
-                {% if is_granted('ROLE_SCENARISTE', app.user) %}
-                    <strong>{% if groupe.pj %}Groupe de PJ{% else %}Groupe de PNJ{% endif %}</strong><br/>
-                {% endif %}
-
                 <strong>Participe à : </strong>
-                <ul>
+                <ul class="list-group mb-2">
                     {% for session in groupe.groupeGns %}
-                        <li><a href="{{ path('gn.detail', {'gn': session.gn.id}) }}">{{ session.gn }}</a></li>
+                        <li class="list-group-item"><a
+                                    href="{{ path('gn.detail', {'gn': session.gn.id}) }}">{{ session.gn }}</a></li>
+                    {% else %}
+                        Aucun
                     {% endfor %}
                 </ul>
 
-                {% if is_granted('ROLE_SCENARISTE', app.user) %}
-                    <a class="btn btn-secondary" href="{{ path('groupeGn.list', {'groupe': groupe.id}) }}">Gestion des
-                        sessions de jeu</a><br/>
-                    <div id="groupe_lock" class="m-2">
-                        {% if groupe.lock %}
-                            Le groupe est <strong class="text-warning">fermé</strong>.
-                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
-                               title="Ouvrir le groupe"
-                               href="{{ path('groupe.unlock', {'groupe' : groupe.id}) }}"><i
-                                        class="fa fa-pencil"></i></a>
-                        {% else %}
-                            Le groupe est <strong class="text-success">ouvert</strong>.
-                            <a data-toggle="tooltip" data-placement="top" title="Fermer le groupe"
-                               href="{{ path('groupe.lock', {'groupe' : groupe.id}) }}"><i class="fa fa-pencil"></i></a>
-                        {% endif %}
-                    </div>
+                {% if isAdmin %}
+
+                    {% set noticeTypeGroupeHtml %}
+                        <strong>Type de groupe</strong> {% if groupe.pj %}Groupe de PJ{% else %}Groupe de PNJ{% endif %}
+
+
+                        <a class="btn btn-secondary" href="{{ path('groupeGn.list', {'groupe': groupe.id}) }}">Gestion
+                            des
+                            sessions de jeu</a><br/>
+                        <div id="groupe_lock" class="m-2">
+                            {% if groupe.lock %}
+                                Le groupe est <strong class="text-warning">verouillé aux modifications PJ</strong>.
+                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                   title="Ouvrir le groupe"
+                                   href="{{ path('groupe.unlock', {'groupe' : groupe.id}) }}"><i
+                                            class="fa fa-pencil"></i> déverouiller</a>
+                            {% else %}
+                                Le groupe est <strong class="text-success">ouvert aux modifications PJ</strong>.
+                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                   title="Fermer le groupe"
+                                   href="{{ path('groupe.lock', {'groupe' : groupe.id}) }}"><i class="fa fa-pencil"></i>
+                                    verouiller</a>
+                            {% endif %}
+                        </div>
+                    {% endset %}
+                    {% include '_partials/cardNotif.twig' with {'type' : 'gamemaster', 'content' : noticeTypeGroupeHtml, 'css' : 'mt-2'} %}
                 {% endif %}
+
                 <br/>
             </div>
         </div>
 
         {% if isAdmin %}
             <div class="card text-bg mb-3 overflow-auto">
-                <div class="header"><h5>Intrigues</h5></div>
+                <div class="header"><h5><i class="fa fa-feather text-gamemaster"> </i>Intrigues</h5></div>
                 <div class="text-body">
                     <ul>
                         {% for intrigueHasGroupe in groupe.intrigueHasGroupes %}

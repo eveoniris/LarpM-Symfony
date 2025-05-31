@@ -2992,15 +2992,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-        // TEMP UNTIL FIX
-        $this->addFlash(
-            'error',
-            'Par Crom ! Un rituel est en cours, veuillez ne pas importuner. Vous pourrez revenir sous peu une fois que tout aura été nettoyé',
-        );
-
-        return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-
-        $availableDescriptionReligion = $this->personnageService->getAvaReliilableDescriptionReligion($personnage);
+        $availableDescriptionReligion = $this->personnageService->getAvailableDescriptionReligion($personnage);
 
         $form = $this->createFormBuilder()
             ->add('religion', ChoiceType::class, [
@@ -3027,15 +3019,18 @@ class PersonnageController extends AbstractController
 
             $personnage->addReligion($religion);
 
-            $trigger = $personnage->getTrigger(TriggerType::PRETRISE_INITIE);
-            if (!$trigger) {
+            if ($trigger = $personnage->getTrigger(TriggerType::PRETRISE_INITIE)) {
                 $this->entityManager->remove($trigger);
             }
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Vos modifications ont été enregistrées.');
 
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute(
+                'personnage.detail.tab',
+                ['personnage' => $personnage->getId(), 'tab' => 'competences'],
+                303,
+            );
         }
 
         return $this->render('personnage/descriptionReligion.twig', [
@@ -3292,7 +3287,11 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le déclencheur a été supprimé.');
 
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute(
+                'personnage.detail.tab',
+                ['personnage' => $personnage->getId(), 'tab' => 'competences'],
+                303,
+            );
         }
 
         return $this->render('personnage/deleteTrigger.twig', [
