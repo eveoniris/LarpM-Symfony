@@ -167,7 +167,11 @@
                                     <div class="list-group-item">{{ territoire.culture.label|default('Non définie') }}</div>
                                     <div class="list-group-item">
                                         <h6>Description</h6>
-                                        {{ territoire.culture.description|default('Non définie') }}
+                                        {% if territoire.culture.description is defined %}
+                                            {{ territoire.culture.description|markdown_to_html }}
+                                        {% else %}
+                                            Non définie
+                                        {% endif %}
                                     </div>
                                     {% if true or canReadPrivate %}
                                         <div class="list-group-item">
@@ -176,7 +180,12 @@
                                                    data-placement="top"
                                                    title="Secret"></i> Description secrète
                                             </h6>
-                                            {{ territoire.culture.descriptionComplete|default('Non définie') }}
+                                            {% if territoire.culture.descriptionComplete is defined %}
+
+                                                {{ territoire.culture.descriptionComplete|markdown_to_html }}
+                                            {% else %}
+                                                Non définie
+                                            {% endif %}
                                         </div>
                                     {% endif %}
                                 </div>
@@ -419,53 +428,54 @@
                     </div>
                 </div>
 
-                <div class="col-sm-6">
-                    <div class="card mb-2">
-                        <div class="card-header d-flex justify-content-between">
-                            <h5 class="align-content-center">Constructions</h5>
-                            {% if isAdmin %}
-                                <a class="btn btn-sm btn-outline-gamemaster"
-                                   data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                   title="Modifier"
-                                   href="{{ path('territoire.constructionAdd', {'territoire': territoire.id}) }}">
-                                    <i class="fa-solid fa-feather"></i>
-                                </a>
-                            {% endif %}
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-condensed table-striped table-bordered table-hover">
-                                {% include '_partials/thead.twig' with  { 'route': 'connaissance.list', 'rows': [
-                                    {'name' : 'Nom', 'css' : 'text-center'},
-                                    {'name' : 'Défense', 'css' : 'text-center'},
-                                    {'name' : 'Action', 'css' : 'text-center', visible: isAdmin},
-                                ]} %}
-                                <tbody>
-                                {% for construction in territoire.constructions %}
-                                    <tr>
-                                        <td>{{ construction.label }}</td>
-                                        <td class="text-center">{{ construction.defense }}</td>
-                                        {% if isAdmin %}
-                                            <td class="text-center">
-                                                <a
-                                                        class="btn btn-sm btn-outline-gamemaster"
-                                                        href="{{ path('territoire.constructionRemove', {'territoire': territoire.id, 'construction': construction.id}) }}">
-                                                    <i class="fa fa-eraser text-gamemaster"></i>
-                                                    Retirer
-                                                </a>
-                                            </td>
-                                        {% endif %}
-                                    </tr>
-                                {% else %}
-                                    {% include '_partials/noResultTableRow.twig' %}
-                                {% endfor %}
-                                </tbody>
-                            </table>
 
-                        </div>
-                    </div>
-                </div>
             {% endif %}
 
+            <div class="col-sm-6">
+                <div class="card mb-2">
+                    <div class="card-header d-flex justify-content-between">
+                        <h5 class="align-content-center">Constructions</h5>
+                        {% if isAdmin %}
+                            <a class="btn btn-sm btn-outline-gamemaster"
+                               data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Modifier"
+                               href="{{ path('territoire.constructionAdd', {'territoire': territoire.id}) }}">
+                                <i class="fa-solid fa-feather"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-condensed table-striped table-bordered table-hover">
+                            {% include '_partials/thead.twig' with  { 'route': 'connaissance.list', 'rows': [
+                                {'name' : 'Nom', 'css' : 'text-center'},
+                                {'name' : 'Défense', 'css' : 'text-center'},
+                                {'name' : 'Action', 'css' : 'text-center', visible: isAdmin},
+                            ]} %}
+                            <tbody>
+                            {% for construction in territoire.constructions %}
+                                <tr>
+                                    <td>{{ construction.label }}</td>
+                                    <td class="text-center">{{ construction.defense }}</td>
+                                    {% if isAdmin %}
+                                        <td class="text-center">
+                                            <a
+                                                    class="btn btn-sm btn-outline-gamemaster"
+                                                    href="{{ path('territoire.constructionRemove', {'territoire': territoire.id, 'construction': construction.id}) }}">
+                                                <i class="fa fa-eraser text-gamemaster"></i>
+                                                Retirer
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% else %}
+                                {% include '_partials/noResultTableRow.twig' %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
 
             <div class="col-sm-6">
                 <div class="card mb-2">

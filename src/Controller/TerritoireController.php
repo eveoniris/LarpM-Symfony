@@ -259,9 +259,10 @@ class TerritoireController extends AbstractController
     // TODO
     protected function hasAccess(?Territoire $territoire = null, array $roles = []): void
     {
-        $isMembreOfGroupeOwner = false;
+        $isMembreOrLeadOfGroupeOwner = false;
         if ($groupe = $territoire?->getGroupe()) {
-            $isMembreOfGroupeOwner = $this->groupeService->isUserIsGroupeMember($groupe);
+            $isMembreOrLeadOfGroupeOwner = $this->groupeService->isUserIsGroupeMember($groupe)
+                || $this->groupeService->isUserIsGroupeResponsable($groupe);
         }
 
         // Visible des cartographes initiés (pour les merveilles)
@@ -277,7 +278,7 @@ class TerritoireController extends AbstractController
 
         $this->setCan(self::IS_ADMIN, $this->isGranted(Role::TERRITOIRE->value));
         $this->setCan(self::CAN_MANAGE, false); // not used?
-        $this->setCan(self::CAN_READ_PRIVATE, $isMembreOfGroupeOwner || $canSeeDetail);
+        $this->setCan(self::CAN_READ_PRIVATE, $isMembreOrLeadOfGroupeOwner || $canSeeDetail);
         $this->setCan(self::CAN_READ_SECRET, $isMappingInitiated);
         $this->setCan(self::CAN_WRITE, false); // not used?
         $this->setCan(self::CAN_READ, $this->isGranted(Role::USER->value)); // public page
