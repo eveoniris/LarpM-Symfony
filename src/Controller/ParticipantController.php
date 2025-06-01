@@ -2899,7 +2899,6 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/personnageOld', name: 'participant.personnage.old')]
     public function personnageOldAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
     ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();

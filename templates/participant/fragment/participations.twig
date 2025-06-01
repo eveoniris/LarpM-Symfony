@@ -50,7 +50,7 @@
             <td class="col-4 align-middle">
                 {% if participant.personnage %}
                     <i class="fa fa-user"></i> <a
-                        href="{{ path('gn.personnage',{'gn': participant.gn.id}) }}">{{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}</a>
+                        href="{{ path('personnage.detail',{'gn': participant.gn.id, 'personnage': participant.personnage.id, 'participant': participant.id }) }}">{{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}</a>
                 {% else %}
                     {% if participant.session %}
                         <div class="w-100 d-flex justify-content-center">
