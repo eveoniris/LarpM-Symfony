@@ -482,16 +482,16 @@
                 <div class="text-body">
                     <ul>
                         {% for intrigueHasGroupe in groupe.intrigueHasGroupes %}
-                        <li>
-                            <a href="{{ path('intrigue.detail', {'intrigue': intrigueHasGroupe.intrigue.id}) }}">{{ groupe.nom }}
-                                -- {{ intrigueHasGroupe.intrigue.titre }}</a>
-                        </li>
+                            <li>
+                                <a href="{{ path('intrigue.detail', {'intrigue': intrigueHasGroupe.intrigue.id}) }}">{{ groupe.nom }}
+                                    -- {{ intrigueHasGroupe.intrigue.titre }}</a>
+                            </li>
                         {% else %}
-                        <li>
-                            <a href="{{ path('intrigue.add') }}">Attention, aucune intrigue ne concerne votre
-                                groupe {{ groupe.nom }}. Vous devriez peut-être en définir une.</a><
-                            /li>
-                            {% endfor %}
+                            <li>
+                                <a href="{{ path('intrigue.add') }}">Attention, aucune intrigue ne concerne votre
+                                    groupe {{ groupe.nom }}. Vous devriez peut-être en définir une.</a>
+                            </li>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>

@@ -15,7 +15,8 @@
     <div class="well bs-component">
         {{ form_start(form, {"attr": {"action": path('personnage.trigger.delete', {'personnage': personnage.id, 'trigger': trigger.id}) }}) }}
         <fieldset>
-            <legend>Supression du déclencheur {{ trigger.tag.value }} lié a {{ personnage.publicName }}</legend>
+            <legend>Supression du déclencheur {{ trigger.tag.value|default('-') }} lié
+                a {{ personnage.publicName }}</legend>
 
             <p class="text-danger">
 					<span class="fa-stack fa-lg">

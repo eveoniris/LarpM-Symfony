@@ -7,6 +7,7 @@ use App\Entity\PersonnageBonus;
 use App\Enum\BonusPeriode;
 use App\Repository\ExperienceGainRepository;
 use App\Repository\ExperienceUsageRepository;
+use App\Repository\LogActionRepository;
 use App\Repository\PersonnageRepository;
 use App\Repository\UserRepository;
 use App\Service\OrderBy;
@@ -22,11 +23,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
-    // Returns a file size limit in bytes based on the PHP upload_max_filesize
-    // and post_max_size
     #[Route('/originebonus', name: 'originebonus')]
     public function bonusOrigineAction(PersonnageRepository $rep): void
     {
+        return; // will see if we set it from creation and register once
         /** @var Personnage $personnage */
         foreach ($rep->findBy(['vivant' => true]) as $personnage) {
             if (!$territoire = $personnage->getTerritoire()) {
@@ -247,6 +247,24 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('admin', [], 303);
     }
 
+    #[Route('/admin/action/logs', name: 'admin.action.logs')]
+    public function logsAction(Request $request, PagerService $pagerService, LogActionRepository $repository): Response
+    {
+        $pagerService->setRequest($request)
+            ->setRepository($repository)
+            ->setLimit(50)
+            ->setDefaultOrdersBy(['id' => 'DESC']);
+
+
+        return $this->render(
+            'admin/logAction.twig',
+            [
+                'paginator' => $repository->searchPaginated($pagerService),
+                'pagerService' => $pagerService,
+            ],
+        );
+    }
+
     /**
      * Fourni les listes des utilisateurs n'ayants pas remplis certaines conditions.
      */
@@ -313,7 +331,6 @@ class AdminController extends AbstractController
                 [
                     'AND',
                     [
-
                         'TYPE' => 'CLASSE',
                         'VALUE' => 21,
                     ],

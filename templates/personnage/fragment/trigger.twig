@@ -15,7 +15,8 @@
     {% endif %}
 {% endset %}
 
-   {% if personnage.personnageTriggers|length > 0
+{% set activeTriggers = personnage.getActiveTriggers %}
+   {% if activeTriggers|length > 0
        or alchemyTrigger|trim is not empty %}
 
        {# Compétences #}
@@ -27,7 +28,7 @@
            {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : 'Vos compétences vous permettent de choisir des connaissances supplémentaires' } %}
 
            <ul class="list-group">
-               {% for trigger in personnage.personnageTriggers %}
+               {% for trigger in activeTriggers %}
 
                    {% if  trigger.tag and trigger.tag.isLangueCourante %}
                        <li class="list-group-item"><a

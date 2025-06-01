@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\LogActionType;
 use App\Repository\LogActionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -28,30 +29,6 @@ class LogAction
     #[ORM\Column(length: 255)]
     private ?string $type = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
     public function getData(): ?array
     {
         return $this->data;
@@ -76,14 +53,50 @@ class LogAction
         return $this;
     }
 
-    public function getType(): ?string
+    public function getId(): ?int
     {
-        return $this->type;
+        return $this->id;
     }
 
-    public function setType(string $type): static
+    public function setId(int $id): static
     {
-        $this->type = $type;
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getType(): ?LogActionType
+    {
+        return LogActionType::tryFrom($this->type);
+    }
+
+    public function setType(string|LogActionType|null $type): static
+    {
+        if ($type instanceof LogActionType) {
+            $this->type = $type->value;
+
+            return $this;
+        }
+
+        if (null === $type) {
+            $this->type = null;
+
+            return $this;
+        }
+
+        $this->type = LogActionType::OTHER->value;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

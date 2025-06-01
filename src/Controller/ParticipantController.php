@@ -14,10 +14,12 @@ use App\Entity\GroupeAllie;
 use App\Entity\GroupeEnemy;
 use App\Entity\GroupeGn;
 use App\Entity\Langue;
+use App\Entity\LogAction;
 use App\Entity\Loi;
 use App\Entity\Membre;
 use App\Entity\Message;
 use App\Entity\Participant;
+use App\Entity\ParticipantHasRestauration;
 use App\Entity\Personnage;
 use App\Entity\PersonnageChronologie;
 use App\Entity\PersonnageLangues;
@@ -38,6 +40,7 @@ use App\Entity\Technologie;
 use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\CompetenceFamilyType;
+use App\Enum\LogActionType;
 use App\Enum\Role;
 use App\Enum\TriggerType;
 use App\Form\AcceptAllianceForm;
@@ -497,6 +500,9 @@ class ParticipantController extends AbstractController
                 $historique->setOperationDate(new \DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($gain);
+
+                $this->log($historique, LogActionType::XP_ADD);
+
                 $this->entityManager->persist($historique);
                 $this->entityManager->flush();
 
@@ -873,22 +879,39 @@ class ParticipantController extends AbstractController
             // suppression du trigger
             switch ($niveau) {
                 case 1:
-                    $trigger = $personnage->getTrigger('SORT APPRENTI');
-                    $this->entityManager->remove($trigger);
+                    if ($trigger = $personnage->getTrigger(TriggerType::SORT_APPRENTI)) {
+                        $this->entityManager->remove($trigger);
+                    }
                     break;
                 case 2:
-                    $trigger = $personnage->getTrigger('SORT INITIE');
-                    $this->entityManager->remove($trigger);
+                    if ($trigger = $personnage->getTrigger(TriggerType::SORT_INITIE)) {
+                        $this->entityManager->remove($trigger);
+                    }
                     break;
                 case 3:
-                    $trigger = $personnage->getTrigger('SORT EXPERT');
-                    $this->entityManager->remove($trigger);
+                    if ($trigger = $personnage->getTrigger(TriggerType::SORT_EXPERT)) {
+                        $this->entityManager->remove($trigger);
+                    }
                     break;
                 case 4:
-                    $trigger = $personnage->getTrigger('SORT MAITRE');
-                    $this->entityManager->remove($trigger);
+                    if ($trigger = $personnage->getTrigger(TriggerType::SORT_MAITRE)) {
+                        $this->entityManager->remove($trigger);
+                    }
                     break;
             }
+
+            $logAction = new LogAction();
+            $logAction->setDate(new \DateTime());
+            $logAction->setUser($this->getUser());
+            $logAction->setType(LogActionType::ADD_SORT);
+            $logAction->setData(
+                [
+                    'personnage_id' => $personnage->getId(),
+                    'niveau' => $niveau,
+                    'sort_id' => $sort->getId(),
+                ],
+            );
+            $this->entityManager->persist($logAction);
 
             $this->entityManager->flush();
 
@@ -1711,7 +1734,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        if (!$personnage->hasTrigger('DOMAINE MAGIE')) {
+        if (!$personnage->hasTrigger(TriggerType::DOMAINE_MAGIE)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de domaine de magie supplémentaire.');
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
@@ -1742,8 +1765,21 @@ class ParticipantController extends AbstractController
             $this->entityManager->persist($personnage);
 
             // suppression du trigger
-            $trigger = $personnage->getTrigger('DOMAINE MAGIE');
-            $this->entityManager->remove($trigger);
+            if ($trigger = $personnage->getTrigger(TriggerType::DOMAINE_MAGIE)) {
+                $this->entityManager->remove($trigger);
+            }
+
+            $logAction = new LogAction();
+            $logAction->setDate(new \DateTime());
+            $logAction->setUser($this->getUser());
+            $logAction->setType(LogActionType::ADD_SORT);
+            $logAction->setData(
+                [
+                    'personnage_id' => $personnage->getId(),
+                    'domaine_id' => $domaine->getId(),
+                ],
+            );
+            $this->entityManager->persist($logAction);
 
             $this->entityManager->flush();
 
@@ -1768,9 +1804,7 @@ class ParticipantController extends AbstractController
         Request $request,
         #[MapEntity] Participant $participant,
     ): RedirectResponse|Response {
-
         $this->hasAccess($participant);
-
 
         // il faut un billet pour rejoindre un groupe
         /* Commenté parce que ça gène la manière de faire d'Edaelle.
@@ -2246,7 +2280,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        if (!$personnage->hasTrigger('LANGUE ANCIENNE')) {
+        if (!$personnage->hasTrigger(TriggerType::LANGUE_ANCIENNE)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue ancienne supplémentaire.');
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
@@ -2278,8 +2312,11 @@ class ParticipantController extends AbstractController
             $personnageLangue->setSource('LITTERATURE');
             $this->entityManager->persist($personnageLangue);
 
-            $trigger = $personnage->getTrigger('LANGUE ANCIENNE');
-            $this->entityManager->remove($trigger);
+            if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_ANCIENNE)) {
+                $this->entityManager->remove($trigger);
+            }
+
+            $this->log($personnageLangue, LogActionType::ADD_LANGUE);
 
             $this->entityManager->flush();
 
@@ -2301,7 +2338,6 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/langueCommune', name: 'participant.langueCommune')]
     public function langueCommuneAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
@@ -2313,7 +2349,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        if (!$personnage->hasTrigger('LANGUE COMMUNE')) {
+        if (!$personnage->hasTrigger(TriggerType::LANGUE_COURANTE)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue commune supplémentaire.');
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
@@ -2345,8 +2381,11 @@ class ParticipantController extends AbstractController
             $personnageLangue->setSource('LITTERATURE');
             $this->entityManager->persist($personnageLangue);
 
-            $trigger = $personnage->getTrigger('LANGUE COMMUNE');
-            $this->entityManager->remove($trigger);
+            if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_COURANTE)) {
+                $this->entityManager->remove($trigger);
+            }
+
+            $this->log($personnageLangue, LogActionType::ADD_LANGUE);
 
             $this->entityManager->flush();
 
@@ -2412,8 +2451,11 @@ class ParticipantController extends AbstractController
             $personnageLangue->setSource('LITTERATURE');
             $this->entityManager->persist($personnageLangue);
 
-            $trigger = $personnage->getTrigger('LANGUE COURANTE');
-            $this->entityManager->remove($trigger);
+            if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_COURANTE)) {
+                $this->entityManager->remove($trigger);
+            }
+
+            $this->log($personnageLangue, LogActionType::ADD_LANGUE);
 
             $this->entityManager->flush();
 
@@ -2510,7 +2552,7 @@ class ParticipantController extends AbstractController
      * Création d'un nouveau participant.
      */
     #[Route('/participant/new', name: 'participant.new')]
-    public function newAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    public function newAction(Request $request): RedirectResponse|Response
     {
         $participant = new Participant();
         $userRepository = $this->entityManager->getRepository(User::class);
@@ -2550,7 +2592,6 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/origine', name: 'participant.origine')]
     public function origineAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
@@ -2578,8 +2619,20 @@ class ParticipantController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Personnage $personnage */
             $personnage = $form->getData();
             $this->entityManager->persist($personnage);
+
+            $log = new LogAction();
+            $log->setDate(new \DateTime());
+            $log->setType(LogActionType::ADD_ORIGINE);
+            $log->setUser($this->getUser());
+            $log->setData([
+                'origine_id' => $personnage->getOrigine()?->getId(),
+                'personnage_id' => $personnage->getId(),
+            ]);
+            $this->entityManager->persist($logAction);
+
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
@@ -2601,7 +2654,6 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/personnageEdit', name: 'participant.personnage.edit')]
     public function personnageEditAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
@@ -2640,7 +2692,6 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/personnageNew', name: 'participant.personnage.new')]
     public function personnageNewAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
@@ -3001,7 +3052,6 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/personnage/{personnage}/remove', name: 'participant.personnage.remove')]
     public function personnageRemoveAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         Participant $participant,
         Personnage $personnage,
     ): RedirectResponse|Response {
@@ -3196,10 +3246,10 @@ class ParticipantController extends AbstractController
         }
 
         $niveaux = [
-            1 => 'ALCHIMIE APPRENTI',
-            2 => 'ALCHIMIE INITIE',
-            3 => 'ALCHIMIE EXPERT',
-            4 => 'ALCHIMIE MAITRE',
+            1 => TriggerType::ALCHIMIE_APPRENTI,
+            2 => TriggerType::ALCHIMIE_INITIE,
+            3 => TriggerType::ALCHIMIE_EXPERT,
+            4 => TriggerType::ALCHIMIE_MAITRE,
         ];
         foreach ($niveaux as $i => $tag) {
             if ($niveau === $i && (!$personnage->hasTrigger($tag))) {
@@ -3236,21 +3286,21 @@ class ParticipantController extends AbstractController
             // suppression du trigger
             switch ($niveau) {
                 case 1:
-                    $trigger = $personnage->getTrigger('ALCHIMIE APPRENTI');
+                    $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_APPRENTI);
                     // May not come from trigger
                     if ($trigger) {
                         $this->entityManager->remove($trigger);
                     }
                     break;
                 case 2:
-                    $trigger = $personnage->getTrigger('ALCHIMIE INITIE');
+                    $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_INITIE);
                     // May not come from trigger
                     if ($trigger) {
                         $this->entityManager->remove($trigger);
                     }
                     break;
                 case 3:
-                    $trigger = $personnage->getTrigger('ALCHIMIE EXPERT');
+                    $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_EXPERT);
                     // May not come from trigger
                     if ($trigger) {
                         $this->entityManager->remove($trigger);
@@ -3258,12 +3308,24 @@ class ParticipantController extends AbstractController
                     break;
                 case 4:
                     // May not come from trigger
-                    $trigger = $personnage->getTrigger('ALCHIMIE MAITRE');
+                    $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_MAITRE);
                     if ($trigger) {
                         $this->entityManager->remove($trigger);
                     }
                     break;
             }
+
+            $logAction = new LogAction();
+            $logAction->setDate(new \DateTime());
+            $logAction->setUser($this->getUser());
+            $logAction->setType(LogActionType::ADD_POTION);
+            $logAction->setData(
+                [
+                    'personnage_id' => $personnage->getId(),
+                    'potion' => $potion->getId(),
+                ],
+            );
+            $this->entityManager->persist($logAction);
 
             $this->entityManager->flush();
 
@@ -3331,6 +3393,19 @@ class ParticipantController extends AbstractController
             $participant->addPotionDepart($potion);
             $this->entityManager->persist($participant);
 
+            $logAction = new LogAction();
+            $logAction->setDate(new \DateTime());
+            $logAction->setUser($this->getUser());
+            $logAction->setType(LogActionType::ADD_POTION_DEPART);
+            $logAction->setData(
+                [
+                    'personnage_id' => $personnage->getId(),
+                    'niveau' => $niveau,
+                    'potion_id' => $potion->getId(),
+                ],
+            );
+            $this->entityManager->persist($logAction);
+
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Vos modifications ont été enregistrées.');
@@ -3354,7 +3429,6 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/potion/{potion}/depart/add', name: 'participant.potion.depart.add')]
     #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::SCENARISTE->value.'")'))]
     public function potionDepartAddAction(
-        Request $request,
         #[MapEntity] Participant $participant,
         #[MapEntity] Potion $potion,
     ): RedirectResponse|Response {
@@ -3380,6 +3454,17 @@ class ParticipantController extends AbstractController
 
         $participant->addPotionDepart($potion);
         $this->entityManager->persist($participant);
+
+        $logAction = new LogAction();
+        $logAction->setDate(new \DateTime());
+        $logAction->setUser($this->getUser());
+        $logAction->setType(LogActionType::ADD_POTION_DEPART);
+        $logAction->setData(
+            [
+                'personnage_id' => $personnage->getId(),
+                'potion_id' => $potion->getId(),
+            ],
+        );
 
         $this->entityManager->flush();
 
@@ -3425,6 +3510,17 @@ class ParticipantController extends AbstractController
             // Retrait de la potion au personnage
             $participant->removePotionDepart($potion);
             $this->entityManager->persist($participant);
+
+            $logAction = new LogAction();
+            $logAction->setDate(new \DateTime());
+            $logAction->setUser($this->getUser());
+            $logAction->setType(LogActionType::DELETE_POTION_DEPART);
+            $logAction->setData(
+                [
+                    'personnage_id' => $personnage->getId(),
+                    'potion_id' => $potion->getId(),
+                ],
+            );
 
             $this->entityManager->flush();
 
@@ -3841,6 +3937,8 @@ class ParticipantController extends AbstractController
                 }
             }
 
+            $this->log($personnageReligion, LogActionType::ADD_RELIGION);
+
             $this->entityManager->persist($personnageReligion);
             $this->entityManager->flush();
 
@@ -3878,7 +3976,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        if (!$personnage->hasTrigger('PRETRISE INITIE')) {
+        if (!$personnage->hasTrigger(TriggerType::PRETRISE_INITIE)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de descriptif de religion supplémentaire.');
 
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
@@ -3906,7 +4004,7 @@ class ParticipantController extends AbstractController
 
             $personnage->addReligion($religion);
 
-            $trigger = $personnage->getTrigger('PRETRISE INITIE');
+            $trigger = $personnage->getTrigger(TriggerType::PRETRISE_INITIE);
             $this->entityManager->remove($trigger);
 
             $this->entityManager->flush();
@@ -4274,8 +4372,22 @@ class ParticipantController extends AbstractController
             /*
              * Pour toutes les restaurations du participant
              */
+            /** @var ParticipantHasRestauration $participantHasRestauration */
             foreach ($participant->getParticipantHasRestaurations() as $participantHasRestauration) {
                 $participantHasRestauration->setParticipant($participant);
+
+                $logAction = new LogAction();
+                $logAction->setDate(new \DateTime());
+                $logAction->setUser($this->getUser());
+                $logAction->setType(LogActionType::DELETE_POTION_DEPART);
+                $logAction->setData(
+                    [
+                        'personnage_id' => $participant->getPersonnage()?->getId(),
+                        'participant_id' => $participant->getId(),
+                        'restauration_id' => $participantHasRestauration->getRestauration()?->getId(),
+                    ],
+                );
+                $this->entityManager->persist($logAction);
             }
 
             /*

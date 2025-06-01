@@ -1,0 +1,59 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Log d'action{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des actions sur le larpmanager' },
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Liste des actions sur le larpmanager</h5>
+        </div>
+
+        {% include '_partials/formListSearch.twig' with
+            {
+                'actionPath' : path('admin.action.logs')
+            } %}
+    </div>
+
+    {% include '_partials/pagination.html.twig' %}
+
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'admin.action.logs', 'rows': [
+            {'name' : 'Id', 'field' : 'id', 'css' : 'text-center'},
+            {'name' : 'Qui', 'field' : 'user', 'css' : 'text-center'},
+            {'name' : 'Quand', 'field' : 'date', 'css' : 'text-center'},
+            {'name' : 'Type', 'field' : 'date', 'css' : 'text-center'},
+            {'name' : 'Quoi', 'field' : 'data', 'css' : 'text-center'},
+        ]} %}
+        <tbody>
+        {% for logAction in paginator %}
+            <tr>
+                <td class="text-center align-middle col-1">{{ logAction.id|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle col-1">
+                    <a href="{{ path('user.detail', {'user': logAction.user.id }) }}">
+                        {{ logAction.user.name|highlight(pagerService.searchValue) }}
+                    </a>
+                </td>
+                <td class="text-center align-middle col-1">{{ logAction.date|date("m/d/Y H:i:s")|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle col-1">{{ logAction.type.value|default('-')|highlight(pagerService.searchValue) }}</td>
+                <td class="align-middle col-8">
+                    {{ dump(logAction.data) }}
+                </td>
+            </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include '_partials/pagination.html.twig' %}
+
+
+{% endblock %}
