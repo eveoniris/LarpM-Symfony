@@ -48,14 +48,14 @@ class PretriseService extends CompetenceService
     public function getRules(): array
     {
         return [
-            // TODO
             // Initié : Vous connaissez le niveau fervent d'une Religion supplémentaire.
             // Expert : Vous connaissez le niveau Fervent de deux Religions supplémentaires.
+            // Maitre : Vous connaissez le niveau Fervent de trois Religions supplémentaires.
 
-            // Permet à un prêtre de choisir des infos, 3 descriptions de religions qu'il ne connait pas
+            // Permet à un prêtre de choisir des infos de descriptions de religions qu'il ne connait pas
             Level::NIVEAU_2 => [TriggerType::PRETRISE_INITIE->value => 1],
             Level::NIVEAU_3 => [TriggerType::PRETRISE_INITIE->value => 2],
-            // Level::NIVEAU_4 => [PersonnageTrigger::TAG_PRETRISE_INITIE => 3],
+            Level::NIVEAU_4 => [TriggerType::PRETRISE_INITIE->value => 3],
         ];
     }
 

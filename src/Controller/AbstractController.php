@@ -10,6 +10,7 @@ use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\User;
 use App\Enum\FolderType;
+use App\Enum\LogActionType;
 use App\Enum\Role;
 use App\Form\DeleteForm;
 use App\Repository\BaseRepository;
@@ -485,22 +486,22 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 return $this->redirectToRoute($routes['add']);
             }
 
-            $logType = 'entity';
+            $logType = LogActionType::ENTITY;
 
             if ($form->has('delete') && $form->get('delete')->isClicked()) {
-                $logType = 'entity_delete';
+                $logType = LogActionType::ENTITY_DELETE;
                 $this->entityManager->remove($entity);
                 $this->addFlash('success', $msg['entity_deleted']);
             } else {
                 $this->entityManager->persist($entity);
 
                 if ($form->has('update') && $form->get('update')->isClicked()) {
-                    $logType = 'entity_update';
+                    $logType = LogActionType::ENTITY_UPDATE;
                     $this->addFlash('success', $msg['entity_updated']);
                 }
 
                 if ($form->has('save') && $form->get('save')->isClicked()) {
-                    $logType = 'entity_add';
+                    $logType = LogActionType::ENTITY_ADD;
                     $this->addFlash('success', $msg['entity_added']);
                 }
             }
@@ -522,7 +523,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ]);
     }
 
-    protected function log(mixed $entity, string $type, bool $flush = false): void
+    protected function log(mixed $entity, LogActionType $type, bool $flush = false): void
     {
         $logAction = new LogAction();
         $logAction->setDate(new \DateTime());

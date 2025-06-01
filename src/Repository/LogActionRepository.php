@@ -3,41 +3,39 @@
 namespace App\Repository;
 
 use App\Entity\LogAction;
+use App\Service\OrderBy;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<LogAction>
  */
-class LogActionRepository extends ServiceEntityRepository
+class LogActionRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, LogAction::class);
+    public function search(
+        mixed $search = null,
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null,
+    ): QueryBuilder {
+        $alias ??= static::getEntityAlias();
+        $query ??= $this->createQueryBuilder($alias);
+        $query->join($alias.'.user', 'user');
+
+        return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    //    /**
-    //     * @return LogAction[] Returns an array of LogAction objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('l')
-    //            ->andWhere('l.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('l.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function searchAttributes(): array
+    {
+        $alias = static::getEntityAlias();
 
-    //    public function findOneBySomeField($value): ?LogAction
-    //    {
-    //        return $this->createQueryBuilder('l')
-    //            ->andWhere('l.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return [
+            self::SEARCH_ALL,
+            $alias.'.user',
+            $alias.'.date',
+            $alias.'.data',
+        ];
+    }
 }

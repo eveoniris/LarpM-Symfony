@@ -15,6 +15,7 @@ use App\Entity\Personnage;
 use App\Entity\PersonnageTrigger;
 use App\Entity\RenommeHistory;
 use App\Enum\CompetenceFamilyType;
+use App\Enum\LogActionType;
 use App\Service\Competence\AlchimieService;
 use App\Service\Competence\ArtisantService;
 use App\Service\Competence\LitteratureService;
@@ -96,7 +97,7 @@ class CompetenceService
 
         $log = new LogAction();
         $log->setDate(new \DateTime());
-        $log->setType('AddCompetence');
+        $log->setType(LogActionType::ADD_COMPETENCE);
         $log->setUser($this->security->getUser());
         $log->setData([
             'competence_id' => $this->getCompetence()->getId(),

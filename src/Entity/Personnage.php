@@ -292,6 +292,19 @@ class Personnage extends BasePersonnage implements \Stringable
         return $this;
     }
 
+    public function getActiveTriggers(): ArrayCollection
+    {
+        $all = new ArrayCollection();
+        /** @var PersonnageTrigger $personnageTrigger */
+        foreach ($this->personnageTriggers as $personnageTrigger) {
+            if (!$personnageTrigger->isDone()) {
+                $all->add($personnageTrigger);
+            }
+        }
+
+        return $all;
+    }
+
     public function getApprentissage(Competence $competence): ?PersonnageApprentissage
     {
         /** @var PersonnageApprentissage $apprentissage */
