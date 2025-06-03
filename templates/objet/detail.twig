@@ -88,7 +88,7 @@
                                title="Secret"></i> Description secrète</h6>
                     </div>
                     <div class="card-body">
-                        {{ item.descriptionSecrete|markdown_to_html }}
+                        {{ item.descriptionSecrete|default('')|markdown_to_html }}
                     </div>
                 </div>
 
@@ -100,7 +100,7 @@
                                title="Scénarisation"></i> Description scénariste</h6>
                     </div>
                     <div class="card-body">
-                        {{ item.descriptionScenariste|markdown_to_html }}
+                        {{ item.descriptionScenariste|default('')|markdown_to_html }}
                     </div>
                 </div>
 

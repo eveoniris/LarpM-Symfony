@@ -1,12 +1,12 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Postuler à un groupe secondaire{% endblock title %}
+{% block title %}Postuler à un groupe transverse{% endblock title %}
 
 {% block body %}
 
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
-            {'name' : 'Liste des groupes secondaires', 'route': path('groupeSecondaire.list') },
+            {'name' : 'Liste des groupes transverses', 'route': path('groupeSecondaire.list') },
             {'name' : "Détail de #{groupeSecondaire.label}", 'route': path('groupeSecondaire.detail', {'groupeSecondaire':groupeSecondaire.id}) },
             {'name' : "Postuler" },
         ]
@@ -14,12 +14,12 @@
 
     {% set htmlInfo %}
         <p>
-            Votre nom "<strong>{{ personnage.publicName }}</strong>", sera transmis au responsable du groupe secondaire.
+            Votre nom "<strong>{{ personnage.publicName }}</strong>", sera transmis au responsable du groupe transverse.
         </p>
 
         <p>
             Dans le cas de groupes religieux, la liste de vos religions (ainsi que vos niveaux de Ferveur associés)
-            sera transmis et visible par responsable du groupe secondaire.
+            sera transmis et visible par responsable du groupe transverse.
         </p>
     {% endset %}
     {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : htmlInfo} %}

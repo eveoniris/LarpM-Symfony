@@ -42,7 +42,7 @@
                     <hr/>
 
                     <h4>{{ form_label(form.intrigueHasGroupeSecondaires) }}</h4>
-                    <p>Si votre intrigue concerne un groupe secondaire secondaire, veuillez l'ajouter dans la liste
+                    <p>Si votre intrigue concerne un groupe transverse, veuillez l'ajouter dans la liste
                         ci-dessous</p>
 
                     <ul class="list-group intrigueHasGroupeSecondaires"
@@ -111,7 +111,7 @@
         </fieldset>
         <input type="hidden" name="intrigue_form[_token]" value="{{ csrf_token('intrigue_form') }}">
 
-        {# { form_end(form) }#}
+        {# { form_end(form) } #}
     </div>
 
 {% endblock body %}

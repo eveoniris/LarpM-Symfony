@@ -1,23 +1,23 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Groupe secondaire{% endblock title %}
+{% block title %}Groupe transverse{% endblock title %}
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("groupeSecondaire.list") }}">Liste des groupes secondaires</a></li>
-		<li class="active">Ajout d'un groupe secondaire</li>
-	</ol>
-	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('groupeSecondaire.add') }}) }}
-			<fieldset>
-				<legend>Ajout d'un groupe secondaire</legend>
-					
-					{{ form(form) }}
-			</fieldset>
-		{{ form_end(form) }}
-	</div>
-	
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path("groupeSecondaire.list") }}">Liste des groupes transverses</a></li>
+        <li class="active">Ajout d'un groupe transverse</li>
+    </ol>
+
+    <div class="well bs-component">
+        {{ form_start(form, {"attr": {"action": path('groupeSecondaire.add') }}) }}
+        <fieldset>
+            <legend>Ajout d'un groupe transverse</legend>
+
+            {{ form(form) }}
+        </fieldset>
+        {{ form_end(form) }}
+    </div>
+
 {% endblock body %}

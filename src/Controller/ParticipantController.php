@@ -2040,7 +2040,7 @@ class ParticipantController extends AbstractController
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage avant de postuler à un groupe secondaire!');
+            $this->addFlash('error', 'Vous devez avoir créé un personnage avant de postuler à un groupe transverse!');
 
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }

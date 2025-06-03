@@ -646,7 +646,7 @@ class CompetenceService
             return;
         }
         foreach ($rule as $tagName => $nb) {
-            while ($nb-- >= 0) {
+            while ($nb-- > 0) {
                 $trigger = new PersonnageTrigger();
                 $trigger->setPersonnage($this->getPersonnage());
                 $trigger->setTag($tagName);

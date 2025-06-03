@@ -467,7 +467,7 @@ class GroupeGnController extends AbstractController
         $this->checkGroupeLocked($groupeGn->getGroupe());
 
         return $this->redirect(
-            $this->generateUrl('groupe.detail', ['groupe' => 2]).'#groupe_lock',
+            $this->generateUrl('groupe.detail', ['groupe' => $groupeGn->getGroupe()->getId()]).'#groupe_lock',
             307,
         );
 
