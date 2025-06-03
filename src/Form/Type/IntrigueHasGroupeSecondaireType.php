@@ -17,7 +17,7 @@ class IntrigueHasGroupeSecondaireType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('secondaryGroup', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-            'label' => 'Ajouter un groupe secondaire concerné par cette intrigue',
+            'label' => 'Ajouter un groupe transverse concerné par cette intrigue',
             'required' => true,
             'class' => \App\Entity\SecondaryGroup::class,
             'choice_label' => 'label',

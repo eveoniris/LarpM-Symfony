@@ -527,7 +527,7 @@
                                             <hr>
                                             <h6 class="text-gamemaster"><i class="fa fa-feather"></i> Description
                                                 scénariste</h6>
-                                            {{ merveille.descriptionScenariste|markdown_to_html|default('Aucune') }}
+                                            {{ merveille.descriptionScenariste|default('Aucune')|markdown_to_html }}
                                         {% endif %}
                                     </div>
                                 </li>

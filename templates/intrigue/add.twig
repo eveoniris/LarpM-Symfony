@@ -4,111 +4,118 @@
 
 {% block body %}
 
-	{% include '_partials/breadcrumb.twig' with {'items' :
-		[
-			{'name' : 'Liste des intrigues', 'route': path('intrigue.list') },
-			{'name' : "Création d'une intrigue" }
-		]
-	} %}
-	
-	<div class="well bs-component">
-		{{ form_start(form, {"attr": {"action": path('intrigue.add') }}) }}
-			<fieldset>
-				<legend>Création d'une intrigue</legend>
-				
-				{{ form_start(form) }}
-		
-				{{ form_row(form.add) }}
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des intrigues', 'route': path('intrigue.list') },
+            {'name' : "Création d'une intrigue" }
+        ]
+    } %}
 
-				<div class="row">
-					<div class="col-md-8">
-					{{ form_row(form.titre) }}
-					{{ form_row(form.description) }}
-					{{ form_row(form.text) }}
-					{{ form_row(form.resolution) }}
-					{{ form_row(form.state) }}
-					</div>
-					<div class="col-md-4">
-						<h4>{{ form_label(form.intrigueHasGroupes) }}</h4>
-						<p>Si votre intrigue concerne un groupe, veuillez l'ajouter dans la liste ci-dessous</p>
-						
-						<ul class="list-group intrigueHasGroupes" data-prototype="{{ form_widget(form.intrigueHasGroupes.vars.prototype)|e }}">
-							{% for intrigueHasGroupe in form.intrigueHasGroupes %}
-							 	<li class="list-group-item">{{ form_widget(intrigueHasGroupe.groupe) }}</li>
-							{% endfor %}
-						</ul>
-						
-						<hr />
-						
-						<h4>{{ form_label(form.intrigueHasGroupeSecondaires) }}</h4>
-						<p>Si votre intrigue concerne un groupe secondaire, veuillez l'ajouter dans la liste ci-dessous</p>
-						
-						<ul class="list-group intrigueHasGroupeSecondaires" data-prototype="{{ form_widget(form.intrigueHasGroupeSecondaires.vars.prototype)|e }}">
-							{% for intrigueHasGroupeSecondaire in form.intrigueHasGroupeSecondaires %}
-							 	<li class="list-group-item">{{ form_widget(intrigueHasGroupeSecondaire.secondaryGroup) }}</li>
-							{% endfor %}
-						</ul>
-						
-						<hr />
-						
-						<h4>{{ form_label(form.intrigueHasDocuments) }}</h4>
-						<p>Si votre intrigue est concernée par un document, veuillez l'ajouter dans la liste ci-dessous</p>
-						
-						<ul class="list-group intrigueHasDocuments" data-prototype="{{ form_widget(form.intrigueHasDocuments.vars.prototype)|e }}">
-							{% for intrigueHasDocument in form.intrigueHasDocuments %}
-							 	<li class="list-group-item">{{ form_widget(intrigueHasDocument.document) }}</li>
-							{% endfor %}
-						</ul>
-						
-						<hr />
-						
-						<h4>{{ form_label(form.intrigueHasLieus) }}</h4>
-						<p>Si votre intrigue concerne une instance, veuillez l'ajouter dans la liste ci-dessous</p>
-						
-						<ul class="list-group intrigueHasLieus" data-prototype="{{ form_widget(form.intrigueHasLieus.vars.prototype)|e }}">
-							{% for intrigueHasLieu in form.intrigueHasLieus %}
-							 	<li class="list-group-item">{{ form_widget(intrigueHasLieu.lieu) }}</li>
-							{% endfor %}
-						</ul>
-						
-						<hr />
-						
-						<h4>{{ form_label(form.intrigueHasEvenements) }}</h4>
-						<p>Si votre intrigue dépend d'un événement ayant eu lieu, veuillez l'ajouter dans la liste ci-dessous</p>
-						<ul class="list-group intrigueHasEvenements" data-prototype="{{ form_widget(form.intrigueHasEvenements.vars.prototype)|e }}">
-							{% for intrigueHasEvenement in form.intrigueHasEvenements %}
-								<li class="list-group-item">
-									<div class="evenement">
-										{{ form_widget(intrigueHasEvenement.evenement) }}
-									</div>
-								</li>
-							{% endfor %}
-						</ul>
-						
-						<hr />
-						
-						<h4>{{ form_label(form.intrigueHasObjectifs) }}</h4>
-						<p>Ajoutez içi les objectifs liés à votre intrigue</p>
-						<ul class="list-group intrigueHasObjectifs" data-prototype="{{ form_widget(form.intrigueHasObjectifs.vars.prototype)|e }}">
-							{% for intrigueHasObjectif in form.intrigueHasObjectifs %}
-								<li class="list-group-item">
-									<div class="objectif">
-										{{ form_widget(intrigueHasObjectif.objectif) }}
-									</div>
-								</li>
-							{% endfor %}
-						</ul>
-					</div>
-					</div>
-			</fieldset>
+    <div class="well bs-component">
+        {{ form_start(form, {"attr": {"action": path('intrigue.add') }}) }}
+        <fieldset>
+            <legend>Création d'une intrigue</legend>
 
-		<input type="hidden" name="intrigue_form[_token]" value="{{ csrf_token('intrigue_form') }}">
-	</div>
-	
+            {{ form_start(form) }}
+
+            {{ form_row(form.add) }}
+
+            <div class="row">
+                <div class="col-md-8">
+                    {{ form_row(form.titre) }}
+                    {{ form_row(form.description) }}
+                    {{ form_row(form.text) }}
+                    {{ form_row(form.resolution) }}
+                    {{ form_row(form.state) }}
+                </div>
+                <div class="col-md-4">
+                    <h4>{{ form_label(form.intrigueHasGroupes) }}</h4>
+                    <p>Si votre intrigue concerne un groupe, veuillez l'ajouter dans la liste ci-dessous</p>
+
+                    <ul class="list-group intrigueHasGroupes"
+                        data-prototype="{{ form_widget(form.intrigueHasGroupes.vars.prototype)|e }}">
+                        {% for intrigueHasGroupe in form.intrigueHasGroupes %}
+                            <li class="list-group-item">{{ form_widget(intrigueHasGroupe.groupe) }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <hr/>
+
+                    <h4>{{ form_label(form.intrigueHasGroupeSecondaires) }}</h4>
+                    <p>Si votre intrigue concerne un groupe transverse, veuillez l'ajouter dans la liste ci-dessous</p>
+
+                    <ul class="list-group intrigueHasGroupeSecondaires"
+                        data-prototype="{{ form_widget(form.intrigueHasGroupeSecondaires.vars.prototype)|e }}">
+                        {% for intrigueHasGroupeSecondaire in form.intrigueHasGroupeSecondaires %}
+                            <li class="list-group-item">{{ form_widget(intrigueHasGroupeSecondaire.secondaryGroup) }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <hr/>
+
+                    <h4>{{ form_label(form.intrigueHasDocuments) }}</h4>
+                    <p>Si votre intrigue est concernée par un document, veuillez l'ajouter dans la liste ci-dessous</p>
+
+                    <ul class="list-group intrigueHasDocuments"
+                        data-prototype="{{ form_widget(form.intrigueHasDocuments.vars.prototype)|e }}">
+                        {% for intrigueHasDocument in form.intrigueHasDocuments %}
+                            <li class="list-group-item">{{ form_widget(intrigueHasDocument.document) }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <hr/>
+
+                    <h4>{{ form_label(form.intrigueHasLieus) }}</h4>
+                    <p>Si votre intrigue concerne une instance, veuillez l'ajouter dans la liste ci-dessous</p>
+
+                    <ul class="list-group intrigueHasLieus"
+                        data-prototype="{{ form_widget(form.intrigueHasLieus.vars.prototype)|e }}">
+                        {% for intrigueHasLieu in form.intrigueHasLieus %}
+                            <li class="list-group-item">{{ form_widget(intrigueHasLieu.lieu) }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <hr/>
+
+                    <h4>{{ form_label(form.intrigueHasEvenements) }}</h4>
+                    <p>Si votre intrigue dépend d'un événement ayant eu lieu, veuillez l'ajouter dans la liste
+                        ci-dessous</p>
+                    <ul class="list-group intrigueHasEvenements"
+                        data-prototype="{{ form_widget(form.intrigueHasEvenements.vars.prototype)|e }}">
+                        {% for intrigueHasEvenement in form.intrigueHasEvenements %}
+                            <li class="list-group-item">
+                                <div class="evenement">
+                                    {{ form_widget(intrigueHasEvenement.evenement) }}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <hr/>
+
+                    <h4>{{ form_label(form.intrigueHasObjectifs) }}</h4>
+                    <p>Ajoutez içi les objectifs liés à votre intrigue</p>
+                    <ul class="list-group intrigueHasObjectifs"
+                        data-prototype="{{ form_widget(form.intrigueHasObjectifs.vars.prototype)|e }}">
+                        {% for intrigueHasObjectif in form.intrigueHasObjectifs %}
+                            <li class="list-group-item">
+                                <div class="objectif">
+                                    {{ form_widget(intrigueHasObjectif.objectif) }}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </fieldset>
+
+        <input type="hidden" name="intrigue_form[_token]" value="{{ csrf_token('intrigue_form') }}">
+    </div>
+
 {% endblock body %}
 
 {% block javascripts %}
-	{{ parent() }}
+    {{ parent() }}
 
-	{{ include("intrigue/intrigueJs.twig") }}
+    {{ include("intrigue/intrigueJs.twig") }}
 {% endblock javascripts %}

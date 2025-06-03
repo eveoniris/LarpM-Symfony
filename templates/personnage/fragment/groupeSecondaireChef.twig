@@ -6,7 +6,7 @@
 {% if personnage.secondaryGroups|length >0 %}
 <div class="{{ css }}">
     <div class="header">
-        <h5>Chef de groupe secondaire</h5>
+        <h5>Chef de groupe transverse</h5>
     </div>
 
     <ul class="list-group">
@@ -21,7 +21,7 @@
             </li>
         {% else %}
             <li class="list-group-item">
-            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucun'} %}
+                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Aucun'} %}
             </li>
         {% endfor %}
     </ul>

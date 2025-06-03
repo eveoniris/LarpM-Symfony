@@ -197,7 +197,7 @@ class TechnologieController extends AbstractController
      */
     #[Route(name: 'index')]
     #[Route(name: 'list')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function indexAction(
         PagerService $pagerService,
         TechnologieRepository $technologieRepository,

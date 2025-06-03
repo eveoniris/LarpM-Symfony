@@ -2243,7 +2243,7 @@ class PersonnageController extends AbstractController
 
             $this->log(
                 ['personnage' => $personnage->getid(), 'xp' => $data['xp'], 'explanation' => $data['explanation']],
-                'xp_add',
+                LogActionType::XP_ADD,
                 true,
             );
 

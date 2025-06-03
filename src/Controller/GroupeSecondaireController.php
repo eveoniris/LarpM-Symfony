@@ -28,6 +28,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class GroupeSecondaireController extends AbstractController
 {
     #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/accept', name: 'groupeSecondaire.postulant.accept')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/postulant/{postulant}/accept', name: 'groupeTransverse.postulant.accept')]
     public function acceptPostulantAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Postulant $postulant,
@@ -42,7 +43,7 @@ class GroupeSecondaireController extends AbstractController
         $membre->setSecret(false);
 
         if ($groupeSecondaire->isMembre($personnage)) {
-            $this->addFlash('warning', 'le personnage est déjà membre du groupe secondaire.');
+            $this->addFlash('warning', 'le personnage est déjà membre du groupe transverse.');
         } else {
             $this->entityManager->persist($membre);
             $this->entityManager->remove($postulant);
@@ -121,10 +122,11 @@ class GroupeSecondaireController extends AbstractController
     }
 
     /**
-     * Ajoute un groupe secondaire.
+     * Ajoute un groupe transverse.
      */
     #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     #[Route('/groupeSecondaire/add', name: 'groupeSecondaire.add')]
+    #[Route('/groupeTransverse/add', name: 'groupeTransverse.add')]
     public function adminAddAction(Request $request): RedirectResponse|Response
     {
         $groupeSecondaire = new SecondaryGroup();
@@ -161,7 +163,7 @@ class GroupeSecondaireController extends AbstractController
             $this->entityManager->persist($groupeSecondaire);
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Le groupe secondaire a été ajouté.');
+            $this->addFlash('success', 'Le groupe transverse a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('groupeSecondaire.list', [], 303);
@@ -177,6 +179,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/contact', name: 'groupeSecondaire.contact')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/contact', name: 'groupeTransverse.contact')]
     public function contactLeaderAction(Request $request, #[MapEntity] SecondaryGroup $groupeSecondaire): Response
     {
         $this->loadAccess($groupeSecondaire);
@@ -250,6 +253,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/contact/membre/{membre}', name: 'groupeSecondaire.contact.membre')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/contact/membre/{membre}', name: 'groupeTransverse.contact.membre')]
     public function contactMembreAction(
         Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
@@ -315,6 +319,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/detail', name: 'groupeSecondaire.detail')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/detail', name: 'groupeTransverse.detail')]
     public function detailAction(#[MapEntity] SecondaryGroup $groupeSecondaire): Response
     {
         $this->hasAccess($groupeSecondaire);
@@ -357,6 +362,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/postuler', name: 'groupeSecondaire.postuler')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/postuler', name: 'groupeTransverse.postuler')]
     public function groupeSecondairePostulerAction(
         Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
@@ -379,7 +385,7 @@ class GroupeSecondaireController extends AbstractController
         if (!$personnage) {
             $this->addFlash(
                 'error',
-                'Vous devez avoir créé un personnage et le choisir comme personnage actif avant de postuler à un groupe secondaire!',
+                'Vous devez avoir créé un personnage et le choisir comme personnage actif avant de postuler à un groupe transverse!',
             );
 
             return $this->redirectToRoute('user.detail', ['user' => $this->getUser()?->getId()], 303);
@@ -468,6 +474,7 @@ class GroupeSecondaireController extends AbstractController
      * Liste des groupes secondaires (pour les orgas).
      */
     #[Route('/groupeSecondaire', name: 'groupeSecondaire.list')]
+    #[Route('/groupeTransverse', name: 'groupeTransverse.list')]
     public function listAction(
         Request $request,
         PagerService $pagerService,
@@ -501,6 +508,7 @@ class GroupeSecondaireController extends AbstractController
      */
     #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     #[Route('/groupeSecondaire/{groupeSecondaire}/print', name: 'groupeSecondaire.materiel.print')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/print', name: 'groupeTransverse.materiel.print')]
     public function materielPrintAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
     ): Response {
@@ -514,6 +522,7 @@ class GroupeSecondaireController extends AbstractController
      */
     #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     #[Route('/groupeSecondaire/printAll', name: 'groupeSecondaire.materiel.printAll')]
+    #[Route('/groupeTransverse/printAll', name: 'groupeTransverse.materiel.printAll')]
     public function materielPrintAllAction(): Response
     {
         $groupeSecondaires = $this->entityManager->getRepository(SecondaryGroup::class)->findAll();
@@ -528,6 +537,7 @@ class GroupeSecondaireController extends AbstractController
      */
     #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     #[Route('/groupeSecondaire/{groupeSecondaire}/materielUpdate', name: 'groupeSecondaire.materiel.update')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/materielUpdate', name: 'groupeTransverse.materiel.update')]
     public function materielUpdateAction(
         Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
@@ -539,7 +549,7 @@ class GroupeSecondaireController extends AbstractController
             $groupeSecondaire = $form->getData();
             $this->entityManager->persist($groupeSecondaire);
             $this->entityManager->flush();
-            $this->addFlash('success', 'Le groupe secondaire a été mis à jour.');
+            $this->addFlash('success', 'Le groupe transverse a été mis à jour.');
 
             return $this->redirectToRoute(
                 'groupeSecondaire.detail',
@@ -558,6 +568,7 @@ class GroupeSecondaireController extends AbstractController
      * Ajoute un nouveau membre au groupe secondaire.
      */
     #[Route('/groupeSecondaire/{groupeSecondaire}/addMember', name: 'groupeSecondaire.newMembre')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/addMember', name: 'groupeTransverse.newMembre')]
     public function newMembreAction(
         Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
@@ -583,7 +594,7 @@ class GroupeSecondaireController extends AbstractController
             $membre = new Membre();
 
             if ($groupeSecondaire->isMembre($personnage)) {
-                $this->addFlash('warning', 'le personnage est déjà membre du groupe secondaire.');
+                $this->addFlash('warning', 'le personnage est déjà membre du groupe transverse.');
 
                 return $this->redirectToRoute(
                     'groupeSecondaire.detail',
@@ -599,7 +610,7 @@ class GroupeSecondaireController extends AbstractController
             $this->entityManager->persist($membre);
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'le personnage a été ajouté au groupe secondaire.');
+            $this->addFlash('success', 'le personnage a été ajouté au groupe transverse.');
 
             return $this->redirectToRoute(
                 'groupeSecondaire.detail',
@@ -615,6 +626,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/response', name: 'groupeSecondaire.postulant.response')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/postulant/{postulant}/response', name: 'groupeTransverse.postulant.response')]
     public function postulantResponseAction(
         Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
@@ -672,6 +684,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/wait', name: 'groupeSecondaire.postulant.wait')]
+    #[Route('groupeTransverse/{groupeSecondaire}/postulant/{postulant}/wait', name: 'groupeTransverse.postulant.wait')]
     public function postulantWaitAction(
         Request $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
@@ -709,6 +722,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/membre/{membre}/remove', name: 'groupeSecondaire.member.remove')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/membre/{membre}/remove', name: 'groupeTransverse.member.remove')]
     public function removeMembreAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Membre $membre,
@@ -721,7 +735,7 @@ class GroupeSecondaireController extends AbstractController
             'Le membre a été retiré',
             ['route' => 'groupeSecondaire.detail', 'params' => ['groupeSecondaire' => $groupeSecondaire->getId()]],
             [
-                ['route' => $this->generateUrl('groupeSecondaire.list'), 'name' => 'Liste des groupes secondaires'],
+                ['route' => $this->generateUrl('groupeSecondaire.list'), 'name' => 'Liste des groupes transverses'],
                 [
                     'route' => $this->generateUrl(
                         'groupeSecondaire.detail',
@@ -737,6 +751,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/remove', name: 'groupeSecondaire.postulant.remove')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/postulant/{postulant}/remove', name: 'groupeTransverse.postulant.remove')]
     public function removePostulantAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Postulant $postulant,
@@ -756,6 +771,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/secretOff/{membre}', name: 'groupeSecondaire.secret.off')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/secretOff/{membre}', name: 'groupeTransverse.secret.off')]
     public function secretOffAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Membre $membre,
@@ -776,6 +792,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/secretOn/{membre}', name: 'groupeSecondaire.secret.on')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/secretOn/{membre}', name: 'groupeTransverse.secret.on')]
     public function secretOnAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
         #[MapEntity] Membre $membre,
@@ -796,6 +813,7 @@ class GroupeSecondaireController extends AbstractController
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.update')]
+    #[Route('/groupeTransverse/{groupeSecondaire}/update', name: 'groupeTransverse.update')]
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -838,11 +856,11 @@ class GroupeSecondaireController extends AbstractController
                 }
                 $entityManager->persist($groupeSecondaire);
                 $entityManager->flush();
-                $this->addFlash('success', 'Le groupe secondaire a été mis à jour.');
+                $this->addFlash('success', 'Le groupe transverse a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($groupeSecondaire);
                 $entityManager->flush();
-                $this->addFlash('success', 'Le groupe secondaire a été supprimé.');
+                $this->addFlash('success', 'Le groupe transverse a été supprimé.');
             }
 
             return $this->redirectToRoute('groupeSecondaire.list');

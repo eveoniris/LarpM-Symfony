@@ -1,12 +1,12 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Postuler à un groupe secondaire{% endblock title %}
+{% block title %}Postuler à un groupe transverse{% endblock title %}
 
 {% block body %}
 
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
-            {'name' : 'Liste des groupes secondaires', 'route': path('groupeSecondaire.list') },
+            {'name' : 'Liste des groupes transverses', 'route': path('groupeSecondaire.list') },
             {'name' : "Détail de #{groupeSecondaire.label}", 'route': path('groupeSecondaire.detail', {'groupeSecondaire':groupeSecondaire.id}) },
             {'name' : "Contacter" },
         ]
@@ -15,7 +15,7 @@
     {% set htmlInfo %}
         <p>
             Votre nom "<strong>{{ personnage.publicName }}</strong>" et votre identifiant utilisateur (pour réponse),
-            sera transmis au responsable du groupe secondaire.
+            sera transmis au responsable du groupe transverse.
         </p>
     {% endset %}
     {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : htmlInfo} %}

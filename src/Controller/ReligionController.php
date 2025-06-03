@@ -228,7 +228,7 @@ class ReligionController extends AbstractController
      * affiche la liste des niveaux de fanatisme.
      */
     #[Route('/religion/level', name: 'religion.level')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_REGLES")'))]
     public function levelIndexAction(Request $request, EntityManagerInterface $entityManager)
     {
         $repo = $entityManager->getRepository(ReligionLevel::class);
@@ -244,7 +244,7 @@ class ReligionController extends AbstractController
      * redirigé vers la liste de niveaux de religions.
      */
     #[Route('/religion/level/{religionLevel}/update', name: 'religion.level.update')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_REGLES")'))]
     public function levelUpdateAction(
         Request $request,
         EntityManagerInterface $entityManager,

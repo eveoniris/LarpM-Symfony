@@ -384,8 +384,8 @@ readonly class GroupeService
                 // Clone to avoid unwanted overwriting
                 $ressource = clone $ressourceExported;
                 $nbRessource = 3;
-                if ('Instable' === $territoire->getStatut()) {
-                    $nbRessource = 2;
+                if (!$territoire->isStable()) {
+                    $nbRessource = ceil($nbRessource * 0.5);
                 }
                 $ressource->setLabel(
                     '<strong>'.$ressource->getLabel().'</strong> fourni(e)s par <strong>'.$territoire->getNom(
@@ -503,11 +503,13 @@ readonly class GroupeService
             $all += $richesse['value'] ?? 0;
         }
 
-        return $all ?? 0;
+        return $all;
     }
 
     public function getAllRichesseDisplay(Groupe $groupe): array
     {
+        // (base + bonus) x3 [x0.5 si instable]
+
         $histories = [];
 
         /** @var Territoire $territoire */
@@ -536,14 +538,20 @@ readonly class GroupeService
                 }
             }
 
-            $isInstable = TerritoireStatut::INSTABLE->value === strtolower($territoire->getStatut()?->value ?? '');
-            $value = $tresor / ($isInstable ? 2 : 1);
+            $value = $tresor * 3;
+
+            if ($territoire->isStable()) {
+                $value *= 0.5;
+            }
+
+            // arrondi au sup
+            $value = ceil($value);
 
             $label = sprintf(
                 "<strong>%s pièces d'argent</strong> fournies par <strong>%s</strong>. Etat %s : 3 x %d.%s",
                 $value,
                 $territoire->getNom(),
-                $isInstable ? 'instable 0.5 x' : 'normal',
+                $territoire->isStable() ? 'instable 0.5 x' : 'normal',
                 $base,
                 $constructions ? ' '.implode(', ', $constructions) : '',
             );
@@ -580,7 +588,7 @@ readonly class GroupeService
 
             $histories[] = [
                 'label' => '<strong>'.$bonus->getTitre(
-                ).'</strong> fourni(e)s par <strong>'.$source.'</strong></strong> fourni(e)s par <strong>'.$source.'</strong>',
+                    ).'</strong> fourni(e)s par <strong>'.$source.'</strong></strong> fourni(e)s par <strong>'.$source.'</strong>',
                 'value' => (int) $bonus->getValeur(),
             ];
         }

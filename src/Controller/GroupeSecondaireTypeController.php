@@ -18,17 +18,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class GroupeSecondaireTypeController extends AbstractController
 {
     /**
-     * Liste les types de groupe secondaire.
-     */
-    public function adminListAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\SecondaryGroupType::class);
-        $groupeSecondaireTypes = $repo->findAll();
-
-        return $this->render('groupeSecondaireType/list.twig', ['groupeSecondaireTypes' => $groupeSecondaireTypes]);
-    }
-
-    /**
      * Ajoute un type de groupe secondaire.
      */
     #[Route('/groupeSecondaireType/add', name: 'groupeSecondaireType.add')]
@@ -38,7 +27,11 @@ class GroupeSecondaireTypeController extends AbstractController
 
         $form = $this->createForm(GroupeSecondaireTypeForm::class, $groupeSecondaireType)
             ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+            ->add(
+                'save_continue',
+                \Symfony\Component\Form\Extension\Core\Type\SubmitType::class,
+                ['label' => 'Sauvegarder & continuer'],
+            );
 
         $form->handleRequest($request);
 
@@ -48,7 +41,7 @@ class GroupeSecondaireTypeController extends AbstractController
             $entityManager->persist($groupeSecondaireType);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le type de groupe secondaire a été ajouté.');
+            $this->addFlash('success', 'Le type de groupe transverse a été ajouté.');
 
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('groupeSecondaire.list', [], 303);
@@ -63,9 +56,38 @@ class GroupeSecondaireTypeController extends AbstractController
     }
 
     /**
+     * Detail d'un type de groupe secondaire.
+     */
+    public function adminDetailAction(Request $request, EntityManagerInterface $entityManager)
+    {
+        $id = $request->get('index');
+
+        $groupeSecondaireType = $entityManager->find('\\'.\App\Entity\SecondaryGroupType::class, $id);
+
+        if ($groupeSecondaireType) {
+            return $this->render('groupeSecondaireType/detail.twig', ['groupeSecondaireType' => $groupeSecondaireType]);
+        } else {
+            $this->addFlash('error', 'Le type de groupe transverse n\'a pas été trouvé.');
+
+            return $this->redirectToRoute('groupeSecondaireType.list');
+        }
+    }
+
+    /**
+     * Liste les types de groupe secondaire.
+     */
+    public function adminListAction(Request $request, EntityManagerInterface $entityManager)
+    {
+        $repo = $entityManager->getRepository('\\'.\App\Entity\SecondaryGroupType::class);
+        $groupeSecondaireTypes = $repo->findAll();
+
+        return $this->render('groupeSecondaireType/list.twig', ['groupeSecondaireTypes' => $groupeSecondaireTypes]);
+    }
+
+    /**
      * Met à jour un type de groupe secondaire.
      */
-    public function adminUpdateAction(Request $request,  EntityManagerInterface $entityManager)
+    public function adminUpdateAction(Request $request, EntityManagerInterface $entityManager)
     {
         $id = $request->get('index');
 
@@ -83,11 +105,11 @@ class GroupeSecondaireTypeController extends AbstractController
             if ($form->get('update')->isClicked()) {
                 $entityManager->persist($groupeSecondaireType);
                 $entityManager->flush();
-               $this->addFlash('success', 'Le type de groupe secondaire a été mis à jour.');
+                $this->addFlash('success', 'Le type de groupe transverse a été mis à jour.');
             } elseif ($form->get('delete')->isClicked()) {
                 $entityManager->remove($groupeSecondaireType);
                 $entityManager->flush();
-               $this->addFlash('success', 'Le type de groupe secondaire a été supprimé.');
+                $this->addFlash('success', 'Le type de groupe transverse a été supprimé.');
             }
 
             return $this->redirectToRoute('groupeSecondaireType.list');
@@ -97,23 +119,5 @@ class GroupeSecondaireTypeController extends AbstractController
             'groupeSecondaireType' => $groupeSecondaireType,
             'form' => $form->createView(),
         ]);
-    }
-
-    /**
-     * Detail d'un type de groupe secondaire.
-     */
-    public function adminDetailAction(Request $request,  EntityManagerInterface $entityManager)
-    {
-        $id = $request->get('index');
-
-        $groupeSecondaireType = $entityManager->find('\\'.\App\Entity\SecondaryGroupType::class, $id);
-
-        if ($groupeSecondaireType) {
-            return $this->render('groupeSecondaireType/detail.twig', ['groupeSecondaireType' => $groupeSecondaireType]);
-        } else {
-           $this->addFlash('error', 'Le type de groupe secondaire n\'a pas été trouvé.');
-
-            return $this->redirectToRoute('groupeSecondaireType.list');
-        }
     }
 }

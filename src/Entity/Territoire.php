@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\TerritoireStatut;
 use App\Repository\TerritoireRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -368,6 +369,12 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         }
 
         return false;
+    }
+
+    public function isStable(): bool
+    {
+        return TerritoireStatut::INSTABLE->value === strtolower($this->getStatut()?->value ?? '');
+
     }
 
     /**
