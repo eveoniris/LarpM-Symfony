@@ -466,11 +466,6 @@ class GroupeGnController extends AbstractController
     ): RedirectResponse|Response {
         $this->checkGroupeLocked($groupeGn->getGroupe());
 
-        return $this->redirect(
-            $this->generateUrl('groupe.detail', ['groupe' => $groupeGn->getGroupe()->getId()]).'#groupe_lock',
-            307,
-        );
-
         $redirect = $request->get('redirect');
 
         $this->hasAccess($groupeGn, [Role::WARGAME]);

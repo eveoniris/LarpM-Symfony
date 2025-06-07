@@ -2,7 +2,6 @@
 
 namespace App\Form\GroupeSecondaire;
 
-use App\Entity\Groupe;
 use App\Entity\Personnage;
 use App\Entity\SecondaryGroup;
 use App\Entity\SecondaryGroupType;
@@ -73,7 +72,7 @@ class GroupeSecondaireForm extends AbstractType
                 ])
                 ->add('personnage', EntityType::class, [
                     'required' => false,
-                    'label' => 'Chef du groupe',
+                    'label' => 'Recruteur responsable du groupe',
                     'class' => Personnage::class,
                     'query_builder' => static fn(EntityRepository $er) => $er->createQueryBuilder('p')->orderBy(
                         'p.nom',

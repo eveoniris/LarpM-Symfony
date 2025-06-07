@@ -15,11 +15,11 @@ Variables passed to this template:
 {# The plain text message. #}
 {%- block body_text -%}{%- autoescape false -%}
 
-Le chef de groupe vous a retiré du groupe {{ groupeSecondaire.label }}.
+    Le recruteur du groupe vous a retiré du groupe {{ groupeSecondaire.label }}.
 
 {%- endautoescape -%}{%- endblock -%}
 
 {# The HTML message. Optional. #}
 {%- block body_html -%}
-    <p>Le chef de groupe vous a retiré du groupe {{ groupeSecondaire.label }}.</p>
+    <p>Le recruteur du groupe vous a retiré du groupe {{ groupeSecondaire.label }}.</p>
 {%- endblock -%}

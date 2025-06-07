@@ -13,6 +13,11 @@ use JetBrains\PhpStorm\Deprecated;
 
 class PersonnageRepository extends BaseRepository
 {
+    public function findAll(): array
+    {
+        return $this->findBy([], ['nom' => 'ASC']);
+    }
+
     public function findAllWithoutLangue(Gn $gn)
     {
         $query = $this->getEntityManager()

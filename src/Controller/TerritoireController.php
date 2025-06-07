@@ -52,9 +52,10 @@ class TerritoireController extends AbstractController
     // #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
     #[Route('/territoire/add', name: 'territoire.add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    public function addAction(Request $request): RedirectResponse|Response
     {
         $territoire = new Territoire();
+
         $form = $this->createForm(TerritoireForm::class, $territoire)
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
             ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
@@ -64,8 +65,8 @@ class TerritoireController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $territoire = $form->getData();
 
-            $entityManager->persist($territoire);
-            $entityManager->flush();
+            $this->entityManager->persist($territoire);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Le territoire a été ajouté.');
 

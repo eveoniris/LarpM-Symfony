@@ -3,6 +3,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Gn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\Trombinoscope\TrombinoscopeForm;
