@@ -39,7 +39,7 @@ class MagieService extends CompetenceService
         return [
             // le personnage doit choisir un domaine de magie et un sort de niveau 1
             Level::NIVEAU_1 => [
-                TriggerType::MAGIE_APPRENTI->value => 1,
+                TriggerType::DOMAINE_MAGIE->value => 1,
                 TriggerType::SORT_APPRENTI->value => 1,
             ],
             // le personnage peut choisir un nouveau domaine de magie et un sort de niveau 2

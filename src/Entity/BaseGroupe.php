@@ -25,7 +25,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupe', 'extended' => 'Groupe'])]
 class BaseGroupe
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 100, nullable: true)]
@@ -175,222 +175,6 @@ class BaseGroupe
     }
 
     /**
-     * Set the value of id.
-     */
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set the value of nom.
-     */
-    public function setNom(?string $nom): static
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of nom.
-     */
-    public function getNom(): string
-    {
-        return $this->nom ?? '';
-    }
-
-    /**
-     * Set the value of description.
-     */
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of description.
-     */
-    public function getDescription(): string
-    {
-        return $this->description ?? '';
-    }
-
-    /**
-     * Set the value of numero.
-     */
-    public function setNumero(int $numero): static
-    {
-        $this->numero = $numero;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of numero.
-     */
-    public function getNumero(): string
-    {
-        return $this->numero;
-    }
-
-    /**
-     * Set the value of code.
-     */
-    public function setCode(?string $code): static
-    {
-        $this->code = $code;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of code.
-     */
-    public function getCode(): string
-    {
-        return $this->code ?? '';
-    }
-
-    /**
-     * Set the value of jeu_maritime.
-     */
-    public function setJeuMaritime(bool $jeu_maritime): static
-    {
-        $this->jeu_maritime = $jeu_maritime;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of jeu_maritime.
-     */
-    public function getJeuMaritime(): bool
-    {
-        return $this->jeu_maritime ?? false;
-    }
-
-    /**
-     * Set the value of jeu_strategique.
-     */
-    public function setJeuStrategique(bool $jeu_strategique): static
-    {
-        $this->jeu_strategique = $jeu_strategique;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of jeu_strategique.
-     */
-    public function getJeuStrategique(): bool
-    {
-        return $this->jeu_strategique ?? false;
-    }
-
-    /**
-     * Set the value of classe_open.
-     */
-    public function setClasseOpen(int $classe_open): static
-    {
-        $this->classe_open = $classe_open;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of classe_open.
-     */
-    public function getClasseOpen(): int
-    {
-        return $this->classe_open;
-    }
-
-    /**
-     * Set the value of pj.
-     */
-    public function setPj(bool $pj): static
-    {
-        $this->pj = $pj;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of pj.
-     */
-    public function getPj(): bool
-    {
-        return $this->pj;
-    }
-
-    /**
-     * Set the value of materiel.
-     */
-    public function setMateriel(string $materiel): static
-    {
-        $this->materiel = $materiel;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of materiel.
-     */
-    public function getMateriel(): string
-    {
-        return $this->materiel ?? '';
-    }
-
-    /**
-     * Set the value of lock.
-     */
-    public function setLock(bool $lock): static
-    {
-        $this->lock = $lock;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of lock.
-     */
-    public function getLock(): bool
-    {
-        return $this->lock;
-    }
-
-    /**
-     * Set the value of richesse.
-     */
-    public function setRichesse(int $richesse): static
-    {
-        $this->richesse = $richesse;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of richesse.
-     */
-    public function getRichesse(): ?int
-    {
-        return $this->richesse;
-    }
-
-    /**
      * Add Background entity to collection (one to many).
      */
     public function addBackground(Background $background): static
@@ -401,24 +185,6 @@ class BaseGroupe
     }
 
     /**
-     * Remove Background entity from collection (one to many).
-     */
-    public function removeBackground(Background $background): static
-    {
-        $this->backgrounds->removeElement($background);
-
-        return $this;
-    }
-
-    /**
-     * Get Background entity collection (one to many).
-     */
-    public function getBackgrounds(): Collection
-    {
-        return $this->backgrounds;
-    }
-
-    /**
      * Add Debriefing entity to collection (one to many).
      */
     public function addDebriefing(Debriefing $debriefing): static
@@ -426,386 +192,6 @@ class BaseGroupe
         $this->debriefings[] = $debriefing;
 
         return $this;
-    }
-
-    /**
-     * Remove Debriefing entity from collection (one to many).
-     */
-    public function removeDebriefing(Debriefing $debriefing): static
-    {
-        $this->debriefings->removeElement($debriefing);
-
-        return $this;
-    }
-
-    /**
-     * Get Debriefing entity collection (one to many).
-     */
-    public function getDebriefings(): Collection
-    {
-        return $this->debriefings;
-    }
-
-    /**
-     * Add GroupeAllie entity related by `groupe_id` to collection (one to many).
-     */
-    public function addGroupeAllieRelatedByGroupeId(GroupeAllie $groupeAllie): static
-    {
-        $this->groupeAllieRelatedByGroupeIds[] = $groupeAllie;
-
-        return $this;
-    }
-
-    /**
-     * Remove GroupeAllie entity related by `groupe_id` from collection (one to many).
-     */
-    public function removeGroupeAllieRelatedByGroupeId(GroupeAllie $groupeAllie): static
-    {
-        $this->groupeAllieRelatedByGroupeIds->removeElement($groupeAllie);
-
-        return $this;
-    }
-
-    /**
-     * Get GroupeAllie entity related by `groupe_id` collection (one to many).
-     */
-    public function getGroupeAllieRelatedByGroupeIds(): Collection
-    {
-        return $this->groupeAllieRelatedByGroupeIds;
-    }
-
-    /**
-     * Add GroupeAllie entity related by `groupe_allie_id` to collection (one to many).
-     */
-    public function addGroupeAllieRelatedByGroupeAllieId(GroupeAllie $groupeAllie): static
-    {
-        $this->groupeAllieRelatedByGroupeAllieIds[] = $groupeAllie;
-
-        return $this;
-    }
-
-    /**
-     * Remove GroupeAllie entity related by `groupe_allie_id` from collection (one to many).
-     */
-    public function removeGroupeAllieRelatedByGroupeAllieId(GroupeAllie $groupeAllie): static
-    {
-        $this->groupeAllieRelatedByGroupeAllieIds->removeElement($groupeAllie);
-
-        return $this;
-    }
-
-    /**
-     * Get GroupeAllie entity related by `groupe_allie_id` collection (one to many).
-     */
-    public function getGroupeAllieRelatedByGroupeAllieIds(): Collection
-    {
-        return $this->groupeAllieRelatedByGroupeAllieIds;
-    }
-
-    /**
-     * Add GroupeClasse entity to collection (one to many).
-     */
-    public function addGroupeClasse(GroupeClasse $groupeClasse): static
-    {
-        $this->groupeClasses[] = $groupeClasse;
-
-        return $this;
-    }
-
-    /**
-     * Remove GroupeClasse entity from collection (one to many).
-     */
-    public function removeGroupeClasse(GroupeClasse $groupeClasse): static
-    {
-        $this->groupeClasses->removeElement($groupeClasse);
-
-        return $this;
-    }
-
-    /**
-     * Get GroupeClasse entity collection (one to many).
-     */
-    public function getGroupeClasses(): Collection
-    {
-        return $this->groupeClasses;
-    }
-
-    /**
-     * Add GroupeEnemy entity related by `groupe_id` to collection (one to many).
-     */
-    public function addGroupeEnemyRelatedByGroupeId(GroupeEnemy $groupeEnemy): static
-    {
-        $this->groupeEnemyRelatedByGroupeIds[] = $groupeEnemy;
-
-        return $this;
-    }
-
-    /**
-     * Remove GroupeEnemy entity related by `groupe_id` from collection (one to many).
-     */
-    public function removeGroupeEnemyRelatedByGroupeId(GroupeEnemy $groupeEnemy): static
-    {
-        $this->groupeEnemyRelatedByGroupeIds->removeElement($groupeEnemy);
-
-        return $this;
-    }
-
-    /**
-     * Get GroupeEnemy entity related by `groupe_id` collection (one to many).
-     */
-    public function getGroupeEnemyRelatedByGroupeIds(): Collection
-    {
-        return $this->groupeEnemyRelatedByGroupeIds;
-    }
-
-    /**
-     * Add GroupeEnemy entity related by `groupe_enemy_id` to collection (one to many).
-     */
-    public function addGroupeEnemyRelatedByGroupeEnemyId(GroupeEnemy $groupeEnemy): static
-    {
-        $this->groupeEnemyRelatedByGroupeEnemyIds[] = $groupeEnemy;
-
-        return $this;
-    }
-
-    /**
-     * Remove GroupeEnemy entity related by `groupe_enemy_id` from collection (one to many).
-     */
-    public function removeGroupeEnemyRelatedByGroupeEnemyId(GroupeEnemy $groupeEnemy): static
-    {
-        $this->groupeEnemyRelatedByGroupeEnemyIds->removeElement($groupeEnemy);
-
-        return $this;
-    }
-
-    /**
-     * Get GroupeEnemy entity related by `groupe_enemy_id` collection (one to many).
-     */
-    public function getGroupeEnemyRelatedByGroupeEnemyIds(): Collection
-    {
-        return $this->groupeEnemyRelatedByGroupeEnemyIds;
-    }
-
-    /**
-     * Add GroupeGn entity to collection (one to many).
-     */
-    public function addGroupeGn(GroupeGn $groupeGn): static
-    {
-        $this->groupeGns[] = $groupeGn;
-
-        return $this;
-    }
-
-    /**
-     * Remove GroupeGn entity from collection (one to many).
-     */
-    public function removeGroupeGn(GroupeGn $groupeGn): static
-    {
-        $this->groupeGns->removeElement($groupeGn);
-
-        return $this;
-    }
-
-    /**
-     * Get GroupeGn entity collection (one to many).
-     */
-    public function getGroupeGns(): Collection
-    {
-        return $this->groupeGns;
-    }
-
-    /**
-     * Add GroupeHasIngredient entity to collection (one to many).
-     */
-    public function addGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient): static
-    {
-        $this->groupeHasIngredients[] = $groupeHasIngredient;
-
-        return $this;
-    }
-
-    /**
-     * Remove GroupeHasIngredient entity from collection (one to many).
-     */
-    public function removeGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient): static
-    {
-        $this->groupeHasIngredients->removeElement($groupeHasIngredient);
-
-        return $this;
-    }
-
-    /**
-     * Get GroupeHasIngredient entity collection (one to many).
-     */
-    public function getGroupeHasIngredients(): Collection
-    {
-        return $this->groupeHasIngredients;
-    }
-
-    /**
-     * Add GroupeHasRessource entity to collection (one to many).
-     */
-    public function addGroupeHasRessource(GroupeHasRessource $groupeHasRessource): static
-    {
-        $this->groupeHasRessources[] = $groupeHasRessource;
-
-        return $this;
-    }
-
-    /**
-     * Remove GroupeHasRessource entity from collection (one to many).
-     */
-    public function removeGroupeHasRessource(GroupeHasRessource $groupeHasRessource): static
-    {
-        $this->groupeHasRessources->removeElement($groupeHasRessource);
-
-        return $this;
-    }
-
-    /**
-     * Get GroupeHasRessource entity collection (one to many).
-     */
-    public function getGroupeHasRessources(): Collection
-    {
-        return $this->groupeHasRessources;
-    }
-
-    /**
-     * Add IntrigueHasGroupe entity to collection (one to many).
-     */
-    public function addIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe): static
-    {
-        $this->intrigueHasGroupes[] = $intrigueHasGroupe;
-
-        return $this;
-    }
-
-    /**
-     * Remove IntrigueHasGroupe entity from collection (one to many).
-     */
-    public function removeIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe): static
-    {
-        $this->intrigueHasGroupes->removeElement($intrigueHasGroupe);
-
-        return $this;
-    }
-
-    /**
-     * Get IntrigueHasGroupe entity collection (one to many).
-     */
-    public function getIntrigueHasGroupes(): Collection
-    {
-        return $this->intrigueHasGroupes;
-    }
-
-    /**
-     * Add Personnage entity to collection (one to many).
-     */
-    public function addPersonnage(Personnage $personnage): static
-    {
-        $this->personnages[] = $personnage;
-
-        return $this;
-    }
-
-    /**
-     * Remove Personnage entity from collection (one to many).
-     */
-    public function removePersonnage(Personnage $personnage): static
-    {
-        $this->personnages->removeElement($personnage);
-
-        return $this;
-    }
-
-    /**
-     * Get Personnage entity collection (one to many).
-     */
-    public function getPersonnages(): Collection
-    {
-        return $this->personnages;
-    }
-
-    /**
-     * Add Territoire entity to collection (one to many).
-     */
-    public function addTerritoire(Territoire $territoire): static
-    {
-        $this->territoires[] = $territoire;
-
-        return $this;
-    }
-
-    /**
-     * Remove Territoire entity from collection (one to many).
-     */
-    public function removeTerritoire(Territoire $territoire): static
-    {
-        $this->territoires->removeElement($territoire);
-
-        return $this;
-    }
-
-    /**
-     * Get Territoire entity collection (one to many).
-     */
-    public function getTerritoires(): Collection
-    {
-        return $this->territoires;
-    }
-
-    /**
-     * Set User entity related by `scenariste_id` (many to one).
-     */
-    public function setUserRelatedByScenaristeId(?User $User = null): static
-    {
-        $this->userRelatedByScenaristeId = $User;
-
-        return $this;
-    }
-
-    /**
-     * Get User entity related by `scenariste_id` (many to one).
-     */
-    public function getUserRelatedByScenaristeId(): ?User
-    {
-        return $this->userRelatedByScenaristeId;
-    }
-
-    /**
-     * Set User entity related by `responsable_id` (many to one).
-     */
-    public function setUserRelatedByResponsableId(?User $User = null): static
-    {
-        $this->userRelatedByResponsableId = $User;
-
-        return $this;
-    }
-
-    /**
-     * Get User entity related by `responsable_id` (many to one).
-     */
-    public function getUserRelatedByResponsableId(): ?User
-    {
-        return $this->userRelatedByResponsableId;
-    }
-
-    /**
-     * Set Territoire entity (many to one).
-     */
-    public function setTerritoire(?Territoire $territoire = null): static
-    {
-        $this->territoire = $territoire;
-
-        return $this;
-    }
-
-    /**
-     * Get Territoire entity (many to one).
-     */
-    public function getTerritoire(): ?Territoire
-    {
-        return $this->territoire;
     }
 
     /**
@@ -820,22 +206,103 @@ class BaseGroupe
     }
 
     /**
-     * Remove Document entity from collection.
+     * Add GroupeAllie entity related by `groupe_allie_id` to collection (one to many).
      */
-    public function removeDocument(Document $document): static
+    public function addGroupeAllieRelatedByGroupeAllieId(GroupeAllie $groupeAllie): static
     {
-        $document->removeGroupe($this);
-        $this->documents->removeElement($document);
+        $this->groupeAllieRelatedByGroupeAllieIds[] = $groupeAllie;
 
         return $this;
     }
 
     /**
-     * Get Document entity collection.
+     * Add GroupeAllie entity related by `groupe_id` to collection (one to many).
      */
-    public function getDocuments(): Collection
+    public function addGroupeAllieRelatedByGroupeId(GroupeAllie $groupeAllie): static
     {
-        return $this->documents;
+        $this->groupeAllieRelatedByGroupeIds[] = $groupeAllie;
+
+        return $this;
+    }
+
+    public function addGroupeBonus(GroupeBonus $groupeBonus): static
+    {
+        if (!$this->groupeBonus->contains($groupeBonus)) {
+            $this->groupeBonus->add($groupeBonus);
+            $groupeBonus->setGroupe($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add GroupeClasse entity to collection (one to many).
+     */
+    public function addGroupeClasse(GroupeClasse $groupeClasse): static
+    {
+        $this->groupeClasses[] = $groupeClasse;
+
+        return $this;
+    }
+
+    /**
+     * Add GroupeEnemy entity related by `groupe_enemy_id` to collection (one to many).
+     */
+    public function addGroupeEnemyRelatedByGroupeEnemyId(GroupeEnemy $groupeEnemy): static
+    {
+        $this->groupeEnemyRelatedByGroupeEnemyIds[] = $groupeEnemy;
+
+        return $this;
+    }
+
+    /**
+     * Add GroupeEnemy entity related by `groupe_id` to collection (one to many).
+     */
+    public function addGroupeEnemyRelatedByGroupeId(GroupeEnemy $groupeEnemy): static
+    {
+        $this->groupeEnemyRelatedByGroupeIds[] = $groupeEnemy;
+
+        return $this;
+    }
+
+    /**
+     * Add GroupeGn entity to collection (one to many).
+     */
+    public function addGroupeGn(GroupeGn $groupeGn): static
+    {
+        $this->groupeGns[] = $groupeGn;
+
+        return $this;
+    }
+
+    /**
+     * Add GroupeHasIngredient entity to collection (one to many).
+     */
+    public function addGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient): static
+    {
+        $this->groupeHasIngredients[] = $groupeHasIngredient;
+
+        return $this;
+    }
+
+    /**
+     * Add GroupeHasRessource entity to collection (one to many).
+     */
+    public function addGroupeHasRessource(GroupeHasRessource $groupeHasRessource): static
+    {
+        $this->groupeHasRessources[] = $groupeHasRessource;
+
+        return $this;
+    }
+
+    /**
+     * Add IntrigueHasGroupe entity to collection (one to many).
+     */
+    public function addIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe): static
+    {
+        $this->intrigueHasGroupes[] = $intrigueHasGroupe;
+
+        return $this;
     }
 
     /**
@@ -850,45 +317,103 @@ class BaseGroupe
     }
 
     /**
-     * Remove Item entity from collection.
+     * Add Personnage entity to collection (one to many).
      */
-    public function removeItem(Item $item): static
+    public function addPersonnage(Personnage $personnage): static
     {
-        $item->removeGroupe($this);
-        $this->items->removeElement($item);
+        $this->personnages[] = $personnage;
 
         return $this;
     }
 
     /**
-     * Get Item entity collection.
+     * Add Territoire entity to collection (one to many).
      */
-    public function getItems(): Collection
+    public function addTerritoire(Territoire $territoire): static
     {
-        return $this->items;
-    }
-
-    public function getGroupeBonus(): ?Collection
-    {
-        return $this->groupeBonus;
-    }
-
-    public function addGroupeBonus(GroupeBonus $groupeBonus): static
-    {
-        if (!$this->groupeBonus->contains($groupeBonus)) {
-            $this->groupeBonus->add($groupeBonus);
-            $groupeBonus->setGroupe($this);
-        }
+        $this->territoires[] = $territoire;
 
         return $this;
     }
 
-    public function removeGroupeBonus(GroupeBonus $groupeBonus): static
+    /**
+     * Get Background entity collection (one to many).
+     */
+    public function getBackgrounds(): Collection
     {
-        // set the owning side to null (unless already changed)
-        if ($this->groupeBonus->removeElement($groupeBonus) && $groupeBonus->getGroupe() === $this) {
-            $groupeBonus->setGroupe(null);
-        }
+        return $this->backgrounds;
+    }
+
+    /**
+     * Get the value of classe_open.
+     */
+    public function getClasseOpen(): ?int
+    {
+        return $this->classe_open;
+    }
+
+    /**
+     * Set the value of classe_open.
+     */
+    public function setClasseOpen(int $classe_open): static
+    {
+        $this->classe_open = $classe_open;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of code.
+     */
+    public function getCode(): string
+    {
+        return $this->code ?? '';
+    }
+
+    /**
+     * Set the value of code.
+     */
+    public function setCode(?string $code): static
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    /**
+     * Get Debriefing entity collection (one to many).
+     */
+    public function getDebriefings(): Collection
+    {
+        return $this->debriefings;
+    }
+
+    /**
+     * Get the value of description.
+     */
+    public function getDescription(): string
+    {
+        return $this->description ?? '';
+    }
+
+    /**
+     * Set the value of description.
+     */
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getDescriptionMembres(): ?string
+    {
+        return $this->description_membres;
+    }
+
+    public function setDescriptionMembres(?string $description_membres): static
+    {
+        $this->description_membres = $description_membres;
 
         return $this;
     }
@@ -905,14 +430,489 @@ class BaseGroupe
         return $this;
     }
 
-    public function getDescriptionMembres(): ?string
+    /**
+     * Get Document entity collection.
+     */
+    public function getDocuments(): Collection
     {
-        return $this->description_membres;
+        return $this->documents;
     }
 
-    public function setDescriptionMembres(?string $description_membres): static
+    /**
+     * Get GroupeAllie entity related by `groupe_allie_id` collection (one to many).
+     */
+    public function getGroupeAllieRelatedByGroupeAllieIds(): Collection
     {
-        $this->description_membres = $description_membres;
+        return $this->groupeAllieRelatedByGroupeAllieIds;
+    }
+
+    /**
+     * Get GroupeAllie entity related by `groupe_id` collection (one to many).
+     */
+    public function getGroupeAllieRelatedByGroupeIds(): Collection
+    {
+        return $this->groupeAllieRelatedByGroupeIds;
+    }
+
+    public function getGroupeBonus(): ?Collection
+    {
+        return $this->groupeBonus;
+    }
+
+    /**
+     * Get GroupeClasse entity collection (one to many).
+     */
+    public function getGroupeClasses(): Collection
+    {
+        return $this->groupeClasses;
+    }
+
+    /**
+     * Get GroupeEnemy entity related by `groupe_enemy_id` collection (one to many).
+     */
+    public function getGroupeEnemyRelatedByGroupeEnemyIds(): Collection
+    {
+        return $this->groupeEnemyRelatedByGroupeEnemyIds;
+    }
+
+    /**
+     * Get GroupeEnemy entity related by `groupe_id` collection (one to many).
+     */
+    public function getGroupeEnemyRelatedByGroupeIds(): Collection
+    {
+        return $this->groupeEnemyRelatedByGroupeIds;
+    }
+
+    /**
+     * Get GroupeGn entity collection (one to many).
+     */
+    public function getGroupeGns(): Collection
+    {
+        return $this->groupeGns;
+    }
+
+    /**
+     * Get GroupeHasIngredient entity collection (one to many).
+     */
+    public function getGroupeHasIngredients(): Collection
+    {
+        return $this->groupeHasIngredients;
+    }
+
+    /**
+     * Get GroupeHasRessource entity collection (one to many).
+     */
+    public function getGroupeHasRessources(): Collection
+    {
+        return $this->groupeHasRessources;
+    }
+
+    /**
+     * Get the value of id.
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the value of id.
+     */
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get IntrigueHasGroupe entity collection (one to many).
+     */
+    public function getIntrigueHasGroupes(): Collection
+    {
+        return $this->intrigueHasGroupes;
+    }
+
+    /**
+     * Get Item entity collection.
+     */
+    public function getItems(): Collection
+    {
+        return $this->items;
+    }
+
+    /**
+     * Get the value of jeu_maritime.
+     */
+    public function getJeuMaritime(): bool
+    {
+        return $this->jeu_maritime ?? false;
+    }
+
+    /**
+     * Set the value of jeu_maritime.
+     */
+    public function setJeuMaritime(bool $jeu_maritime): static
+    {
+        $this->jeu_maritime = $jeu_maritime;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of jeu_strategique.
+     */
+    public function getJeuStrategique(): bool
+    {
+        return $this->jeu_strategique ?? false;
+    }
+
+    /**
+     * Set the value of jeu_strategique.
+     */
+    public function setJeuStrategique(bool $jeu_strategique): static
+    {
+        $this->jeu_strategique = $jeu_strategique;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of lock.
+     */
+    public function getLock(): bool
+    {
+        return $this->lock;
+    }
+
+    /**
+     * Set the value of lock.
+     */
+    public function setLock(bool $lock): static
+    {
+        $this->lock = $lock;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of materiel.
+     */
+    public function getMateriel(): string
+    {
+        return $this->materiel ?? '';
+    }
+
+    /**
+     * Set the value of materiel.
+     */
+    public function setMateriel(string $materiel): static
+    {
+        $this->materiel = $materiel;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of nom.
+     */
+    public function getNom(): string
+    {
+        return $this->nom ?? '';
+    }
+
+    /**
+     * Set the value of nom.
+     */
+    public function setNom(?string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of numero.
+     */
+    public function getNumero(): string
+    {
+        return $this->numero;
+    }
+
+    /**
+     * Set the value of numero.
+     */
+    public function setNumero(int $numero): static
+    {
+        $this->numero = $numero;
+
+        return $this;
+    }
+
+    /**
+     * Get Personnage entity collection (one to many).
+     */
+    public function getPersonnages(): Collection
+    {
+        return $this->personnages;
+    }
+
+    /**
+     * Get the value of pj.
+     */
+    public function getPj(): bool
+    {
+        return $this->pj;
+    }
+
+    /**
+     * Set the value of pj.
+     */
+    public function setPj(bool $pj): static
+    {
+        $this->pj = $pj;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of richesse.
+     */
+    public function getRichesse(): ?int
+    {
+        return $this->richesse;
+    }
+
+    /**
+     * Set the value of richesse.
+     */
+    public function setRichesse(int $richesse): static
+    {
+        $this->richesse = $richesse;
+
+        return $this;
+    }
+
+    /**
+     * Get Territoire entity (many to one).
+     */
+    public function getTerritoire(): ?Territoire
+    {
+        return $this->territoire;
+    }
+
+    /**
+     * Set Territoire entity (many to one).
+     */
+    public function setTerritoire(?Territoire $territoire = null): static
+    {
+        $this->territoire = $territoire;
+
+        return $this;
+    }
+
+    /**
+     * Get Territoire entity collection (one to many).
+     */
+    public function getTerritoires(): Collection
+    {
+        return $this->territoires;
+    }
+
+    /**
+     * Get User entity related by `responsable_id` (many to one).
+     */
+    public function getUserRelatedByResponsableId(): ?User
+    {
+        return $this->userRelatedByResponsableId;
+    }
+
+    /**
+     * Set User entity related by `responsable_id` (many to one).
+     */
+    public function setUserRelatedByResponsableId(?User $User = null): static
+    {
+        $this->userRelatedByResponsableId = $User;
+
+        return $this;
+    }
+
+    /**
+     * Get User entity related by `scenariste_id` (many to one).
+     */
+    public function getUserRelatedByScenaristeId(): ?User
+    {
+        return $this->userRelatedByScenaristeId;
+    }
+
+    /**
+     * Set User entity related by `scenariste_id` (many to one).
+     */
+    public function setUserRelatedByScenaristeId(?User $User = null): static
+    {
+        $this->userRelatedByScenaristeId = $User;
+
+        return $this;
+    }
+
+    /**
+     * Remove Background entity from collection (one to many).
+     */
+    public function removeBackground(Background $background): static
+    {
+        $this->backgrounds->removeElement($background);
+
+        return $this;
+    }
+
+    /**
+     * Remove Debriefing entity from collection (one to many).
+     */
+    public function removeDebriefing(Debriefing $debriefing): static
+    {
+        $this->debriefings->removeElement($debriefing);
+
+        return $this;
+    }
+
+    /**
+     * Remove Document entity from collection.
+     */
+    public function removeDocument(Document $document): static
+    {
+        $document->removeGroupe($this);
+        $this->documents->removeElement($document);
+
+        return $this;
+    }
+
+    /**
+     * Remove GroupeAllie entity related by `groupe_allie_id` from collection (one to many).
+     */
+    public function removeGroupeAllieRelatedByGroupeAllieId(GroupeAllie $groupeAllie): static
+    {
+        $this->groupeAllieRelatedByGroupeAllieIds->removeElement($groupeAllie);
+
+        return $this;
+    }
+
+    /**
+     * Remove GroupeAllie entity related by `groupe_id` from collection (one to many).
+     */
+    public function removeGroupeAllieRelatedByGroupeId(GroupeAllie $groupeAllie): static
+    {
+        $this->groupeAllieRelatedByGroupeIds->removeElement($groupeAllie);
+
+        return $this;
+    }
+
+    public function removeGroupeBonus(GroupeBonus $groupeBonus): static
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->groupeBonus->removeElement($groupeBonus) && $groupeBonus->getGroupe() === $this) {
+            $groupeBonus->setGroupe(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove GroupeClasse entity from collection (one to many).
+     */
+    public function removeGroupeClasse(GroupeClasse $groupeClasse): static
+    {
+        $this->groupeClasses->removeElement($groupeClasse);
+
+        return $this;
+    }
+
+    /**
+     * Remove GroupeEnemy entity related by `groupe_enemy_id` from collection (one to many).
+     */
+    public function removeGroupeEnemyRelatedByGroupeEnemyId(GroupeEnemy $groupeEnemy): static
+    {
+        $this->groupeEnemyRelatedByGroupeEnemyIds->removeElement($groupeEnemy);
+
+        return $this;
+    }
+
+    /**
+     * Remove GroupeEnemy entity related by `groupe_id` from collection (one to many).
+     */
+    public function removeGroupeEnemyRelatedByGroupeId(GroupeEnemy $groupeEnemy): static
+    {
+        $this->groupeEnemyRelatedByGroupeIds->removeElement($groupeEnemy);
+
+        return $this;
+    }
+
+    /**
+     * Remove GroupeGn entity from collection (one to many).
+     */
+    public function removeGroupeGn(GroupeGn $groupeGn): static
+    {
+        $this->groupeGns->removeElement($groupeGn);
+
+        return $this;
+    }
+
+    /**
+     * Remove GroupeHasIngredient entity from collection (one to many).
+     */
+    public function removeGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient): static
+    {
+        $this->groupeHasIngredients->removeElement($groupeHasIngredient);
+
+        return $this;
+    }
+
+    /**
+     * Remove GroupeHasRessource entity from collection (one to many).
+     */
+    public function removeGroupeHasRessource(GroupeHasRessource $groupeHasRessource): static
+    {
+        $this->groupeHasRessources->removeElement($groupeHasRessource);
+
+        return $this;
+    }
+
+    /**
+     * Remove IntrigueHasGroupe entity from collection (one to many).
+     */
+    public function removeIntrigueHasGroupe(IntrigueHasGroupe $intrigueHasGroupe): static
+    {
+        $this->intrigueHasGroupes->removeElement($intrigueHasGroupe);
+
+        return $this;
+    }
+
+    /**
+     * Remove Item entity from collection.
+     */
+    public function removeItem(Item $item): static
+    {
+        $item->removeGroupe($this);
+        $this->items->removeElement($item);
+
+        return $this;
+    }
+
+    /**
+     * Remove Personnage entity from collection (one to many).
+     */
+    public function removePersonnage(Personnage $personnage): static
+    {
+        $this->personnages->removeElement($personnage);
+
+        return $this;
+    }
+
+    /**
+     * Remove Territoire entity from collection (one to many).
+     */
+    public function removeTerritoire(Territoire $territoire): static
+    {
+        $this->territoires->removeElement($territoire);
 
         return $this;
     }

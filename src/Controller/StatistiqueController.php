@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Classe;
 use App\Entity\Competence;
-use App\Entity\Construction;
 use App\Entity\Genre;
 use App\Entity\Gn;
 use App\Entity\Groupe;
@@ -28,6 +27,35 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted(new MultiRolesExpression(Role::ADMIN))]
 class StatistiqueController extends AbstractController
 {
+    #[Route('/api/competences/{gn}', name: 'api.competences.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_SCENARISTE', message: 'You are not allowed to access the admin dashboard.')]
+    public function competencesGnAction(
+        #[MapEntity] Gn $gn,
+    ): JsonResponse {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('competence', 'competence', 'string');
+        $rsm->addScalarResult('niveau', 'niveau', 'string');
+        $rsm->addScalarResult('total', 'total', 'integer');
+
+        /** @noinspection SqlNoDataSourceInspection */
+        $query = $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT r.label as religion, count(perso.id) as pratiquants, rl.label as niveau
+                FROM participant p
+                         INNER JOIN personnages_religions pr ON p.personnage_id = pr.personnage_id
+                         INNER JOIN religion r ON pr.religion_id = r.id
+                         INNER JOIN personnage perso ON pr.personnage_id = perso.id
+                         INNER JOIN religion_level rl ON pr.religion_level_id = rl.id
+                WHERE perso.vivant = 1 and p.gn_id = :gnid
+                GROUP BY pr.religion_id, rl.label
+                ORDER BY pratiquants DESC;
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId());
+
+        return new JsonResponse($query->getResult());
+    }
+
     /**
      * @throws \JsonException
      */
@@ -52,7 +80,7 @@ class StatistiqueController extends AbstractController
             ];
         }
 
-        $repo = $entityManager->getRepository(Classe::class);
+        $repo = $this->entityManager->getRepository(Classe::class);
         $classes = $repo->findAll();
         $statClasses = [];
         foreach ($classes as $classe) {
@@ -86,7 +114,7 @@ class StatistiqueController extends AbstractController
          * ];
          * }
          * */
-        $repo = $entityManager->getRepository(Competence::class);
+        $repo = $this->entityManager->getRepository(Competence::class);
         $competences = $repo->findAllOrderedByLabel();
         $statCompetences = [];
         $statCompetencesFamily = [];
@@ -122,7 +150,7 @@ class StatistiqueController extends AbstractController
         $personnages = $repo->findAll();
 
         $repo = $entityManager->getRepository(User::class);
-        $Users = $repo->findAll();
+        $users = $repo->findAll();
 
         $repo = $entityManager->getRepository(Participant::class);
         $participants = $repo->findAll();
@@ -158,18 +186,16 @@ class StatistiqueController extends AbstractController
             'competencesFamily' => json_encode($statCompetencesFamily, JSON_THROW_ON_ERROR),
             'constructions' => [], // TODO json_encode($statConstructions, JSON_THROW_ON_ERROR),
             'personnageCount' => count($personnages),
-            'UserCount' => count($Users),
+            'userCount' => max(count($users), 1),
             'participantCount' => count($participants),
             'places' => $places,
         ]);
     }
 
-
     #[Route('/api/religions/pratiquants/{gn}', name: 'api.religions.pratiquants', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted('ROLE_SCENARISTE', message: 'You are not allowed to access the admin dashboard.')]
     public function religionsPratiquantsAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Gn $gn,
     ): JsonResponse {
         $rsm = new ResultSetMapping();
@@ -178,7 +204,7 @@ class StatistiqueController extends AbstractController
         $rsm->addScalarResult('niveau', 'niveau', 'string');
 
         /** @noinspection SqlNoDataSourceInspection */
-        $query = $entityManager->createNativeQuery(
+        $query = $this->entityManager->createNativeQuery(
             <<<SQL
                 SELECT r.label as religion, count(perso.id) as pratiquants, rl.label as niveau
                 FROM participant p

@@ -9,6 +9,7 @@ use App\Entity\Religion;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
 use App\Enum\TerritoireStatut;
+use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -17,11 +18,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\TerritoireForm.
- *
- * @author kevin
- */
+#[Deprecated]
+/** @see \App\Form\Territoire\TerritoireForm */
 class TerritoireForm extends AbstractType
 {
     /**
@@ -60,7 +58,7 @@ class TerritoireForm extends AbstractType
             ->add('statut', EnumType::class, [
                 'label' => 'Statut',
                 'required' => false,
-                'clasBos' => TerritoireStatut::class,
+                'class' => TerritoireStatut::class,
             ])
             ->add('geojson', TextareaType::class, [
                 'label' => 'GeoJSON',

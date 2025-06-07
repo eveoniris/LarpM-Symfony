@@ -15,6 +15,11 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class ParticipantRepository extends BaseRepository
 {
+    public function findAll(): array
+    {
+        return $this->findBy([], ['id' => 'ASC']);
+    }
+
     public function findAllWithoutPersonnageSecondaire(Gn $gn)
     {
         $query = $this->getEntityManager()

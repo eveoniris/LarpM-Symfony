@@ -10,50 +10,9 @@ use Doctrine\ORM\QueryBuilder;
 
 class ClasseRepository extends BaseRepository
 {
-    /**
-     * Trouve toutes les classes disponibles à la création d'un personnage.
-     */
-    public function findAllCreation()
+    public function findAll(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT c FROM App\Entity\Classe c WHERE c.creation = true ORDER BY c.label_masculin ASC')
-            ->getResult();
-    }
-
-    /**
-     * Find all classes ordered by label.
-     *
-     * @return ArrayCollection $classes
-     */
-    public function findAllOrderedByLabel()
-    {
-        return $this->getEntityManager()
-            ->createQuery('SELECT c FROM App\Entity\Classe c ORDER BY c.label_masculin ASC')
-            ->getResult();
-    }
-
-    public function getPersonnages(Classe $classe): QueryBuilder
-    {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
-
-        return $personnageRepository->createQueryBuilder('p')
-            ->innerJoin('p.classe', 'c')
-            ->where('c.id = :cid')
-            ->setParameter('cid', $classe->getId());
-    }
-
-    /**
-     * Returns a query builder to find all competences ordered by label.
-     */
-    public function getQueryBuilderFindAllOrderedByLabel(): QueryBuilder
-    {
-        return $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select('c')
-            ->from(Classe::class, 'c')
-            ->addOrderBy('c.label_feminin')
-            ->addOrderBy('c.label_masculin');
+        return $this->findBy([], ['label_masculin' => 'ASC']);
     }
 
     public function search(
@@ -109,5 +68,51 @@ class ClasseRepository extends BaseRepository
                 OrderBy::DESC => [$alias.'.creation' => OrderBy::DESC],
             ],
         ];
+    }
+
+    /**
+     * Trouve toutes les classes disponibles à la création d'un personnage.
+     */
+    public function findAllCreation()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT c FROM App\Entity\Classe c WHERE c.creation = true ORDER BY c.label_masculin ASC')
+            ->getResult();
+    }
+
+    /**
+     * Find all classes ordered by label.
+     *
+     * @return ArrayCollection $classes
+     */
+    public function findAllOrderedByLabel()
+    {
+        return $this->getEntityManager()
+            ->createQuery('SELECT c FROM App\Entity\Classe c ORDER BY c.label_masculin ASC')
+            ->getResult();
+    }
+
+    public function getPersonnages(Classe $classe): QueryBuilder
+    {
+        /** @var PersonnageRepository $personnageRepository */
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+
+        return $personnageRepository->createQueryBuilder('p')
+            ->innerJoin('p.classe', 'c')
+            ->where('c.id = :cid')
+            ->setParameter('cid', $classe->getId());
+    }
+
+    /**
+     * Returns a query builder to find all competences ordered by label.
+     */
+    public function getQueryBuilderFindAllOrderedByLabel(): QueryBuilder
+    {
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('c')
+            ->from(Classe::class, 'c')
+            ->addOrderBy('c.label_feminin')
+            ->addOrderBy('c.label_masculin');
     }
 }

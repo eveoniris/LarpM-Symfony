@@ -46,47 +46,9 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         return !empty($result->getScalarResult());
     }
 
-    /**
-     * @throws NonUniqueResultException
-     */
-    public function findOneByConfirmationToken(string $token): ?User
+    public function findAll(): array
     {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.confirmationToken = :val')
-            ->setParameter('val', $token)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
-
-    #[Deprecated]
-    public function findWithoutEtatCivil()
-    {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                SELECT u 
-                FROM App\Entity\User u 
-                WHERE IDENTITY(u.etatCivil) IS NULL 
-                ORDER BY u.email ASC
-                DQL,
-            );
-
-        return $query->getResult();
-    }
-
-    public function getPersonnagesIds(User $user): array
-    {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                SELECT p.id
-                FROM App\Entity\User u 
-                INNER JOIN App\Entity\Personnage p
-                WHERE u.id = :uid
-                DQL,
-            );
-
-        return $query->setParameter('uid', $user->getId())->getScalarResult();
+        return $this->findBy([], ['username' => 'ASC']);
     }
 
     public function search(
@@ -157,8 +119,52 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
             'nom' => $this->translator->trans('Nom', domain: 'repository'),
             'etatCivil.prenom',
             'prenom' => $this->translator->trans('Prenom', domain: 'repository'),
-            'nomPrenom', 'HIDDEN nomPrenom' => $this->translator->trans('Nom prénom', domain: 'repository'),
+            'nomPrenom',
+            'HIDDEN nomPrenom' => $this->translator->trans('Nom prénom', domain: 'repository'),
         ];
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findOneByConfirmationToken(string $token): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.confirmationToken = :val')
+            ->setParameter('val', $token)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    #[Deprecated]
+    public function findWithoutEtatCivil()
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT u 
+                FROM App\Entity\User u 
+                WHERE IDENTITY(u.etatCivil) IS NULL 
+                ORDER BY u.email ASC
+                DQL,
+            );
+
+        return $query->getResult();
+    }
+
+    public function getPersonnagesIds(User $user): array
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                SELECT p.id
+                FROM App\Entity\User u 
+                INNER JOIN App\Entity\Personnage p
+                WHERE u.id = :uid
+                DQL,
+            );
+
+        return $query->setParameter('uid', $user->getId())->getScalarResult();
     }
 
     /**

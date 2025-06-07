@@ -22,8 +22,8 @@ class BaseMessage
     #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Assert\Length(45)]
-    #[Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Assert\Length(255)]
+    #[Column(type: Types::STRING, length: 255, nullable: true)]
     protected ?string $title = null;
 
     #[Column(type: Types::TEXT, nullable: true)]

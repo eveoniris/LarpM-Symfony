@@ -439,7 +439,7 @@ class GroupeSecondaireController extends AbstractController
                 // envoi d'un mail au chef du groupe secondaire
                 if ($responsable = $groupeSecondaire->getResponsable()) {
                     $message = new Message();
-                    $message->setTitle(substr('Candidat - '.$groupeSecondaire->getLabel(), 0, 45));
+                    $message->setTitle(substr('Candidat - '.$groupeSecondaire->getLabel(), 0, 255));
                     $message->setUserRelatedByAuteur($this->getUser());
                     $message->setUserRelatedByDestinataire($responsable->getUser());
                     $message->setCreationDate(new \DateTime('NOW'));
@@ -453,7 +453,7 @@ class GroupeSecondaireController extends AbstractController
 
                 $this->entityManager->flush();
 
-                $this->addFlash('success', 'Votre candidature a été enregistrée, et transmise au chef de groupe.');
+                $this->addFlash('success', 'Votre candidature a été enregistrée, et transmise au recruteur.');
 
                 return $this->redirectToRoute(
                     'groupeSecondaire.list',

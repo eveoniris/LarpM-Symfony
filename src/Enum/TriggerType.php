@@ -30,7 +30,7 @@ enum TriggerType: string
             self::ALCHIMIE_INITIE->value => 'permet de choisir une nouvelle recette de potion de niveau Initié',
             self::ALCHIMIE_EXPERT->value => 'permet de choisir une nouvelle recette de potion de niveau Expert',
             self::ALCHIMIE_MAITRE->value => 'permet de choisir une nouvelle recette de potion de niveau Maître',
-            self::MAGIE_APPRENTI->value => 'permet de choisir un domaine de magie',
+            //self::MAGIE_APPRENTI->value => 'permet de choisir un domaine de magie',
             self::SORT_APPRENTI->value => 'permet de choisir un sort de niveau Apprenti',
             self::SORT_INITIE->value => 'permet de choisir un sort de niveau Initié',
             self::SORT_EXPERT->value => 'permet de choisir un sort de niveau Expert',
