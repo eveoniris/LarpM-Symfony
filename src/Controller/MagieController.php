@@ -160,7 +160,7 @@ class MagieController extends AbstractController
             },
         );
 
-        return $this->sendDocument($potion, $document);
+        return $this->sendDocument($potion);
     }
 
     /**
