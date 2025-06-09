@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}Statistique{% endblock title %}
+
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Statistiques' },
+        ]
+    } %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Statistiques</h5>
+        </div>
+
+        <div class="row">
+
+            {% if is_granted('ROLE_SCENARISTE', app.user) %}
+
+                <div class="col-md-6">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <a href="{{ path('stats.competences.gn', {'gn':7}) }}">Répartition des compétences LH7</a>
+                        </div>
+                        <div class="list-group-item">WIP</div>
+                    </div>
+                </div>
+
+            {% endif %}
+
+            {% if is_granted('ROLE_WARGAME', app.user) %}
+                <div class="col-md-6">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <a href="{{ path('stats.constructions') }}">Détails constructions</a>
+                        </div>
+                        <div class="list-group-item">
+                            <a href="{{ path('stats.constructions.fiefs') }}">Répartition des constructions sur les
+                                fiefs</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+{% endblock %}

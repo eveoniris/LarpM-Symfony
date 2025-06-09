@@ -56,9 +56,9 @@ readonly class GroupeService
             foreach ($territoire->getIngredients() as $ingredientProvided) {
                 // Clone to avoid unwanted overwriting
                 $ingredient = clone $ingredientProvided;
-                $nb = 5;
-                if ('Instable' === $territoire->getStatut()) {
-                    $nb = 3;
+                $nb = $ingredient->getQuantite();
+                if (!$territoire->isStable()) {
+                    $nb = ceil($nb * 0.5);
                 }
 
                 $ingredient->setLabel(
@@ -383,7 +383,8 @@ readonly class GroupeService
             foreach ($territoire->getExportations() as $ressourceExported) {
                 // Clone to avoid unwanted overwriting
                 $ressource = clone $ressourceExported;
-                $nbRessource = 3;
+                $nbRessource = $ressource->getQuantite();
+
                 if (!$territoire->isStable()) {
                     $nbRessource = ceil($nbRessource * 0.5);
                 }
@@ -540,7 +541,7 @@ readonly class GroupeService
 
             $value = $tresor * 3;
 
-            if ($territoire->isStable()) {
+            if (!$territoire->isStable()) {
                 $value *= 0.5;
             }
 
@@ -548,10 +549,10 @@ readonly class GroupeService
             $value = ceil($value);
 
             $label = sprintf(
-                "<strong>%s pièces d'argent</strong> fournies par <strong>%s</strong>. Etat %s : 3 x %d.%s",
+                "<strong>%s pièces d'argent</strong> fournies par <strong>%s</strong>. Etat %s 3 x (%d %s)",
                 $value,
                 $territoire->getNom(),
-                $territoire->isStable() ? 'instable 0.5 x' : 'normal',
+                $territoire->isStable() ? 'stable' : 'instable 0.5 x',
                 $base,
                 $constructions ? ' '.implode(', ', $constructions) : '',
             );
@@ -618,6 +619,11 @@ readonly class GroupeService
         }
 
         return $lois;
+    }
+
+    public function getNbRessourcesBase(): int
+    {
+        return 3;
     }
 
     public function getNextSessionGn()

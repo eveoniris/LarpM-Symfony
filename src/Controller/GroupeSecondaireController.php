@@ -480,6 +480,7 @@ class GroupeSecondaireController extends AbstractController
         PagerService $pagerService,
         SecondaryGroupRepository $secondaryGroupRepository,
     ): Response {
+        $this->loadAccess();
         $alias = $secondaryGroupRepository->getAlias();
         $queryBuilder = $secondaryGroupRepository->createQueryBuilder($alias);
         $pagerService->setRequest($request)
@@ -488,6 +489,7 @@ class GroupeSecondaireController extends AbstractController
 
         // If not admin, only groupe where user's personnage are.
         $isAdmin = $this->hasRoles([Role::ROLE_GROUPE_TRANSVERSE]);
+
         $fetchCollection = false;
         if (!$isAdmin && $personnage = $this->getPersonnage()) {
             $fetchCollection = true;  // may have issue with OrderBy but paginator will load result without member in (due to leftjoin(member))

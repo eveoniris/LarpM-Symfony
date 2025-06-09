@@ -40,7 +40,7 @@
         {% set allRessource = groupeService.allRessource(groupe) %}
 
         {% for groupeRessource in allRessource %}
-            <li>{{ groupeRessource.quantite }} {{ groupeRessource.ressource.label|raw }}</li>
+            <li><strong>{{ groupeRessource.quantite }}</strong> {{ groupeRessource.ressource.label|raw }}</li>
         {% else %}
             <li>Aucune ressource additionnelle</li>
         {% endfor %}
@@ -61,7 +61,7 @@
         {% set allIngredient = groupeService.allIngredient(groupe) %}
 
         {% for groupeHasIngredient in allIngredient %}
-            <li>{{ groupeHasIngredient.quantite }} {{ groupeHasIngredient.ingredient.label|raw }}</li>
+            <li><strong>{{ groupeHasIngredient.quantite }}</strong> {{ groupeHasIngredient.ingredient.label|raw }}</li>
         {% else %}
             <li>Aucun ingrédient additionnel</li>
         {% endfor %}
@@ -69,7 +69,7 @@
     </ul>
 </div>
 
-<h6><strong>&nbspDocuments</strong>
+<h6><strong>Documents</strong>
     {% if isAdmin %}
         <a
                 href=" {{ path('groupe.documents', {'groupe': groupe.id}) }}">Modifier la liste de documents</a>
@@ -89,7 +89,7 @@
     </ul>
 </div>
 
-<h6><strong>&nbspObjets</strong>
+<h6><strong>Objets</strong>
     {% if isAdmin %}
         <a
                 href=" {{ path('groupe.items', {'groupe': groupe.id}) }}">Modifier la liste des objets</a>

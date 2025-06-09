@@ -26,7 +26,7 @@ class TokenController extends AbstractController
     public function indexAction(
         Request $request,
         PagerService $pagerService,
-        TokenRepository $tokenRepository
+        TokenRepository $tokenRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($tokenRepository);
 
@@ -44,7 +44,6 @@ class TokenController extends AbstractController
 
         return $this->render('token/print.twig', ['tokens' => $tokens]);
     }
-
 
     #[NoReturn]
     #[Route('/download', name: 'download')]
@@ -112,7 +111,7 @@ class TokenController extends AbstractController
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         return parent::handleCreateOrUpdate(
             request: $request,

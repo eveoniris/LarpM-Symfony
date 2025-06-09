@@ -22,9 +22,8 @@ class AlchimieService extends CompetenceService
         return [
             // le personnage doit choisir 2 potions de niveau apprenti
             Level::NIVEAU_1 => [TriggerType::ALCHIMIE_APPRENTI->value => 2],
-            // le personnage doit choisir 1 potion de niveau initie et 1 potion de niveau apprenti
+            // le personnage doit choisir 1 potion de niveau initie
             Level::NIVEAU_2 => [
-                TriggerType::ALCHIMIE_APPRENTI->value => 1,
                 TriggerType::ALCHIMIE_INITIE->value => 1,
             ],
             // le personnage doit choisir 1 potion de niveau expert
