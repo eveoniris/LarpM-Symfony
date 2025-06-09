@@ -49,7 +49,9 @@
         {% if canReadPrivate %}
             <div class="card text-bg mb-3 overflow-auto">
                 <div class="header">
-                    <h5>Description aux membres</h5>
+                    <h5 class="border-warning border-bottom"><i class="fa fa-user-secret text-warning"></i> Description
+                        aux membres
+                    </h5>
                 </div>
 
                 <div class="card-body">
@@ -144,36 +146,22 @@
                 <div class="card-body">
                     <strong>Richesse : </strong>
                     <ul>
-                        {% for territoire in groupe.territoires %}
-                            <li><strong>{{ 3*territoire.richesse }} pièces d'argent</strong> fournies par
-                                <strong>{{ territoire.nom }}</strong>.
-                                Etat {{ territoire.statut.value|default('stable') }}
-                                : {% if territoire.statut.value|default('stable')|lower == 'instable' %}0.5 x {% endif %}
-                                3 x
-                                ( {{ territoire.tresor|default(0) }} [Fief]
-                                {% for construction in territoire.constructions %}
-                                {% if construction.id == 6 or construction.id == 10 %}
-                                    + 5 [{{ construction.label }}]
-                                {% endif %}
-                                {% if construction.id == 23 %}
-                                    + 10 [{{ construction.label }}]
-                                {% endif %}
-                                {% endfor %})
-                            </li>
+                        {% set allRichesse = groupeService.allRichesseDisplay(groupe) %}
+                        {% for richesse in allRichesse %}
+                            <li>{{ richesse.label|raw }}</li>
                         {% endfor %}
                     </ul>
 
                     <strong>Ressources : </strong>
+
+
                     <ul>
-                        {% for territoire in groupe.territoires %}
-                            {% set nbRessource = 3 %}
-                            {% if territoire.statut == 'Instable' %}
-                                {% set nbRessource = 2 %}
-                            {% endif %}
-                            {% for ressource in territoire.exportations %}
-                                <li><strong>{{ nbRessource }} {{ ressource.label }}</strong> fourni(e)s par
-                                    <strong>{{ territoire.nom }}</strong></li>
-                            {% endfor %}
+                        {% set allRessource = groupeService.allRessource(groupe) %}
+
+                        {% for groupeRessource in allRessource %}
+                            <li>
+                                <strong>{{ groupeRessource.quantite }}</strong> {{ groupeRessource.ressource.label|raw }}
+                            </li>
                         {% endfor %}
                     </ul>
 
@@ -182,15 +170,12 @@
                         Aucun ingrédient n'est fourni par les territoires contrôlé par ce groupe
                     {% endif %}
                     <ul>
-                        {% for territoire in groupe.territoires %}
-                            {% set nbIngredient = 5 %}
-                            {% if territoire.statut == 'Instable' %}
-                                {% set nbIngredient = 3 %}
-                            {% endif %}
-                            {% for ingredient in territoire.ingredients %}
-                                <li><strong>{{ nbIngredient }} {{ ingredient.label }}</strong> fourni(e)s par
-                                    <strong>{{ territoire.nom }}</strong></li>
-                            {% endfor %}
+                        {% set allIngredient = groupeService.allIngredient(groupe) %}
+
+                        {% for groupeHasIngredient in allIngredient %}
+                            <li>
+                                <strong>{{ groupeHasIngredient.quantite }}</strong> {{ groupeHasIngredient.ingredient.label|raw }}
+                            </li>
                         {% endfor %}
                     </ul>
                     {# disabled for now #}
@@ -477,8 +462,9 @@
         </div>
 
         {% if isAdmin %}
-            <div class="card text-bg mb-3 overflow-auto">
-                <div class="header"><h5><i class="fa fa-feather text-gamemaster"> </i>Intrigues</h5></div>
+            <div class="card text-bg mb-3 overflow-auto border-gamemaster">
+                <div class="header"><h5><i class="fa fa-feather text-gamemaster"> </i> Intrigues
+                    </h5></div>
                 <div class="text-body">
                     <ul>
                         {% for intrigueHasGroupe in groupe.intrigueHasGroupes %}

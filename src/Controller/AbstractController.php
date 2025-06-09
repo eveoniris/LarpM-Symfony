@@ -20,12 +20,16 @@ use App\Service\GroupeService;
 use App\Service\MailService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
+use App\Service\StatsService;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NativeQuery;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpClient\Exception\RedirectionException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -73,6 +77,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected PersonnageService $personnageService,
         protected GroupeService $groupeService,
         protected Environment $twig,
+        protected StatsService $statsService,
         // Cache $cache, // TODO : later
     )
     {
@@ -309,15 +314,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         // TODO enhance
         $request = $this->requestStack?->getCurrentRequest();
         if ($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/'.$view)) {
-            $currentParameters = $request->attributes->get('_route_params');
-            $currentParameters['playerView'] = !$request->get('playerView');
+            $currentParameters = $request?->attributes->get('_route_params');
+            $currentParameters['playerView'] = !$request?->get('playerView');
 
             $parameters['playerViewToggleUrl'] = $this->generateUrl(
-                $request->attributes->get('_route'),
+                $request?->attributes->get('_route'),
                 $currentParameters,
             );
 
-            if (false !== (bool) $request->get('playerView')) {
+            if (false !== (bool) $request?->get('playerView')) {
                 return parent::render('admin/'.$view, $parameters, $response);
             }
         }
@@ -581,14 +586,22 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return null;
     }
 
+    /**
+     * @throws \ErrorException if not valid implementation
+     */
     protected function sendCsv(
         string $title,
         ?BaseRepository $repository = null,
+        QueryBuilder|AbstractQuery|null $query = null,
         array $header = [],
         ?callable $content = null,
     ): StreamedResponse {
-        if (!$repository && !$content) {
-            throw new \Exception('Method need a repository or a callable content');
+        if (!$repository && !$content && !$query) {
+            throw new \ErrorException('Method needs a repository, queryBuilder or a callable content');
+        }
+
+        if ($query instanceof QueryBuilder) {
+            $query = $query->getQuery();
         }
 
         $response = new StreamedResponse();
@@ -599,16 +612,25 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $response->headers->set('Expires', '0');
 
         if (null === $content) {
-            $content = static function () use ($repository, $header) {
+            $content = static function () use ($repository, $header, $query) {
                 $output = fopen('php://output', 'wb');
 
-                $iterateMode = $repository::ITERATE_EXPORT_HEADER;
+                $iterateMode = BaseRepository::ITERATE_EXPORT_HEADER;
                 if ($header) {
-                    $iterateMode = $repository::ITERATE_EXPORT;
+                    $iterateMode = BaseRepository::ITERATE_EXPORT;
                     fputcsv($output, $header, ';');
                 }
 
-                foreach ($repository->findIterable(iterableMode: $iterateMode) as $data) {
+                $dataProvider = [];
+                if ($query) {
+                    $dataProvider = $query->toIterable();
+                }
+
+                if ($repository) {
+                    $dataProvider = $repository->findIterable($query, iterableMode: $iterateMode);
+                }
+
+                foreach ($dataProvider as $data) {
                     fputcsv($output, $data, ';');
                 }
                 fclose($output);

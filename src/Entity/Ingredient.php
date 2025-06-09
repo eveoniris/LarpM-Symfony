@@ -30,4 +30,9 @@ class Ingredient extends BaseIngredient implements \Stringable
             default => $color,
         };
     }
+
+    public function getQuantite(): int
+    {
+        return 5;
+    }
 }

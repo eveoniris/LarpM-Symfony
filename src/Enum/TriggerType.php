@@ -56,7 +56,7 @@ enum TriggerType: string
 
     public function isAlchimieInitie(): bool
     {
-        return $this->value === self::ALCHIMIE_APPRENTI->value;
+        return $this->value === self::ALCHIMIE_INITIE->value;
     }
 
     public function isAlchimieMaitre(): bool

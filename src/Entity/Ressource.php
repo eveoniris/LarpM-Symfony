@@ -12,4 +12,9 @@ class Ressource extends BaseRessource implements \Stringable
     {
         return $this->getLabel();
     }
+
+    public function getQuantite(): int
+    {
+        return 3;
+    }
 }

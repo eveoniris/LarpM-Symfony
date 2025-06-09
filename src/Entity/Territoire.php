@@ -271,7 +271,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
      */
     public function getRichesse(): float|int|null
     {
-        $tresor = parent::getTresor();
+        $tresor = $this->getTresor();
         if (0 === $tresor) {
             $tresor = 0;
         }
@@ -292,11 +292,15 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         }
 
         // gestion de l'état du territoire
-        return match ($this->getStatut()) {
-            'Normal' => $tresor,
-            'Instable' => ceil($tresor / 2),
-            default => $tresor,
-        };
+        return $this->isStable()
+            ? $this->tresor
+            : ceil($tresor / 2);
+    }
+
+    public function isStable(): bool
+    {
+        return TerritoireStatut::STABLE->value === strtolower($this->getStatut()?->value ?? '');
+
     }
 
     /**
@@ -305,8 +309,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     public function getStatutIndex(): int
     {
         return match ($this->getStatut()) {
-            'Normal' => 0,
-            'Instable' => 1,
+            TerritoireStatut::INSTABLE->value => 1,
             default => 0,
         };
     }
@@ -318,9 +321,9 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     {
         if ($this->getTerritoire()) {
             return $this.' --- '.$this->getTerritoire().' --- '.$this->getTerritoire()->getRoot();
-        } else {
-            return $this;
         }
+
+        return $this;
     }
 
     /**
@@ -330,9 +333,9 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     {
         if ($this->getTerritoire()) {
             return $this->getTerritoire()->getRoot();
-        } else {
-            return $this;
         }
+
+        return $this;
     }
 
     /**
@@ -357,8 +360,6 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
 
     /**
      * Determine si un territoire dispose d'une construction.
-     *
-     * @param unknown $label
      */
     public function hasConstruction($label): bool
     {
@@ -369,12 +370,6 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         }
 
         return false;
-    }
-
-    public function isStable(): bool
-    {
-        return TerritoireStatut::INSTABLE->value === strtolower($this->getStatut()?->value ?? '');
-
     }
 
     /**
