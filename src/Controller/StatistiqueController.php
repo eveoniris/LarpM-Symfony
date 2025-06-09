@@ -25,7 +25,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(new MultiRolesExpression(Role::ADMIN))]
+#[IsGranted(new MultiRolesExpression(Role::ADMIN, Role::SCENARISTE, Role::WARGAME, Role::ORGA))]
 class StatistiqueController extends AbstractController
 {
     #[Route('/api/competences/{gn}', name: 'api.competences.gn', requirements: ['gn' => Requirement::DIGITS])]
@@ -252,6 +252,50 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
+    #[Route('/api/mineurs/{gn}', name: 'api.mineurs.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/mineurs/{gn}/json', name: 'stats.mineurs.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function mineursApiGnAction(
+        #[MapEntity] Gn $gn,
+    ): JsonResponse {
+        return new JsonResponse($this->statsService->getMineurs($gn)->getResult());
+    }
+
+    #[Route('/stats/mineurs/{gn}/csv', name: 'stats.mineurs.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function mineursCsvStatsGnAction(
+        #[MapEntity] Gn $gn,
+    ): StreamedResponse {
+        return $this->sendCsv(
+            title: 'eveoniris_mineurs_gn_'.$gn->getId().'_'.date('Ymd'),
+            query: $this->statsService->getMineurs($gn),
+            header: [
+                'nom',
+                'prenom_usage',
+                'prenom',
+                'userId',
+                'email',
+                'email_contact',
+                'groupeId',
+                'groupe',
+                'personnageId',
+                'personnage',
+                'sensible',
+            ],
+        );
+    }
+
+    #[Route('/stats/mineurs/{gn}', name: 'stats.mineurs.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function mineursStatsGnAction(
+        #[MapEntity] Gn $gn,
+    ): Response {
+        return $this->render('statistique/mineursGn.twig', [
+            'mineurs' => $this->statsService->getMineurs($gn)->getResult(),
+            'gn' => $gn,
+        ]);
+    }
+
     #[Route('/api/religions/pratiquants/{gn}', name: 'api.religions.pratiquants', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted('ROLE_SCENARISTE', message: 'You are not allowed to access the admin dashboard.')]
     public function religionsPratiquantsAction(
@@ -288,5 +332,22 @@ class StatistiqueController extends AbstractController
     public function statsAction(): Response
     {
         return $this->render('statistique/list.twig');
+    }
+
+    #[Route('/stats/users/roles', name: 'stats.users.roles')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function usersRolesAction(): Response
+    {
+        $roles = [];
+        foreach (Role::toArray() as $simple => $role) {
+            if (Role::USER->value === $role) {
+                continue;
+            }
+            $roles[$simple] = $this->statsService->getUsersRole(Role::tryFrom($role))->getResult();
+        }
+
+        return $this->render('statistique/usersRoles.twig', [
+            'roles' => $roles,
+        ]);
     }
 }

@@ -33,7 +33,7 @@
                        autocomplete="current-password" required>
                 <label>
                     <input type="checkbox" name="_remember_me" checked>
-                    Se rappeler de moi sur cet ordinaateur
+                    Se rappeler de moi sur cet ordinateur
                 </label>
 
                 <input type="hidden" name="_csrf_token"
@@ -45,6 +45,10 @@
                     <a href="{{ path('user.forgot-password') }}" class="btn btn-secondary ms-2">Mot de passe oublié</a>
                 </div>
             </form>
+
+            <div class="mt-2 p-2">
+                {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Si une erreur 'CSRF' s'affiche:<br /> Vider cache et cookie ou passer en navigation privé. Le soucis sera réglé dès que possible" } %}
+            </div>
 
         </div>
     </div>

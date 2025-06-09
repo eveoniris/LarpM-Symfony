@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Grandeur nature{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' : [
+        {'name' : 'Liste des grandeurs nature', 'route': path('gn.list') },
+        {'name' : gn.label, 'route': path('gn.detail', {'gn':gn.id}) },
+        {'name' : 'Liste des groupes réservés' }
+    ]} %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Liste des groupes réservés pour {{ gn.label }} ({{ groupes|length }})</h5>
+        </div>
+
+        <table class="table table-condensed table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Groupe</th>
+                <th>Responsable</th>
+                <th>Scénariste</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for groupe in groupes %}
+                {% set groupeGn = groupe.groupeGn(gn) %}
+                <tr>
+                    <td>
+                        <a href="{{ path('groupe.detail', {'groupe': groupe.id}) }}">#{{ groupe.numero }} {{ groupe.nom }}</a>
+                    </td>
+                    <td>
+                        {% if groupeGn.responsable %}
+                            <a href="{{ path('user.detail', {'user': groupeGn.responsable.user.id}) }}">{{ groupeGn.responsable.user.etatCivil }}</a>
+                        {% else %}
+                            <span class="text-danger">Aucun responsable</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if groupe.scenariste %}
+                            <a href="{{ path('user.detail', {'user': groupe.scenariste.id}) }}">{{ groupe.scenariste.etatCivil }}</a>
+                        {% else %}
+                            <span class="text-danger">Aucun scénariste</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

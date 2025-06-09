@@ -1,0 +1,55 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Roles des utilisateurs{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Statistiques', 'route': path('stats.list') },
+            {'name' : 'Roles des utilisateurs'},
+        ]
+    } %}
+
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Roles des utilisateurs</h5>
+        </div>
+
+        {% for role, users in roles %}
+
+            <div class="card mb-2">
+                <div class="card-header">
+                    <h6>{{ role }}</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-bordered table-condensed table-hover">
+                        {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
+                            {'name' : 'id', 'css': 'text-center'},
+                            {'name' : 'nom'},
+                            {'name' : 'prenom'},
+                            {'name' : 'email'},
+                            {'name' : 'username'}
+                        ]} %}
+                        <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td class="text-center col-1">{{ user.id }}</td>
+                                <td class="col-1">{{ user.nom }}</td>
+                                <td class="col-9">{{ user.prenom }}</td>
+                                <td class="text-center col-1">{{ user.email }}</td>
+                                <td class="text-center col-1">{{ user.username }}</td>
+                            </tr>
+                        {% else %}
+                            {% include '_partials/noResultTableRow.twig' %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

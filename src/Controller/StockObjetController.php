@@ -30,11 +30,184 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class StockObjetController extends AbstractController
 {
     /**
+     * Ajoute un objet.
+     */
+    #[Route('/stock/objet/add', name: 'stockObjet.add')]
+    public function addAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse|Response {
+        $objet = new Objet();
+
+        $objet->setNombre(1);
+
+        $repo = $entityManager->getRepository(Etat::class);
+        $etat = $repo->find(1);
+        if ($etat) {
+            $objet->setEtat($etat);
+        }
+
+        $form = $this->createForm(ObjetForm::class, $objet)
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
+            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder et créer un nouveau'])
+            ->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Objet $objet */
+            $objet = $this->handleObjetPost($form, $entityManager);
+
+            if ($form->get('save')->isClicked()) {
+                return $this->redirectToRoute('stockObjet.index', [], 303);
+            }
+            if ($form->get('save_continue')->isClicked()) {
+                return $this->redirectToRoute('stockObjet.add', [], 303);
+            }
+            if ($form->get('save_clone')->isClicked()) {
+                return $this->redirectToRoute('stockObjet.clone', ['objet' => $objet->getId()], 303);
+            }
+        }
+
+        return $this->render('stock/objet/add.twig', ['form' => $form->createView()]);
+    }
+
+    public function handleObjetPost(
+        FormInterfaceAlias $form,
+        EntityManagerInterface $entityManager,
+        string $successMsg = null,
+    ): mixed {
+        $objet = $form->getData();
+
+        if ($objet->getObjetCarac()) {
+            $entityManager->persist($objet->getObjetCarac());
+        }
+
+        if ($objet->getPhoto()) {
+            $objet->getPhoto()->handleUpload(
+                $this->fileUploader,
+                $objet->getPhotosDocumentType(),
+                $objet->getPhotosFolderType(),
+            );
+            $entityManager->persist($objet->getPhoto());
+        }
+
+        $entityManager->persist($objet);
+        $entityManager->flush();
+
+        $this->addFlash('success', $successMsg ?? 'L\'objet a été ajouté dans le stock');
+
+        return $objet;
+    }
+
+    /**
+     * Créé un objet à partir d'un autre.
+     */
+    #[Route('/stock/objet/{objet}/clone', name: 'stockObjet.clone')]
+    public function cloneAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Objet $objet,
+    ): RedirectResponse|Response {
+        $newObjet = clone $objet;
+
+        $numero = $objet->getNumero();
+        if ('' !== $numero && '0' !== $numero && is_numeric($numero)) {
+            $newObjet->setNumero(++$numero);
+        } else {
+            $newObjet->setNumero($numero.'_2');
+        }
+
+        $form = $this->createForm(ObjetForm::class, $newObjet)
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
+            ->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $newObjet = $this->handleObjetPost($form, $entityManager);
+
+            if ($form->get('save')->isClicked()) {
+                return $this->redirectToRoute('stockObjet.index', [], 303);
+            }
+
+            return $this->redirectToRoute('stockObjet.clone', ['objet' => $newObjet->getId()], 303);
+        }
+
+        return $this->render('stock/objet/clone.twig', ['objet' => $newObjet, 'form' => $form->createView()]);
+    }
+
+    /**
+     * Suppression d'un objet.
+     */
+    #[Route('/stock/objet/{objet}/delete', name: 'stockObjet.delete')]
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Objet $objet,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(ObjetDeleteForm::class, $objet);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $objet = $form->getData();
+
+            $entityManager->remove($objet);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'L\'objet a été supprimé');
+
+            return $this->redirectToRoute('stockObjet.index');
+        }
+
+        return $this->render('stock/objet/delete.twig', ['objet' => $objet, 'form' => $form->createView()]);
+    }
+
+    /**
+     * Affiche la détail d'un objet.
+     */
+    #[Route('/stock/objet/{objet}/detail', name: 'stockObjet.detail')]
+    public function detailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Objet $objet,
+    ): Response {
+        return $this->render('stock/objet/detail.twig', ['objet' => $objet]);
+    }
+
+    /**
+     * Exporte la liste des objets au format CSV.
+     */
+    #[Route('/stock/objet/export', name: 'stockObjet.export')]
+    public function exportAction(ObjetRepository $objetRepository): Response
+    {
+        return $this->sendCsv(
+            'eveoniris_stock_'.date('Ymd'),
+            repository: $objetRepository,
+            header: [
+                'nom',
+                'code',
+                'description',
+                'photo',
+                'rangement',
+                'etat',
+                'proprietaire',
+                'responsable',
+                'nombre',
+                'creation_date',
+            ],
+        );
+    }
+
+    /**
      * Affiche la liste des objets.
      */
     #[Route('/stock/objet', name: 'stockObjet.index')]
-    public function indexAction(Request $request, EntityManagerInterface $entityManager, ObjetRepository $objetRepository): Response
-    {
+    public function indexAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ObjetRepository $objetRepository,
+    ): Response {
         $type = null;
         $value = null;
         $tag = null;
@@ -71,7 +244,7 @@ class StockObjetController extends AbstractController
         $orderBy = $this->getRequestOrder(
             defOrderBy: 'nom',
             alias: $alias,
-            allowedFields: $objetRepository->getFieldNames()
+            allowedFields: $objetRepository->getFieldNames(),
         );
 
         $query = $objetRepository->createQueryBuilder($alias)
@@ -102,7 +275,9 @@ class StockObjetController extends AbstractController
         }
 
         $paginator = $objetRepository->findPaginatedQuery(
-            $query->getQuery(), $this->getRequestLimit(25), $this->getRequestPage()
+            $query->getQuery(),
+            $this->getRequestLimit(25),
+            $this->getRequestPage(),
         );
 
         return $this->render('stock/objet/list.twig', [
@@ -133,25 +308,6 @@ class StockObjetController extends AbstractController
     }
 
     /**
-     * Fourni la liste des objets sans responsable.
-     */
-    #[Route('/stock/objet/list-without-responsable', name: 'stockObjet.list-without-responsable')]
-    public function listWithoutResponsableAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $repo = $entityManager->getRepository(Objet::class);
-
-        $qb = $repo->createQueryBuilder('o');
-        $qb->select('o');
-        $qb->where('o.user IS NULL');
-
-        $objet_without_responsable = $qb->getQuery()->getResult();
-
-        return $this->render('stock/objet/listWithoutResponsable.twig', [
-            'objets' => $objet_without_responsable,
-        ]);
-    }
-
-    /**
      * Fourni la liste des objets sans rangement.
      */
     #[Route('/stock/objet/list-without-rangement', name: 'stockObjet.list-without-rangement')]
@@ -171,12 +327,22 @@ class StockObjetController extends AbstractController
     }
 
     /**
-     * Affiche la détail d'un objet.
+     * Fourni la liste des objets sans responsable.
      */
-    #[Route('/stock/objet/{objet}/detail', name: 'stockObjet.detail')]
-    public function detailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet): Response
+    #[Route('/stock/objet/list-without-responsable', name: 'stockObjet.list-without-responsable')]
+    public function listWithoutResponsableAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('stock/objet/detail.twig', ['objet' => $objet]);
+        $repo = $entityManager->getRepository(Objet::class);
+
+        $qb = $repo->createQueryBuilder('o');
+        $qb->select('o');
+        $qb->where('o.user IS NULL');
+
+        $objet_without_responsable = $qb->getQuery()->getResult();
+
+        return $this->render('stock/objet/listWithoutResponsable.twig', [
+            'objets' => $objet_without_responsable,
+        ]);
     }
 
     /**
@@ -238,143 +404,14 @@ class StockObjetController extends AbstractController
     }
 
     /**
-     * Ajoute un objet.
-     */
-    #[Route('/stock/objet/add', name: 'stockObjet.add')]
-    public function addAction(
-        Request $request,
-        EntityManagerInterface $entityManager
-    ): RedirectResponse|Response {
-        $objet = new Objet();
-
-        $objet->setNombre(1);
-
-        $repo = $entityManager->getRepository(Etat::class);
-        $etat = $repo->find(1);
-        if ($etat) {
-            $objet->setEtat($etat);
-        }
-
-        $form = $this->createForm(ObjetForm::class, $objet)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder et créer un nouveau'])
-            ->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var Objet $objet */
-            $objet = $this->handleObjetPost($form, $entityManager);
-
-            if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('stockObjet.index', [], 303);
-            }
-            if ($form->get('save_continue')->isClicked()) {
-                return $this->redirectToRoute('stockObjet.add', [], 303);
-            }
-            if ($form->get('save_clone')->isClicked()) {
-                return $this->redirectToRoute('stockObjet.clone', ['objet' => $objet->getId()], 303);
-            }
-        }
-
-        return $this->render('stock/objet/add.twig', ['form' => $form->createView()]);
-    }
-
-    /**
-     * Créé un objet à partir d'un autre.
-     */
-    #[Route('/stock/objet/{objet}/clone', name: 'stockObjet.clone')]
-    public function cloneAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet): RedirectResponse|Response
-    {
-        $newObjet = clone $objet;
-
-        $numero = $objet->getNumero();
-        if ('' !== $numero && '0' !== $numero && is_numeric($numero)) {
-            $newObjet->setNumero(++$numero);
-        } else {
-            $newObjet->setNumero($numero.'_2');
-        }
-
-        $form = $this->createForm(ObjetForm::class, $newObjet)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
-            ->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $newObjet = $this->handleObjetPost($form, $entityManager);
-
-            if ($form->get('save')->isClicked()) {
-                return $this->redirectToRoute('stockObjet.index', [], 303);
-            }
-
-            return $this->redirectToRoute('stockObjet.clone', ['objet' => $newObjet->getId()], 303);
-        }
-
-        return $this->render('stock/objet/clone.twig', ['objet' => $newObjet, 'form' => $form->createView()]);
-    }
-
-    /**
-     * Mise à jour un objet.
-     */
-    #[Route('/stock/objet/{objet}/update', name: 'stockObjet.update')]
-    public function updateAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity] Objet $objet): RedirectResponse|Response
-    {
-        $form = $this->createForm(ObjetForm::class, $objet)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $objet = $form->getData();
-
-            if ($form->get('update')->isClicked()) {
-                $this->handleObjetPost($form, $entityManager, 'L\'objet a été mis à jour');
-            } elseif ($form->get('delete')->isClicked()) {
-                $entityManager->remove($objet);
-                $entityManager->flush();
-                $this->addFlash('success', 'L\'objet a été supprimé');
-            }
-
-            return $this->redirectToRoute('stockObjet.index');
-        }
-
-        return $this->render('stock/objet/update.twig', ['objet' => $objet, 'form' => $form->createView()]);
-    }
-
-    /**
-     * Suppression d'un objet.
-     */
-    #[Route('/stock/objet/{objet}/delete', name: 'stockObjet.delete')]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Objet $objet): RedirectResponse|Response
-    {
-        $form = $this->createForm(ObjetDeleteForm::class, $objet);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $objet = $form->getData();
-
-            $entityManager->remove($objet);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'L\'objet a été supprimé');
-
-            return $this->redirectToRoute('stockObjet.index');
-        }
-
-        return $this->render('stock/objet/delete.twig', ['objet' => $objet, 'form' => $form->createView()]);
-    }
-
-    /**
      * Modification des tags d'un objet.
      */
     #[Route('/stock/objet/{objet}/tag', name: 'stockObjet.tag')]
-    public function tagAction(Request $request, EntityManagerInterface $entityManager, Objet $objet): RedirectResponse|Response
-    {
+    public function tagAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Objet $objet,
+    ): RedirectResponse|Response {
         $form = $this->createForm(ObjetTagForm::class, $objet);
         $form->handleRequest($request);
 
@@ -399,61 +436,34 @@ class StockObjetController extends AbstractController
     }
 
     /**
-     * Exporte la liste des objets au format CSV.
+     * Mise à jour un objet.
      */
-    #[NoReturn] #[Route('/stock/objet/export', name: 'stockObjet.export')]
-    public function exportAction(Request $request, EntityManagerInterface $entityManager): void
-    {
-        /** @var ObjetRepository $repo */
-        $repo = $entityManager->getRepository(Objet::class);
+    #[Route('/stock/objet/{objet}/update', name: 'stockObjet.update')]
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Objet $objet,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(ObjetForm::class, $objet)
+            ->add('update', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
+            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_stock_'.date('Ymd').'.csv');
-        header('Pragma: no-cache');
-        header('Expires: 0');
+        $form->handleRequest($request);
 
-        $output = fopen('php://output', 'wb');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $objet = $form->getData();
 
-        // header
-        fputcsv($output,
-            [
-                'nom',
-                'code',
-                'description',
-                'photo',
-                'rangement',
-                'etat',
-                'proprietaire',
-                'responsable',
-                'nombre',
-                'creation_date'], ',');
+            if ($form->get('update')->isClicked()) {
+                $this->handleObjetPost($form, $entityManager, 'L\'objet a été mis à jour');
+            } elseif ($form->get('delete')->isClicked()) {
+                $entityManager->remove($objet);
+                $entityManager->flush();
+                $this->addFlash('success', 'L\'objet a été supprimé');
+            }
 
-        foreach ($repo->findIterable() as $objet) {
-            fputcsv($output, $objet, ',');
+            return $this->redirectToRoute('stockObjet.index');
         }
 
-        fclose($output);
-        exit;
-    }
-
-    public function handleObjetPost(FormInterfaceAlias $form, EntityManagerInterface $entityManager, string $successMsg = null): mixed
-    {
-        $objet = $form->getData();
-
-        if ($objet->getObjetCarac()) {
-            $entityManager->persist($objet->getObjetCarac());
-        }
-
-        if ($objet->getPhoto()) {
-            $objet->getPhoto()->handleUpload($this->fileUploader, $objet->getPhotosDocumentType(), $objet->getPhotosFolderType());
-            $entityManager->persist($objet->getPhoto());
-        }
-
-        $entityManager->persist($objet);
-        $entityManager->flush();
-
-        $this->addFlash('success', $successMsg ?? 'L\'objet a été ajouté dans le stock');
-
-        return $objet;
+        return $this->render('stock/objet/update.twig', ['objet' => $objet, 'form' => $form->createView()]);
     }
 }
