@@ -349,7 +349,7 @@ class GnController extends AbstractController
         });
         $groupes = new ArrayCollection(iterator_to_array($iterator));
 
-        return $this->render('gn/groupes.twig', [
+        return $this->render('gn/groupesReserves.twig', [
             'groupes' => $groupes,
             'gn' => $gn,
         ]);

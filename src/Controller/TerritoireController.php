@@ -280,7 +280,7 @@ class TerritoireController extends AbstractController
         $this->setCan(self::IS_ADMIN, $this->isGranted(Role::TERRITOIRE->value));
         $this->setCan(self::CAN_MANAGE, false); // not used?
         $this->setCan(self::CAN_READ_PRIVATE, $isMembreOrLeadOfGroupeOwner || $canSeeDetail);
-        $this->setCan(self::CAN_READ_SECRET, $isMappingInitiated);
+        $this->setCan(self::CAN_READ_SECRET, (bool) $isMappingInitiated);
         $this->setCan(self::CAN_WRITE, false); // not used?
         $this->setCan(self::CAN_READ, $this->isGranted(Role::USER->value)); // public page
 

@@ -19,28 +19,78 @@
 
         <div class="row">
 
+            {% if is_granted('ROLE_ADMIN', app.user) %}
+
+                <div class="col-md-6 mb-2">
+                    <div class="card">
+                        <div class="card-header border-danger">
+                            <h5><i class="fa fa-screwdriver-wrench text-danger"></i> Admin</h5>
+                        </div>
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <a href="{{ path('stats.users.roles') }}">Répartition des rôles utilisateurs</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% endif %}
+
+            {% if is_granted('ROLE_ORGA', app.user) %}
+
+                <div class="col-md-6 mb-2">
+                    <div class="card">
+                        <div class="card-header border-info">
+                            <h5><i class="fa fa-ticket text-info"></i> Gestion orga</h5>
+                        </div>
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <a href="{{ path('stats.mineurs.gn', {'gn':7}) }}">Listes des mineurs présents au
+                                    LH7</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% endif %}
+
             {% if is_granted('ROLE_SCENARISTE', app.user) %}
 
-                <div class="col-md-6">
-                    <div class="list-group">
-                        <div class="list-group-item">
-                            <a href="{{ path('stats.competences.gn', {'gn':7}) }}">Répartition des compétences LH7</a>
+                <div class="col-md-6 mb-2">
+                    <div class="card">
+                        <div class="card-header border-gamemaster">
+                            <h5><i class="fa fa-feather text-gamemaster"></i> Scénarisation</h5>
                         </div>
-                        <div class="list-group-item">WIP</div>
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <a href="{{ path('stats.competences.gn', {'gn':7}) }}">Répartition des compétences
+                                    LH7</a>
+                            </div>
+                            <div class="list-group-item">
+                                <a href="{{ path('stats.mineurs.gn', {'gn':7}) }}">Listes des mineurs présents au
+                                    LH7</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
             {% endif %}
 
             {% if is_granted('ROLE_WARGAME', app.user) %}
-                <div class="col-md-6">
-                    <div class="list-group">
-                        <div class="list-group-item">
-                            <a href="{{ path('stats.constructions') }}">Détails constructions</a>
+                <div class="col-md-6 mb-2">
+
+                    <div class="card">
+                        <div class="card-header border-warning">
+                            <h5><i class="fa fa-fist-raised text-warning"></i> Jeu de domaine</h5>
                         </div>
-                        <div class="list-group-item">
-                            <a href="{{ path('stats.constructions.fiefs') }}">Répartition des constructions sur les
-                                fiefs</a>
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <a href="{{ path('stats.constructions') }}">Détails constructions</a>
+                            </div>
+                            <div class="list-group-item">
+                                <a href="{{ path('stats.constructions.fiefs') }}">Répartition des constructions sur les
+                                    fiefs</a>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -44,7 +44,9 @@
                 <td class="text-center align-middle col-1">{{ logAction.date|date("m/d/Y H:i:s")|highlight(pagerService.searchValue) }}</td>
                 <td class="text-center align-middle col-1">{{ logAction.type.value|default('-')|highlight(pagerService.searchValue) }}</td>
                 <td class="align-middle col-8">
-                    {{ dump(logAction.data) }}
+                    <div class="w-100" style="overflow:auto;">
+                        <pre style="text-overflow: ellipsis;overflow-wrap: break-word;white-space: pre-wrap;word-wrap: break-word;">{{ logAction.data|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+                    </div>
                 </td>
             </tr>
         {% else %}

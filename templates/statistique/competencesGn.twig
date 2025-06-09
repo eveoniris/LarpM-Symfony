@@ -35,7 +35,7 @@
         {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Liste des compétences des participants (PJ ou PNJ) vivant inscrits pour le GN"} %}
 
         <table class="table table-striped table-bordered table-condensed table-hover">
-            {% include '_partials/thead.twig' with  { 'route': 'trombinoscope.index', 'rows': [
+            {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
                 {'name' : 'Total', 'css': 'text-center'},
                 {'name' : 'Competence'},
                 {'name' : 'Niveau'},
