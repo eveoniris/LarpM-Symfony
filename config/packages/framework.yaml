@@ -6,9 +6,7 @@ framework:
   php_errors:
   form:
     csrf_protection:
-      enabled: false
-      token_id: 'submit'
-      # stateless_token_ids: [ 'submit', 'authenticate', 'logout' ]
+      enabled: true
   #log: true
 
   # Note that the session will be started ONLY if you read or write from it.
