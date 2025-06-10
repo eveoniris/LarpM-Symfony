@@ -9,7 +9,9 @@ use App\Form\Religion\ReligionBlasonForm;
 use App\Form\Religion\ReligionDeleteForm;
 use App\Form\Religion\ReligionForm;
 use App\Form\Religion\ReligionLevelForm;
+use App\Repository\ReligionLevelRepository;
 use App\Repository\ReligionRepository;
+use App\Security\MultiRolesExpression;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
@@ -28,7 +30,7 @@ class ReligionController extends AbstractController
      * Ajoute une religion.
      */
     #[Route('/religion/add', name: 'religion.add')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function addAction(Request $request): Response
     {
         $religion = new Religion();
@@ -71,8 +73,6 @@ class ReligionController extends AbstractController
      */
     #[Route('/religion/{religion}/blason', name: 'religion.blason', methods: ['GET'])]
     public function blasonAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         #[MapEntity] Religion $religion,
     ): Response {
         $blason = $religion->getBlason();
@@ -88,7 +88,7 @@ class ReligionController extends AbstractController
      * Supression d'une religion.
      */
     #[Route('/religion/{religion}/delete', name: 'religion.delete')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function deleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -132,7 +132,7 @@ class ReligionController extends AbstractController
      * Detail d'une religion.
      */
     #[Route('/religion/{religion}/detail', name: 'religion.detail')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function detailAction(Religion $religion): Response
     {
         return $this->render(
@@ -154,7 +154,7 @@ class ReligionController extends AbstractController
         $orderDir = $request->query->getString('order_dir', 'ASC');
         $limit = 10;
 
-        if ($this->isGranted('ROLE_REGLE')) {
+        if ($this->isGranted(Role::REGLE->value)) {
             $where = '1=1';
         } else {
             $where = 'religion.secret = 0';
@@ -177,8 +177,8 @@ class ReligionController extends AbstractController
      * Ajoute un niveau de fanatisme.
      */
     #[Route('/religion/level/add', name: 'religion.level.add')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function levelAddAction(Request $request, EntityManagerInterface $entityManager)
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
+    public function levelAddAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $religionLevel = new ReligionLevel();
 
@@ -201,7 +201,8 @@ class ReligionController extends AbstractController
             // vers le formulaire d'ajout d'un niveau de religion
             if ($form->get('save')->isClicked()) {
                 return $this->redirectToRoute('religion.level', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
+            }
+            if ($form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('religion.level.add', [], 303);
             }
         }
@@ -215,12 +216,10 @@ class ReligionController extends AbstractController
      * Detail d'un niveau de fanatisme.
      */
     #[Route('/religion/level/{religionLevel}/detail', name: 'religion.level.detail')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function levelDetailAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
         ReligionLevel $religionLevel,
-    ) {
+    ): Response {
         return $this->render('religion/level/detail.twig', ['religionLevel' => $religionLevel]);
     }
 
@@ -228,13 +227,13 @@ class ReligionController extends AbstractController
      * affiche la liste des niveaux de fanatisme.
      */
     #[Route('/religion/level', name: 'religion.level')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_REGLES")'))]
-    public function levelIndexAction(Request $request, EntityManagerInterface $entityManager)
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
+    public function levelIndexAction(ReligionLevelRepository $religionLevelRepository): Response
     {
-        $repo = $entityManager->getRepository(ReligionLevel::class);
-        $religionLevels = $repo->findAllOrderedByIndex();
-
-        return $this->render('religion/level/index.twig', ['religionLevels' => $religionLevels]);
+        return $this->render(
+            'religion/level/index.twig',
+            ['religionLevels' => $religionLevelRepository->findAllOrderedByIndex()],
+        );
     }
 
     /**
@@ -244,12 +243,12 @@ class ReligionController extends AbstractController
      * redirigé vers la liste de niveaux de religions.
      */
     #[Route('/religion/level/{religionLevel}/update', name: 'religion.level.update')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA") or is_granted("ROLE_REGLES")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function levelUpdateAction(
         Request $request,
         EntityManagerInterface $entityManager,
         ReligionLevel $religionLevel,
-    ) {
+    ): RedirectResponse|Response {
         $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
             ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
@@ -288,7 +287,7 @@ class ReligionController extends AbstractController
      * affiche la liste des religions.
      */
     #[Route('/religion/mail', name: 'religion.mail')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function mailAction(ReligionRepository $religionRepository): Response
     {
         return $this->render(
@@ -303,7 +302,7 @@ class ReligionController extends AbstractController
      * Liste des perso ayant cette religion.
      */
     #[Route('/religion/{religion}/perso', name: 'religion.perso')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function persoAction(Request $request, Religion $religion): Response
     {
         return $this->render(
@@ -321,9 +320,12 @@ class ReligionController extends AbstractController
      * redirigé vers la liste des religions.
      */
     #[Route('/religion/{religion}/update', name: 'religion.update')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function updateAction(EntityManagerInterface $entityManager, Request $request, Religion $religion)
-    {
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
+    public function updateAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Religion $religion,
+    ): RedirectResponse|Response {
         $form = $this->createForm(ReligionForm::class, $religion)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
             ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
@@ -376,9 +378,12 @@ class ReligionController extends AbstractController
      * Met à jour le blason d'une religion.
      */
     #[Route('/religion/{religion}/updateBlason', name: 'religion.update.blason')]
-    #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
-    public function updateBlasonAction(Request $request, EntityManagerInterface $entityManager, Religion $religion)
-    {
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
+    public function updateBlasonAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Religion $religion,
+    ): RedirectResponse|Response {
         $form = $this->createForm(ReligionBlasonForm::class, $religion)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 

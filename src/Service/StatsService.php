@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\CompetenceFamily;
 use App\Entity\Gn;
 use App\Enum\Role;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,6 +16,81 @@ class StatsService
     ) {
     }
 
+    public function getAlchimieHerboristeGn(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('personnageId', 'personnageId', 'integer');
+        $rsm->addScalarResult('nom', 'nom', 'string');
+        $rsm->addScalarResult('competence', 'competence', 'string');
+        $rsm->addScalarResult('niveauMax', 'niveauMax', 'integer');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT pp.id as 'personnageId', pp.nom, cf.label as competence, MAX(l.`index`) as niveauMax -- , l.index
+                FROM participant p
+                         INNER JOIN personnage pp ON p.personnage_id = pp.id
+                         INNER JOIN personnages_competences pc ON pp.id = pc.personnage_id
+                         INNER JOIN competence cpt ON pc.competence_id = cpt.id
+                         INNER JOIN competence_family cf ON cpt.competence_family_id = cf.id
+                         INNER JOIN `level` l on cpt.level_id = l.id
+                WHERE p.gn_id = :gnid and ((cf.id = 2 and l.index > 1) or (cf.id = 4 and l.index > 0) )
+                GROUP BY pp.id, cf.id, cf.label, l.index
+                ORDER BY cf.label, l.index
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId());
+    }
+
+    public function getClassesGn(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('total', 'total', 'integer');
+        $rsm->addScalarResult('nom', 'label', 'string');
+        $rsm->addScalarResult('id', 'id', 'integer');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT COUNT(c.id) as total, c.label_masculin as nom, c.id
+                FROM participant p
+                         INNER JOIN personnage pp ON p.personnage_id = pp.id
+                         INNER JOIN personnages_competences pc ON pp.id = pc.personnage_id
+                         INNER JOIN classe c ON pp.classe_id = c.id
+                WHERE p.gn_id = :gnid
+                GROUP BY c.id, c.label_masculin
+                ORDER BY total DESC, c.label_masculin
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId());
+    }
+
+    public function getCompetenceFamilyGn(CompetenceFamily $competenceFamily, Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('total', 'total', 'integer');
+        $rsm->addScalarResult('label', 'niveau', 'string');
+        $rsm->addScalarResult('index', 'indexNiveau', 'integer');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT COUNT(c.id) as total, l.label, l.index
+                FROM participant p
+                         INNER JOIN personnage pp ON p.personnage_id = pp.id
+                         INNER JOIN personnages_competences pc ON pp.id = pc.personnage_id
+                         INNER JOIN competence c ON pc.competence_id = c.id
+                         INNER JOIN competence_family cf ON c.competence_family_id = cf.id
+                         INNER JOIN level l ON c.level_id = l.id
+                WHERE p.gn_id = :gnid
+                  AND cf.id = :cfid
+                GROUP BY c.id,  c.level_id
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId())
+            ->setParameter('cfid', $competenceFamily->getId());
+    }
+
     public function getCompetenceGn(Gn $gn): NativeQuery
     {
         $rsm = new ResultSetMapping();
@@ -22,7 +98,7 @@ class StatsService
         $rsm->addScalarResult('competence', 'competence', 'string');
         $rsm->addScalarResult('niveau', 'niveau', 'string');
 
-        /** @noinspection SqlNoDataSourceInspection */
+        /* @noinspection SqlNoDataSourceInspection */
         return $this->entityManager->createNativeQuery(
             <<<SQL
                 SELECT COUNt(cpt.id) as total, cf.label as competence, l.label as niveau -- , l.index
@@ -32,7 +108,7 @@ class StatsService
                          INNER JOIN competence cpt ON pc.competence_id = cpt.id
                          INNER JOIN competence_family cf ON cpt.competence_family_id = cf.id
                          INNER JOIN `level` l on cpt.level_id = l.id
-                WHERE p.gn_id = 7 and pp.vivant = 1
+                WHERE p.gn_id = :gnid and pp.vivant = 1
                 GROUP BY cpt.id, cf.label, l.index, l.label
                 ORDER BY cf.label, l.index, l.label;
                 SQL,
@@ -48,7 +124,7 @@ class StatsService
         $rsm->addScalarResult('description', 'description', 'string');
         $rsm->addScalarResult('defense', 'defense', 'integer');
 
-        /** @noinspection SqlNoDataSourceInspection */
+        /* @noinspection SqlNoDataSourceInspection */
         return $this->entityManager->createNativeQuery(
             <<<SQL
                  SELECT t.nom as fief, c.label as batiment, c.description, c.defense FROM territoire_has_construction hhc
@@ -67,7 +143,7 @@ class StatsService
         $rsm->addScalarResult('fiefs', 'fiefs', 'string');
         $rsm->addScalarResult('description', 'description', 'string');
 
-        /** @noinspection SqlNoDataSourceInspection */
+        /* @noinspection SqlNoDataSourceInspection */
         return $this->entityManager->createNativeQuery(
             <<<SQL
                  SELECT c.label as batiment, group_concat(t.nom) as fiefs, c.description FROM territoire_has_construction hhc
@@ -94,7 +170,7 @@ class StatsService
         $rsm->addScalarResult('personnage', 'personnage', 'string');
         $rsm->addScalarResult('sensible', 'sensible', 'string');
 
-        /** @noinspection SqlNoDataSourceInspection */
+        /* @noinspection SqlNoDataSourceInspection */
         return $this->entityManager->createNativeQuery(
             <<<SQL
                  SELECT ec.nom,
@@ -135,7 +211,7 @@ class StatsService
         $rsm->addScalarResult('email', 'email', 'string');
         $rsm->addScalarResult('username', 'username', 'string');
 
-        /** @noinspection SqlNoDataSourceInspection */
+        /* @noinspection SqlNoDataSourceInspection */
         return $this->entityManager->createNativeQuery(
             <<<SQL
                  SELECT u.id, ec.nom, ec.prenom, u.email, u.username

@@ -1000,12 +1000,12 @@ class Personnage extends BasePersonnage implements \Stringable
         /** @var PersonnageTrigger $personnageTrigger */
         foreach ($this->getPersonnageTriggers() as $personnageTrigger) {
             if (is_string($tag)) {
-                if ($personnageTrigger->getTag()->value === $tag) {
+                if ($personnageTrigger?->getTag()?->value === $tag) {
                     return $personnageTrigger;
                 }
                 continue;
             }
-            if ($personnageTrigger->getTag()->value === $tag->value) {
+            if ($personnageTrigger?->getTag()?->value === $tag?->value) {
                 return $personnageTrigger;
             }
         }
@@ -1344,13 +1344,13 @@ class Personnage extends BasePersonnage implements \Stringable
         /** @var PersonnageTrigger $personnageTrigger */
         foreach ($this->getPersonnageTriggers() as $personnageTrigger) {
             if ($tag instanceof TriggerType) {
-                if ($personnageTrigger->getTag()->value === $tag->value) {
+                if ($personnageTrigger?->getTag()->value === $tag?->value) {
                     return true;
                 }
                 continue;
             }
 
-            if ($personnageTrigger->getTag()->value === $tag) {
+            if ($personnageTrigger?->getTag()?->value === $tag) {
                 return true;
             }
         }

@@ -1,0 +1,79 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Alchimiste et Herboriste{% endblock title %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+
+    <script type="application/javascript">
+        jQuery(document).ready(function () {
+            new DataTable('#stats-table', {'pageLength': 50});
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Statistiques', 'route': path('stats.list') },
+            {'name' : 'Alchimiste et Herboriste ' ~ gn.label },
+        ]
+    } %}
+
+    <div class="d-flex justify-content-end">
+
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="Télécharger" href="{{ path('stats.alchimieHerboriste.gn.csv', {'gn':gn.id}) }}"><i
+                            class="fa fa-file-csv"></i>
+                    Télécharger</a>
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="format JSON" href="{{ path('stats.alchimieHerboriste.gn.json', {'gn':gn.id}) }}"><i
+                            class="fa fa-file-lines"></i>
+                    Json API</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Alchimiste et Herboriste {{ gn.label }}</h5>
+        </div>
+
+        <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
+            {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
+                {'name' : 'Id Personnage', 'css': 'text-center'},
+                {'name' : 'Nom'},
+                {'name' : 'Competence'},
+                {'name' : 'Niveau Max'},
+            ]} %}
+            <tbody>
+            {% for alchimieHerboriste in alchimieHerboristes %}
+                <tr>
+                    <td class="text-center col-1">
+                        <a href="{{ path('personnage.detail', {'personnage': alchimieHerboriste.personnageId}) }}">
+                            {{ alchimieHerboriste.personnageId }}
+                        </a>
+                    </td>
+                    <td class="col-5">
+                        <a href="{{ path('personnage.detail', {'personnage': alchimieHerboriste.personnageId}) }}">
+                            {{ alchimieHerboriste.nom }}</a>
+                    </td>
+                    <td class="col-5">{{ alchimieHerboriste.competence }}</td>
+                    <td class="col-1">{{ alchimieHerboriste.niveauMax }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}

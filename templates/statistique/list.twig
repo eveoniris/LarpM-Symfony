@@ -23,12 +23,16 @@
 
                 <div class="col-md-6 mb-2">
                     <div class="card">
-                        <div class="card-header border-danger">
+                        <div class="card-header border-danger border-2">
                             <h5><i class="fa fa-screwdriver-wrench text-danger"></i> Admin</h5>
                         </div>
-                        <div class="list-group">
-                            <div class="list-group-item">
-                                <a href="{{ path('stats.users.roles') }}">Répartition des rôles utilisateurs</a>
+                        <div class="card-body">
+                            <div class="list-group link-offset-hover">
+                                <div class="list-group-item">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.users.roles') }}">Répartition
+                                        des rôles utilisateurs</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -40,13 +44,46 @@
 
                 <div class="col-md-6 mb-2">
                     <div class="card">
-                        <div class="card-header border-info">
+                        <div class="card-header border-info border-2">
                             <h5><i class="fa fa-ticket text-info"></i> Gestion orga</h5>
                         </div>
-                        <div class="list-group">
-                            <div class="list-group-item">
-                                <a href="{{ path('stats.mineurs.gn', {'gn':7}) }}">Listes des mineurs présents au
-                                    LH7</a>
+                        <div class="card-body">
+                            <div class="list-group link-offset-hover">
+                                <div class="list-group-item">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.mineurs.gn', {'gn':7}) }}">
+                                        Listes des mineurs présents au LH7
+                                    </a>
+                                </div>
+                                <div class="list-group-item">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.alchimieHerboriste.gn', {'gn':7}) }}">
+                                        Listes des Alchimistes & Herboriste présent au LH7
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.competenceFamily.gn', {'gn':7, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::MAGIC').id}) }}">
+                                        Répartition des sorciers/magicien sur LH7
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.competenceFamily.gn', {'gn':7, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::CRAFTSMANSHIP').id}) }}">
+                                        Répartition des artisants sur LH7
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.competenceFamily.gn', {'gn':7, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::THEFT').id}) }}">
+                                        Répartition des voleurs sur LH7
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+
+                                    Répartition des niveau de renommé LH7 (WIP)
+
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -58,17 +95,28 @@
 
                 <div class="col-md-6 mb-2">
                     <div class="card">
-                        <div class="card-header border-gamemaster">
+                        <div class="card-header border-gamemaster border-2">
                             <h5><i class="fa fa-feather text-gamemaster"></i> Scénarisation</h5>
                         </div>
-                        <div class="list-group">
-                            <div class="list-group-item">
-                                <a href="{{ path('stats.competences.gn', {'gn':7}) }}">Répartition des compétences
-                                    LH7</a>
-                            </div>
-                            <div class="list-group-item">
-                                <a href="{{ path('stats.mineurs.gn', {'gn':7}) }}">Listes des mineurs présents au
-                                    LH7</a>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.competences.gn', {'gn':7}) }}">
+                                        Répartition des compétences LH7
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.classes.gn', {'gn':7}) }}">
+                                        Répartition des classes LH7
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+
+                                    Répartition des religion LH7 (WIP)
+
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -80,16 +128,23 @@
                 <div class="col-md-6 mb-2">
 
                     <div class="card">
-                        <div class="card-header border-warning">
+                        <div class="card-header border-warning border-2">
                             <h5><i class="fa fa-fist-raised text-warning"></i> Jeu de domaine</h5>
                         </div>
-                        <div class="list-group">
-                            <div class="list-group-item">
-                                <a href="{{ path('stats.constructions') }}">Détails constructions</a>
-                            </div>
-                            <div class="list-group-item">
-                                <a href="{{ path('stats.constructions.fiefs') }}">Répartition des constructions sur les
-                                    fiefs</a>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.constructions') }}">
+                                        Détails constructions
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.constructions.fiefs') }}">
+                                        Répartition des constructions sur les fiefs
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

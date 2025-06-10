@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Classe;
 use App\Entity\Competence;
+use App\Entity\CompetenceFamily;
 use App\Entity\Genre;
 use App\Entity\Gn;
 use App\Entity\Groupe;
@@ -28,20 +29,119 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted(new MultiRolesExpression(Role::ADMIN, Role::SCENARISTE, Role::WARGAME, Role::ORGA))]
 class StatistiqueController extends AbstractController
 {
-    #[Route('/api/competences/{gn}', name: 'api.competences.gn', requirements: ['gn' => Requirement::DIGITS])]
-    #[Route('/stats/competences/{gn}/json', name: 'stats.competences.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/alchimieHerboriste/{gn}/csv', name: 'stats.alchimieHerboriste.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
-    public function competencesApiGnAction(
+    public function alchimieHerboristeCsvStatsGnAction(#[MapEntity] Gn $gn): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'eveoniris_alchimieHerboriste_gn_'.$gn->getId().'_'.date('Ymd'),
+            query: $this->statsService->getAlchimieHerboristeGn($gn),
+            header: ['personnageId', 'nom', 'competence', 'niveauMax'],
+        );
+    }
+
+    #[Route('/stats/alchimieHerboriste/{gn}', name: 'stats.alchimieHerboriste.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function alchimieHerboristeStatsGnAction(#[MapEntity] Gn $gn): Response
+    {
+        return $this->render('statistique/alchimieHerboriste.twig', [
+            'alchimieHerboristes' => $this->statsService->getAlchimieHerboristeGn($gn)->getResult(),
+            'gn' => $gn,
+        ]);
+    }
+
+    #[Route('/api/alchimieHerboriste/{gn}', name: 'api.alchimieHerboriste.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/alchimieHerboriste/{gn}/json', name: 'stats.alchimieHerboriste.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function alchimieHerboristeStatsGnApiAction(#[MapEntity] Gn $gn): JsonResponse
+    {
+        return new JsonResponse($this->statsService->getAlchimieHerboristeGn($gn)->getResult());
+    }
+
+    #[Route('/stats/classes/{gn}/csv', name: 'stats.classes.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function classesCsvStatsGnAction(#[MapEntity] Gn $gn): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'eveoniris_classes_gn_'.$gn->getId().'_'.date('Ymd'),
+            query: $this->statsService->getClassesGn($gn),
+            header: ['total', 'label', 'id'],
+        );
+    }
+
+    #[Route('/stats/classes/{gn}', name: 'stats.classes.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function classesStatsGnAction(#[MapEntity] Gn $gn): Response
+    {
+        return $this->render('statistique/classes.twig', [
+            'classes' => $this->statsService->getClassesGn($gn)->getResult(),
+            'gn' => $gn,
+        ]);
+    }
+
+    #[Route('/api/classes/{gn}', name: 'api.classes.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/classes/{gn}/json', name: 'stats.classes.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function classesStatsGnApiAction(#[MapEntity] Gn $gn): JsonResponse
+    {
+        return new JsonResponse($this->statsService->getClassesGn($gn)->getResult());
+    }
+
+    #[Route(
+        '/stats/competenceFamily/{competenceFamily}/gn/{gn}/csv',
+        name: 'stats.competenceFamily.gn.csv',
+        requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS]
+    )]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function competenceFamilyCsvStatsGnAction(
+        #[MapEntity] CompetenceFamily $competenceFamily,
+        #[MapEntity] Gn $gn,
+    ): StreamedResponse {
+        return $this->sendCsv(
+            title: 'eveoniris_competenceFamily_gn_'.$gn->getId().'_'.date('Ymd'),
+            query: $this->statsService->getCompetenceFamilyGn($competenceFamily, $gn),
+            header: ['total', 'niveau', 'indexNiveau'],
+        );
+    }
+
+    #[Route(
+        '/stats/competenceFamily/{competenceFamily}/gn/{gn}',
+        name: 'stats.competenceFamily.gn',
+        requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS]
+    )]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role:Role::ORGA))]
+    public function competenceFamilyStatsGnAction(
+        #[MapEntity] CompetenceFamily $competenceFamily,
+        #[MapEntity] Gn $gn,
+    ): Response {
+        return $this->render('statistique/competenceFamily.twig', [
+            'competences' => $this->statsService->getCompetenceFamilyGn($competenceFamily, $gn)->getResult(),
+            'competenceFamily' => $competenceFamily,
+            'gn' => $gn,
+        ]);
+    }
+
+    #[Route(
+        '/api/competenceFamily/{competenceFamily}/gn/{gn}',
+        name: 'api.competenceFamily.gn',
+        requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS]
+    )]
+    #[Route('/stats/competenceFamily/{competenceFamily}/gn/{gn}/json',
+        name: 'stats.competenceFamily.gn.json',
+        requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS]
+    )]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role:Role::ORGA))]
+    public function competenceFamilyStatsGnApiAction(
+        #[MapEntity] CompetenceFamily $competenceFamily,
         #[MapEntity] Gn $gn,
     ): JsonResponse {
-        return new JsonResponse($this->statsService->getCompetenceGn($gn)->getResult());
+        return new JsonResponse($this->statsService->getCompetenceFamilyGn($competenceFamily, $gn)->getResult());
     }
 
     #[Route('/stats/competences/{gn}/csv', name: 'stats.competences.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
-    public function competencesCsvStatsGnAction(
-        #[MapEntity] Gn $gn,
-    ): StreamedResponse {
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role:Role::ORGA))]
+    public function competencesCsvStatsGnAction(#[MapEntity] Gn $gn): StreamedResponse
+    {
         return $this->sendCsv(
             title: 'eveoniris_competences_gn_'.$gn->getId().'_'.date('Ymd'),
             query: $this->statsService->getCompetenceGn($gn),
@@ -58,6 +158,14 @@ class StatistiqueController extends AbstractController
             'competences' => $this->statsService->getCompetenceGn($gn)->getResult(),
             'gn' => $gn,
         ]);
+    }
+
+    #[Route('/api/competences/{gn}', name: 'api.competences.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/competences/{gn}/json', name: 'stats.competences.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function competencesStatsGnApiAction(#[MapEntity] Gn $gn): JsonResponse
+    {
+        return new JsonResponse($this->statsService->getCompetenceGn($gn)->getResult());
     }
 
     #[Route('/api/constructions', name: 'api.constructions')]
@@ -254,7 +362,7 @@ class StatistiqueController extends AbstractController
 
     #[Route('/api/mineurs/{gn}', name: 'api.mineurs.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/mineurs/{gn}/json', name: 'stats.mineurs.gn.json', requirements: ['gn' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function mineursApiGnAction(
         #[MapEntity] Gn $gn,
     ): JsonResponse {
@@ -262,7 +370,7 @@ class StatistiqueController extends AbstractController
     }
 
     #[Route('/stats/mineurs/{gn}/csv', name: 'stats.mineurs.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function mineursCsvStatsGnAction(
         #[MapEntity] Gn $gn,
     ): StreamedResponse {
@@ -286,7 +394,7 @@ class StatistiqueController extends AbstractController
     }
 
     #[Route('/stats/mineurs/{gn}', name: 'stats.mineurs.gn', requirements: ['gn' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function mineursStatsGnAction(
         #[MapEntity] Gn $gn,
     ): Response {
@@ -297,9 +405,8 @@ class StatistiqueController extends AbstractController
     }
 
     #[Route('/api/religions/pratiquants/{gn}', name: 'api.religions.pratiquants', requirements: ['gn' => Requirement::DIGITS])]
-    #[IsGranted('ROLE_SCENARISTE', message: 'You are not allowed to access the admin dashboard.')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function religionsPratiquantsAction(
-        Request $request,
         #[MapEntity] Gn $gn,
     ): JsonResponse {
         $rsm = new ResultSetMapping();
@@ -328,14 +435,14 @@ class StatistiqueController extends AbstractController
 
     #[Route('/stats', name: 'stats')]
     #[Route('/stats/list', name: 'stats.list')]
-    #[IsGranted('ROLE_SCENARISTE', message: 'You are not allowed to access the admin dashboard.')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE, Role::ADMIN, Role::WARGAME))]
     public function statsAction(): Response
     {
         return $this->render('statistique/list.twig');
     }
 
     #[Route('/stats/users/roles', name: 'stats.users.roles')]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    #[IsGranted(new MultiRolesExpression(Role::ADMIN))]
     public function usersRolesAction(): Response
     {
         $roles = [];
