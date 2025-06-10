@@ -653,6 +653,7 @@ class UserController extends AbstractController
      * Seconde étape pour un nouvel utilisateur : enregistrer les informations administratives.
      */
     #[Route('/user/new/step2', name: 'user.new-step2')]
+    #[IsGranted(Role::USER->value)]
     public function newUserStep2Action(Request $request): RedirectResponse|Response
     {
         $etatCivil = $this->getUser()?->getEtatCivil();

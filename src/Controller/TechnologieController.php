@@ -12,7 +12,6 @@ use App\Security\MultiRolesExpression;
 use App\Service\OrderBy;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -23,7 +22,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
 #[Route('/technologie', name: 'technologie.')]
 class TechnologieController extends AbstractController
 {
@@ -31,8 +29,8 @@ class TechnologieController extends AbstractController
      * Ajout d'une technologie.
      */
     #[Route('/add', name: 'add')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
-    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
+    public function addAction(Request $request): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate(
             $request,
@@ -81,7 +79,7 @@ class TechnologieController extends AbstractController
      * Ajout d'une ressource à une technologie.
      */
     #[Route('/{technologie}/ressource/add', name: 'ressource.add', requirements: ['technologie' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function addRessourceAction(
         Request $request,
         #[MapEntity] Technologie $technologie,
@@ -119,7 +117,7 @@ class TechnologieController extends AbstractController
      * Suppression d'une technologie.
      */
     #[Route('/{technologie}/delete', name: 'delete', requirements: ['technologie' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function deleteAction(
         #[MapEntity] Technologie $technologie,
     ): RedirectResponse|Response {
@@ -216,7 +214,7 @@ class TechnologieController extends AbstractController
      * @param Technologie
      */
     #[Route('/{technologie}/personnages', name: 'personnages', requirements: ['technologie' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function personnagesAction(
         Request $request,
         #[MapEntity] Technologie $technologie,
@@ -255,7 +253,7 @@ class TechnologieController extends AbstractController
         name: 'ressource.delete',
         requirements: ['technologie' => Requirement::DIGITS, 'technologiesRessources' => Requirement::DIGITS]
     )]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function removeRessourceAction(
         #[MapEntity] Technologie $technologie,
         #[MapEntity] TechnologiesRessources $technologiesRessources,
@@ -282,7 +280,7 @@ class TechnologieController extends AbstractController
      * Mise à jour d'une technologie.
      */
     #[Route('/{technologie}/udpate', name: 'update', requirements: ['technologie' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function updateAction(Request $request, #[MapEntity] Technologie $technologie): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate(
@@ -295,7 +293,7 @@ class TechnologieController extends AbstractController
     #[Route('/{technologie}/ressource/{technologiesRessources}/update',
         name: 'ressource.update',
         requirements: ['technologie' => Requirement::DIGITS, 'technologiesRessources' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function updateRessourceAction(
         Request $request,
         #[MapEntity] Technologie $technologie,
