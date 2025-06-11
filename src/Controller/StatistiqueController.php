@@ -11,9 +11,11 @@ use App\Entity\Groupe;
 use App\Entity\Langue;
 use App\Entity\Participant;
 use App\Entity\Personnage;
+use App\Entity\Religion;
 use App\Entity\User;
 use App\Enum\Role;
 use App\Manager\RandomColor;
+use App\Repository\ReligionRepository;
 use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -109,7 +111,7 @@ class StatistiqueController extends AbstractController
         name: 'stats.competenceFamily.gn',
         requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS]
     )]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role:Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role: Role::ORGA))]
     public function competenceFamilyStatsGnAction(
         #[MapEntity] CompetenceFamily $competenceFamily,
         #[MapEntity] Gn $gn,
@@ -130,7 +132,7 @@ class StatistiqueController extends AbstractController
         name: 'stats.competenceFamily.gn.json',
         requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS]
     )]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role:Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role: Role::ORGA))]
     public function competenceFamilyStatsGnApiAction(
         #[MapEntity] CompetenceFamily $competenceFamily,
         #[MapEntity] Gn $gn,
@@ -139,7 +141,7 @@ class StatistiqueController extends AbstractController
     }
 
     #[Route('/stats/competences/{gn}/csv', name: 'stats.competences.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role:Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role: Role::ORGA))]
     public function competencesCsvStatsGnAction(#[MapEntity] Gn $gn): StreamedResponse
     {
         return $this->sendCsv(
@@ -221,6 +223,34 @@ class StatistiqueController extends AbstractController
     {
         return $this->render('statistique/constructions.twig', [
             'constructions' => $this->statsService->getConstructions()->getResult(),
+        ]);
+    }
+
+    #[Route('/api/gameItemWithoutPersonnage', name: 'api.gameItemWithoutPersonnage')]
+    #[Route('/stats/gameItemWithoutPersonnage/json', name: 'stats.gameItemWithoutPersonnage.json')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    public function gameItemWithoutPersonnageApiAction(): JsonResponse
+    {
+        return new JsonResponse($this->statsService->getGameItemWithoutPersonnage()->getResult());
+    }
+
+    #[Route('/stats/gameItemWithoutPersonnage/csv', name: 'stats.gameItemWithoutPersonnage.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    public function gameItemWithoutPersonnageCsvStatsAction(): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'eveoniris_getGameItemWithoutPersonnage_'.date('Ymd'),
+            query: $this->statsService->getGameItemWithoutPersonnage(),
+            header: ['id', 'label', 'quality_id', 'numero', 'identification', 'couleur', 'quantite', 'objet_id'],
+        );
+    }
+
+    #[Route('/stats/gameItemWitoutPersonnage', name: 'stats.gameItemWithoutPersonnage')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    public function gameItemWithoutPersonnageStatsAction(): Response
+    {
+        return $this->render('statistique/gameItemWithoutPersonnage.twig', [
+            'gameItemWithoutPersonnages' => $this->statsService->getGameItemWithoutPersonnage()->getResult(),
         ]);
     }
 
@@ -404,6 +434,57 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
+    #[Route('/stats/religion/{religion}/gn/{gn}/personnage/csv', name: 'stats.religionPersonnage.gn.csv', requirements: [
+        'gn' => Requirement::DIGITS,
+        'personnage' => Requirement::DIGITS,
+    ])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function religionPersonnageCsvStatsGnAction(
+        #[MapEntity] Gn $gn,
+        #[MapEntity] Religion $religion,
+        ReligionRepository $religionRepository,
+    ): StreamedResponse {
+        return $this->sendCsv(
+            title: 'eveoniris_religion_personnage_gn_'.$gn->getId().'_'.date('Ymd'),
+            query: $religionRepository->getPersonnagesByReligions($gn, $religion),
+            header: ['religionId', 'label', 'level', 'personnage', 'personnageId', 'vivant', 'pnj', 'email'],
+        );
+    }
+
+    #[Route('/stats/religion/{religion}/gn/{gn}/personnage', name: 'stats.religionPersonnage.gn', requirements: [
+        'gn' => Requirement::DIGITS,
+        'personnage' => Requirement::DIGITS,
+    ])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function religionPersonnageStatsGnAction(
+        #[MapEntity] Gn $gn,
+        #[MapEntity] Religion $religion,
+        ReligionRepository $religionRepository,
+    ): Response {
+        return $this->render('statistique/religionPersonnages.twig', [
+            'religionPersonnages' => $religionRepository->getPersonnagesByReligions($gn, $religion)->getResult(),
+            'gn' => $gn,
+            'religion' => $religion,
+        ]);
+    }
+
+    #[Route('/api/religion/{religion}/gn/{gn}/personnage', name: 'api.religionPersonnage.gn', requirements: [
+        'gn' => Requirement::DIGITS,
+        'personnage' => Requirement::DIGITS,
+    ])]
+    #[Route('/stats/religion/{religion}/gn/{gn}/personnage/json', name: 'stats.religionPersonnage.gn.json', requirements: [
+        'gn' => Requirement::DIGITS,
+        'personnage' => Requirement::DIGITS,
+    ])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function religionPersonnageStatsGnApiAction(
+        #[MapEntity] Gn $gn,
+        #[MapEntity] Religion $religion,
+        ReligionRepository $religionRepository,
+    ): JsonResponse {
+        return new JsonResponse($religionRepository->getPersonnagesByReligions($gn, $religion)->getResult());
+    }
+
     #[Route('/api/religions/pratiquants/{gn}', name: 'api.religions.pratiquants', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function religionsPratiquantsAction(
@@ -431,6 +512,35 @@ class StatistiqueController extends AbstractController
         )->setParameter('gnid', $gn->getId());
 
         return new JsonResponse($query->getResult());
+    }
+
+    #[Route('/stats/renomme/{gn}/csv', name: 'stats.renomme.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function renommeCsvStatsGnAction(#[MapEntity] Gn $gn): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'eveoniris_renomme_gn_'.$gn->getId().'_'.date('Ymd'),
+            query: $this->statsService->getRenommeGn($gn),
+            header: ['total', 'grp_renome'],
+        );
+    }
+
+    #[Route('/stats/renomme/{gn}', name: 'stats.renomme.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function renommeStatsGnAction(#[MapEntity] Gn $gn): Response
+    {
+        return $this->render('statistique/renomme.twig', [
+            'renommes' => $this->statsService->getRenommeGn($gn)->getResult(),
+            'gn' => $gn,
+        ]);
+    }
+
+    #[Route('/api/renomme/{gn}', name: 'api.renomme.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/renomme/{gn}/json', name: 'stats.renomme.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function renommeStatsGnApiAction(#[MapEntity] Gn $gn): JsonResponse
+    {
+        return new JsonResponse($this->statsService->getRenommeGn($gn)->getResult());
     }
 
     #[Route('/stats', name: 'stats')]

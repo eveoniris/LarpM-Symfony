@@ -15,6 +15,25 @@
         ]
     } %}
 
+    <div class="d-flex justify-content-end">
+
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="Télécharger" href="{{ path('religion.perso', {'religion':religion.id}) }}"><i
+                            class="fa fa-users"></i>
+                    Personnages</a>
+                {% if groupeService.nextSessionGn.id is defined %}
+                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                       title="Télécharger"
+                       href="{{ path('stats.religionPersonnage.gn.csv', {'religion':religion.id, 'gn': groupeService.nextSessionGn.id|default(1) }) }}"><i
+                                class="fa fa-users"></i>
+                        Personnages {{ groupeService.nextSessionGn.label }}</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
     <div class="well well-sm">
 
         <div class="clearfix">

@@ -155,6 +155,29 @@ class StatsService
         );
     }
 
+    public function getGameItemWithoutPersonnage(): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('id', 'id', 'integer');
+        $rsm->addScalarResult('label', 'label', 'string');
+        $rsm->addScalarResult('quality_id', 'quality_id', 'integer');
+        $rsm->addScalarResult('numero', 'numero', 'integer');
+        $rsm->addScalarResult('identification', 'identification', 'integer');
+        $rsm->addScalarResult('couleur', 'couleur', 'string');
+        $rsm->addScalarResult('quantite', 'quantite', 'integer');
+        $rsm->addScalarResult('objet_id', 'objet_id', 'integer');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT i.id, i.label, i.quality_id, i.numero,  i.identification, i.couleur, i.quantite, i.objet_id FROM item i
+                LEFT JOIN personnage_has_item phi ON i.id = phi.item_id
+                WHERE phi.personnage_id IS NULL
+                SQL,
+            $rsm,
+        );
+    }
+
     public function getMineurs(Gn $gn): NativeQuery
     {
         $rsm = new ResultSetMapping();
@@ -200,6 +223,33 @@ class StatsService
         )
             ->setParameter('gnid', $gn->getId())
             ->setParameter('gndate', (string) $gn->getDateInstallationJoueur()?->format('Y-m-d'));
+    }
+
+    public function getRenommeGn(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('total', 'total', 'integer');
+        $rsm->addScalarResult('grp_renomme', 'grp_renomme', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT COUNT(p.id) as total,
+                       CASE
+                           WHEN renomme < 6 THEN 'Insufisante'
+                           WHEN renomme < 11 THEN 'Etoile noir'
+                           WHEN renomme < 21 THEN 'Etoile dorée'
+                           ELSE 'Grande broche'
+                           END     as grp_renomme
+                FROM participant p
+                         INNER JOIN personnage pp ON p.personnage_id = pp.id
+                WHERE p.gn_id = :gnid
+                  and renomme is not null
+                  and renomme > 0
+                GROUP BY grp_renomme
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId());
     }
 
     public function getUsersRole(Role $role): NativeQuery
