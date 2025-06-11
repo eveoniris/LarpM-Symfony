@@ -1,5 +1,5 @@
 {% set useQrCode = false %}
-{% if app.request.get('qrCode') == 1 %}
+{% if app.request.get('qrCode') == 1 or app.request.get('qrcode') == 1 %}
     {% set useQrCode = true %}
 {% endif %}
 

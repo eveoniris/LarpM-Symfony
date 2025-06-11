@@ -65,9 +65,10 @@ abstract class BaseRepository extends ServiceEntityRepository
         int $batchSize = 100,
         ?string $alias = null,
         string $iterableMode = self::ITERATE_EXPORT_HEADER,
-    ): \Generator {
+    ) {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
+
         $this->addOrderBy($query);
         if ($query instanceof QueryBuilder) {
             $query = $query->getQuery();
@@ -81,20 +82,21 @@ abstract class BaseRepository extends ServiceEntityRepository
                 \in_array($iterableMode, [static::ITERATE_EXPORT, static::ITERATE_EXPORT_HEADER], true)
                 && method_exists($iterable, 'getExportValue')
             ) {
-                if (static::ITERATE_EXPORT_HEADER === $iterableMode) {
+                if (static::ITERATE_EXPORT_HEADER === $iterableMode && 0 === $i) {
                     yield array_keys($iterable->getExportValue());
                 }
                 yield $iterable->getExportValue();
+                ++$i;
                 continue;
             }
-
-            yield $iterable;
 
             if (0 === ++$i % $batchSize) {
                 flush();
                 $this->entityManager->flush();
                 $this->entityManager->clear();
             }
+
+            yield $iterable;
         }
 
         flush();
@@ -154,6 +156,7 @@ abstract class BaseRepository extends ServiceEntityRepository
 
             return $query;
         }
+
         // Default order
         $asAttributes = $this->searchAttributesAs($alias);
         foreach ($this->sortAttributes($alias) as $sortDefinitions) {

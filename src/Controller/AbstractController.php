@@ -23,8 +23,6 @@ use App\Service\PersonnageService;
 use App\Service\StatsService;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\NativeQuery;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
 use Psr\Log\LoggerInterface;
@@ -587,6 +585,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     }
 
     /**
+     * If entity have a getExportValue() export will use it, your headers can too.
+     *
      * @throws \ErrorException if not valid implementation
      */
     protected function sendCsv(
@@ -606,7 +606,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
         $response = new StreamedResponse();
         $response->headers->set('Content-Control', 'private');
-        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        // $response->headers->set('Content-Type', 'text/csv; charset=UTF-16LE');
+        $response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
         $response->headers->set('Content-Disposition', 'attachment; filename='.$this->slugger->slug($title).'.csv');
         $response->headers->set('Pragma', 'no-cache');
         $response->headers->set('Expires', '0');
@@ -614,6 +615,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if (null === $content) {
             $content = static function () use ($repository, $header, $query) {
                 $output = fopen('php://output', 'wb');
+                //fwrite($output, chr(255).chr(254)); // Excel BOM do a chinese chars
+                fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
 
                 $iterateMode = BaseRepository::ITERATE_EXPORT_HEADER;
                 if ($header) {
@@ -622,15 +625,14 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 }
 
                 $dataProvider = [];
-                if ($query) {
+                if ($repository) {
+                    $dataProvider = $repository->findIterable($query, iterableMode: $iterateMode);
+                } elseif ($query) {
                     $dataProvider = $query->toIterable();
                 }
 
-                if ($repository) {
-                    $dataProvider = $repository->findIterable($query, iterableMode: $iterateMode);
-                }
-
                 foreach ($dataProvider as $data) {
+                    // fputcsv($output, mb_convert_encoding($data, 'UTF-16LE', 'UTF-8'), ';');
                     fputcsv($output, $data, ';');
                 }
                 fclose($output);

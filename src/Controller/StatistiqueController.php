@@ -228,14 +228,14 @@ class StatistiqueController extends AbstractController
 
     #[Route('/api/gameItemWithoutPersonnage', name: 'api.gameItemWithoutPersonnage')]
     #[Route('/stats/gameItemWithoutPersonnage/json', name: 'stats.gameItemWithoutPersonnage.json')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function gameItemWithoutPersonnageApiAction(): JsonResponse
     {
         return new JsonResponse($this->statsService->getGameItemWithoutPersonnage()->getResult());
     }
 
     #[Route('/stats/gameItemWithoutPersonnage/csv', name: 'stats.gameItemWithoutPersonnage.csv', requirements: ['gn' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function gameItemWithoutPersonnageCsvStatsAction(): StreamedResponse
     {
         return $this->sendCsv(
@@ -246,7 +246,7 @@ class StatistiqueController extends AbstractController
     }
 
     #[Route('/stats/gameItemWitoutPersonnage', name: 'stats.gameItemWithoutPersonnage')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function gameItemWithoutPersonnageStatsAction(): Response
     {
         return $this->render('statistique/gameItemWithoutPersonnage.twig', [

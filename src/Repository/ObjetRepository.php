@@ -12,6 +12,47 @@ class ObjetRepository extends BaseRepository
 {
     final public const CRIT_WITHOUT = -1;
 
+    public function addRangementCriteriaToQueryBuilder(
+        string|int|Rangement|null $criter,
+        QueryBuilder $qb,
+    ): QueryBuilder {
+        $alias = $qb->getRootAliases()[0] ?? 'o';
+        if (null === $criter) {
+            return $qb;
+        }
+
+        if ($criter instanceof Rangement) {
+            if ($criter->getId() <= 0) {
+                $criter = -1;
+            } else {
+                $criter = $criter->getLabel();
+            }
+        }
+
+        if (\is_numeric($criter)) {
+            $criter = (int) $criter;
+            if (-1 === $criter) {
+                $qb->leftjoin($alias.'.rangement', 'r');
+                $qb->andWhere('r.id is null');
+            } else {
+                $qb->andWhere($alias.'.rangement = :rangement');
+                $qb->setParameter('rangement', $criter);
+            }
+
+            return $qb;
+        }
+        $qb->join($alias.'.rangement', 'r');
+        $qb->andWhere('r.label LIKE :rangement');
+        $qb->setParameter('rangement', $criter);
+
+        return $qb;
+    }
+
+    public function findAll(): array
+    {
+        return $this->findBy([], ['nom' => 'ASC']);
+    }
+
     /**
      * Trouve le nombre d'objets correspondant aux critères de recherche.
      */
@@ -22,20 +63,6 @@ class ObjetRepository extends BaseRepository
         $qb->select($qb->expr()->count('distinct o'));
 
         return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    /**
-     * Trouve les objets correspondant aux critères de recherche.
-     */
-    #[Deprecated]
-    public function findList(array $criteria, array $order = [], int $limit = 50, int $offset = 0)
-    {
-        $qb = $this->getQueryBuilder($criteria);
-        $qb->setFirstResult($offset);
-        $qb->setMaxResults($limit);
-        $qb->orderBy('o.'.$order['by'], $order['dir']);
-
-        return $qb->getQuery()->getResult();
     }
 
     #[Deprecated]
@@ -83,7 +110,7 @@ class ObjetRepository extends BaseRepository
         }
 
         if (\is_numeric($criter)) {
-            $criter = (int)$criter;
+            $criter = (int) $criter;
 
             if (-1 === $criter) {
                 $qb->leftjoin($alias.'.tags', 't');
@@ -104,39 +131,17 @@ class ObjetRepository extends BaseRepository
         return $qb;
     }
 
-    public function addRangementCriteriaToQueryBuilder(
-        string|int|Rangement|null $criter,
-        QueryBuilder $qb
-    ): QueryBuilder {
-        $alias = $qb->getRootAliases()[0] ?? 'o';
-        if (null === $criter) {
-            return $qb;
-        }
+    /**
+     * Trouve les objets correspondant aux critères de recherche.
+     */
+    #[Deprecated]
+    public function findList(array $criteria, array $order = [], int $limit = 50, int $offset = 0)
+    {
+        $qb = $this->getQueryBuilder($criteria);
+        $qb->setFirstResult($offset);
+        $qb->setMaxResults($limit);
+        $qb->orderBy('o.'.$order['by'], $order['dir']);
 
-        if ($criter instanceof Rangement) {
-            if ($criter->getId() <= 0) {
-                $criter = -1;
-            } else {
-                $criter = $criter->getLabel();
-            }
-        }
-
-        if (\is_numeric($criter)) {
-            $criter = (int)$criter;
-            if (-1 === $criter) {
-                $qb->leftjoin($alias.'.rangement', 'r');
-                $qb->andWhere('r.id is null');
-            } else {
-                $qb->andWhere($alias.'.rangement = :rangement');
-                $qb->setParameter('rangement', $criter);
-            }
-
-            return $qb;
-        }
-        $qb->join($alias.'.rangement', 'r');
-        $qb->andWhere('r.label LIKE :rangement');
-        $qb->setParameter('rangement', $criter);
-
-        return $qb;
+        return $qb->getQuery()->getResult();
     }
 }
