@@ -189,7 +189,7 @@ class ObjetController extends AbstractController
     public function printAllAction(ItemRepository $itemRepository): Response
     {
         return $this->render('objet/printAll.twig', [
-            'items' => $itemRepository->findAll(),
+            'items' => $itemRepository->findBy([], ['numero' => 'ASC']),
         ]);
     }
 
