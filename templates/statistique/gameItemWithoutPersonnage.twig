@@ -67,14 +67,14 @@
 
         <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
             {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
-                {'name' : 'Id', 'css': 'text-center'},
+                {'name' : 'Id objet de jeu', 'css': 'text-center'},
                 {'name' : 'Nom'},
                 {'name' : 'Id qualite', 'css': 'text-center'},
                 {'name' : 'numero', 'css': 'text-center'},
                 {'name' : 'identification', 'css': 'text-center'},
                 {'name' : 'couleur', 'css': 'text-center'},
                 {'name' : 'quantite', 'css': 'text-center'},
-                {'name' : 'Id Objet', 'css': 'text-center'},
+                {'name' : 'Id objet de stock', 'css': 'text-center'},
             ]} %}
             <tbody>
             {% for gameItemWithoutPersonnage in gameItemWithoutPersonnages %}

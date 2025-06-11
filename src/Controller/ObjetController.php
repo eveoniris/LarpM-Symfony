@@ -17,7 +17,9 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseAlias;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
@@ -54,9 +56,9 @@ class ObjetController extends AbstractController
     /**
      * Détail d'un objet de jeu.
      */
-    #[Route('/{item}', name: 'objet')]
-    #[Route('/{item}/detail', name: 'detail')]
-    #[Route('/objet/{item}/detail', name: 'objet.detail')] // Larp v1 route
+    #[Route('/{item}', name: 'objet', requirements: ['item' => Requirement::DIGITS])]
+    #[Route('/{item}/detail', name: 'detail', requirements: ['item' => Requirement::DIGITS])]
+    #[Route('/objet/{item}/detail', name: 'objet.detail', requirements: ['item' => Requirement::DIGITS])] // Larp v1 route
     public function detailAction(
         #[MapEntity] Item $item,
     ): Response {
@@ -191,85 +193,14 @@ class ObjetController extends AbstractController
         ]);
     }
 
-    /**
-     * Sortie CSV.
-     */
-    #[NoReturn]
+
     #[Route('/print-csv', name: 'print-csv')]
-    public function printCsvAction(ItemRepository $itemRepository): void
+    public function printCsvAction(ItemRepository $itemRepository): StreamedResponse
     {
-        $items = $itemRepository->findAll();
-
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_objets_'.date('Ymd').'.csv');
-        header('Pragma: no-cache');
-        header('Expires: 0');
-
-        $output = fopen('php://output', 'wb');
-
-        // header
-        fputcsv(
-            $output,
-            [
-                'numéro',
-                'identification',
-                'label',
-                'description',
-                'special',
-                'groupe',
-                'personnage',
-                'rangement',
-                'proprietaire',
-            ],
-            ';',
+        return $this->sendCsv(
+            'eveoniris_game_item_'.date('Ymd'),
+            repository: $itemRepository,
         );
-
-        foreach ($items as $item) {
-            $line = [];
-            $line[] = mb_convert_encoding((string) $item->getNumero(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding($item->getQuality()->getNumero().$item->getIdentification(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding((string) $item->getlabel(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding(
-                html_entity_decode(strip_tags((string) $item->getDescription())),
-                'ISO-8859-1',
-            );
-            $line[] = mb_convert_encoding(html_entity_decode(strip_tags((string) $item->getSpecial())), 'ISO-8859-1');
-
-            $groupes = '';
-            foreach ($item->getGroupes() as $groupe) {
-                $groupes = $groupe->getNom().', ';
-            }
-
-            $line[] = mb_convert_encoding($groupes, 'ISO-8859-1');
-
-            $personnages = '';
-            foreach ($item->getPersonnages() as $personnage) {
-                $personnages = $personnage->getNom().', ';
-            }
-
-            $line[] = mb_convert_encoding($personnages, 'ISO-8859-1');
-
-            $objet = $item->getObjet();
-            if ($objet) {
-                $line[] = $objet->getRangement() ? mb_convert_encoding(
-                    (string) $objet->getRangement()->getAdresse(),
-                    'ISO-8859-1',
-                ) : '';
-
-                $line[] = $objet->getProprietaire() ? mb_convert_encoding(
-                    (string) $objet->getProprietaire()->getNom(),
-                    'ISO-8859-1',
-                ) : '';
-            } else {
-                $line[] = '';
-                $line[] = '';
-            }
-
-            fputcsv($output, $line, ';');
-        }
-
-        fclose($output);
-        exit;
     }
 
     /**

@@ -32,7 +32,7 @@ class ItemRepository extends BaseRepository
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias.'.quality', 'quality');
+        // $query->join($alias.'.quality', 'quality');
 
         // Ad Paginator didn't like a dynamic concat we add it here and in SearchAttributes with doctrine HIDDEN keywork
         // $query->addSelect('CONCAT(quality.numero, item.identification) AS HIDDEN qualident');
@@ -57,6 +57,11 @@ class ItemRepository extends BaseRepository
             $alias.'.description',
             $alias.'.special',
         ];
+    }
+
+    public function createQueryBuilder($alias, $indexBy = null): QueryBuilder
+    {
+        return parent::createQueryBuilder($alias, $indexBy)->join($alias.'.quality', 'quality');
     }
 
     public function sortAttributes(?string $alias = null): array

@@ -26,7 +26,7 @@
                                 {{ form_widget(form.type) }}
                                 {{ form_widget(form.tag) }}
                                 {{ form_widget(form.rangement) }}
-                                <div class="input-group-btn">
+                                <div class="input-group-btn btn-group">
                                     <button type="submit" class="btn btn-default" data-toggle="tooltup"
                                             data-placement="top"
                                             title="Lancer la recherche"><i class="fa fa-search"></i></button>
@@ -35,6 +35,9 @@
                                     <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                        title="Ajouter un objet" href="{{ path('stockObjet.add') }}"><i
                                                 class="fa fa-plus"></i> Ajouter</a>
+                                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                       title="Exporter la liste" href="{{ path('stockObjet.export') }}"><i
+                                                class="fa fa-file-csv"></i> Export CSV</a>
                                 </div>
                             </div>
                         </div>
@@ -84,9 +87,10 @@
                 <td>
                     {% if objet.photo %}
                         <div class="hover_img">
-                            <a href="{{ path('stockObjet.photo', {'objet': objet.id }) }}" target="_blank" rel="noopener noreferrer">Show Image<span>
+                            <a href="{{ path('stockObjet.photo', {'objet': objet.id }) }}" target="_blank"
+                               rel="noopener noreferrer">Show Image<span>
 						    		<img src="{{ path('stockObjet.photo', {'objet': objet.id, 'miniature': true}) }}"
-                                         alt="{{ objet.photo.name }} - {{ objet.nom }}" width="200px" />
+                                         alt="{{ objet.photo.name }} - {{ objet.nom }}" width="200px"/>
 						    		</span>
                             </a>
                         </div>
@@ -101,7 +105,8 @@
                 <td>{{ objet.rangement.adresse }}</td>
                 <td>
                     {% for item in objet.items %}
-                        <strong>{{ item.numero|highlight(searchValue) }} - {{ item.label|highlight(searchValue) }}</strong>
+                        <strong>{{ item.numero|highlight(searchValue) }}
+                            - {{ item.label|highlight(searchValue) }}</strong>
                     {% else %}
                         <span class="text-success">Cet objet n'est pas utilisé en jeu.</span>
                     {% endfor %}

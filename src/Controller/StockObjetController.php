@@ -184,18 +184,6 @@ class StockObjetController extends AbstractController
         return $this->sendCsv(
             'eveoniris_stock_'.date('Ymd'),
             repository: $objetRepository,
-            header: [
-                'nom',
-                'code',
-                'description',
-                'photo',
-                'rangement',
-                'etat',
-                'proprietaire',
-                'responsable',
-                'nombre',
-                'creation_date',
-            ],
         );
     }
 

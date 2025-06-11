@@ -16,21 +16,6 @@ class Objet extends BaseObjet
         $this->setCreationDate(new \DateTime('NOW'));
     }
 
-    public function getPhotosDocumentType(): DocumentType
-    {
-        return DocumentType::Stock;
-    }
-
-    public function getPhotosFolderType(): FolderType
-    {
-        return FolderType::Private;
-    }
-
-    public function getPhotoFilePath(string $projectDir): string
-    {
-        return $projectDir.$this->getPhotosFolderType()->value.$this->getPhotosDocumentType()->value.DIRECTORY_SEPARATOR;
-    }
-
     /**
      * Manage relation when clone entity.
      */
@@ -57,15 +42,19 @@ class Objet extends BaseObjet
     public function getExportValue(): array
     {
         return [
+            'numero' => $this->getNumero(),
             'nom' => ('' !== $this->getNom() && '0' !== $this->getNom()) ? $this->getNom() : '',
             'code' => ($this->getcode()) ? $this->getCode() : '',
-            'description' => ('' !== $this->getDescription() && '0' !== $this->getDescription()) ? $this->getDescription() : '',
+            'description' => ('' !== $this->getDescription() && '0' !== $this->getDescription(
+            )) ? html_entity_decode(strip_tags((string) $this->getDescription())) : '',
             'photo' => ($this->getPhoto()) ? $this->getPhoto()?->getRealName() : '',
+            'tag' => implode(', ', $this->getTags()->toArray()),
             'rangement' => ($this->getRangement()) ? $this->getRangement()->getAdresse() : '',
             'etat' => ($this->getEtat()) ? $this->getEtat()->getLabel() : '',
             'proprietaire' => ($this->getProprietaire()) ? $this->getProprietaire()->getNom() : '',
             'responsable' => ($this->getResponsable()) ? $this->getResponsable()->getUserName() : '',
             'nombre' => $this->getNombre(),
+            'objet de jeu' => $this->getItemsNumeroLabels(),
             'creation_date' => ($this->getCreationDate()) ? $this->getCreationDate()->format('Y-m-d H:i:s') : '',
         ];
     }
@@ -86,21 +75,47 @@ class Objet extends BaseObjet
     /**
      * Get User entity related by `responsable_id` (many to one).
      *
-     * @return \App\Entity\User
+     * @return User
      */
     public function getResponsable()
     {
         return $this->getUser();
     }
 
+    public function getItemsNumeroLabels(): string
+    {
+        $string = '';
+        foreach ($this->getItems() as $item) {
+            $string .= $item->getNumero().' - '.$item->getLabel();
+        }
+
+        return $string;
+    }
+
+    public function getPhotoFilePath(string $projectDir): string
+    {
+        return $projectDir.$this->getPhotosFolderType()->value.$this->getPhotosDocumentType(
+        )->value.DIRECTORY_SEPARATOR;
+    }
+
+    public function getPhotosFolderType(): FolderType
+    {
+        return FolderType::Private;
+    }
+
+    public function getPhotosDocumentType(): DocumentType
+    {
+        return DocumentType::Stock;
+    }
+
     /**
      * Set Users entity related by `responsable_id` (many to one).
      *
-     * @param \App\Entity\Users $User
+     * @param Users $User
      *
-     * @return \App\Entity\Objet
+     * @return Objet
      */
-    public function setResponsable(User $User = null)
+    public function setResponsable(?User $User = null)
     {
         return $this->setUser($User);
     }

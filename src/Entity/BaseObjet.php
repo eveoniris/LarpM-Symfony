@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -52,7 +51,7 @@ abstract class BaseObjet
     protected ?bool $investissement = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?DateTime $creation_date = null;
+    protected ?\DateTime $creation_date = null;
 
     #[OneToMany(mappedBy: 'objet', targetEntity: Item::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: 'false')]
@@ -160,7 +159,7 @@ abstract class BaseObjet
     /**
      * Get the value of creation_date.
      */
-    public function getCreationDate(): DateTime
+    public function getCreationDate(): \DateTime
     {
         return $this->creation_date;
     }
@@ -168,7 +167,7 @@ abstract class BaseObjet
     /**
      * Set the value of creation_date.
      */
-    public function setCreationDate(DateTime $creation_date): static
+    public function setCreationDate(\DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
