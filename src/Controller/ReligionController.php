@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\PersonnagesReligions;
 use App\Entity\Religion;
 use App\Entity\ReligionLevel;
 use App\Enum\Role;
@@ -16,13 +17,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class ReligionController extends AbstractController
 {
@@ -302,14 +303,64 @@ class ReligionController extends AbstractController
      * Liste des perso ayant cette religion.
      */
     #[Route('/religion/{religion}/perso', name: 'religion.perso')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
-    public function persoAction(Request $request, Religion $religion): Response
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
+    public function persoAction(Religion $religion): Response
     {
         return $this->render(
             'religion/perso.twig',
             [
                 'religion' => $religion,
             ],
+        );
+    }
+
+    #[Route('/religion/{religion}/perso/csv', name: 'religion.perso.csv')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
+    public function persoActionCsv(#[MapEntity] Religion $religion): Response
+    {
+        return $this->sendCsv(
+            title: 'eveoniris_religion_personnage_'.(new AsciiSlugger())->slug($religion->getLabel()).'_'.date('Ymd'),
+            content: static function () use ($religion) {
+                $output = fopen('php://output', 'wb');
+
+                fputcsv(
+                    $output,
+                    [
+                        'niveau',
+                        'personnageId',
+                        'nom',
+                        'surnom',
+                        'classe',
+                        'vivant',
+                        'pnj',
+                        'lastGn',
+                        'email',
+                    ],
+                    ';',
+                );
+
+                /** @var PersonnagesReligions $personnagesReligion */
+                foreach ($religion->getPersonnagesReligions() as $personnagesReligion) {
+                    $personnage = $personnagesReligion->getPersonnage();
+
+                    fputcsv(
+                        $output,
+                        [
+                            $personnagesReligion->getReligionLevel()?->getLabel(),
+                            $personnage?->getId(),
+                            $personnage?->getNom(),
+                            $personnage?->getSurnom(),
+                            $personnage?->getClasseName(),
+                            $personnage?->getVivant(),
+                            $personnage?->isPnj(),
+                            $personnage?->getLastParticipant()?->getGn()?->getLabel(),
+                            $personnage?->getUser()?->getEmail(),
+                        ],
+                        ';',
+                    );
+                }
+                fclose($output);
+            },
         );
     }
 
@@ -355,7 +406,7 @@ class ReligionController extends AbstractController
                 $this->addFlash('success', 'La religion a été mise à jour.');
 
                 return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
-                // return $this->redirectToRoute('religion.detail', [], 303);
+            // return $this->redirectToRoute('religion.detail', [], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 /*$entityManager->remove($religion);
                 $entityManager->flush();

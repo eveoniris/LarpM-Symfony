@@ -1,0 +1,121 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Objets de jeu sans personnage
+{% endblock title %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
+
+
+    <script type="application/javascript">
+        jQuery(document).ready(function () {
+            new DataTable('#stats-table', {
+                'pageLength': 100,
+                'layout': {
+                    'topStart': {
+                        'buttons': ['copy', 'csv', 'excel', 'pdf', 'print']
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Statistiques', 'route': path('stats.list') },
+            {'name' : 'Objets de jeu sans personnage' },
+        ]
+    } %}
+
+    <div class="d-flex justify-content-end">
+
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="Télécharger" href="{{ path('stats.gameItemWithoutPersonnage.csv') }}"><i
+                            class="fa fa-file-csv"></i>
+                    Télécharger</a>
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="format JSON" href="{{ path('stats.gameItemWithoutPersonnage.json') }}"><i
+                            class="fa fa-file-lines"></i>
+                    Json API</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Objets de jeu sans personnage</h5>
+        </div>
+
+        <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
+            {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
+                {'name' : 'Id', 'css': 'text-center'},
+                {'name' : 'Nom'},
+                {'name' : 'Id qualite', 'css': 'text-center'},
+                {'name' : 'numero', 'css': 'text-center'},
+                {'name' : 'identification', 'css': 'text-center'},
+                {'name' : 'couleur', 'css': 'text-center'},
+                {'name' : 'quantite', 'css': 'text-center'},
+                {'name' : 'Id Objet', 'css': 'text-center'},
+            ]} %}
+            <tbody>
+            {% for gameItemWithoutPersonnage in gameItemWithoutPersonnages %}
+                <tr>
+                    <td class="text-center col-1">
+                        <a href="{{ path('item.detail', {'item': gameItemWithoutPersonnage.id}) }}">
+                            {{ gameItemWithoutPersonnage.id }}
+                        </a>
+                    </td>
+                    <td class="text-center col-1">
+                        <a href="{{ path('item.detail', {'item': gameItemWithoutPersonnage.id}) }}">
+                            {{ gameItemWithoutPersonnage.label }}
+                        </a>
+                    </td>
+                    <td class="text-center col-1">
+                        <a href="{{ path('quality.detail', {'quality': gameItemWithoutPersonnage.quality_id}) }}">
+                            {{ gameItemWithoutPersonnage.quality_id }}
+                        </a>
+                    </td>
+                    <td class="text-center col-1">
+                        {{ gameItemWithoutPersonnage.numero }}
+                    </td>
+                    <td class="text-center col-1">
+                        {{ gameItemWithoutPersonnage.identification }}
+                    </td>
+                    <td class="text-center col-2">
+                        {{ gameItemWithoutPersonnage.couleur }}
+                    </td>
+                    <td class="text-center col-1">
+                        {{ gameItemWithoutPersonnage.quantite }}
+                    </td>
+                    <td class="text-center col-1">
+                        <a href="{{ path('stockObjet.detail', {'objet': gameItemWithoutPersonnage.objet_id}) }}">
+                            {{ gameItemWithoutPersonnage.objet_id }}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}

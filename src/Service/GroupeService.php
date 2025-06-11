@@ -628,10 +628,7 @@ readonly class GroupeService
 
     public function getNextSessionGn()
     {
-        /** @var GnRepository $gnRepo */
-        $gnRepo = $this->entityManager->getRepository(Gn::class);
-
-        return $gnRepo->findNext();
+        return $this->entityManager->getRepository(Gn::class)->findNext();
     }
 
     public function getStatutTerritoire(Territoire $territoire): TerritoireStatut

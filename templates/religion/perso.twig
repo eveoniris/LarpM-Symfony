@@ -2,36 +2,144 @@
 
 {% block title %}Age{% endblock title %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
+
+    <script type="application/javascript">
+        jQuery(document).ready(function () {
+            new DataTable('#data-table', {
+                'pageLength': 100,
+                'layout': {
+                    'topStart': {
+                        'buttons': ['copy', 'csv', 'excel', 'pdf', 'print']
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li><a href="{{ path("religion.list") }}">Liste des religions</a></li>
-		<li><a href="{{ path('religion.detail', {'religion': religion.id}) }}">{{ religion.label }}</a></li>
-		<li class="active">Personnages</li>
-	</ol>
-	
-	<div class="well well-sm bs-component">
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path("religion.list") }}">Liste des religions</a></li>
+        <li><a href="{{ path('religion.detail', {'religion': religion.id}) }}">{{ religion.label }}</a></li>
+        <li class="active">Personnages</li>
+    </ol>
 
-		<div class="header">
-			<h5>
-				{{ religion.label }}
-				<small>
-					( {{ religion.personnagesReligions|length }} personnages )
-				</small>
-			</h5>
-		</div>
+    <div class="d-flex justify-content-end">
 
-		<div class="list-group">
-			{% for personnageReligion in religion.personnagesReligions %}
-				<div class="list-group-item">
-				<a href="{{ path('personnage.detail',{'personnage':personnageReligion.personnage.id}) }}">#{{ personnageReligion.personnage.id }} - {{ personnageReligion.personnage.nom }} ({{ personnageReligion.personnage.surnom }}) - {{ personnageReligion.personnage.classeName }} - <strong>{{ personnageReligion.religionLevel.label }}</strong></a>
-				{% if personnageReligion.personnage.user %}
-					{{ personnageReligion.personnage.user.email }}
-				{% endif %}
-				</div>
-			{% endfor %}
-		</div>
-	</div>
-	
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="Télécharger" href="{{ path('religion.perso.csv', {'religion':religion.id}) }}"><i
+                            class="fa fa-file-csv"></i>
+                    Télécharger</a>
+                {% if groupeService.nextSessionGn.id is defined %}
+                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                       title="Télécharger"
+                       href="{{ path('stats.religionPersonnage.gn.csv', {'religion':religion.id, 'gn': groupeService.nextSessionGn.id|default(1) }) }}"><i
+                                class="fa fa-users"></i>
+                        Personnages {{ groupeService.nextSessionGn.label }}</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="well well-sm bs-component">
+
+        <div class="header">
+            <h5>
+                {{ religion.label }}
+                <small>
+                    ( {{ religion.personnagesReligions|length }} personnages )
+                </small>
+            </h5>
+        </div>
+
+        <table id="data-table" class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
+            {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
+                {'name' : 'Id', 'css': 'text-center'},
+                {'name' : 'Personnage'},
+                {'name' : 'Classe'},
+                {'name' : 'Niveau'},
+                {'name' : 'Vivant', 'css': 'text-center'},
+                {'name' : 'Pnj', 'css': 'text-center'},
+                {'name' : 'Dernier GN', 'css': 'text-center'},
+                {'name' : 'Email'},
+            ]} %}
+            <tbody>
+            {% for personnageReligion in religion.personnagesReligions %}
+                <tr>
+                    <td class="text-center col-1">
+                        <a href="{{ path('personnage.detail',{'personnage':personnageReligion.personnage.id}) }}">
+                            {{ personnageReligion.personnage.id }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('personnage.detail',{'personnage':personnageReligion.personnage.id}) }}">
+                            {{ personnageReligion.personnage.nom }}
+                            {% if personnageReligion.personnage.surnom %}
+                                ({{ personnageReligion.personnage.surnom }})
+                            {% endif %}
+                        </a>
+                    </td>
+                    <td>
+                        {{ personnageReligion.personnage.classeName }}
+                    </td>
+                    <td>
+                        {{ personnageReligion.religionLevel.label }}
+                    </td>
+                    <td class="text-center col-1">
+                        {% if personnageReligion.personnage.vivant == 1 %}
+                            Oui
+                        {% else %}
+                            Non
+                        {% endif %}
+                    </td>
+                    <td class="text-center col-1">
+                        {% if  personnageReligion.personnage.isPnj %}
+                            Oui
+                        {% else %}
+                            Non
+                        {% endif %}
+                    </td>
+                    <td class="text-center col-1">
+                        {% if personnageReligion.personnage.lastParticipant.gn is defined %}
+                            {{ personnageReligion.personnage.lastParticipant.gn.label }}
+                        {% else %}
+                            Aucun
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if personnageReligion.personnage.user %}
+                            <a href="{{ path('user.detail',{'user':personnageReligion.personnage.user.id}) }}">
+                                {{ personnageReligion.personnage.user.email }}
+                            </a>
+                        {% else %}
+                            Aucun utilisateur lié
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
+
 {% endblock %}

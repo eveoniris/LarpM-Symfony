@@ -1,0 +1,56 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Besoins en distinction de renommé{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Statistiques', 'route': path('stats.list') },
+            {'name' : 'Besoins en distinction de renommé ' ~ gn.label },
+        ]
+    } %}
+
+    <div class="d-flex justify-content-end">
+
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="Télécharger" href="{{ path('stats.renomme.gn.csv', {'gn':gn.id}) }}"><i
+                            class="fa fa-file-csv"></i>
+                    Télécharger</a>
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="format JSON" href="{{ path('stats.renomme.gn.json', {'gn':gn.id}) }}"><i
+                            class="fa fa-file-lines"></i>
+                    Json API</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Besoins en distinction de renommé {{ gn.label }}</h5>
+        </div>
+
+        <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
+            {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
+                {'name' : 'Total', 'css': 'text-center'},
+                {'name' : 'Distinction'},
+            ]} %}
+            <tbody>
+            {% for renomme in renommes %}
+                <tr>
+                    <td class="text-center col-1">
+                        {{ renomme.total }}
+                    </td>
+                    <td>
+                        {{ renomme.grp_renomme }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}

@@ -205,7 +205,6 @@ class StockObjetController extends AbstractController
     #[Route('/stock/objet', name: 'stockObjet.index')]
     public function indexAction(
         Request $request,
-        EntityManagerInterface $entityManager,
         ObjetRepository $objetRepository,
     ): Response {
         $type = null;
