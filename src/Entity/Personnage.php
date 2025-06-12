@@ -176,6 +176,21 @@ class Personnage extends BasePersonnage implements \Stringable
         return $competences;
     }
 
+    public function getLabel(): string
+    {
+        return $this->getIdName();
+    }
+
+    public function getIdName(): string
+    {
+        return $this->getId().' - '.$this->getNameSurname();
+    }
+
+    public function getNameSurname(): string
+    {
+        return $this->getNom().(empty(trim($this->getSurnom())) ? '' : ' - ').$this->getSurnom();
+    }
+
     /**
      * Ajoute des points de pugilat à un personnage.
      *
@@ -702,16 +717,6 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         return $withId ? $this->getIdName() : $this->getNameSurname();
-    }
-
-    public function getIdName(): string
-    {
-        return $this->getId().' - '.$this->getNameSurname();
-    }
-
-    public function getNameSurname(): string
-    {
-        return $this->getNom().(empty(trim($this->getSurnom())) ? '' : ' - ').$this->getSurnom();
     }
 
     /**
