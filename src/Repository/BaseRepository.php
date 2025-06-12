@@ -118,7 +118,7 @@ abstract class BaseRepository extends ServiceEntityRepository
             // dump($orderBy->getOrders());
             foreach ($orderBy->getOrders() as $by => $sort) {
                 if (!$this->isAllowedAttribute($by, $this->sortAttributes($alias))) {
-                    //  dump($by.' not allowed');
+                    // dump($by.' not allowed');
                     continue;
                 }
 
@@ -133,6 +133,7 @@ abstract class BaseRepository extends ServiceEntityRepository
                             $query->addSelect(
                                 $asAttributes[$attr].' AS '.$attr,
                             );
+                            break;
                         }
                     }
                 }

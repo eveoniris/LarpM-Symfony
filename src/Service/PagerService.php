@@ -119,7 +119,7 @@ final class PagerService
      * Return all orders as a string for link.
      * First link will order by ASC
      * Second will order by DESC
-     * Third will not order by
+     * Third will not order by.
      */
     public function getSearchOrderPathLinkForField(string $field, ?string $route = null, ?array $params = null): string
     {
@@ -127,14 +127,11 @@ final class PagerService
 
         $route ??= $request?->attributes->get('_route') ?? 'homepage';
         $params ??= $request?->attributes->get('_route_params') ?? [];
+        $params = [...$params, ...($request?->query->all() ?? [])];
+        $params['q'] = $this->getSearchValue();
+        $params['t'] = $this->getSearchType();
 
         $orders = $this->getOrderBy()->getOrders();
-
-        if ($orders[$field] ?? false) {
-
-        } else {
-
-        }
 
         $orders[$field] = $this->getOrderBy()->getNextDirForLink($orders[$field] ?? null);
 
@@ -153,21 +150,16 @@ final class PagerService
         return $this->urlGenerator->generate($route, $params);
     }
 
-    public function getOrderBy(): OrderBy
+    public function getSearchValue(): mixed
     {
-        return $this->orderBy;
-    }
-
-    public function getSearchType(): string|array|null
-    {
-        if (isset($this->searchType)) {
-            return $this->searchType;
+        if (isset($this->searchValue)) {
+            return $this->searchValue;
         }
 
-        $this->searchType = null;
+        $this->searchValue = null;
         $this->loadForm();
 
-        return $this->searchType;
+        return $this->searchValue;
     }
 
     protected function loadForm(): void
@@ -179,7 +171,10 @@ final class PagerService
         }
 
         // handle Get search
-        $this->searchValue = $this->getRequest()?->get('search');
+        $this->searchValue = $this->getRequest()?->get('search')
+            ?? $this->getRequest()?->get('q');
+        $this->searchType = $this->getRequest()?->get('searchType')
+            ?? $this->getRequest()?->get('t');
 
         /** @var $data ListSearch */
         if ($form->isSubmitted() && $form->isValid() && $data = $form->getData()) {
@@ -230,9 +225,18 @@ final class PagerService
         }
 
         // may from GET
-        if (empty($data->getValue()) && $search = $this->getRequest()?->get('search')) {
+        if (empty($data->getValue()) && $search = $this->getRequest()?->get('search') ?? $this->getRequest()?->get(
+            'q',
+        )) {
             $data->setValue($search);
             $this->searchValue = $search;
+        }
+
+        if (empty($data->getType()) && $type = $this->getRequest()?->get('searchType') ?? $this->getRequest()?->get(
+            't',
+        )) {
+            $data->setType($type);
+            $this->searchType = $type;
         }
 
         $this->form = $this->formFactory->create(
@@ -260,16 +264,21 @@ final class PagerService
         return $this;
     }
 
-    public function getSearchValue(): mixed
+    public function getSearchType(): string|array|null
     {
-        if (isset($this->searchValue)) {
-            return $this->searchValue;
+        if (isset($this->searchType)) {
+            return $this->searchType;
         }
 
-        $this->searchValue = null;
+        $this->searchType = null;
         $this->loadForm();
 
-        return $this->searchValue;
+        return $this->searchType;
+    }
+
+    public function getOrderBy(): OrderBy
+    {
+        return $this->orderBy;
     }
 
     public function isAsc(string $field): bool
