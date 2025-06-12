@@ -267,6 +267,7 @@ class PersonnageController extends AbstractController
             if (!$service->hasErrors()) {
                 $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
+                /* already done in ADD COMPETENCE
                 $log = new LogAction();
                 $log->setDate(new \DateTime());
                 $log->setType(LogActionType::ADD_COMPETENCE);
@@ -281,6 +282,7 @@ class PersonnageController extends AbstractController
                 ]);
                 $this->entityManager->persist($log);
                 $this->entityManager->flush();
+                */
 
                 return $this->redirectToRoute(
                     'personnage.detail.tab',

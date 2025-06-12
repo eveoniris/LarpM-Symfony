@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Enum\LogActionType;
+use App\Helper\DataFormatter;
 use App\Repository\LogActionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -39,6 +40,11 @@ class LogAction
         $this->data = $data;
 
         return $this;
+    }
+
+    public function getDataAsJson(): ?string
+    {
+        return json_encode($this->data, JSON_THROW_ON_ERROR);
     }
 
     public function getDate(): ?\DateTimeInterface

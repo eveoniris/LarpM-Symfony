@@ -145,6 +145,7 @@ class PersonnageService
         protected readonly GroupeService $groupeService,
         protected readonly Security $security,
         protected readonly ConditionsService $conditionsService,
+        protected readonly DataFormatterService $dataFormatterService,
     ) {
     }
 
@@ -467,7 +468,7 @@ class PersonnageService
         if (!$groupe = $personnage->getLastParticipantGnGroupe()) {
             return $all;
         }
-        
+
         return $this->groupeService->getMerveilleBonus(
             $groupe,
             $type,
@@ -1074,7 +1075,7 @@ class PersonnageService
 
         // trie des competences disponibles
         $iterator = $availableCompetences->getIterator();
-        $iterator->uasort(static fn($a, $b) => $a->getLabel() <=> $b->getLabel());
+        $iterator->uasort(static fn ($a, $b) => $a->getLabel() <=> $b->getLabel());
 
         return new ArrayCollection(iterator_to_array($iterator));
     }
@@ -1615,6 +1616,17 @@ class PersonnageService
         $groupeGn = $groupe->getGroupeGns()->last();
 
         return $groupeGn->getPersonnages()->contains($personnage);
+    }
+
+    public function prettifyData(?array $data): string
+    {
+        if (null === $data) {
+            return '';
+        }
+
+        // need decorator ?
+
+        return $this->dataFormatterService->format($data);
     }
 
     public function removeCompetence(
