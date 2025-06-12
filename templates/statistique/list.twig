@@ -6,6 +6,8 @@
 
 {% block body %}
 
+    {% set gn = groupeService.nextSessionGn %}
+
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
             {'name' : 'Statistiques' },
@@ -51,38 +53,44 @@
                             <div class="list-group link-offset-hover">
                                 <div class="list-group-item">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.mineurs.gn', {'gn':7}) }}">
-                                        Listes des mineurs présents au LH7
+                                       href="{{ path('stats.mineurs.gn', {'gn':gn.id}) }}">
+                                        Listes des mineurs présents au {{ gn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.alchimieHerboriste.gn', {'gn':7}) }}">
-                                        Listes des Alchimistes & Herboriste présent au LH7
+                                       href="{{ path('stats.alchimieHerboriste.gn', {'gn':gn.id}) }}">
+                                        Listes des Alchimistes & Herboriste présent au {{ gn.label }}
+                                    </a>
+                                </div>
+                                <div class="list-group-item">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.potionsDepart.gn', {'gn':groupeService.nextSessionGn.id}) }}">
+                                        Potions de départ choisies sur {{ gn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.competenceFamily.gn', {'gn':7, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::MAGIC').id}) }}">
-                                        Répartition des sorciers/magicien sur LH7
+                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::MAGIC').id}) }}">
+                                        Répartition des sorciers/magicien sur {{ gn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.competenceFamily.gn', {'gn':7, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::CRAFTSMANSHIP').id}) }}">
-                                        Répartition des artisants sur LH7
+                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::CRAFTSMANSHIP').id}) }}">
+                                        Répartition des artisants sur {{ gn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.competenceFamily.gn', {'gn':7, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::THEFT').id}) }}">
-                                        Répartition des voleurs sur LH7
+                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::THEFT').id}) }}">
+                                        Répartition des voleurs sur {{ gn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.renomme.gn', {'gn': 7}) }}">
-                                        Besoins en distinctions de renommé LH7
+                                       href="{ path('stats.renomme.gn', {'gn': gn.id}) }}">
+                                        Besoins en distinctions de renommé {{ gn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
@@ -109,20 +117,21 @@
                             <div class="list-group">
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.competences.gn', {'gn':7}) }}">
-                                        Répartition des compétences LH7
+                                       href="{{ path('stats.competences.gn', {'gn':gn.id}) }}">
+                                        Répartition des compétences {{ gn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.classes.gn', {'gn':7}) }}">
-                                        Répartition des classes LH7
+                                       href="{{ path('stats.classes.gn', {'gn':gn.id}) }}">
+                                        Répartition des classes {{ gn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
-
-                                    Répartition des religion LH7 (WIP)
-
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.religions.gn', {'gn':gn.id}) }}">
+                                        Répartition du nombre d'adeptes religieux sur {{ gn.label }}
+                                    </a>
                                 </div>
                             </div>
                         </div>

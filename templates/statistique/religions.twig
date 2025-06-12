@@ -1,6 +1,8 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Competences par GN{% endblock title %}
+{% block title %}
+    Répartition du nombre d'adeptes religieux sur {{ gn.label }}
+{% endblock title %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -17,18 +19,38 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
     <script type="application/javascript">
         jQuery(document).ready(function () {
             new DataTable('#stats-table', {
                 'pageLength': 100,
+                'order': [[0, 'desc'], [1, 'asc']],
                 'layout': {
                     'topStart': {
                         'buttons': ['copy', 'csv', 'excel', 'pdf', 'print']
                     }
                 }
             });
+        });
+    </script>
+
+    <script type="application/javascript">
+        jQuery(document).ready(function () {
+            const ctx = document.getElementById('statsChart');
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: {{ chartData.labels|json_encode|raw }},
+                    datasets: [{
+                        label: 'Adeptes',
+                        data: {{ chartData.values|json_encode }},
+                        borderWidth: 1
+                    }]
+                }
+            })
         });
     </script>
 {% endblock %}
@@ -38,7 +60,7 @@
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
             {'name' : 'Statistiques', 'route': path('stats.list') },
-            {'name' : 'Répartition des compétences ' ~ gn.label },
+            {'name' : "Répartition du nombre d'adeptes religieux sur " ~ gn.label },
         ]
     } %}
 
@@ -47,11 +69,11 @@
         <div class="btn-toolbar" role="toolbar" aria-label="...">
             <div class="btn-group" role="group" aria-label="...">
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                   title="Télécharger" href="{{ path('stats.competences.gn.csv', {'gn':gn.id}) }}"><i
+                   title="Télécharger" href="{{ path('stats.religions.gn.csv', {'gn':gn.id}) }}"><i
                             class="fa fa-file-csv"></i>
                     Télécharger</a>
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                   title="format JSON" href="{{ path('stats.competences.gn.json', {'gn':gn.id}) }}"><i
+                   title="format JSON" href="{{ path('stats.religions.gn.json', {'gn':gn.id}) }}"><i
                             class="fa fa-file-lines"></i>
                     Json API</a>
             </div>
@@ -60,23 +82,31 @@
 
     <div class="well well-sm">
         <div class="header">
-            <h5>Répartition des compétences {{ gn.label }}</h5>
+            <h5>Répartition du nombre d'adeptes religieux sur {{ gn.label }}</h5>
         </div>
 
-        {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Liste des compétences des participants (PJ ou PNJ) vivant inscrits pour le GN"} %}
+        <canvas id="statsChart"></canvas>
 
         <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
             {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
                 {'name' : 'Total', 'css': 'text-center'},
-                {'name' : 'Competence'},
-                {'name' : 'Niveau'},
+                {'name' : 'label', 'css': 'text-center'},
+                {'name' : 'level', 'css': 'text-center'},
             ]} %}
             <tbody>
-            {% for competence in competences %}
+            {% for religion in religions %}
                 <tr>
-                    <td class="text-center col-1">{{ competence.total }}</td>
-                    <td class="col-6">{{ competence.competence }}</td>
-                    <td class="col-5">{{ competence.niveau }}</td>
+                    <td class="text-center col-1">
+                        {{ religion.total }}
+                    </td>
+                    <td class="text-center col-1">
+                        <a href="{{ path('religion.detail', {'religion': religion.id}) }}">
+                            {{ religion.label }}
+                        </a>
+                    </td>
+                    <td class="text-center col-1">
+                        {{ religion.level }}
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

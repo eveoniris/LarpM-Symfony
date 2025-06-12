@@ -1,6 +1,8 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Competences par GN{% endblock title %}
+{% block title %}
+    Potions de départ choisies sur {{ gn.label }}
+{% endblock title %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -38,7 +40,7 @@
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
             {'name' : 'Statistiques', 'route': path('stats.list') },
-            {'name' : 'Répartition des compétences ' ~ gn.label },
+            {'name' : 'Potions de départ choisies sur ' ~ gn.label },
         ]
     } %}
 
@@ -47,11 +49,11 @@
         <div class="btn-toolbar" role="toolbar" aria-label="...">
             <div class="btn-group" role="group" aria-label="...">
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                   title="Télécharger" href="{{ path('stats.competences.gn.csv', {'gn':gn.id}) }}"><i
+                   title="Télécharger" href="{{ path('stats.potionsDepart.gn.csv', {'gn':gn.id}) }}"><i
                             class="fa fa-file-csv"></i>
                     Télécharger</a>
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                   title="format JSON" href="{{ path('stats.competences.gn.json', {'gn':gn.id}) }}"><i
+                   title="format JSON" href="{{ path('stats.potionsDepart.gn.json', {'gn':gn.id}) }}"><i
                             class="fa fa-file-lines"></i>
                     Json API</a>
             </div>
@@ -60,23 +62,35 @@
 
     <div class="well well-sm">
         <div class="header">
-            <h5>Répartition des compétences {{ gn.label }}</h5>
+            <h5>Potions de départ choisies sur {{ gn.label }}</h5>
         </div>
-
-        {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Liste des compétences des participants (PJ ou PNJ) vivant inscrits pour le GN"} %}
 
         <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
             {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
-                {'name' : 'Total', 'css': 'text-center'},
-                {'name' : 'Competence'},
-                {'name' : 'Niveau'},
+                {'name' : 'label', 'css': 'text-center'},
+                {'name' : 'personnage'},
+                {'name' : 'numero'},
+                {'name' : 'niveau'},
             ]} %}
             <tbody>
-            {% for competence in competences %}
+            {% for potionsDepart in potionsDeparts %}
                 <tr>
-                    <td class="text-center col-1">{{ competence.total }}</td>
-                    <td class="col-6">{{ competence.competence }}</td>
-                    <td class="col-5">{{ competence.niveau }}</td>
+                    <td class="text-center col-1">
+                        <a href="{{ path('magie.potion.detail', {'potion': potionsDepart.potion_id}) }}">
+                            {{ potionsDepart.label }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('personnage.detail', {'personnage': potionsDepart.personnage_id}) }}">
+                            {{ potionsDepart.personnage }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ potionsDepart.numero }}
+                    </td>
+                    <td>
+                        {{ potionsDepart.niveau }}
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

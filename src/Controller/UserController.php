@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\Annonce;
 use App\Entity\EtatCivil;
 use App\Entity\Gn;
+use App\Entity\LogAction;
 use App\Entity\Participant;
 use App\Entity\Restriction;
 use App\Entity\User;
+use App\Enum\LogActionType;
 use App\Enum\Role;
 use App\Form\Entity\ListSearch;
 use App\Form\EtatCivilForm;
@@ -324,6 +326,16 @@ class UserController extends AbstractController
                 && $this->isGranted(User::ROLE_ADMIN)
             ) {
                 $user->setRoles($roles);
+
+                $log = new LogAction();
+                $log->setDate(new \DateTime());
+                $log->setType(LogActionType::ENTITY_UPDATE);
+                $log->setUser($this->getUser());
+                $log->setData([
+                    'user_id' => $user->getId(),
+                    'roles' => $roles,
+                ]);
+                $this->entityManager->persist($log);
             }
 
             if ($repository->emailExists($user)) {

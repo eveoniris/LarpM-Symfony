@@ -434,6 +434,36 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
+    #[Route('/api/potionsDepart/{gn}', name: 'api.potionsDepart.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/potionsDepart/{gn}', name: 'stats.potionsDepart.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/potionsDepart/{gn}/csv', name: 'stats.potionsDepart.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/potionsDepart/{gn}/json', name: 'stats.potionsDepart.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    public function potionsDepartGnAction(#[MapEntity] Gn $gn, string $_route): Response|JsonResponse|StreamedResponse
+    {
+        return match ($_route) {
+            'api.potionsDepart.gn', 'stats.potionsDepart.gn.json' => new JsonResponse(
+                $this->statsService->getPotionsDepartGn($gn)->getResult(),
+            ),
+            'stats.potionsDepart.gn.csv' => $this->sendCsv(
+                title: 'eveoniris_potionsDepartGn_gn_'.$gn->getId().'_'.date('Ymd'),
+                query: $this->statsService->getPotionsDepartGn($gn),
+                header: [
+                    'potion_id',
+                    'personnage_id',
+                    'personnage',
+                    'label',
+                    'numero',
+                    'niveau',
+                ],
+            ),
+            default => $this->render('statistique/potionsDepart.twig', [
+                'potionsDeparts' => $this->statsService->getPotionsDepartGn($gn)->getResult(),
+                'gn' => $gn,
+            ]),
+        };
+    }
+
     #[Route('/stats/religion/{religion}/gn/{gn}/personnage/csv', name: 'stats.religionPersonnage.gn.csv', requirements: [
         'gn' => Requirement::DIGITS,
         'personnage' => Requirement::DIGITS,
@@ -483,6 +513,46 @@ class StatistiqueController extends AbstractController
         ReligionRepository $religionRepository,
     ): JsonResponse {
         return new JsonResponse($religionRepository->getPersonnagesByReligions($gn, $religion)->getResult());
+    }
+
+    #[Route('/api/religions/{gn}', name: 'api.religions.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/religions/{gn}', name: 'stats.religions.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/religions/{gn}/csv', name: 'stats.religions.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/religions/{gn}/json', name: 'stats.religions.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    public function religionsGnAction(#[MapEntity] Gn $gn, string $_route): Response|JsonResponse|StreamedResponse
+    {
+        $dataQuery = $this->statsService->getReligionsLevelGn($gn);
+        $chartData = [
+            'labels' => [],
+            'data' => [],
+        ];
+        foreach ($this->statsService->getReligionsGn($gn)->getResult() as $data) {
+            $chartData['labels'][] = $data['label'];
+            $chartData['values'][] = $data['total'];
+        }
+
+        return match ($_route) {
+            'api.religions.gn', 'stats.religions.gn.json' => new JsonResponse($dataQuery->getResult()),
+            'stats.religions.gn.csv' => $this->sendCsv(
+                title: 'eveoniris_religions_gn_'.$gn->getId().'_'.date('Ymd'),
+                query: $dataQuery,
+                header: [
+                    'total',
+                    'id',
+                    'label',
+                    'level',
+                ],
+            ),
+            default => $this->render(
+                'statistique/religions.twig',
+                [
+                    'religions' => $dataQuery->getResult(),
+                    'gn' => $gn,
+                    'chartData' => $chartData,
+                ],
+            ),
+        };
     }
 
     #[Route('/api/religions/pratiquants/{gn}', name: 'api.religions.pratiquants', requirements: ['gn' => Requirement::DIGITS])]
