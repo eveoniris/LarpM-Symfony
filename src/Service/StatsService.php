@@ -225,6 +225,78 @@ class StatsService
             ->setParameter('gndate', (string) $gn->getDateInstallationJoueur()?->format('Y-m-d'));
     }
 
+    public function getPotionsDepartGn(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('potion_id', 'potion_id', 'integer');
+        $rsm->addScalarResult('numero', 'numero', 'integer');
+        $rsm->addScalarResult('niveau', 'niveau', 'integer');
+        $rsm->addScalarResult('personnage_id', 'personnage_id', 'integer');
+        $rsm->addScalarResult('personnage', 'personnage', 'string');
+        $rsm->addScalarResult('label', 'label', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT pot.id as potion_id, p.id as personnage_id, p.nom as personnage, pot.label, pot.numero, pot.niveau 
+                    FROM participant_potions_depart ppd
+                    INNER JOIN potion pot ON ppd.potion_id = pot.id
+                    INNER JOIN participant pt ON ppd.participant_id = pt.id
+                    INNER JOIN personnage p ON pt.personnage_id = p.id
+                WHERE pt.gn_id = :gnid
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId());
+    }
+
+    public function getReligionsGn(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('total', 'total', 'integer');
+        $rsm->addScalarResult('label', 'label', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT COUNT(p.id) as total, r.label
+                  FROM
+                    participant pt 
+                    INNER JOIN personnage p ON p.id = pt.personnage_id
+                    INNER JOIN `personnages_religions` pr ON p.id = pr.personnage_id
+                    INNER JOIN religion r ON r.id = pr.religion_id
+                WHERE pt.gn_id = :gnid
+                GROUP BY r.id,  r.label
+                ORDER BY total DESC, r.label
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId());
+    }
+
+    public function getReligionsLevelGn(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('total', 'total', 'integer');
+        $rsm->addScalarResult('id', 'id', 'integer');
+        $rsm->addScalarResult('label', 'label', 'string');
+        $rsm->addScalarResult('level', 'level', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT COUNT(p.id) as total, r.id, r.label, rl.label as level
+                  FROM participant pt 
+                    INNER JOIN personnage p ON p.id = pt.personnage_id
+                    INNER JOIN personnages_religions pr ON p.id = pr.personnage_id
+                    INNER JOIN religion r ON r.id = pr.religion_id
+                    INNER JOIN religion_level rl ON rl.id = pr.religion_level_id
+                WHERE pt.gn_id = :gnid
+                GROUP BY r.id,  r.label, level
+                ORDER BY total DESC, r.label, level
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId());
+    }
+
     public function getRenommeGn(Gn $gn): NativeQuery
     {
         $rsm = new ResultSetMapping();

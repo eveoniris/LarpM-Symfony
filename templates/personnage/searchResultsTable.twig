@@ -15,7 +15,7 @@
             {% for columnDef in columnDefinitions %}
                 <th class="personnage-list-column-{{ columnDef['fieldName'] }} {% if columnDef['colMd'] is defined %}{{ columnDef['colMd'] }}{% endif %}{% if columnDef['css'] is defined %} {{ columnDef['css'] }}{% endif %}">
 
-                    {#  TODO when using PageService { macros.getOrderBy(app, columnDef) }}#}
+                    {#  TODO when using PageService { macros.getOrderBy(app, columnDef) }} #}
 
                     {% if columnDef['canOrder'] is not defined %}
                         {% set columnDef = columnDef|merge({"canOrder":true}) %}
@@ -55,7 +55,8 @@
                         {% elseif fieldName == 'groupe' %}
                             {% set gn = personnage.getLastParticipantGn() ?: 'LH1' %}
                             {% set groupe = personnage.getLastParticipantGnGroupe() %}
-                            <strong><a href="{{ path('gn.detail', {'gn': gn.id}) }}">{{ gn }}</a></strong> - <a href="{{ path('groupe.detail', {'groupe': groupe.id}) }}">{{ groupe.nom }}</a>
+                            <strong><a href="{{ path('gn.detail', {'gn': gn.id}) }}">{{ gn }}</a></strong> {% if groupe.id is defined %}-
+                            <a href="{{ path('groupe.detail', {'groupe': groupe.id}) }}">{{ groupe.nom }}</a>{% endif %}
                         {% elseif fieldName == 'renomme' %}
                             {{ personnage.renomme|default(0) }}
                         {% elseif fieldName == 'pugilat' %}
@@ -65,7 +66,8 @@
                         {% elseif fieldName == 'user' %}
                             {% for participant in personnage.participants %}
                                 <strong><a href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">{{ participant.gn.label }}</a></strong>&nbsp;-&nbsp;
-                                <a href="{{ path('user.detail', {'user': participant.user.id}) }}">{{ participant.userFullName }}</a><br/>
+                                <a href="{{ path('user.detail', {'user': participant.user.id}) }}">{{ participant.userFullName }}</a>
+                                <br/>
                             {% endfor %}
                         {% elseif fieldName == 'xp' %}
                             {{ personnage.xp|default(0) }} / {{ personnage.xpTotal }} XP - <a

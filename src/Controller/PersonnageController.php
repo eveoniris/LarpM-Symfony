@@ -267,7 +267,20 @@ class PersonnageController extends AbstractController
             if (!$service->hasErrors()) {
                 $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-                $this->log($competence, LogActionType::ADD_COMPETENCE, true);
+                $log = new LogAction();
+                $log->setDate(new \DateTime());
+                $log->setType(LogActionType::ADD_COMPETENCE);
+                $log->setUser($this->getUser());
+                $log->setData([
+                    'competence_id' => $competence->getId(),
+                    'personnage_id' => $personnage->getId(),
+                    'cost' => $personnageService->getCompetenceCout(
+                        $personnage,
+                        $competence,
+                    ),
+                ]);
+                $this->entityManager->persist($log);
+                $this->entityManager->flush();
 
                 return $this->redirectToRoute(
                     'personnage.detail.tab',
