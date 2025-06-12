@@ -228,6 +228,40 @@ class ParticipantRepository extends BaseRepository
             'etatCivil.prenom as firstname',
             'user.email as email',
             'billet.label as billet',
+            "CONCAT(etatCivil.nom, ' ', etatCivil.prenom) AS HIDDEN nomPrenom",
+        ];
+    }
+
+    public function sortAttributes(?string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::sortAttributes($alias),
+            'user.username' => [
+                OrderBy::ASC => ['user.username' => OrderBy::ASC],
+                OrderBy::DESC => ['user.username' => OrderBy::DESC],
+            ],
+            'user.email' => [
+                OrderBy::ASC => ['user.email' => OrderBy::ASC],
+                OrderBy::DESC => ['user.email' => OrderBy::DESC],
+            ],
+            'etatCivil.nom' => [
+                OrderBy::ASC => ['etatCivil.nom' => OrderBy::ASC],
+                OrderBy::DESC => ['etatCivil.nom' => OrderBy::DESC],
+            ],
+            'etatCivil.prenom' => [
+                OrderBy::ASC => ['etatCivil.prenom' => OrderBy::ASC],
+                OrderBy::DESC => ['etatCivil.prenom' => OrderBy::DESC],
+            ],
+            'nomPrenom' => [
+                OrderBy::ASC => ['nomPrenom' => OrderBy::ASC],
+                OrderBy::DESC => ['nomPrenom' => OrderBy::DESC],
+            ],
+            'billet.label' => [
+                OrderBy::ASC => ['billet.label' => OrderBy::ASC],
+                OrderBy::DESC => ['billet.label' => OrderBy::DESC],
+            ],
         ];
     }
 
@@ -252,6 +286,9 @@ class ParticipantRepository extends BaseRepository
             'firstname' => $this->translator->trans('Prénom', domain: 'repository'),
             'email' => $this->translator->trans('Email', domain: 'repository'),
             'billet' => $this->translator->trans('Billet', domain: 'repository'),
+            'nomPrenom',
+            'HIDDEN nomPrenom' => $this->translator->trans('Participant', domain: 'repository'),
+
         ];
     }
 }
