@@ -42,6 +42,28 @@ class StatsService
         )->setParameter('gnid', $gn->getId());
     }
 
+    public function getBateauxGn(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('total', 'total', 'integer');
+        $rsm->addScalarResult('groupe_id', 'groupe_id', 'integer');
+        $rsm->addScalarResult('groupe_gn_id', 'groupe_gn_id', 'integer');
+        $rsm->addScalarResult('nom', 'nom', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT SUM(bateaux) as total, groupe_id, ggn.id as groupe_gn_id, g.nom
+                FROM groupe_gn ggn
+                
+                         INNER JOIN groupe g ON ggn.groupe_id = g.id
+                WHERE ggn.gn_id = :gnid
+                GROUP BY groupe_id
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId());
+    }
+
     public function getClassesGn(Gn $gn): NativeQuery
     {
         $rsm = new ResultSetMapping();

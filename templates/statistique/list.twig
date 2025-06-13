@@ -89,6 +89,24 @@
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::MAPPING').id}) }}">
+                                        Répartition des cartographes sur {{ gn.label }}
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::ALCHEMY').id}) }}">
+                                        Répartition des alchimistes sur {{ gn.label }}
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::WEALTH').id}) }}">
+                                        Répartition des riches sur {{ gn.label }}
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
                                        href="{{ path('stats.renomme.gn', {'gn': gn.id}) }}">
                                         Besoins en distinctions de renommé {{ gn.label }}
                                     </a>
@@ -160,6 +178,15 @@
                                        href="{{ path('stats.constructions.fiefs') }}">
                                         Répartition des constructions sur les fiefs
                                     </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.bateaux.gn', {'gn':gn.id}) }}">
+                                        Totaux des bateaux par groupe sur {{ gn.label }}
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <i class="fa-solid fa-person-digging"></i> Emplacement des bateaux (WIP)
                                 </div>
                             </div>
                         </div>

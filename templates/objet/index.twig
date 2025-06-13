@@ -26,8 +26,9 @@ td {white-space: normal; text-overflow: ellipsis;}
             {
                 'actionPath' : path('item.list'),
                 'buttons' : [
-                {'label': 'Imprimer les photos', 'title': "Imprimer les photos", 'route': path('item.print-photo'), 'icon': 'fa-print', 'target':'_blank'},
-                {'label': 'Imprimer les étiquettes', 'title': "Imprimer les étiquettes", 'route': path('item.print-all'), 'icon': 'fa-print', 'target':'_blank'},
+                {'label': 'Photos', 'title': "Imprimer les photos", 'route': path('item.print-photo'), 'icon': 'fa-print', 'target':'_blank'},
+                {'label': 'Étiquettes', 'title': "Imprimer les étiquettes", 'route': path('item.print-all'), 'icon': 'fa-print', 'target':'_blank'},
+                {'label': 'Étiquettes Qrcode', 'title': "Imprimer les étiquettes Qrcode", 'route': path('item.print-all', {'qrCode':1}), 'icon': 'fa-print', 'target':'_blank'},
                 {'label': 'Fichier CSV','title': "Télécharger la liste (CSV)", 'route': path('item.print-csv'), 'icon': 'fa-file-csv'}
             ]
             } %}
