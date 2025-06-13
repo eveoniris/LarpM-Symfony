@@ -79,6 +79,11 @@
                                        href="{{ path('personnage.export', {'personnage':personnage.id}) }}"><i
                                                 class="fa fa-print"
                                                 aria-hidden="true"></i></a>
+                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Imprimer votre personnage avec Qrcode"
+                                       href="{{ path('personnage.export', {'personnage':personnage.id, 'qrCode':1}) }}"><i
+                                                class="fa fa-qrcode"
+                                                aria-hidden="true"></i></a>
                                 {% endif %}
                             </div>
                         </div>

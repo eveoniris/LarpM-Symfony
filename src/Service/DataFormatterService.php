@@ -69,12 +69,20 @@ class DataFormatterService
                                 }
                             }
 
-                            return sprintf(
-                                '<a href="%s" id="entity_%s">%s</a>',
-                                $this->urlGenerator->generate($codeKey.'.detail', [$codeKey => $value]),
-                                $value,
-                                $prettyValue,
-                            );
+                            try {
+
+                                $string = sprintf(
+                                    '<a href="%s" id="entity_%s">%s</a>',
+                                    $this->urlGenerator->generate($codeKey.'.detail', [$codeKey => $value]),
+                                    $value,
+                                    $prettyValue,
+                                );
+                            } catch (\Exception $e) {
+                                $this->logger->warning($e);
+                                $string = $prettyValue;
+                            }
+
+                            return $string;
                         };
                     } catch (\Exception $e) {
                         $this->logger->warning($e);

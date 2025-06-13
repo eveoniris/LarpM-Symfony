@@ -60,6 +60,37 @@ class StatistiqueController extends AbstractController
         return new JsonResponse($this->statsService->getAlchimieHerboristeGn($gn)->getResult());
     }
 
+    #[Route('/api/bateaux/{gn}', name: 'api.bateaux.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/bateaux/{gn}', name: 'stats.bateaux.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/bateaux/{gn}/csv', name: 'stats.bateaux.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/bateaux/{gn}/json', name: 'stats.bateaux.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    public function bateauxGnAction(#[MapEntity] Gn $gn, string $_route): Response|JsonResponse|StreamedResponse
+    {
+        $dataQuery = $this->statsService->getBateauxGn($gn);
+
+        return match ($_route) {
+            'api.bateaux.gn', 'stats.bateaux.gn.json' => new JsonResponse($dataQuery->getResult()),
+            'stats.bateaux.gn.csv' => $this->sendCsv(
+                title: 'eveoniris_bateaux_gn_'.$gn->getId().'_'.date('Ymd'),
+                query: $dataQuery,
+                header: [
+                    'total',
+                    'id',
+                    'label',
+                    'level',
+                ],
+            ),
+            default => $this->render(
+                'statistique/bateaux.twig',
+                [
+                    'bateaux' => $dataQuery->getResult(),
+                    'gn' => $gn,
+                ],
+            ),
+        };
+    }
+
     #[Route('/stats/classes/{gn}/csv', name: 'stats.classes.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function classesCsvStatsGnAction(#[MapEntity] Gn $gn): StreamedResponse

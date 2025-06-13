@@ -2257,7 +2257,7 @@ class PersonnageController extends AbstractController
             $this->entityManager->flush();
 
             $this->log(
-                ['personnage' => $personnage->getid(), 'xp' => $data['xp'], 'explanation' => $data['explanation']],
+                $historique,
                 LogActionType::XP_ADD,
                 true,
             );
