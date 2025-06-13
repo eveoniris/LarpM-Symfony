@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Background;
 use App\Entity\Bonus;
 use App\Entity\Gn;
 use App\Entity\Groupe;
@@ -21,6 +22,7 @@ use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
+use App\Enum\Role;
 use App\Enum\TerritoireStatut;
 use App\Repository\GnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -601,6 +603,69 @@ readonly class GroupeService
         return $histories;
     }
 
+    public function getGroupeDebriefingsVisibleForCurrentUser(
+        Groupe $groupe,
+    ): ArrayCollection {
+        $debriefings = new ArrayCollection();
+
+        // Public require at least a logged user
+        /** @var User $user */
+        if (!$user = $this->security->getUser()) {
+            return $debriefings;
+        }
+
+        $personnagesIds = [];
+        foreach ($user->getPersonnages() as $personnage) {
+            $personnagesIds[$personnage->getid()] = $personnage;
+        }
+
+        $chefs = [];
+        /** @var GroupeGn $groupeGn */
+        foreach ($groupe->getGroupeGns() as $groupeGn) {
+            $partPersoId = $groupeGn->getParticipant()?->getPersonnage()?->getId();
+            if ($partPersoId && isset($personnagesIds[$partPersoId])) {
+                $chefs[$groupeGn?->getGn()?->getId()] = true;
+            }
+        }
+
+        $isGroupeMember = false;
+        /** @var Personnage $personnage */
+        foreach ($groupe->getPersonnages() as $personnage) {
+            $uid = $personnage->getUser()?->getId();
+            if ($uid && $uid === $user->getId()) {
+                $isGroupeMember = true;
+            }
+        }
+
+        /** @var Background $background */
+        foreach ($groupe->getDebriefings() as $debriefing) {
+            // Owner For a specific GN
+            if ('GROUPE_OWNER' === $debriefing->getVisibility() && !isset($chefs[$background->getGn()?->getId()])) {
+                continue;
+            }
+            // For ALL GN
+            if (!$isGroupeMember && 'GROUPE_MEMBER' === $debriefing->getVisibility()) {
+                continue;
+            }
+            if ('AUTHOR' === $debriefing->getVisibility() && $user->getId() !== $background->getUser()?->getId()) {
+                continue;
+            }
+            // Scénariste
+            if ('PRIVATE' === $debriefing->getVisibility() && !$this->security->isGranted(Role::SCENARISTE->value)) {
+                continue;
+            }
+
+            $debriefings->add($debriefing);
+        }
+
+        return $debriefings;
+    }
+
+    public function getPersonnages(GroupeGn $groupeGn): Collection
+    {
+        return $groupeGn->getPersonnages();
+    }
+
     /**
      * @return array|Collection<int, Loi>
      */
@@ -690,11 +755,6 @@ readonly class GroupeService
         }
 
         return false;
-    }
-
-    public function getPersonnages(GroupeGn $groupeGn): Collection
-    {
-        return $groupeGn->getPersonnages();
     }
 
     public function hasPersonnageInSecondaryGroup(

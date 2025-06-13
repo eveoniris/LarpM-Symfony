@@ -132,13 +132,13 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ?string $route = null,
         ?array $routeParams = null,
         ?string $msg = null,
-    ): void {
+    ): ?RedirectResponse {
         if (!$groupe) {
-            return;
+            return null;
         }
 
         if (!$groupe->getLock()) {
-            return;
+            return null;
         }
 
         $href = $this->generateUrl('groupe.detail', ['groupe' => $groupe->getId()]).'#groupe_lock';
@@ -157,9 +157,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $route ??= 'groupe.detail';
         $routeParams ??= ['groupe' => $groupe->getId()];
 
-        $this->redirectToRoute($route, $routeParams, 303);
-
-        return;
+        return $this->redirectToRoute($route, $routeParams, 303);
     }
 
     protected function checkHasAccess(array $roles, ?callable $callable): void

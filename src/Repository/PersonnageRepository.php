@@ -100,7 +100,7 @@ class PersonnageRepository extends BaseRepository
     {
         $qb->from(Personnage::class, 'p');
         // jointure sur le dernier participant créé (on se base sur le max id des personnage participants)
-        $qb->join(
+        $qb->leftjoin(
             'p.participants',
             'pa',
             'with',

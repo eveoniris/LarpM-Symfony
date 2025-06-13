@@ -1075,7 +1075,7 @@ class PersonnageService
 
         // trie des competences disponibles
         $iterator = $availableCompetences->getIterator();
-        $iterator->uasort(static fn ($a, $b) => $a->getLabel() <=> $b->getLabel());
+        $iterator->uasort(static fn($a, $b) => $a->getLabel() <=> $b->getLabel());
 
         return new ArrayCollection(iterator_to_array($iterator));
     }
@@ -1267,7 +1267,7 @@ class PersonnageService
                 continue;
             }
             // For ALL GN
-            if ($isGroupeMember && 'GROUPE_MEMBER' === $background->getVisibility()) {
+            if (!$isGroupeMember && 'GROUPE_MEMBER' === $background->getVisibility()) {
                 continue;
             }
             if ('AUTHOR' === $background->getVisibility() && $user->getId() !== $background->getUser()?->getId()) {
