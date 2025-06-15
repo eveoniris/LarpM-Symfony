@@ -7,7 +7,7 @@
     {% endif %}
     <div class="panel-body">
         <div class="list-group">
-            {% for background in personnageService.getGroupeBackgroundsVisibleForCurrentUser(groupe) %}
+            {% for background in groupeService.getGroupeBackgroundsVisibleForCurrentUser(groupe) %}
                 <div class="list-group-item">
                     <div class="list-group-item-heading">
                         <h4>
@@ -33,16 +33,16 @@
                         </h4>
                     </div>
                     <p class="list-group-item-text text-warning">
-                        {% if background.visibility == 'GROUPE_MEMBER' %}
-                            Background visible en qualité de membre du groupe
-                        {% elseif background.visibility == 'GROUPE_OWNER' %}
-                            Background visible en qualité de responsable du groupe
-                        {% elseif background.visibility == 'PRIVATE' %}
-                            Background visible en qualité de scénariste
-                        {% elseif background.visibility == 'AUTHOR' %}
-                            Background visible en qualité d'auteur
-                        {% elseif background.visibility == 'PUBLIC' %}
-                            Background visible à tous les joueurs
+                        {% if background.visibility.isGroupeMember() %}
+                            Background visible pour les membres du groupe
+                        {% elseif background.visibility.isGroupeOwner() %}
+                            Background visible pour le responsable du groupe
+                        {% elseif background.visibility.isPrivate() %}
+                            Background visible pour les scénaristes
+                        {% elseif background.visibility.isAuthor() %}
+                            Background visible pour l'auteur
+                        {% elseif background.visibility.isPublic() %}
+                            Background visible à tous
                         {% endif %}
                     </p>
                     <p class="list-group-item-text">
