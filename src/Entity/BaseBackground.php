@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\VisibilityType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -153,13 +154,19 @@ class BaseBackground
         return $this;
     }
 
-    public function getVisibility(): ?string
+    public function getVisibility(): string|VisibilityType|null
     {
-        return $this->visibility;
+        return VisibilityType::tryFrom($this->visibility) ?? VisibilityType::PUBLIC;
     }
 
-    public function setVisibility(string $visibility): self
+    public function setVisibility(string|VisibilityType|null $visibility): self
     {
+        if ($visibility instanceof VisibilityType) {
+            $this->visibility = $visibility->value;
+
+            return $this;
+        }
+
         $this->visibility = $visibility;
 
         return $this;

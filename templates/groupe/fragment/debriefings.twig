@@ -35,16 +35,16 @@
                         </h3>
                     </div>
                     <p class="list-group-item-text text-warning">
-                        {% if debriefing.visibility == 'GROUPE_MEMBER' %}
-                            Debriefing visible en qualité de membre du groupe
-                        {% elseif debriefing.visibility == 'GROUPE_OWNER' %}
-                            Debriefing visible en qualité de responsable du groupe
-                        {% elseif debriefing.visibility == 'PRIVATE' %}
-                            Debriefing visible en qualité de scénariste
-                        {% elseif debriefing.visibility == 'AUTHOR' %}
-                            Debriefing visible en qualité d'auteur
-                        {% elseif debriefing.visibility == 'PUBLIC' %}
-                            Debriefing visible à tous les joueurs
+                        {% if debriefing.visibility.isGroupeMember() %}
+                            Debriefing visible pour les membres du groupe
+                        {% elseif debriefing.visibility.isGroupeOwner() %}
+                            Debriefing visible pour le responsable du groupe
+                        {% elseif debriefing.visibility.isPrivate() %}
+                            Debriefing visible pour les scénaristes
+                        {% elseif debriefing.visibility.isAuthor() %}
+                            Debriefing visible pour l'auteur
+                        {% elseif debriefing.visibility.isPublic() %}
+                            Debriefing visible à tous
                         {% endif %}
                     </p>
                     <p class="list-group-item-text">

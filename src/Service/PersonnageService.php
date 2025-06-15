@@ -1223,131 +1223,6 @@ class PersonnageService
         return $availableTechnologies;
     }
 
-    /**
-     * Available visibility: 'PRIVATE', 'PUBLIC', 'GROUPE_MEMBER', 'GROUPE_OWNER', 'AUTHOR'.
-     */
-    public function getGroupeBackgroundsVisibleForCurrentUser(
-        Groupe $groupe,
-    ): ArrayCollection {
-        $backgrounds = new ArrayCollection();
-
-        // Public require at least a logged user
-        /** @var User $user */
-        if (!$user = $this->security->getUser()) {
-            return $backgrounds;
-        }
-
-        $personnagesIds = [];
-        foreach ($user->getPersonnages() as $personnage) {
-            $personnagesIds[$personnage->getid()] = $personnage;
-        }
-
-        $chefs = [];
-        /** @var GroupeGn $groupeGn */
-        foreach ($groupe->getGroupeGns() as $groupeGn) {
-            $partPersoId = $groupeGn->getParticipant()?->getPersonnage()?->getId();
-            if ($partPersoId && isset($personnagesIds[$partPersoId])) {
-                $chefs[$groupeGn?->getGn()?->getId()] = true;
-            }
-        }
-
-        $isGroupeMember = false;
-        /** @var Personnage $personnage */
-        foreach ($groupe->getPersonnages() as $personnage) {
-            $uid = $personnage->getUser()?->getId();
-            if ($uid && $uid === $user->getId()) {
-                $isGroupeMember = true;
-            }
-        }
-
-        /** @var Background $background */
-        foreach ($groupe->getBackgrounds() as $background) {
-            // Owner For a specific GN
-            if ('GROUPE_OWNER' === $background->getVisibility() && !isset($chefs[$background->getGn()?->getId()])) {
-                continue;
-            }
-            // For ALL GN
-            if (!$isGroupeMember && 'GROUPE_MEMBER' === $background->getVisibility()) {
-                continue;
-            }
-            if ('AUTHOR' === $background->getVisibility() && $user->getId() !== $background->getUser()?->getId()) {
-                continue;
-            }
-            // Scénariste
-            if ('PRIVATE' === $background->getVisibility() && !$this->security->isGranted(Role::SCENARISTE->value)) {
-                continue;
-            }
-
-            $backgrounds->add($background);
-        }
-
-        return $backgrounds;
-    }
-
-    public function getPersonnages(
-        User $user,
-    ): string {
-        return $user->getPersonnages();
-    }
-
-    public function getGroupeDebriefingVisibleForCurrentUser(
-        Groupe $groupe,
-    ): ArrayCollection {
-        $debriefings = new ArrayCollection();
-
-        // Public require at least a logged user
-        /** @var User $user */
-        if (!$user = $this->security->getUser()) {
-            return $debriefings;
-        }
-
-        $personnagesIds = [];
-        foreach ($user->getPersonnages() as $personnage) {
-            $personnagesIds[$personnage->getid()] = $personnage;
-        }
-
-        $chefs = [];
-        /** @var GroupeGn $groupeGn */
-        foreach ($groupe->getGroupeGns() as $groupeGn) {
-            $partPersoId = $groupeGn->getParticipant()?->getPersonnage()?->getId();
-            if ($partPersoId && isset($personnagesIds[$partPersoId])) {
-                $chefs[$groupeGn?->getGn()?->getId()] = true;
-            }
-        }
-
-        $isGroupeMember = false;
-        /** @var Personnage $personnage */
-        foreach ($groupe->getPersonnages() as $personnage) {
-            $uid = $personnage->getUser()?->getId();
-            if ($uid && $uid === $user->getId()) {
-                $isGroupeMember = true;
-            }
-        }
-
-        /** @var Debriefing $debriefing */
-        foreach ($groupe->getDebriefings() as $debriefing) {
-            // Owner For a specific GN
-            if ('GROUPE_OWNER' === $debriefing->getVisibility() && !isset($chefs[$debriefing->getGn()?->getId()])) {
-                continue;
-            }
-            // For ALL GN
-            if ($isGroupeMember && 'GROUPE_MEMBER' === $debriefing->getVisibility()) {
-                continue;
-            }
-            if ('AUTHOR' === $debriefing->getVisibility() && $user->getId() !== $debriefing->getUser()?->getId()) {
-                continue;
-            }
-            // Scénariste
-            if ('PRIVATE' === $debriefing->getVisibility() && !$this->security->isGranted(Role::SCENARISTE->value)) {
-                continue;
-            }
-
-            $debriefings->add($debriefing);
-        }
-
-        return $debriefings;
-    }
-
     public function getHumanEspece(): Espece
     {
         $especeRepository = $this->entityManager->getRepository(Espece::class);
@@ -1616,6 +1491,12 @@ class PersonnageService
         $groupeGn = $groupe->getGroupeGns()->last();
 
         return $groupeGn->getPersonnages()->contains($personnage);
+    }
+
+    public function getPersonnages(
+        User $user,
+    ): string {
+        return $user->getPersonnages();
     }
 
     public function prettifyData(?array $data): string

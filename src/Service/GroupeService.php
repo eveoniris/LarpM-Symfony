@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Background;
 use App\Entity\Bonus;
+use App\Entity\Debriefing;
 use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Entity\GroupeBonus;
@@ -24,7 +25,6 @@ use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Enum\Role;
 use App\Enum\TerritoireStatut;
-use App\Repository\GnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -603,15 +603,25 @@ readonly class GroupeService
         return $histories;
     }
 
-    public function getGroupeDebriefingsVisibleForCurrentUser(
+    public function getGroupeBackgroundsVisibleForCurrentUser(
         Groupe $groupe,
     ): ArrayCollection {
-        $debriefings = new ArrayCollection();
+        return $this->filterVisibilityForCurrentUser($groupe, $groupe->getBackgrounds());
+    }
+
+    /**
+     * @param Collection<Debriefing|Background> $datas
+     */
+    public function filterVisibilityForCurrentUser(Groupe $groupe, Collection $datas): ArrayCollection
+    {
+        $filtred = new ArrayCollection();
 
         // Public require at least a logged user
         /** @var User $user */
-        if (!$user = $this->security->getUser()) {
-            return $debriefings;
+        $user = $this->security->getUser();
+
+        if (!$user || !$this->security->isGranted(Role::USER->value)) {
+            return $filtred;
         }
 
         $personnagesIds = [];
@@ -619,51 +629,61 @@ readonly class GroupeService
             $personnagesIds[$personnage->getid()] = $personnage;
         }
 
-        $chefs = [];
+        $groupeOwnerForGn = [];
+        $groupeMemberForGn = [];
         /** @var GroupeGn $groupeGn */
         foreach ($groupe->getGroupeGns() as $groupeGn) {
             $partPersoId = $groupeGn->getParticipant()?->getPersonnage()?->getId();
-            if ($partPersoId && isset($personnagesIds[$partPersoId])) {
-                $chefs[$groupeGn?->getGn()?->getId()] = true;
+            if ($partPersoId && isset($personnagesIds[$partPersoId]) && $groupeGn->getGn()->getId()) {
+                $groupeOwnerForGn[$groupeGn->getGn()->getId()] = true;
+            }
+
+            /** @var Personnage $personnage */
+            foreach ($groupeGn->getPersonnages() as $personnage) {
+                if (isset($personnagesIds[$personnage->getId()]) && $groupeGn->getGn()->getId()) {
+                    $groupeMemberForGn[$groupeGn->getGn()->getId()] = true;
+                }
             }
         }
 
-        $isGroupeMember = false;
-        /** @var Personnage $personnage */
-        foreach ($groupe->getPersonnages() as $personnage) {
-            $uid = $personnage->getUser()?->getId();
-            if ($uid && $uid === $user->getId()) {
-                $isGroupeMember = true;
+        foreach ($datas as $data) {
+            if ($this->security->isGranted(Role::SCENARISTE->value)
+                || $data->getVisibility()?->isPublic()
+            ) {
+                $filtred->add($data);
+                continue;
             }
-        }
 
-        /** @var Background $background */
-        foreach ($groupe->getDebriefings() as $debriefing) {
             // Owner For a specific GN
-            if ('GROUPE_OWNER' === $debriefing->getVisibility() && !isset($chefs[$background->getGn()?->getId()])) {
-                continue;
-            }
-            // For ALL GN
-            if (!$isGroupeMember && 'GROUPE_MEMBER' === $debriefing->getVisibility()) {
-                continue;
-            }
-            if ('AUTHOR' === $debriefing->getVisibility() && $user->getId() !== $background->getUser()?->getId()) {
-                continue;
-            }
-            // Scénariste
-            if ('PRIVATE' === $debriefing->getVisibility() && !$this->security->isGranted(Role::SCENARISTE->value)) {
+            if (!isset($groupeOwnerForGn[$data->getGn()?->getId()]) && $data->getVisibility()?->isGroupeOwner()) {
                 continue;
             }
 
-            $debriefings->add($debriefing);
+            // Member for a specific GN
+            if (!isset($groupeMemberForGn[$data->getGn()?->getId()]) && $data->getVisibility()?->isGroupeMember()) {
+                continue;
+            }
+
+            // Author of it
+            if ($data->getVisibility()?->isAuthor() && $user->getId() !== $data->getUser()?->getId()) {
+                continue;
+            }
+
+            $filtred->add($data);
         }
 
-        return $debriefings;
+        return $filtred;
     }
 
     public function getPersonnages(GroupeGn $groupeGn): Collection
     {
         return $groupeGn->getPersonnages();
+    }
+
+    public function getGroupeDebriefingsVisibleForCurrentUser(
+        Groupe $groupe,
+    ): ArrayCollection {
+        return $this->filterVisibilityForCurrentUser($groupe, $groupe->getDebriefings());
     }
 
     /**
@@ -674,7 +694,7 @@ readonly class GroupeService
         // Lois du pays du personnage initié
         $lois = new ArrayCollection();
         /** @var Territoire $territoire */
-        foreach ($groupe?->getTerritoires() ?? new ArrayCollection() as $territoire) {
+        foreach ($groupe->getTerritoires() ?? new ArrayCollection() as $territoire) {
             /** @var Territoire $fief */
             foreach ($territoire->getAncestors() as $fief) {
                 foreach ($fief->getLois() as $loi) {
@@ -747,6 +767,7 @@ readonly class GroupeService
 
     public function hasOnePersonnageSuzerain(GroupeGn $groupeGn, ?User $user = null): bool
     {
+        /** @var User $user */
         $user ??= $this->security->getUser();
         foreach ($user?->getPersonnages() as $personnage) {
             if ($personnage->getId() === $groupeGn->getSuzerain()?->getId()) {
@@ -791,7 +812,8 @@ readonly class GroupeService
     public function isUserIsGroupeMember(Groupe $groupe): bool
     {
         /** @var User $user */
-        if (!$user = $this->security->getUser()) {
+        $user = $this->security->getUser();
+        if (!$user) {
             return false;
         }
 
@@ -801,12 +823,14 @@ readonly class GroupeService
     public function isUserIsGroupeResponsable(Groupe $groupe): bool
     {
         /** @var User $user */
-        if (!$user = $this->security->getUser()) {
+        $user = $this->security->getUser();
+        if (!$user) {
             return false;
         }
 
         /** @var GroupeGn $groupeGn */
-        if (!$groupeGn = $groupe->getGroupeGns()->last()) {
+        $groupeGn = $groupe->getGroupeGns()->last();
+        if (!$groupeGn) {
             return false;
         }
 
