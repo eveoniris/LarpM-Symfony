@@ -615,6 +615,7 @@ class GroupeController extends AbstractController
             $isMembre = $this->groupeService->isUserIsGroupeMember($groupe);
         }
 
+        /*
         $groupeGn ??= $groupe->getGroupeGns()->last();
         if (!$groupeGn && $gn) {
             foreach ($groupe->getGroupeGns() as $grpGn) {
@@ -622,7 +623,7 @@ class GroupeController extends AbstractController
                     $groupeGn = $grpGn;
                 }
             }
-        }
+        }*/
 
         // TODO check if membre can read secret
         // TODO limit WARGAME to .. WARGAME ... ADD a GROUPE_ROLE

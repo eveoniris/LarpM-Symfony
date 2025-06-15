@@ -18,7 +18,7 @@
 		<div class="list-group-item">
 			<div class="list-group-item-heading"><h6>Informations</h6></div>
 			<p class="list-group-item-text text-warning">
-				Visibilité : {{ debriefing.visibility }}
+				Visibilité : {{ debriefing.visibility.value }}
 			</p>
 			<p class="list-group-item-text">
 				Scénariste : {{ debriefing.user }}
@@ -40,11 +40,11 @@
 			{% if debriefing.documentUrl %}
 	    	<p class="list-group-item-text">
 	    		Document : <a href="{{ path('debriefing.document', {'debriefing': debriefing.id}) }}">{{ debriefing.getPrintTitre }}</a>
-	    	</p>			
+	    	</p>
 			{% endif %}
 		</div>
 	</div>
-	
+
 	<div class="panel panel-default">
 		<div class="panel-heading">
 			<h4>{{ debriefing.titre|default('Pas de titre') }}
@@ -56,5 +56,5 @@
 			<p>{{ debriefing.text|markdown_to_html }}</p>
 		</div>
 	</div>
-	
+
 {% endblock %}

@@ -3,13 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Background;
-use App\Entity\Gn;
 use App\Entity\Groupe;
-use App\Entity\GroupeGn;
+use App\Enum\Role;
 use App\Form\BackgroundDeleteForm;
 use App\Form\BackgroundFindForm;
 use App\Form\BackgroundForm;
-use DateTime;
+use App\Repository\BackgroundRepository;
+use App\Repository\GnRepository;
+use App\Repository\GroupeGnRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -17,16 +18,17 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_SCENARISTE')]
 class BackgroundController extends AbstractController
 {
     /**
      * Ajout d'un background.
      */
     #[Route('/background/{groupe}/add', name: 'background.add')]
+    #[IsGranted('ROLE_SCENARISTE')]
     public function addAction(
         Request $request,
         #[MapEntity] Groupe $groupe,
@@ -71,6 +73,7 @@ class BackgroundController extends AbstractController
      * Suppression d'un background.
      */
     #[Route('/background/{background}/delete', name: 'background.delete')]
+    #[IsGranted('ROLE_SCENARISTE')]
     public function deleteAction(Request $request, EntityManagerInterface $entityManager, Background $background)
     {
         $form = $this->createForm(BackgroundDeleteForm::class, $background)
@@ -98,8 +101,18 @@ class BackgroundController extends AbstractController
      * Détail d'un background.
      */
     #[Route('/background/{background}', name: 'background.detail')]
-    public function detailAction(Request $request, EntityManagerInterface $entityManager, Background $background)
+    public function detailAction(#[MapEntity] Background $background): Response
     {
+        if ($this->groupeService->isUserIsGroupeResponsable($background->getGroupe())) {
+            $isMembre = true;
+        } else {
+            $isMembre = $this->groupeService->isUserIsGroupeMember($background->getGroupe());
+        }
+
+        if (!$isMembre && !$this->isGranted(Role::SCENARISTE->value)) {
+            throw new AccessDeniedHttpException();
+        }
+
         return $this->render('background/detail.twig', [
             'background' => $background,
         ]);
@@ -109,6 +122,7 @@ class BackgroundController extends AbstractController
      * Présentation des backgrounds.
      */
     #[Route('/background', name: 'background.list')]
+    #[IsGranted('ROLE_SCENARISTE')]
     public function listAction(Request $request, EntityManagerInterface $entityManager)
     {
         $order_by = $request->get('order_by') ?: 'id';
@@ -154,18 +168,20 @@ class BackgroundController extends AbstractController
      * Impression de tous les backgrounds de personnage.
      */
     #[Route('/background/personnage/print', name: 'background.personnage.print')]
-    public function personnagePrintAction(Request $request, EntityManagerInterface $entityManager)
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function personnagePrintAction(GnRepository $gnRepository, GroupeGnRepository $groupeGnRepository)
     {
-        $gns = $entityManager->getRepository('\\'.Gn::class)->findActive();
+        $gns = $gnRepository->findActive();
         if (0 == count($gns)) {
             echo 'Erreur : Aucun GN actif trouvé. Veuillez activer le GN en préparation.';
             exit;
-        } elseif (count($gns) > 1) {
+        }
+        if (count($gns) > 1) {
             echo "Erreur : Il ne peut pas y avoir plus d'un GN actif à la fois. Merci de désactiver le GN précédent.";
             exit;
         }
 
-        $groupeGns = $entityManager->getRepository('\\'.GroupeGn::class)->findByGn($gns[0]->getId());
+        $groupeGns = $groupeGnRepository->findByGn($gns[0]->getId());
 
         return $this->render('background/personnagePrint.twig', [
             'groupeGns' => $groupeGns,
@@ -176,18 +192,20 @@ class BackgroundController extends AbstractController
      * Impression de tous les backgrounds de groupe.
      */
     #[Route('/background/print', name: 'background.print')]
-    public function printAction(Request $request, EntityManagerInterface $entityManager)
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function printAction(GnRepository $gnRepository, BackgroundRepository $backgroundRepository)
     {
-        $gns = $entityManager->getRepository('\\'.Gn::class)->findActive();
+        $gns = $gnRepository->findActive();
         if (0 == count($gns)) {
             echo 'Erreur : Aucun GN actif trouvé. Veuillez activer le GN en préparation.';
             exit;
-        } elseif (count($gns) > 1) {
+        }
+        if (count($gns) > 1) {
             echo "Erreur : Il ne peut pas y avoir plus d'un GN actif à la fois. Merci de désactiver le GN précédent.";
             exit;
         }
 
-        $backgrounds = $entityManager->getRepository('\\'.Background::class)->findBackgrounds($gns[0]->getId());
+        $backgrounds = $backgroundRepository->findBackgrounds($gns[0]->getId());
 
         return $this->render('background/print.twig', [
             'backgrounds' => $backgrounds,
@@ -198,6 +216,7 @@ class BackgroundController extends AbstractController
      * Mise à jour d'un background.
      */
     #[Route('/background/{background}/update', name: 'background.update')]
+    #[IsGranted('ROLE_SCENARISTE')]
     public function updateAction(Request $request, EntityManagerInterface $entityManager, Background $background)
     {
         $form = $this->createForm(BackgroundForm::class, $background)
@@ -218,7 +237,7 @@ class BackgroundController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $background = $form->getData();
-            $background->setUpdateDate(new DateTime('NOW'));
+            $background->setUpdateDate(new \DateTime('NOW'));
 
             $entityManager->persist($background);
             $entityManager->flush();

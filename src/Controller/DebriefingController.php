@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Debriefing;
 use App\Entity\Groupe;
+use App\Enum\Role;
 use App\Form\Debriefing\DebriefingDeleteForm;
-use App\Form\Debriefing\DebriefingFindForm;
 use App\Form\Debriefing\DebriefingForm;
 use App\Repository\DebriefingRepository;
 use App\Service\PagerService;
@@ -20,31 +20,20 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_SCENARISTE')]
+
 class DebriefingController extends AbstractController
 {
     final public const DOC_PATH = __DIR__.'/../../private/doc/';
 
     /**
-     * Présentation des debriefings.
-     */
-    #[Route('/debriefing', name: 'debriefing.list')]
-    public function listAction(Request $request, PagerService $pagerService, DebriefingRepository $debriefingRepository): Response
-    {
-        $pagerService->setRequest($request)->setRepository($debriefingRepository)->setLimit(25);
-
-        return $this->render('debriefing/list.twig', [
-            'pagerService' => $pagerService,
-            'paginator' => $debriefingRepository->searchPaginated($pagerService),
-        ]);
-    }
-
-    /**
      * Ajout d'un debriefing.
      */
     #[Route('/debriefing/add', name: 'debriefing.add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager)
-    {
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function addAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
         $debriefing = new Debriefing();
         $groupeId = $request->get('groupe');
         if ($groupeId) {
@@ -91,89 +80,14 @@ class DebriefingController extends AbstractController
     }
 
     /**
-     * Suppression d'un debriefing.
-     */
-    #[Route('/debriefing/{debriefing}/delete', name: 'debriefing.delete')]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Debriefing $debriefing)
-    {
-        $form = $this->createForm(DebriefingDeleteForm::class, $debriefing)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $debriefing = $form->getData();
-            $entityManager->remove($debriefing);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le debriefing a été supprimé.');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $debriefing->getGroupe()->getId()], 303);
-        }
-
-        return $this->render('debriefing/delete.twig', [
-            'form' => $form->createView(),
-            'debriefing' => $debriefing,
-        ]);
-    }
-
-    /**
-     * Mise à jour d'un debriefing.
-     */
-    #[Route('/debriefing/{debriefing}/update', name: 'debriefing.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, Debriefing $debriefing)
-    {
-        $form = $this->createForm(DebriefingForm::class, $debriefing)
-            ->add('visibility', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Visibilité',
-                'choices' => [
-                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
-                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
-                    'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
-                    'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
-                    'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-                ],
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $debriefing = $form->getData();
-
-            if ($this->handleDocument($request, $entityManager, $form, $debriefing)) {
-                $entityManager->persist($debriefing);
-                $entityManager->flush();
-
-                $this->addFlash('success', 'Le debriefing a été modifié.');
-
-                return $this->redirectToRoute('groupe.detail', ['groupe' => $debriefing->getGroupe()->getId()], 303);
-            }
-        }
-
-        return $this->render('debriefing/update.twig', [
-            'form' => $form->createView(),
-            'debriefing' => $debriefing,
-        ]);
-    }
-
-    /**
-     * Détail d'un debriefing.
-     */
-    #[Route('/debriefing/{debriefing}', name: 'debriefing.detail')]
-    public function detailAction(Request $request, EntityManagerInterface $entityManager, Debriefing $debriefing)
-    {
-        return $this->render('debriefing/detail.twig', [
-            'debriefing' => $debriefing,
-        ]);
-    }
-
-    /**
      * Gère le document uploadé et renvoie true si il est valide, false sinon.
      */
-    private function handleDocument(Request $request, EntityManagerInterface $entityManager, Form $form, Debriefing $debriefing): bool
-    {
+    private function handleDocument(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Form $form,
+        Debriefing $debriefing,
+    ): bool {
         $files = $request->files->get($form->getName());
         $documentFile = $files['document'];
         // Si un document est fourni, l'enregistrer
@@ -182,7 +96,10 @@ class DebriefingController extends AbstractController
             $extension = pathinfo((string) $filename, PATHINFO_EXTENSION);
 
             if ('pdf' !== $extension) {
-                $this->addFlash('error', 'Désolé, votre document n\'est pas valide. Vérifiez le format de votre document ('.$extension.'), seuls les .pdf sont acceptés.');
+                $this->addFlash(
+                    'error',
+                    'Désolé, votre document n\'est pas valide. Vérifiez le format de votre document ('.$extension.'), seuls les .pdf sont acceptés.',
+                );
 
                 return false;
             }
@@ -216,11 +133,73 @@ class DebriefingController extends AbstractController
     }
 
     /**
+     * Suppression d'un debriefing.
+     */
+    #[Route('/debriefing/{debriefing}/delete', name: 'debriefing.delete')]
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Debriefing $debriefing,
+    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
+        $form = $this->createForm(DebriefingDeleteForm::class, $debriefing)
+            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $debriefing = $form->getData();
+            $entityManager->remove($debriefing);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le debriefing a été supprimé.');
+
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $debriefing->getGroupe()->getId()], 303);
+        }
+
+        return $this->render('debriefing/delete.twig', [
+            'form' => $form->createView(),
+            'debriefing' => $debriefing,
+        ]);
+    }
+
+    /**
+     * Détail d'un debriefing.
+     */
+    #[Route('/debriefing/{debriefing}', name: 'debriefing.detail')]
+    public function detailAction(
+        Debriefing $debriefing,
+    ): Response {
+        $this->checkHasAccess([Role::SCENARISTE],
+            function () use ($debriefing) {
+                return $this->groupeService->isUserIsGroupeResponsable($debriefing->getGroupe())
+                    || $this->groupeService->isUserIsGroupeMember($debriefing->getGroupe());
+            },
+        );
+
+        return $this->render('debriefing/detail.twig', [
+            'debriefing' => $debriefing,
+        ]);
+    }
+
+    protected function checkHasAccess(array $roles, ?callable $callable): void
+    {
+        parent::checkHasAccess($roles, $callable);
+    }
+
+    /**
      * Afficher le document lié a un debriefing.
      */
     #[Route('/debriefing/{debriefing}/document', name: 'debriefing.document')]
     public function documentAction(Debriefing $debriefing): BinaryFileResponse
     {
+        $this->checkHasAccess([Role::SCENARISTE],
+            function () use ($debriefing) {
+                return $this->groupeService->isUserIsGroupeResponsable($debriefing->getGroupe())
+                    || $this->groupeService->isUserIsGroupeMember($debriefing->getGroupe());
+            },
+        );
+
         $document = $debriefing->getDocumentUrl();
         $file = self::DOC_PATH.$document;
 
@@ -230,5 +209,68 @@ class DebriefingController extends AbstractController
         $response->headers->set('Content-Disposition', 'attachment; filename="'.$debriefing->getPrintTitre().'.pdf"');
 
         return $response;
+    }
+
+    /**
+     * Présentation des debriefings.
+     */
+    #[Route('/debriefing', name: 'debriefing.list')]
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function listAction(
+        Request $request,
+        PagerService $pagerService,
+        DebriefingRepository $debriefingRepository,
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($debriefingRepository)->setLimit(25);
+
+        return $this->render('debriefing/list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $debriefingRepository->searchPaginated($pagerService),
+        ]);
+    }
+
+    /**
+     * Mise à jour d'un debriefing.
+     */
+    #[Route('/debriefing/{debriefing}/update', name: 'debriefing.update')]
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Debriefing $debriefing,
+    ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
+        $form = $this->createForm(DebriefingForm::class, $debriefing)
+            ->add('visibility', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Visibilité',
+                'choices' => [
+                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
+                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
+                    'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
+                    'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
+                    'Seul l\'auteur peut voir ceci' => 'AUTHOR',
+                ],
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $debriefing = $form->getData();
+
+            if ($this->handleDocument($request, $entityManager, $form, $debriefing)) {
+                $entityManager->persist($debriefing);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Le debriefing a été modifié.');
+
+                return $this->redirectToRoute('groupe.detail', ['groupe' => $debriefing->getGroupe()->getId()], 303);
+            }
+        }
+
+        return $this->render('debriefing/update.twig', [
+            'form' => $form->createView(),
+            'debriefing' => $debriefing,
+        ]);
     }
 }
