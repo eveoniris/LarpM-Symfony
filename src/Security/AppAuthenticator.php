@@ -26,6 +26,26 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
     {
     }
 
+    public function supports(Request $request): bool
+    {
+        // Check if it's a login form submission
+        $isLoginRoute = $request->attributes->get('_route') === self::LOGIN_ROUTE;
+        $isPost = $request->isMethod('POST');
+
+        // If it's a login form submission, proceed with normal authentication
+        if ($isLoginRoute && $isPost) {
+            return true;
+        }
+
+        // For BinaryFileResponse requests, we need to ensure the authenticator supports them
+        // to prevent the "headers already sent" error
+        if ($request->headers->has('Cookie') && str_contains($request->headers->get('Cookie'), 'REMEMBERME')) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function authenticate(Request $request): Passport
     {
         $username = $request->request->get('username', '');
