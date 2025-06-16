@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseRelecture', 'extended' => 'Relecture'])]
 class BaseRelecture
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     /**
@@ -55,21 +55,11 @@ class BaseRelecture
     }
 
     /**
-     * Set the value of id.
+     * Get the value of date.
      */
-    public function setId(int $id): static
+    public function getDate(): \DateTime
     {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
+        return $this->date;
     }
 
     /**
@@ -83,65 +73,29 @@ class BaseRelecture
     }
 
     /**
-     * Get the value of date.
+     * Get the value of id.
      */
-    public function getDate(): \DateTime
+    public function getId(): int
     {
-        return $this->date;
+        return $this->id;
     }
 
     /**
-     * Set the value of statut.
+     * Set the value of id.
      */
-    public function setStatut(string $statut): static
+    public function setId(int $id): static
     {
-        $this->statut = $statut;
+        $this->id = $id;
 
         return $this;
     }
 
     /**
-     * Get the value of statut.
+     * Get Intrigue entity (many to one).
      */
-    public function getStatut(): string
+    public function getIntrigue(): Intrigue
     {
-        return $this->statut;
-    }
-
-    /**
-     * Set the value of remarque.
-     */
-    public function setRemarque(string $remarque): static
-    {
-        $this->remarque = $remarque;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of remarque.
-     */
-    public function getRemarque(): string
-    {
-        return $this->remarque;
-    }
-
-    /**
-     * Set User entity (many to one).
-     */
-    public function setUser(?User $user = null): static
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get User entity (many to one).
-     */
-    public function getUser(): ?User
-    {
-        return $this->user;
+        return $this->intrigue;
     }
 
     /**
@@ -155,11 +109,57 @@ class BaseRelecture
     }
 
     /**
-     * Get Intrigue entity (many to one).
+     * Get the value of remarque.
      */
-    public function getIntrigue(): Intrigue
+    public function getRemarque(): string
     {
-        return $this->intrigue;
+        return $this->remarque ?? '';
+    }
+
+    /**
+     * Set the value of remarque.
+     */
+    public function setRemarque(?string $remarque): static
+    {
+        $this->remarque = $remarque ?? '';
+
+        return $this;
+    }
+
+    /**
+     * Get the value of statut.
+     */
+    public function getStatut(): string
+    {
+        return $this->statut;
+    }
+
+    /**
+     * Set the value of statut.
+     */
+    public function setStatut(string $statut): static
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    /**
+     * Get User entity (many to one).
+     */
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set User entity (many to one).
+     */
+    public function setUser(?User $user = null): static
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
     /* public function __sleep()
