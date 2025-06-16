@@ -57,7 +57,7 @@ abstract class BaseObjet
     #[JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: false)]
     protected Collection $items;
 
-    #[OneToOne(mappedBy: 'objet', targetEntity: ObjetCarac::class)]
+    #[OneToOne(inversedBy: 'objet', targetEntity: ObjetCarac::class)]
     protected ?ObjetCarac $objetCarac = null;
 
     #[ManyToOne(targetEntity: Etat::class, inversedBy: 'objets')]

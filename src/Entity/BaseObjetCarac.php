@@ -28,7 +28,7 @@ abstract class BaseObjetCarac
     #[Column(type: Types::STRING, length: 6, nullable: true)]
     protected ?string $couleur = null;
 
-    #[ORM\OneToOne(inversedBy: 'objetCarac', targetEntity: Objet::class, cascade: [
+    #[ORM\OneToOne(targetEntity: Objet::class, cascade: [
         'persist',
         'remove',
         'merge',
