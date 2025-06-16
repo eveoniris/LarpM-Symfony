@@ -46,15 +46,15 @@ abstract class BaseBillet
      * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Participant>|\App\Entity\Participant[]
      */
     #[OneToMany(mappedBy: 'billet', targetEntity: Participant::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'billet_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'billet_id', nullable: false)]
     protected ?Collection $participants = null;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'billets')]
-    #[JoinColumn(name: 'createur_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'createur_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'billets')]
-    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: false)]
     protected ?Gn $gn = null;
 
     public function __construct()

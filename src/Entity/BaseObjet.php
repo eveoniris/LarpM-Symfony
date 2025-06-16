@@ -54,7 +54,7 @@ abstract class BaseObjet
     protected ?\DateTime $creation_date = null;
 
     #[OneToMany(mappedBy: 'objet', targetEntity: Item::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: false)]
     protected Collection $items;
 
     #[OneToOne(mappedBy: 'objet', targetEntity: ObjetCarac::class)]
@@ -65,11 +65,11 @@ abstract class BaseObjet
     protected ?Etat $etat = null;
 
     #[ManyToOne(targetEntity: Proprietaire::class, inversedBy: 'objets')]
-    #[JoinColumn(name: 'proprietaire_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'proprietaire_id', referencedColumnName: 'id', nullable: false)]
     protected ?Proprietaire $proprietaire = null;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'objets')]
-    #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     #[ManyToOne(targetEntity: Photo::class, cascade: [
@@ -83,7 +83,7 @@ abstract class BaseObjet
     protected ?Photo $photo = null;
 
     #[ManyToOne(targetEntity: Rangement::class, inversedBy: 'objets')]
-    #[JoinColumn(name: 'rangement_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'rangement_id', referencedColumnName: 'id', nullable: false)]
     #[Assert\NotNull]
     protected ?Rangement $rangement = null;
 

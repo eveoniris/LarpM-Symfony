@@ -22,11 +22,11 @@ abstract class BaseGroupeClasse
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: Groupe::class, cascade: ['persist'], inversedBy: 'groupeClasses')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     protected Groupe $groupe;
 
     #[ManyToOne(targetEntity: Classe::class, cascade: ['persist'], inversedBy: 'groupeClasses')]
-    #[JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: false)]
     protected Classe $classe;
 
     public function setId(int $id): static

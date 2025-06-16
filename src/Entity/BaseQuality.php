@@ -28,11 +28,11 @@ abstract class BaseQuality
     protected ?int $numero = null;
 
     #[OneToMany(mappedBy: 'quality', targetEntity: Item::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'quality_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'quality_id', nullable: false)]
     protected Collection $items;
 
     #[OneToMany(mappedBy: 'quality', targetEntity: QualityValeur::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'quality_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'quality_id', nullable: false)]
     protected Collection $qualityValeurs;
 
     public function __construct()

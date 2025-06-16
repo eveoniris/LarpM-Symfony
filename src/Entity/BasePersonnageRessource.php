@@ -24,11 +24,11 @@ abstract class BasePersonnageRessource
     protected ?int $nombre;
 
     #[ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'personnageRessources')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected ?Personnage $personnage;
 
     #[ManyToOne(targetEntity: Ressource::class, inversedBy: 'personnageRessources')]
-    #[JoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
     protected ?Ressource $ressource;
 
     /**

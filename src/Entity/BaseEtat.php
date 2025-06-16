@@ -28,7 +28,7 @@ abstract class BaseEtat
      * @var \Doctrine\Common\Collections\ArrayCollection<int, \App\Entity\Objet>|\App\Entity\Objet[]
      */
     #[OneToMany(mappedBy: 'etat', targetEntity: Objet::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'etat_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'etat_id', nullable: false)]
     protected Collection $objets;
 
     public function __construct()

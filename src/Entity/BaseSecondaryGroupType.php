@@ -29,7 +29,7 @@ abstract class BaseSecondaryGroupType
     protected ?string $description = null;
 
     #[OneToMany(mappedBy: 'secondaryGroupType', targetEntity: SecondaryGroup::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_type_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_type_id', nullable: false)]
     protected Collection $secondaryGroups;
 
     public function __construct()

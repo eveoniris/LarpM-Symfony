@@ -37,11 +37,11 @@ abstract class BaseIngredient
     protected string $dose = '';
 
     #[OneToMany(mappedBy: 'ingredient', targetEntity: GroupeHasIngredient::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'ingredient_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'ingredient_id', nullable: false)]
     protected ?Collection $groupeHasIngredients;
 
     #[OneToMany(mappedBy: 'ingredient', targetEntity: PersonnageIngredient::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'ingredient_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'ingredient_id', nullable: false)]
     protected ?Collection $personnageIngredients;
 
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'ingredients')]

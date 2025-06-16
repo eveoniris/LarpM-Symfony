@@ -22,11 +22,11 @@ abstract class BasePersonnageSecondaireCompetence
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: PersonnageSecondaire::class, cascade: ['persist'], inversedBy: 'personnageSecondaireCompetences')]
-    #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id', nullable: false)]
     protected PersonnageSecondaire $personnageSecondaire;
 
     #[ManyToOne(targetEntity: Competence::class, inversedBy: 'personnageSecondaireCompetences', cascade: ['persist'])]
-    #[JoinColumn(name: 'competence_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'competence_id', referencedColumnName: 'id', nullable: false)]
     protected Competence $competence;
 
     /**

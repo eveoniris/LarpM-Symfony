@@ -47,15 +47,15 @@ abstract class BaseReligion
     protected ?bool $secret = null;
 
     #[OneToMany(mappedBy: 'religion', targetEntity: PersonnagesReligions::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: false)]
     protected Collection $personnagesReligions;
 
     #[OneToMany(mappedBy: 'religion', targetEntity: ReligionDescription::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: false)]
     protected Collection $religionDescriptions;
 
     #[OneToMany(mappedBy: 'religion', targetEntity: Territoire::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: false)]
     protected Collection $territoires;
 
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'religions')]

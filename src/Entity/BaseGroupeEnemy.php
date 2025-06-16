@@ -34,11 +34,11 @@ abstract class BaseGroupeEnemy
     protected ?string $message_enemy = null;
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'groupeEnemyRelatedByGroupeIds')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     protected Groupe $groupeRelatedByGroupeId;
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'groupeEnemyRelatedByGroupeEnemyIds')]
-    #[JoinColumn(name: 'groupe_enemy_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'groupe_enemy_id', referencedColumnName: 'id', nullable: false)]
     protected Groupe $groupeRelatedByGroupeEnemyId;
 
     /**

@@ -25,27 +25,27 @@ abstract class BasePersonnageSecondaire
     protected ?int $id = null;
 
     #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: Participant::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $participants;
 
     #[OneToMany(mappedBy: 'personnageSecondaire', cascade: ['persist'], targetEntity: PersonnageSecondaireCompetence::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $personnageSecondaireCompetences;
 
     #[OneToMany(mappedBy: 'personnageSecondaire', cascade: ['persist'], targetEntity: PersonnageSecondairesCompetences::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $personnageSecondairesCompetences;
 
     #[OneToMany(mappedBy: 'personnageSecondaire', cascade: ['persist'], targetEntity: PersonnageSecondairesSkills::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $personnageSecondairesSkills;
 
     #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: User::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $users;
 
     #[ManyToOne(targetEntity: Classe::class, inversedBy: 'personnageSecondaires')]
-    #[JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: false)]
     protected Classe $classe;
 
     public function __construct()

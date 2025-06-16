@@ -21,11 +21,11 @@ abstract class BasePersonnageHasToken
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageHasTokens')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     #[ManyToOne(targetEntity: Token::class, inversedBy: 'personnageHasTokens')]
-    #[JoinColumn(name: 'token_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'token_id', referencedColumnName: 'id', nullable: false)]
     protected Token $token;
 
     /**

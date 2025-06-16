@@ -41,7 +41,7 @@ abstract class BaseLevel
     protected ?int $cout_meconu = 0;
 
     #[OneToMany(mappedBy: 'level', targetEntity: Competence::class, cascade: ['persist'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'level_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'level_id', nullable: false)]
     protected ?Collection $competences;
 
     public function __construct()

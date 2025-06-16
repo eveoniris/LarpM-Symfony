@@ -36,15 +36,15 @@ abstract class BaseQuestion
     protected string $label = '';
 
     #[OneToMany(mappedBy: 'question', targetEntity: Reponse::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'question_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'question_id', nullable: false)]
     protected Collection $reponses;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'questions')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     #[OneToMany(mappedBy: 'question', targetEntity: PersonnageHasQuestion::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'question_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'question_id', nullable: false)]
     protected Collection $personnageHasQuestions;
 
     public function __construct()

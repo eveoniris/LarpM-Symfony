@@ -35,7 +35,7 @@ class BaseObjectif
      * @var Collection<int, IntrigueHasObjectif>|IntrigueHasObjectif[]
      */
     #[OneToMany(mappedBy: 'objectif', targetEntity: IntrigueHasObjectif::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'objectif_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'objectif_id', nullable: false)]
     protected Collection $intrigueHasObjectifs;
 
     public function __construct()

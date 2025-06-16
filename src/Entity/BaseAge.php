@@ -41,7 +41,7 @@ abstract class BaseAge
      * @var Collection<int, Personnage>|Personnage[]
      */
     #[OneToMany(mappedBy: 'age', targetEntity: Personnage::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'age_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'age_id', nullable: false)]
     protected Collection $personnages;
 
     public function __construct()

@@ -41,24 +41,24 @@ abstract class BaseSecondaryGroup
     protected ?string $materiel = null;
 
     #[OneToMany(mappedBy: 'secondaryGroup', targetEntity: IntrigueHasGroupeSecondaire::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: false)]
     protected Collection $intrigueHasGroupeSecondaires;
 
     #[OneToMany(mappedBy: 'secondaryGroup', targetEntity: Membre::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: false)]
     #[ORM\OrderBy(['id' => 'ASC'])]
     protected Collection $membres;
 
     #[OneToMany(mappedBy: 'secondaryGroup', targetEntity: Postulant::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: false)]
     protected Collection $postulants;
 
     #[ManyToOne(targetEntity: SecondaryGroupType::class, fetch: 'EAGER', inversedBy: 'secondaryGroups')]
-    #[JoinColumn(name: 'secondary_group_type_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'secondary_group_type_id', referencedColumnName: 'id', nullable: false)]
     protected SecondaryGroupType $secondaryGroupType;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'secondaryGroups')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected ?Personnage $personnage = null;
 
     #[Column(length: 255, nullable: true)]

@@ -30,7 +30,7 @@ abstract class BaseRenommeHistory
     protected \DateTime $date;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'renommeHistories')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     public function __construct()

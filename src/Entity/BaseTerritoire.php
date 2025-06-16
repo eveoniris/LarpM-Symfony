@@ -108,31 +108,31 @@ abstract class BaseTerritoire
     protected int $ordre_social = 0;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Chronologie::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'zone_politique_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'zone_politique_id', nullable: false)]
     protected Collection $chronologies;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Groupe::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: false)]
     protected ?Collection $groupes;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Personnage::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: false)]
     protected Collection $personnages;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Rumeur::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: false)]
     protected Collection $rumeurs;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: Territoire::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: false)]
     protected Collection $territoires;
 
     #[OneToMany(mappedBy: 'territoire', targetEntity: TitreTerritoire::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: false)]
     protected Collection $titreTerritoires;
 
     #[OneToMany(mappedBy: 'cible', targetEntity: GroupeGnOrdre::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'cible_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'cible_id', nullable: false)]
     protected Collection $groupeGnOrdres;
 
     #[ORM\ManyToOne(targetEntity: Territoire::class, inversedBy: 'territoires')]
@@ -219,7 +219,7 @@ abstract class BaseTerritoire
      */
     #[OneToMany(mappedBy: 'territoire', targetEntity: OrigineBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'origine_bonus')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['id' => 'DESC'])]
     private ?Collection $originesBonus;
 

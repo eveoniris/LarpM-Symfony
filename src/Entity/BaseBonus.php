@@ -43,7 +43,7 @@ abstract class BaseBonus
      */
     #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: OrigineBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'origine_bonus')]
-    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
     private Collection $originesBonus;
 
     /**
@@ -51,7 +51,7 @@ abstract class BaseBonus
      */
     #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: PersonnageBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'personnage_bonus')]
-    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
     private ?Collection $personnageBonus;
 
     /**
@@ -59,7 +59,7 @@ abstract class BaseBonus
      */
     #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: GroupeBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'groupe_bonus')]
-    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
     private ?Collection $groupeBonus;
 
     /**

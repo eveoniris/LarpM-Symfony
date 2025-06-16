@@ -32,7 +32,7 @@ abstract class BaseCulture
     protected ?string $description_complete = null;
 
     #[OneToMany(mappedBy: 'culture', targetEntity: Territoire::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'culture_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'culture_id', nullable: false)]
     protected Collection $territoires;
 
     public function __construct()

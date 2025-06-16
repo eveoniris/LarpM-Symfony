@@ -28,11 +28,11 @@ abstract class BaseGroupeGnOrdre
     protected string $extra;
 
     #[ManyToOne(targetEntity: GroupeGn::class, inversedBy: 'groupeGnOrdres')]
-    #[JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id', nullable: false)]
     protected GroupeGn $groupeGn;
 
     #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'groupeGnOrdres')]
-    #[JoinColumn(name: 'cible_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'cible_id', referencedColumnName: 'id', nullable: false)]
     protected Territoire $cible;
 
     /**

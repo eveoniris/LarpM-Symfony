@@ -34,7 +34,7 @@ abstract class BaseStatut
     protected ?string $description = null;
 
     #[OneToMany(mappedBy: 'statut', targetEntity: Item::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'statut_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'statut_id', nullable: false)]
     protected Collection $items;
 
     public function __construct()

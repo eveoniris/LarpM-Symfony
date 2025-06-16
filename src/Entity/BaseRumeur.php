@@ -35,15 +35,15 @@ abstract class BaseRumeur
     protected $visibility = '';
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'rumeurs')]
-    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: false)]
     protected Gn $gn;
 
     #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'rumeurs')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     protected Territoire $territoire;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'rumeurs')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     public function __construct()

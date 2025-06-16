@@ -32,7 +32,7 @@ abstract class BaseToken
     protected string $tag = '';
 
     #[OneToMany(mappedBy: 'token', targetEntity: PersonnageHasToken::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'token_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'token_id', nullable: false)]
     protected Collection $personnageHasTokens;
 
     public function __construct()

@@ -43,11 +43,11 @@ class BaseRelecture
     protected string $remarque = '';
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'relectures')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     #[ManyToOne(targetEntity: Intrigue::class, cascade: ['persist', 'remove'], inversedBy: 'relectures')]
-    #[JoinColumn(name: 'intrigue_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'intrigue_id', referencedColumnName: 'id', nullable: false)]
     protected Intrigue $intrigue;
 
     public function __construct()

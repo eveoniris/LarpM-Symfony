@@ -36,7 +36,7 @@ abstract class BaseProprietaire
     protected ?string $tel = null;
 
     #[OneToMany(mappedBy: 'proprietaire', targetEntity: Objet::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'proprietaire_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'proprietaire_id', nullable: false)]
     protected Collection $objets;
 
     public function __construct()

@@ -30,7 +30,7 @@ abstract class BaseLocalisation
     protected ?string $precision = null;
 
     #[OneToMany(mappedBy: 'localisation', targetEntity: Rangement::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'localisation_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'localisation_id', nullable: false)]
     protected Collection $rangements;
 
     public function __construct()

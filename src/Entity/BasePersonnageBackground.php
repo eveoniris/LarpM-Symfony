@@ -37,15 +37,15 @@ abstract class BasePersonnageBackground
     protected $update_date;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageBackgrounds')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'personnageBackgrounds')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'personnageBackgrounds')]
-    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: false)]
     #[Assert\NotNull]
     protected ?Gn $gn = null;
 

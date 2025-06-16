@@ -42,11 +42,11 @@ class BaseBackground
     protected ?\DateTime $update_date;
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'backgrounds')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     protected ?Groupe $groupe = null;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'backgrounds')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'backgrounds')]

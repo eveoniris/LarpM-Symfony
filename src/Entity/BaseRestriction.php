@@ -33,7 +33,7 @@ class BaseRestriction
     protected ?\DateTime $update_date = null;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'restrictionRelatedByAuteurIds')]
-    #[JoinColumn(name: 'auteur_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'auteur_id', referencedColumnName: 'id', nullable: false)]
     protected User $userRelatedByAuteurId;
 
     #[ManyToMany(targetEntity: User::class, mappedBy: 'restrictions')]

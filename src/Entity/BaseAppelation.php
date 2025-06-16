@@ -37,14 +37,14 @@ class BaseAppelation
      * @var Collection<int, Appelation>|Appelation[]
      */
     #[OneToMany(mappedBy: 'appelation', targetEntity: Appelation::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: false)]
     protected Collection $appelations;
 
     /**
      * @var Collection<int, Territoire>|Territoire[]
      */
     #[OneToMany(mappedBy: 'appelation', targetEntity: Territoire::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: false)]
     protected Collection $territoires;
 
     #[ManyToOne(targetEntity: Appelation::class, inversedBy: 'appelations')]

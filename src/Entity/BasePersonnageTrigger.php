@@ -29,7 +29,7 @@ abstract class BasePersonnageTrigger
     protected bool $done = false;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageTriggers')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     /**

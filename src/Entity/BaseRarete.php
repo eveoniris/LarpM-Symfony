@@ -28,7 +28,7 @@ abstract class BaseRarete
     protected int $value = 0;
 
     #[OneToMany(mappedBy: 'rarete', targetEntity: Ressource::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'rarete_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'rarete_id', nullable: false)]
     protected Collection $ressources;
 
     public function __construct()

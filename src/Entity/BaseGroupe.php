@@ -123,7 +123,7 @@ class BaseGroupe
     protected ?User $userRelatedByResponsableId = null;
 
     #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'groupes')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     protected ?Territoire $territoire;
 
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'groupes')]
@@ -145,7 +145,7 @@ class BaseGroupe
      */
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'groupe_bonus')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     private ?Collection $groupeBonus;
 
     #[ORM\Column(length: 255, nullable: true)]

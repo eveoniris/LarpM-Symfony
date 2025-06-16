@@ -28,7 +28,7 @@ class BaseAttributeType
      * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\CompetenceAttribute>|\App\Entity\CompetenceAttribute[]
      */
     #[OneToMany(mappedBy: 'attributeType', targetEntity: CompetenceAttribute::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'attribute_type_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'attribute_type_id', nullable: false)]
     protected \Doctrine\Common\Collections\ArrayCollection|\Doctrine\Common\Collections\Collection $competenceAttributes;
 
     public function __construct()

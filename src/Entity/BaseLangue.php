@@ -34,16 +34,16 @@ abstract class BaseLangue
     protected ?int $diffusion = 0;
 
     #[OneToMany(mappedBy: 'langue', targetEntity: PersonnageLangues::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: false)]
     #[OrderBy(['langue' => 'ASC'])]
     protected Collection $personnageLangues;
 
     #[OneToMany(mappedBy: 'langue', targetEntity: Territoire::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: false)]
     protected Collection $territoires;
 
     #[ORM\ManyToOne(targetEntity: GroupeLangue::class, inversedBy: 'langues')]
-    #[JoinColumn(name: 'groupe_langue_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'groupe_langue_id', referencedColumnName: 'id', nullable: false)]
     protected GroupeLangue $groupeLangue;
 
     #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'langues')]

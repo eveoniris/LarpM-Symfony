@@ -29,7 +29,7 @@ abstract class BaseNotification
     protected ?string $url = '';
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'notifications')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     /**
