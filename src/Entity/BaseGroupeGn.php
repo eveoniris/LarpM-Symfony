@@ -52,25 +52,25 @@ abstract class BaseGroupeGn
     protected int $initiative = 0;
 
     #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: Participant::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: false)]
     #[ORM\OrderBy(['subscription_date' => 'ASC'])]
     protected Collection $participants;
 
     #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: GroupeGnOrdre::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: false)]
     #[ORM\OrderBy(['ordre' => 'ASC'])]
     protected Collection $groupeGnOrdres;
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'groupeGns')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     protected Groupe $groupe;
 
     #[ORM\ManyToOne(targetEntity: Gn::class, inversedBy: 'groupeGns')]
-    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: false)]
     protected Gn $gn;
 
     #[ORM\ManyToOne(targetEntity: Participant::class, inversedBy: 'groupeGns')]
-    #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: false)]
     protected ?Participant $participant;
 
     #[Column(length: 255, nullable: true)]
@@ -96,7 +96,7 @@ abstract class BaseGroupeGn
 
     /*
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
-    #[JoinColumn(name: 'suzerain_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'suzerain_id', referencedColumnName: 'id', nullable: false)]
     protected ?Personnage $suzerain;*/
 
     public function __construct()

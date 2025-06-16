@@ -33,7 +33,7 @@ abstract class BaseSorts
     protected int $niveau = 0;
 
     #[ManyToOne(targetEntity: Domaine::class, inversedBy: 'sorts')]
-    #[JoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: false)]
     protected Domaine $domaine;
 
     /**

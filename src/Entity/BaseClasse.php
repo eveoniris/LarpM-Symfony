@@ -47,21 +47,21 @@ abstract class BaseClasse
      * @var Collection<int, GroupeClasse>|GroupeClasse[]
      */
     #[OneToMany(mappedBy: 'classe', targetEntity: GroupeClasse::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: false)]
     protected Collection $groupeClasses;
 
     /**
      * @var Collection<int, Personnage>|Personnage[]
      */
     #[OneToMany(mappedBy: 'classe', targetEntity: Personnage::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: false)]
     protected Collection $personnages;
 
     /**
      * @var Collection<int, PersonnageSecondaire>
      */
     #[OneToMany(mappedBy: 'classe', targetEntity: PersonnageSecondaire::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: false)]
     protected Collection $personnageSecondaires;
 
     #[JoinTable(name: 'classe_competence_family_favorite')]

@@ -30,7 +30,7 @@ abstract class BaseDomaine
     protected ?string $description;
 
     #[OneToMany(mappedBy: 'domaine', targetEntity: Sort::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'domaine_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'domaine_id', nullable: false)]
     #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $sorts;
 

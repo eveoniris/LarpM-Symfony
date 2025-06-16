@@ -26,11 +26,11 @@ abstract class BaseParticipantHasRestauration
     protected \DateTime $date;
 
     #[ManyToOne(targetEntity: Participant::class, inversedBy: 'participantHasRestaurations', cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: false)]
     protected Participant $participant;
 
     #[ManyToOne(targetEntity: Restauration::class, inversedBy: 'participantHasRestaurations', cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'restauration_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'restauration_id', referencedColumnName: 'id', nullable: false)]
     protected Restauration $restauration;
 
     public function __construct()

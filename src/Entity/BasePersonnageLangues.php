@@ -27,11 +27,11 @@ abstract class BasePersonnageLangues
     protected string $source = '';
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageLangues')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     #[ManyToOne(targetEntity: Langue::class, inversedBy: 'personnageLangues')]
-    #[JoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: false)]
     #[OrderBy(['secret' => 'ASC', 'langue' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC'])]
     protected Langue $langue;
 

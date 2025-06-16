@@ -24,16 +24,16 @@ abstract class BasePersonnagesReligions
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: Religion::class, inversedBy: 'personnagesReligions')]
-    #[JoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['religion_label' => 'ASC'])]
     protected Religion $religion;
 
     #[ManyToOne(targetEntity: ReligionLevel::class, inversedBy: 'personnagesReligions')]
-    #[JoinColumn(name: 'religion_level_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'religion_level_id', referencedColumnName: 'id', nullable: false)]
     protected ReligionLevel $religionLevel;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnagesReligions')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     /**

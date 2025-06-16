@@ -24,7 +24,7 @@ abstract class BasePersonnageChronologie
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageChronologie')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING)]

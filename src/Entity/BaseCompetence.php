@@ -44,33 +44,33 @@ class BaseCompetence
      * @var Collection<int, CompetenceAttribute>|CompetenceAttribute[]
      */
     #[OneToMany(mappedBy: 'competence', targetEntity: CompetenceAttribute::class, cascade: ['all'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: false)]
     protected Collection $competenceAttributes;
 
     /**
      * @var Collection<int, ExperienceUsage>|ExperienceUsage[]
      */
     #[OneToMany(mappedBy: 'competence', targetEntity: ExperienceUsage::class, cascade: ['all'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: false)]
     protected Collection $experienceUsages;
 
     /**
      * @var Collection<int, PersonnageSecondaireCompetence>|PersonnageSecondaireCompetence[]
      */
     #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageSecondaireCompetence::class, cascade: ['persist'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: false)]
     protected Collection $personnageSecondaireCompetences;
 
     #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageSecondairesCompetences::class, cascade: ['persist'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: false)]
     protected Collection $personnageSecondairesCompetences;
 
     #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageSecondairesSkills::class, cascade: ['persist'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: false)]
     protected Collection $personnageSecondairesSkills;
 
     #[ManyToOne(targetEntity: CompetenceFamily::class, cascade: ['persist'], inversedBy: 'competences')]
-    #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: false)]
     #[OrderBy(['competence_family_label' => Criteria::ASC])]
     protected CompetenceFamily $competenceFamily;
 
@@ -85,7 +85,7 @@ class BaseCompetence
     protected Collection $personnages;
 
     #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageApprentissage::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'competence_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'competence_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $personnageApprentissages;
 
     public function __construct()

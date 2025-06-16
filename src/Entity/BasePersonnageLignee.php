@@ -25,19 +25,19 @@ abstract class BasePersonnageLignee
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageLignee')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'PersonnageLigneeParent1')]
-    #[JoinColumn(name: 'parent1_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'parent1_id', referencedColumnName: 'id', nullable: false)]
     protected ?Personnage $parent1;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'PersonnageLigneeParent2')]
-    #[JoinColumn(name: 'parent2_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'parent2_id', referencedColumnName: 'id', nullable: false)]
     protected ?Personnage $parent2;
 
     #[ManyToOne(targetEntity: Lignee::class, inversedBy: 'personnageLignees')]
-    #[JoinColumn(name: 'lignee_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'lignee_id', referencedColumnName: 'id', nullable: false)]
     protected ?Lignee $lignee;
 
     /**

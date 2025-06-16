@@ -32,11 +32,11 @@ abstract class BaseReligionLevel
     protected ?string $description = null;
 
     #[OneToMany(mappedBy: 'religionLevel', targetEntity: PersonnagesReligions::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'religion_level_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'religion_level_id', nullable: false)]
     protected $personnagesReligions;
 
     #[OneToMany(mappedBy: 'religionLevel', targetEntity: ReligionDescription::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'religion_level_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'religion_level_id', nullable: false)]
     protected $religionDescriptions;
 
     public function __construct()

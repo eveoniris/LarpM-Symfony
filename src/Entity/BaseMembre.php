@@ -26,11 +26,11 @@ abstract class BaseMembre
     protected bool $secret = false;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'membres')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     #[ManyToOne(targetEntity: SecondaryGroup::class, inversedBy: 'membres')]
-    #[JoinColumn(name: 'secondary_group_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'secondary_group_id', referencedColumnName: 'id', nullable: false)]
     protected SecondaryGroup $secondaryGroup;
 
     #[ORM\Column(nullable: true)]

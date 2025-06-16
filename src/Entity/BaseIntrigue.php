@@ -56,39 +56,39 @@ abstract class BaseIntrigue
     protected ?string $state = null;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasEvenement::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasEvenements;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasGroupe::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasGroupes;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasGroupeSecondaire::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasGroupeSecondaires;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasLieu::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasLieus;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasDocument::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasDocuments;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasModification::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasModifications;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasObjectif::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasObjectifs;
 
     #[OneToMany(mappedBy: 'intrigue', targetEntity: Relecture::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $relectures;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'intrigues')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     public function __construct()

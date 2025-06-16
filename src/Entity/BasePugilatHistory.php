@@ -30,7 +30,7 @@ abstract class BasePugilatHistory
     protected string $explication;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'pugilatHistories')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     public function __construct()

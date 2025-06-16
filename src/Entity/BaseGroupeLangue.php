@@ -29,7 +29,7 @@ abstract class BaseGroupeLangue
     protected $couleur;
 
     #[OneToMany(mappedBy: 'groupeLangue', targetEntity: Langue::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_langue_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'groupe_langue_id', nullable: false)]
     protected Collection $langues;
 
     public function __construct()

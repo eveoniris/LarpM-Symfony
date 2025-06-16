@@ -33,7 +33,7 @@ abstract class BaseIntrigueHasModification
     protected Intrigue $intrigue;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'intrigueHasModifications')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     public function __construct()

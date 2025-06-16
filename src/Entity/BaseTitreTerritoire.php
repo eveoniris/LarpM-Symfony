@@ -25,11 +25,11 @@ abstract class BaseTitreTerritoire
     protected string $label = '';
 
     #[ManyToOne(targetEntity: Titre::class, inversedBy: 'titreTerritoires')]
-    #[JoinColumn(name: 'titre_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'titre_id', referencedColumnName: 'id', nullable: false)]
     protected Titre $titre;
 
     #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'titreTerritoires')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     protected Territoire $territoire;
 
     /**

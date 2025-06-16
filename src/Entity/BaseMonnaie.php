@@ -28,7 +28,7 @@ abstract class BaseMonnaie
     protected string $description;
 
     #[OneToMany(mappedBy: 'monnaie', targetEntity: QualityValeur::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'monnaie_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'monnaie_id', nullable: false)]
     protected Collection $qualityValeurs;
 
     public function __construct()

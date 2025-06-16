@@ -33,27 +33,27 @@ class BaseParticipant
     protected ?\DateTimeInterface $valide_ci_le = null;
 
     #[OneToMany(mappedBy: 'participant', targetEntity: GroupeGn::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: false)]
     protected Collection $groupeGns;
 
     #[OneToMany(mappedBy: 'participant', targetEntity: ParticipantHasRestauration::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: false)]
     protected Collection $participantHasRestaurations;
 
     #[OneToMany(mappedBy: 'participant', targetEntity: Reponse::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: false)]
     protected Collection $reponses;
 
     #[ManyToOne(targetEntity: Gn::class, cascade: ['persist'], inversedBy: 'participants')]
-    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: false)]
     protected Gn $gn;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'participants')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     #[ManyToOne(targetEntity: PersonnageSecondaire::class, inversedBy: 'participants', cascade: ['persist'])]
-    #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id', nullable: false)]
     protected ?PersonnageSecondaire $personnageSecondaire;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'participants', cascade: ['persist'])]

@@ -28,7 +28,7 @@ abstract class BaseRestauration
     protected ?string $description = null;
 
     #[OneToMany(mappedBy: 'restauration', targetEntity: ParticipantHasRestauration::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'restauration_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'restauration_id', nullable: false)]
     protected Collection $participantHasRestaurations;
 
     public function __construct()

@@ -38,7 +38,7 @@ abstract class BaseEvenement
      * @var Collection<int, IntrigueHasEvenement>|IntrigueHasEvenement[]
      */
     #[OneToMany(mappedBy: 'evenement', targetEntity: IntrigueHasEvenement::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'evenement_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'evenement_id', nullable: false)]
     protected Collection $intrigueHasEvenements;
 
     public function __construct()

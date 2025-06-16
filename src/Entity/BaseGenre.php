@@ -31,7 +31,7 @@ abstract class BaseGenre
      * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Personnage>|\App\Entity\Personnage[]
      */
     #[OneToMany(mappedBy: 'genre', targetEntity: Personnage::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'genre_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'genre_id', nullable: false)]
     protected Collection $personnages;
 
     public function __construct()

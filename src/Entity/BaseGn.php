@@ -67,35 +67,35 @@ class BaseGn
     protected ?string $conditions_inscription = null;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Annonce::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $annonces;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Background::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $backgrounds;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Billet::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $billets;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Debriefing::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $debriefings;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: GroupeGn::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $groupeGns;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Participant::class, cascade: ['persist'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $participants;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: PersonnageBackground::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $personnageBackgrounds;
 
     #[OneToMany(mappedBy: 'gn', targetEntity: Rumeur::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $rumeurs;
 
     public function __construct()

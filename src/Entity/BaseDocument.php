@@ -60,7 +60,7 @@ abstract class BaseDocument
     protected bool $impression;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'documents')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     #[ORM\ManyToMany(targetEntity: Langue::class, inversedBy: 'documents')]
@@ -79,7 +79,7 @@ abstract class BaseDocument
     protected Collection $personnages;
 
     #[ORM\OneToMany(mappedBy: 'document', targetEntity: IntrigueHasDocument::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'document_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'document_id', nullable: false)]
     protected Collection $intrigueHasDocuments;
 
     public function __construct()

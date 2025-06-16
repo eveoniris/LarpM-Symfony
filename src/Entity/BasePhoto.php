@@ -52,7 +52,7 @@ abstract class BasePhoto
     protected string $filename = '';
 
     #[OneToMany(mappedBy: 'photo', targetEntity: Objet::class, cascade: ['persist', 'remove', 'detach', 'all'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'photo_id', nullable: 'false', onDelete: 'CASCADE')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'photo_id', nullable: false, onDelete: 'CASCADE')]
     protected Collection $objets;
 
     public function __construct()

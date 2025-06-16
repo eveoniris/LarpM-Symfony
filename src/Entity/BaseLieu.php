@@ -28,7 +28,7 @@ abstract class BaseLieu
     protected ?string $description = '';
 
     #[OneToMany(mappedBy: 'lieu', targetEntity: IntrigueHasLieu::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'lieu_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'lieu_id', nullable: false)]
     protected Collection $intrigueHasLieus;
 
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'lieus')]

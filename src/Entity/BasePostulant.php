@@ -32,11 +32,11 @@ abstract class BasePostulant
     protected bool $waiting;
 
     #[ManyToOne(targetEntity: SecondaryGroup::class, inversedBy: 'postulants')]
-    #[JoinColumn(name: 'secondary_group_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'secondary_group_id', referencedColumnName: 'id', nullable: false)]
     protected SecondaryGroup $secondaryGroup;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'postulants')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     /**

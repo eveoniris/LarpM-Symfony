@@ -75,100 +75,100 @@ abstract class BasePersonnage
     protected ?bool $bracelet = null;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceGain::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $experienceGains;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceUsage::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $experienceUsages;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: Trigger::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'true')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: true)]
     protected Collection $triggers;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: HeroismeHistory::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $heroismeHistories;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: Membre::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $membres;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: Participant::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $participants;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageBackground::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageBackgrounds;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageHasToken::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageHasTokens;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageIngredient::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageIngredients;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLangues::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     #[OrderBy(['langue' => 'ASC'])]
     protected Collection $personnageLangues;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageRessource::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageRessources;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageTrigger::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageTriggers;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnagesReligions::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnagesReligions;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: Postulant::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $postulants;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: RenommeHistory::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $renommeHistories;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: SecondaryGroup::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $secondaryGroups;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: User::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $users;
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'personnages')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     protected ?Groupe $groupe;
 
     #[ManyToOne(targetEntity: Classe::class, inversedBy: 'personnages')]
-    #[JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: false)]
     protected Classe $classe;
 
     #[ManyToOne(targetEntity: Age::class, inversedBy: 'personnages')]
-    #[JoinColumn(name: 'age_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'age_id', referencedColumnName: 'id', nullable: false)]
     protected Age $age;
 
     #[ManyToOne(targetEntity: Genre::class, inversedBy: 'personnages')]
-    #[JoinColumn(name: 'genre_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'genre_id', referencedColumnName: 'id', nullable: false)]
     protected Genre $genre;
 
     #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'personnages')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     protected Territoire $territoire;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'personnages')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageHasQuestion::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageHasQuestions;
 
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'personnages')]
@@ -235,24 +235,24 @@ abstract class BasePersonnage
     protected Collection $connaissances;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PugilatHistory::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $pugilatHistories;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageChronologie::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     #[OrderBy(['annee' => 'ASC', 'id' => 'ASC'])]
     protected Collection $personnageChronologie;
 
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLignee::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageLignee;
 
     #[OneToMany(mappedBy: 'parent1', targetEntity: PersonnageLignee::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'parent1_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'parent1_id', nullable: false)]
     protected Collection $PersonnageLigneeParent1;
 
     #[OneToMany(mappedBy: 'parent2', targetEntity: PersonnageLignee::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'parent2_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'parent2_id', nullable: false)]
     protected Collection $PersonnageLigneeParent2;
 
     /**
@@ -260,7 +260,7 @@ abstract class BasePersonnage
      */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'personnage_bonus')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     private ?Collection $personnageBonus;
 
     /**
@@ -273,14 +273,14 @@ abstract class BasePersonnage
      * @var Collection<int, PersonnageApprentissage>|null
      */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageApprentissage::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     private ?Collection $apprentissages;
 
     /**
      * @var Collection<int, PersonnageApprentissage>|null
      */
     #[OneToMany(mappedBy: 'enseignant', targetEntity: PersonnageApprentissage::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     private ?Collection $apprentissageEnseignants;
 
     public function __construct()

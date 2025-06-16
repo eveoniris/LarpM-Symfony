@@ -26,7 +26,7 @@ abstract class BaseSphere
     protected ?string $label = null;
 
     #[OneToMany(mappedBy: 'sphere', targetEntity: Priere::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'sphere_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'sphere_id', nullable: false)]
     protected Collection $prieres;
 
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'spheres')]

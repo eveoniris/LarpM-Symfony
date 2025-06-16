@@ -30,11 +30,11 @@ abstract class BaseExperienceUsage
     protected int $xp_use;
 
     #[ManyToOne(targetEntity: Competence::class, inversedBy: 'experienceUsages')]
-    #[JoinColumn(name: 'competence_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'competence_id', referencedColumnName: 'id', nullable: false)]
     protected Competence $competence;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'experienceUsages')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     public function setId(int $id): static

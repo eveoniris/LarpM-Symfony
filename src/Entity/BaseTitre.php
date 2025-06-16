@@ -28,7 +28,7 @@ abstract class BaseTitre
     protected int $renomme;
 
     #[OneToMany(mappedBy: 'titre', targetEntity: TitreTerritoire::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'titre_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'titre_id', nullable: false)]
     protected Collection $titreTerritoires;
 
     public function __construct()

@@ -25,11 +25,11 @@ abstract class BasePersonnageHasQuestion
     protected bool $reponse;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageHasQuestions')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     #[ManyToOne(targetEntity: Question::class, inversedBy: 'personnageHasQuestions')]
-    #[JoinColumn(name: 'question_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'question_id', referencedColumnName: 'id', nullable: false)]
     protected Question $question;
 
     /**

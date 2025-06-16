@@ -30,7 +30,7 @@ abstract class BaseExperienceGain
     protected int $xp_gain;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'experienceGains')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     public function setId(int $id): static

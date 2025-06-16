@@ -31,11 +31,11 @@ abstract class BaseRangement
     protected ?string $precision = null;
 
     #[OneToMany(mappedBy: 'rangement', targetEntity: Objet::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'rangement_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'rangement_id', nullable: false)]
     protected Collection $objets;
 
     #[ManyToOne(targetEntity: Localisation::class, inversedBy: 'rangements')]
-    #[JoinColumn(name: 'localisation_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'localisation_id', referencedColumnName: 'id', nullable: false)]
     protected Localisation $localisation;
 
     public function __construct()

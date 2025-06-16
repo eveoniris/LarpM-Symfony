@@ -38,7 +38,7 @@ abstract class BaseLignee
      * @JoinColumn(name="id", referencedColumnName="lignee_id", nullable=false)
      */
     #[OneToMany(mappedBy: 'lignee', targetEntity: PersonnageLignee::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'lignee_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'lignee_id', nullable: false)]
     protected Collection $personnageLignees;
 
     /**

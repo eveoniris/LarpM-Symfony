@@ -25,11 +25,11 @@ abstract class BasePersonnageIngredient
     protected ?int $nombre = null;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageIngredients')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
     #[ManyToOne(targetEntity: Ingredient::class, inversedBy: 'personnageIngredients')]
-    #[JoinColumn(name: 'ingredient_id', referencedColumnName: 'id', nullable: 'false')]
+    #[JoinColumn(name: 'ingredient_id', referencedColumnName: 'id', nullable: false)]
     protected Ingredient $ingredient;
 
     /**

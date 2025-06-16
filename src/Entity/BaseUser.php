@@ -80,85 +80,85 @@ abstract class BaseUser
     protected ?int $coeur = 0;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Background::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $backgrounds;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Billet::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'createur_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'createur_id', nullable: false)]
     protected Collection $billets;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Debriefing::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $debriefings;
 
     #[OneToMany(mappedBy: 'player', targetEntity: Debriefing::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'player_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'player_id', nullable: false)]
     protected Collection $playerDebriefings;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Document::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $documents;
 
     #[OneToMany(mappedBy: 'userRelatedByScenaristeId', targetEntity: Groupe::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'scenariste_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'scenariste_id', nullable: false)]
     protected Collection $groupeRelatedByScenaristeIds;
 
     #[OneToMany(mappedBy: 'userRelatedByResponsableId', targetEntity: Groupe::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: false)]
     protected Collection $groupeRelatedByResponsableIds;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Intrigue::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $intrigues;
 
     #[OneToMany(mappedBy: 'user', targetEntity: IntrigueHasModification::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $intrigueHasModifications;
 
     #[OneToMany(mappedBy: 'userRelatedByAuteur', targetEntity: Message::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'auteur', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'auteur', nullable: false)]
     protected Collection $messageRelatedByAuteurs;
 
     #[OneToMany(mappedBy: 'userRelatedByDestinataire', targetEntity: Message::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'destinataire', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'destinataire', nullable: false)]
     #[OrderBy(['update_date' => 'DESC'])]
     protected Collection $messageRelatedByDestinataires;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Notification::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $notifications;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Objet::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: false)]
     protected Collection $objets;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Participant::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     #[OrderBy(['id' => 'ASC'])]
     protected Collection $participants;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Personnage::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $personnages;
 
     #[OneToMany(mappedBy: 'user', targetEntity: PersonnageBackground::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $personnageBackgrounds;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Question::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $questions;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Relecture::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $relectures;
 
     #[OneToMany(mappedBy: 'userRelatedByAuteurId', targetEntity: Restriction::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'auteur_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'auteur_id', nullable: false)]
     protected Collection $restrictionRelatedByAuteurIds;
 
     #[OneToMany(mappedBy: 'user', targetEntity: Rumeur::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $rumeurs;
 
     #[ORM\OneToOne(inversedBy: 'user', targetEntity: EtatCivil::class, cascade: ['persist', 'remove'])]
@@ -183,11 +183,11 @@ abstract class BaseUser
      * @var Collection<int, BaseSecondaryGroup>
      */
     #[OneToMany(mappedBy: 'scenariste', targetEntity: SecondaryGroup::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'scenariste_id', nullable: 'false')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'scenariste_id', nullable: false)]
     private Collection $secondaryGroups;
 
     #[OneToMany(mappedBy: 'user', targetEntity: LogAction::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: 'true')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: true)]
     private Collection $logActions;
 
     #[Column(length: 255, nullable: true)]
