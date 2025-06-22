@@ -239,6 +239,7 @@ class CompetenceController extends AbstractController
             'colId',
             'colStatut',
             'colNom',
+            'colGroupe',
         ]; // check if it's better in PersonnageService
         $personnages = $competence->getPersonnages();
         $competenceFamily = $competence->getCompetenceFamily();

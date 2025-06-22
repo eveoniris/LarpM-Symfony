@@ -16,6 +16,8 @@ class Document extends BaseDocument implements \Stringable
     use EntityFileUploadTrait;
 
     private ?string $label = null;
+    private ?string $extension = null;
+    private ?string $mimetype = null;
 
     public function __construct()
     {

@@ -86,6 +86,10 @@ class ItemRepository extends BaseRepository
                 OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
                 OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
             ],
+            'couleur' => [
+                OrderBy::ASC => [$alias.'.couleur' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.couleur' => OrderBy::DESC],
+            ],
             'description' => [
                 OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
                 OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
@@ -120,6 +124,7 @@ class ItemRepository extends BaseRepository
             'special' => $this->translator->trans('Spécial', domain: 'repository'),
             'numero' => $this->translator->trans('Numéro', domain: 'repository'),
             'quality' => $this->translator->trans('Qualité', domain: 'repository'),
+            'couleur' => $this->translator->trans('Couleur', domain: 'repository'),
             'qualident' => $this->translator->trans('Qualité et identification', domain: 'repository'),
             'label' => $this->translator->trans('Libellé', domain: 'repository'),
             'identification' => $this->translator->trans('Identification', domain: 'repository'),

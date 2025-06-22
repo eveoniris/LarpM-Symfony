@@ -25,15 +25,15 @@
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Modifier"
                                href="{{ path('groupe.add') }}"><i
-                                        class="fa fa-plus"></i> Ajouter</a>
+                                    class="fa fa-plus"></i> Ajouter</a>
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Modifier"
                                href="{{ path('groupe.update',{'groupe':groupe.id}) }}"><i
-                                        class="fa fa-pencil"></i> Modifier</a>
+                                    class="fa fa-pencil"></i> Modifier</a>
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Supprimer"
                                href="{{ path('groupe.delete',{'groupe':groupe.id}) }}"><i
-                                        class="fa fa-eraser"></i> Supprimer</a>
+                                    class="fa fa-eraser"></i> Supprimer</a>
 
                             <div class="btn-group dropdown" role="group" aria-label="...">
                                 <button type="button" class="btn btn-secondary dropdown-toggle"
@@ -110,14 +110,6 @@
                         </li>
 
                         {% if canRead %}
-                            {% if isAdmin %}
-                                <li class="nav-item">
-                                    <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
-                                       href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'enveloppe', 'groupeGn': groupeGnId|default()})) }}"
-                                    >Enveloppe</a>
-                                </li>
-                            {% endif %}
-
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle{% if tab == 'domaine' %} active{% endif %}"
                                    data-bs-toggle="dropdown" href="#" role="button"
@@ -149,6 +141,14 @@
                                    href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'debriefings', 'groupeGn': groupeGn.id|default()})) }}"
                                 >Debriefings</a>
                             </li>
+
+                            {% if isAdmin %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
+                                       href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'enveloppe', 'groupeGn': groupeGnId|default()})) }}"
+                                    >Enveloppe</a>
+                                </li>
+                            {% endif %}
                         {% endif %}
                     </ul>
 
@@ -168,7 +168,7 @@
 
         {{ parent() }}
 
-        <script type="text/javascript">
+        <script type="module">
             $(document).ready(function () {
                 // allow copy to clipboard
                 $('.copyToClipBoard').click(function () {

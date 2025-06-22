@@ -7,6 +7,10 @@
 {% if app.request.get('qrCode') == 1 or app.request.get('qrcode') == 1 %}
     {% set useQrCode = true %}
 {% endif %}
+{% set useDot = false %}
+{% if app.request.get('dot') == 1 or app.request.get('dot') == 1 %}
+    {% set useDot = true %}
+{% endif %}
 
 <div class="item {{ type }}">
     <table>
@@ -48,9 +52,11 @@
                         {% endif %}
                     </tr>
                 </table>
+                {% if useDot %}<span class="dot"></span>{% endif %}
             </td>
             <td class="verso">
                 {{ item.description|markdown_to_html }}
+                {% if useDot %}<span class="dot"></span>{% endif %}
             </td>
         </tr>
     </table>

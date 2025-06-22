@@ -2,11 +2,9 @@
 
 namespace App\Service;
 
-use App\Entity\Background;
 use App\Entity\Bonus;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
-use App\Entity\Debriefing;
 use App\Entity\Domaine;
 use App\Entity\Espece;
 use App\Entity\Gn;
@@ -24,6 +22,7 @@ use App\Entity\Personnage;
 use App\Entity\PersonnageIngredient;
 use App\Entity\PersonnageLangues;
 use App\Entity\PersonnageRessource;
+use App\Entity\Potion;
 use App\Entity\PugilatHistory;
 use App\Entity\Rarete;
 use App\Entity\Religion;
@@ -36,7 +35,6 @@ use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\LevelType;
-use App\Enum\Role;
 use App\Form\PersonnageFindForm;
 use App\Repository\ReligionRepository;
 use App\Repository\TechnologieRepository;
@@ -207,9 +205,10 @@ class PersonnageService
      */
     public function getAdminAvailableReligions(
         Personnage $personnage,
+        bool $withSecret = false,
     ): ?ArrayCollection {
         // Pour le moment aucune différence entre vue user et vue admin
-        return $this->getAvailableReligions($personnage);
+        return $this->getAvailableReligions($personnage, $withSecret);
     }
 
     /**
@@ -219,11 +218,12 @@ class PersonnageService
      */
     public function getAvailableReligions(
         Personnage $personnage,
+        bool $withSecret = false,
     ): ArrayCollection {
         $availableReligions = new ArrayCollection();
 
         $repo = $this->entityManager->getRepository(Religion::class);
-        $religions = $repo->findAllPublicOrderedByLabel();
+        $religions = $withSecret ? $repo->findAllOrderedByLabel() : $repo->findAllPublicOrderedByLabel();
 
         foreach ($religions as $religion) {
             if (!$this->knownReligion($personnage, $religion)) {
@@ -252,16 +252,39 @@ class PersonnageService
      */
     public function getAllCompetences(Personnage $personnage): Collection
     {
+        $all = new ArrayCollection();
         try {
-            $all = new ArrayCollection(
+            /*$all = new ArrayCollection(
                 $this->entityManager->getRepository(Personnage::class)
                     ->findCompetencesOrdered($personnage),
-            );
-            $all = $personnage->getCompetences();
+            );*/
+            foreach ($personnage->getCompetences() as $competence) {
+                // Handle Alchemy replace text
+                if ($competence->isAlchemy()) {
+                    $potions = $this->getPotionsDepart($personnage, $competence->getLevelType());
+
+                    $potionsApprentie = $this->getPotionsDepart($personnage, LevelType::APPRENTICE);
+                    $potionsInitie = $this->getPotionsDepart($personnage, LevelType::INITIATED);
+
+                    $competence->setMateriel(
+                        str_replace(
+                            ['{POTION}', '{POTION_APPRENTI}', '{POTION_INITIE}', '{CARTE}'],
+                            [
+                                implode(', ', $potions),
+                                implode(', ', $potionsApprentie),
+                                implode(', ', $potionsInitie),
+                                '3212'.$personnage->getId(),
+                            ],
+                            $competence->getMateriel(),
+                        ),
+                    );
+                }
+                $all->add($competence);
+            }
         } catch (\Exception $exception) {
             $all = new ArrayCollection();
+            // dump($exception);
         }
-
         foreach ($this->getAllBonus($personnage, BonusType::COMPETENCE) as $bonus) {
             if (!$bonus->isCompetence()) {
                 continue;
@@ -358,6 +381,32 @@ class PersonnageService
         }
 
         return $all;
+    }
+
+    protected function getPotionsDepart(Personnage $personnage, LevelType $level): array
+    {
+        $potions = [];
+
+        // A des potions de départ
+        /** @var Potion $potion */
+        foreach ((array) $personnage->getLastParticipant()
+            ?->getPotionsDepartByLevel($level?->getIndex()) as $potion) {
+            if (null === $potion) {
+                continue;
+            }
+            $potions[] = $potion->getLabel();
+        }
+
+        // N'a pas de potion de départ
+        if (empty($potions)) {
+            foreach ((array) $personnage->getPotionsNiveau(
+                $level?->getIndex(),
+            ) as $potion) {
+                $potions[] = $potion->getLabel();
+            }
+        }
+
+        return $potions;
     }
 
     /**
@@ -511,9 +560,13 @@ class PersonnageService
     }
 
     public function getTitre(
-        Personnage $personnage,
+        ?Personnage $personnage,
         ?Gn $gn = null,
     ): ?string {
+        if (!$personnage) {
+            return null;
+        }
+
         return $this->entityManager->getRepository(GroupeGn::class)->getTitres($personnage, $gn);
     }
 

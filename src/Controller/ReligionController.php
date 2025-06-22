@@ -133,7 +133,7 @@ class ReligionController extends AbstractController
      * Detail d'une religion.
      */
     #[Route('/religion/{religion}/detail', name: 'religion.detail')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function detailAction(Religion $religion): Response
     {
         return $this->render(
@@ -217,7 +217,7 @@ class ReligionController extends AbstractController
      * Detail d'un niveau de fanatisme.
      */
     #[Route('/religion/level/{religionLevel}/detail', name: 'religion.level.detail')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function levelDetailAction(
         ReligionLevel $religionLevel,
     ): Response {
@@ -228,7 +228,7 @@ class ReligionController extends AbstractController
      * affiche la liste des niveaux de fanatisme.
      */
     #[Route('/religion/level', name: 'religion.level')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function levelIndexAction(ReligionLevelRepository $religionLevelRepository): Response
     {
         return $this->render(
@@ -288,7 +288,7 @@ class ReligionController extends AbstractController
      * affiche la liste des religions.
      */
     #[Route('/religion/mail', name: 'religion.mail')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function mailAction(ReligionRepository $religionRepository): Response
     {
         return $this->render(
@@ -406,7 +406,7 @@ class ReligionController extends AbstractController
                 $this->addFlash('success', 'La religion a été mise à jour.');
 
                 return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
-            // return $this->redirectToRoute('religion.detail', [], 303);
+                // return $this->redirectToRoute('religion.detail', [], 303);
             } elseif ($form->get('delete')->isClicked()) {
                 /*$entityManager->remove($religion);
                 $entityManager->flush();

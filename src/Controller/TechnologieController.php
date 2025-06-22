@@ -200,7 +200,8 @@ class TechnologieController extends AbstractController
         PagerService $pagerService,
         TechnologieRepository $technologieRepository,
     ): Response {
-        //$pagerService->setDefaultOrdersBy(['label' => OrderBy::ASC]); // test default overwrite from request
+        $pagerService->setDefaultOrdersBy([$technologieRepository::getEntityAlias().'.label' => OrderBy::ASC],
+        ); // test default overwrite from request
 
         return $this->render('technologie/list.twig', [
             'pagerService' => $pagerService,

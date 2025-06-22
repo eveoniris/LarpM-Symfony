@@ -119,33 +119,33 @@ class RuleController extends AbstractController
      */
     #[IsGranted(Role::REGLE->value)]
     #[Route('/rule/{rule}/delete', name: 'rule.delete', requirements: ['rule' => Requirement::DIGITS])]
-    public function deleteAction(Request $request, #[MapEntity] Rule $rule): RedirectResponse|Response
+    public function deleteAction(#[MapEntity] Rule $rule): RedirectResponse|Response
     {
-        $form = $this->createForm(RuleDeleteForm::class, $rule)
-            ->add('supprimer', SubmitType::class, ['label' => 'Supprimer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->remove($rule);
-            $this->entityManager->flush();
-
-            $filename = __DIR__.'/../../private/rules/'.$rule->getUrl();
-
-            if (file_exists($filename)) {
-                unlink($filename);
-                $this->addFlash('success', 'suppresion du fichier '.$filename);
-            } else {
-                $this->addFlash('error', 'impossible de supprimer le fichier '.$filename);
-            }
-
-            return $this->redirectToRoute('rules', [], 303);
-        }
-
-        return $this->render('rule/delete.twig', [
-            'form' => $form->createView(),
-            'rule' => $rule,
-        ]);
+        return $this->genericDelete(
+            $rule,
+            'Supprimer une règle',
+            'La règle a été supprimée',
+            'technologie.list',
+            [
+                ['route' => $this->generateUrl('rule.list'), 'name' => 'Règles'],
+                [
+                    'route' => 'rule.list',
+                    'rule' => $rule->getId(),
+                    'name' => $rule->getLabel(),
+                ],
+                ['name' => 'Supprimer une règle'],
+            ],
+            $rule->getDescription(),
+            callbackOnValid: function () use ($rule) {
+                $filename = $rule->getDocument($this->getParameter('kernel.project_dir').'/');
+                if (file_exists($filename)) {
+                    unlink($filename);
+                    $this->addFlash('success', 'suppresion du fichier '.$filename);
+                } else {
+                    $this->addFlash('error', 'impossible de supprimer le fichier '.$filename);
+                }
+            },
+        );
     }
 
     #[Route('/rule/{rule}/detail', name: 'rule.detail', requirements: ['rule' => Requirement::DIGITS])]

@@ -26,40 +26,32 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
     {
     }
 
-    public function supports(Request $request): bool
-    {
-        // Check if it's a login form submission
-        $isLoginRoute = $request->attributes->get('_route') === self::LOGIN_ROUTE;
-        $isPost = $request->isMethod('POST');
-
-        // If it's a login form submission, proceed with normal authentication
-        if ($isLoginRoute && $isPost) {
-            return true;
-        }
-
-        // For BinaryFileResponse requests, we need to ensure the authenticator supports them
-        // to prevent the "headers already sent" error
-        if ($request->headers->has('Cookie') && str_contains($request->headers->get('Cookie'), 'REMEMBERME')) {
-            return true;
-        }
-
-        return false;
-    }
-
     public function authenticate(Request $request): Passport
     {
         $username = $request->request->get('username', '');
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $username);
 
-        return new Passport(
+        $passport = new Passport(
             new UserBadge($username),
             new PasswordCredentials($request->request->get('password', '')),
             [
                 new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
-                new RememberMeBadge(),
-            ]
+                (new RememberMeBadge())->enable(),
+            ],
         );
+
+        // Add _remember_me from JSON body to attributes
+        $cookie_found = $request->cookies->get('REMEMBERME');
+        $flag = $data->_remember_me ?? '';
+        $request->attributes->set('_remember_me', $flag || $cookie_found);
+
+        return $passport;
+    }
+
+    protected function getLoginUrl(Request $request): string
+    {
+        return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
@@ -71,8 +63,8 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
         return new RedirectResponse($this->urlGenerator->generate('homepage'));
     }
 
-    protected function getLoginUrl(Request $request): string
+    public function supports(Request $request): bool
     {
-        return $this->urlGenerator->generate(self::LOGIN_ROUTE);
+        return self::LOGIN_ROUTE === $request->attributes->get('_route') && $request->isMethod('POST');
     }
 }

@@ -59,8 +59,7 @@
     {% set materielHtml %}
         {% set bracelets = [] %}
         {% if personnage.bracelet %}
-            <li>Géré par l'interprète du personnage
-            <li>
+            <li>Géré par l'interprète du personnage</li>
         {% else %}
             {% for personnageLangue in personnageService.allLangues(personnage) %}
                 {% if personnageLangue.langue.diffusion > 0 and personnageLangue.langue.secret == 0 %}
@@ -89,17 +88,6 @@
         <ul>
             {% for document in personnage.documents %}
                 <li><strong>{{ document.code }}</strong> - {{ document.titre }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    {# objets #}
-    {% set items = personnageService.allItems(personnage) %}
-    {% if items|length > 0 %}
-        <strong>Objets</strong>
-        <ul>
-            {% for item in items %}
-                <li><strong>{{ item.numero }}</strong> - {{ item.label }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -133,7 +121,7 @@
     <li>1 Fiche de personnage (dans une pochette plastifiée)</li>
     <li>1 Fiche retour de personnage</li>
     {% for materiel in personnageService.allMateriel(personnage) %}
-        <li>{{ materiel|markdown_to_html }}</li>
+        <li>{{ materiel|striptags }}</li>
     {% endfor %}
 </ul>
 
@@ -143,3 +131,14 @@
         <li>Brassard jaune avec un poing gravé</li>
     </ul>
 {% endif %}
+
+{# objets #}
+    {% set items = personnageService.allItems(personnage) %}
+    {% if items|length > 0 %}
+        <strong>Objets de jeu</strong> ou étiquette à récupérer au PC Joueur sur présentation de cette feuille.
+        <ul>
+            {% for item in items %}
+                <li><strong>{{ item.numero }}</strong> - {{ item.label }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}

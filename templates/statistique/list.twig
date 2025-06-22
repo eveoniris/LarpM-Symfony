@@ -35,6 +35,12 @@
                                        href="{{ path('stats.users.roles') }}">Répartition
                                         des rôles utilisateurs</a>
                                 </div>
+                                <div class="list-group-item">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.xpGap.gn', {'gn':gn.id, 'gap':50}) }}">Personnage avec un
+                                        gap XP de 50
+                                        sur {{ gn.label }}</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -55,6 +61,12 @@
                                     <a class="link-underline link-underline-opacity-0"
                                        href="{{ path('stats.mineurs.gn', {'gn':gn.id}) }}">
                                         Listes des mineurs présents au {{ gn.label }}
+                                    </a>
+                                </div>
+                                <div class="list-group-item">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.sensible.gn', {'gn':gn.id}) }}">
+                                        Listes des personnages sensible présents au {{ gn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item">
@@ -115,6 +127,31 @@
                                     <a class="link-underline link-underline-opacity-0"
                                        href="{{ path('stats.gameItemWithoutPersonnage') }}">
                                         Objet de jeu sans personnage
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.renommeGroupe.gn', {'gn': gn.id}) }}">
+                                        Nombre de personnage par groupe ayant une renommé égale ou suppérieur à 10
+                                        sur {{ gn.label }}
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.nbClasseGroupe.gn', {'gn': gn.id, 'classe':15}) }}">
+                                        Nombre de personnage de la classe Tacticien par groupe sur {{ gn.label }}
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.nbClasseGroupe.gn', {'gn': gn.id, 'classe':12}) }}">
+                                        Nombre de personnage de la classe Chevalier par groupe sur {{ gn.label }}
+                                    </a>
+                                </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.nbClasseGroupe.gn', {'gn': gn.id, 'classe':14}) }}">
+                                        Nombre de personnage de la classe Soldat par groupe sur {{ gn.label }}
                                     </a>
                                 </div>
                             </div>

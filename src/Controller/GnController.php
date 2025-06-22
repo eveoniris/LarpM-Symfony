@@ -2,15 +2,18 @@
 
 namespace App\Controller;
 
+use App\Entity\Competence;
 use App\Entity\Gn;
 use App\Entity\Loi;
 use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\PersonnageLangues;
+use App\Entity\PersonnageSecondaire;
 use App\Enum\Role;
 use App\Form\Gn\GnDeleteForm;
 use App\Form\Gn\GnForm;
 use App\Manager\GroupeManager;
+use App\Repository\ClasseRepository;
 use App\Repository\GnRepository;
 use App\Repository\LangueRepository;
 use App\Repository\ParticipantRepository;
@@ -400,6 +403,7 @@ class GnController extends AbstractController
     public function lockAction(
         Request $request,
         GnRepository $gnRepository,
+        ClasseRepository $classeRepository,
         PersonnageRepository $personnageRepository,
         PersonnageSecondaireRepository $personnageSecondaireRepository,
         ParticipantRepository $participantRepository,
@@ -416,9 +420,41 @@ class GnController extends AbstractController
 
         $form->handleRequest($request);
 
-
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // Lock de base
             $gnRepository->lockAllGroup($gn);
+
+            // TODO : Donner 2 points de renommé par GN (au lock ou en fin de GN ? => voir marc)
+            // TODO : Donner trigger de choix littéraire (au lock ou en fin de GN ? => voir marc)
+
+
+            // Attribution par défaut
+            /** @var PersonnageSecondaire $personnageSecondaire */
+            $personnageSecondaire = $personnageSecondaireRepository->findOneBy(['id' => 1]);
+
+            // On force les joueurs sans personnage à être Soldat
+            $classe = $classeRepository->findOneBy(['id' => 14]); // Soldat
+            $cache = 0;
+            /** @var Personnage $personnage */
+            foreach ($participantRepository->findAllWithoutPersonnage($gn) as $personnage) {
+                $personnage->setClasse($classe);
+
+                /** @var Competence $competence */
+                foreach ($personnageSecondaire->getCompetences() as $competence) {
+                    if (!$personnage->hasCompetence($competence)) {
+                        $this->personnageService->addCompetence($personnage, $competence);
+                    }
+                }
+
+                $this->entityManager->persist($personnage);
+
+                if (++$cache > 50) {
+                    $cache = 0;
+                    $this->entityManager->flush();
+                }
+            }
+            $this->entityManager->flush();
 
             // On force les personnages sans langue à avoir Aquillonien
             $langue = $langueRepository->findOneBy(['id' => 2]); // Aquillonien
@@ -439,7 +475,6 @@ class GnController extends AbstractController
 
             // On force les personnages sans personnage secondaire à être soldat
             /** @var Participant $participant */
-            $personnageSecondaire = $personnageSecondaireRepository->findOneBy(['id' => 1]);
             $cache = 0;
             foreach ($participantRepository->findAllWithoutPersonnageSecondaire($gn) as $participant) {
                 $participant->setPersonnageSecondaire($personnageSecondaire);

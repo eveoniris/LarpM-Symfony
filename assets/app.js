@@ -1,4 +1,3 @@
-import './bootstrap.js';
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -7,19 +6,50 @@ import './bootstrap.js';
  */
 
 // any CSS you import will output into a single css file (app.css in this case)
-import './styles/app.scss';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '@fortawesome/fontawesome-free/css/all.css';
+import '@fontsource-variable/roboto-condensed/index.min.css';
+// import 'bootstrap-select/dist/css/bootstrap-select.min.css';
+// import './styles/app.scss';
 
-import 'bootstrap';
+/* Import custom styles*/
+import './styles/dark_theme.css';
+import './styles/light_theme.css';
+import './styles/style.css';
+
+//import './styles/app.css';
+
+// start the Stimulus application
+import '@popperjs/core';
+import './bootstrap.js';
+//import $ from 'jquery';
+import jquery from 'jquery';
+import * as bootstrap from 'bootstrap'
+
+const JQUERY_NO_CONFLICT = jQuery.fn['tooltip']
+jQuery.fn['tooltip'] = bootstrap.Tooltip.jQueryInterface
+jQuery.fn['tooltip'].Constructor = bootstrap.Tooltip
+jQuery.fn['tooltip'].noConflict = () => {
+    jQuery.fn['tooltip'] = JQUERY_NO_CONFLICT
+    return bootstrap.Tooltip.jQueryInterface
+}
+
+// Make jQuery global
+window.$ = window.jQuery = $;
+
+//import 'bootstrap';
 import bsCustomFileInput from 'bs-custom-file-input';
-import 'bootstrap-select';
+//import 'bootstrap-select';
 
 // Import TinyMCE
 import tinymce from 'tinymce/tinymce';
 
 // A theme is also required
-import 'tinymce/themes/silver/theme';
+import 'tinymce/themes/silver' ;
 
 // Any plugins you want to use has to be imported
+
+import 'tinymce/models/dom';
 import 'tinymce/plugins/link';
 import 'tinymce/plugins/code';
 import 'tinymce/plugins/table';
@@ -33,23 +63,38 @@ import 'tinymce/plugins/autoresize';
 import 'tinymce/plugins/anchor';
 import 'tinymce/plugins/charmap';
 import 'tinymce/plugins/image';
+import 'tinymce/plugins/visualblocks';
+import 'tinymce/plugins/advlist';
+import 'tinymce/plugins/help';
+import 'tinymce/plugins/searchreplace';
+import 'tinymce/plugins/fullscreen';
+import 'tinymce/plugins/help';
+import 'tinymce/plugins/help/js/i18n/keynav/en';
+import 'tinymce/skins/ui/oxide-dark/skin';
+import 'tinymce/skins/ui/oxide-dark/content';
+import 'tinymce/skins/ui/oxide/skin';
+import 'tinymce/skins/ui/oxide/content';
+import 'tinymce/skins/content/dark/content';
+import 'tinymce/icons/default';
+
 
 /* Note
 If we want to User pref color scheme to set default theme
 Theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "";,
 * */
 
+
 // require jQuery normally
-const $ = require('jquery');
+//const $ = require('jquery');
 // create global $ and jQuery variables
-global.$ = global.jQuery = $;
+// global.$ = global.jQuery = $;
 
 bsCustomFileInput.init();
 
-require('bootstrap');
+// require('bootstrap');
 
 // Modal 2
-var $mainModal = $('#mainModal');
+let $mainModal = $('#mainModal');
 
 function openModalX(title, body, footer, htmlOptions) {
     let defaultOptions = {

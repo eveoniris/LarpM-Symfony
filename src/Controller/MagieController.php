@@ -207,7 +207,7 @@ class MagieController extends AbstractController
             },
         );
 
-        return $this->sendDocument($sort, $document);
+        return $this->sendDocument($sort);
     }
 
     /**

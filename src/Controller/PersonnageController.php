@@ -31,6 +31,7 @@ use App\Entity\PersonnageTrigger;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\PugilatHistory;
+use App\Entity\Religion;
 use App\Entity\RenommeHistory;
 use App\Entity\Ressource;
 use App\Entity\Sort;
@@ -213,8 +214,10 @@ class PersonnageController extends AbstractController
         $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
 
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
 
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
         $availableCompetences = $personnageService->getAvailableCompetences($personnage);
         $referer = $request->headers->get('referer');
 
@@ -370,7 +373,7 @@ class PersonnageController extends AbstractController
         ?string $route = null,
         ?array $routeParams = null,
         ?string $msg = null,
-    ): ?Response {
+    ): ?RedirectResponse {
         if (!$participant) {
             $participant = $personnage->getLastParticipant();
         }
@@ -593,7 +596,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Connaissance $connaissance,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $personnage->addConnaissance($connaissance);
         $this->entityManager->flush();
@@ -667,7 +672,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $potionID = $request->get('potion');
 
@@ -696,7 +703,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Priere $priere,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $priere->addPersonnage($personnage);
 
@@ -732,24 +741,20 @@ class PersonnageController extends AbstractController
         }
 
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $personnageReligion = new PersonnagesReligions();
         $personnageReligion->setPersonnage($personnage);
-
+        
         // ne proposer que les religions que le personnage ne pratique pas déjà ...
-        $availableReligions = $personnageService->getAdminAvailableReligions($personnage);
+        $availableReligions = $personnageService->getAdminAvailableReligions($personnage, $this->can(self::IS_ADMIN));
 
         if (0 === $availableReligions->count()) {
             $this->addFlash('error', 'Désolé, il n\'y a plus de religion disponibles');
 
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-        }
-
-        // construit le tableau de choix
-        $choices = [];
-        foreach ($availableReligions as $religion) {
-            $choices[] = $religion;
         }
 
         $form = $this->createForm(PersonnageReligionForm::class, $personnageReligion)
@@ -809,7 +814,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Sort $sort,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $personnage->addSort($sort);
 
@@ -834,7 +841,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Technologie $technologie,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $personnage->addTechnologie($technologie);
 
@@ -859,7 +868,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createForm(PersonnageDeleteForm::class, $personnage)
             ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
@@ -1049,7 +1060,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createFormBuilder()
             ->add('materiel', TextareaType::class, [
@@ -1107,7 +1120,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Connaissance $connaissance,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $personnage->removeConnaissance($connaissance);
         $this->entityManager->flush();
@@ -1133,7 +1148,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Domaine $domaine,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $nomDomaine = $domaine->getLabel();
 
@@ -1160,7 +1177,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] PersonnageLangues $personnageLangue,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createFormBuilder()
             ->add(
@@ -1199,7 +1218,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Potion $potion,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $nomPotion = $potion->getLabel();
         $personnage->removePotion($potion);
@@ -1225,7 +1246,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Priere $priere,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $priere->removePersonnage($personnage);
 
@@ -1250,7 +1273,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] PersonnagesReligions $personnageReligion,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         return $this->genericDelete(
             $personnageReligion,
@@ -1283,7 +1308,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Sort $sort,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $personnage->removeSort($sort);
 
@@ -1308,7 +1335,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Technologie $technologie,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $personnage->removeTechnologie($technologie);
 
@@ -1332,7 +1361,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createForm(PersonnageStatutForm::class, $personnage)
             ->add('submit', SubmitType::class, ['label' => 'Valider']);
@@ -1376,7 +1407,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $token = $request->get('token');
         $token = $this->entityManager->getRepository(Token::class)->findOneByTag($token);
@@ -1475,7 +1508,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $trigger = new PersonnageTrigger();
         $trigger->setPersonnage($personnage);
@@ -1604,7 +1639,9 @@ class PersonnageController extends AbstractController
         ConnaissanceRepository $connaissanceRepository,
     ): Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $pagerService->setRequest($request)->setRepository($connaissanceRepository)->setLimit(50);
 
@@ -1625,7 +1662,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $originalDomaines = new ArrayCollection();
         foreach ($personnage->getDomaines() as $domaine) {
@@ -1680,7 +1719,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createForm(PersonnageUpdateHeroismeForm::class)
             ->add('save', SubmitType::class, ['label' => 'Valider les modifications']);
@@ -1724,7 +1765,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $originalPersonnageIngredients = new ArrayCollection();
 
@@ -1809,7 +1852,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createForm(PersonnageOriginForm::class, $personnage)
             ->add(
@@ -1827,7 +1872,7 @@ class PersonnageController extends AbstractController
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
                 if ('ORIGINE' === $personnageLangue->getSource(
-                ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
+                    ) || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource()) {
                     $personnage->removePersonnageLangues($personnageLangue);
                     $this->entityManager->remove($personnageLangue);
                 }
@@ -1870,7 +1915,9 @@ class PersonnageController extends AbstractController
         PotionRepository $potionRepository,
     ): Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $pagerService->setRequest($request)->setRepository($potionRepository)->setLimit(50);
 
@@ -1897,7 +1944,9 @@ class PersonnageController extends AbstractController
         PriereRepository $priereRepository,
     ): Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $pagerService->setRequest($request)->setRepository($priereRepository)->setLimit(50);
 
@@ -1921,7 +1970,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createForm(PersonnageUpdatePugilatForm::class)
             ->add(
@@ -1968,7 +2019,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createForm(PersonnageUpdateRenommeForm::class)
             ->add(
@@ -2015,7 +2068,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $originalPersonnageRessources = new ArrayCollection();
 
@@ -2115,7 +2170,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createForm(PersonnageRichesseForm::class, $personnage);
 
@@ -2154,7 +2211,9 @@ class PersonnageController extends AbstractController
         SortRepository $sortRepository,
     ): Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $pagerService->setRequest($request)->setRepository($sortRepository)->setLimit(50);
 
@@ -2180,7 +2239,9 @@ class PersonnageController extends AbstractController
         TechnologieRepository $technologieRepository,
     ): Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $pagerService->setRequest($request)->setRepository($technologieRepository)->setLimit(50);
 
@@ -2191,7 +2252,7 @@ class PersonnageController extends AbstractController
         $limit = 1;
         foreach ($competences as $competence) {
             if (CompetenceFamilyType::CRAFTSMANSHIP->value === $competence->getCompetenceFamily(
-            )?->getCompetenceFamilyType()?->value) {
+                )?->getCompetenceFamilyType()?->value) {
                 if ($competence->getLevel()?->getIndex() >= 2) {
                     $message = false;
                     $errorLevel = 0;
@@ -2231,7 +2292,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createForm(PersonnageXpForm::class, [])
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -2301,7 +2364,7 @@ class PersonnageController extends AbstractController
                 'autocomplete' => true,
                 'label' => 'Enseignant',
                 'class' => Personnage::class,
-                'choice_label' => static fn (Personnage $personnage) => $personnage->getIdName(),
+                'choice_label' => static fn(Personnage $personnage) => $personnage->getIdName(),
             ])
             ->add('competence', ChoiceType::class, [
                 'required' => true,
@@ -2309,7 +2372,7 @@ class PersonnageController extends AbstractController
                 'autocomplete' => true,
                 'label' => 'Compétence étudiée',
                 'choices' => $availableCompetences,
-                'choice_label' => static fn (Competence $competence) => $competence->getLabel(),
+                'choice_label' => static fn(Competence $competence) => $competence->getLabel(),
             ]);
 
         /** @var GnRepository $gnRepository */
@@ -2570,7 +2633,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createForm(PersonnageDocumentForm::class, $personnage)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn-secondary']]);
@@ -2723,7 +2788,7 @@ class PersonnageController extends AbstractController
             $response->headers->set('Content-Type', 'image/jpeg');
         }
 
-        return $response->send();
+        return $response;
         /* OLD
         $trombine = $personnage->getTrombineUrl();
         $filename = $this->fileUploader->getDirectory(FolderType::Photos).$trombine;
@@ -2753,7 +2818,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createForm(PersonnageItemForm::class, $personnage)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
@@ -3055,6 +3122,33 @@ class PersonnageController extends AbstractController
         ]);
     }
 
+    #[Route('/{personnage}/religion/{religion}/stl', name: 'personnage.religion.stl')]
+    #[IsGranted(Role::USER->value)]
+    public function religionStlAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Religion $religion,
+    ): BinaryFileResponse|RedirectResponse {
+        $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA, Role::REGLE]);
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if (!$personnage->isKnownReligion($religion)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
+
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        return $this->sendDocument(null, $religion->getStl());
+    }
+
+    /**
+     * Selection du personnage courant.
+     */
+    // TODO permet à un USER de choisir son personnage ACTIF
     /**
      * Retire la dernière compétence acquise par un personnage.
      */
@@ -3066,7 +3160,9 @@ class PersonnageController extends AbstractController
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $lastCompetence = $personnageService->getLastCompetence($personnage);
 
@@ -3115,10 +3211,7 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    /**
-     * Selection du personnage courant.
-     */
-    // TODO permet à un USER de choisir son personnage ACTIF
+
     public function selectAction(
         Request $request,
 
@@ -3200,7 +3293,9 @@ class PersonnageController extends AbstractController
         }*/
 
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createFormBuilder()
             ->add('participant', EntityType::class, [
@@ -3211,9 +3306,9 @@ class PersonnageController extends AbstractController
                 'label' => 'Nouveau propriétaire',
                 'help' => 'Il doit avoir une participation, et ne pas avoir de personnage associé à celle-ci',
                 'class' => Participant::class,
-                'choice_label' => static fn (Participant $participant) => $participant->getGn()->getLabel(
-                ).' - '.$participant->getUser()?->getFullname(),
-                'query_builder' => static fn (ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
+                'choice_label' => static fn(Participant $participant) => $participant->getGn()->getLabel(
+                    ).' - '.$participant->getUser()?->getFullname(),
+                'query_builder' => static fn(ParticipantRepository $pr) => $pr->createQueryBuilder('prt')
                     ->select('prt')
                     ->innerJoin('prt.user', 'u')
                     ->innerJoin('prt.gn', 'gn')
@@ -3262,7 +3357,9 @@ class PersonnageController extends AbstractController
             $personnage->setUser($newParticipant->getUser());
 
             // Check que le groupe de destination n'est pas lock aussi
-            $this->checkPersonnageGroupeLock($personnage, $newParticipant);
+            if ($r = $this->checkPersonnageGroupeLock($personnage, $newParticipant)) {
+                return $r;
+            }
 
             $this->entityManager->persist($newParticipant);
             $this->entityManager->persist($personnage);
@@ -3279,6 +3376,10 @@ class PersonnageController extends AbstractController
         ]);
     }
 
+    /**
+     * Dé-Selection du personnage courant.
+     */
+    // TODO ?
     /**
      * Supprime un trigger.
      */
@@ -3319,10 +3420,7 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    /**
-     * Dé-Selection du personnage courant.
-     */
-    // TODO ?
+
     public function unselectAction(Request $request): RedirectResponse
     {
         $app['personnage.manager']->resetCurrentPersonnage();
@@ -3342,7 +3440,9 @@ class PersonnageController extends AbstractController
         $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
 
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $form = $this->createForm(PersonnageUpdateForm::class, $personnage)
             ->add('save', SubmitType::class, [
@@ -3384,7 +3484,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $especes = $this->entityManager->getRepository(Espece::class)->findBy([],
             ['nom' => 'ASC']);
@@ -3403,8 +3505,8 @@ class PersonnageController extends AbstractController
                 'class' => Espece::class,
                 'choices' => $especes,
                 'label_html' => true,
-                'choice_label' => static fn (Espece $espece) => ($espece->isSecret(
-                ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
+                'choice_label' => static fn(Espece $espece) => ($espece->isSecret(
+                    ) ? '<i class="fa fa-user-secret text-warning"></i> secret - ' : '').$espece->getNom(),
                 'data' => $originalEspeces,
             ])
             ->add(
@@ -3474,7 +3576,9 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
-        $this->checkPersonnageGroupeLock($personnage, $participant);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
 
         $langues = $this->entityManager->getRepository(Langue::class)->findBy([],
             ['secret' => 'ASC', 'diffusion' => 'DESC', 'label' => 'ASC']);

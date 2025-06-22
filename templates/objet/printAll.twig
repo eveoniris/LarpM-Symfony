@@ -17,7 +17,7 @@
             border: 1px solid #000;
             display: inline-block;
             font-size: 10px;
-            height: 80px;
+            height: 22mm;
         }
 
         .item_bleu {
@@ -41,10 +41,33 @@
 
         .recto {
             border-right: 1px dashed #000;
-            font-size: 14px;
+            width: 50mm;
+            position: relative;
         }
 
         .verso {
+            width: 50mm;
+            position: relative;
+        }
+
+        .dot {
+            height: 5mm;
+            width: 5mm;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            border: 1px dashed #777;
+        }
+
+        .recto .dot {
+            left: 40mm;
+            top: 0mm;
+        }
+
+        .verso .dot {
+            right: 0;
+            bottom: 5mm;
         }
 
         .item_left {

@@ -139,7 +139,7 @@ abstract class BaseTerritoire
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
     protected ?Territoire $territoire;
 
-    #[ORM\OneToOne(mappedBy: 'territoire', targetEntity: TerritoireGuerre::class)]
+    #[ORM\OneToOne(inversedBy: 'territoire', targetEntity: TerritoireGuerre::class)]
     protected TerritoireGuerre $territoireGuerre;
 
     #[ORM\ManyToOne(targetEntity: Appelation::class, inversedBy: 'territoires')]

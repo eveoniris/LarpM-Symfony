@@ -12,12 +12,40 @@ enum LevelType: string
     case MASTER = 'Master'; // Maitre
     case GRAND_MASTER = 'Grand master'; // Grand Maitre
 
-    public function getId(): int
+    public static function getFromIndex(int $index): ?self
     {
-        return self::getTypeId($this);
+        return match ($index) {
+            1 => self::APPRENTICE,
+            3 => self::EXPERT,
+            5 => self::GRAND_MASTER,
+            2 => self::INITIATED,
+            4 => self::MASTER,
+            default => null,
+        };
     }
 
-    public function getIndex(): int
+    public static function getFromLabel(string $label): ?self
+    {
+        if ($type = self::tryFrom($label)) {
+            return $type;
+        }
+
+        return self::tryFromOlder($label);
+    }
+
+    public static function tryFromOlder(string $value): ?self
+    {
+        return match ($value) {
+            'Apprenti' => self::APPRENTICE,
+            'Initié', 'InitiÃ©' => self::INITIATED,
+            'Expert' => self::EXPERT,
+            'Maitre', 'MaÃ®tre', 'Maître' => self::MASTER,
+            'Grand Maitre', 'Grand MaÃ®tre', 'Grand Maître' => self::GRAND_MASTER,
+            default => null,
+        };
+    }
+
+    public function getId(): int
     {
         return self::getTypeId($this);
     }
@@ -34,24 +62,8 @@ enum LevelType: string
         };
     }
 
-    public static function getFromLabel(string $label): ?LevelType
+    public function getIndex(): int
     {
-        if ($type = static::tryFrom($label)) {
-            return $type;
-        }
-
-        return LevelType::tryFromOlder($label);
-    }
-
-    public static function tryFromOlder(string $value): ?LevelType
-    {
-        return match ($value) {
-            'Apprenti' => self::APPRENTICE,
-            'Initié', 'InitiÃ©' => self::INITIATED,
-            'Expert' => self::EXPERT,
-            'Maitre', 'MaÃ®tre', 'Maître' => self::MASTER,
-            'Grand Maitre', 'Grand MaÃ®tre', 'Grand Maître' => self::GRAND_MASTER,
-            default => null,
-        };
+        return self::getTypeId($this);
     }
 }

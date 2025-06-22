@@ -22,7 +22,7 @@ class BaseMessage
     #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Assert\Length(255)]
+    #[Assert\Length(max: 255)]
     #[Column(type: Types::STRING, length: 255, nullable: true)]
     protected ?string $title = null;
 
@@ -116,9 +116,9 @@ class BaseMessage
     /**
      * Set the value of text.
      */
-    public function setText(string $text): static
+    public function setText(?string $text): static
     {
-        $this->text = $text;
+        $this->text = $text ?? '';
 
         return $this;
     }

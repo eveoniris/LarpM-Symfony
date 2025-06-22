@@ -1,0 +1,104 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Personnage avec un gap XP sur {{ gn.label }}
+{% endblock title %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
+
+
+    <script type="module">
+        jQuery(document).ready(function () {
+            new DataTable('#stats-table', {
+                'pageLength': 100,
+                order:[[O, 'desc']],
+                'layout': {
+                    'topStart': {
+                        'buttons': ['copy', 'csv', 'excel', 'pdf', 'print']
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Statistiques', 'route': path('stats.list') },
+            {'name' : 'Personnage avec un gap XP de '~ gap ~' par groupe sur ' ~ gn.label },
+        ]
+    } %}
+
+    <div class="d-flex justify-content-end">
+
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="Télécharger"
+                   href="{{ path('stats.xpGap.gn.csv', {'gn':gn.id, 'gap':gap}) }}"><i
+                        class="fa fa-file-csv"></i>
+                    Télécharger</a>
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="format JSON"
+                   href="{{ path('stats.xpGap.gn.json', {'gn':gn.id, 'gap':gap}) }}"><i
+                        class="fa fa-file-lines"></i>
+                    Json API</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Personnage avec un gap XP de {{ gap }} sur {{ gn.label }}</h5>
+        </div>
+
+        <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
+            {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
+                {'name' : 'total', 'css': 'text-center'},
+                {'name' : 'restant', 'css': 'text-center'},
+                {'name' : 'personnage', 'css': 'text-center'},
+                {'name' : 'groupe', 'css': 'text-center'},
+            ]} %}
+            <tbody>
+            {% for xpGap in xpGaps %}
+                <tr>
+                    <td class="text-center col-6">
+                        {{ xpGap.total }}
+                    </td>
+                    <td class="text-center col-6">
+                        {{ xpGap.xp_restant }}
+                    </td>
+                    <td class="text-center col-6">
+                        <a href="{{ path('personnage.detail', {'personnage': xpGap.personnage_id, 'gn' : gn.id } ) }}">
+                            {{ xpGap.personnage_nom }}
+                        </a>
+                    </td>
+                    <td class="text-center col-6">
+                        <a href="{{ path('groupe.detail.groupeGn', {'groupe': xpGap.groupe_id, 'gn' : gn.id, 'groupeGn': xpGap.groupe_gn_id } ) }}">
+                            {{ xpGap.groupe_nom }}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}

@@ -26,8 +26,7 @@
                     {% if personnage.user %}{{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}{% else %}Ce personnage n'est pas lié à un joueur{% endif %}
                     . {% if personnage.intrigue %}participe aux intrigues{% else %}ne participe pas aux intrigues{% endif %}
                     <br/> <strong>Titre : </strong>
-                    {{ personnageService.getTitre(participant.personnage, participant.gn) }}
-
+                    {{ personnageService.getTitre(participant.personnage, participant.gn)|default('-') }}
                 </div>
 
             </td>

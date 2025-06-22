@@ -387,7 +387,7 @@ class StockObjetController extends AbstractController
             $response->headers->set('Content-Type', 'image/'.$photo->getExtension());
         }
 
-        return $response->send();
+        return $response;
     }
 
     /**

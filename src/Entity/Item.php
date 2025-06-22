@@ -28,6 +28,7 @@ class Item extends BaseItem
             'qualite' => $this->getQuality()->getNumero(),
             'identification' => $this->getIdentification(),
             'qualident' => $this->getQualident(),
+            'couleur' => $this->getCouleur(),
             'label' => $this->getLabel(),
             'description' => html_entity_decode(strip_tags((string) $this->getDescription())),
             'special' => html_entity_decode(strip_tags((string) $this->getSpecial())),

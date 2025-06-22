@@ -28,7 +28,7 @@
     <table class="table table-condensed table-striped table-bordered table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'technologie.list', 'rows': [
             {'name' : 'Secret', 'field' : 'secret', 'css' : 'text-center'},
-            {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
+            {'name' : 'Nom', 'field' : 'technologie.label', 'css' : 'text-center'},
             {'name' : 'Expert', 'field' : 'competenceFamily.label', 'css' : 'text-center'},
             {'name' : 'Description', 'css' : 'text-center'},
             {'name' : 'Ressources requises', 'css' : 'text-center'},
@@ -91,24 +91,24 @@
                                 <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                    title="Télécharger le document associé"
                                    href="{{ path('technologie.document', {'technologie': technologie.id, 'document': technologie.documentUrl}) }}"><i
-                                            class="fa-solid fa-download"></i> Télécharger</a>
+                                        class="fa-solid fa-download"></i> Télécharger</a>
                             {% endif %}
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Modifier"
                                href="{{ path('technologie.update',{'technologie':technologie.id}) }}"><i
-                                        class="fa fa-pencil"></i> Modifier</a>
+                                    class="fa fa-pencil"></i> Modifier</a>
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Détail"
                                href="{{ path('technologie.detail',{'technologie':technologie.id}) }}"><i
-                                        class="fa fa-eye"></i> Detail</a>
+                                    class="fa fa-eye"></i> Detail</a>
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Personnages associés"
                                href="{{ path('technologie.personnages',{'technologie':technologie.id}) }}"><i
-                                        class="fa fa-users"></i> Personnages ({{ technologie.personnages|length }})</a>
+                                    class="fa fa-users"></i> Personnages ({{ technologie.personnages|length }})</a>
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Supprimer"
                                href="{{ path('technologie.delete',{'technologie':technologie.id}) }}"><i
-                                        class="fa fa-eraser"></i> Supprimer</a>
+                                    class="fa fa-eraser"></i> Supprimer</a>
                         </div>
                     </div>
                 </td>

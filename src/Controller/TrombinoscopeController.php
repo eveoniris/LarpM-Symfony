@@ -4,6 +4,7 @@
 namespace App\Controller;
 
 use App\Entity\Gn;
+use App\Repository\GnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\Trombinoscope\TrombinoscopeForm;
@@ -25,10 +26,9 @@ class TrombinoscopeController extends AbstractController
         Request $request,
         PagerService $pagerService,
         ParticipantRepository $participantRepository,
-        EntityManagerInterface $entityManager,
+        GnRepository $gnRepository,
     ): Response {
-        $gnRepo = $entityManager->getRepository(Gn::class);
-        $gn = $gnRepo->findNext();
+        $gn = $gnRepository->findNext();
 
         $pagerService->setRequest($request)->setRepository($participantRepository)->setLimit(50);
 
@@ -138,7 +138,7 @@ class TrombinoscopeController extends AbstractController
             $data = $form->getData();
             $titre = $data['titre'];
             $ids = $data['ids'];
-            $ids = explode(' ', (string)$ids);
+            $ids = explode(' ', (string) $ids);
             $repo = $entityManager->getRepository('\\'.\App\Entity\Personnage::class);
             $personnages = $repo->findByIds($ids);
 

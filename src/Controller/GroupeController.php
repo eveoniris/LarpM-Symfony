@@ -134,7 +134,9 @@ class GroupeController extends AbstractController
 
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $this->checkGroupeLocked($groupe);
+        if ($r = $this->checkGroupeLocked($groupe)) {
+            return $r;
+        }
 
         $form = $this->createForm(GroupeDocumentForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
@@ -167,7 +169,9 @@ class GroupeController extends AbstractController
 
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $this->checkGroupeLocked($groupe);
+        if ($r = $this->checkGroupeLocked($groupe)) {
+            return $r;
+        }
         $originalGroupeHasIngredients = new ArrayCollection();
 
         /*
@@ -244,7 +248,9 @@ class GroupeController extends AbstractController
 
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $this->checkGroupeLocked($groupe);
+        if ($r = $this->checkGroupeLocked($groupe)) {
+            return $r;
+        }
 
         $form = $this->createForm(GroupeItemForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
@@ -375,7 +381,9 @@ class GroupeController extends AbstractController
 
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $this->checkGroupeLocked($groupe);
+        if ($r = $this->checkGroupeLocked($groupe)) {
+            return $r;
+        }
 
         $form = $this->createForm(GroupeRichesseForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
@@ -427,7 +435,9 @@ class GroupeController extends AbstractController
 
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $this->checkGroupeLocked($groupe);
+        if ($r = $this->checkGroupeLocked($groupe)) {
+            return $r;
+        }
 
         $originalGroupeClasses = new ArrayCollection();
 
@@ -809,8 +819,6 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/lock', name: 'lock')]
     public function lockAction(
-        Request $request,
-
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse {
         $groupe->setLock(true);
@@ -835,7 +843,9 @@ class GroupeController extends AbstractController
 
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $this->checkGroupeLocked($groupe);
+        if ($r = $this->checkGroupeLocked($groupe)) {
+            return $r;
+        }
 
         $form = $this->createFormBuilder()
             ->add('territoire', EntityType::class, [
@@ -980,8 +990,6 @@ class GroupeController extends AbstractController
         #[MapEntity] Groupe $groupe,
         RessourceRepository $ressourceRepository,
     ): Response {
-        $this->checkGroupeLocked($groupe);
-
         // recherche les personnages du prochain GN membre du groupe
         $session = $groupe->getNextSession();
         $participants = $session?->getParticipants();
@@ -1167,7 +1175,9 @@ class GroupeController extends AbstractController
         Request $request,
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $this->checkGroupeLocked($groupe);
+        if ($r = $this->checkGroupeLocked($groupe)) {
+            return $r;
+        }
 
         $originalGroupeHasRessources = new ArrayCollection();
 
@@ -1411,7 +1421,9 @@ class GroupeController extends AbstractController
 
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $this->checkGroupeLocked($groupe);
+        if ($r = $this->checkGroupeLocked($groupe)) {
+            return $r;
+        }
 
         $form = $this->createFormBuilder()
             ->add('territoire', EntityType::class, [
@@ -1462,7 +1474,9 @@ class GroupeController extends AbstractController
         Groupe $groupe,
         Territoire $territoire,
     ): RedirectResponse|Response {
-        $this->checkGroupeLocked($groupe);
+        if ($r = $this->checkGroupeLocked($groupe)) {
+            return $r;
+        }
 
         $form = $this->createFormBuilder()
             ->add('remove', SubmitType::class, ['label' => 'Retirer le territoire'])
@@ -1527,7 +1541,9 @@ class GroupeController extends AbstractController
         Request $request,
         #[MapEntity] Groupe $groupe,
     ): RedirectResponse|Response {
-        $this->checkGroupeLocked($groupe);
+        if ($r = $this->checkGroupeLocked($groupe)) {
+            return $r;
+        }
 
         $originalGroupeClasses = new ArrayCollection();
         $originalTerritoires = new ArrayCollection();

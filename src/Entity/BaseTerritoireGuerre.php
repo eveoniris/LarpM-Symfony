@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'territoire_guerre')]
@@ -27,7 +28,7 @@ abstract class BaseTerritoireGuerre
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $protection = null;
 
-    #[ORM\OneToOne(inversedBy: 'territoireGuerre', targetEntity: Territoire::class)]
+    #[ORM\OneToOne(mappedBy: 'territoireGuerre', targetEntity: Territoire::class)]
     protected Territoire $territoire;
 
     public function __construct()
