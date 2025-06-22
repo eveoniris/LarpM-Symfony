@@ -26,6 +26,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
 use Psr\Log\LoggerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -38,6 +39,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -76,6 +78,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected GroupeService $groupeService,
         protected Environment $twig,
         protected StatsService $statsService,
+        protected Security $security,
         // protected Cache $cache, // TODO : later
     )
     {
@@ -339,6 +342,12 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             if (false !== (bool) $request?->get('playerView')) {
                 return parent::render('admin/'.$view, $parameters, $response);
             }
+        }
+
+        $token = $this->security->getToken();
+
+        if ($token instanceof SwitchUserToken) {
+            $parameters['impersonateUser'] = $token->getOriginalToken()->getUser();
         }
 
         $parameters = [...$this->getCan(), ...$parameters];

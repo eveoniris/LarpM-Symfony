@@ -51,6 +51,7 @@ security:
                 # always_remember_me: true
                 remember_me_parameter: stay_logged_in
                 signature_properties: [ 'pwd', 'email', 'username' ]
+            switch_user: true
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
