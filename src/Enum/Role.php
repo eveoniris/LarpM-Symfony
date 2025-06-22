@@ -30,7 +30,7 @@ enum Role: string
     public static function getLabels(): array
     {
         return [
-            //self::SUPER_ADMIN->value => 'Droit divin',
+            self::SUPER_ADMIN->value => 'Droit divin, en plus de l\'admin, peu se faire passer pour autrui',
             self::ADMIN->value => 'Droit de modification sur tout',
             self::DEV->value => 'Droit de développeur',
             self::CARTOGRAPHE->value => 'Droit de modification sur l\'univers',

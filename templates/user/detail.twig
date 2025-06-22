@@ -14,7 +14,8 @@
     <div class="well well-sm">
 
         <div class="row">
-            <div class="{% if is_granted('ROLE_ORGA', user) or app.user.id == user.id %}col-md-6{% else %}col-md-12{% endif %}">
+            <div
+                class="{% if is_granted('ROLE_ORGA', user) or app.user.id == user.id %}col-md-6{% else %}col-md-12{% endif %}">
 
                 <div class="header">
                     <h5>{{ user.displayName }}</h5>
@@ -42,6 +43,19 @@
                         message</a>
                 </div>
 
+                {% if is_granted('ROLE_SUPER_ADMIN', user) %}
+                    <div class="w-100">
+                        <div class="m-2 d-flex justify-content-center">
+                            <a class="btn btn-outline-secondary border-danger"
+                               href="{{ path('user.detail', {'user': user.id, '_switch_user': user.email}) }}"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="top" title="Se connecter comme l'utilisateur">
+                                <i class="fa fa-user-ninja text-danger"
+                                ></i> Simuler sa session</a>
+                        </div>
+                    </div>
+                {% endif %}
+
             </div>
 
             {% if is_granted('ROLE_ORGA', user) or app.user.id == user.id %}
@@ -59,7 +73,7 @@
                             <div class="list-group-item">
                                 <div>
                                     Participe à <a
-                                            href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">{{ participant.gn.label }}</a>.
+                                        href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">{{ participant.gn.label }}</a>.
                                 </div>
 
                                 {% if participant.groupeGn %}
@@ -100,11 +114,11 @@
 
                     <div class="m-2 d-flex justify-content-between">
                         <a class="btn btn-secondary" href="{{ path('user.edit', {'user': user.id}) }}"><span
-                                    class="fa fa-edit"
-                                    style="margin-right: 5px;"></span>Modifier</a>
+                                class="fa fa-edit"
+                                style="margin-right: 5px;"></span>Modifier</a>
                         <a class="btn btn-secondary"
                            href="{{ path('user.personnageDefault', {'user': user.id}) }}"><span
-                                    class="fa fa-users" style="margin-right: 5px;"></span>
+                                class="fa fa-users" style="margin-right: 5px;"></span>
                             Choisir le personnage actif</a>
                     </div>
 

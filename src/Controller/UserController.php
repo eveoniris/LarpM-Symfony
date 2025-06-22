@@ -355,7 +355,9 @@ class UserController extends AbstractController
         }
 
         $availableLabels = Role::getLabels();
-
+        if (!$this->isGranted(Role::SUPER_ADMIN->value)) {
+            unset($availableLabels[Role::SUPER_ADMIN->value]);
+        }
 
         return $this->render(
             'user/update.twig',
