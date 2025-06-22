@@ -226,15 +226,15 @@ final class PagerService
 
         // may from GET
         if (empty($data->getValue()) && $search = $this->getRequest()?->get('search') ?? $this->getRequest()?->get(
-            'q',
-        )) {
+                'q',
+            )) {
             $data->setValue($search);
             $this->searchValue = $search;
         }
 
         if (empty($data->getType()) && $type = $this->getRequest()?->get('searchType') ?? $this->getRequest()?->get(
-            't',
-        )) {
+                't',
+            )) {
             $data->setType($type);
             $this->searchType = $type;
         }

@@ -1,0 +1,13 @@
+/* Import Bootstrap CSS */
+@import '../vendor/bootstrap/dist/css/bootstrap.min.css';
+/*@import '../vendor/bootstrap-select/dist/css/bootstrap-select.min.css';*/
+
+/* Import FontAwesome */
+@import '../fontawesome-6-5-1/css/fontawesome.min.css';
+@import '../fontawesome-6-5-1/css/solid.min.css';
+@import '../fontawesome-6-5-1/css/brands.min.css';
+
+/* Import custom styles */
+@import './style.css';
+@import './dark_theme.css';
+@import './light_theme.css';

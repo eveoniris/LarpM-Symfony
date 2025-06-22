@@ -7,9 +7,9 @@ parameters:
     fedegn.url: 'http://api.fedegn.org/creagn.php'
     fedegn.password: 33fe9b242877621f81adb912b9a3705e
     projectDir: "%kernel.project_dir%/"
-    fromEmailAddress : "no-reply@eveoniris.com"
-    fromEmailName : "Eve-oniris"
-    passwordTokenTTL : 600
+    fromEmailAddress: "no-reply@eveoniris.com"
+    fromEmailName: "Eve-oniris"
+    passwordTokenTTL: 600
 
 services:
     # default configuration for services in *this* file
@@ -34,6 +34,11 @@ services:
     App\Service\ImageOptimizer:
         arguments:
             $projectDirectory: '%projectDir%'
+
+    App\EventListener\AccessEventListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+            - { name: kernel.event_listener, event: kernel.view, method: onKernelView }
 
     acme_api.event.jwt_created_listener:
         class: App\EventListener\JWTCreatedListener

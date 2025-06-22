@@ -112,7 +112,8 @@ class ClasseRepository extends BaseRepository
             ->createQueryBuilder()
             ->select('c')
             ->from(Classe::class, 'c')
-            ->addOrderBy('c.label_feminin')
-            ->addOrderBy('c.label_masculin');
+            ->addOrderBy('c.creation', 'DESC')
+            ->addOrderBy('c.label_masculin')
+            ->addOrderBy('c.label_feminin');
     }
 }

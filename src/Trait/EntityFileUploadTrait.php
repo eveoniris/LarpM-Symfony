@@ -111,8 +111,34 @@ trait EntityFileUploadTrait
         $document->setLabel($this->getLabel());
         $document->setFilenameMaxLength($this->getFilenameMaxLength());
         $document->setDocumentUrl($this->getDocumentUrl());
+        $document->setDocumentExtension($this->getDocumentExtension());
+        $document->setDocumentMimeType($this->getDocumentMimeType());
 
         return $document;
+    }
+
+    public function getDocumentExtension(): string
+    {
+        return $this->extension ?? 'pdf';
+    }
+
+    public function getDocumentMimeType(): string
+    {
+        return $this->mimetype ?? 'application/pdf';
+    }
+
+    public function setDocumentExtension(?string $ext): self
+    {
+        $this->extension = $ext;
+
+        return $this;
+    }
+
+    public function setDocumentMimeType(?string $mimetype): self
+    {
+        $this->mimetype = $mimetype;
+
+        return $this;
     }
 
     public function getProjectDir(): ?string

@@ -41,13 +41,6 @@ phpstan.neon
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
-
-###> symfony/webpack-encore-bundle ###
-/node_modules/
-/public/build/
-npm-debug.log
-yarn-error.log
-###< symfony/webpack-encore-bundle ###
 package-lock.json
 package.json
 private/doc/
@@ -58,3 +51,8 @@ docker/mailpit/
 ###< lexik/jwt-authentication-bundle ###
 /tests/rest/http-client.private.env.json
 /migrations/old/
+
+###> symfony/asset-mapper ###
+/public/assets/
+/assets/vendor/
+###< symfony/asset-mapper ###

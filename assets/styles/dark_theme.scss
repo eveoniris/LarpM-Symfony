@@ -1,221 +1,335 @@
 /* Customize Theme */
+$primary: #337ab7; // #2a9fd6 !default;
+$body-color-dark: #999 !default;
+$body-color: #454545 !default;
+$body-emphasis-color: #333333 !default;
+$body-emphasis-color-dark: #cccccc !default;
+$body-color-dark: #aaa !default;
+$body-bg-dark: #181818 !default;
+// $headings-color: #dddddd !default;
+$headings-color-dark: #111111 !default;
+$dark: #333 !default;
+
+$blue: #0d6efd !default;
+$indigo: #6610f2 !default;
+$purple: #6f42c1 !default;
+$pink: #d63384 !default;
+$red: #dc3545 !default;
+$orange: #fd7e14 !default;
+$yellow: #ffc107 !default;
+$green: #198754 !default;
+$teal: #20c997 !default;
+$cyan: #0dcaf0 !default;
+$purple-100: tint-color($purple, 80%) !default;
+$purple-200: tint-color($purple, 60%) !default;
+$purple-300: tint-color($purple, 40%) !default;
+$purple-400: tint-color($purple, 20%) !default;
+$purple-500: $purple !default;
+$purple-600: shade-color($purple, 20%) !default;
+$purple-700: shade-color($purple, 40%) !default;
+$purple-800: shade-color($purple, 60%) !default;
+$purple-900: shade-color($purple, 80%) !default;
+$white: #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #6c757d !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black: #000 !default;
+$dark-bg-subtle-dark: color-mix($gray-800, $black) !default;
+$light-text-emphasis-dark: $gray-100 !default;
+$dark-text-emphasis-dark: $gray-300 !default;
+$font-sans-serif: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$body-font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$font-size-base: 0.875rem;
+// scss-docs-start theme-color-variables
+$primary: $blue !default;
+$secondary: $gray-600 !default;
+$success: $green !default;
+$info: $cyan !default;
+$warning: $yellow !default;
+$danger: $red !default;
+$light: $gray-100 !default;
+$dark: $gray-900 !default;
+// scss-docs-end theme-color-variables
+
+// scss-docs-start theme-colors-map
+$theme-colors: (
+    "primary": $primary,
+    "secondary": $secondary,
+    "success": $success,
+    "info": $info,
+    "warning": $warning,
+    "danger": $danger,
+    "light": $light,
+    "dark": $dark
+) !default;
+// scss-docs-end theme-colors-map
+$yellow-100: tint-color($yellow, 80%) !default;
+$yellow-200: tint-color($yellow, 60%) !default;
+$yellow-300: tint-color($yellow, 40%) !default;
+$yellow-400: tint-color($yellow, 20%) !default;
+$yellow-500: $yellow !default;
+$yellow-600: shade-color($yellow, 20%) !default;
+$yellow-700: shade-color($yellow, 40%) !default;
+$yellow-800: shade-color($yellow, 60%) !default;
+$yellow-900: shade-color($yellow, 80%) !default;
+// scss-docs-start theme-text-variables
+$primary-text-emphasis: shade-color($primary, 60%) !default;
+$secondary-text-emphasis: shade-color($secondary, 60%) !default;
+$success-text-emphasis: shade-color($success, 60%) !default;
+$info-text-emphasis: shade-color($info, 60%) !default;
+$warning-text-emphasis: shade-color($warning, 60%) !default;
+$danger-text-emphasis: shade-color($danger, 60%) !default;
+$light-text-emphasis: $gray-700 !default;
+$dark-text-emphasis: $gray-700 !default;
+// scss-docs-end theme-text-variables
+$dark-border-subtle-dark: $gray-800 !default;
+// scss-docs-start theme-bg-subtle-variables
+$primary-bg-subtle: tint-color($primary, 80%) !default;
+$secondary-bg-subtle: tint-color($secondary, 80%) !default;
+$success-bg-subtle: tint-color($success, 80%) !default;
+$info-bg-subtle: tint-color($info, 80%) !default;
+$warning-bg-subtle: tint-color($warning, 80%) !default;
+$danger-bg-subtle: tint-color($danger, 80%) !default;
+$light-bg-subtle: color-mix($gray-100, $white) !default;
+$dark-bg-subtle: $gray-400 !default;
+// scss-docs-end theme-bg-subtle-variables
+
+// scss-docs-start theme-border-subtle-variables
+$primary-border-subtle: tint-color($primary, 60%) !default;
+$secondary-border-subtle: tint-color($secondary, 60%) !default;
+$success-border-subtle: tint-color($success, 60%) !default;
+$info-border-subtle: tint-color($info, 60%) !default;
+$warning-border-subtle: tint-color($warning, 60%) !default;
+$danger-border-subtle: tint-color($danger, 60%) !default;
+$light-border-subtle: $gray-200 !default;
+$dark-border-subtle: $gray-500 !default;
+// scss-docs-end theme-border-subtle-variables
+
+$card-cap-color: $body-color-dark;
+
 
 [data-bs-theme="dark"] {
-  --bs-primary: #{$dark};
-  --bs-primary-bg-subtle: #{$primary};
-  --bs-primary-bg-subtle-dark: #{$primary};
-  --bs-breadcrumb-bg-color: #{$dark-bg-subtle-dark};
-  --bs-link-color: #2a9fd6;
-  --bs-heading-color: #cccccc;
-  --bs-secondary-bg-rgb: 40, 40, 40;
+    --bs-primary: #{$dark};
+    --bs-primary-bg-subtle: #{$primary};
+    --bs-primary-bg-subtle-dark: #{$primary};
+    --bs-breadcrumb-bg-color: #{$dark-bg-subtle-dark};
+    --bs-link-color: #2a9fd6;
+    --bs-heading-color: #cccccc;
+    --bs-secondary-bg-rgb: 40, 40, 40;
 
-  /*
-  --bd-violet: #9561fb;
-  --bd-violet-bg: #712cf9;
-  --bd-toc-color: var(--bs-emphasis-color);
-  --bd-sidebar-link-bg: rgba(85, 33, 187, .5);
-  --bd-callout-link: 110, 168, 254;
-  --bd-callout-code-color: #e685b5;
-  --bd-pre-bg: #1b1f22;
-*/
-  --bs-gamemaster: #9966ee;
-  --bs-violet: #6610f2;
-  --bs-gamemaster-rgb: rgba(111, 66, 193, 100);
+    /*
+    --bd-violet: #9561fb;
+    --bd-violet-bg: #712cf9;
+    --bd-toc-color: var(--bs-emphasis-color);
+    --bd-sidebar-link-bg: rgba(85, 33, 187, .5);
+    --bd-callout-link: 110, 168, 254;
+    --bd-callout-code-color: #e685b5;
+    --bd-pre-bg: #1b1f22;
+  */
+    --bs-gamemaster: #9966ee;
+    --bs-violet: #6610f2;
+    --bs-gamemaster-rgb: rgba(111, 66, 193, 100);
 
-  --bs-gamemaster-text-emphasis: #7744cc;
-  --bs-gamemaster-bg-subtle: #{$purple-900};
-  --bs-gamemaster-border-subtle: #5520aa;
+    --bs-gamemaster-text-emphasis: #7744cc;
+    --bs-gamemaster-bg-subtle: #{$purple-900};
+    --bs-gamemaster-border-subtle: #5520aa;
 
-  .table-gamemaster {
-    --bs-table-color: #fff;
-    --bs-table-bg: var(--bs-gamemaster);
-    --bs-table-border-color: var(--bs-gamemaster-text-emphasis);
-    --bs-table-striped-bg: var(--bs-gamemaster-border-subtle);
-    --bs-table-striped-color: #fff;
-    --bs-table-active-bg: var(--bs-gamemaster-border-subtle);
-    --bs-table-active-color: #fff;
-    --bs-table-hover-bg: var(--bs-gamemaster-border-subtle);
-    --bs-table-hover-color: #fff;
-    color: var(--bs-table-color);
-    border-color: var(--bs-table-border-color)
-  }
+    .table-gamemaster {
+        --bs-table-color: #fff;
+        --bs-table-bg: var(--bs-gamemaster);
+        --bs-table-border-color: var(--bs-gamemaster-text-emphasis);
+        --bs-table-striped-bg: var(--bs-gamemaster-border-subtle);
+        --bs-table-striped-color: #fff;
+        --bs-table-active-bg: var(--bs-gamemaster-border-subtle);
+        --bs-table-active-color: #fff;
+        --bs-table-hover-bg: var(--bs-gamemaster-border-subtle);
+        --bs-table-hover-color: #fff;
+        color: var(--bs-table-color);
+        border-color: var(--bs-table-border-color)
+    }
 
-  .btn-gamemaster {
-    --bs-btn-color: #fff;
-    --bs-btn-bg: var(--bs-gamemaster);
-    --bs-btn-border-color: var(--bs-gamemaster);
-    --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: #7f5dd1;
-    --bs-btn-hover-border-color: #6f47c1;
-    --bs-btn-focus-shadow-rgb: 217, 164, 6;
-    --bs-btn-active-color: #fff;
-    --bs-btn-active-bg: #6f4dc1;
-    --bs-btn-active-border-color: #6f47c1;
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: #fff;
-    --bs-btn-disabled-bg: var(--bs-gamemaster);
-    --bs-btn-disabled-border-color: var(--bs-gamemaster)
-  }
+    .btn-gamemaster {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: var(--bs-gamemaster);
+        --bs-btn-border-color: var(--bs-gamemaster);
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #7f5dd1;
+        --bs-btn-hover-border-color: #6f47c1;
+        --bs-btn-focus-shadow-rgb: 217, 164, 6;
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: #6f4dc1;
+        --bs-btn-active-border-color: #6f47c1;
+        --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+        --bs-btn-disabled-color: #fff;
+        --bs-btn-disabled-bg: var(--bs-gamemaster);
+        --bs-btn-disabled-border-color: var(--bs-gamemaster)
+    }
 
-  .btn-outline-gamemaster {
-    --bs-btn-color: var(--bs-gamemaster);
-    --bs-btn-border-color: var(--bs-gamemaster);
-    --bs-btn-hover-color: #BB88FF;
-    --bs-btn-hover-bg: var(--bs-gamemaster-bg-subtle);
-    --bs-btn-hover-border-color: var(--bs-gamemaster);
-    --bs-btn-focus-shadow-rgb: 255, 193, 7;
-    --bs-btn-active-color: #BB88FF;
-    --bs-btn-active-bg: var(--bs-gamemaster);
-    --bs-btn-active-border-color: var(--bs-gamemaster);
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: var(--bs-gamemaster);
-    --bs-btn-disabled-bg: transparent;
-    --bs-btn-disabled-border-color: var(--bs-gamemaster);
-    --bs-gradient: none
-  }
+    .btn-outline-gamemaster {
+        --bs-btn-color: var(--bs-gamemaster);
+        --bs-btn-border-color: var(--bs-gamemaster);
+        --bs-btn-hover-color: #BB88FF;
+        --bs-btn-hover-bg: var(--bs-gamemaster-bg-subtle);
+        --bs-btn-hover-border-color: var(--bs-gamemaster);
+        --bs-btn-focus-shadow-rgb: 255, 193, 7;
+        --bs-btn-active-color: #BB88FF;
+        --bs-btn-active-bg: var(--bs-gamemaster);
+        --bs-btn-active-border-color: var(--bs-gamemaster);
+        --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+        --bs-btn-disabled-color: var(--bs-gamemaster);
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: var(--bs-gamemaster);
+        --bs-gradient: none
+    }
 
-  .alert-gamemaster {
-    --bs-alert-color: var(--bs-gamemaster-text-emphasis);
-    --bs-alert-bg: var(--bs-gamemaster-bg-subtle);
-    --bs-alert-border-color: var(--bs-gamemaster-border-subtle);
-    --bs-alert-link-color: var(--bs-gamemaster-text-emphasis)
-  }
+    .alert-gamemaster {
+        --bs-alert-color: var(--bs-gamemaster-text-emphasis);
+        --bs-alert-bg: var(--bs-gamemaster-bg-subtle);
+        --bs-alert-border-color: var(--bs-gamemaster-border-subtle);
+        --bs-alert-link-color: var(--bs-gamemaster-text-emphasis)
+    }
 
-  .list-group-item-gamemaster {
-    --bs-list-group-color: var(--bs-gamemaster-text-emphasis);
-    --bs-list-group-bg: var(--bs-gamemaster-bg-subtle);
-    --bs-list-group-border-color: var(--bs-gamemaster-border-subtle);
-    --bs-list-group-action-hover-color: var(--bs-emphasis-color);
-    --bs-list-group-action-hover-bg: var(--bs-gamemaster-border-subtle);
-    --bs-list-group-action-active-color: var(--bs-emphasis-color);
-    --bs-list-group-action-active-bg: var(--bs-gamemaster-border-subtle);
-    --bs-list-group-active-color: var(--bs-gamemaster-bg-subtle);
-    --bs-list-group-active-bg: var(--bs-gamemaster-text-emphasis);
-    --bs-list-group-active-border-color: var(--bs-gamemaster-text-emphasis)
-  }
+    .list-group-item-gamemaster {
+        --bs-list-group-color: var(--bs-gamemaster-text-emphasis);
+        --bs-list-group-bg: var(--bs-gamemaster-bg-subtle);
+        --bs-list-group-border-color: var(--bs-gamemaster-border-subtle);
+        --bs-list-group-action-hover-color: var(--bs-emphasis-color);
+        --bs-list-group-action-hover-bg: var(--bs-gamemaster-border-subtle);
+        --bs-list-group-action-active-color: var(--bs-emphasis-color);
+        --bs-list-group-action-active-bg: var(--bs-gamemaster-border-subtle);
+        --bs-list-group-active-color: var(--bs-gamemaster-bg-subtle);
+        --bs-list-group-active-bg: var(--bs-gamemaster-text-emphasis);
+        --bs-list-group-active-border-color: var(--bs-gamemaster-text-emphasis)
+    }
 
-  .link-gamemaster {
-    color: var(--bs-gamemaster) !important;
-    -webkit-text-decoration-color: var(--bs-gamemaster) !important;
-    text-decoration-color: var(--bs-gamemaster) !important;
-  }
+    .link-gamemaster {
+        color: var(--bs-gamemaster) !important;
+        -webkit-text-decoration-color: var(--bs-gamemaster) !important;
+        text-decoration-color: var(--bs-gamemaster) !important;
+    }
 
-  .link-gamemaster:focus, .link-gamemaster:hover {
-    color: var(--bs-gamemaster-text-emphasis) !important;
-    -webkit-text-decoration-color: var(--bs-gamemaster-text-emphasis) !important;
-    text-decoration-color: var(--bs-gamemaster-text-emphasis) !important;
-  }
+    .link-gamemaster:focus, .link-gamemaster:hover {
+        color: var(--bs-gamemaster-text-emphasis) !important;
+        -webkit-text-decoration-color: var(--bs-gamemaster-text-emphasis) !important;
+        text-decoration-color: var(--bs-gamemaster-text-emphasis) !important;
+    }
 
-  .text-bg-gamemaster {
-    color: #fff !important;
-    background-color: var(--bs-gamemaster-bg-subtle) !important;
-  }
+    .text-bg-gamemaster {
+        color: #fff !important;
+        background-color: var(--bs-gamemaster-bg-subtle) !important;
+    }
 
-  .focus-ring-gamemaster {
-    --bs-focus-ring-color: rgba(var(--bs-gamemaster-rgb), var(--bs-focus-ring-opacity))
-  }
+    .focus-ring-gamemaster {
+        --bs-focus-ring-color: rgba(var(--bs-gamemaster-rgb), var(--bs-focus-ring-opacity))
+    }
 
-  .border-gamemaster {
-    --bs-border-opacity: 1;
-    border-color: var(--bs-gamemaster) !important
-  }
+    .border-gamemaster {
+        --bs-border-opacity: 1;
+        border-color: var(--bs-gamemaster) !important
+    }
 
-  .border-gamemaster-subtle {
-    border-color: var(--bs-gamemaster-border-subtle) !important
-  }
+    .border-gamemaster-subtle {
+        border-color: var(--bs-gamemaster-border-subtle) !important
+    }
 
-  .text-gamemaster {
-    --bs-text-opacity: 1;
-    color: var(--bs-gamemaster) !important
-  }
+    .text-gamemaster {
+        --bs-text-opacity: 1;
+        color: var(--bs-gamemaster) !important
+    }
 
-  .text-gamemaster-emphasis {
-    color: var(--bs-gamemaster-text-emphasis) !important
-  }
+    .text-gamemaster-emphasis {
+        color: var(--bs-gamemaster-text-emphasis) !important
+    }
 
-  .link-underline-gamemaster {
-    --bs-link-underline-opacity: 1;
-    -webkit-text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity)) !important;
-    text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity)) !important
-  }
+    .link-underline-gamemaster {
+        --bs-link-underline-opacity: 1;
+        -webkit-text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity)) !important;
+        text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity)) !important
+    }
 
-  .bg-gamemaster {
-    --bs-bg-opacity: 1;
-    background-color: rgba(var(--bs-gamemaster-rgb), var(--bs-bg-opacity)) !important
-  }
+    .bg-gamemaster {
+        --bs-bg-opacity: 1;
+        background-color: rgba(var(--bs-gamemaster-rgb), var(--bs-bg-opacity)) !important
+    }
 
-  .bg-gamemaster-subtle {
-    background-color: var(--bs-gamemaster-bg-subtle) !important
-  }
+    .bg-gamemaster-subtle {
+        background-color: var(--bs-gamemaster-bg-subtle) !important
+    }
 
-  /***/
+    /***/
 
-  .breadcrumb {
-    background-color: #{$dark-bg-subtle-dark};
-    padding: 8px 15px;
-    margin-bottom: 20px;
-    list-style: none;
-    border-radius: 4px
-  }
+    .breadcrumb {
+        background-color: #{$dark-bg-subtle-dark};
+        padding: 8px 15px;
+        margin-bottom: 20px;
+        list-style: none;
+        border-radius: 4px
+    }
 
-  .breadcrumb > li {
-    display: inline-block
-  }
+    .breadcrumb > li {
+        display: inline-block
+    }
 
-  .breadcrumb > li + li:before {
-    content: "/\00a0";
-    padding: 0 5px;
-    color: #ffffff
-  }
+    .breadcrumb > li + li:before {
+        content: "/\00a0";
+        padding: 0 5px;
+        color: #ffffff
+    }
 
-  .breadcrumb > .active {
-    color: #888888
-  }
+    .breadcrumb > .active {
+        color: #888888
+    }
 
-  .btn-primary {
-    --bs-btn-bg: #{$primary};
-  }
+    .btn-primary {
+        --bs-btn-bg: #{$primary};
+    }
 
-  .panel {
-    color: #{$dark-text-emphasis-dark};
-    background-color: #{$dark-bg-subtle-dark};
-    border-color: #{$dark-border-subtle-dark};
-  }
+    .panel {
+        color: #{$dark-text-emphasis-dark};
+        background-color: #{$dark-bg-subtle-dark};
+        border-color: #{$dark-border-subtle-dark};
+    }
 
-  .panel-conan > .panel-heading, .header > h5, .header > h4, .header-conan {
-    background: url("../img/header.png") no-repeat scroll 25% 40% / 110% 110% #8B360C;
-    color: #{$dark-text-emphasis-dark};
-  }
+    .panel-conan > .panel-heading, .header > h5, .header > h4, .header-conan {
+        background: url("../img/header.png") no-repeat scroll 25% 40% / 110% 110% #8B360C;
+        color: #{$dark-text-emphasis-dark};
+    }
 
-  .well {
-    background-color: #{$dark-bg-subtle-dark};
-    border: 1px solid #{$dark-border-subtle-dark};
-    box-shadow: inset 0 0 1px #{$dark-text-emphasis-dark};
-  }
+    .well {
+        background-color: #{$dark-bg-subtle-dark};
+        border: 1px solid #{$dark-border-subtle-dark};
+        box-shadow: inset 0 0 1px #{$dark-text-emphasis-dark};
+    }
 
-  .well blockquote {
-    border-color: #{$dark-text-emphasis-dark};
-  }
+    .well blockquote {
+        border-color: #{$dark-text-emphasis-dark};
+    }
 
-  .highlight {
-    background-color: #{$yellow-600};
-    border: 1px solid #{$yellow-700};
-  }
+    .highlight {
+        background-color: #{$yellow-600};
+        border: 1px solid #{$yellow-700};
+    }
 
-  .ts-dropdown, .ts-control, .ts-control input {
-    color: #{$secondary};
-  }
+    .ts-dropdown, .ts-control, .ts-control input {
+        color: #{$secondary};
+    }
 
-  .item-bleu {
-    background-color: #{blue-600};
-  }
+    .item-bleu {
+        background-color: #{blue-600};
+    }
 
-  .item-orange {
-    background-color: #{orange};
-  }
+    .item-orange {
+        background-color: #{orange};
+    }
 
-  ul.detail li .head, ul.detail li > strong {
-    background-color: #{$body-emphasis-color};
-  }
+    ul.detail li .head, ul.detail li > strong {
+        background-color: #{$body-emphasis-color};
+    }
 
 }

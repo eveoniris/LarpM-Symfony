@@ -20,6 +20,20 @@ class ParticipantRepository extends BaseRepository
         return $this->findBy([], ['id' => 'ASC']);
     }
 
+    public function findAllWithoutPersonnage(Gn $gn)
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                    SELECT p FROM App\Entity\Participant p
+                    WHERE p.personnage IS NULL and p.gn = :gnid
+                DQL,
+            );
+        $query->setParameter('gnid', $gn->getId());
+
+        return $query->getResult();
+    }
+
     public function findAllWithoutPersonnageSecondaire(Gn $gn)
     {
         $query = $this->getEntityManager()
@@ -130,6 +144,9 @@ class ParticipantRepository extends BaseRepository
         $query->join($alias.'.groupeGn', 'groupeGn');
         $query->join('groupeGn.groupe', 'groupe');
         $query->join($alias.'.personnage', 'personnage');
+        $query->join($alias.'.user', 'user');
+        $query->join($alias.'.billet', 'billet');
+        $query->join('user.etatCivil', 'etatCivil');
         $query->join('personnage.classe', 'classe');
 
         // $query->leftJoin($alias.'.player', 'player');

@@ -465,6 +465,9 @@ class GroupeGnController extends AbstractController
         #[MapEntity] GroupeGn $groupeGn,
     ): RedirectResponse|Response {
         $this->checkGroupeLocked($groupeGn->getGroupe());
+        if ($r = $this->checkGroupeLocked($groupeGn->getGroupe())) {
+            return $r;
+        }
 
         $redirect = $request->get('redirect');
 

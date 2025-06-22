@@ -10,6 +10,7 @@ enum DocumentType: string
     case Stock = 'stocks';
     case Doc = 'doc';
     case Document = 'documents';
+    case Religion3D = 'religions/stl';
     case Rule = 'rules';
     case Langue = 'langue';
     case None = '';

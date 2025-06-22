@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
-use App\Entity\Groupe;
-use Doctrine\ORM\Mapping\Entity;
+use App\Enum\LevelType;
 use App\Repository\ParticipantRepository;
+use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: ParticipantRepository::class)]
 class Participant extends BaseParticipant implements \Stringable
@@ -34,51 +34,13 @@ class Participant extends BaseParticipant implements \Stringable
         return false;
     }
 
-    /**
-     * Vérifie si le joueur est responsable du groupe.
-     */
-    public function isResponsable(Groupe $groupe, GroupeGn $groupeGn): bool
+    public function getAgeJoueur(): int
     {
-        foreach ($groupe->getGroupeGns() as $session) {
-            if ($groupeGn->getId() === $session->getId() && $this->getGroupeGns()->contains($session)) {
-                return true;
-            }
-        }
+        $gn_date = $this->getGn()->getDateFin();
+        $naissance = $this->getUser()->getEtatCivil()->getDateNaissance();
+        $interval = date_diff($gn_date, $naissance);
 
-        return false;
-    }
-
-    /**
-     * Fourni la session de jeu auquel participe l'utilisateur.
-     */
-    public function getSession()
-    {
-        return $this->getGroupeGn();
-    }
-
-    /**
-     * Retire un participant d'un groupe.
-     */
-    public function setGroupeGnNull(): static
-    {
-        $this->setGroupeGn(null);
-
-        return $this;
-    }
-
-    /**
-     * Retire un personnage du participant.
-     */
-    public function setPersonnageNull(): static
-    {
-        $this->setPersonnage(null);
-
-        return $this;
-    }
-
-    public function getUserIdentity(): string
-    {
-        return $this->getUser()?->getDisplayName().' '.$this->getUser()?->getEmail();
+        return (int) $interval->format('%y');
     }
 
     public function getBesoinValidationCi(): bool
@@ -99,15 +61,74 @@ class Participant extends BaseParticipant implements \Stringable
     }
 
     /**
-     * Retourne true si le participant a un billet PNJ, false sinon.
+     * @return mixed[]
      */
-    public function isPnj(): bool
+    public function getPotionsEnveloppe(): array
     {
-        if ($this->getBillet()) {
-            return $this->getBillet()->isPnj();
+        $niveauMax = $this->getPersonnage()?->getCompetenceNiveau('Alchimie');
+        $i = 1;
+        $potions = [];
+        while ($i <= $niveauMax) {
+            $potions = [...$this->getPotionsDepartByLevel($i), ...$potions];
+            ++$i;
         }
 
-        return false;
+        return $potions;
+    }
+
+    public function getPotionsDepartByLevel(int|LevelType|null $niveau = 1)
+    {
+        if (!$niveau) {
+            return [];
+        }
+
+        $return = [];
+        foreach ($this->getPotionsDepart() as $potion) {
+            if ($niveau instanceof LevelType) {
+                $niveau = $niveau->getIndex();
+            }
+
+            if ($potion->getNiveau() === $niveau) {
+                $return[] = $potion;
+            }
+        }
+
+        if (empty($return)) {
+            $return[] = $this->getPotionsRandomByLevel($niveau);
+        }
+
+        return $return;
+    }
+
+    public function getPotionsRandomByLevel(int|LevelType|null $niveau = 1)
+    {
+        if (!$niveau) {
+            return null;
+        }
+
+        $potions = [];
+        foreach ($this->getPersonnage()?->getPotions() as $potion) {
+            if ($niveau instanceof LevelType) {
+                $niveau = $niveau->getIndex();
+            }
+            if ($potion->getNiveau() === $niveau) {
+                $potions[] = $potion;
+            }
+        }
+
+        if (empty($potions)) {
+            return null;
+        }
+
+        return $potions[random_int(0, count($potions) - 1)];
+    }
+
+    /**
+     * Fourni la session de jeu auquel participe l'utilisateur.
+     */
+    public function getSession()
+    {
+        return $this->getGroupeGn();
     }
 
     /**
@@ -118,40 +139,9 @@ class Participant extends BaseParticipant implements \Stringable
         return $this->getUser()->getFullName();
     }
 
-    public function getAgeJoueur(): int
+    public function getUserIdentity(): string
     {
-        $gn_date = $this->getGn()->getDateFin();
-        $naissance = $this->getUser()->getEtatCivil()->getDateNaissance();
-        $interval = date_diff($gn_date, $naissance);
-
-        return (int) $interval->format('%y');
-    }
-
-    public function hasPotionsDepartByLevel(int $niveau = 1): ?Potion
-    {
-        foreach ($this->getPotionsDepart() as $potion) {
-            if ($potion->getNiveau() === $niveau) {
-                return $potion;
-            }
-        }
-
-        return null;
-    }
-
-    public function getPotionsDepartByLevel($niveau = 1)
-    {
-        $return = false;
-        foreach ($this->getPotionsDepart() as $potion) {
-            if ($potion->getNiveau() == $niveau) {
-                $return = $potion;
-            }
-        }
-
-        if (false === $return) {
-            $return = $this->getPotionsRandomByLevel($niveau);
-        }
-
-        return $return;
+        return $this->getUser()?->getDisplayName().' '.$this->getUser()?->getEmail();
     }
 
     public function hasPotionsDepart(Potion $potionDepart): bool
@@ -166,31 +156,60 @@ class Participant extends BaseParticipant implements \Stringable
         return false;
     }
 
-    public function getPotionsRandomByLevel($niveau = 1)
+    public function hasPotionsDepartByLevel(int $niveau = 1): ?Potion
     {
-        $potions = [];
-        foreach ($this->getPersonnage()->getPotions() as $potion) {
-            if ($potion->getNiveau() == $niveau) {
-                $potions[] = $potion;
+        foreach ($this->getPotionsDepart() as $potion) {
+            if ($potion->getNiveau() === $niveau) {
+                return $potion;
             }
         }
 
-        return $potions[rand(0, count($potions) - 1)];
+        return null;
     }
 
     /**
-     * @return mixed[]
+     * Retourne true si le participant a un billet PNJ, false sinon.
      */
-    public function getPotionsEnveloppe(): array
+    public function isPnj(): bool
     {
-        $niveauMax = $this->getPersonnage()->getCompetenceNiveau('Alchimie');
-        $i = 1;
-        $potions = [];
-        while ($i <= $niveauMax) {
-            $potions[] = $this->getPotionsDepartByLevel($i);
-            ++$i;
+        if ($this->getBillet()) {
+            return $this->getBillet()->isPnj();
         }
 
-        return $potions;
+        return false;
+    }
+
+    /**
+     * Vérifie si le joueur est responsable du groupe.
+     */
+    public function isResponsable(Groupe $groupe, GroupeGn $groupeGn): bool
+    {
+        foreach ($groupe->getGroupeGns() as $session) {
+            if ($groupeGn->getId() === $session->getId() && $this->getGroupeGns()->contains($session)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Retire un participant d'un groupe.
+     */
+    public function setGroupeGnNull(): static
+    {
+        $this->setGroupeGn(null);
+
+        return $this;
+    }
+
+    /**
+     * Retire un personnage du participant.
+     */
+    public function setPersonnageNull(): static
+    {
+        $this->setPersonnage(null);
+
+        return $this;
     }
 }

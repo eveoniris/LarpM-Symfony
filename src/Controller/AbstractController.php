@@ -76,7 +76,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         protected GroupeService $groupeService,
         protected Environment $twig,
         protected StatsService $statsService,
-        // Cache $cache, // TODO : later
+        // protected Cache $cache, // TODO : later
     )
     {
     }
@@ -122,6 +122,13 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $this;
     }
 
+    public function loadGrantedAccess(): void
+    {
+        if ($this->isGranted(Role::ADMIN->value)) {
+            $this->setCan(self::IS_ADMIN, true);
+        }
+    }
+
     protected function ListSearchForm(): FormInterface
     {
         return $this->pageRequest->getForm();
@@ -141,6 +148,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             return null;
         }
 
+        if ($this->isGranted(Role::ADMIN->value)) {
+            return null;
+        }
+
         $href = $this->generateUrl('groupe.detail', ['groupe' => $groupe->getId()]).'#groupe_lock';
 
         $renderMsg = [];
@@ -156,6 +167,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
         $route ??= 'groupe.detail';
         $routeParams ??= ['groupe' => $groupe->getId()];
+
+        // throw new AccessDeniedHttpException(implode('<br />', $renderMsg));
 
         return $this->redirectToRoute($route, $routeParams, 303);
     }
@@ -249,6 +262,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $this->getUser()?->getPersonnage();
     }
 
+    // TODO change to orderBy service
+
     protected function genericDelete(
         $entity,
         string $title,
@@ -256,6 +271,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         string|array $redirect,
         array $breadcrumb,
         string $content = '',
+        ?callable $callbackOnValid = null,
     ): RedirectResponse|Response {
         $request = $this->requestStack->getCurrentRequest();
         $form = $this->createForm(DeleteForm::class, $entity, ['class' => $entity::class]);
@@ -267,6 +283,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
         if ($form->isSubmitted() && $form->isValid()) {
             $entityToDelete = $form->getData();
+        }
+
+        if (is_callable($callbackOnValid)) {
+            $callbackOnValid();
         }
 
         if ($entityToDelete) {
@@ -302,8 +322,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             'content' => $content,
         ]);
     }
-
-    // TODO change to orderBy service
 
     protected function render(string $view, array $parameters = [], ?Response $response = null): Response
     {
@@ -400,7 +418,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             throw new \RuntimeException(
                 <<<'EOF'
                 Unable to get the root route.
-                If you do not define a main route as class attributes (ie: #[Route('/groupe', name: 'groupe.')]), 
+                If you do not define a main route as class attributes (ie: #[Route('/groupe', name: 'groupe.')]),
                 You may need to provide the argument $routes['root'] from the calling methods.
                 Sample: ['root' => 'groupe.'] from GroupeController::handleCreateOrUpdate()
                 EOF,
@@ -524,6 +542,25 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ]);
     }
 
+    /*
+     * Sample
+     *
+     * For a modal confirm button :
+     * ->add('delete', ButtonType::class, [
+     *     'label' => 'Supprimer',
+     *     'attr' => [
+     *         'value' => 'Submit',
+     *         'data-bs-toggle' => 'modal',
+     *         'data-bs-target' => '#mainModal',
+     *         'data-bs-title' => 'Confirmation',
+     *         'data-bs-body' => 'Confirmez-vous vouloir supprimer cette entrée ?',
+     *         'data-bs-action' => $this->generateUrl('age.delete', ['age' => $age->getId()]),
+     *         'class' => 'btn btn-secondary btn-confirm-conf',
+     *     ],
+     * ]
+     * );
+     */
+
     protected function log(mixed $entity, LogActionType $type, bool $flush = false): void
     {
         $logAction = new LogAction();
@@ -551,25 +588,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $this->entityManager->persist($logAction);
         $flush && $this->entityManager->flush();
     }
-
-    /*
-     * Sample
-     *
-     * For a modal confirm button :
-     * ->add('delete', ButtonType::class, [
-     *     'label' => 'Supprimer',
-     *     'attr' => [
-     *         'value' => 'Submit',
-     *         'data-bs-toggle' => 'modal',
-     *         'data-bs-target' => '#mainModal',
-     *         'data-bs-title' => 'Confirmation',
-     *         'data-bs-body' => 'Confirmez-vous vouloir supprimer cette entrée ?',
-     *         'data-bs-action' => $this->generateUrl('age.delete', ['age' => $age->getId()]),
-     *         'class' => 'btn btn-secondary btn-confirm-conf',
-     *     ],
-     * ]
-     * );
-     */
 
     protected function redirectToReferer(Request $request): ?RedirectResponse
     {
@@ -613,7 +631,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if (null === $content) {
             $content = static function () use ($repository, $header, $query) {
                 $output = fopen('php://output', 'wb');
-                //fwrite($output, chr(255).chr(254)); // Excel BOM do a chinese chars
+                // fwrite($output, chr(255).chr(254)); // Excel BOM do a chinese chars
                 fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
 
                 $iterateMode = BaseRepository::ITERATE_EXPORT_HEADER;
@@ -688,6 +706,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $filename = $entity->getDocument();
         $documentUrl = $entity->getDocumentUrl();
         $documentLabel = $entity->getPrintLabel() ?: $documentUrl ?: time();
+        $documentExtention = $entity->getDocumentExtension() ?: '.pdf';
+        $documentMimeType = $entity->getDocumentMimeType() ?: 'application/pdf';
 
         // TRY FROM 1 on first failed
         if (!file_exists($filename) && method_exists($entity, 'getOldV1Document')) {
@@ -705,21 +725,24 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if ($hasAttachement) {
             $response->setContentDisposition(
                 ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                $documentLabel.'.pdf',
-                $documentLabel.'.pdf',
+                $documentLabel.$documentExtention,
+                $documentLabel.$documentExtention,
             );
         } else {
-            $response->headers->set('Content-Disposition', 'inline; filename='.$this->slugger->slug($filename).'.pdf');
+            $response->headers->set(
+                'Content-Disposition',
+                'inline; filename='.$this->slugger->slug($filename).$documentExtention,
+            );
             $response
                 ->setContentDisposition(
                     ResponseHeaderBag::DISPOSITION_INLINE,
-                    $documentLabel.'.pdf',
-                    $documentLabel.'.pdf',
+                    $documentLabel.$documentExtention,
+                    $documentLabel.$documentExtention,
                 );
         }
 
         $response->headers->set('Content-Control', 'private');
-        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Type', $documentMimeType);
         $response->headers->set('Content-length', filesize($filename));
 
         return $response;
@@ -738,6 +761,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $response->headers->set('Content-X-Path', $path);
         }
 
-        return $response->send();
+        return $response;
     }
 }

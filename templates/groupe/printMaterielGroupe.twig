@@ -29,12 +29,11 @@
         </ul>
     {% endif %}
 
-    {% set allRessource = groupeService.allRessource(groupe) %}
-    {% if allRessource|length > 0 %}
-        <strong>Ressources</strong>
+    {% if groupe.documents|length > 0 %}
+        <strong>Documents</strong>
         <ul>
-            {% for groupeRessource in allRessource %}
-                <li>{{ groupeRessource.quantite }} {{ groupeRessource.ressource.label|raw }}</li>
+            {% for document in groupe.documents %}
+                <li>{{ document.code }} - {{ document.titre }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -49,27 +48,18 @@
         </ul>
     {% endif %}
 
-    {% if groupe.documents|length > 0 %}
-        <strong>Documents</strong>
+    {% set allRessource = groupeService.allRessource(groupe) %}
+    {% if allRessource|length > 0 %}
+        <strong>Ressources</strong>
         <ul>
-            {% for document in groupe.documents %}
-                <li>{{ document.code }} - {{ document.titre }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    {% set allItems = groupeService.allItems(groupe) %}
-    {% if allItems|length > 0 %}
-        <strong>Objets</strong>
-        <ul>
-            {% for item in allItems %}
-                <li>{{ item.numero }} - {{ item.label }}</li>
+            {% for groupeRessource in allRessource %}
+                <li>{{ groupeRessource.quantite }} {{ groupeRessource.ressource.label|raw }}</li>
             {% endfor %}
         </ul>
     {% endif %}
 
     {% set allMateriel = groupeService.allMateriel(groupe) %}
-    <strong>Matériel</strong>
+    <strong>Matériel supplémentaire</strong>
     <ul>
         <li>Livret de règles de sécurité</li>
         <li>1 sac poubelle transparent (déchets recyclables)</li>
@@ -143,5 +133,15 @@
         <strong>Récompenses : </strong>{{ quete.recompenses|join(', ') }}
     </div>
     #}
+
+    {% set allItems = groupeService.allItems(groupe) %}
+    {% if allItems|length > 0 %}
+        <strong>Objets de jeu</strong> ou étiquette à récupérer au PC Joueur sur présentation de cette feuille.
+        <ul>
+            {% for item in allItems %}
+                <li>{{ item.numero }} - {{ item.label }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
 {% endblock content %}

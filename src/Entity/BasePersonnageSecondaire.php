@@ -28,15 +28,15 @@ abstract class BasePersonnageSecondaire
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $participants;
 
-    #[OneToMany(mappedBy: 'personnageSecondaire', cascade: ['persist'], targetEntity: PersonnageSecondaireCompetence::class)]
+    #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: PersonnageSecondaireCompetence::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $personnageSecondaireCompetences;
 
-    #[OneToMany(mappedBy: 'personnageSecondaire', cascade: ['persist'], targetEntity: PersonnageSecondairesCompetences::class)]
+    #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: PersonnageSecondairesCompetences::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $personnageSecondairesCompetences;
 
-    #[OneToMany(mappedBy: 'personnageSecondaire', cascade: ['persist'], targetEntity: PersonnageSecondairesSkills::class)]
+    #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: PersonnageSecondairesSkills::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $personnageSecondairesSkills;
 

@@ -31,6 +31,7 @@ use App\Repository\BonusRepository;
 use App\Repository\TerritoireRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\GeoJson;
+use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -514,7 +515,9 @@ class TerritoireController extends AbstractController
         TerritoireRepository $territoireRepository,
     ): Response {
         // Set order by nom by default
-        // $pagerService->setOrdersBy(['nom' => OrderBy::ASC]); // test default overwrite from request
+        // $pagerService->setOrdersBy(['name' => OrderBy::ASC]);
+        $pagerService->setDefaultOrdersBy(['name' => OrderBy::ASC]);
+
         $alias = $territoireRepository->getAlias();
 
         // Got only main territory

@@ -1,205 +1,321 @@
 /* Customize Theme */
+$light: #F8F9FAFF !default;
+
+$primary: #337ab7; // #2a9fd6 !default;
+$body-color-dark: #999 !default;
+$body-color: #454545 !default;
+$body-emphasis-color: #333333 !default;
+$body-emphasis-color-dark: #cccccc !default;
+$body-color-dark: #aaa !default;
+$body-bg-dark: #181818 !default;
+$dark-bg-subtle: #181818 !default;
+// $headings-color: #dddddd !default;
+$headings-color-dark: #111111 !default;
+$dark: #333 !default;
+
+$blue: #0d6efd !default;
+$indigo: #6610f2 !default;
+$purple: #6f42c1 !default;
+$pink: #d63384 !default;
+$red: #dc3545 !default;
+$orange: #fd7e14 !default;
+$yellow: #ffc107 !default;
+$green: #198754 !default;
+$teal: #20c997 !default;
+$cyan: #0dcaf0 !default;
+$purple-100: tint-color($purple, 80%) !default;
+$purple-200: tint-color($purple, 60%) !default;
+$purple-300: tint-color($purple, 40%) !default;
+$purple-400: tint-color($purple, 20%) !default;
+$purple-500: $purple !default;
+$purple-600: shade-color($purple, 20%) !default;
+$purple-700: shade-color($purple, 40%) !default;
+$purple-800: shade-color($purple, 60%) !default;
+$purple-900: shade-color($purple, 80%) !default;
+$white: #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #6c757d !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black: #000 !default;
+$light-text-emphasis-dark: $gray-100 !default;
+$dark-text-emphasis-dark: $gray-300 !default;
+$font-sans-serif: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$body-font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$font-size-base: 0.875rem;
+$yellow-100: tint-color($yellow, 80%) !default;
+$yellow-200: tint-color($yellow, 60%) !default;
+$yellow-300: tint-color($yellow, 40%) !default;
+$yellow-400: tint-color($yellow, 20%) !default;
+$yellow-500: $yellow !default;
+$yellow-600: shade-color($yellow, 20%) !default;
+$yellow-700: shade-color($yellow, 40%) !default;
+$yellow-800: shade-color($yellow, 60%) !default;
+$yellow-900: shade-color($yellow, 80%) !default;
+// scss-docs-start theme-color-variables
+$primary: $blue !default;
+$secondary: $gray-600 !default;
+$success: $green !default;
+$info: $cyan !default;
+$warning: $yellow !default;
+$danger: $red !default;
+$light: $gray-100 !default;
+$dark: $gray-900 !default;
+// scss-docs-end theme-color-variables
+
+// scss-docs-start theme-colors-map
+$theme-colors: (
+    "primary": $primary,
+    "secondary": $secondary,
+    "success": $success,
+    "info": $info,
+    "warning": $warning,
+    "danger": $danger,
+    "light": $light,
+    "dark": $dark
+) !default;
+// scss-docs-end theme-colors-map
+
+// scss-docs-start theme-text-variables
+$primary-text-emphasis: shade-color($primary, 60%) !default;
+$secondary-text-emphasis: shade-color($secondary, 60%) !default;
+$success-text-emphasis: shade-color($success, 60%) !default;
+$info-text-emphasis: shade-color($info, 60%) !default;
+$warning-text-emphasis: shade-color($warning, 60%) !default;
+$danger-text-emphasis: shade-color($danger, 60%) !default;
+$light-text-emphasis: $gray-700 !default;
+$dark-text-emphasis: $gray-700 !default;
+// scss-docs-end theme-text-variables
+
+// scss-docs-start theme-bg-subtle-variables
+$primary-bg-subtle: tint-color($primary, 80%) !default;
+$secondary-bg-subtle: tint-color($secondary, 80%) !default;
+$success-bg-subtle: tint-color($success, 80%) !default;
+$info-bg-subtle: tint-color($info, 80%) !default;
+$warning-bg-subtle: tint-color($warning, 80%) !default;
+$danger-bg-subtle: tint-color($danger, 80%) !default;
+$light-bg-subtle: color-mix($gray-100, $white) !default;
+$dark-bg-subtle: $gray-400 !default;
+// scss-docs-end theme-bg-subtle-variables
+// scss-docs-start theme-border-subtle-variables
+$primary-border-subtle: tint-color($primary, 60%) !default;
+$secondary-border-subtle: tint-color($secondary, 60%) !default;
+$success-border-subtle: tint-color($success, 60%) !default;
+$info-border-subtle: tint-color($info, 60%) !default;
+$warning-border-subtle: tint-color($warning, 60%) !default;
+$danger-border-subtle: tint-color($danger, 60%) !default;
+$light-border-subtle: $gray-200 !default;
+$dark-border-subtle: $gray-500 !default;
+// scss-docs-end theme-border-subtle-variables
+
+$card-cap-color: $body-color-dark;
+
 
 [data-bs-theme="light"] {
-  --bs-primary: #{$light};
-  --bs-primary-bg-subtle: #{$primary};
-  --bs-primary-bg-subtle-dark: #{$primary};
-  --bs-breadcrumb-bg-color: #{$dark-bg-subtle};
+    --bs-primary: #{$light};
+    --bs-primary-bg-subtle: #{$primary};
+    --bs-primary-bg-subtle-dark: #{$primary};
+    --bs-breadcrumb-bg-color: #{$dark-bg-subtle};
 
-  --bs-gamemaster: #8040eb;
-  --bs-violet: #6610f2;
-  --bs-gamemaster-rgb: rgba(128, 64, 235, 100);
+    --bs-gamemaster: #8040eb;
+    --bs-violet: #6610f2;
+    --bs-gamemaster-rgb: rgba(128, 64, 235, 100);
 
-  --bs-gamemaster-text-emphasis: #500fba;
-  --bs-gamemaster-bg-subtle: #d9d0e9;
-  --bs-gamemaster-border-subtle: #bdacdd;
+    --bs-gamemaster-text-emphasis: #500fba;
+    --bs-gamemaster-bg-subtle: #d9d0e9;
+    --bs-gamemaster-border-subtle: #bdacdd;
 
-  .table-gamemaster {
-    --bs-table-color: #000;
-    --bs-table-bg: #d9d0e9;
-    --bs-table-border-color: #bdacdd;
-    --bs-table-striped-bg: #bdacdd;
-    --bs-table-striped-color: #000;
-    --bs-table-active-bg: #bdacdd;
-    --bs-table-active-color: #000;
-    --bs-table-hover-bg: #bdacdd;
-    --bs-table-hover-color: #000;
-    color: var(--bs-table-color);
-    border-color: var(--bs-table-border-color)
-  }
+    .table-gamemaster {
+        --bs-table-color: #000;
+        --bs-table-bg: #d9d0e9;
+        --bs-table-border-color: #bdacdd;
+        --bs-table-striped-bg: #bdacdd;
+        --bs-table-striped-color: #000;
+        --bs-table-active-bg: #bdacdd;
+        --bs-table-active-color: #000;
+        --bs-table-hover-bg: #bdacdd;
+        --bs-table-hover-color: #000;
+        color: var(--bs-table-color);
+        border-color: var(--bs-table-border-color)
+    }
 
-  .btn-gamemaster {
-    --bs-btn-color: #000;
-    --bs-btn-bg: var(--bs-gamemaster);
-    --bs-btn-border-color: var(--bs-gamemaster);
-    --bs-btn-hover-color: #000;
-    --bs-btn-hover-bg: #7f5dd1;
-    --bs-btn-hover-border-color: #6f47c1;
-    --bs-btn-focus-shadow-rgb: 217, 164, 6;
-    --bs-btn-active-color: #000;
-    --bs-btn-active-bg: #6f4dc1;
-    --bs-btn-active-border-color: #6f47c1;
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: #000;
-    --bs-btn-disabled-bg: var(--bs-gamemaster);
-    --bs-btn-disabled-border-color: var(--bs-gamemaster)
-  }
+    .btn-gamemaster {
+        --bs-btn-color: #000;
+        --bs-btn-bg: var(--bs-gamemaster);
+        --bs-btn-border-color: var(--bs-gamemaster);
+        --bs-btn-hover-color: #000;
+        --bs-btn-hover-bg: #7f5dd1;
+        --bs-btn-hover-border-color: #6f47c1;
+        --bs-btn-focus-shadow-rgb: 217, 164, 6;
+        --bs-btn-active-color: #000;
+        --bs-btn-active-bg: #6f4dc1;
+        --bs-btn-active-border-color: #6f47c1;
+        --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+        --bs-btn-disabled-color: #000;
+        --bs-btn-disabled-bg: var(--bs-gamemaster);
+        --bs-btn-disabled-border-color: var(--bs-gamemaster)
+    }
 
-  .btn-outline-gamemaster {
-    --bs-btn-color: var(--bs-gamemaster);
-    --bs-btn-border-color: var(--bs-gamemaster);
-    --bs-btn-hover-color: #000;
-    --bs-btn-hover-bg: var(--bs-gamemaster);
-    --bs-btn-hover-border-color: var(--bs-gamemaster);
-    --bs-btn-focus-shadow-rgb: 255, 193, 7;
-    --bs-btn-active-color: #000;
-    --bs-btn-active-bg: var(--bs-gamemaster);
-    --bs-btn-active-border-color: var(--bs-gamemaster);
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: var(--bs-gamemaster);
-    --bs-btn-disabled-bg: transparent;
-    --bs-btn-disabled-border-color: var(--bs-gamemaster);
-    --bs-gradient: none
-  }
+    .btn-outline-gamemaster {
+        --bs-btn-color: var(--bs-gamemaster);
+        --bs-btn-border-color: var(--bs-gamemaster);
+        --bs-btn-hover-color: #000;
+        --bs-btn-hover-bg: var(--bs-gamemaster);
+        --bs-btn-hover-border-color: var(--bs-gamemaster);
+        --bs-btn-focus-shadow-rgb: 255, 193, 7;
+        --bs-btn-active-color: #000;
+        --bs-btn-active-bg: var(--bs-gamemaster);
+        --bs-btn-active-border-color: var(--bs-gamemaster);
+        --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+        --bs-btn-disabled-color: var(--bs-gamemaster);
+        --bs-btn-disabled-bg: transparent;
+        --bs-btn-disabled-border-color: var(--bs-gamemaster);
+        --bs-gradient: none
+    }
 
-  .alert-gamemaster {
-    --bs-alert-color: var(--bs-gamemaster-text-emphasis);
-    --bs-alert-bg: var(--bs-gamemaster-bg-subtle);
-    --bs-alert-border-color: var(--bs-gamemaster-border-subtle);
-    --bs-alert-link-color: var(--bs-gamemaster-text-emphasis)
-  }
+    .alert-gamemaster {
+        --bs-alert-color: var(--bs-gamemaster-text-emphasis);
+        --bs-alert-bg: var(--bs-gamemaster-bg-subtle);
+        --bs-alert-border-color: var(--bs-gamemaster-border-subtle);
+        --bs-alert-link-color: var(--bs-gamemaster-text-emphasis)
+    }
 
-  .list-group-item-gamemaster {
-    --bs-list-group-color: var(--bs-gamemaster-text-emphasis);
-    --bs-list-group-bg: var(--bs-gamemaster-bg-subtle);
-    --bs-list-group-border-color: var(--bs-gamemaster-border-subtle);
-    --bs-list-group-action-hover-color: var(--bs-emphasis-color);
-    --bs-list-group-action-hover-bg: var(--bs-gamemaster-border-subtle);
-    --bs-list-group-action-active-color: var(--bs-emphasis-color);
-    --bs-list-group-action-active-bg: var(--bs-gamemaster-border-subtle);
-    --bs-list-group-active-color: var(--bs-gamemaster-bg-subtle);
-    --bs-list-group-active-bg: var(--bs-gamemaster-text-emphasis);
-    --bs-list-group-active-border-color: var(--bs-gamemaster-text-emphasis)
-  }
+    .list-group-item-gamemaster {
+        --bs-list-group-color: var(--bs-gamemaster-text-emphasis);
+        --bs-list-group-bg: var(--bs-gamemaster-bg-subtle);
+        --bs-list-group-border-color: var(--bs-gamemaster-border-subtle);
+        --bs-list-group-action-hover-color: var(--bs-emphasis-color);
+        --bs-list-group-action-hover-bg: var(--bs-gamemaster-border-subtle);
+        --bs-list-group-action-active-color: var(--bs-emphasis-color);
+        --bs-list-group-action-active-bg: var(--bs-gamemaster-border-subtle);
+        --bs-list-group-active-color: var(--bs-gamemaster-bg-subtle);
+        --bs-list-group-active-bg: var(--bs-gamemaster-text-emphasis);
+        --bs-list-group-active-border-color: var(--bs-gamemaster-text-emphasis)
+    }
 
-  .link-gamemaster {
-    color: RGBA(var(--bs-gamemaster-rgb), var(--bs-link-opacity, 1)) !important;
-    -webkit-text-decoration-color: RGBA(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity, 1)) !important;
-    text-decoration-color: RGBA(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity, 1)) !important
-  }
+    .link-gamemaster {
+        color: RGBA(var(--bs-gamemaster-rgb), var(--bs-link-opacity, 1)) !important;
+        -webkit-text-decoration-color: RGBA(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity, 1)) !important;
+        text-decoration-color: RGBA(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity, 1)) !important
+    }
 
-  .link-gamemaster:focus, .link-gamemaster:hover {
-    color: RGBA(255, 205, 57, var(--bs-link-opacity, 1)) !important;
-    -webkit-text-decoration-color: RGBA(255, 205, 57, var(--bs-link-underline-opacity, 1)) !important;
-    text-decoration-color: RGBA(255, 205, 57, var(--bs-link-underline-opacity, 1)) !important
-  }
+    .link-gamemaster:focus, .link-gamemaster:hover {
+        color: RGBA(255, 205, 57, var(--bs-link-opacity, 1)) !important;
+        -webkit-text-decoration-color: RGBA(255, 205, 57, var(--bs-link-underline-opacity, 1)) !important;
+        text-decoration-color: RGBA(255, 205, 57, var(--bs-link-underline-opacity, 1)) !important
+    }
 
-  .text-bg-gamemaster {
-    color: #000 !important;
-    background-color: RGBA(var(--bs-gamemaster-rgb), var(--bs-bg-opacity, 1)) !important
-  }
+    .text-bg-gamemaster {
+        color: #000 !important;
+        background-color: RGBA(var(--bs-gamemaster-rgb), var(--bs-bg-opacity, 1)) !important
+    }
 
-  .focus-ring-gamemaster {
-    --bs-focus-ring-color: rgba(var(--bs-gamemaster-rgb), var(--bs-focus-ring-opacity))
-  }
+    .focus-ring-gamemaster {
+        --bs-focus-ring-color: rgba(var(--bs-gamemaster-rgb), var(--bs-focus-ring-opacity))
+    }
 
-  .border-gamemaster {
-    --bs-border-opacity: 1;
-    border-color: rgba(var(--bs-gamemaster-rgb), var(--bs-border-opacity)) !important
-  }
+    .border-gamemaster {
+        --bs-border-opacity: 1;
+        border-color: rgba(var(--bs-gamemaster-rgb), var(--bs-border-opacity)) !important
+    }
 
-  .border-gamemaster-subtle {
-    border-color: var(--bs-gamemaster-border-subtle) !important
-  }
+    .border-gamemaster-subtle {
+        border-color: var(--bs-gamemaster-border-subtle) !important
+    }
 
-  .text-gamemaster {
-    --bs-text-opacity: 1;
-    color: rgba(var(--bs-gamemaster-rgb), var(--bs-text-opacity)) !important
-  }
+    .text-gamemaster {
+        --bs-text-opacity: 1;
+        color: rgba(var(--bs-gamemaster-rgb), var(--bs-text-opacity)) !important
+    }
 
-  .text-gamemaster-emphasis {
-    color: var(--bs-gamemaster-text-emphasis) !important
-  }
+    .text-gamemaster-emphasis {
+        color: var(--bs-gamemaster-text-emphasis) !important
+    }
 
-  .link-underline-gamemaster {
-    --bs-link-underline-opacity: 1;
-    -webkit-text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity)) !important;
-    text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity)) !important
-  }
+    .link-underline-gamemaster {
+        --bs-link-underline-opacity: 1;
+        -webkit-text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity)) !important;
+        text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity)) !important
+    }
 
-  .bg-gamemaster {
-    --bs-bg-opacity: 1;
-    background-color: rgba(var(--bs-gamemaster-rgb), var(--bs-bg-opacity)) !important
-  }
+    .bg-gamemaster {
+        --bs-bg-opacity: 1;
+        background-color: rgba(var(--bs-gamemaster-rgb), var(--bs-bg-opacity)) !important
+    }
 
-  .bg-gamemaster-subtle {
-    background-color: var(--bs-gamemaster-bg-subtle) !important
-  }
+    .bg-gamemaster-subtle {
+        background-color: var(--bs-gamemaster-bg-subtle) !important
+    }
 
-  /*******/
+    /*******/
 
-  .breadcrumb {
-    background-color: #{$dark-bg-subtle};
-    padding: 8px 15px;
-    margin-bottom: 20px;
-    list-style: none;
-    border-radius: 4px
-  }
+    .breadcrumb {
+        background-color: #{$dark-bg-subtle};
+        padding: 8px 15px;
+        margin-bottom: 20px;
+        list-style: none;
+        border-radius: 4px
+    }
 
-  .breadcrumb > li {
-    display: inline-block
-  }
+    .breadcrumb > li {
+        display: inline-block
+    }
 
-  .breadcrumb > li + li:before {
-    content: "/\00a0";
-    padding: 0 5px;
-    color: #ffffff
-  }
+    .breadcrumb > li + li:before {
+        content: "/\00a0";
+        padding: 0 5px;
+        color: #ffffff
+    }
 
-  .breadcrumb > .active {
-    color: #888888
-  }
+    .breadcrumb > .active {
+        color: #888888
+    }
 
-  .btn-primary {
-    --bs-btn-bg: #{$primary};
-  }
+    .btn-primary {
+        --bs-btn-bg: #{$primary};
+    }
 
-  .panel {
-    color: #{$dark-text-emphasis};
-    background-color: #{$dark-bg-subtle};
-    border-color: #{$dark-border-subtle};
-  }
+    .panel {
+        color: #{$dark-text-emphasis};
+        background-color: #{$dark-bg-subtle};
+        border-color: #{$dark-border-subtle};
+    }
 
-  .panel-conan > .panel-heading, .header > h5 {
-    background: url('#') no-repeat scroll 25% 40% / 100% 100% #FFAA80;
-    color: #{$dark-text-emphasis};
-  }
+    .panel-conan > .panel-heading, .header > h5 {
+        background: url('#') no-repeat scroll 25% 40% / 100% 100% #FFAA80;
+        color: #{$dark-text-emphasis};
+    }
 
-  .well {
-    background-color: #{$dark-bg-subtle};
-    border: 1px solid #{$dark-border-subtle};
-    box-shadow: inset 0 0 1px #{$dark-text-emphasis};
-  }
+    .well {
+        background-color: #{$dark-bg-subtle};
+        border: 1px solid #{$dark-border-subtle};
+        box-shadow: inset 0 0 1px #{$dark-text-emphasis};
+    }
 
-  .well blockquote {
-    border-color: #{$dark-text-emphasis};
-  }
+    .well blockquote {
+        border-color: #{$dark-text-emphasis};
+    }
 
-  .highlight {
-    background-color: #{$yellow-200};
-    border: 1px solid #{$yellow-300};
-  }
+    .highlight {
+        background-color: #{$yellow-200};
+        border: 1px solid #{$yellow-300};
+    }
 
-  .item-bleu {
-    background-color: #{blue-600};
-  }
+    .item-bleu {
+        background-color: #{blue-600};
+    }
 
-  .item-orange {
-    background-color: #{orange};
-  }
+    .item-orange {
+        background-color: #{orange};
+    }
 
-  ul.detail li .head, ul.detail li > strong {
-    background-color: #{$dark-bg-subtle};
-  }
+    ul.detail li .head, ul.detail li > strong {
+        background-color: #{$dark-bg-subtle};
+    }
 
 }

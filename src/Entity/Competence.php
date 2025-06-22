@@ -2,8 +2,10 @@
 
 namespace App\Entity;
 
+use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
+use App\Enum\LevelType;
 use App\Repository\CompetenceRepository;
 use App\Service\FileUploader;
 use App\Trait\EntityFileUploadTrait;
@@ -74,6 +76,11 @@ class Competence extends BaseCompetence implements \Stringable
 
     // TODO use a StringHelper
 
+    public function getLevelType(): ?LevelType
+    {
+        return LevelType::getFromIndex($this->level->getIndex());
+    }
+
     public function getMaterielRaw(): string
     {
         return html_entity_decode(strip_tags($this->getMateriel()));
@@ -131,6 +138,11 @@ class Competence extends BaseCompetence implements \Stringable
     public function getPrintLabel(): array|string|null
     {
         return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
+    }
+
+    public function isAlchemy(): bool
+    {
+        return $this->competenceFamily->getCompetenceFamilyType()->value === CompetenceFamilyType::ALCHEMY->value;
     }
 
     public function setCompetenceAttributesAsString(?int $value, $ormEm, $attributeRepos): static

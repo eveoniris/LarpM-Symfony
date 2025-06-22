@@ -414,8 +414,10 @@ class ParticipantController extends AbstractController
     /**
      * Reprendre un ancien personnage.
      */
-    #[Route('/participant/{participant}/personnageOld', name: 'participant.personnage.old')]
+    #[Route('/participant/{participant}/personnageOld', name: 'admin.participant.personnage.old')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    #[Deprecated()]
+    // See usage of participant.personnage.old for Pj and Admin
     public function adminPersonnageOldAction(
         Request $request,
         Participant $participant,
@@ -603,7 +605,7 @@ class ParticipantController extends AbstractController
 
         $this->checkHasAccess(
             $roles,
-            fn() => $participant->getPersonnage()?->getUser()?->getId() === $this->getUser()?->getId(),
+            fn () => $participant->getPersonnage()?->getUser()?->getId() === $this->getUser()?->getId(),
         );
     }
 
@@ -965,7 +967,9 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $this->checkParticipantGroupeLock($participant);
+        if ($r = $this->checkParticipantGroupeLock($participant)) {
+            return $r;
+        }
 
         $availableCompetences = $app['personnage.manager']->getAvailableCompetences($personnage);
 
@@ -979,7 +983,7 @@ class ParticipantController extends AbstractController
         $choices = [];
         foreach ($availableCompetences as $competence) {
             $choices[$competence->getId()] = $competence->getLabel(
-                ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+            ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
         }
 
         $form = $this->createFormBuilder($participant)
@@ -1078,8 +1082,8 @@ class ParticipantController extends AbstractController
                     foreach ($religion->getSpheres() as $sphere) {
                         foreach ($sphere->getPrieres() as $priere) {
                             if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere(
-                                    $priere,
-                                )) {
+                                $priere,
+                            )) {
                                 $priere->addPersonnage($personnage);
                                 $personnage->addPriere($priere);
                             }
@@ -2602,7 +2606,9 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $this->checkParticipantGroupeLock($participant);
+        if ($r = $this->checkParticipantGroupeLock($participant)) {
+            return $r;
+        }
 
         if ($personnage->getTerritoire()) {
             $this->addFlash(
@@ -2631,7 +2637,7 @@ class ParticipantController extends AbstractController
                 'origine_id' => $personnage->getOrigine()?->getId(),
                 'personnage_id' => $personnage->getId(),
             ]);
-            $this->entityManager->persist($logAction);
+            $this->entityManager->persist($log);
 
             $this->entityManager->flush();
 
@@ -2709,7 +2715,9 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
-        $this->checkParticipantGroupeLock($participant, 'gn.detail', ['gn' => $groupeGn->getGn()->getId()]);
+        if ($r = $this->checkParticipantGroupeLock($participant, 'gn.detail', ['gn' => $groupeGn->getGn()->getId()])) {
+            return $r;
+        }
 
         if ($participant->getPersonnage()) {
             $this->addFlash('error', 'Désolé, vous disposez déjà d\'un personnage.');
@@ -2915,13 +2923,15 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
-        if ($participant->getPersonnage()) {
+        if ($participant->getPersonnage() && !$this->isGranted(Role::SCENARISTE->value)) {
             $this->addFlash('error', 'Désolé, vous disposez déjà d\'un personnage.');
 
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
 
-        $this->checkParticipantGroupeLock($participant, 'gn.detail', ['gn' => $groupeGn->getGn()->getId()]);
+        if ($r = $this->checkParticipantGroupeLock($participant, 'gn.detail', ['gn' => $groupeGn->getGn()->getId()])) {
+            return $r;
+        }
 
         $groupe = $groupeGn->getGroupe();
 
@@ -2946,6 +2956,7 @@ class ParticipantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+            /** @var Personnage $personnage */
             $personnage = $data['personnage'];
             $participant->setPersonnage($personnage);
 
@@ -2962,74 +2973,85 @@ class ParticipantController extends AbstractController
             }
 
             // Chronologie : Participation au GN courant
+            $hasGnDate = false;
             $anneeGN2 = $participant->getGn()->getDateJeu();
-            $evenement2 = 'Participation '.$participant->getGn()->getLabel();
-            $personnageChronologie2 = new PersonnageChronologie();
-            $personnageChronologie2->setAnnee($anneeGN2);
-            $personnageChronologie2->setEvenement($evenement2);
-            $personnageChronologie2->setPersonnage($personnage);
-
-            // Activer les triggers automatique pour la Litérature et la Noblesse par exemple.
-            foreach ($personnage->getCompetences() as $competence) {
-                // Litterature initié : 1 sort 1 + 1 recette 1
-                if ('Littérature' == $competence->getCompetenceFamily()->getLabel()) {
-                    if (2 == $competence->getLevel()->getId()) {
-                        $trigger = new PersonnageTrigger();
-                        $trigger->setPersonnage($personnage);
-                        $trigger->setTag('SORT APPRENTI');
-                        $trigger->setDone(false);
-                        $this->entityManager->persist($trigger);
-
-                        $trigger2 = new PersonnageTrigger();
-                        $trigger2->setPersonnage($personnage);
-                        $trigger2->setTag('ALCHIMIE APPRENTI');
-                        $trigger2->setDone(false);
-                        $this->entityManager->persist($trigger2);
-                    }
-
-                    // Litterature expert : 1 sort 2 + 1 recette 2
-                    if (3 == $competence->getLevel()->getId()) {
-                        $trigger3 = new PersonnageTrigger();
-                        $trigger3->setPersonnage($personnage);
-                        $trigger3->setTag('SORT INITIE');
-                        $trigger3->setDone(false);
-                        $this->entityManager->persist($trigger3);
-
-                        $trigger4 = new PersonnageTrigger();
-                        $trigger4->setPersonnage($personnage);
-                        $trigger4->setTag('ALCHIMIE INITIE');
-                        $trigger4->setDone(false);
-                        $this->entityManager->persist($trigger4);
-                    }
-
-                    // Litterature maitre : 1 sort 3 + 1 recette 3
-                    if (4 == $competence->getLevel()->getId()) {
-                        $trigger5 = new PersonnageTrigger();
-                        $trigger5->setPersonnage($personnage);
-                        $trigger5->setTag('SORT EXPERT');
-                        $trigger5->setDone(false);
-                        $this->entityManager->persist($trigger5);
-
-                        $trigger6 = new PersonnageTrigger();
-                        $trigger6->setPersonnage($personnage);
-                        $trigger6->setTag('ALCHIMIE EXPERT');
-                        $trigger6->setDone(false);
-                        $this->entityManager->persist($trigger6);
-                    }
-                }
-
-                // Noblesse expert : +2 Renommee
-                if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId(
-                    )) {
-                    $renomme_history = new RenommeHistory();
-                    $renomme_history->setRenomme(2);
-                    $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
-                    $renomme_history->setPersonnage($personnage);
-                    $this->entityManager->persist($renomme_history);
+            /** @var PersonnageChronologie $chronologie */
+            foreach ($personnage->getPersonnageChronologie() as $chronologie) {
+                if ($chronologie->getAnnee() === $anneeGN2) {
+                    $hasGnDate = true;
                 }
             }
+            if (!$hasGnDate) {
+                $evenement2 = 'Participation '.$participant->getGn()->getLabel();
+                $personnageChronologie2 = new PersonnageChronologie();
+                $personnageChronologie2->setAnnee($anneeGN2);
+                $personnageChronologie2->setEvenement($evenement2);
+                $personnageChronologie2->setPersonnage($personnage);
+                $this->entityManager->persist($personnageChronologie2);
+            }
 
-            $this->entityManager->persist($personnageChronologie2);
+            // Activer les triggers automatique pour la Litérature et la Noblesse par exemple.
+            $todo = false; // pourquoi on fait ça? pas besoin des trigger oO
+            if ($todo) {
+                foreach ($personnage->getCompetences() as $competence) {
+                    // Litterature initié : 1 sort 1 + 1 recette 1
+                    if ('Littérature' == $competence->getCompetenceFamily()->getLabel()) {
+                        if (2 == $competence->getLevel()->getId()) {
+                            $trigger = new PersonnageTrigger();
+                            $trigger->setPersonnage($personnage);
+                            $trigger->setTag('SORT APPRENTI');
+                            $trigger->setDone(false);
+                            $this->entityManager->persist($trigger);
+
+                            $trigger2 = new PersonnageTrigger();
+                            $trigger2->setPersonnage($personnage);
+                            $trigger2->setTag('ALCHIMIE APPRENTI');
+                            $trigger2->setDone(false);
+                            $this->entityManager->persist($trigger2);
+                        }
+
+                        // Litterature expert : 1 sort 2 + 1 recette 2
+                        if (3 == $competence->getLevel()->getId()) {
+                            $trigger3 = new PersonnageTrigger();
+                            $trigger3->setPersonnage($personnage);
+                            $trigger3->setTag('SORT INITIE');
+                            $trigger3->setDone(false);
+                            $this->entityManager->persist($trigger3);
+
+                            $trigger4 = new PersonnageTrigger();
+                            $trigger4->setPersonnage($personnage);
+                            $trigger4->setTag('ALCHIMIE INITIE');
+                            $trigger4->setDone(false);
+                            $this->entityManager->persist($trigger4);
+                        }
+
+                        // Litterature maitre : 1 sort 3 + 1 recette 3
+                        if (4 == $competence->getLevel()->getId()) {
+                            $trigger5 = new PersonnageTrigger();
+                            $trigger5->setPersonnage($personnage);
+                            $trigger5->setTag('SORT EXPERT');
+                            $trigger5->setDone(false);
+                            $this->entityManager->persist($trigger5);
+
+                            $trigger6 = new PersonnageTrigger();
+                            $trigger6->setPersonnage($personnage);
+                            $trigger6->setTag('ALCHIMIE EXPERT');
+                            $trigger6->setDone(false);
+                            $this->entityManager->persist($trigger6);
+                        }
+                    }
+
+                    // Noblesse expert : +2 Renommee
+                    if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel(
+                    )->getId()) {
+                        $renomme_history = new RenommeHistory();
+                        $renomme_history->setRenomme(2);
+                        $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
+                        $renomme_history->setPersonnage($personnage);
+                        $this->entityManager->persist($renomme_history);
+                    }
+                }
+            }
             $this->entityManager->persist($participant);
             $this->entityManager->flush();
 
@@ -3665,10 +3687,6 @@ class ParticipantController extends AbstractController
         return $this->file($file, $priere->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);*/
     }
 
-    /**
-     * RefUser une alliance.
-     */
-    // #[Route('/participant/{participant}/groupe/{groupe}/refuseAlliance', name: 'participant.groupe.refuseAlliance')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function refuseAllianceAction(
         Request $request,
@@ -3721,9 +3739,10 @@ class ParticipantController extends AbstractController
     }
 
     /**
-     * RefUser la paix.
+     * RefUser une alliance.
      */
-    // #[Route('/participant/{participant}/groupe/{groupe}/refusePeace', name: 'participant.groupe.refusePeace')]
+    // #[Route('/participant/{participant}/groupe/{groupe}/refuseAlliance', name: 'participant.groupe.refuseAlliance')]
+
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function refusePeaceAction(
         Request $request,
@@ -3777,6 +3796,10 @@ class ParticipantController extends AbstractController
         ]);
     }
 
+    /**
+     * RefUser la paix.
+     */
+    // #[Route('/participant/{participant}/groupe/{groupe}/refusePeace', name: 'participant.groupe.refusePeace')]
     /**
      * Détail d'une règle.
      */
@@ -3838,7 +3861,9 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $this->checkParticipantGroupeLock($participant);
+        if ($r = $this->checkParticipantGroupeLock($participant)) {
+            return $r;
+        }
 
         // refUser la demande si le personnage est Fanatique
         if ($personnage->isFanatique()) {
@@ -3861,7 +3886,7 @@ class ParticipantController extends AbstractController
         $hasReligionSans = $personnageService->hasReligionSans($personnage);
 
         // ne proposer que les religions que le personnage ne pratique pas déjà ...
-        $availableReligions = $personnageService->getAvailableReligions($personnage);
+        $availableReligions = $personnageService->getAvailableReligions($personnage, $this->can(self::IS_ADMIN));
 
         if (0 === $availableReligions->count()) {
             $this->addFlash(
@@ -3899,6 +3924,8 @@ class ParticipantController extends AbstractController
                         'error',
                         "Par Chrom! Un prêtre sans religion ?! C'est non !",
                     );
+
+                    return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
                 } else {
                     $personnagesReligions = $personnage->getPersonnagesReligions();
                     foreach ($personnagesReligions as $oldReligion) {
@@ -3911,28 +3938,31 @@ class ParticipantController extends AbstractController
                             'error',
                             "Etre sans religion ne permet pas d'être plus que pratiquant",
                         );
-                        $religionLevel = $this->entityManager->getRepository(ReligionLevel::class)->findOneBy(
-                            ['index' => 1],
-                        );
-                        $personnageReligion->setReligionLevel($religionLevel);
+                    }
+                    $religionLevel = $this->entityManager->getRepository(ReligionLevel::class)->findOneBy(
+                        ['index' => 1],
+                    );
+                    $personnageReligion->setReligionLevel($religionLevel);
+                }
+            } else {
+                // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
+                if (3 === $personnageReligion->getReligionLevel()?->getIndex()) {
+                    $personnagesReligions = $personnage->getPersonnagesReligions();
+                    foreach ($personnagesReligions as $oldReligion) {
+                        $this->entityManager->remove($oldReligion);
                     }
                 }
 
-                // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
                 // n'autoriser qu'un Fervent que si l'utilisateur n'a pas encore Fervent.
-            } elseif (3 === $personnageReligion->getReligionLevel()?->getIndex()) {
-                $personnagesReligions = $personnage->getPersonnagesReligions();
-                foreach ($personnagesReligions as $oldReligion) {
-                    $this->entityManager->remove($oldReligion);
-                }
-            } elseif (2 === $personnageReligion->getReligionLevel()?->getIndex()) {
-                if ($personnage->isFervent()) {
-                    $this->addFlash(
-                        'error',
-                        'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.',
-                    );
+                if (2 === $personnageReligion->getReligionLevel()?->getIndex()) {
+                    if ($personnage->isFervent()) {
+                        $this->addFlash(
+                            'error',
+                            'Désolé, vous êtes déjà Fervent d\'une autre religion, il vous est impossible de choisir une nouvelle religion en tant que Fervent. Veuillez contacter votre orga en cas de problème.',
+                        );
 
-                    return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+                        return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+                    }
                 }
             }
 
@@ -4037,6 +4067,31 @@ class ParticipantController extends AbstractController
             'religions' => $religions,
             'participant' => $participant,
         ]);
+    }
+
+    #[Route('/participant/{participant}/religion/{religion}/stl', name: 'participant.religion.stl')]
+    #[IsGranted(Role::USER->value)]
+    public function religionStlAction(
+        #[MapEntity] Participant $participant,
+        #[MapEntity] Religion $religion,
+    ): BinaryFileResponse|RedirectResponse {
+        $this->hasAccess($participant);
+
+        $personnage = $participant->getPersonnage();
+
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if (!$personnage->isKnownReligion($religion)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
+
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        return $this->sendDocument(null, $religion->getStl());
     }
 
     /**

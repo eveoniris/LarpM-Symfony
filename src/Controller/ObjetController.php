@@ -11,8 +11,6 @@ use App\Form\Item\ItemLinkForm;
 use App\Repository\ItemRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
-use Doctrine\ORM\EntityManagerInterface;
-use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseAlias;
 use Symfony\Component\HttpFoundation\Request;
@@ -109,6 +107,14 @@ class ObjetController extends AbstractController
         ]);
     }
 
+    public function loadGrantedAccess(): void
+    {
+        // TODO add Main Role vars on top ?
+        if ($this->isGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))) {
+            $this->setCan(self::IS_ADMIN, true);
+        }
+    }
+
     /**
      * Création d'un nouvel objet de jeu.
      */
@@ -192,7 +198,6 @@ class ObjetController extends AbstractController
             'items' => $itemRepository->findBy([], ['numero' => 'ASC']),
         ]);
     }
-
 
     #[Route('/print-csv', name: 'print-csv')]
     public function printCsvAction(ItemRepository $itemRepository): StreamedResponse

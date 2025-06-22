@@ -1,0 +1,68 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Personne sensible par GN{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Statistiques', 'route': path('stats.list') },
+            {'name' : 'Liste des mineurs présent sur ' ~ gn.label},
+        ]
+    } %}
+
+    <div class="d-flex justify-content-end">
+
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="Télécharger" href="{{ path('stats.mineurs.gn.csv', {'gn' : gn.id}) }}"><i
+                        class="fa fa-file-csv"></i>
+                    Télécharger</a>
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="format JSON" href="{{ path('stats.mineurs.gn.json', {'gn' : gn.id}) }}"><i
+                        class="fa fa-file-lines"></i>
+                    Json API</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Personne sensible sur {{ gn.label }}</h5>
+        </div>
+
+        <table class="table table-striped table-bordered table-condensed table-hover">
+            {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
+                {'name' : 'nom'},
+                {'name' : 'prenom_usage'},
+                {'name' : 'prenom'},
+                {'name' : 'email'},
+                {'name' : 'email_contact'},
+                {'name' : 'groupe'},
+                {'name' : 'personnage'},
+            ]} %}
+            <tbody>
+            {% for sensible in sensibles %}
+                <tr>
+                    <td class="col-1"><a
+                            href="{{ path('user.detail', {'user': sensible.userId}) }}">{{ sensible.nom }}</a>
+                    </td>
+                    <td class="col-1">{{ sensible.prenom_usage }}</td>
+                    <td class="col-1">{{ sensible.prenom }}</td>
+                    <td class="col-2">{{ sensible.email }}</td>
+                    <td class="col-1">{{ sensible.email_contact }}</td>
+                    <td class="col-2"><a
+                            href="{{ path('groupe.detail', {'groupe': sensible.groupeId}) }}">{{ sensible.groupe }}</a>
+                    </td>
+                    <td class="col-1"><a
+                            href="{{ path('personnage.detail', {'personnage': sensible.personnageId}) }}">{{ sensible.personnage }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}

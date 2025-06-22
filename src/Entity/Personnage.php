@@ -1523,7 +1523,7 @@ class Personnage extends BasePersonnage implements \Stringable
     {
         $personnagesReligions = $this->getPersonnagesReligions();
         foreach ($personnagesReligions as $personnageReligion) {
-            if ($personnageReligion->getReligion() == $religion) {
+            if ($personnageReligion->getReligion()->getId() === $religion->getId()) {
                 return true;
             }
         }

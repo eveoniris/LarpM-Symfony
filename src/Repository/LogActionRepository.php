@@ -23,6 +23,7 @@ class LogActionRepository extends BaseRepository
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
         $query->join($alias.'.user', 'user');
+        $query->leftJoin('user.etatCivil', 'etatCivil');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
@@ -33,9 +34,13 @@ class LogActionRepository extends BaseRepository
 
         return [
             self::SEARCH_ALL,
-            $alias.'.user',
+            'user.username as username',
             $alias.'.date',
             $alias.'.data',
+            'etatCivil.nom as nom',
+            'etatCivil.prenom as prenom',
+            "CONCAT(etatCivil.nom, ' ', etatCivil.prenom) AS HIDDEN nomPrenom",
+
         ];
     }
 }

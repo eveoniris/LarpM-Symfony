@@ -465,6 +465,53 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
+    #[Route('/api/nbClasseGroupe/classe/{classe}/gn/{gn}', name: 'api.nbClasseGroupe.gn', requirements: [
+        'gn' => Requirement::DIGITS,
+        'classe' => Requirement::DIGITS,
+    ])]
+    #[Route('/stats/nbClasseGroupe/classe/{classe}/gn/{gn}', name: 'stats.nbClasseGroupe.gn', requirements: [
+        'gn' => Requirement::DIGITS,
+        'classe' => Requirement::DIGITS,
+    ])]
+    #[Route('/stats/nbClasseGroupe/classe/{classe}/gn/{gn}/csv', name: 'stats.nbClasseGroupe.gn.csv', requirements: [
+        'gn' => Requirement::DIGITS,
+        'classe' => Requirement::DIGITS,
+    ])]
+    #[Route('/stats/nbClasseGroupe/classe/{classe}/gn/{gn}/json', name: 'stats.nbClasseGroupe.gn.json', requirements: [
+        'gn' => Requirement::DIGITS,
+        'classe' => Requirement::DIGITS,
+    ])]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    public function nbClasseGroupeGnAction(
+        #[MapEntity] Gn $gn,
+        #[MapEntity] Classe $classe,
+        string $_route,
+    ): Response|JsonResponse|StreamedResponse {
+        $dataQuery = $this->statsService->nbClasseGroupeGn($gn, $classe);
+
+        return match ($_route) {
+            'api.nbClasseGroupe.gn', 'stats.nbClasseGroupe.gn.json' => new JsonResponse($dataQuery->getResult()),
+            'stats.nbClasseGroupe.gn.csv' => $this->sendCsv(
+                title: 'nbClasseGroupe'.$gn->getId().'_'.date('Ymd'),
+                query: $dataQuery,
+                header: [
+                    'total',
+                    'id',
+                    'label',
+                    'level',
+                ],
+            ),
+            default => $this->render(
+                'statistique/nbClasseGroupe.twig',
+                [
+                    'nbClasseGroupes' => $dataQuery->getResult(),
+                    'gn' => $gn,
+                    'classe' => $classe,
+                ],
+            ),
+        };
+    }
+
     #[Route('/api/potionsDepart/{gn}', name: 'api.potionsDepart.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/potionsDepart/{gn}', name: 'stats.potionsDepart.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/potionsDepart/{gn}/csv', name: 'stats.potionsDepart.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
@@ -626,6 +673,37 @@ class StatistiqueController extends AbstractController
         );
     }
 
+    #[Route('/api/renommeGroupe/{gn}', name: 'api.renommeGroupe.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/renommeGroupe/{gn}', name: 'stats.renommeGroupe.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/renommeGroupe/{gn}/csv', name: 'stats.renommeGroupe.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/renommeGroupe/{gn}/json', name: 'stats.renommeGroupe.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    public function renommeGroupeGnAction(#[MapEntity] Gn $gn, string $_route): Response|JsonResponse|StreamedResponse
+    {
+        $dataQuery = $this->statsService->renommeGroupeGn($gn, 10);
+
+        return match ($_route) {
+            'api.renommeGroupe.gn', 'stats.renommeGroupe.gn.json' => new JsonResponse($dataQuery->getResult()),
+            'stats.renommeGroupe.gn.csv' => $this->sendCsv(
+                title: 'eveoniris_renommeGroupe_gn_'.$gn->getId().'_'.date('Ymd'),
+                query: $dataQuery,
+                header: [
+                    'total',
+                    'id',
+                    'label',
+                    'level',
+                ],
+            ),
+            default => $this->render(
+                'statistique/renommeGroupe.twig',
+                [
+                    'renommeGroupes' => $dataQuery->getResult(),
+                    'gn' => $gn,
+                ],
+            ),
+        };
+    }
+
     #[Route('/stats/renomme/{gn}', name: 'stats.renomme.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function renommeStatsGnAction(#[MapEntity] Gn $gn): Response
@@ -642,6 +720,44 @@ class StatistiqueController extends AbstractController
     public function renommeStatsGnApiAction(#[MapEntity] Gn $gn): JsonResponse
     {
         return new JsonResponse($this->statsService->getRenommeGn($gn)->getResult());
+    }
+
+    #[Route('/api/sensible/{gn}', name: 'api.sensible.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/sensible/{gn}', name: 'stats.sensible.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/sensible/{gn}/csv', name: 'stats.sensible.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/sensible/{gn}/json', name: 'stats.sensible.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    public function sensibleGnAction(#[MapEntity] Gn $gn, string $_route): Response|JsonResponse|StreamedResponse
+    {
+        $dataQuery = $this->statsService->sensibleGn($gn);
+
+        return match ($_route) {
+            'api.sensible.gn', 'stats.sensible.gn.json' => new JsonResponse($dataQuery->getResult()),
+            'stats.sensible.gn.csv' => $this->sendCsv(
+                title: 'sensible'.$gn->getId().'_'.date('Ymd'),
+                query: $dataQuery,
+                header: [
+                    'nom',
+                    'prenom_usage',
+                    'prenom',
+                    'userId',
+                    'email',
+                    'email_contact',
+                    'groupeId',
+                    'groupe',
+                    'personnageId',
+                    'personnage',
+                    'sensible',
+                ],
+            ),
+            default => $this->render(
+                'statistique/sensible.twig',
+                [
+                    'sensibles' => $dataQuery->getResult(),
+                    'gn' => $gn,
+                ],
+            ),
+        };
     }
 
     #[Route('/stats', name: 'stats')]
@@ -667,5 +783,42 @@ class StatistiqueController extends AbstractController
         return $this->render('statistique/usersRoles.twig', [
             'roles' => $roles,
         ]);
+    }
+
+    #[Route('/api/xpGap/{gn}/{gap}', name: 'api.xpGap.gn', requirements: ['gn' => Requirement::DIGITS], defaults: ['gap' => 50])]
+    #[Route('/stats/xpGap/{gn}/{gap}', name: 'stats.xpGap.gn', requirements: ['gn' => Requirement::DIGITS], defaults: ['gap' => 50])]
+    #[Route('/stats/xpGap/{gn}/{gap}/csv', name: 'stats.xpGap.gn.csv', requirements: ['gn' => Requirement::DIGITS], defaults: ['gap' => 50])]
+    #[Route('/stats/xpGap/{gn}/{gap}/json', name: 'stats.xpGap.gn.json', requirements: ['gn' => Requirement::DIGITS], defaults: ['gap' => 50])]
+    #[IsGranted(new MultiRolesExpression(Role::ADMIN))]
+    public function xpGapGnAction(
+        #[MapEntity] Gn $gn,
+        string $_route,
+        int $gap = 50,
+    ): Response|JsonResponse|StreamedResponse {
+        $dataQuery = $this->statsService->getXpGap($gn, $gap);
+
+        return match ($_route) {
+            'api.xpGap.gn', 'stats.xpGap.gn.json' => new JsonResponse($dataQuery->getResult()),
+            'stats.xpGap.gn.csv' => $this->sendCsv(
+                title: 'xpGap_'.$gn->getId().'_'.date('Ymd'),
+                query: $dataQuery,
+                header: [
+                    'perso_id',
+                    'perso_nom',
+                    'xp_restant',
+                    'total',
+                    'gourpe_id',
+                    'groupe_nom',
+                ],
+            ),
+            default => $this->render(
+                'statistique/xpGap.twig',
+                [
+                    'xpGaps' => $dataQuery->getResult(),
+                    'gn' => $gn,
+                    'gap' => $gap,
+                ],
+            ),
+        };
     }
 }

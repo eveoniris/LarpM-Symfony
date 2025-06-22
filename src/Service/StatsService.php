@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Classe;
 use App\Entity\CompetenceFamily;
 use App\Entity\Gn;
 use App\Enum\Role;
@@ -55,7 +56,7 @@ class StatsService
             <<<SQL
                 SELECT SUM(bateaux) as total, groupe_id, ggn.id as groupe_gn_id, g.nom
                 FROM groupe_gn ggn
-                
+
                          INNER JOIN groupe g ON ggn.groupe_id = g.id
                 WHERE ggn.gn_id = :gnid
                 GROUP BY groupe_id
@@ -260,7 +261,7 @@ class StatsService
         /* @noinspection SqlNoDataSourceInspection */
         return $this->entityManager->createNativeQuery(
             <<<SQL
-                SELECT pot.id as potion_id, p.id as personnage_id, p.nom as personnage, pot.label, pot.numero, pot.niveau 
+                SELECT pot.id as potion_id, p.id as personnage_id, p.nom as personnage, pot.label, pot.numero, pot.niveau
                     FROM participant_potions_depart ppd
                     INNER JOIN potion pot ON ppd.potion_id = pot.id
                     INNER JOIN participant pt ON ppd.participant_id = pt.id
@@ -282,7 +283,7 @@ class StatsService
             <<<SQL
                 SELECT COUNT(p.id) as total, r.label
                   FROM
-                    participant pt 
+                    participant pt
                     INNER JOIN personnage p ON p.id = pt.personnage_id
                     INNER JOIN `personnages_religions` pr ON p.id = pr.personnage_id
                     INNER JOIN religion r ON r.id = pr.religion_id
@@ -306,7 +307,7 @@ class StatsService
         return $this->entityManager->createNativeQuery(
             <<<SQL
                 SELECT COUNT(p.id) as total, r.id, r.label, rl.label as level
-                  FROM participant pt 
+                  FROM participant pt
                     INNER JOIN personnage p ON p.id = pt.personnage_id
                     INNER JOIN personnages_religions pr ON p.id = pr.personnage_id
                     INNER JOIN religion r ON r.id = pr.religion_id
@@ -365,5 +366,135 @@ class StatsService
                 SQL,
             $rsm,
         )->setParameter('role', '%'.$role->value.'%');
+    }
+
+    public function getXpGap(Gn $gn, int $gap = 50): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('personnage_id', 'personnage_id', 'integer');
+        $rsm->addScalarResult('personnage_nom', 'personnage_nom', 'string');
+        $rsm->addScalarResult('xp_restant', 'xp_restant', 'integer');
+        $rsm->addScalarResult('total', 'total', 'integer');
+        $rsm->addScalarResult('groupe_id', 'groupe_id', 'integer');
+        $rsm->addScalarResult('groupe_nom', 'groupe_nom', 'string');
+        $rsm->addScalarResult('groupe_gn_id', 'groupe_gn_id', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                 SELECT DISTINCT perso.id as personnage_id, perso.nom as personnage_nom, xp as xp_restant, sum(xp_gain) as total, g.id as groupe_id, g.nom as groupe_nom
+                FROM participant p
+                         INNER JOIN personnage perso ON p.personnage_id = perso.id
+                INNER JOIN experience_gain eg ON perso.id = eg.personnage_id
+                INNER JOIN groupe_gn ggn ON p.groupe_gn_id = ggn.id
+                INNER JOIN groupe g ON ggn.groupe_id = g.id
+                WHERE p.gn_id = 7 and explanation NOT LIKE 'Suppression de la compétence %'
+                GROUP BY perso.id, perso.nom
+                HAVING sum(xp_gain) >= 50
+                ORDER BY total DESC
+            SQL,
+            $rsm,
+        )
+            ->setParameter('gnid', $gn->getId())
+            ->setParameter('gap', $gap);
+    }
+
+    public function nbClasseGroupeGn(Gn $gn, Classe $classe): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('total', 'total', 'integer');
+        $rsm->addScalarResult('groupe_name', 'groupe_name', 'string');
+        $rsm->addScalarResult('groupe_id', 'groupe_id', 'integer');
+        $rsm->addScalarResult('groupe_gn_id', 'groupe_gn_id', 'integer');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT COUNT(DISTINCT pt.personnage_id) as total, g.nom as groupe_name, g.id as groupe_id, pt.groupe_gn_id
+                FROM participant pt
+                         INNER JOIN personnage p ON pt.personnage_id = p.id
+                         INNER JOIN groupe_gn ggn ON pt.groupe_gn_id = ggn.id
+                         INNER JOIN groupe g ON ggn.groupe_id = g.id
+                WHERE pt.gn_id = 7
+                  AND classe_id = :classe_id
+                GROUP BY g.id
+                ORDER BY total DESC
+                SQL,
+            $rsm,
+        )
+            ->setParameter('gnid', $gn->getId())
+            ->setParameter('classe_id', $classe->getId());
+    }
+
+    public function renommeGroupeGn(Gn $gn, ?int $equalOrUpper = null): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('total', 'total', 'integer');
+        $rsm->addScalarResult('groupe_name', 'groupe_name', 'string');
+        $rsm->addScalarResult('groupe_id', 'groupe_id', 'integer');
+        $rsm->addScalarResult('groupe_gn_id', 'groupe_gn_id', 'integer');
+
+        $equalOrUpperParam = '';
+        if (is_int($equalOrUpper)) {
+            $equalOrUpperParam = 'AND renomme >= '.$equalOrUpper;
+        }
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT COUNT(DISTINCT pt.personnage_id) as total, g.nom as groupe_name, g.id as groupe_id, pt.groupe_gn_id
+                FROM participant pt
+                         INNER JOIN personnage p ON pt.personnage_id = p.id
+                         INNER JOIN groupe_gn ggn ON pt.groupe_gn_id = ggn.id
+                         INNER JOIN groupe g ON ggn.groupe_id = g.id
+                WHERE pt.gn_id = 7
+                  $equalOrUpperParam
+                GROUP BY g.id
+                ORDER BY total DESC
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId());
+    }
+
+    public function sensibleGn(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('nom', 'nom', 'string');
+        $rsm->addScalarResult('prenom_usage', 'prenom_usage', 'string');
+        $rsm->addScalarResult('prenom', 'prenom', 'string');
+        $rsm->addScalarResult('userId', 'userId', 'string');
+        $rsm->addScalarResult('email', 'email', 'string');
+        $rsm->addScalarResult('email_contact', 'email_contact', 'string');
+        $rsm->addScalarResult('groupeId', 'groupeId', 'string');
+        $rsm->addScalarResult('groupe', 'groupe', 'string');
+        $rsm->addScalarResult('personnageId', 'personnageId', 'string');
+        $rsm->addScalarResult('personnage', 'personnage', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                 SELECT ec.nom,
+                   ec.prenom_usage,
+                   ec.prenom,
+                   u.id as userId,
+                   u.email,
+                   u.email_contact,
+                   g.id      as groupeId,
+                   g.nom     as groupe,
+                   perso.id  as personnageId,
+                   perso.nom as personnage
+                 FROM  participant p
+                        INNER JOIN `user` u ON p.user_id = u.id
+                        INNER JOIN etat_civil ec ON u.etat_civil_id = ec.id
+                        INNER JOIN groupe_gn ggn ON p.groupe_gn_id = ggn.id
+                        INNER JOIN groupe g ON ggn.groupe_id = g.id
+                        INNER JOIN personnage perso ON p.personnage_id = perso.id
+                    WHERE
+                    p.gn_id = :gnid
+                        AND sensible = 1;
+                SQL,
+            $rsm,
+        )
+            ->setParameter('gnid', $gn->getId());
     }
 }

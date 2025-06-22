@@ -1,0 +1,212 @@
+@charset "UTF-8";
+/* Customize Theme */
+[data-bs-theme=light] {
+    --bs-primary: #f8f9fa;
+    --bs-primary-bg-subtle: #337ab7;
+    --bs-primary-bg-subtle-dark: #337ab7;
+    --bs-breadcrumb-bg-color: #eee;
+    /*
+      --bd-violet: #9561fb;
+      --bd-violet-bg: #712cf9;
+      --bd-toc-color: var(--bs-emphasis-color);
+      --bd-sidebar-link-bg: rgba(85, 33, 187, .5);
+      --bd-callout-link: 110, 168, 254;
+      --bd-callout-code-color: #e685b5;
+      --bd-pre-bg: #1b1f22;
+    */
+    --bs-gamemaster: #8040eb;
+    --bs-violet: #6610f2;
+    --bs-gamemaster-rgb: rgba(128, 64, 235, 100);
+    --bs-gamemaster-text-emphasis: #500fba;
+    --bs-gamemaster-bg-subtle: #d9d0e9;
+    --bs-gamemaster-border-subtle: #bdacdd;
+    /*******/
+}
+
+[data-bs-theme=light] .table-gamemaster {
+    --bs-table-color: #fff;
+    --bs-table-bg: var(--bs-gamemaster);
+    --bs-table-border-color: var(--bs-gamemaster-text-emphasis);
+    --bs-table-striped-bg: var(--bs-gamemaster-border-subtle);
+    --bs-table-striped-color: #fff;
+    --bs-table-active-bg: var(--bs-gamemaster-border-subtle);
+    --bs-table-active-color: #fff;
+    --bs-table-hover-bg: var(--bs-gamemaster-border-subtle);
+    --bs-table-hover-color: #fff;
+    color: var(--bs-table-color);
+    border-color: var(--bs-table-border-color);
+}
+
+[data-bs-theme=light] .btn-gamemaster {
+    --bs-btn-color: #000;
+    --bs-btn-bg: var(--bs-gamemaster);
+    --bs-btn-border-color: var(--bs-gamemaster);
+    --bs-btn-hover-color: #000;
+    --bs-btn-hover-bg: #7f5dd1;
+    --bs-btn-hover-border-color: #6f47c1;
+    --bs-btn-focus-shadow-rgb: 217, 164, 6;
+    --bs-btn-active-color: #000;
+    --bs-btn-active-bg: #6f4dc1;
+    --bs-btn-active-border-color: #6f47c1;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #000;
+    --bs-btn-disabled-bg: var(--bs-gamemaster);
+    --bs-btn-disabled-border-color: var(--bs-gamemaster);
+}
+
+[data-bs-theme=light] .btn-outline-gamemaster {
+    --bs-btn-color: var(--bs-gamemaster);
+    --bs-btn-border-color: var(--bs-gamemaster);
+    --bs-btn-hover-color: #000;
+    --bs-btn-hover-bg: var(--bs-gamemaster);
+    --bs-btn-hover-border-color: var(--bs-gamemaster);
+    --bs-btn-focus-shadow-rgb: 255, 193, 7;
+    --bs-btn-active-color: #000;
+    --bs-btn-active-bg: var(--bs-gamemaster);
+    --bs-btn-active-border-color: var(--bs-gamemaster);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: var(--bs-gamemaster);
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: var(--bs-gamemaster);
+    --bs-gradient: none;
+}
+
+[data-bs-theme=light] .alert-gamemaster {
+    --bs-alert-color: var(--bs-gamemaster-text-emphasis);
+    --bs-alert-bg: var(--bs-gamemaster-bg-subtle);
+    --bs-alert-border-color: var(--bs-gamemaster-border-subtle);
+    --bs-alert-link-color: var(--bs-gamemaster-text-emphasis);
+}
+
+[data-bs-theme=light] .list-group-item-gamemaster {
+    --bs-list-group-color: var(--bs-gamemaster-text-emphasis);
+    --bs-list-group-bg: var(--bs-gamemaster-bg-subtle);
+    --bs-list-group-border-color: var(--bs-gamemaster-border-subtle);
+    --bs-list-group-action-hover-color: var(--bs-emphasis-color);
+    --bs-list-group-action-hover-bg: var(--bs-gamemaster-border-subtle);
+    --bs-list-group-action-active-color: var(--bs-emphasis-color);
+    --bs-list-group-action-active-bg: var(--bs-gamemaster-border-subtle);
+    --bs-list-group-active-color: var(--bs-gamemaster-bg-subtle);
+    --bs-list-group-active-bg: var(--bs-gamemaster-text-emphasis);
+    --bs-list-group-active-border-color: var(--bs-gamemaster-text-emphasis);
+}
+
+[data-bs-theme=light] .link-gamemaster {
+    color: RGBA(var(--bs-gamemaster-rgb), var(--bs-link-opacity, 1)) !important;
+    -webkit-text-decoration-color: RGBA(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity, 1)) !important;
+    text-decoration-color: RGBA(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity, 1)) !important;
+}
+
+[data-bs-theme=light] .link-gamemaster:focus, [data-bs-theme=light] .link-gamemaster:hover {
+    color: RGBA(255, 205, 57, var(--bs-link-opacity, 1)) !important;
+    -webkit-text-decoration-color: RGBA(255, 205, 57, var(--bs-link-underline-opacity, 1)) !important;
+    text-decoration-color: RGBA(255, 205, 57, var(--bs-link-underline-opacity, 1)) !important;
+}
+
+[data-bs-theme=light] .text-bg-gamemaster {
+    color: #000 !important;
+    background-color: RGBA(var(--bs-gamemaster-rgb), var(--bs-bg-opacity, 1)) !important;
+}
+
+[data-bs-theme=light] .focus-ring-gamemaster {
+    --bs-focus-ring-color: rgba(var(--bs-gamemaster-rgb), var(--bs-focus-ring-opacity));
+}
+
+[data-bs-theme=light] .border-gamemaster {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-gamemaster-rgb), var(--bs-border-opacity)) !important;
+}
+
+[data-bs-theme=light] .border-gamemaster-subtle {
+    border-color: var(--bs-gamemaster-border-subtle) !important;
+}
+
+[data-bs-theme=light] .text-gamemaster {
+    --bs-text-opacity: 1;
+    color: rgba(var(--bs-gamemaster-rgb), var(--bs-text-opacity)) !important;
+}
+
+[data-bs-theme=light] .text-gamemaster-emphasis {
+    color: var(--bs-gamemaster-text-emphasis) !important;
+}
+
+[data-bs-theme=light] .link-underline-gamemaster {
+    --bs-link-underline-opacity: 1;
+    -webkit-text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity)) !important;
+    text-decoration-color: rgba(var(--bs-gamemaster-rgb), var(--bs-link-underline-opacity)) !important;
+}
+
+[data-bs-theme=light] .bg-gamemaster {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-gamemaster-rgb), var(--bs-bg-opacity)) !important;
+}
+
+[data-bs-theme=light] .bg-gamemaster-subtle {
+    background-color: var(--bs-gamemaster-bg-subtle) !important;
+}
+
+[data-bs-theme=light] .breadcrumb {
+    background-color: #ddd;
+    padding: 8px 15px;
+    margin-bottom: 20px;
+    list-style: none;
+    border-radius: 4px;
+}
+
+[data-bs-theme=light] .breadcrumb > li {
+    display: inline-block;
+}
+
+[data-bs-theme=light] .breadcrumb > li + li:before {
+    content: "/ ";
+    padding: 0 5px;
+    color: #ffffff;
+}
+
+[data-bs-theme=light] .breadcrumb > .active {
+    color: #888888;
+}
+
+[data-bs-theme=light] .btn-primary {
+    --bs-btn-bg: #337ab7;
+}
+
+[data-bs-theme=light] .panel {
+    color: #495057;
+    background-color: var(--bs-breadcrumb-bg-color);
+    border-color: #adb5bd;
+}
+
+[data-bs-theme=light] .panel-conan > .panel-heading, [data-bs-theme=light] .header > h5 {
+    background: url("#") no-repeat scroll 25% 40%/100% 100% #FFAA80;
+    color: #495057;
+}
+
+[data-bs-theme=light] .well {
+    background-color: var(--bs-breadcrumb-bg-color);
+    border: 1px solid #adb5bd;
+    box-shadow: inset 0 0 1px #495057;
+}
+
+[data-bs-theme=light] .well blockquote {
+    border-color: #495057;
+}
+
+[data-bs-theme=light] .highlight {
+    background-color: hsl(from #ffc107 h s calc(l - 20)); /* 20% darker */
+    border: 1px solid hsl(from #ffc107 h s calc(l - 40)); /* 40% darker */
+}
+
+[data-bs-theme=light] .item-bleu {
+    background-color: #1E88E5;
+}
+
+[data-bs-theme=light] .item-orange {
+    background-color: orange;
+}
+
+[data-bs-theme=light] ul.detail li .head, [data-bs-theme=light] ul.detail li > strong {
+    background-color: #181818;
+}
+
+/*# sourceMappingURL=light_theme.css.map */

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\CompetenceFamilyType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -25,7 +26,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BaseCompetence', 'extended' => 'Competence'])]
 class BaseCompetence
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::TEXT, nullable: true)]
@@ -37,7 +38,7 @@ class BaseCompetence
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $materiel = null;
 
-    #[Column(type: Types::BOOLEAN,nullable: true)]
+    #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $secret = null;
 
     /**
@@ -98,71 +99,11 @@ class BaseCompetence
         $this->personnages = new ArrayCollection();
     }
 
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function getDescription(): string
-    {
-        return $this->description ?? '';
-    }
-
-    public function setDocumentUrl(string $documentUrl): static
-    {
-        $this->documentUrl = $documentUrl;
-
-        return $this;
-    }
-
-    public function getDocumentUrl(): string
-    {
-        return $this->documentUrl ?? '';
-    }
-
-    public function setMateriel(?string $materiel): static
-    {
-        $this->materiel = $materiel ?? '';
-
-        return $this;
-    }
-
-    public function getMateriel(): string
-    {
-        return $this->materiel ?? '';
-    }
-
     public function addCompetenceAttribute(CompetenceAttribute $competenceAttribute): static
     {
         $this->competenceAttributes[] = $competenceAttribute;
 
         return $this;
-    }
-
-    public function removeCompetenceAttribute(CompetenceAttribute $competenceAttribute): static
-    {
-        $this->competenceAttributes->removeElement($competenceAttribute);
-
-        return $this;
-    }
-
-    public function getCompetenceAttributes(): Collection
-    {
-        return $this->competenceAttributes;
     }
 
     public function addExperienceUsage(ExperienceUsage $experienceUsage): static
@@ -172,35 +113,36 @@ class BaseCompetence
         return $this;
     }
 
-    public function removeExperienceUsage(ExperienceUsage $experienceUsage): static
+    public function addPersonnage(Personnage $personnage): static
     {
-        $this->experienceUsages->removeElement($experienceUsage);
+        $personnage->addCompetence($this);
+        $this->personnages[] = $personnage;
 
         return $this;
     }
 
-    public function getExperienceUsages(): Collection
+    public function addPersonnageApprentissage(PersonnageApprentissage $personnageApprentissages): static
     {
-        return $this->experienceUsages;
+        $this->personnageApprentissages[] = $personnageApprentissages;
+
+        return $this;
     }
 
-    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
-    {
+    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence,
+    ): static {
         $this->personnageSecondaireCompetences[] = $personnageSecondaireCompetence;
 
         return $this;
     }
 
-    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
+    public function getCompetenceAttributes(): Collection
     {
-        $this->personnageSecondaireCompetences->removeElement($personnageSecondaireCompetence);
-
-        return $this;
+        return $this->competenceAttributes;
     }
 
-    public function getPersonnageSecondaireCompetences(): Collection
+    public function getCompetenceFamily(): ?CompetenceFamily
     {
-        return $this->personnageSecondaireCompetences;
+        return $this->competenceFamily;
     }
 
     public function setCompetenceFamily(?CompetenceFamily $competenceFamily = null): static
@@ -210,14 +152,43 @@ class BaseCompetence
         return $this;
     }
 
-    public function getCompetenceFamily(): ?CompetenceFamily
+    public function getDescription(): string
     {
-        return $this->competenceFamily;
+        return $this->description ?? '';
     }
 
-    public function setLevel(?Level $level = null): static
+    public function setDescription(string $description): static
     {
-        $this->level = $level;
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getDocumentUrl(): string
+    {
+        return $this->documentUrl ?? '';
+    }
+
+    public function setDocumentUrl(string $documentUrl): static
+    {
+        $this->documentUrl = $documentUrl;
+
+        return $this;
+    }
+
+    public function getExperienceUsages(): Collection
+    {
+        return $this->experienceUsages;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
 
         return $this;
     }
@@ -227,10 +198,55 @@ class BaseCompetence
         return $this->level;
     }
 
-    public function addPersonnage(Personnage $personnage): static
+    public function setLevel(?Level $level = null): static
     {
-        $personnage->addCompetence($this);
-        $this->personnages[] = $personnage;
+        $this->level = $level;
+
+        return $this;
+    }
+
+    public function getMateriel(): string
+    {
+        return $this->materiel ?? '';
+    }
+
+    public function setMateriel(?string $materiel): static
+    {
+        $this->materiel = $materiel ?? '';
+
+        return $this;
+    }
+
+    public function getPersonnageApprentissages(): Collection
+    {
+        return $this->personnageApprentissages;
+    }
+
+    public function getPersonnageSecondaireCompetences(): Collection
+    {
+        return $this->personnageSecondaireCompetences;
+    }
+
+    public function getPersonnages(): Collection
+    {
+        return $this->personnages;
+    }
+
+    public function isSecret(): ?bool
+    {
+        return $this->secret;
+    }
+
+    public function removeCompetenceAttribute(CompetenceAttribute $competenceAttribute): static
+    {
+        $this->competenceAttributes->removeElement($competenceAttribute);
+
+        return $this;
+    }
+
+    public function removeExperienceUsage(ExperienceUsage $experienceUsage): static
+    {
+        $this->experienceUsages->removeElement($experienceUsage);
 
         return $this;
     }
@@ -243,23 +259,6 @@ class BaseCompetence
         return $this;
     }
 
-    public function getPersonnages(): Collection
-    {
-        return $this->personnages;
-    }
-
-    public function getPersonnageApprentissages(): Collection
-    {
-        return $this->personnageApprentissages;
-    }
-
-    public function addPersonnageApprentissage(PersonnageApprentissage $personnageApprentissages): static
-    {
-        $this->personnageApprentissages[] = $personnageApprentissages;
-
-        return $this;
-    }
-
     public function removePersonnageApprentissage(PersonnageApprentissage $personnageApprentissage): static
     {
         $this->personnageApprentissages->removeElement($personnageApprentissage);
@@ -267,9 +266,11 @@ class BaseCompetence
         return $this;
     }
 
-    public function isSecret(): ?bool
-    {
-        return $this->secret;
+    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence,
+    ): static {
+        $this->personnageSecondaireCompetences->removeElement($personnageSecondaireCompetence);
+
+        return $this;
     }
 
     public function setSecret(?bool $secret): static
