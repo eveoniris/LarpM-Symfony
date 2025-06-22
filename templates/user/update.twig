@@ -83,18 +83,24 @@
             </div>
 
             {% if is_granted('ROLE_ADMIN', app.user) %}
-                <div class="form-group">
-                    <label class="col-sm-2 control-label" for="input-roles">
-                        Roles<br/>
-                        <span class="text-muted" style="font-weight: normal;">(Admin-only)</span>
-                    </label>
-                    <div class="col-sm-8">
-                        {% for role, label in available_roles %}
-                            <label class="control-label">
-                                <input name="roles[]" type="checkbox" value="{{ role }}"
-                                       {% if user.hasRole(role) %}checked{% endif %}> {{ role }}&nbsp;- {{ label }}
-                            </label><br/>
-                        {% endfor %}
+                <div class="card border-danger my-2">
+
+                    <div class="form-group">
+                        <div class="card-header border-danger">
+                            <h5><label class="col-sm-2 control-label" for="input-roles">
+                                    <i class="fa-solid fa-user-astronaut text-danger"
+                                       data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Admin"></i> Roles
+                                </label></h5>
+                        </div>
+                        <div class="card-body">
+                            {% for role, label in available_roles %}
+                                <label class="control-label">
+                                    <input name="roles[]" type="checkbox" value="{{ role }}"
+                                           {% if user.hasRole(role) %}checked{% endif %}> {{ role }}&nbsp;- {{ label }}
+                                </label><br/>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             {% endif %}
