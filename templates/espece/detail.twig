@@ -24,19 +24,19 @@
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Ajouter"
                        href="{{ path('espece.add') }}"><i
-                                class="fa fa-plus"></i> Ajouter</a>
+                            class="fa fa-plus"></i> Ajouter</a>
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Modifier"
                        href="{{ path('espece.update',{'espece':espece.id}) }}"><i
-                                class="fa fa-pencil"></i> Modifier</a>
+                            class="fa fa-pencil"></i> Modifier</a>
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Personnages ayant cette espèce"
                        href="{{ path('espece.personnages',{'espece':espece.id}) }}"><i
-                                class="fa fa-users"></i> Personnages</a>
+                            class="fa fa-users"></i> Personnages</a>
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Supprimer"
                        href="{{ path('espece.delete',{'espece':espece.id}) }}"><i
-                                class="fa fa-eraser"></i> Supprimer</a>
+                            class="fa fa-eraser"></i> Supprimer</a>
                 </div>
             </div>
         </div>
@@ -50,8 +50,8 @@
                 <div class="list-group-item">
                     <div class="list-group-item-heading fw-bold mb-1">Nom</div>
                     <div class="list-group-item-text ps-1">{% if espece.secret %}<i
-                                class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
-                                title="Secret"></i> - {% endif %}{{ espece.nom }}</div>
+                            class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
+                            title="Secret"></i> - {% endif %}{{ espece.nom }}</div>
                 </div>
 
                 <div class="list-group-item">
@@ -74,7 +74,8 @@
                                title="Secret"></i>
                             Description secrète
                         </div>
-                        <div class="list-group-item-text ps-1">{{ espece.description|markdown_to_html }}</div>
+                        <div
+                            class="list-group-item-text ps-1">{{ espece.descriptionSecrete|default('')|markdown_to_html }}</div>
                     </div>
                 {% endif %}
 

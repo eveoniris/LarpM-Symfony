@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Background;
 use App\Entity\Groupe;
 use App\Enum\Role;
+use App\Enum\VisibilityType;
 use App\Form\BackgroundDeleteForm;
 use App\Form\BackgroundFindForm;
 use App\Form\BackgroundForm;
@@ -14,6 +15,7 @@ use App\Repository\GroupeGnRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +29,7 @@ class BackgroundController extends AbstractController
     /**
      * Ajout d'un background.
      */
-    #[Route('/background/{groupe}/add', name: 'background.add')]
+    #[Route('/background/groupe/{groupe}/add', name: 'background.add')]
     #[IsGranted('ROLE_SCENARISTE')]
     public function addAction(
         Request $request,
@@ -37,16 +39,18 @@ class BackgroundController extends AbstractController
         $background->setGroupe($groupe);
 
         $form = $this->createForm(BackgroundForm::class, $background, ['groupeId' => $groupe->getId()])
-            ->add('visibility', ChoiceType::class, [
+            ->add('visibility', EnumType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
-                'choices' => [
+                'choice_label' => 'label',
+                'class' => VisibilityType::class,
+                /*'choices' => [
                     'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
                     'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
                     'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
                     'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
                     'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-                ],
+                ],*/
             ])
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -143,7 +147,7 @@ class BackgroundController extends AbstractController
             $value = $data['value'];
         }
 
-        $repo = $entityManager->getRepository('\\'.Background::class);
+        $repo = $entityManager->getRepository(Background::class);
         $backgrounds = $repo->findList(
             $type,
             $value,
@@ -220,16 +224,18 @@ class BackgroundController extends AbstractController
     public function updateAction(Request $request, EntityManagerInterface $entityManager, Background $background)
     {
         $form = $this->createForm(BackgroundForm::class, $background)
-            ->add('visibility', ChoiceType::class, [
+            ->add('visibility', EnumType::class, [
                 'required' => true,
                 'label' => 'Visibilité',
-                'choices' => [
+                'choice_label' => 'label',
+                'class' => VisibilityType::class,
+                /*'choices' => [
                     'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
                     'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
                     'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
                     'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
                     'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-                ],
+                ],*/
             ])
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 

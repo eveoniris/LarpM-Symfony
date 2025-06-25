@@ -205,6 +205,26 @@
         <source>Domaine d'application</source>
         <target>Domaine d'application</target>
       </trans-unit>
+      <trans-unit id="rwOcvxW" resname="Participant">
+        <source>Participant</source>
+        <target>Participant</target>
+      </trans-unit>
+      <trans-unit id="yLOgULN" resname="Secret">
+        <source>Secret</source>
+        <target>Secret</target>
+      </trans-unit>
+      <trans-unit id="FqZeV.G" resname="Couleur">
+        <source>Couleur</source>
+        <target>Couleur</target>
+      </trans-unit>
+      <trans-unit id="cgCXxa8" resname="Secrète">
+        <source>Secrète</source>
+        <target>Secrète</target>
+      </trans-unit>
+      <trans-unit id="LhH4r2b" resname="Nom prénom">
+        <source>Nom prénom</source>
+        <target>Nom prénom</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
