@@ -78,7 +78,6 @@ class StatsService
                 SELECT COUNT(c.id) as total, c.label_masculin as nom, c.id
                 FROM participant p
                          INNER JOIN personnage pp ON p.personnage_id = pp.id
-                         INNER JOIN personnages_competences pc ON pp.id = pc.personnage_id
                          INNER JOIN classe c ON pp.classe_id = c.id
                 WHERE p.gn_id = :gnid
                 GROUP BY c.id, c.label_masculin
@@ -233,9 +232,9 @@ class StatsService
                  FROM  participant p
                         INNER JOIN `user` u ON p.user_id = u.id
                         INNER JOIN etat_civil ec ON u.etat_civil_id = ec.id
-                        INNER JOIN groupe_gn ggn ON p.groupe_gn_id = ggn.id
-                        INNER JOIN groupe g ON ggn.groupe_id = g.id
-                        INNER JOIN personnage perso ON p.personnage_id = perso.id
+                        LEFT JOIN groupe_gn ggn ON p.groupe_gn_id = ggn.id
+                        LEFT JOIN groupe g ON ggn.groupe_id = g.id
+                        LEFT JOIN personnage perso ON p.personnage_id = perso.id
                     WHERE
                     p.gn_id = :gnid
                         AND date_naissance is not null

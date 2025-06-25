@@ -14,11 +14,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\QueryBuilder;
 
-/**
- * LarpManager\Form\BackgroundForm.
- *
- * @author kevin
- */
 class BackgroundForm extends AbstractType
 {
     /**
@@ -35,20 +30,21 @@ class BackgroundForm extends AbstractType
                 'label' => 'Contenu',
                 'attr' => [
                     'class' => 'tinymce',
-                    'rows' => 15],
+                    'rows' => 15,
+                ],
             ])
             ->add('groupe', EntityType::class, [
                 'required' => true,
                 'label' => 'Groupe',
                 'class' => Groupe::class,
-                'query_builder' => function (GroupeRepository $er) use ($options) : QueryBuilder {
+                'query_builder' => function (GroupeRepository $er) use ($options): QueryBuilder {
                     $qb = $er->createQueryBuilder('g');
-                    if ($options['groupeId'])
-                    {
+                    if ($options['groupeId']) {
                         $qb->where('g.id = :groupeId');
                         $qb->setParameter('groupeId', $options['groupeId']);
                     }
                     $qb->orderBy('g.nom', 'ASC');
+
                     return $qb;
                 },
                 'choice_label' => 'nom',

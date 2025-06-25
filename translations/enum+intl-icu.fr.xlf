@@ -29,6 +29,26 @@
         <source>ETHEREAL</source>
         <target>Ethéré</target>
       </trans-unit>
+      <trans-unit id="AvUW5ry" resname="PRIVATE">
+        <source>PRIVATE</source>
+        <target>Seuls les scénaristes peuvent voir ceci</target>
+      </trans-unit>
+      <trans-unit id="kneGI2E" resname="PUBLIC">
+        <source>PUBLIC</source>
+        <target>Tous les joueurs peuvent voir ceci</target>
+      </trans-unit>
+      <trans-unit id="MzN41n1" resname="GROUPE_MEMBER">
+        <source>GROUPE_MEMBER</source>
+        <target>Seuls les membres du groupe peuvent voir ceci</target>
+      </trans-unit>
+      <trans-unit id="w.rCNN2" resname="GROUPE_OWNER">
+        <source>GROUPE_OWNER</source>
+        <target>Seul le chef de groupe peut voir ceci</target>
+      </trans-unit>
+      <trans-unit id="FqyysTk" resname="AUTHOR">
+        <source>AUTHOR</source>
+        <target>Seul l'auteur peut voir ceci</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

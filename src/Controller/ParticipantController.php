@@ -414,7 +414,7 @@ class ParticipantController extends AbstractController
     /**
      * Reprendre un ancien personnage.
      */
-    #[Route('/participant/{participant}/personnageOld', name: 'admin.participant.personnage.old')]
+    #[Route('/participant/{participant}/personnageOld/admin', name: 'admin.participant.personnage.old')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     #[Deprecated()]
     // See usage of participant.personnage.old for Pj and Admin
@@ -425,6 +425,12 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
         $gn = $groupeGn->getGn();
+        $personnage = $participant->getPersonnage();
+        if (!$personnage) {
+            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
 
         $form = $this->createForm(PersonnageOldFindForm::class, $participant);
 
