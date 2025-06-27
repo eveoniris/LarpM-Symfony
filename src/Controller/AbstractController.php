@@ -66,19 +66,19 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     ];
 
     public function __construct(
-        protected EntityManagerInterface $entityManager,
-        protected RequestStack $requestStack,
-        protected FileUploader $fileUploader,
+        protected EntityManagerInterface       $entityManager,
+        protected RequestStack                 $requestStack,
+        protected FileUploader                 $fileUploader,
         protected readonly TranslatorInterface $translator,
-        protected readonly SluggerInterface $slugger,
-        protected PagerService $pageRequest,
-        protected MailService $mailer,
-        protected LoggerInterface $logger,
-        protected PersonnageService $personnageService,
-        protected GroupeService $groupeService,
-        protected Environment $twig,
-        protected StatsService $statsService,
-        protected Security $security,
+        protected readonly SluggerInterface    $slugger,
+        protected PagerService                 $pageRequest,
+        protected MailService                  $mailer,
+        protected LoggerInterface              $logger,
+        protected PersonnageService            $personnageService,
+        protected GroupeService                $groupeService,
+        protected Environment                  $twig,
+        protected StatsService                 $statsService,
+        protected Security                     $security,
         // protected Cache $cache, // TODO : later
     )
     {
@@ -140,9 +140,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     protected function checkGroupeLocked(
         ?Groupe $groupe,
         ?string $route = null,
-        ?array $routeParams = null,
+        ?array  $routeParams = null,
         ?string $msg = null,
-    ): ?RedirectResponse {
+    ): ?RedirectResponse
+    {
         if (!$groupe) {
             return null;
         }
@@ -155,7 +156,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             return null;
         }
 
-        $href = $this->generateUrl('groupe.detail', ['groupe' => $groupe->getId()]).'#groupe_lock';
+        $href = $this->generateUrl('groupe.detail', ['groupe' => $groupe->getId()]) . '#groupe_lock';
 
         $renderMsg = [];
         if ($msg) {
@@ -275,7 +276,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         array $breadcrumb,
         string $content = '',
         ?callable $callbackOnValid = null,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $request = $this->requestStack->getCurrentRequest();
         $form = $this->createForm(DeleteForm::class, $entity, ['class' => $entity::class]);
         $form->handleRequest($request);
@@ -330,7 +332,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     {
         // TODO enhance
         $request = $this->requestStack?->getCurrentRequest();
-        if ($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/'.$view)) {
+        if ($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/' . $view)) {
             $currentParameters = $request?->attributes->get('_route_params');
             $currentParameters['playerView'] = !$request?->get('playerView');
 
@@ -339,8 +341,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 $currentParameters,
             );
 
-            if (false !== (bool) $request?->get('playerView')) {
-                return parent::render('admin/'.$view, $parameters, $response);
+            if (false !== (bool)$request?->get('playerView')) {
+                return parent::render('admin/' . $view, $parameters, $response);
             }
         }
 
@@ -364,10 +366,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
     #[Deprecated]
     protected function getRequestOrder(
-        string $defOrderBy = 'id',
-        string $defOrderDir = 'ASC',
+        string  $defOrderBy = 'id',
+        string  $defOrderDir = 'ASC',
         ?string $alias = null,
-        ?array $allowedFields = null, // TODO: check SF security Form on Self Entity's attributes
+        ?array  $allowedFields = null, // TODO: check SF security Form on Self Entity's attributes
     ): array
     {
         $request = $this->requestStack?->getCurrentRequest();
@@ -383,7 +385,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         if ($alias) {
-            $orderBy = $alias.'.'.$orderBy;
+            $orderBy = $alias . '.' . $orderBy;
         }
 
         return [$orderBy => $orderDir];
@@ -400,14 +402,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     }
 
     protected function handleCreateOrUpdate(
-        Request $request,
-        $entity,
-        string $formClass,
-        array $breadcrumb = [],
-        array $routes = [],
-        array $msg = [],
+        Request   $request,
+                  $entity,
+        string    $formClass,
+        array     $breadcrumb = [],
+        array     $routes = [],
+        array     $msg = [],
         ?callable $entityCallback = null,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $repository = $this->entityManager->getRepository($entity::class);
         if (!$repository instanceof BaseRepository || !$repository->isEntity($entity)) {
             throw new \RuntimeException('Entity must be a doctrine entity and have a repository');
@@ -434,11 +437,11 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             );
         }
 
-        $routes['add'] ??= $root.'add';
-        $routes['list'] ??= ($routes['index'] ?? $root.'list');
-        $routes['delete'] ??= $root.'delete';
-        $routes['update'] ??= $root.'update';
-        $routes['detail'] ??= ($routes['view'] ?? $root.'detail');
+        $routes['add'] ??= $root . 'add';
+        $routes['list'] ??= ($routes['index'] ?? $root . 'list');
+        $routes['delete'] ??= $root . 'delete';
+        $routes['update'] ??= $root . 'update';
+        $routes['detail'] ??= ($routes['view'] ?? $root . 'detail');
         $routes['entityAlias'] ??= $root ? trim($root, ".\n\r\t\v\0") : $repository::getEntityAlias();
 
         $msg['entity'] ??= $this->translator->trans('donnée', domain: 'controller');
@@ -580,7 +583,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if (!is_array($entity) && method_exists($entity, 'toLog')) {
             $entityValue = $entity->toLog();
         } else {
-            $entityValue = (array) $entity;
+            $entityValue = (array)$entity;
             // Clean a bit
             foreach ($entityValue as $key => $value) {
                 $cleanKey = str_replace([is_array($entity) ? '_' : $entity::class, ' ', '*'], ['', '', ''], $key);
@@ -615,12 +618,13 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
      * @throws \ErrorException if not valid implementation
      */
     protected function sendCsv(
-        string $title,
-        ?BaseRepository $repository = null,
+        string                          $title,
+        ?BaseRepository                 $repository = null,
         QueryBuilder|AbstractQuery|null $query = null,
-        array $header = [],
-        ?callable $content = null,
-    ): StreamedResponse {
+        array                           $header = [],
+        ?callable                       $content = null,
+    ): StreamedResponse
+    {
         if (!$repository && !$content && !$query) {
             throw new \ErrorException('Method needs a repository, queryBuilder or a callable content');
         }
@@ -633,7 +637,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $response->headers->set('Content-Control', 'private');
         // $response->headers->set('Content-Type', 'text/csv; charset=UTF-16LE');
         $response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
-        $response->headers->set('Content-Disposition', 'attachment; filename='.$this->slugger->slug($title).'.csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename=' . $this->slugger->slug($title) . '.csv');
         $response->headers->set('Pragma', 'no-cache');
         $response->headers->set('Expires', '0');
 
@@ -641,7 +645,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $content = static function () use ($repository, $header, $query) {
                 $output = fopen('php://output', 'wb');
                 // fwrite($output, chr(255).chr(254)); // Excel BOM do a chinese chars
-                fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+                fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
                 $iterateMode = BaseRepository::ITERATE_EXPORT_HEADER;
                 if ($header) {
@@ -674,10 +678,11 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
      * le Manager ou Controller ou Service appellant.
      */
     protected function sendDocument(
-        mixed $entity,
+        mixed     $entity,
         ?Document $document = null,
-        bool $hasAttachement = true,
-    ): BinaryFileResponse {
+        bool      $hasAttachement = true,
+    ): BinaryFileResponse
+    {
         if (null === $entity && $document instanceof Document) {
             $entity = $document;
         }
@@ -708,7 +713,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         $projectDir = $this->getParameter('kernel.project_dir')
-            ? $this->getParameter('kernel.project_dir').'/'
+            ? $this->getParameter('kernel.project_dir') . '/'
             : $this->fileUploader->getProjectDirectory();
 
         $entity->setProjectDir($projectDir);
@@ -725,7 +730,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
         if (!$documentUrl || !file_exists($filename)) {
             throw new NotFoundHttpException(
-                "Le document n'existe pas ".$filename.' - '.$documentUrl.' - '.$documentLabel,
+                "Le document n'existe pas " . $filename . ' - ' . $documentUrl . ' - ' . $documentLabel,
             );
         }
 
@@ -734,19 +739,19 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if ($hasAttachement) {
             $response->setContentDisposition(
                 ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                $documentLabel.$documentExtention,
-                $documentLabel.$documentExtention,
+                $documentLabel . $documentExtention,
+                $documentLabel . $documentExtention,
             );
         } else {
             $response->headers->set(
                 'Content-Disposition',
-                'inline; filename='.$this->slugger->slug($filename).$documentExtention,
+                'inline; filename=' . $this->slugger->slug($filename) . $documentExtention,
             );
             $response
                 ->setContentDisposition(
                     ResponseHeaderBag::DISPOSITION_INLINE,
-                    $documentLabel.$documentExtention,
-                    $documentLabel.$documentExtention,
+                    $documentLabel . $documentExtention,
+                    $documentLabel . $documentExtention,
                 );
         }
 
@@ -762,7 +767,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $response = new BinaryFileResponse(
             $this->fileUploader->getDirectory(
                 FolderType::Private,
-            ).'No_Image_Available.jpg',
+            ) . 'No_Image_Available.jpg',
         );
         $response->headers->set('Content-Type', 'image/jpeg');
         $response->headers->set('Content-Control', 'private');

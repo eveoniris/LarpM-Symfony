@@ -14,7 +14,8 @@ class StatsService
 {
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
-    ) {
+    )
+    {
     }
 
     public function getAlchimieHerboristeGn(Gn $gn): NativeQuery
@@ -158,6 +159,146 @@ class StatsService
         );
     }
 
+    public function getFiefsState(): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+
+        $rsm->addScalarResult('id', 'id', 'integer');
+        $rsm->addScalarResult('fief', 'fief', 'string');
+        $rsm->addScalarResult('groupe_id', 'groupe_id', 'integer');
+        $rsm->addScalarResult('groupe', 'groupe', 'string');
+        $rsm->addScalarResult('religion', 'religion', 'string');
+        $rsm->addScalarResult('defense', 'defense', 'integer');
+        $rsm->addScalarResult('stable', 'stable', 'string');
+        $rsm->addScalarResult('instable', 'instable', 'string');
+        $rsm->addScalarResult('revenus', 'revenus', 'string');
+        $rsm->addScalarResult('murailles', 'murailles', 'string');
+        $rsm->addScalarResult('bastion', 'bastion', 'string');
+        $rsm->addScalarResult('forteresse', 'forteresse', 'string');
+        $rsm->addScalarResult('temple', 'temple', 'string');
+        $rsm->addScalarResult('sanctuaire', 'sanctuaire', 'string');
+        $rsm->addScalarResult('comptoir', 'comptoir', 'string');
+        $rsm->addScalarResult('merveille', 'merveille', 'string');
+        $rsm->addScalarResult('palais', 'palais', 'string');
+        $rsm->addScalarResult('route', 'route', 'string');
+        $rsm->addScalarResult('port', 'port', 'string');
+        $rsm->addScalarResult('total_defense', 'total_defense', 'string');
+        $rsm->addScalarResult('total_revenus', 'total_revenus', 'string');
+        $rsm->addScalarResult('suzerain', 'suzerain', 'string');
+        $rsm->addScalarResult('renommee', 'renommee', 'integer');
+        $rsm->addScalarResult('technologies', 'technologies', 'string');
+        $rsm->addScalarResult('exportations', 'exportations', 'string');
+        $rsm->addScalarResult('ingredients', 'ingredients', 'string');
+        $rsm->addScalarResult('@export', '@export', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                 SELECT
+                    a.id as id
+                    , a.nom as fief
+                    , b.numero as groupe_id
+                    , b.nom as groupe
+                    , m.label as religion
+                    , case a.resistance
+                        when NULL then 0
+                        else a.resistance
+                        end as defense
+                    , case a.statut
+                        when 'Instable' then ''
+                        else 'X'
+                        end as stable
+                    , case a.statut
+                        when 'Instable' then 'X'
+                        else ''
+                        end as instable
+                    , a.tresor as revenus
+                    , case c.construction_id
+                        when 1 then 'X'
+                        else ''
+                        end as murailles
+                    , case d.construction_id
+                        when 2 then 'X'
+                        else ''
+                        end as bastion
+                    , case e.construction_id
+                        when 3 then 'X'
+                        else ''
+                        end as forteresse
+                    , case f.construction_id
+                        when 4 then 'X'
+                        else ''
+                        end as temple
+                    , case g.construction_id
+                        when 5 then 'X'
+                        else ''
+                        end as sanctuaire
+                    , case h.construction_id
+                        when 6 then 'X'
+                        else ''
+                        end as comptoir
+                    , case i.construction_id
+                        when 7 then 'X'
+                        else ''
+                        end as merveille
+                    , case j.construction_id
+                        when 8 then 'X'
+                        else ''
+                        end as palais
+                    , case k.construction_id
+                        when 9 then 'X'
+                        else ''
+                        end as route
+                    , case l.construction_id
+                        when 10 then 'X'
+                        else ''
+                        end as port
+                    , case a.statut
+                        when 'Instable' then CEILING((a.resistance + case c.construction_id when 1 then 2 else 0 end + case e.construction_id when 3 then 2 else 0 end) / 2)
+                        else a.resistance + case c.construction_id when 1 then 2 else 0 end + case e.construction_id when 3 then 2 else 0 end
+                      end as total_defense
+                    , case a.statut
+                        when 'Instable' then CEILING((a.tresor + case h.construction_id	when 6 then 5 else 0 end + case l.construction_id when 10 then 5 else 0 end) / 2)
+                        else a.tresor + case h.construction_id	when 6 then 5 else 0 end + case l.construction_id when 10 then 5 else 0 end
+                      end as total_revenus
+                    , CONCAT(suzerain.nom, ' - ', suzerain.surnom) as suzerain
+                    , suzerain.renomme as renommee
+                    , GROUP_CONCAT( DISTINCT q.label ORDER BY q.label ) as technologies
+                    , GROUP_CONCAT( DISTINCT t.label ORDER BY t.label ) as exportations
+                    , GROUP_CONCAT( DISTINCT v.label ORDER BY v.label ) as ingredients
+                    , CONCAT('..\Links\\'', min(p.label), '.ai') as export
+                FROM `territoire` as a
+                left join groupe as b on b.id = a.groupe_id
+                left join territoire_has_construction as c on c.territoire_id = a.id and c.construction_id = 1
+                left join territoire_has_construction as d on d.territoire_id = a.id and d.construction_id = 2
+                left join territoire_has_construction as e on e.territoire_id = a.id and e.construction_id = 3
+                left join territoire_has_construction as f on f.territoire_id = a.id and f.construction_id = 4
+                left join territoire_has_construction as g on g.territoire_id = a.id and g.construction_id = 5
+                left join territoire_has_construction as h on h.territoire_id = a.id and h.construction_id = 6
+                left join territoire_has_construction as i on i.territoire_id = a.id and i.construction_id = 7
+                left join territoire_has_construction as j on j.territoire_id = a.id and j.construction_id = 8
+                left join territoire_has_construction as k on k.territoire_id = a.id and k.construction_id = 9
+                left join territoire_has_construction as l on l.territoire_id = a.id and l.construction_id = 10
+                left join religion as m on m.id = a.religion_id
+                left join territoire_importation as n on n.territoire_id = a.id
+                left join ressource as p on p.id = n.ressource_id
+                left join territoire_has_construction as r on r.territoire_id = a.id and r.construction_id > 10
+                left join construction as q on q.id = r.construction_id
+                left join territoire_exportation as s on s.territoire_id = a.id
+                left join ressource as t on t.id = s.ressource_id
+                left join territoire_ingredient as u on u.territoire_id = a.id
+                left join ingredient as v on v.id = u.ingredient_id
+                left join groupe_gn ggn ON ggn.id = (SELECT ggn2.id FROM groupe_gn ggn2 WHERE b.id = ggn2.groupe_id ORDER BY ggn2.id DESC LIMIT 1)
+                left join personnage as suzerain ON ggn.suzerin_id = suzerain.id
+                WHERE a.territoire_id is not null
+                and a.tresor is not null
+                group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
+                order by b.nom, a.id;
+                SQL,
+            $rsm,
+        );
+    }
+
     public function getConstructionsFiefs(): NativeQuery
     {
         $rsm = new ResultSetMapping();
@@ -244,7 +385,7 @@ class StatsService
             $rsm,
         )
             ->setParameter('gnid', $gn->getId())
-            ->setParameter('gndate', (string) $gn->getDateInstallationJoueur()?->format('Y-m-d'));
+            ->setParameter('gndate', (string)$gn->getDateInstallationJoueur()?->format('Y-m-d'));
     }
 
     public function getPotionsDepartGn(Gn $gn): NativeQuery
@@ -364,7 +505,7 @@ class StatsService
                     WHERE u.roles LIKE :role
                 SQL,
             $rsm,
-        )->setParameter('role', '%'.$role->value.'%');
+        )->setParameter('role', '%' . $role->value . '%');
     }
 
     public function getXpGap(Gn $gn, int $gap = 50): NativeQuery
@@ -435,7 +576,7 @@ class StatsService
 
         $equalOrUpperParam = '';
         if (is_int($equalOrUpper)) {
-            $equalOrUpperParam = 'AND renomme >= '.$equalOrUpper;
+            $equalOrUpperParam = 'AND renomme >= ' . $equalOrUpper;
         }
 
         /* @noinspection SqlNoDataSourceInspection */

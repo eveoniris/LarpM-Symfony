@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Rule;
 use App\Enum\Role;
-use App\Form\Rule\RuleDeleteForm;
 use App\Form\Rule\RuleForm;
 use App\Repository\RuleRepository;
 use App\Service\PagerService;
@@ -79,7 +78,7 @@ class RuleController extends AbstractController
     ): RedirectResponse|Response {
         if (!$entityCallback) {
             /** @var Rule $rule */
-            $entityCallback = fn(mixed $rule, FormInterface $form): ?Rule => $rule->handleUpload($this->fileUploader);
+            $entityCallback = fn (mixed $rule, FormInterface $form): ?Rule => $rule->handleUpload($this->fileUploader);
         }
 
         if (null === $breadcrumb) {

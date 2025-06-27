@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -18,7 +19,7 @@ final class FileUploader
     private string $extension;
     private SluggerInterface $slugger;
 
-    public function __construct(string $projectDirectory, SluggerInterface $slugger)
+    public function __construct(string $projectDirectory, SluggerInterface $slugger, protected LoggerInterface $logger)
     {
         $this->storedFileName = '';
         $this->filePath = '';
@@ -26,6 +27,7 @@ final class FileUploader
         $this->extension = '';
         $this->projectDirectory = $projectDirectory;
         $this->slugger = $slugger;
+        $this->logger = $this->logger;
     }
 
     public function getExtension(): string
@@ -58,6 +60,11 @@ final class FileUploader
         return $this->storedFileName;
     }
 
+    /**
+     * @param int|null $filenameMaxLength without 28 chars reserved for uid and extension
+     *
+     * @return $this
+     */
     public function upload(
         UploadedFile $file,
         FolderType $folderType,
@@ -67,12 +74,16 @@ final class FileUploader
         bool $useUniqueId = true,
     ): self {
         $this->extension = $file->guessExtension();
+
         $filenameMaxLength ??= mb_strlen($this->getOriginalFilename($file));
+
+        $filename ??= mb_substr($this->getOriginalFilename($file), 0, $filenameMaxLength);
+        $uid = $useUniqueId ? str_replace('.', '-', '-'.uniqid('', true)) : '';
 
         $this->storedFileName = sprintf(
             '%s%s.%s',
-            $filename ?? mb_substr($this->getOriginalFilename($file), 0, $filenameMaxLength),
-            $useUniqueId ? str_replace('.', '-', '-'.uniqid('', true)) : '',
+            $filename,
+            $uid,
             $this->extension,
         );
 
@@ -80,6 +91,7 @@ final class FileUploader
 
         try {
             $file->move($this->filePath, $this->storedFileName);
+
             // Keep for V1
             if (str_contains(__FILE__, 'larpmanager')) {
                 $mainProdFile = $this->getProjectDirectory(
@@ -93,9 +105,8 @@ final class FileUploader
                 $filesystem = new Filesystem();
                 $filesystem->copy($this->filePath.'/'.$this->storedFileName, $mainProdFile);
             }
-
         } catch (FileException $e) {
-            // TODO log or handle exception if something happens during file upload
+            $this->logger->error($e);
         }
 
         return $this;

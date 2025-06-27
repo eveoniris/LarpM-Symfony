@@ -3,10 +3,14 @@
 {% endif %}
 
  {% if isAdmin %}
-     <div class="{{ css }}">
+     <div class="{{ css }} border-1 border-opacity-100 border-gamemaster card p-0">
          <div class="header">
-             <h5>Informations scénariste</h5>
+             <h5 class="p-1 border-gamemaster border-bottom"><i class="fa fa-feather text-gamemaster"></i>
+                 Informations
+                 scénariste
+             </h5>
          </div>
+
 
          {% if isAdmin %}
              {% include '_partials/dropDown.twig' with {
@@ -36,7 +40,8 @@
                  </div>
                  <div class="list-group border-0">
                      {% for personnageReligion in personnage.personnagesReligions %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div>
                                  {% if personnageReligion.religion.secret %}
                                      <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
@@ -44,13 +49,15 @@
                                         title="Secret"></i> -
                                  {% endif %}
                                  <a href="{{ path('religion.detail', {'religion': personnageReligion.religion.id }) }}">{{ personnageReligion.religion.label }}</a>
-                                 <span class="badge display-6 rounded-pill text-bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
+                                 <span
+                                     class="badge display-6 rounded-pill text-bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
                              </div>
                              <a class="btn btn-sm btn-secondary"
                                 href="{{ path('personnage.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              Sans religion
                          </div>
                      {% endfor %}
@@ -67,7 +74,8 @@
                  {% endif %}
                  <div class="list-group border-0">
                      {% for personnageLangue in personnageService.allLangues(personnage) %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div>
                                  {% if personnageLangue.langue.secret %}
                                      <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
@@ -85,7 +93,8 @@
                              {% endif %}
                          </div>
                      {% else %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              Aucune
                          </div>
                      {% endfor %}
@@ -98,7 +107,8 @@
                  </div>
                  <div class="list-group border-0">
                      {% for domaine in personnage.domaines %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div>
                                  <a href="{{ path('magie.domaine.detail', {'domaine': domaine.id }) }}">{{ domaine.label }}</a>
                              </div>
@@ -106,7 +116,8 @@
                                 href="{{ path('personnage.delete.domaine', {'personnage': personnage.id, 'domaine': domaine.id }) }}">Supprimer</a>
                          </div>
                      {% else %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              Aucun
                          </div>
                      {% endfor %}
@@ -123,7 +134,8 @@
                  {% endif %}
                  <div class="list-group border-0">
                      {% for sort in personnage.sorts %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div class="list-group-item-text">
                                  {% if sort.secret %}
                                      <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
@@ -152,7 +164,8 @@
                  {% endif %}
                  <div class="list-group border-0">
                      {% for potion in personnage.potions %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div class="list-group-item-text">
                                  {% if potion.secret %}
                                      <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
@@ -185,7 +198,8 @@
                      </div>
                      <div class="list-group border-0">
                          {% for potion in personnage.lastParticipant.potionsDepart %}
-                             <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                             <div
+                                 class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                                  <div class="list-group-item-text">
                                      {% if potion.secret %}
                                          <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
@@ -215,7 +229,8 @@
                  {% endif %}
                  <div class="list-group border-0">
                      {% for priere in personnage.prieres %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div class="list-group-item-text">
                                  <a href="{{ path('magie.priere.detail', {'priere': priere.id }) }}">{{ priere.sphere.label }}</a>
                                  - Niveau {{ priere.niveau }} ({{ priere.label }})
@@ -235,7 +250,8 @@
                  </div>
                  <div class="list-group border-0">
                      {% for technologie in personnage.technologies %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div class="list-group-item-text">
                                  {% if technologie.secret %}
                                      <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
@@ -259,7 +275,8 @@
                  </div>
                  <div class="list-group border-0">
                      {% for connaissance in personnage.connaissances %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div class="list-group-item-text">
                                  {% if connaissance.secret %}
                                      <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
@@ -283,7 +300,8 @@
                  </div>
                  <div class="list-group border-0">
                      {% for bonus in personnageService.getAllBonus(personnage) %}
-                         <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
+                         <div
+                             class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div class="list-group-item-text">
                                  {% if bonus.merveille.id is defined %}
                                      <a href="{{ path('merveille.detail', {'merveille': bonus.merveille.id }) }}">{{ bonus.merveille.nom }}</a>:
