@@ -117,30 +117,6 @@ trait EntityFileUploadTrait
         return $document;
     }
 
-    public function getDocumentExtension(): string
-    {
-        return $this->extension ?? 'pdf';
-    }
-
-    public function getDocumentMimeType(): string
-    {
-        return $this->mimetype ?? 'application/pdf';
-    }
-
-    public function setDocumentExtension(?string $ext): self
-    {
-        $this->extension = $ext;
-
-        return $this;
-    }
-
-    public function setDocumentMimeType(?string $mimetype): self
-    {
-        $this->mimetype = $mimetype;
-
-        return $this;
-    }
-
     public function getProjectDir(): ?string
     {
         return $this->projectDir;
@@ -175,6 +151,30 @@ trait EntityFileUploadTrait
         $this->filenameMaxLength = $filenameMaxLength;
 
         return $this;
+    }
+
+    public function setDocumentExtension(?string $ext): self
+    {
+        $this->extension = $ext;
+
+        return $this;
+    }
+
+    public function getDocumentExtension(): string
+    {
+        return $this->extension ?? '.pdf';
+    }
+
+    public function setDocumentMimeType(?string $mimetype): self
+    {
+        $this->mimetype = $mimetype;
+
+        return $this;
+    }
+
+    public function getDocumentMimeType(): string
+    {
+        return $this->mimetype ?? 'application/pdf';
     }
 
     #[NoReturn]

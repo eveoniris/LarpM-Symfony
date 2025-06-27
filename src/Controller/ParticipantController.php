@@ -40,6 +40,7 @@ use App\Entity\Technologie;
 use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\CompetenceFamilyType;
+use App\Enum\LevelType;
 use App\Enum\LogActionType;
 use App\Enum\Role;
 use App\Enum\TriggerType;
@@ -111,10 +112,11 @@ class ParticipantController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     #[Deprecated('Retrait du jeu diplo actuelle')]
     public function acceptAllianceAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-        Groupe $groupe,
-    ): RedirectResponse|Response {
+        Groupe      $groupe,
+    ): RedirectResponse|Response
+    {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
@@ -167,10 +169,11 @@ class ParticipantController extends AbstractController
     // #[Route('/participant/{participant}/groupe/{groupe}/acceptPeace', name: 'participant.groupe.acceptPeace')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function acceptPeaceAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-        Groupe $groupe,
-    ): RedirectResponse|Response {
+        Groupe      $groupe,
+    ): RedirectResponse|Response
+    {
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
 
@@ -228,7 +231,8 @@ class ParticipantController extends AbstractController
     #[IsGranted(Role::SCENARISTE->value)]
     public function addAction(
         Request $request,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $joueur = new Participant();
 
         $form = $this->createForm(JoueurForm::class, $joueur)
@@ -261,7 +265,8 @@ class ParticipantController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminDetailAction(
         #[MapEntity] Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($participant) {
             return $this->render('joueur/detail.twig', ['participant' => $participant]);
         } else {
@@ -277,10 +282,11 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/personnageNew', name: 'participant.personnage.new')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function adminPersonnageNewAction(
-        Request $request,
-        Participant $participant,
+        Request           $request,
+        Participant       $participant,
         PersonnageService $personnageService,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
 
@@ -419,9 +425,10 @@ class ParticipantController extends AbstractController
     #[Deprecated()]
     // See usage of participant.personnage.old for Pj and Admin
     public function adminPersonnageOldAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
         $gn = $groupeGn->getGn();
@@ -454,7 +461,7 @@ class ParticipantController extends AbstractController
 
             // Chronologie : Participation au GN courant
             $anneeGN2 = $participant->getGn()->getDateJeu();
-            $evenement2 = 'Participation '.$participant->getGn()->getLabel();
+            $evenement2 = 'Participation ' . $participant->getGn()->getLabel();
             $personnageChronologie2 = new PersonnageChronologie();
             $personnageChronologie2->setAnnee($anneeGN2);
             $personnageChronologie2->setEvenement($evenement2);
@@ -482,9 +489,10 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/xp', name: 'participant.xp')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function adminXpAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-    ): Response {
+    ): Response
+    {
         $form = $this->createForm(JoueurXpForm::class, $participant)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -529,7 +537,8 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/background', name: 'participant.background')]
     public function backgroundAction(
         Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         // l'utilisateur doit avoir un personnage
@@ -611,7 +620,7 @@ class ParticipantController extends AbstractController
 
         $this->checkHasAccess(
             $roles,
-            fn () => $participant->getPersonnage()?->getUser()?->getId() === $this->getUser()?->getId(),
+            fn() => $participant->getPersonnage()?->getUser()?->getId() === $this->getUser()?->getId(),
         );
     }
 
@@ -625,9 +634,10 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/billet', name: 'participant.billet')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function billetAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $form = $this->createForm(
             ParticipantBilletForm::class,
             $participant,
@@ -663,10 +673,11 @@ class ParticipantController extends AbstractController
 
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function breakAllianceAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-        Groupe $groupe,
-    ): RedirectResponse|Response {
+        Groupe      $groupe,
+    ): RedirectResponse|Response
+    {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
@@ -722,10 +733,11 @@ class ParticipantController extends AbstractController
     // #[Route('/participant/{participant}/groupe/{groupe}/cancelRequestedPeace', name: 'participant.groupe.cancelRequestedPeace')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function cancelRequestedAllianceAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-        Groupe $groupe,
-    ): RedirectResponse|Response {
+        Groupe      $groupe,
+    ): RedirectResponse|Response
+    {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
@@ -773,10 +785,11 @@ class ParticipantController extends AbstractController
 
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function cancelRequestedPeaceAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-        Groupe $groupe,
-    ): RedirectResponse|Response {
+        Groupe      $groupe,
+    ): RedirectResponse|Response
+    {
         $war = $request->get('enemy');
 
         $groupeGn = $participant->getGroupeGn();
@@ -833,11 +846,12 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/sort/{sort}', name: 'participant.sort.choose', requirements: ['personnage' => Requirement::DIGITS])]
     public function chooseSortAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-        int $sort,
-        PersonnageService $personnageService,
-    ): RedirectResponse|Response {
+        int                      $sort,
+        PersonnageService        $personnageService,
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -944,7 +958,8 @@ class ParticipantController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function classeListAction(
         Participant $participant,
-    ): Response {
+    ): Response
+    {
         $this->hasAccess($participant);
 
         $repo = $this->entityManager->getRepository(Classe::class);
@@ -961,10 +976,11 @@ class ParticipantController extends AbstractController
      */
     #[Deprecated]
     public function competenceAddAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        Participant $participant,
-    ): RedirectResponse|Response {
+        Participant            $participant,
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
         // Acess user or deprecated to PCont?
         if (!$personnage) {
@@ -988,8 +1004,7 @@ class ParticipantController extends AbstractController
         // construit le tableau de choix
         $choices = [];
         foreach ($availableCompetences as $competence) {
-            $choices[$competence->getId()] = $competence->getLabel(
-            ).' (cout : '.$app['personnage.manager']->getCompetenceCout($personnage, $competence).' xp)';
+            $choices[$competence->getId()] = $competence->getLabel() . ' (cout : ' . $app['personnage.manager']->getCompetenceCout($personnage, $competence) . ' xp)';
         }
 
         $form = $this->createFormBuilder($participant)
@@ -1006,7 +1021,7 @@ class ParticipantController extends AbstractController
             $data = $form->getData();
 
             $competenceId = $data['competenceId'];
-            $competence = $this->entityManager->find('\\'.Competence::class, $competenceId);
+            $competence = $this->entityManager->find('\\' . Competence::class, $competenceId);
 
             $cout = $app['personnage.manager']->getCompetenceCout($personnage, $competence);
             $xp = $personnage->getXp();
@@ -1088,8 +1103,8 @@ class ParticipantController extends AbstractController
                     foreach ($religion->getSpheres() as $sphere) {
                         foreach ($sphere->getPrieres() as $priere) {
                             if ($priere->getNiveau() == $competence->getLevel()->getId() && !$personnage->hasPriere(
-                                $priere,
-                            )) {
+                                    $priere,
+                                )) {
                                 $priere->addPersonnage($personnage);
                                 $personnage->addPriere($priere);
                             }
@@ -1408,10 +1423,11 @@ class ParticipantController extends AbstractController
 
     protected function checkParticipantGroupeLock(
         Participant $participant,
-        ?string $route = null,
-        ?array $routeParams = null,
-        ?string $msg = null,
-    ): ?Response {
+        ?string     $route = null,
+        ?array      $routeParams = null,
+        ?string     $msg = null,
+    ): ?Response
+    {
         return $this->checkGroupeLocked(
             $participant->getGroupeGn()?->getGroupe(),
             $route ?? 'personnage.detail',
@@ -1430,8 +1446,9 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/competence/{competence}/detail', name: 'participant.competence.detail')]
     public function competenceDetailAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] Competence $competence,
-    ): RedirectResponse|Response {
+        #[MapEntity] Competence  $competence,
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -1460,8 +1477,9 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/competence/{competence}/document', name: 'participant.competence.document')]
     public function competenceDocumentAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] Competence $competence,
-    ): BinaryFileResponse|RedirectResponse {
+        #[MapEntity] Competence  $competence,
+    ): BinaryFileResponse|RedirectResponse
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -1478,10 +1496,10 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $filename = __DIR__.'/../../private/doc/'.$competence->getDocumentUrl();
+        $filename = __DIR__ . '/../../private/doc/' . $competence->getDocumentUrl();
         $file = new File($filename);
 
-        return $this->file($file, $competence->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+        return $this->file($file, $competence->getPrintLabel() . '.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     /**
@@ -1489,9 +1507,10 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/connaissance/{connaissance}/detail', name: 'participant.connaissance.detail')]
     public function connaissanceDetailAction(
-        #[MapEntity] Participant $participant,
+        #[MapEntity] Participant  $participant,
         #[MapEntity] Connaissance $connaissance,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -1520,9 +1539,10 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/connaissance/{connaissance}/document', name: 'participant.connaissance.document')]
     public function connaissanceDocumentAction(
-        #[MapEntity] Participant $participant,
+        #[MapEntity] Participant  $participant,
         #[MapEntity] Connaissance $connaissance,
-    ): BinaryFileResponse|RedirectResponse {
+    ): BinaryFileResponse|RedirectResponse
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -1547,10 +1567,11 @@ class ParticipantController extends AbstractController
      */
     // #[Route('/participant/{participant}/groupe/{groupe}/declareWar', name: 'participant.groupe.declareWar')]
     public function declareWarAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-        Groupe $groupe,
-    ): RedirectResponse|Response {
+        Groupe      $groupe,
+    ): RedirectResponse|Response
+    {
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
@@ -1662,7 +1683,8 @@ class ParticipantController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function detailOrgaAction(
         #[MapEntity] Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($participant) {
             return $this->render('joueur/detail.twig', ['participant' => $participant]);
         }
@@ -1674,8 +1696,9 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/document/{document}', name: 'participant.document')]
     public function documentAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] Document $document,
-    ): BinaryFileResponse|RedirectResponse {
+        #[MapEntity] Document    $document,
+    ): BinaryFileResponse|RedirectResponse
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -1701,8 +1724,9 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/document/{document}/detail', name: 'participant.document.detail')]
     public function documentDetailAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] Document $document,
-    ): RedirectResponse|Response {
+        #[MapEntity] Document    $document,
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -1730,10 +1754,11 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/domaineMagie', name: 'participant.personnage.domaine')]
     public function domaineMagieAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-        PersonnageService $personnageService,
-    ): RedirectResponse|Response {
+        PersonnageService        $personnageService,
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -1811,9 +1836,10 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/groupe', name: 'participant.groupe')]
     public function groupeAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         // il faut un billet pour rejoindre un groupe
@@ -1854,9 +1880,10 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/groupe/join', name: 'participant.groupe.join')]
     public function groupeJoinAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         // il faut un billet pour rejoindre un groupe
@@ -1930,11 +1957,12 @@ class ParticipantController extends AbstractController
     #[Deprecated]
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/accept', name: 'participant.groupeSecondaire.postulant.accept')]
     public function groupeSecondaireAcceptAction(
-        Request $request,
-        Participant $participant,
+        Request        $request,
+        Participant    $participant,
         SecondaryGroup $groupeSecondaire,
-        Postulant $postulant,
-    ): RedirectResponse|Response {
+        Postulant      $postulant,
+    ): RedirectResponse|Response
+    {
         $form = $this->createFormBuilder($participant)
             ->add('envoyer', SubmitType::class, ['label' => 'Accepter le postulant'])
             ->getForm();
@@ -1976,9 +2004,10 @@ class ParticipantController extends AbstractController
     #[Deprecated]
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/detail', name: 'participant.groupeSecondaire.detail')]
     public function groupeSecondaireDetailAction(
-        #[MapEntity] Participant $participant,
+        #[MapEntity] Participant    $participant,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
         $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
 
@@ -2010,11 +2039,12 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/groupeSecondaire/list', name: 'participant.groupeSecondaire.list')]
     public function groupeSecondaireListAction(
-        PagerService $pagerService,
+        PagerService             $pagerService,
         SecondaryGroupRepository $secondaryGroupRepository,
-        EntityManagerInterface $entityManager,
-        Participant $participant,
-    ): Response {
+        EntityManagerInterface   $entityManager,
+        Participant              $participant,
+    ): Response
+    {
         $alias = $secondaryGroupRepository->getAlias();
         $queryBuilder = $secondaryGroupRepository->createQueryBuilder($alias);
         $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::SCENARISTE->value);
@@ -2037,11 +2067,12 @@ class ParticipantController extends AbstractController
     #[Deprecated]
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postuler', name: 'participant.groupeSecondaire.postuler')]
     public function groupeSecondairePostulerAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        Participant $participant,
-        SecondaryGroup $groupeSecondaire,
-    ): RedirectResponse|Response {
+        Participant            $participant,
+        SecondaryGroup         $groupeSecondaire,
+    ): RedirectResponse|Response
+    {
         /**
          * L'utilisateur doit avoir un personnage.
          *
@@ -2123,11 +2154,12 @@ class ParticipantController extends AbstractController
     #[Deprecated]
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/reject', name: 'participant.groupeSecondaire.postulant.reject')]
     public function groupeSecondaireRejectAction(
-        Request $request,
-        Participant $participant,
+        Request        $request,
+        Participant    $participant,
         SecondaryGroup $groupeSecondaire,
-        Postulant $postulant,
-    ): RedirectResponse|Response {
+        Postulant      $postulant,
+    ): RedirectResponse|Response
+    {
         $form = $this->createFormBuilder($participant)
             ->add('envoyer', SubmitType::class, ['label' => 'Refuser le postulant'])
             ->getForm();
@@ -2164,11 +2196,12 @@ class ParticipantController extends AbstractController
     #[Deprecaed]
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/response', name: 'participant.groupeSecondaire.postulant.response')]
     public function groupeSecondaireResponseAction(
-        Request $request,
-        Participant $participant,
+        Request        $request,
+        Participant    $participant,
         SecondaryGroup $groupeSecondaire,
-        Postulant $postulant,
-    ): RedirectResponse|Response {
+        Postulant      $postulant,
+    ): RedirectResponse|Response
+    {
         $message = new Message();
 
         $message->setUserRelatedByAuteur($this->getUser());
@@ -2212,11 +2245,12 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/wait', name: 'participant.groupeSecondaire.postulant.wait')]
     #[Deprecated]
     public function groupeSecondaireWaitAction(
-        Request $request,
-        #[MapEntity] Participant $participant,
+        Request                     $request,
+        #[MapEntity] Participant    $participant,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Postulant $postulant,
-    ): RedirectResponse|Response {
+        #[MapEntity] Postulant      $postulant,
+    ): RedirectResponse|Response
+    {
         $form = $this->createFormBuilder($participant)
             ->add('envoyer', SubmitType::class, ['label' => 'Laisser en attente'])
             ->getForm();
@@ -2254,7 +2288,8 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/index', name: 'participant.index')]
     public function indexAction(
         #[MapEntity] Participant $participant,
-    ): Response {
+    ): Response
+    {
         $this->hasAccess($participant);
 
         $groupeGn = $participant->getSession();
@@ -2276,10 +2311,11 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/langueAncienne', name: 'participant.langueAncienne')]
     public function langueAncienneAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-        PersonnageService $personnageService,
-    ): RedirectResponse|Response {
+        PersonnageService        $personnageService,
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -2347,10 +2383,11 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/langueCommune', name: 'participant.langueCommune')]
     public function langueCommuneAction(
-        Request $request,
-        Participant $participant,
+        Request           $request,
+        Participant       $participant,
         PersonnageService $personnageService,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2416,11 +2453,12 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/langueCourante', name: 'participant.langueCourante')]
     public function langueCouranteAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        Participant $participant,
-        PersonnageService $personnageService,
-    ): RedirectResponse|Response {
+        Participant            $participant,
+        PersonnageService      $personnageService,
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2487,8 +2525,9 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/langue/{langue}/document', name: 'participant.langue.document')]
     public function langueDocumentAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] Langue $langue,
-    ): BinaryFileResponse|RedirectResponse {
+        #[MapEntity] Langue      $langue,
+    ): BinaryFileResponse|RedirectResponse
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2514,10 +2553,11 @@ class ParticipantController extends AbstractController
 
     #[Route('/participant/{participant}/loi/{loi}/document', name: 'participant.loi.document')]
     public function loiDocumentAction(
-        Participant $participant,
+        Participant       $participant,
         PersonnageService $personnageService,
-        Loi $loi,
-    ): BinaryFileResponse|RedirectResponse {
+        Loi               $loi,
+    ): BinaryFileResponse|RedirectResponse
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2540,9 +2580,10 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/magie', name: 'participant.magie')]
     public function magieAction(
-        Participant $participant,
+        Participant       $participant,
         DomaineRepository $domaineRepository,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2601,9 +2642,10 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/origine', name: 'participant.origine')]
     public function origineAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2665,9 +2707,10 @@ class ParticipantController extends AbstractController
     #[Deprecated()]
     #[Route('/participant/{participant}/personnageEdit', name: 'participant.personnage.edit')]
     public function personnageEditAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -2703,10 +2746,11 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/personnageNew', name: 'participant.personnage.new')]
     public function personnageNewAction(
-        Request $request,
-        Participant $participant,
+        Request           $request,
+        Participant       $participant,
         PersonnageService $personnageService,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $groupeGn = $participant->getGroupeGn();
 
         if (!$groupeGn) {
@@ -2740,7 +2784,7 @@ class ParticipantController extends AbstractController
         }*/
 
         $personnage = new Personnage();
-        $classes = $this->entityManager->getRepository('\\'.Classe::class)->findAllCreation();
+        $classes = $this->entityManager->getRepository('\\' . Classe::class)->findAllCreation();
 
         // j'ajoute ici certains champs du formulaires (les classes)
         // car j'ai besoin des informations du groupe pour les alimenter
@@ -2787,7 +2831,7 @@ class ParticipantController extends AbstractController
 
             // Chronologie : Participation au GN courant
             $anneeGN2 = $participant->getGn()->getDateJeu();
-            $evenement2 = 'Participation '.$participant->getGn()->getLabel();
+            $evenement2 = 'Participation ' . $participant->getGn()->getLabel();
             $personnageChronologie2 = new PersonnageChronologie();
             $personnageChronologie2->setAnnee($anneeGN2);
             $personnageChronologie2->setEvenement($evenement2);
@@ -2912,9 +2956,10 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/personnageOld', name: 'participant.personnage.old')]
     public function personnageOldAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $groupeGn = $participant->getGroupeGn();
 
         if (!$groupeGn) {
@@ -2988,7 +3033,7 @@ class ParticipantController extends AbstractController
                 }
             }
             if (!$hasGnDate) {
-                $evenement2 = 'Participation '.$participant->getGn()->getLabel();
+                $evenement2 = 'Participation ' . $participant->getGn()->getLabel();
                 $personnageChronologie2 = new PersonnageChronologie();
                 $personnageChronologie2->setAnnee($anneeGN2);
                 $personnageChronologie2->setEvenement($evenement2);
@@ -3048,8 +3093,7 @@ class ParticipantController extends AbstractController
                     }
 
                     // Noblesse expert : +2 Renommee
-                    if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel(
-                    )->getId()) {
+                    if ('Noblesse' == $competence->getCompetenceFamily()->getLabel() && 3 == $competence->getLevel()->getId()) {
                         $renomme_history = new RenommeHistory();
                         $renomme_history->setRenomme(2);
                         $renomme_history->setExplication('[Nouvelle participation] Noblesse Expert');
@@ -3078,10 +3122,11 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/personnage/{personnage}/remove', name: 'participant.personnage.remove')]
     public function personnageRemoveAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-        Personnage $personnage,
-    ): RedirectResponse|Response {
+        Personnage  $personnage,
+    ): RedirectResponse|Response
+    {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
 
@@ -3115,10 +3160,11 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/personnageSecondaire', name: 'participant.personnageSecondaire')]
     #[IsGranted(Role::USER->value)]
     public function personnageSecondaireAction(
-        Request $request,
-        Participant $participant,
+        Request                        $request,
+        Participant                    $participant,
         PersonnageSecondaireRepository $repo,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
 
         if (!$isAdmin && $participant->getPersonnage()?->getUser()?->getId() !== $this->getUser()?->getId()) {
@@ -3160,11 +3206,12 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/personnage/{personnage}/trombine', name: 'participant.personnage.trombine')]
     #[Deprecated]
     public function personnageTrombineAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        Participant $participant,
-        Personnage $personnage,
-    ): RedirectResponse|Response {
+        Participant            $participant,
+        Personnage             $personnage,
+    ): RedirectResponse|Response
+    {
         $form = $this->createForm(TrombineForm::class, [])
             ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
 
@@ -3173,7 +3220,7 @@ class ParticipantController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $files = $request->files->get($form->getName());
 
-            $path = __DIR__.'/../../private/img/';
+            $path = __DIR__ . '/../../private/img/';
             $filename = $files['trombine']->getClientOriginalName();
             $extension = $files['trombine']->guessExtension();
 
@@ -3190,12 +3237,12 @@ class ParticipantController extends AbstractController
                 );
             }
 
-            $trombineFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
+            $trombineFilename = hash('md5', $this->getUser()->getUsername() . $filename . time()) . '.' . $extension;
 
             $imagine = new Imagine();
             $image = $imagine->open($files['trombine']->getPathname());
             $image->resize($image->getSize()->widen(160));
-            $image->save($path.$trombineFilename);
+            $image->save($path . $trombineFilename);
 
             $personnage->setTrombineUrl($trombineFilename);
             $this->entityManager->persist($personnage);
@@ -3259,11 +3306,12 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/potion/{niveau}/add', name: 'participant.potion')]
     #[IsGranted(Role::USER->value)]
     public function potionAddAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-        PotionRepository $potionRepository,
-        int $niveau,
-    ): RedirectResponse|Response {
+        PotionRepository         $potionRepository,
+        int                      $niveau,
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -3376,9 +3424,10 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/potion/depart', name: 'participant.potion.depart')]
     #[IsGranted(Role::USER->value)]
     public function potionDepartAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -3388,6 +3437,12 @@ class ParticipantController extends AbstractController
         }
 
         $niveau = $request->get('niveau');
+
+        if ($participant->getPersonnage()->getCompetenceNiveau(CompetenceFamilyType::ALCHEMY) < LevelType::APPRENTICE) {
+            $this->addFlash('error', 'Seul un alchimiste peu avoir des potions de départ');
+
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
+        }
 
         if ($participant->hasPotionsDepartByLevel($niveau)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions de départ supplémentaires.');
@@ -3415,6 +3470,13 @@ class ParticipantController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $potion = $data['potion'];
+
+
+            if (!$personnage->isKnownPotion($potion)) {
+                $this->addFlash('error', 'Désolé, le personnage ne connait cette potion.');
+
+                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            }
 
             // Ajout de la potion au personnage
             $participant->addPotionDepart($potion);
@@ -3454,17 +3516,24 @@ class ParticipantController extends AbstractController
     }
 
     #[Route('/participant/{participant}/potion/{potion}/depart/add', name: 'participant.potion.depart.add')]
-    #[IsGranted(new Expression('is_granted("'.Role::ORGA->value.'") or is_granted("'.Role::SCENARISTE->value.'")'))]
+    #[IsGranted(new Expression('is_granted("' . Role::ORGA->value . '") or is_granted("' . Role::SCENARISTE->value . '")'))]
     public function potionDepartAddAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] Potion $potion,
-    ): RedirectResponse|Response {
+        #[MapEntity] Potion      $potion,
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
 
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if ($personnage->getCompetenceNiveau(CompetenceFamilyType::ALCHEMY) < LevelType::APPRENTICE) {
+            $this->addFlash('error', 'Seul un alchimiste peu avoir des potions de départ');
+
+            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
         if ($participant->hasPotionsDepart($potion)) {
@@ -3506,10 +3575,11 @@ class ParticipantController extends AbstractController
 
     #[Route('/participant/{participant}/potion/{potion}/depart/delete', name: 'participant.potion.depart.delete')]
     public function potionDepartDeleteAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-        #[MapEntity] Potion $potion,
-    ): RedirectResponse|Response {
+        #[MapEntity] Potion      $potion,
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -3582,8 +3652,9 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/potion/{potion}/detail', name: 'participant.potion.detail')]
     public function potionDetailAction(
         Participant $participant,
-        Potion $potion,
-    ): RedirectResponse|Response {
+        Potion      $potion,
+    ): RedirectResponse|Response
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -3611,8 +3682,9 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/potion/{potion}/document', name: 'participant.potion.document')]
     public function potionDocumentAction(
         Participant $participant,
-        Potion $potion,
-    ): BinaryFileResponse|RedirectResponse {
+        Potion      $potion,
+    ): BinaryFileResponse|RedirectResponse
+    {
         $personnage = $participant->getPersonnage();
 
         if (!$personnage) {
@@ -3636,8 +3708,9 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/priere/{priere}/detail', name: 'participant.priere.detail')]
     public function priereDetailAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] Priere $priere,
-    ): RedirectResponse|Response {
+        #[MapEntity] Priere      $priere,
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -3668,8 +3741,9 @@ class ParticipantController extends AbstractController
     #[IsGranted(Role::USER->value)]
     public function priereDocumentAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] Priere $priere,
-    ): BinaryFileResponse|RedirectResponse {
+        #[MapEntity] Priere      $priere,
+    ): BinaryFileResponse|RedirectResponse
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -3695,10 +3769,11 @@ class ParticipantController extends AbstractController
 
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function refuseAllianceAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-        Groupe $groupe,
-    ): RedirectResponse|Response {
+        Groupe      $groupe,
+    ): RedirectResponse|Response
+    {
         $alliance = $request->get('alliance');
         $groupeGn = $participant->getGroupeGn();
 
@@ -3751,10 +3826,11 @@ class ParticipantController extends AbstractController
 
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function refusePeaceAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-        Groupe $groupe,
-    ): RedirectResponse|Response {
+        Groupe      $groupe,
+    ): RedirectResponse|Response
+    {
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
 
@@ -3826,8 +3902,9 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/regle/{rule}/document', name: 'participant.regle.document')]
     public function regleDocumentAction(
         Rule $rule,
-    ): BinaryFileResponse {
-        $filename = __DIR__.'/../../private/rules/'.$rule->getUrl();
+    ): BinaryFileResponse
+    {
+        $filename = __DIR__ . '/../../private/rules/' . $rule->getUrl();
         $file = new File($filename);
 
         return $this->file($file);
@@ -3839,7 +3916,8 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/regle/list', name: 'participant.regle.list')]
     public function regleListAction(
         Participant $participant,
-    ): Response {
+    ): Response
+    {
         $regles = $this->entityManager->getRepository(Rule::class)->findAll();
 
         return $this->render('rule/list.twig', [
@@ -3853,10 +3931,11 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/religion/add', name: 'participant.religion.add')]
     public function religionAddAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-        PersonnageService $personnageService,
-    ): RedirectResponse|Response {
+        PersonnageService        $personnageService,
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -3998,9 +4077,10 @@ class ParticipantController extends AbstractController
      * Choix d'une nouvelle description de religion.
      */
     public function religionDescriptionAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -4063,7 +4143,8 @@ class ParticipantController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function religionListAction(
         #[MapEntity] Participant $participant,
-    ): Response {
+    ): Response
+    {
         $this->hasAccess($participant);
 
         $repo = $this->entityManager->getRepository(Religion::class);
@@ -4079,8 +4160,9 @@ class ParticipantController extends AbstractController
     #[IsGranted(Role::USER->value)]
     public function religionStlAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] Religion $religion,
-    ): BinaryFileResponse|RedirectResponse {
+        #[MapEntity] Religion    $religion,
+    ): BinaryFileResponse|RedirectResponse
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -4106,9 +4188,10 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/remove', name: 'participant.remove')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function removeAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $form = $this->createForm(
             ParticipantRemoveForm::class,
             $participant,
@@ -4168,9 +4251,10 @@ class ParticipantController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function reponseAction(
         Participant $participant,
-        Question $question,
-        $reponse,
-    ): RedirectResponse {
+        Question    $question,
+                    $reponse,
+    ): RedirectResponse
+    {
         $rep = new Reponse();
         $rep->setQuestion($question);
         $rep->setParticipant($participant);
@@ -4191,8 +4275,9 @@ class ParticipantController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function reponseDeleteAction(
         Participant $participant,
-        Reponse $reponse,
-    ): RedirectResponse {
+        Reponse     $reponse,
+    ): RedirectResponse
+    {
         $this->entityManager->remove($reponse);
         $this->entityManager->flush();
 
@@ -4207,10 +4292,11 @@ class ParticipantController extends AbstractController
     // #[Route('/participant/{participant}/groupe/{groupe}/requestAlliance', name: 'participant.groupe.requestAlliance')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function requestAllianceAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-        Groupe $groupe,
-    ): RedirectResponse|Response {
+        Groupe      $groupe,
+    ): RedirectResponse|Response
+    {
         $groupeGn = $participant->getGroupeGn();
 
         if (true == $groupe->getLock()) {
@@ -4347,11 +4433,12 @@ class ParticipantController extends AbstractController
     // #[Route('/participant/{participant}/groupe/{groupe}/requestPeace', name: 'participant.groupe.requestPeace')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function requestPeaceAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        Participant $participant,
-        Groupe $groupe,
-    ): RedirectResponse|Response {
+        Participant            $participant,
+        Groupe                 $groupe,
+    ): RedirectResponse|Response
+    {
         $war = $request->get('enemy');
         $groupeGn = $participant->getGroupeGn();
 
@@ -4407,9 +4494,10 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/restauration', name: 'participant.restauration')]
     public function restaurationAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $originalParticipantHasRestaurations = new ArrayCollection();
@@ -4479,9 +4567,10 @@ class ParticipantController extends AbstractController
     #[Route('/participant/search', name: 'participant.search')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function searchAction(
-        Request $request,
+        Request               $request,
         ParticipantRepository $participantRepository,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $form = $this->createForm(FindJoueurForm::class, [])
             ->add('submit', SubmitType::class, ['label' => 'Rechercher']);
 
@@ -4539,8 +4628,9 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/sort/{sort}/detail', name: 'participant.sort.detail', requirements: ['personnage' => Requirement::DIGITS])]
     public function sortDetailAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] Sort $sort,
-    ): RedirectResponse|Response {
+        #[MapEntity] Sort        $sort,
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -4570,8 +4660,9 @@ class ParticipantController extends AbstractController
     #[Route('/participant/{participant}/sort/{sort}/document', name: 'participant.sort.document')]
     public function sortDocumentAction(
         #[MapEntity] Participant $participant,
-        #[MapEntity] Sort $sort,
-    ): BinaryFileResponse|RedirectResponse {
+        #[MapEntity] Sort        $sort,
+    ): BinaryFileResponse|RedirectResponse
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -4596,9 +4687,10 @@ class ParticipantController extends AbstractController
      */
     #[Route('/participant/{participant}/technologie', name: 'participant.technologie')]
     public function technologieAction(
-        Request $request,
+        Request                  $request,
         #[MapEntity] Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -4669,7 +4761,8 @@ class ParticipantController extends AbstractController
     public function technologieDocumentAction(
         #[MapEntity] Participant $participant,
         #[MapEntity] Technologie $technologie,
-    ): BinaryFileResponse|RedirectResponse {
+    ): BinaryFileResponse|RedirectResponse
+    {
         $this->hasAccess($participant);
 
         $personnage = $participant->getPersonnage();
@@ -4695,9 +4788,10 @@ class ParticipantController extends AbstractController
     #[Route('/participant/orga/{participant}/detail', name: 'participant.orga.detail')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function updateAction(
-        Request $request,
+        Request     $request,
         Participant $participant,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $form = $this->createForm(JoueurForm::class, $participant)
             ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
 

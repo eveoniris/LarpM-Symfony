@@ -56,11 +56,6 @@ class Rule extends BaseRule implements \Stringable
 
     public function getDocumentUrl(): string
     {
-        return $this->getUrl() ?? '';
-    }
-
-    public function getFilename(): ?string
-    {
-        return $this->getLabel() ?? (string) time();
+        return $this->getUrl();
     }
 }

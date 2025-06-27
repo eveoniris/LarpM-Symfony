@@ -1,0 +1,187 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Etat des fiefs
+{% endblock title %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
+
+
+    <script type="module">
+        jQuery(document).ready(function () {
+            new DataTable('#stats-table', {
+                'pageLength': 100,
+                'layout': {
+                    'topStart': {
+                        'buttons': ['copy', 'csv', 'excel', 'pdf', 'print']
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Statistiques', 'route': path('stats.list') },
+            {'name' : 'Etat des fiefs' },
+        ]
+    } %}
+
+    <div class="d-flex justify-content-end">
+
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="Télécharger" href="{{ path('stats.fiefsState.csv') }}"><i
+                        class="fa fa-file-csv"></i>
+                    Télécharger</a>
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="format JSON" href="{{ path('stats.fiefsState.json') }}"><i
+                        class="fa fa-file-lines"></i>
+                    Json API</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Etat des fiefs</h5>
+        </div>
+
+        <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
+            {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
+                {'name' : 'id','css': 'text-center'},
+                {'name' : 'fief','css': 'text-center'},
+                {'name' : 'groupe_id','css': 'text-center'},
+                {'name' : 'groupe','css': 'text-center'},
+                {'name' : 'religion','css': 'text-center'},
+                {'name' : 'defense','css': 'text-center'},
+                {'name' : 'stable','css': 'text-center'},
+                {'name' : 'instable','css': 'text-center'},
+                {'name' : 'revenus','css': 'text-center'},
+                {'name' : 'murailles','css': 'text-center'},
+                {'name' : 'bastion','css': 'text-center'},
+                {'name' : 'forteresse','css': 'text-center'},
+                {'name' : 'temple','css': 'text-center'},
+                {'name' : 'sanctuaire','css': 'text-center'},
+                {'name' : 'comptoir','css': 'text-center'},
+                {'name' : 'merveille','css': 'text-center'},
+                {'name' : 'palais','css': 'text-center'},
+                {'name' : 'route','css': 'text-center'},
+                {'name' : 'port','css': 'text-center'},
+                {'name' : 'total_defense','css': 'text-center'},
+                {'name' : 'total_revenus','css': 'text-center'},
+                {'name' : 'suzerain','css': 'text-center'},
+                {'name' : 'renommee','css': 'text-center'},
+                {'name' : 'technologies','css': 'text-center'},
+                {'name' : 'exportations','css': 'text-center'},
+                {'name' : 'ingredients','css': 'text-center'},
+                {'name' : 'export','css': 'text-center'},
+            ]} %}
+            <tbody>
+            {% for fiefsState in fiefsStates %}
+                <tr>
+                    <td class="text-center">
+                        <a href="{{ path('territoire.detail', {'territoire': fiefsState.id} ) }}">
+                            {{ fiefsState.fief }}
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <a href="{{ path('groupe.detail', {'groupe': fiefsState.groupe_id} ) }}">
+                            {{ fiefsState.groupe }}
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.religion }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.defense }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.stable }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.instable }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.revenus }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.murailles }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.bastion }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.forteresse }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.temple }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.sanctuaire }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.comptoir }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.merveille }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.palais }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.route }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.port }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.total_defense }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.total_revenus }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.suzerain }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.renommee }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.technologies }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.exportations }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.ingredients }}
+                    </td>
+                    <td class="text-center">
+                        {{ fiefsState.fief }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}

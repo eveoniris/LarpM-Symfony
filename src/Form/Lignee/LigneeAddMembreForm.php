@@ -7,14 +7,10 @@ use App\Entity\PersonnageLignee;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Lignee\LigneeAddMembreForm.
- *
- * @author Gérald
- */
 class LigneeAddMembreForm extends AbstractType
 {
     /**
@@ -26,6 +22,7 @@ class LigneeAddMembreForm extends AbstractType
             'required' => true,
             'label' => 'Choisissez le personnage membre',
             'class' => Personnage::class,
+            'autocomplete' => true,
             'query_builder' => static function (EntityRepository $er) {
                 /* trouve les personnages ayant une lignée */
                 $sqb = $er->createQueryBuilder('m');
@@ -44,12 +41,13 @@ class LigneeAddMembreForm extends AbstractType
                 'data-live-search' => 'true',
                 'placeholder' => 'Nouveau membre',
             ],
-            'choice_label' => 'nom',
+            'choice_label' => 'idName',
             'mapped' => false,
         ])
             ->add('parent1', EntityType::class, [
                 'required' => true,
                 'label' => 'Choisissez le parent du membre',
+                'autocomplete' => true,
                 'class' => Personnage::class,
                 'query_builder' => static function (EntityRepository $er) {
                     $qb = $er->createQueryBuilder('p');
@@ -62,13 +60,14 @@ class LigneeAddMembreForm extends AbstractType
                     'data-live-search' => 'true',
                     'placeholder' => 'Parent (obligatoire)',
                 ],
-                'choice_label' => 'nom',
+                'choice_label' => 'idName',
                 'mapped' => false,
             ])
             ->add('parent2', EntityType::class, [
                 'required' => false,
                 'label' => 'Choisissez le second parent',
                 'class' => Personnage::class,
+                'autocomplete' => true,
                 'query_builder' => static function (EntityRepository $er) {
                     $qb = $er->createQueryBuilder('p');
                     $qb->orderBy('p.nom', 'ASC');
@@ -80,10 +79,10 @@ class LigneeAddMembreForm extends AbstractType
                     'data-live-search' => 'true',
                     'placeholder' => 'Second parent (facultatif)',
                 ],
-                'choice_label' => 'nom',
+                'choice_label' => 'idName',
                 'mapped' => false,
             ])
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Ajouter']);
+            ->add('submit', SubmitType::class, ['label' => 'Ajouter']);
     }
 
     /**
