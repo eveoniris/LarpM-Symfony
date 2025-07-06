@@ -28,11 +28,13 @@ use App\Entity\PersonnageIngredient;
 use App\Entity\PersonnageLangues;
 use App\Entity\PersonnageRessource;
 use App\Entity\PersonnageSecondaire;
+use App\Entity\PersonnagesReligions;
 use App\Entity\PersonnageTrigger;
 use App\Entity\Potion;
 use App\Entity\PugilatHistory;
 use App\Entity\Rarete;
 use App\Entity\Religion;
+use App\Entity\ReligionLevel;
 use App\Entity\RenommeHistory;
 use App\Entity\Ressource;
 use App\Entity\Sort;
@@ -1492,6 +1494,173 @@ class PersonnageService
         return $trigger;
     }
 
+    public function lockGnGiveSanctuaireGnEffect(bool $asGenerator = false)
+    {
+        // All player in groupe get the first level of religion if his not FANATICAL or DEISTE
+
+        $deisteId = 36;
+        $deiste = $this->entityManager->getRepository(Religion::class)->find($deisteId);
+        $config = [
+            // Zath
+            // aucun
+            // Anu
+            3 => [
+                23,
+                38,
+                56,
+                105,
+            ],
+            // Bel
+            5 => [66],
+            // Bori
+            6 => [
+                17,
+                27,
+                28,
+                99,
+                108,
+                137,
+                139,
+            ],
+
+            // Crom
+            7 => [
+                17,
+                26,
+                27,
+                28,
+            ],
+            // Culte ancêtre
+            8 => [
+                23,
+                26,
+                29,
+                30,
+                52,
+                116,
+                124,
+                145,
+            ],
+            // Erlik
+            10 => [
+                1,
+                40,
+                45,
+                72,
+                80,
+                82,
+                126,
+                133,
+            ],
+            // Isthar
+            12 => [
+                21,
+                48,
+                49,
+                52,
+                61,
+                62,
+                125,
+            ],
+            // Mitra
+            14 => [
+                4,
+                5,
+                9,
+                11,
+                13,
+                14,
+                21,
+                55,
+                56,
+                57,
+                58,
+                59,
+                107,
+                137,
+                146,
+            ],
+
+            // Set
+            15 => [52, 61, 62],
+
+            // Yun
+            19 => [40, 45, 82, 126],
+
+
+            // Ymir
+            18 => [89, 132],
+            // Ereshkigal
+            28 => [40, 130],
+
+
+        ];
+
+        $religionLevel = $this->entityManager->getRepository(ReligionLevel::class)->findOneBy(
+            ['index' => 1],
+        );
+
+        $i = 0;
+        foreach ($config as $religionId => $groupeNumbers) {
+            $religion = $this->entityManager->getRepository(Religion::class)->find($religionId);
+
+            if (!$religion) {
+                $this->logger->warning(sprintf('Religion %d not found', $religionId));
+                continue;
+            }
+
+            $this->logger->info(sprintf('Adding first level of %s religion to personnage', $religion->getLabel()));
+
+            foreach ($groupeNumbers as $groupeNumber) {
+                $groupe = $this->entityManager->getRepository(Groupe::class)->findOneBy(['numero' => $groupeNumber]);
+
+                if (!$groupe) {
+                    $this->logger->warning(sprintf('Groupe with number %d not found', $groupeNumber));
+                    continue;
+                }
+
+                /** @var Personnage $personnage */
+                foreach ($groupe->getPersonnages() as $personnage) {
+                    if (!$personnage->getVivant()) {
+                        $this->logger->info(sprintf('Personnage %d is dead, dead is not affacted', $personnage->getId()));
+                        continue;
+                    }
+                    if ($this->knownReligion($personnage, $religion)) {
+                        $this->logger->info(sprintf('Personnage %d already know this religion', $personnage->getId()));
+                        continue;
+                    }
+                    if ($deiste && $this->knownReligion($personnage, $deiste)) {
+                        $this->logger->info(sprintf('Personnage %d is deiste and not affected', $personnage->getId()));
+                        continue;
+                    }
+                    if ($personnage->isFanatique()) {
+                        $this->logger->info(sprintf('Personnage %d is a fanatic and not affected', $personnage->getId()));
+                        continue;
+                    }
+
+                    $personnageReligion = new PersonnagesReligions();
+                    $personnageReligion->setPersonnage($personnage);
+                    $personnageReligion->setReligion($religion);
+                    $personnageReligion->setReligionLevel($religionLevel);
+                    $this->entityManager->persist($personnageReligion);
+                    $this->entityManager->flush();
+
+                    ++$i;
+                    if ($asGenerator) {
+                        yield ++$i;
+                    }
+                }
+            }
+        }
+    }
+
+    public function getPersonnages(
+        User $user,
+    ): string
+    {
+        return $user->getPersonnages();
+    }
+
     public function lockGnSetDefaultCharacter(?Gn $gn = null): void
     {
         $gnRepository = $this->entityManager->getRepository(Gn::class);
@@ -1836,13 +2005,6 @@ class PersonnageService
         $groupeGn = $groupe->getGroupeGns()->last();
 
         return $groupeGn->getPersonnages()->contains($personnage);
-    }
-
-    public function getPersonnages(
-        User $user,
-    ): string
-    {
-        return $user->getPersonnages();
     }
 
     public function prettifyData(?array $data): string

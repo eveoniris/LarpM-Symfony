@@ -435,6 +435,7 @@ class GnController extends AbstractController
             $this->personnageService->lockGnSetDefaultSecondCharacter($gn);
             $this->personnageService->lockGnGiveNoblityGnRenomme($gn);
             $this->personnageService->lockGnGiveLiteratureGnBonus($gn);
+            $this->personnageService->lockGnGiveSanctuaireGnEffect();
 
             $this->addFlash('success', 'Le gn a été verrouillé.');
 
