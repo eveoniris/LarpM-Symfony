@@ -82,6 +82,7 @@ use App\Repository\SecondaryGroupRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
@@ -261,19 +262,19 @@ class ParticipantController extends AbstractController
     /**
      * Detail d'un joueur.
      */
-    #[Route('/participant/{participant}/detail', name: 'participant.detail')]
+    #[Route('/participant/{participant}/admin/detail', name: 'participant.admin.detail')]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function adminDetailAction(
         #[MapEntity] Participant $participant,
     ): RedirectResponse|Response
     {
         if ($participant) {
-            return $this->render('joueur/detail.twig', ['participant' => $participant]);
-        } else {
-            $this->addFlash('error', 'Le participant n\'a pas été trouvé.');
-
-            return $this->redirectToRoute('homepage');
+            return $this->render('participant/index.twig', ['participant' => $participant, 'gn' => $participant->getGn(), 'groupeGn' => $participant->getGroupeGn()]);
         }
+
+        $this->addFlash('error', 'Le participant n\'a pas été trouvé.');
+
+        return $this->redirectToRoute('homepage');
     }
 
     /**
@@ -318,7 +319,7 @@ class ParticipantController extends AbstractController
             // historique
             $historique = new ExperienceGain();
             $historique->setExplanation('Création de votre personnage');
-            $historique->setOperationDate(new \DateTime('NOW'));
+            $historique->setOperationDate(new DateTime('NOW'));
             $historique->setPersonnage($personnage);
             $historique->setXpGain($participant->getGn()->getXpCreation());
             $this->entityManager->persist($historique);
@@ -355,7 +356,7 @@ class ParticipantController extends AbstractController
                 $personnage->addXp($xpAgeBonus);
                 $historique = new ExperienceGain();
                 $historique->setExplanation("Bonus lié à l'age");
-                $historique->setOperationDate(new \DateTime('NOW'));
+                $historique->setOperationDate(new DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($xpAgeBonus);
                 $this->entityManager->persist($historique);
@@ -513,7 +514,7 @@ class ParticipantController extends AbstractController
                 // historique
                 $historique = new ExperienceGain();
                 $historique->setExplanation($explanation);
-                $historique->setOperationDate(new \DateTime('NOW'));
+                $historique->setOperationDate(new DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($gain);
 
@@ -649,7 +650,7 @@ class ParticipantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $participant = $form->getData();
-            $participant->setBilletDate(new \DateTime('NOW'));
+            $participant->setBilletDate(new DateTime('NOW'));
             $this->entityManager->persist($participant);
             $this->entityManager->flush();
 
@@ -923,7 +924,7 @@ class ParticipantController extends AbstractController
             }
 
             $logAction = new LogAction();
-            $logAction->setDate(new \DateTime());
+            $logAction->setDate(new DateTime());
             $logAction->setUser($this->getUser());
             $logAction->setType(LogActionType::ADD_SORT);
             $logAction->setData(
@@ -1398,7 +1399,7 @@ class ParticipantController extends AbstractController
 
             // historique
             $historique = new ExperienceUsage();
-            $historique->setOperationDate(new \DateTime('NOW'));
+            $historique->setOperationDate(new DateTime('NOW'));
             $historique->setXpUse($cout);
             $historique->setCompetence($competence);
             $historique->setPersonnage($personnage);
@@ -1805,7 +1806,7 @@ class ParticipantController extends AbstractController
             }
 
             $logAction = new LogAction();
-            $logAction->setDate(new \DateTime());
+            $logAction->setDate(new DateTime());
             $logAction->setUser($this->getUser());
             $logAction->setType(LogActionType::ADD_SORT);
             $logAction->setData(
@@ -2206,8 +2207,8 @@ class ParticipantController extends AbstractController
 
         $message->setUserRelatedByAuteur($this->getUser());
         $message->setUserRelatedByDestinataire($postulant->getPersonnage()->getUser());
-        $message->setCreationDate(new \DateTime('NOW'));
-        $message->setUpdateDate(new \DateTime('NOW'));
+        $message->setCreationDate(new DateTime('NOW'));
+        $message->setUpdateDate(new DateTime('NOW'));
 
         $form = $this->createForm(MessageForm::class, $message)
             ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre réponse']);
@@ -2286,6 +2287,7 @@ class ParticipantController extends AbstractController
      * Interface Joueur d'un jeu.
      */
     #[Route('/participant/{participant}/index', name: 'participant.index')]
+    #[Route('/participant/{participant}', name: 'participant.detail')]
     public function indexAction(
         #[MapEntity] Participant $participant,
     ): Response
@@ -2678,7 +2680,7 @@ class ParticipantController extends AbstractController
             $this->entityManager->persist($personnage);
 
             $log = new LogAction();
-            $log->setDate(new \DateTime());
+            $log->setDate(new DateTime());
             $log->setType(LogActionType::ADD_ORIGINE);
             $log->setUser($this->getUser());
             $log->setData([
@@ -2841,7 +2843,7 @@ class ParticipantController extends AbstractController
             // historique
             $historique = new ExperienceGain();
             $historique->setExplanation('Création de votre personnage');
-            $historique->setOperationDate(new \DateTime('NOW'));
+            $historique->setOperationDate(new DateTime('NOW'));
             $historique->setPersonnage($personnage);
             $historique->setXpGain($participant->getGn()->getXpCreation());
             $this->entityManager->persist($historique);
@@ -2889,7 +2891,7 @@ class ParticipantController extends AbstractController
                 $personnage->addXp($xpAgeBonus);
                 $historique = new ExperienceGain();
                 $historique->setExplanation("Modification liée à l'age");
-                $historique->setOperationDate(new \DateTime('NOW'));
+                $historique->setOperationDate(new DateTime('NOW'));
                 $historique->setPersonnage($personnage);
                 $historique->setXpGain($xpAgeBonus);
                 $this->entityManager->persist($historique);
@@ -3391,7 +3393,7 @@ class ParticipantController extends AbstractController
             }
 
             $logAction = new LogAction();
-            $logAction->setDate(new \DateTime());
+            $logAction->setDate(new DateTime());
             $logAction->setUser($this->getUser());
             $logAction->setType(LogActionType::ADD_POTION);
             $logAction->setData(
@@ -3483,7 +3485,7 @@ class ParticipantController extends AbstractController
             $this->entityManager->persist($participant);
 
             $logAction = new LogAction();
-            $logAction->setDate(new \DateTime());
+            $logAction->setDate(new DateTime());
             $logAction->setUser($this->getUser());
             $logAction->setType(LogActionType::ADD_POTION_DEPART);
             $logAction->setData(
@@ -3552,7 +3554,7 @@ class ParticipantController extends AbstractController
         $this->entityManager->persist($participant);
 
         $logAction = new LogAction();
-        $logAction->setDate(new \DateTime());
+        $logAction->setDate(new DateTime());
         $logAction->setUser($this->getUser());
         $logAction->setType(LogActionType::ADD_POTION_DEPART);
         $logAction->setData(
@@ -3609,7 +3611,7 @@ class ParticipantController extends AbstractController
             $this->entityManager->persist($participant);
 
             $logAction = new LogAction();
-            $logAction->setDate(new \DateTime());
+            $logAction->setDate(new DateTime());
             $logAction->setUser($this->getUser());
             $logAction->setType(LogActionType::DELETE_POTION_DEPART);
             $logAction->setData(
@@ -4525,7 +4527,7 @@ class ParticipantController extends AbstractController
                 $participantHasRestauration->setParticipant($participant);
 
                 $logAction = new LogAction();
-                $logAction->setDate(new \DateTime());
+                $logAction->setDate(new DateTime());
                 $logAction->setUser($this->getUser());
                 $logAction->setType(LogActionType::DELETE_POTION_DEPART);
                 $logAction->setData(

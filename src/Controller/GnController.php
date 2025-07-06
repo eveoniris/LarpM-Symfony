@@ -150,9 +150,10 @@ class GnController extends AbstractController
     #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
     public function billetterieAction(
         EntityManagerInterface $entityManager,
-        Request $request,
-        #[MapEntity] Gn $gn,
-    ): Response {
+        Request                $request,
+        #[MapEntity] Gn        $gn,
+    ): Response
+    {
         $groupeGns = $gn->getGroupeGnsPj();
         $iterator = $groupeGns->getIterator();
         $iterator->uasort(static function ($a, $b): int {
@@ -171,10 +172,11 @@ class GnController extends AbstractController
     #[Route('/{gn}/delete', name: 'delete')]
     #[IsGranted('ROLE_ORGA')]
     public function deleteAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn,
-    ): RedirectResponse|Response {
+        #[MapEntity] Gn        $gn,
+    ): RedirectResponse|Response
+    {
         $form = $this->createForm(GnDeleteForm::class, $gn)
             ->add('delete', SubmitType::class, [
                 'label' => 'Supprimer',
@@ -197,10 +199,11 @@ class GnController extends AbstractController
 
     #[Route('/{gn}', name: 'detail')]
     public function detailAction(
-        Request $request,
-        #[MapEntity] Gn $gn,
+        Request            $request,
+        #[MapEntity] Gn    $gn,
         QuestionRepository $questionRepository,
-    ): Response {
+    ): Response
+    {
         $participant = $this->getUser()?->getParticipant($gn);
 
         if (null !== $participant && $participant->getBesoinValidationCi()) {
@@ -229,7 +232,7 @@ class GnController extends AbstractController
     {
         $participants = $gn->getParticipantsFedeGn();
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_fedegn_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_fedegn_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
         $output = fopen('php://output', 'w');
@@ -244,23 +247,23 @@ class GnController extends AbstractController
         foreach ($participants as $participant) {
             $line = [];
             $line[] = mb_convert_encoding(
-                (string) $participant->getUser()
+                (string)$participant->getUser()
                     ->getEtatCivil()
                     ->getNom(),
                 'ISO-8859-1',
             );
             $line[] = mb_convert_encoding(
-                (string) $participant->getUser()
+                (string)$participant->getUser()
                     ->getEtatCivil()
                     ->getPrenom(),
                 'ISO-8859-1',
             );
-            $line[] = mb_convert_encoding((string) $participant->getUser()->getEmail(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string)$participant->getUser()->getEmail(), 'ISO-8859-1');
             if ($participant->getUser()
                 ->getEtatCivil()
                 ->getDateNaissance()) {
                 $line[] = mb_convert_encoding(
-                    (string) $participant->getUser()
+                    (string)$participant->getUser()
                         ->getEtatCivil()
                         ->getDateNaissance()
                         ->format('Y-m-d'),
@@ -274,7 +277,7 @@ class GnController extends AbstractController
                 ->getEtatCivil()
                 ->getFedeGn()) {
                 $line[] = mb_convert_encoding(
-                    (string) $participant->getUser()
+                    (string)$participant->getUser()
                         ->getEtatCivil()
                         ->getFedeGn(),
                     'ISO-8859-1',
@@ -361,9 +364,10 @@ class GnController extends AbstractController
     #[Route('', name: 'list')]
     #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
     public function listAction(
-        Request $request,
+        Request      $request,
         GnRepository $gnRepository,
-    ): Response {
+    ): Response
+    {
         $page = $request->query->getInt('page', 1);
         $limit = 10;
 
@@ -401,15 +405,16 @@ class GnController extends AbstractController
     #[Route('/{gn}/lock', name: 'gn.lock')]
     #[IsGranted('ROLE_ORGA')]
     public function lockAction(
-        Request $request,
-        GnRepository $gnRepository,
-        ClasseRepository $classeRepository,
-        PersonnageRepository $personnageRepository,
+        Request                        $request,
+        GnRepository                   $gnRepository,
+        ClasseRepository               $classeRepository,
+        PersonnageRepository           $personnageRepository,
         PersonnageSecondaireRepository $personnageSecondaireRepository,
-        ParticipantRepository $participantRepository,
-        LangueRepository $langueRepository,
-        #[MapEntity] Gn $gn,
-    ): RedirectResponse|Response {
+        ParticipantRepository          $participantRepository,
+        LangueRepository               $langueRepository,
+        #[MapEntity] Gn                $gn,
+    ): RedirectResponse|Response
+    {
         $form = $this->createFormBuilder()
             ->add(
                 'save',
@@ -425,67 +430,13 @@ class GnController extends AbstractController
             // Lock de base
             $gnRepository->lockAllGroup($gn);
 
-            // TODO : Donner 2 points de renommé par GN (au lock ou en fin de GN ? => voir marc)
             // TODO : Donner trigger de choix littéraire (au lock ou en fin de GN ? => voir marc)
 
-
-            // Attribution par défaut
-            /** @var PersonnageSecondaire $personnageSecondaire */
-            $personnageSecondaire = $personnageSecondaireRepository->findOneBy(['id' => 1]);
-
-            // On force les joueurs sans personnage à être Soldat
-            $classe = $classeRepository->findOneBy(['id' => 14]); // Soldat
-            $cache = 0;
-            /** @var Personnage $personnage */
-            foreach ($participantRepository->findAllWithoutPersonnage($gn) as $personnage) {
-                $personnage->setClasse($classe);
-
-                /** @var Competence $competence */
-                foreach ($personnageSecondaire->getCompetences() as $competence) {
-                    if (!$personnage->hasCompetence($competence)) {
-                        $this->personnageService->addCompetence($personnage, $competence);
-                    }
-                }
-
-                $this->entityManager->persist($personnage);
-
-                if (++$cache > 50) {
-                    $cache = 0;
-                    $this->entityManager->flush();
-                }
-            }
-            $this->entityManager->flush();
-
-            // On force les personnages sans langue à avoir Aquillonien
-            $langue = $langueRepository->findOneBy(['id' => 2]); // Aquillonien
-            $cache = 0;
-            foreach ($personnageRepository->findAllWithoutLangue($gn) as $personnage) {
-                $personnageLangue = new PersonnageLangues();
-                $personnageLangue->setPersonnage($personnage);
-                $personnageLangue->setLangue($langue);
-                $personnageLangue->setSource('ADMIN');
-                $this->entityManager->persist($personnageLangue);
-
-                if (++$cache > 50) {
-                    $cache = 0;
-                    $this->entityManager->flush();
-                }
-            }
-            $this->entityManager->flush();
-
-            // On force les personnages sans personnage secondaire à être soldat
-            /** @var Participant $participant */
-            $cache = 0;
-            foreach ($participantRepository->findAllWithoutPersonnageSecondaire($gn) as $participant) {
-                $participant->setPersonnageSecondaire($personnageSecondaire);
-                $this->entityManager->persist($participant);
-
-                if (++$cache > 50) {
-                    $cache = 0;
-                    $this->entityManager->flush();
-                }
-            }
-            $this->entityManager->flush();
+            $this->personnageService->lockGnSetDefaultCharacter($gn);
+            $this->personnageService->lockGnSetDefaultLangue($gn);
+            $this->personnageService->lockGnSetDefaultSecondCharacter($gn);
+            $this->personnageService->lockGnGiveNoblityGnRenomme($gn);
+            $this->personnageService->lockGnGiveLiteratureGnBonus($gn);
 
             $this->addFlash('success', 'Le gn a été verrouillé.');
 
@@ -504,11 +455,12 @@ class GnController extends AbstractController
     #[IsGranted('ROLE_ORGA')]
     #[Route('/{gn}/participants', name: 'participants')]
     public function participantsAction(
-        Request $request,
-        PagerService $pagerService,
+        Request               $request,
+        PagerService          $pagerService,
         ParticipantRepository $participantRepository,
-        #[MapEntity] Gn $gn,
-    ): Response {
+        #[MapEntity] Gn       $gn,
+    ): Response
+    {
         $pagerService->setRequest($request)->setRepository($participantRepository);
 
         $alias = $participantRepository->getAlias();
@@ -528,16 +480,17 @@ class GnController extends AbstractController
     #[Route('/{gn}/participantsCSV', name: 'participants.csv')]
     #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function participantsCSVAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn,
-        GnRepository $gnRepository,
-    ): void {
+        #[MapEntity] Gn        $gn,
+        GnRepository           $gnRepository,
+    ): void
+    {
         $participants = $gn->getParticipants();
 
         header('Content-Type: text/csv');
         header(
-            'Content-Disposition: attachment; filename=eveoniris_participants_'.$gn->getLabel().'_'.date('Ymd').'.csv',
+            'Content-Disposition: attachment; filename=eveoniris_participants_' . $gn->getLabel() . '_' . date('Ymd') . '.csv',
         );
         header('Pragma: no-cache');
         header('Expires: 0');
@@ -560,17 +513,16 @@ class GnController extends AbstractController
         foreach ($participants as $participant) {
             $line = [];
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string) $participant->getUser()->getEtatCivil()->getPrenom().' '.$participant->getUser()->getEtatCivil(
-                )->getNom(),
+                (string)$participant->getUser()->getEtatCivil()->getPrenom() . ' ' . $participant->getUser()->getEtatCivil()->getNom(),
                 'ISO-8859-1',
             ) : '';
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string) $participant->getUser()->getEmail(),
+                (string)$participant->getUser()->getEmail(),
                 'ISO-8859-1',
             ) : '';
 
             $line[] = $participant->getBillet() ? mb_convert_encoding(
-                (string) $participant->getBillet()->getLabel(),
+                (string)$participant->getBillet()->getLabel(),
                 'ISO-8859-1',
             ) : '';
 
@@ -579,13 +531,13 @@ class GnController extends AbstractController
                 if ('' == $restauration_string) {
                     $restauration_string = $restauration->getRestauration()->getLabel();
                 } else {
-                    $restauration_string = $restauration_string.', '.$restauration->getRestauration()->getLabel();
+                    $restauration_string = $restauration_string . ', ' . $restauration->getRestauration()->getLabel();
                 }
             }
-            $line[] = mb_convert_encoding((string) $restauration_string, 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string)$restauration_string, 'ISO-8859-1');
 
             $line[] = $participant->getGroupeGn() ? mb_convert_encoding(
-                (string) $participant->getGroupeGn()->getGroupe()->getNom(),
+                (string)$participant->getGroupeGn()->getGroupe()->getNom(),
                 'ISO-8859-1',
             ) : '';
 
@@ -618,13 +570,14 @@ class GnController extends AbstractController
     #[Route('/{gn}/participants/withoutbillet/csv', name: 'participants.withoutbillet.csv')]
     #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function participantsWithoutBilletCSVAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn,
-    ): void {
+        #[MapEntity] Gn        $gn,
+    ): void
+    {
         $participants = $gn->getParticipantsWithoutBillet();
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_participants_sans_billet_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_participants_sans_billet_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
         $output = fopen('php://output', 'w');
@@ -637,15 +590,15 @@ class GnController extends AbstractController
         foreach ($participants as $participant) {
             $line = [];
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string) $participant->getUser()->getEtatCivil()->getNom(),
+                (string)$participant->getUser()->getEtatCivil()->getNom(),
                 'ISO-8859-1',
             ) : '';
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string) $participant->getUser()->getEtatCivil()->getPrenom(),
+                (string)$participant->getUser()->getEtatCivil()->getPrenom(),
                 'ISO-8859-1',
             ) : '';
             $line[] = $participant->getUser() ? mb_convert_encoding(
-                (string) $participant->getUser()->getEmail(),
+                (string)$participant->getUser()->getEmail(),
                 'ISO-8859-1',
             ) : '';
 
@@ -680,7 +633,7 @@ class GnController extends AbstractController
     {
         $participants = $gn->getParticipantsWithoutGroup();
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_participants_sans_groupe_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_participants_sans_groupe_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
         $output = fopen('php://output', 'w');
@@ -693,15 +646,15 @@ class GnController extends AbstractController
         foreach ($participants as $participant) {
             $line = [];
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string) $participant->getUser()->getEtatCivil()->getNom(),
+                (string)$participant->getUser()->getEtatCivil()->getNom(),
                 'ISO-8859-1',
             ) : '';
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string) $participant->getUser()->getEtatCivil()->getPrenom(),
+                (string)$participant->getUser()->getEtatCivil()->getPrenom(),
                 'ISO-8859-1',
             ) : '';
             $line[] = $participant->getUser() ? mb_convert_encoding(
-                (string) $participant->getUser()->getEmail(),
+                (string)$participant->getUser()->getEmail(),
                 'ISO-8859-1',
             ) : '';
 
@@ -733,14 +686,15 @@ class GnController extends AbstractController
     #[Route('/{gn}/participants/withoutperso/csv', name: 'participants.withoutperso.csv')]
     #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function participantsWithoutPersoCSVAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        Gn $gn,
-    ): void {
+        Gn                     $gn,
+    ): void
+    {
         $participants = $gn->getParticipantsWithoutPerso();
 
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_participants_sans_perso_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_participants_sans_perso_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
@@ -757,15 +711,15 @@ class GnController extends AbstractController
             $line = [];
 
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string) $participant->getUser()->getEtatCivil()->getNom(),
+                (string)$participant->getUser()->getEtatCivil()->getNom(),
                 'ISO-8859-1',
             ) : '';
             $line[] = $participant->getUser() && $participant->getUser()->getEtatCivil() ? mb_convert_encoding(
-                (string) $participant->getUser()->getEtatCivil()->getPrenom(),
+                (string)$participant->getUser()->getEtatCivil()->getPrenom(),
                 'ISO-8859-1',
             ) : '';
             $line[] = $participant->getUser() ? mb_convert_encoding(
-                (string) $participant->getUser()->getEmail(),
+                (string)$participant->getUser()->getEmail(),
                 'ISO-8859-1',
             ) : '';
 
@@ -782,11 +736,12 @@ class GnController extends AbstractController
     #[Route('/{gn}/personnage', name: 'personnage')]
     #[IsGranted(new MultiRolesExpression(Role::USER), message: 'You are not allowed to access to this.')]
     public function personnageAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn,
-        Environment $twig,
-    ): RedirectResponse|Response {
+        #[MapEntity] Gn        $gn,
+        Environment            $twig,
+    ): RedirectResponse|Response
+    {
         $participant = $this->getUser()?->getParticipant($gn);
         $personnage = $participant?->getPersonnage();
 
@@ -803,7 +758,7 @@ class GnController extends AbstractController
         $titre = $entityManager->getRepository(Personnage::class)->findTitre($personnage->getRenomme());
 
         $tab = $request->get('tab', 'general');
-        if (!$twig->getLoader()->exists('personnage/fragment/tab_'.$tab.'.twig')) {
+        if (!$twig->getLoader()->exists('personnage/fragment/tab_' . $tab . '.twig')) {
             $tab = 'general';
         }
 
@@ -823,11 +778,12 @@ class GnController extends AbstractController
     #[Route('/{gn}/personnages', name: 'personnages')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
     public function personnagesAction(
-        Request $request,
-        #[MapEntity] Gn $gn,
+        Request           $request,
+        #[MapEntity] Gn   $gn,
         PersonnageService $personnageService,
-        GnRepository $gnRepository,
-    ): Response {
+        GnRepository      $gnRepository,
+    ): Response
+    {
         return $this->render(
             'personnage/list.twig',
             $personnageService->getSearchViewParameters(
@@ -913,10 +869,11 @@ class GnController extends AbstractController
     #[Route('/{gn}/printInter', name: 'print.inter')]
     #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function printInterAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn,
-    ): Response {
+        #[MapEntity] Gn        $gn,
+    ): Response
+    {
         $participants = $gn->getParticipantsInterGN();
         $quetes = new ArrayCollection();
 
@@ -932,10 +889,11 @@ class GnController extends AbstractController
     #[Route('/{gn}/printPerso', name: 'print.perso')]
     #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function printPersoAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn,
-    ): Response {
+        #[MapEntity] Gn        $gn,
+    ): Response
+    {
         $participants = $gn->getParticipantsWithBillet();
         $quetes = new ArrayCollection();
 
@@ -964,10 +922,11 @@ class GnController extends AbstractController
     #[Route('/{gn}/update', name: 'update')]
     #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function updateAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn,
-    ): RedirectResponse|Response {
+        #[MapEntity] Gn        $gn,
+    ): RedirectResponse|Response
+    {
         $form = $this->createForm(GnForm::class, $gn)
             ->add('update', SubmitType::class, [
                 'label' => 'Sauvegarder',

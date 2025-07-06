@@ -189,6 +189,7 @@ class StatsService
         $rsm->addScalarResult('technologies', 'technologies', 'string');
         $rsm->addScalarResult('exportations', 'exportations', 'string');
         $rsm->addScalarResult('ingredients', 'ingredients', 'string');
+        $rsm->addScalarResult('ressource', 'ingredients', 'string');
         $rsm->addScalarResult('@export', '@export', 'string');
 
         /* @noinspection SqlNoDataSourceInspection */
@@ -205,11 +206,11 @@ class StatsService
                         else a.resistance
                         end as defense
                     , case a.statut
-                        when 'Instable' then ''
+                        when LOWER('instable') then ''
                         else 'X'
                         end as stable
-                    , case a.statut
-                        when 'Instable' then 'X'
+                    , case LOWER(a.statut)
+                        when 'instable' then 'X'
                         else ''
                         end as instable
                     , a.tresor as revenus
@@ -253,20 +254,26 @@ class StatsService
                         when 10 then 'X'
                         else ''
                         end as port
-                    , case a.statut
-                        when 'Instable' then CEILING((a.resistance + case c.construction_id when 1 then 2 else 0 end + case e.construction_id when 3 then 2 else 0 end) / 2)
+                    , case  LOWER(a.statut)
+                        when 'instable' then CEILING((a.resistance + case c.construction_id when 1 then 2 else 0 end + case e.construction_id when 3 then 2 else 0 end) / 2)
                         else a.resistance + case c.construction_id when 1 then 2 else 0 end + case e.construction_id when 3 then 2 else 0 end
                       end as total_defense
-                    , case a.statut
-                        when 'Instable' then CEILING((a.tresor + case h.construction_id	when 6 then 5 else 0 end + case l.construction_id when 10 then 5 else 0 end) / 2)
+                    , case LOWER(a.statut)
+                        when 'instable' then CEILING((a.tresor + case h.construction_id	when 6 then 5 else 0 end + case l.construction_id when 10 then 5 else 0 end) / 2)
                         else a.tresor + case h.construction_id	when 6 then 5 else 0 end + case l.construction_id when 10 then 5 else 0 end
                       end as total_revenus
-                    , CONCAT(suzerain.nom, ' - ', suzerain.surnom) as suzerain
+                    , CASE WHEN suzerain.nom <> '' AND suzerain.nom IS NOT NULL
+                        THEN suzerain.nom
+                        ELSE CASE WHEN groupe_leader.nom <> '' AND groupe_leader.nom IS NOT NULL
+                            THEN groupe_leader.nom
+                        ELSE a.dirigeant
+                    END as suzerain
                     , suzerain.renomme as renommee
                     , GROUP_CONCAT( DISTINCT q.label ORDER BY q.label ) as technologies
                     , GROUP_CONCAT( DISTINCT t.label ORDER BY t.label ) as exportations
                     , GROUP_CONCAT( DISTINCT v.label ORDER BY v.label ) as ingredients
-                    , CONCAT('..\Links\\'', min(p.label), '.ai') as export
+                    , p.label as ressource
+                    , CONCAT("..\\\Links\\\",min(p.label),".ai") as '@export'
                 FROM `territoire` as a
                 left join groupe as b on b.id = a.groupe_id
                 left join territoire_has_construction as c on c.territoire_id = a.id and c.construction_id = 1
@@ -290,6 +297,7 @@ class StatsService
                 left join ingredient as v on v.id = u.ingredient_id
                 left join groupe_gn ggn ON ggn.id = (SELECT ggn2.id FROM groupe_gn ggn2 WHERE b.id = ggn2.groupe_id ORDER BY ggn2.id DESC LIMIT 1)
                 left join personnage as suzerain ON ggn.suzerin_id = suzerain.id
+                left join personnage as groupe_leader ON ggn.responsable_id = groupe_leader.id
                 WHERE a.territoire_id is not null
                 and a.tresor is not null
                 group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23

@@ -15,29 +15,31 @@
                 </a>
             </td>
             <td class="text-center col-1 align-middle">
-                {% if participant.gn.isPast %}
-                    <span class="text-notice">Terminé</span>
-                {% else %}
-                    <span class="text-notice">Inscrit</span>
-                {% endif %}
+                <a href="{{ path('participant.detail', {'participant': participant.id}) }}">
+                    {% if participant.gn.isPast %}
+                        <span class="text-notice">Terminé</span>
+                    {% else %}
+                        <span class="text-notice">Inscrit</span>
+                    {% endif %}
+                </a>
             </td>
             <td class="col-2 text-center align-middle">
                 {% if participant.billet %}
                     <span class="text-success"><i
-                                class="fa-solid fa-ticket"></i> {{ participant.billet.label }}</span>
+                            class="fa-solid fa-ticket"></i> {{ participant.billet.label }}</span>
                 {% else %}
                     <div>
                         <span class="text-danger">Un billet est obligatoire pour l'accès au jeu !</span>
                         <a class="btn btn-sm btn-secondary"
                            href="{{ path('gn.billetterie', {'gn': participant.gn.id}) }}"><i
-                                    class="fa-solid fa-ticket"></i> Billetterie</a>
+                                class="fa-solid fa-ticket"></i> Billetterie</a>
                     </div>
                 {% endif %}
             </td>
             <td class="col-4 align-middle">
                 {% if participant.groupeGn %}
                     <i class="fa fa-users"></i> <a
-                        href="{{ path('groupe.detail',{'groupeGn': participant.groupeGn.id, 'groupe': participant.groupeGn.groupe.id}) }}">{{ participant.groupeGn.groupe.nom }}</a>
+                    href="{{ path('groupe.detail',{'groupeGn': participant.groupeGn.id, 'groupe': participant.groupeGn.groupe.id}) }}">{{ participant.groupeGn.groupe.nom }}</a>
                 {% else %}
                     <div class="w-100 d-flex justify-content-center">
                         <a class="btn btn-sm btn-secondary"
@@ -50,7 +52,7 @@
             <td class="col-4 align-middle">
                 {% if participant.personnage %}
                     <i class="fa fa-user"></i> <a
-                        href="{{ path('personnage.detail',{'gn': participant.gn.id, 'personnage': participant.personnage.id, 'participant': participant.id }) }}">{{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}</a>
+                    href="{{ path('personnage.detail',{'gn': participant.gn.id, 'personnage': participant.personnage.id, 'participant': participant.id }) }}">{{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}</a>
                 {% else %}
                     {% if participant.session %}
                         <div class="w-100 d-flex justify-content-center">

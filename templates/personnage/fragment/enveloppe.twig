@@ -14,6 +14,25 @@
         {% endif %}
     {% endif %} #}
 
+{# Restauration #}
+
+{% if participant is not defined %}
+    {% set participant = personnage.lastParticipant %}
+{% endif %}
+
+{% set participantHasRestaurations = participant.participantHasRestaurations|default({}) %}
+{% if participantHasRestaurations %}
+    <strong>Restauration</strong>
+    <ul>
+        {% for participantHasRestauration in participantHasRestaurations %}
+            <li class="list-group-item">
+                <i class="fa fa-coffee" aria-hidden="true"></i>&nbsp;
+                <strong>{{ participantHasRestauration.restauration.label }}</strong> obtenu
+                le {{ participantHasRestauration.date|date('Y-m-d') }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
 {% if personnageService.allRenomme(personnage)|default(0) > 4 %}
     <strong>Renommée :</strong> {{ personnageService.allRenomme(personnage)|default(0) }}<br/>
