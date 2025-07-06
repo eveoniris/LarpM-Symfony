@@ -15,6 +15,7 @@ use App\Form\MessageForm;
 use App\Manager\GroupeManager;
 use App\Repository\SecondaryGroupRepository;
 use App\Service\PagerService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -22,17 +23,19 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
 class GroupeSecondaireController extends AbstractController
 {
-    #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/accept', name: 'groupeSecondaire.postulant.accept')]
-    #[Route('/groupeTransverse/{groupeSecondaire}/postulant/{postulant}/accept', name: 'groupeTransverse.postulant.accept')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/accept', name: 'groupeSecondaire.postulant.accept', requirements: ['postulant' => Requirement::DIGITS])]
+    #[Route('/groupeTransverse/{groupeSecondaire}/postulant/{postulant}/accept', name: 'groupeTransverse.postulant.accept', requirements: ['postulant' => Requirement::DIGITS])]
     public function acceptPostulantAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Postulant $postulant,
-    ): Response {
+        #[MapEntity] Postulant      $postulant,
+    ): Response
+    {
         $this->canManageGroup($groupeSecondaire);
 
         $personnage = $postulant->getPersonnage();
@@ -72,17 +75,19 @@ class GroupeSecondaireController extends AbstractController
 
     protected function hasAccess(
         ?SecondaryGroup $secondaryGroup = null,
-        array $roles = [Role::ROLE_GROUPE_TRANSVERSE],
-        string $lowestCan = self::CAN_READ,
-    ): void {
+        array           $roles = [Role::ROLE_GROUPE_TRANSVERSE],
+        string          $lowestCan = self::CAN_READ,
+    ): void
+    {
         $this->loadAccess($secondaryGroup, $roles);
         $this->checkHasAccess($roles, fn() => $this->can($lowestCan));
     }
 
     protected function loadAccess(
         ?SecondaryGroup $secondaryGroup = null,
-        array $roles = [Role::ROLE_GROUPE_TRANSVERSE],
-    ): void {
+        array           $roles = [Role::ROLE_GROUPE_TRANSVERSE],
+    ): void
+    {
         $isAdmin = false;
         foreach ($roles as $role) {
             if ($this->isGranted($role->value)) {
@@ -217,11 +222,11 @@ class GroupeSecondaireController extends AbstractController
         }
 
         $message = new Message();
-        $message->setTitle('Message pour le responsable du groupe '.$groupeSecondaire->getLabel());
+        $message->setTitle('Message pour le responsable du groupe ' . $groupeSecondaire->getLabel());
         $message->setUserRelatedByAuteur($this->getUser());
         $message->setUserRelatedByDestinataire($responsable->getUser());
-        $message->setCreationDate(new \DateTime('NOW'));
-        $message->setUpdateDate(new \DateTime('NOW'));
+        $message->setCreationDate(new DateTime('NOW'));
+        $message->setUpdateDate(new DateTime('NOW'));
 
         $form = $this->createForm(MessageForm::class, $message)
             ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre message']);
@@ -252,13 +257,14 @@ class GroupeSecondaireController extends AbstractController
         ]);
     }
 
-    #[Route('/groupeSecondaire/{groupeSecondaire}/contact/membre/{membre}', name: 'groupeSecondaire.contact.membre')]
-    #[Route('/groupeTransverse/{groupeSecondaire}/contact/membre/{membre}', name: 'groupeTransverse.contact.membre')]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/contact/membre/{membre}', name: 'groupeSecondaire.contact.membre', requirements: ['membre' => Requirement::DIGITS])]
+    #[Route('/groupeTransverse/{groupeSecondaire}/contact/membre/{membre}', name: 'groupeTransverse.contact.membre', requirements: ['membre' => Requirement::DIGITS])]
     public function contactMembreAction(
-        Request $request,
+        Request                     $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] $membre,
-    ): Response {
+        #[MapEntity] Membre         $membre,
+    ): Response
+    {
         $this->loadAccess($groupeSecondaire);
 
         $personnage = $this->getPersonnage();
@@ -283,11 +289,11 @@ class GroupeSecondaireController extends AbstractController
         }
 
         $message = new Message();
-        $message->setTitle('Message du membre du groupe '.$groupeSecondaire->getLabel());
+        $message->setTitle('Message du membre du groupe ' . $groupeSecondaire->getLabel());
         $message->setUserRelatedByAuteur($this->getUser());
-        $message->setUserRelatedByDestinataire($membre->getUser());
-        $message->setCreationDate(new \DateTime('NOW'));
-        $message->setUpdateDate(new \DateTime('NOW'));
+        $message->setUserRelatedByDestinataire($membre->getPersonnage()->getUser());
+        $message->setCreationDate(new DateTime('NOW'));
+        $message->setUpdateDate(new DateTime('NOW'));
 
         $form = $this->createForm(MessageForm::class, $message)
             ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre message']);
@@ -347,8 +353,9 @@ class GroupeSecondaireController extends AbstractController
      */
     public function buildContextDetailTwig(
         SecondaryGroup $groupeSecondaire,
-        ?array $extraParameters = null,
-    ): array {
+        ?array         $extraParameters = null,
+    ): array
+    {
         $result = [
             'groupeSecondaire' => $groupeSecondaire,
             'gn' => GroupeManager::getGnActif($this->entityManager),
@@ -364,9 +371,10 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/postuler', name: 'groupeSecondaire.postuler')]
     #[Route('/groupeTransverse/{groupeSecondaire}/postuler', name: 'groupeTransverse.postuler')]
     public function groupeSecondairePostulerAction(
-        Request $request,
+        Request                     $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($groupeSecondaire->isSecret()) {
             $this->addFlash(
                 'error',
@@ -439,11 +447,11 @@ class GroupeSecondaireController extends AbstractController
                 // envoi d'un mail au chef du groupe secondaire
                 if ($responsable = $groupeSecondaire->getResponsable()) {
                     $message = new Message();
-                    $message->setTitle(substr('Candidat - '.$groupeSecondaire->getLabel(), 0, 255));
+                    $message->setTitle(substr('Candidat - ' . $groupeSecondaire->getLabel(), 0, 255));
                     $message->setUserRelatedByAuteur($this->getUser());
                     $message->setUserRelatedByDestinataire($responsable->getUser());
-                    $message->setCreationDate(new \DateTime('NOW'));
-                    $message->setUpdateDate(new \DateTime('NOW'));
+                    $message->setCreationDate(new DateTime('NOW'));
+                    $message->setUpdateDate(new DateTime('NOW'));
                     $message->setText($data['explanation']);
 
                     $this->entityManager->persist($message);
@@ -476,10 +484,11 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire', name: 'groupeSecondaire.list')]
     #[Route('/groupeTransverse', name: 'groupeTransverse.list')]
     public function listAction(
-        Request $request,
-        PagerService $pagerService,
+        Request                  $request,
+        PagerService             $pagerService,
         SecondaryGroupRepository $secondaryGroupRepository,
-    ): Response {
+    ): Response
+    {
         $this->loadAccess();
         $alias = $secondaryGroupRepository->getAlias();
         $queryBuilder = $secondaryGroupRepository->createQueryBuilder($alias);
@@ -513,7 +522,8 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeTransverse/{groupeSecondaire}/print', name: 'groupeTransverse.materiel.print')]
     public function materielPrintAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): Response {
+    ): Response
+    {
         return $this->render('groupeSecondaire/print.twig', [
             'groupeSecondaire' => $groupeSecondaire,
         ]);
@@ -541,9 +551,10 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/materielUpdate', name: 'groupeSecondaire.materiel.update')]
     #[Route('/groupeTransverse/{groupeSecondaire}/materielUpdate', name: 'groupeTransverse.materiel.update')]
     public function materielUpdateAction(
-        Request $request,
+        Request                     $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $form = $this->createForm(GroupeSecondaireMaterielForm::class, $groupeSecondaire);
         $form->handleRequest($request);
 
@@ -572,9 +583,10 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/addMember', name: 'groupeSecondaire.newMembre')]
     #[Route('/groupeTransverse/{groupeSecondaire}/addMember', name: 'groupeTransverse.newMembre')]
     public function newMembreAction(
-        Request $request,
+        Request                     $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $this->canManageGroup($groupeSecondaire);
         $form = $this->createForm(GroupeSecondaireNewMembreForm::class);
 
@@ -630,10 +642,11 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/response', name: 'groupeSecondaire.postulant.response')]
     #[Route('/groupeTransverse/{groupeSecondaire}/postulant/{postulant}/response', name: 'groupeTransverse.postulant.response')]
     public function postulantResponseAction(
-        Request $request,
+        Request                     $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Postulant $postulant,
-    ): RedirectResponse|Response {
+        #[MapEntity] Postulant      $postulant,
+    ): RedirectResponse|Response
+    {
         $this->canManageGroup($groupeSecondaire);
 
         if (!$destinataire = $postulant->getPersonnage()->getUser()) {
@@ -651,8 +664,8 @@ class GroupeSecondaireController extends AbstractController
         $message->setTitle('Réponse à votre candidature');
         $message->setUserRelatedByAuteur($this->getUser());
         $message->setUserRelatedByDestinataire($destinataire);
-        $message->setCreationDate(new \DateTime('NOW'));
-        $message->setUpdateDate(new \DateTime('NOW'));
+        $message->setCreationDate(new DateTime('NOW'));
+        $message->setUpdateDate(new DateTime('NOW'));
 
         $form = $this->createForm(MessageForm::class, $message)
             ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre réponse']);
@@ -688,10 +701,11 @@ class GroupeSecondaireController extends AbstractController
     #[Route('groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/wait', name: 'groupeSecondaire.postulant.wait')]
     #[Route('groupeTransverse/{groupeSecondaire}/postulant/{postulant}/wait', name: 'groupeTransverse.postulant.wait')]
     public function postulantWaitAction(
-        Request $request,
+        Request                     $request,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Postulant $postulant,
-    ): RedirectResponse|Response {
+        #[MapEntity] Postulant      $postulant,
+    ): RedirectResponse|Response
+    {
         $this->canManageGroup($groupeSecondaire);
 
         $form = $this->createFormBuilder($postulant)
@@ -727,8 +741,9 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeTransverse/{groupeSecondaire}/membre/{membre}/remove', name: 'groupeTransverse.member.remove')]
     public function removeMembreAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Membre $membre,
-    ): Response {
+        #[MapEntity] Membre         $membre,
+    ): Response
+    {
         $this->canManageGroup($groupeSecondaire);
 
         return $this->genericDelete(
@@ -756,8 +771,9 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeTransverse/{groupeSecondaire}/postulant/{postulant}/remove', name: 'groupeTransverse.postulant.remove')]
     public function removePostulantAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Postulant $postulant,
-    ): Response {
+        #[MapEntity] Postulant      $postulant,
+    ): Response
+    {
         $this->canManageGroup($groupeSecondaire);
 
         $this->entityManager->remove($postulant);
@@ -776,8 +792,9 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeTransverse/{groupeSecondaire}/secretOff/{membre}', name: 'groupeTransverse.secret.off')]
     public function secretOffAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Membre $membre,
-    ): Response {
+        #[MapEntity] Membre         $membre,
+    ): Response
+    {
         $this->canManageGroup($groupeSecondaire);
 
         $membre->setSecret(false);
@@ -797,8 +814,9 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeTransverse/{groupeSecondaire}/secretOn/{membre}', name: 'groupeTransverse.secret.on')]
     public function secretOnAction(
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Membre $membre,
-    ): Response {
+        #[MapEntity] Membre         $membre,
+    ): Response
+    {
         $this->canManageGroup($groupeSecondaire);
 
         $membre->setSecret(true);
@@ -817,10 +835,11 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.update')]
     #[Route('/groupeTransverse/{groupeSecondaire}/update', name: 'groupeTransverse.update')]
     public function updateAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
+        Request                     $request,
+        EntityManagerInterface      $entityManager,
         #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $this->canManageGroup($groupeSecondaire);
 
         $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)

@@ -67,9 +67,7 @@
 
         <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
             {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
-                {'name' : 'id','css': 'text-center'},
                 {'name' : 'fief','css': 'text-center'},
-                {'name' : 'groupe_id','css': 'text-center'},
                 {'name' : 'groupe','css': 'text-center'},
                 {'name' : 'religion','css': 'text-center'},
                 {'name' : 'defense','css': 'text-center'},
@@ -93,7 +91,7 @@
                 {'name' : 'technologies','css': 'text-center'},
                 {'name' : 'exportations','css': 'text-center'},
                 {'name' : 'ingredients','css': 'text-center'},
-                {'name' : 'export','css': 'text-center'},
+                {'name' : 'ressource','css': 'text-center'},
             ]} %}
             <tbody>
             {% for fiefsState in fiefsStates %}
@@ -175,7 +173,7 @@
                         {{ fiefsState.ingredients }}
                     </td>
                     <td class="text-center">
-                        {{ fiefsState.fief }}
+                        {{ fiefsState.ressource }}
                     </td>
                 </tr>
             {% endfor %}

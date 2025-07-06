@@ -8,6 +8,8 @@ use App\Entity\Personnage;
 use App\Entity\PersonnageLangues;
 use App\Entity\PersonnagesReligions;
 use App\Entity\User;
+use App\Enum\CompetenceFamilyType;
+use App\Enum\LevelType;
 use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\ORM\QueryBuilder;
@@ -46,6 +48,54 @@ class ParticipantRepository extends BaseRepository
         $query->setParameter('gnid', $gn->getId());
 
         return $query->getResult();
+    }
+
+    public function findAllByCompentenceFamilyLevel(Gn $gn, CompetenceFamilyType $cft, ?LevelType $level)
+    {
+        $levelQuery = null;
+        if ($level) {
+            $levelQuery = ' and l.index = :lindex ';
+        }
+
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                    SELECT p FROM App\Entity\Participant p
+                    INNER JOIN p.personnage pe
+                     INNER JOIN pe.competences c
+                     INNER JOIN c.competenceFamily cf
+                     INNER JOIN c.level l
+                    WHERE cf.id = :cfid $levelQuery and p.gn = :gnid
+                DQL,
+            );
+        $query->setParameter('gnid', $gn->getId())
+            ->setParameter('cfid', $cft->getId());
+
+        if ($level) {
+            $query->setParameter('lindex', $level->getIndex());
+        }
+
+        return $query->getResult();
+    }
+
+    public function countAllByCompentenceFamilyLevel(Gn $gn, CompetenceFamilyType $cft, LevelType $level): int
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                    SELECT COUNT(p) FROM App\Entity\Participant p
+                    INNER JOIN p.personnage pe
+                     INNER JOIN pe.competences c
+                     INNER JOIN c.competenceFamily cf
+                     INNER JOIN c.level l
+                    WHERE cf.id = :cfid and l.index = :lindex and p.gn = :gnid
+                DQL,
+            );
+        $query->setParameter('gnid', $gn->getId())
+            ->setParameter('cfid', $cft->getId())
+            ->setParameter('lindex', $level->getIndex());
+
+        return (int)$query->getSingleScalarResult();
     }
 
     /**
@@ -104,7 +154,7 @@ class ParticipantRepository extends BaseRepository
 
     public function gn(QueryBuilder $query, Gn $gn): QueryBuilder
     {
-        $query->andWhere($this->alias.'.gn = :gnId');
+        $query->andWhere($this->alias . '.gn = :gnId');
 
         return $query->setParameter('gnId', $gn->getId());
     }
@@ -127,25 +177,26 @@ class ParticipantRepository extends BaseRepository
     }
 
     public function searchByGn(
-        int $gnid,
-        mixed $search = null,
+        int               $gnid,
+        mixed             $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
-        ?OrderBy $orderBy = null,
-        ?string $alias = null,
-        ?QueryBuilder $query = null,
-    ): QueryBuilder {
+        ?OrderBy          $orderBy = null,
+        ?string           $alias = null,
+        ?QueryBuilder     $query = null,
+    ): QueryBuilder
+    {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
 
-        $query->andWhere($alias.'.personnage is not null');
-        $query->andWhere($alias.'.gn = :value');
+        $query->andWhere($alias . '.personnage is not null');
+        $query->andWhere($alias . '.gn = :value');
         $query->setParameter('value', $gnid);
 
-        $query->join($alias.'.groupeGn', 'groupeGn');
+        $query->join($alias . '.groupeGn', 'groupeGn');
         $query->join('groupeGn.groupe', 'groupe');
-        $query->join($alias.'.personnage', 'personnage');
-        $query->join($alias.'.user', 'user');
-        $query->join($alias.'.billet', 'billet');
+        $query->join($alias . '.personnage', 'personnage');
+        $query->join($alias . '.user', 'user');
+        $query->join($alias . '.billet', 'billet');
         $query->join('user.etatCivil', 'etatCivil');
         $query->join('personnage.classe', 'classe');
 
@@ -159,11 +210,11 @@ class ParticipantRepository extends BaseRepository
                 $sub->select('pr');
                 $sub->from(PersonnagesReligions::class, 'pr');
                 $sub->join('pr.religion', 'religion');
-                $sub->andWhere('pr.personnage = '.$alias.'.personnage');
+                $sub->andWhere('pr.personnage = ' . $alias . '.personnage');
                 $sub->andWhere('religion.label like :religion');
 
                 $query->andWhere($query->expr()->exists($sub->getDQL()));
-                $query->setParameter('religion', '%'.$religion.'%');
+                $query->setParameter('religion', '%' . $religion . '%');
                 $search = '';
                 break;
 
@@ -174,11 +225,11 @@ class ParticipantRepository extends BaseRepository
                 $sub->from(Personnage::class, 'pe');
                 $sub->join('pe.competences', 'competence');
                 $sub->join('competence.competenceFamily', 'competenceFamily');
-                $sub->andWhere('pe.id = '.$alias.'.personnage');
+                $sub->andWhere('pe.id = ' . $alias . '.personnage');
                 $sub->andWhere('competenceFamily.label like :competence');
 
                 $query->andWhere($query->expr()->exists($sub->getDQL()));
-                $query->setParameter('competence', '%'.$competence.'%');
+                $query->setParameter('competence', '%' . $competence . '%');
                 $search = '';
                 break;
 
@@ -188,11 +239,11 @@ class ParticipantRepository extends BaseRepository
                 $sub->select('pl');
                 $sub->from(PersonnageLangues::class, 'pl');
                 $sub->join('pl.langue', 'langue');
-                $sub->andWhere('pl.personnage = '.$alias.'.personnage');
+                $sub->andWhere('pl.personnage = ' . $alias . '.personnage');
                 $sub->andWhere('langue.label like :langue');
 
                 $query->andWhere($query->expr()->exists($sub->getDQL()));
-                $query->setParameter('langue', '%'.$langue.'%');
+                $query->setParameter('langue', '%' . $langue . '%');
                 $search = '';
                 break;
 
@@ -200,14 +251,14 @@ class ParticipantRepository extends BaseRepository
                 $territoire = $search;
                 $query->join('personnage.territoire', 'territoire');
                 $query->andWhere('territoire.nom like :territoire');
-                $query->setParameter('territoire', '%'.$territoire.'%');
+                $query->setParameter('territoire', '%' . $territoire . '%');
                 $search = '';
                 break;
 
             case 'participant.renommee':
                 $renommee = $search;
                 $query->andWhere('personnage.renomme >= :renommee');
-                $query->setParameter('renommee', (int) $renommee);
+                $query->setParameter('renommee', (int)$renommee);
                 $search = '';
                 break;
         }
@@ -216,18 +267,19 @@ class ParticipantRepository extends BaseRepository
     }
 
     public function search(
-        mixed $search = null,
+        mixed             $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
-        ?OrderBy $orderBy = null,
-        ?string $alias = null,
-        ?QueryBuilder $query = null,
-    ): QueryBuilder {
+        ?OrderBy          $orderBy = null,
+        ?string           $alias = null,
+        ?QueryBuilder     $query = null,
+    ): QueryBuilder
+    {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias.'.user', 'user');
-        $query->join($alias.'.gn', 'gn');
+        $query->join($alias . '.user', 'user');
+        $query->join($alias . '.gn', 'gn');
         $query->join('user.etatCivil', 'etatCivil');
-        $query->leftJoin($alias.'.billet', 'billet');
+        $query->leftJoin($alias . '.billet', 'billet');
         // Next may be a LEFT join because it's can be null
         // $query->join($alias.'.territoire', 'territoire');
 

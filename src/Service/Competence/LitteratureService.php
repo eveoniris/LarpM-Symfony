@@ -26,9 +26,9 @@ class LitteratureService extends CompetenceService
                 //  Sait parler, lire et écrire trois autres langues vivantes (courante ou commune) de son choix.
                 TriggerType::LANGUE_COURANTE->value => 3,
                 // il obtient aussi la possibilité de choisir un sort de niveau 1
-                TriggerType::SORT_APPRENTI->value => 1,
+                // done on lock gn : TriggerType::SORT_APPRENTI->value => 1,
                 // il obtient aussi la possibilité de choisir une potion de niveau 1
-                TriggerType::ALCHIMIE_APPRENTI->value => 1,
+                // done on lock gn : TriggerType::ALCHIMIE_APPRENTI->value => 1,
             ],
             Level::NIVEAU_3 => [
                 // Sait parler, lire et écrire un langage ancien ainsi que trois autres langues vivantes
@@ -36,9 +36,9 @@ class LitteratureService extends CompetenceService
                 TriggerType::LANGUE_COURANTE->value => 3,
                 TriggerType::LANGUE_ANCIENNE->value => 1,
                 // il obtient aussi la possibilité de choisir un sort et une potion de niveau 2
-                TriggerType::SORT_INITIE->value => 1,
+                // done on lock gn : TriggerType::SORT_INITIE->value => 1,
                 // il obtient aussi la possibilité de choisir une potion de niveau 2
-                TriggerType::ALCHIMIE_INITIE->value => 1,
+                // done on lock gn : TriggerType::ALCHIMIE_INITIE->value => 1,
             ],
             Level::NIVEAU_4 => [
                 // Sait parler, lire et écrire un langage ancien ainsi que trois autres langues vivantes
@@ -46,10 +46,11 @@ class LitteratureService extends CompetenceService
                 TriggerType::LANGUE_COURANTE->value => 3,
                 TriggerType::LANGUE_ANCIENNE->value => 1,
                 // il obtient aussi la possibilité de choisir un sort et une potion de niveau 2
-                TriggerType::SORT_EXPERT->value => 1,
+                // done on lock gn : TriggerType::SORT_EXPERT->value => 1,
                 // il obtient aussi la possibilité de choisir une potion de niveau 2
-                TriggerType::ALCHIMIE_EXPERT->value => 1,
+                // done on lock gn : TriggerType::ALCHIMIE_EXPERT->value => 1,
             ],
+            // todo GM all common langues + 1 old
         ];
     }
 

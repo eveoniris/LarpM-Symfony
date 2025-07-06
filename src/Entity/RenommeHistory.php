@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\RenommeHistoryRepository;
+use Doctrine\ORM\Mapping\Entity;
 
-#[ORM\Entity()]
+#[Entity(repositoryClass: RenommeHistoryRepository::class)]
 class RenommeHistory extends BaseRenommeHistory
 {
-
 }

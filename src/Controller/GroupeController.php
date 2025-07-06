@@ -64,14 +64,15 @@ class GroupeController extends AbstractController
     }
 
     protected function handleCreateOrUpdate(
-        Request $request,
-        $entity,
-        string $formClass,
-        array $breadcrumb = [],
-        array $routes = [],
-        array $msg = [],
+        Request   $request,
+                  $entity,
+        string    $formClass,
+        array     $breadcrumb = [],
+        array     $routes = [],
+        array     $msg = [],
         ?callable $entityCallback = null,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $routes['root'] = 'groupe.';
 
         return parent::handleCreateOrUpdate(
@@ -100,7 +101,8 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     public function addBackgroundAction(
         Request $request,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $id = $request->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
 
@@ -130,10 +132,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/documents', name: 'documents')]
     public function adminDocumentAction(
-        Request $request,
+        Request             $request,
 
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($r = $this->checkGroupeLocked($groupe)) {
             return $r;
         }
@@ -165,10 +168,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/ingredients', name: 'ingredients')]
     public function adminIngredientAction(
-        Request $request,
+        Request             $request,
 
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($r = $this->checkGroupeLocked($groupe)) {
             return $r;
         }
@@ -244,10 +248,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/items', name: 'items')]
     public function adminItemAction(
-        Request $request,
+        Request             $request,
 
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($r = $this->checkGroupeLocked($groupe)) {
             return $r;
         }
@@ -280,7 +285,8 @@ class GroupeController extends AbstractController
     // TODO
     public function adminParticipantAddAction(
         Request $request,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $groupe = $request->get('groupe');
 
         $repo = $this->entityManager->getRepository(Participant::class);
@@ -339,7 +345,8 @@ class GroupeController extends AbstractController
     // TODO
     public function adminParticipantRemoveAction(
         Request $request,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $participantId = $request->get('participant');
         $groupe = $request->get('groupe');
 
@@ -377,10 +384,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/richesse', name: 'richesse')]
     public function adminRichesseAction(
-        Request $request,
+        Request             $request,
 
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($r = $this->checkGroupeLocked($groupe)) {
             return $r;
         }
@@ -414,8 +422,9 @@ class GroupeController extends AbstractController
     public function availableAction(
         Request $request,
 
-        Groupe $groupe,
-    ): RedirectResponse {
+        Groupe  $groupe,
+    ): RedirectResponse
+    {
         $groupe->setFree(true);
         $this->entityManager->persist($groupe);
         $this->entityManager->flush();
@@ -431,10 +440,11 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/composition', name: 'composition')]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE), message: 'You are not allowed to access to this.')]
     public function compositionAction(
-        Request $request,
+        Request             $request,
 
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($r = $this->checkGroupeLocked($groupe)) {
             return $r;
         }
@@ -518,10 +528,11 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/description', name: 'description')]
     #[IsGranted('ROLE_SCENARISTE')]
     public function descriptionAction(
-        Request $request,
+        Request             $request,
 
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $form = $this->createForm(GroupeDescriptionForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -546,9 +557,10 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/description-membres', name: 'description.membres')]
     #[IsGranted('ROLE_USER')]
     public function descriptionMembresAction(
-        Request $request,
+        Request             $request,
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $this->checkHasAccess(
             [Role::ORGA, Role::SCENARISTE],
             fn() => $this->personnageService->isUserIsGroupeResponsable($groupe),
@@ -584,11 +596,12 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/gn/{gn}/{groupeGn}', name: 'groupeGn')]
     #[Route('/{groupe}/detail/{tab}/gn/{gn}/groupeGn/{groupeGn}', name: 'detail.groupeGn')]
     public function detailAction(
-        #[MapEntity] ?Groupe $groupe,
-        #[MapEntity] ?Gn $gn = null,
+        #[MapEntity] ?Groupe   $groupe,
+        #[MapEntity] ?Gn       $gn = null,
         #[MapEntity] ?GroupeGn $groupeGn = null,
-        string $tab = 'detail',
-    ): RedirectResponse|Response {
+        string                 $tab = 'detail',
+    ): RedirectResponse|Response
+    {
         /*
          * Si le groupe existe, on affiche son détail
          * Sinon on envoie une erreur
@@ -601,8 +614,7 @@ class GroupeController extends AbstractController
 
         $this->hasAccess($groupe, $gn, $groupeGn, [Role::WARGAME]);
 
-        if (('domaine' === $tab) && $this->getPersonnage() && $this->getPersonnage()->getId(
-            ) === $groupeGn?->getSuzerain(false)?->getId()) {
+        if (('domaine' === $tab) && $this->getPersonnage() && $this->getPersonnage()->getId() === $groupeGn?->getSuzerain(false)?->getId()) {
             $this->setCan(self::CAN_WRITE, true);
         }
 
@@ -694,10 +706,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/envelope', name: 'envelope')]
     public function envelopeAction(
-        Request $request,
+        Request             $request,
 
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $form = $this->createForm(GroupeEnvelopeForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -729,7 +742,7 @@ class GroupeController extends AbstractController
         $groupes = $repo->findAll();
 
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_groupe_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_groupe_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
@@ -761,10 +774,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('', name: 'list')]
     public function listAction(
-        Request $request,
-        PagerService $pagerService,
+        Request          $request,
+        PagerService     $pagerService,
         GroupeRepository $groupeRepository,
-    ): Response {
+    ): Response
+    {
         $pagerService->setRequest($request)->setRepository($groupeRepository);
 
         return $this->render('groupe/list.twig', [
@@ -820,7 +834,8 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/lock', name: 'lock')]
     public function lockAction(
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse {
+    ): RedirectResponse
+    {
         $groupe->setLock(true);
         $this->entityManager->persist($groupe);
         $this->entityManager->flush();
@@ -839,10 +854,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/pays', name: 'pays')]
     public function paysAction(
-        Request $request,
+        Request             $request,
 
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($r = $this->checkGroupeLocked($groupe)) {
             return $r;
         }
@@ -898,7 +914,8 @@ class GroupeController extends AbstractController
     // TODO
     public function placeAction(
         Request $request,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $id = $request->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
 
@@ -958,7 +975,8 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/print/background', name: 'print.background')]
     public function printBackgroundAction(
         #[MapEntity] Groupe $groupe,
-    ): Response {
+    ): Response
+    {
         return $this->render('groupe/printBackground.twig', [
             'groupe' => $groupe,
         ]);
@@ -989,7 +1007,8 @@ class GroupeController extends AbstractController
     public function printMaterielGroupeAction(
         #[MapEntity] Groupe $groupe,
         RessourceRepository $ressourceRepository,
-    ): Response {
+    ): Response
+    {
         // recherche les personnages du prochain GN membre du groupe
         $session = $groupe->getNextSession();
         $participants = $session?->getParticipants();
@@ -1012,10 +1031,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/print/perso', name: 'print.perso')]
     public function printPersoAction(
-        Request $request,
+        Request             $request,
 
         #[MapEntity] Groupe $groupe,
-    ): Response {
+    ): Response
+    {
         // recherche les personnages du prochains GN membre du groupe
         $session = $groupe->getNextSession();
         $participants = $session->getParticipants();
@@ -1054,7 +1074,8 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/quete', name: 'quete')]
     public function queteAction(
         #[MapEntity] Groupe $groupe,
-    ): Response {
+    ): Response
+    {
         $ressourceRares = new ArrayCollection($this->entityManager->getRepository(Ressource::class)->findRare());
         $ressourceCommunes = new ArrayCollection($this->entityManager->getRepository(Ressource::class)->findCommun());
         $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
@@ -1074,10 +1095,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/quetes', name: 'quetes')]
     public function quetesAction(
-        Request $request,
+        Request             $request,
 
         SerializerInterface $serializer,
-    ) {
+    )
+    {
         $repo = $this->entityManager->getRepository(Groupe::class);
         $groupes = $repo->findAllOrderByNumero();
         $ressourceRares = new ArrayCollection($this->entityManager->getRepository(Ressource::class)->findRare());
@@ -1123,7 +1145,7 @@ class GroupeController extends AbstractController
             ];
 
             header('Content-Type: text/csv');
-            header('Content-Disposition: attachment; filename=eveoniris_quetes_'.date('Ymd').'.csv');
+            header('Content-Disposition: attachment; filename=eveoniris_quetes_' . date('Ymd') . '.csv');
             header('Pragma: no-cache');
             header('Expires: 0');
 
@@ -1134,22 +1156,22 @@ class GroupeController extends AbstractController
             foreach ($quetes as $quete) {
                 $line = [];
                 $line[] = mb_convert_encoding(
-                    '#'.$quete['groupe']->getNumero().' '.$quete['groupe']->getNom(),
+                    '#' . $quete['groupe']->getNumero() . ' ' . $quete['groupe']->getNom(),
                     'ISO-8859-1',
                 );
                 $line[] = $quete['groupe']->getTerritoire() ? mb_convert_encoding(
-                    (string) $quete['groupe']->getTerritoire()->getNom(),
+                    (string)$quete['groupe']->getTerritoire()->getNom(),
                     'ISO-8859-1',
                 ) : '';
 
                 foreach ($quete['quete']['needs'] as $ressources) {
-                    $line[] = mb_convert_encoding((string) $ressources->getLabel(), 'ISO-8859-1');
+                    $line[] = mb_convert_encoding((string)$ressources->getLabel(), 'ISO-8859-1');
                 }
 
                 $line[] = '';
                 $line[] = '';
                 foreach ($quete['quete']['recompenses'] as $recompense) {
-                    $line[] = mb_convert_encoding((string) $recompense, 'ISO-8859-1');
+                    $line[] = mb_convert_encoding((string)$recompense, 'ISO-8859-1');
                 }
 
                 $line[] = '';
@@ -1172,9 +1194,10 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/ressources', name: 'ressources')]
     public function ressourceAction(
-        Request $request,
+        Request             $request,
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($r = $this->checkGroupeLocked($groupe)) {
             return $r;
         }
@@ -1272,8 +1295,9 @@ class GroupeController extends AbstractController
     public function restaurationAction(
         Request $request,
 
-        Groupe $groupe,
-    ): RedirectResponse|Response {
+        Groupe  $groupe,
+    ): RedirectResponse|Response
+    {
         $availableTaverns = GroupeManager::getAvailableTaverns();
 
         $formBuilder = $this->createForm();
@@ -1292,8 +1316,7 @@ class GroupeController extends AbstractController
 
         foreach ($participants as $participant) {
             $formBuilder->add($participant->getId(), 'choice', [
-                'label' => $participant->getUser()->getEtatCivil()->getNom().' '.$participant->getUser()->getEtatCivil(
-                    )->getPrenom().' '.$participant->getUser()->getEmail(),
+                'label' => $participant->getUser()->getEtatCivil()->getNom() . ' ' . $participant->getUser()->getEtatCivil()->getPrenom() . ' ' . $participant->getUser()->getEmail(),
                 'choices' => $availableTaverns,
                 'data' => $participant->getTavernId(),
                 'multiple' => false,
@@ -1334,10 +1357,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/scenariste', name: 'scenariste')]
     public function scenaristeAction(
-        Request $request,
+        Request             $request,
 
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $form = $this->createForm(GroupeScenaristeForm::class, $groupe)
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
@@ -1417,10 +1441,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/territoire/add', name: 'territoire.add')]
     public function territoireAddAction(
-        Request $request,
+        Request             $request,
 
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($r = $this->checkGroupeLocked($groupe)) {
             return $r;
         }
@@ -1470,10 +1495,11 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/{groupe}/territoire/{territoire}/remove', name: 'territoire.remove')]
     public function territoireRemoveAction(
-        Request $request,
-        Groupe $groupe,
+        Request    $request,
+        Groupe     $groupe,
         Territoire $territoire,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($r = $this->checkGroupeLocked($groupe)) {
             return $r;
         }
@@ -1509,6 +1535,13 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/unlock', name: 'unlock')]
     public function unlockAction(#[MapEntity] Groupe $groupe): RedirectResponse
     {
+        $tempLock = true; // only admin can unlock ?
+        if ($tempLock && !$this->isGranted(Role::ADMIN->value)) {
+            $this->addFlash('error', "Il n'est plus possible de déverrouiller les groupes");
+
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+        }
+
         $groupe->setLock(false);
         $this->entityManager->persist($groupe);
         $this->entityManager->flush();
@@ -1525,7 +1558,8 @@ class GroupeController extends AbstractController
     // TODO
     public function unvailableAction(
         Groupe $groupe,
-    ): RedirectResponse {
+    ): RedirectResponse
+    {
         $groupe->setFree(false);
         $this->entityManager->persist($groupe);
         $this->entityManager->flush();
@@ -1538,9 +1572,10 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/update/{groupe}', name: 'update')]
     public function updateAction(
-        Request $request,
+        Request             $request,
         #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if ($r = $this->checkGroupeLocked($groupe)) {
             return $r;
         }
@@ -1658,7 +1693,8 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     public function updateBackgroundAction(
         Request $request,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         $id = $request->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
 

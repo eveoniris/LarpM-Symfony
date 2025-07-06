@@ -72,7 +72,8 @@
                         {% for participant in user.participants %}
                             <div class="list-group-item">
                                 <div>
-                                    Participe à <a
+                                    <a href="{{ path('participant.detail', {'participant': participant.id}) }}">Participe</a>
+                                    à <a
                                         href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">{{ participant.gn.label }}</a>.
                                 </div>
 

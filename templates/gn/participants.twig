@@ -45,7 +45,11 @@
         <tbody>
         {% for participant in paginator %}
             <tr>
-                <td>{{ participant.user.etatCivil.nom|highlight(pagerService.searchValue) }} {{ participant.user.etatCivil.prenom|highlight(pagerService.searchValue) }}</td>
+                <td>
+                    <a href="{{ path('participant.detail', {'participant':participant.id}) }}">
+                        {{ participant.user.etatCivil.nom|highlight(pagerService.searchValue) }} {{ participant.user.etatCivil.prenom|highlight(pagerService.searchValue) }}
+                    </a>
+                </td>
                 <td>{{ participant.user.email|highlight(pagerService.searchValue) }}</td>
                 <td>
                     {% if not participant.billet %}
@@ -82,21 +86,25 @@
                 <td>
                     <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
                         <div class="btn-group" role="group" aria-label="...">
-
+                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
+                               title="Voir"
+                               href="{{ path('participant.detail',{'participant':participant.id}) }}">
+                                <i class="fa fa-eye"></i>
+                            </a>
                             {% if participant.user.personnage %}
-                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
                                    title="Changer de personnage"
                                    href="{{ path('participant.personnage.old',{'participant':participant.id}) }}">
                                     <i class="fa fa-exchange"></i>
                                 </a>
                             {% elseif participant.personnage %}
-                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
                                    title="Sélectionner un ancien personnage"
                                    href="{{ path('participant.personnage.old',{'participant':participant.id}) }}">
                                     <i class="fa fa-user"></i>
                                 </a>
                             {% elseif participant.groupeGN %}
-                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
                                    title="Créer un nouveau personnage"
                                    href="{{ path('participant.personnage.new',{'participant':participant.id}) }}">
                                     <i class="fa fa-user-plus"></i>
@@ -104,28 +112,28 @@
                             {% endif %}
 
                             {% if participant.groupeGN %}
-                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
                                    title="Changer de groupe"
                                    href="{{ path('participant.groupe',{'participant':participant.id}) }}">
                                     <i class="fa fa-sign-out"></i></a>
                             {% else %}
-                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
                                    title="Ajouter à un groupe"
                                    href="{{ path('participant.groupe',{'participant':participant.id}) }}">
                                     <i class="fa fa-users"></i></a>
                             {% endif %}
-                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                            <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
                                title="Choisir le billet"
                                href="{{ path('participant.billet',{'participant':participant.id}) }}"><i
-                                        class="fa fa-ticket"></i></a>
-                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                    class="fa fa-ticket"></i></a>
+                            <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
                                title="Modifier le lieu de restauration"
                                href="{{ path('participant.restauration',{'participant':participant.id}) }}"><i
-                                        class="fa fa-coffee"></i></a>
-                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                    class="fa fa-coffee"></i></a>
+                            <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
                                title="Retirer le participant"
                                href="{{ path('participant.remove',{'participant':participant.id}) }}"><i
-                                        class="fa fa-close"></i></a>
+                                    class="fa fa-close"></i></a>
                         </div>
                     </div>
                 </td>
