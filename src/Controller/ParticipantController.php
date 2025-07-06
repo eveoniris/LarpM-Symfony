@@ -3971,6 +3971,7 @@ class ParticipantController extends AbstractController
 
         // Un prêtre ne peu pas prendre Sans; S'il a "Sans" il ne peut pas prendre de ferveur
         $hasReligionSans = $personnageService->hasReligionSans($personnage);
+        // TODO test if its priest
 
         // ne proposer que les religions que le personnage ne pratique pas déjà ...
         $availableReligions = $personnageService->getAvailableReligions($personnage, $this->can(self::IS_ADMIN));
