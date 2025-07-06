@@ -3,8 +3,6 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
-
 class PersonnageSecondaireRepository extends BaseRepository
 {
     /**

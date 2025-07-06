@@ -430,8 +430,6 @@ class GnController extends AbstractController
             // Lock de base
             $gnRepository->lockAllGroup($gn);
 
-            // TODO : Donner trigger de choix littéraire (au lock ou en fin de GN ? => voir marc)
-
             $this->personnageService->lockGnSetDefaultCharacter($gn);
             $this->personnageService->lockGnSetDefaultLangue($gn);
             $this->personnageService->lockGnSetDefaultSecondCharacter($gn);

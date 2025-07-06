@@ -41,7 +41,7 @@ class Restauration extends BaseRestauration
     {
         $result = new ArrayCollection();
         foreach ($this->getParticipantHasRestaurations() as $participantHasRestauration) {
-            if ($participantHasRestauration->getParticipant()->getUser()->getRestrictions()->count() > 0);
+            if ($participantHasRestauration->getParticipant()->getUser()->getRestrictions()->count() > 0) ;
 
             if ($result->containsKey($participantHasRestauration->getParticipant()->getGn()->getId())) {
                 $gn = $result->get($participantHasRestauration->getParticipant()->getGn()->getId());
@@ -76,5 +76,26 @@ class Restauration extends BaseRestauration
         }
 
         return $result;
+    }
+
+    public function isVisibleOnMaterielEnveloppe(): bool
+    {
+        if (str_ends_with(strtoupper(trim($this->label)), 'REPAS ENFANTS')) {
+            return true;
+        }
+
+        if (str_ends_with(strtoupper(trim($this->label)), 'REPAS CARNE')) {
+            return true;
+        }
+
+        if (str_ends_with(strtoupper(trim($this->label)), 'REPAS CARNÉ')) {
+            return true;
+        }
+
+        if (str_ends_with(strtoupper(trim($this->label)), 'CARTE DE BOISSONS')) {
+            return true;
+        }
+
+        return false;
     }
 }

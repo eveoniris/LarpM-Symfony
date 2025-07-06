@@ -24,7 +24,7 @@ class GnLockSetDefaultLangue extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $io->title('Attribution des points de renommé');
+        $io->title('Attribution langues par défaut');
 
         $this->personnageService->lockGnSetDefaultLangue();
 
