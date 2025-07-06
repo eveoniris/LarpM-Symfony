@@ -2,12 +2,15 @@
 
 namespace App\Service;
 
+use App\Entity\Age;
 use App\Entity\Bonus;
 use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
 use App\Entity\Domaine;
 use App\Entity\Espece;
+use App\Entity\ExperienceGain;
+use App\Entity\Genre;
 use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Entity\GroupeGn;
@@ -34,6 +37,7 @@ use App\Entity\RenommeHistory;
 use App\Entity\Ressource;
 use App\Entity\Sort;
 use App\Entity\Technologie;
+use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
@@ -49,6 +53,7 @@ use App\Repository\PersonnageSecondaireRepository;
 use App\Repository\ReligionRepository;
 use App\Repository\RenommeHistoryRepository;
 use App\Repository\TechnologieRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -1401,7 +1406,7 @@ class PersonnageService
 
             $explication = sprintf('LH%d - Expert Noblesse', $gn->getId());
 
-            if ($renommeHistory = $renommeHistoryRepository->findOneBy(['personnage_id' => $personnage->getId(), 'explication' => $explication])) {
+            if ($renommeHistory = $renommeHistoryRepository->findOneBy(['personnage' => $personnage->getId(), 'explication' => $explication])) {
                 // skip as already done
                 continue;
             }
@@ -1491,8 +1496,8 @@ class PersonnageService
     {
         $gnRepository = $this->entityManager->getRepository(Gn::class);
         $classeRepository = $this->entityManager->getRepository(Classe::class);
-        $personnageSecondaireRepository = $this->entityManager->getRepository(PersonnageSecondaireRepository::class);
-        $participantRepository = $this->entityManager->getRepository(ParticipantRepository::class);
+        $personnageSecondaireRepository = $this->entityManager->getRepository(PersonnageSecondaire::class);
+        $participantRepository = $this->entityManager->getRepository(Participant::class);
         $gn ??= $gnRepository->findNext();
 
         // Attribution par défaut
@@ -1502,9 +1507,48 @@ class PersonnageService
         // On force les joueurs sans personnage à être Soldat
         $classe = $classeRepository->findOneBy(['id' => 14]); // Soldat
         $cache = 0;
-        /** @var Personnage $personnage */
-        foreach ($participantRepository->findAllWithoutPersonnage($gn) as $personnage) {
-            $personnage->setClasse($classe);
+        $age = $this->entityManager->getRepository(Age::class)->findOneBy(['id' => 1]);
+        $territoire = $this->entityManager->getRepository(Territoire::class)->findOneBy(['id' => 1]);
+        $genreM = $this->entityManager->getRepository(Genre::class)->findOneBy(['id' => 1]);
+        $genreF = $this->entityManager->getRepository(Genre::class)->findOneBy(['id' => 2]);
+        /** @var Participant $participant */
+        foreach ($participantRepository->findAllWithoutPersonnage($gn) as $participant) {
+            if (!$personnage = $participant->getPersonnage()) {
+
+
+                $personnage = new Personnage();
+                $personnage->setClasse($classe)
+                    ->setAge($age)
+                    ->setNom($participant->getUser()?->getDisplayName() ?? 'Nanoc')
+                    ->setGroupe($participant->getGroupe())
+                    ->setGenre(random_int(1, 2) === 1 ? $genreM : $genreF)
+                    ->setUser($participant->getUser())
+                    ->setXp($participant->getGn()->getXpCreation())
+                    ->setTerritoire($territoire);
+
+                // historique
+                $historique = new ExperienceGain();
+                $historique->setExplanation('Création de votre personnage');
+                $historique->setOperationDate(new DateTime('NOW'));
+                $historique->setPersonnage($personnage);
+                $historique->setXpGain($participant->getGn()->getXpCreation());
+                $this->entityManager->persist($historique);
+
+                // Ajout des points d'expérience gagné grace à l'age
+                $xpAgeBonus = $personnage->getAge()->getBonus();
+                if ($xpAgeBonus) {
+                    $personnage->addXp($xpAgeBonus);
+                    $historique = new ExperienceGain();
+                    $historique->setExplanation("Bonus lié à l'age");
+                    $historique->setOperationDate(new DateTime('NOW'));
+                    $historique->setPersonnage($personnage);
+                    $historique->setXpGain($xpAgeBonus);
+                    $this->entityManager->persist($historique);
+                }
+
+                $participant->setPersonnage($personnage);
+            }
+
 
             /** @var Competence $competence */
             foreach ($personnageSecondaire->getCompetences() as $competence) {
@@ -1514,11 +1558,12 @@ class PersonnageService
             }
 
             $this->entityManager->persist($personnage);
-
-            if (++$cache > 50) {
+            $this->entityManager->persist($participant);
+            $this->entityManager->flush();
+            /*if (++$cache > 50) {
                 $cache = 0;
                 $this->entityManager->flush();
-            }
+            }*/
         }
         $this->entityManager->flush();
     }
@@ -1526,8 +1571,8 @@ class PersonnageService
     public function lockGnSetDefaultLangue(?Gn $gn = null): void
     {
         $gnRepository = $this->entityManager->getRepository(Gn::class);
-        $langueRepository = $this->entityManager->getRepository(LangueRepository::class);
-        $personnageRepository = $this->entityManager->getRepository(PersonnageRepository::class);
+        $langueRepository = $this->entityManager->getRepository(Langue::class);
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
         $gn ??= $gnRepository->findNext();
 
         // On force les personnages sans langue à avoir Aquillonien
@@ -1551,8 +1596,8 @@ class PersonnageService
     public function lockGnSetDefaultSecondCharacter(?Gn $gn = null): void
     {
         $gnRepository = $this->entityManager->getRepository(Gn::class);
-        $personnageSecondaireRepository = $this->entityManager->getRepository(PersonnageSecondaireRepository::class);
-        $participantRepository = $this->entityManager->getRepository(ParticipantRepository::class);
+        $personnageSecondaireRepository = $this->entityManager->getRepository(PersonnageSecondaire::class);
+        $participantRepository = $this->entityManager->getRepository(Participant::class);
         $gn ??= $gnRepository->findNext();
         /** @var PersonnageSecondaire $personnageSecondaire */
         $personnageSecondaire = $personnageSecondaireRepository->findOneBy(['id' => 1]);

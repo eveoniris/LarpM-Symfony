@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Gn;
 use App\Entity\Personnage;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Result;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
@@ -31,12 +32,13 @@ class GnRepository extends BaseRepository
     }
 
     public function findPaginated(
-        int $page,
-        int $limit = 10,
+        int    $page,
+        int    $limit = 10,
         string $orderby = 'id',
         string $orderdir = 'ASC',
-        $where = '1=1',
-    ): Paginator {
+               $where = '1=1',
+    ): Paginator
+    {
         $limit = abs($limit);
 
         $result = [];
@@ -117,24 +119,21 @@ class GnRepository extends BaseRepository
             ->setParameter('gnid', $gn->getId());
     }
 
-    public function lockAllGroup(Gn $gn): int
+    public function lockAllGroup(Gn $gn): Result
     {
         $connection = $this->entityManager->getConnection();
 
         $sql =
             <<<SQL
-                 UPDATE groupe g SET `lock` = 1
-                    WHERE id IN (
-                        SELECT groupe.id 
-                        
-                        FROM groupe 
-                            INNER JOIN groupe_gn gn ON groupe.id = gn.groupe_id 
-                        WHERE gn_id = :gnid
-                    );
+                 UPDATE groupe g
+                 INNER JOIN groupe_gn AS ggn ON g.id = ggn.groupe_id
+                 SET `lock` = 1
+                 WHERE ggn.gn_id = :gnid
                 SQL;
 
         $statement = $connection->prepare($sql);
+        $statement->bindValue('gnid', $gn->getId());
 
-        return $statement->executeStatement(['gnid' => $gn->getId()]);
+        return $statement->executeQuery();
     }
 }

@@ -25,11 +25,13 @@
     <strong>Restauration</strong>
     <ul>
         {% for participantHasRestauration in participantHasRestaurations %}
-            <li class="list-group-item">
-                <i class="fa fa-coffee" aria-hidden="true"></i>&nbsp;
-                <strong>{{ participantHasRestauration.restauration.label }}</strong> obtenu
-                le {{ participantHasRestauration.date|date('Y-m-d') }}
-            </li>
+            {% if participantHasRestauration.restauration.isVisibleOnMaterielEnveloppe %}
+                <li class="list-group-item">
+                    <i class="fa fa-coffee" aria-hidden="true"></i>&nbsp;
+                    <strong>{{ participantHasRestauration.restauration.label }}</strong> obtenu
+                    le {{ participantHasRestauration.date|date('Y-m-d') }}
+                </li>
+            {% endif %}
         {% endfor %}
     </ul>
 {% endif %}

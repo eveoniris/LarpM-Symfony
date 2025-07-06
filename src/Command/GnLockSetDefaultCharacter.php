@@ -24,7 +24,7 @@ class GnLockSetDefaultCharacter extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $io->title('Attribution des points de renommé');
+        $io->title('Attribution des personnages par défaut');
 
         $this->personnageService->lockGnSetDefaultCharacter();
         $this->personnageService->lockGnSetDefaultSecondCharacter();
