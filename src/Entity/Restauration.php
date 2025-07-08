@@ -92,6 +92,10 @@ class Restauration extends BaseRestauration
             return true;
         }
 
+        if (str_ends_with(strtoupper(trim($this->label)), 'REPAS CARNé')) {
+            return true;
+        }
+
         if (str_ends_with(strtoupper(trim($this->label)), 'CARTE DE BOISSONS')) {
             return true;
         }
