@@ -880,7 +880,7 @@ abstract class BasePersonnage
      */
     public function getIntrigue(): bool
     {
-        return $this->intrigue;
+        return $this->intrigue ?? false;
     }
 
     /**
