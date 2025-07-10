@@ -7,7 +7,16 @@
 
             {% include 'personnage/fragment/enveloppe.twig' with {'personnage': participant.personnage, 'extends': false } %}
 
-            <hr class="print-page-break"/>
+            {#  break every two player ?  #}
+            {% if app.request.get('compact') == 1 %}
+                {% if (loop.index%2 == 0) %}
+                    <hr class="print-page-break compact-mode"/>
+                {% else %}
+                    <hr class="compact-mode"/>
+                {% endif %}
+            {% else %}
+                <hr class="print-page-break"/>
+            {% endif %}
 
         {% endif %}
     {% else %}

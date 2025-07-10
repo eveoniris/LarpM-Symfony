@@ -40,22 +40,22 @@
                 <td>{{ bonus.type.value|default()|highlight(pagerService.searchValue) }}</td>
                 <td>{{ bonus.valeur|default() }}</td>
                 <td>{{ bonus.periode.value|default() }}</td>
-                <td>{{ bonus.application }}</td>
+                <td>{{ bonus.application.value|default() }}</td>
                 <td>
                     <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
                         <div class="btn-group" role="group">
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Détail"
                                href="{{ path('bonus.detail',{'bonus':bonus.id}) }}"><i
-                                        class="fa fa-eye"></i></a>
+                                    class="fa fa-eye"></i></a>
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Modifier"
                                href="{{ path('bonus.update',{'bonus':bonus.id}) }}"><i
-                                        class="fa fa-pencil"></i></a>
+                                    class="fa fa-pencil"></i></a>
                             <a class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Supprimer"
                                href="{{ path('bonus.delete',{'bonus':bonus.id}) }}"><i
-                                        class="fa fa-eraser"></i></a>
+                                    class="fa fa-eraser"></i></a>
                         </div>
                     </div>
                 </td>
