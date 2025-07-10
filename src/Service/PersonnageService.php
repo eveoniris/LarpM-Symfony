@@ -379,10 +379,10 @@ class PersonnageService
                 if ($mat = $this->conditionsService->getKeyValue('materiel', $conditionsDataSet)) {
                     $materiel = $mat;
                 }
-                if (empty($materiel) || !is_string($materiel)) {
-                    $materiel = $bonus->getDescription();
+                if (!empty($materiel) && is_string($materiel)) {
+                    // do not use description $materiel = $bonus->getDescription();
+                    $competence->setMateriel($materiel);
                 }
-                $competence->setMateriel($materiel);
 
                 $family = new CompetenceFamily();
                 $family->setId($bonus->getId() * -1);
@@ -690,6 +690,15 @@ class PersonnageService
                 continue;
             }
 
+            // this condition is tested before JSON value if we use bonus value only
+            if (!$this->conditionsService->isValidConditions(
+                $personnage,
+                $bonus->getJsonData()['condition'] ?? [],
+            )) {
+                // on passe au bonus suivant
+                continue;
+            }
+
             $data = $bonus->getDataAsList('ingredients');
 
             foreach ($data as $ingredientData) {
@@ -718,32 +727,50 @@ class PersonnageService
                     $ingredient->setDose($data['dose'] ?? 'unité');
                 }
 
-                $this->addIngredientToAll($personnage, $ingredient, $all);
+                $personnageIngredient = new PersonnageIngredient();
+                $personnageIngredient->setPersonnage($personnage);
+                $personnageIngredient->setIngredient($ingredient);
+                $personnageIngredient->setNombre($data['nombre'] ?? $bonus->getValeur());
+
+                $this->addIngredientToAll($personnageIngredient, $all);
+
+                continue 2;
             }
+
+            $ingredient = new Ingredient();
+
+            $label = $bonus->getData('label', $bonus->getTitre()) ?: 'BONUS';
+            $ingredient->setLabel($label);
+            $ingredient->setNiveau((int)($bonus->getData('niveau', 1)));
+            $ingredient->setDose($bonus->getData('dose', 'unité'));
+
+            $personnageIngredient = new PersonnageIngredient();
+            $personnageIngredient->setPersonnage($personnage);
+            $personnageIngredient->setIngredient($ingredient);
+            $personnageIngredient->setNombre($bonus->getData('nombre', $bonus->getValeur()));
+
+
+            $this->addIngredientToAll($personnageIngredient, $all);
         }
 
         return $all;
     }
 
     private function addIngredientToAll(
-        Personnage $personnage,
-        Ingredient $ingredient,
-        Collection $all,
+        PersonnageIngredient $personnageIngredient,
+        Collection           $all,
     ): void
     {
         /** @var PersonnageIngredient $existing */
         foreach ($all as $existing) {
             if (
-                $existing->getIngredient()?->getId() === $ingredient->getId()
-                && $existing->getIngredient()?->getLabel() === $ingredient->getLabel()
+                $existing->getIngredient()?->getId() === $personnageIngredient->getIngredient()?->getId()
+                && $existing->getIngredient()?->getLabel() === $personnageIngredient->getIngredient()?->getLabel()
             ) {
                 return;
             }
         }
 
-        $personnageIngredient = new PersonnageIngredient();
-        $personnageIngredient->setPersonnage($personnage);
-        $personnageIngredient->setIngredient($ingredient);
         $all->add($personnageIngredient);
     }
 
@@ -920,7 +947,8 @@ class PersonnageService
                 continue;
             }
 
-            $all[] = $bonus->getTitre() . ' - ' . $bonus->getDescription();
+            $description = $bonus->getData('materiel', $bonus->getDescription());
+            $all[] = $bonus->getTitre() . ' - ' . $description;
         }
 
         return $all;
@@ -1099,7 +1127,12 @@ class PersonnageService
             $ressourcePersonnage = new PersonnageRessource();
             $ressourcePersonnage->setNombre((int)$bonus->getValeur());
             $ressource = new Ressource();
-            $ressource->setLabel($bonus->getTitre() . ' - ' . $bonus->getDescription());
+            $titre = $bonus->getData('titre', $bonus->getTitre());
+            $description = $bonus->getData('description');
+            if ($description !== null) {
+                $description = $bonus->getDescription() . ' - ';
+            }
+            $ressource->setLabel($titre . $description);
             $rarete = new Rarete();
             $rarete->setLabel($data['rarete'] ?? 'Commun');
             $ressource->setRarete($rarete);
