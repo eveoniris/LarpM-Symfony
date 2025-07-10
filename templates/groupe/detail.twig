@@ -53,8 +53,16 @@
                                             Matériel nécessaire (personnages)</a></li>
                                     <li class="d-grid gap-2">
                                         <a class="btn btn-sm btn-secondary rounded-0"
+                                           href="{{ path('groupe.print.materiel', {'groupe' : groupe.id, 'compact': 1}) }}">
+                                            Matériel nécessaire (2 personnages/feuille)</a></li>
+                                    <li class="d-grid gap-2">
+                                        <a class="btn btn-sm btn-secondary rounded-0"
                                            href="{{ path('groupe.print.perso', {'groupe' : groupe.id}) }}">
                                             Fiche de perso</a></li>
+                                    <li class="d-grid gap-2">
+                                        <a class="btn btn-sm btn-secondary rounded-0"
+                                           href="{{ path('groupe.print.perso', {'groupe' : groupe.id, 'qrCode': 1}) }}">
+                                            Fiche de perso QrCode</a></li>
                                     <li class="d-grid gap-2 rounded-2">
                                         <a class="btn btn-sm btn-secondary rounded-0 rounded-bottom-2"
                                            href="{{ path('groupe.print.background', {'groupe' : groupe.id}) }}">

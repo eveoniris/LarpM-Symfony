@@ -21,6 +21,7 @@ use App\Entity\Ressource;
 use App\Entity\SecondaryGroup;
 use App\Entity\Territoire;
 use App\Entity\User;
+use App\Enum\BonusApplication;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Enum\Role;
@@ -37,12 +38,13 @@ readonly class GroupeService
 {
     public function __construct(
         protected EntityManagerInterface $entityManager,
-        protected ValidatorInterface $validator,
-        protected FormFactoryInterface $formFactory,
-        protected UrlGeneratorInterface $urlGenerator,
-        protected ConditionsService $conditionsService,
-        protected Security $security,
-    ) {
+        protected ValidatorInterface     $validator,
+        protected FormFactoryInterface   $formFactory,
+        protected UrlGeneratorInterface  $urlGenerator,
+        protected ConditionsService      $conditionsService,
+        protected Security               $security,
+    )
+    {
     }
 
     /**
@@ -64,8 +66,7 @@ readonly class GroupeService
                 }
 
                 $ingredient->setLabel(
-                    '<strong>'.$ingredient->getLabel().'</strong> fourni(e)s par <strong>'.$territoire->getNom(
-                    ).'</strong>',
+                    '<strong>' . $ingredient->getLabel() . '</strong> fourni(e)s par <strong>' . $territoire->getNom() . '</strong>',
                 );
 
                 $groupeHasIngredident = new GroupeHasIngredient();
@@ -105,13 +106,13 @@ readonly class GroupeService
                     // Generate one
                     $ingredient = new Ingredient();
                     $ingredient->setLabel($data['label'] ?? $bonus->getTitre() ?: 'BONUS');
-                    $ingredient->setNiveau((int) ($data['niveau'] ?? 1));
+                    $ingredient->setNiveau((int)($data['niveau'] ?? 1));
                     $ingredient->setDose($data['dose'] ?? 'unité');
                 }
 
                 $source = '';
                 if ($bonus->getSourceTmp()) {
-                    $source .= $bonus->getSourceTmp().' - ';
+                    $source .= $bonus->getSourceTmp() . ' - ';
                 }
                 if ($bonus->getMerveille()) {
                     $source .= $bonus->getMerveille()->getLabel();
@@ -121,11 +122,11 @@ readonly class GroupeService
                 }
 
                 $ingredient->setLabel(
-                    '<strong>'.$ingredient->getLabel().'</strong> fourni(e)s par <strong>'.$source.'</strong>',
+                    '<strong>' . $ingredient->getLabel() . '</strong> fourni(e)s par <strong>' . $source . '</strong>',
                 );
 
                 $groupeHasIngredident = new GroupeHasIngredient();
-                $groupeHasIngredident->setQuantite(((int) ($data['nombre'] ?? $bonus->getValeur())) ?: 1);
+                $groupeHasIngredident->setQuantite(((int)($data['nombre'] ?? $bonus->getValeur())) ?: 1);
                 $groupeHasIngredident->setIngredient($ingredient);
                 $groupeHasIngredident->setGroupe($groupe);
 
@@ -153,11 +154,12 @@ readonly class GroupeService
      * @return Collection<int, Bonus>
      */
     public function getAllBonus(
-        Groupe $groupe,
-        ?BonusType $type = null,
-        bool $withDisabled = false,
+        Groupe        $groupe,
+        ?BonusType    $type = null,
+        bool          $withDisabled = false,
         ?BonusPeriode $periode = null,
-    ): Collection {
+    ): Collection
+    {
         $all = new ArrayCollection();
 
         $this->getGroupeBonus($groupe, $type, $withDisabled, $periode, $all);
@@ -168,12 +170,13 @@ readonly class GroupeService
     }
 
     public function getGroupeBonus(
-        Groupe $groupe,
-        ?BonusType $type = null,
-        bool $withDisabled = false,
+        Groupe        $groupe,
+        ?BonusType    $type = null,
+        bool          $withDisabled = false,
         ?BonusPeriode $periode = null,
-        ?Collection &$all = null,
-    ): ArrayCollection {
+        ?Collection   &$all = null,
+    ): ArrayCollection
+    {
         $all ??= new ArrayCollection();
 
         /** @var GroupeBonus $groupeBonus */
@@ -199,12 +202,14 @@ readonly class GroupeService
     }
 
     public function getMerveilleBonus(
-        Groupe $groupe,
-        ?BonusType $type = null,
-        bool $withDisabled = false,
+        Groupe        $groupe,
+        ?BonusType    $type = null,
+        bool          $withDisabled = false,
         ?BonusPeriode $periode = null,
-        ?Collection &$all = null,
-    ): ArrayCollection {
+        ?Collection   &$all = null,
+        array         $applications = [],
+    ): ArrayCollection
+    {
         $all ??= new ArrayCollection();
         // On ne prend que celui du dernier groupe actif
         /** @var Territoire $territoire */
@@ -240,6 +245,14 @@ readonly class GroupeService
 
                 if ($periode && $bonus->getPeriode() !== $periode) {
                     continue;
+                }
+
+                if ($bonus->getApplication()) {
+                    foreach ($applications as $application) {
+                        if ($bonus->getApplication() !== $application) {
+                            continue 2;
+                        }
+                    }
                 }
 
                 if (!$all->containsKey($bonus->getId())) {
@@ -284,17 +297,17 @@ readonly class GroupeService
                     // Generate one
                     $item = new Item();
                     $item->setLabel($itemData['label'] ?? $bonus->getTitre());
-                    $item->setNumero($itemData['numero'] ?? (int) $bonus->getValeur());
+                    $item->setNumero($itemData['numero'] ?? (int)$bonus->getValeur());
                     $item->setIdentification($itemData['identification'] ?? 0);
                     $item->setCouleur($itemData['couleur'] ?? 'aucune');
                     $item->setDescription($itemData['description'] ?? $bonus->getDescription());
                     $item->setSpecial($itemData['special'] ?? null);
-                    $item->setQuality(isset($itemData['quality']) ? (int) $itemData['quality'] : null);
+                    $item->setQuality(isset($itemData['quality']) ? (int)$itemData['quality'] : null);
                 }
 
                 $source = '';
                 if ($bonus->getSourceTmp()) {
-                    $source .= $bonus->getSourceTmp().' - ';
+                    $source .= $bonus->getSourceTmp() . ' - ';
                 }
                 if ($bonus->getMerveille()) {
                     $source .= $bonus->getMerveille()->getLabel();
@@ -302,7 +315,7 @@ readonly class GroupeService
                 if ($bonus->getOrigine()) {
                     $source .= $bonus->getOrigine()->getNom();
                 }
-                $item->setLabel('<strong>'.$item->getLabel().'</strong> fourni(e)s par <strong>'.$source.'</strong>');
+                $item->setLabel('<strong>' . $item->getLabel() . '</strong> fourni(e)s par <strong>' . $source . '</strong>');
 
                 $this->addItemToAll($groupe, $item, $all);
             }
@@ -345,7 +358,7 @@ readonly class GroupeService
 
             $source = '';
             if ($bonus->getSourceTmp()) {
-                $source .= $bonus->getSourceTmp().' - ';
+                $source .= $bonus->getSourceTmp() . ' - ';
             }
             if ($bonus->getMerveille()) {
                 $source .= $bonus->getMerveille()->getLabel();
@@ -364,7 +377,7 @@ readonly class GroupeService
                 $prefix,
                 $source,
                 $bonus->getTitre(),
-                ' '.$bonus->getDescription(),
+                ' ' . $bonus->getDescription(),
             );
         }
 
@@ -391,8 +404,7 @@ readonly class GroupeService
                     $nbRessource = ceil($nbRessource * 0.5);
                 }
                 $ressource->setLabel(
-                    '<strong>'.$ressource->getLabel().'</strong> fourni(e)s par <strong>'.$territoire->getNom(
-                    ).'</strong>',
+                    '<strong>' . $ressource->getLabel() . '</strong> fourni(e)s par <strong>' . $territoire->getNom() . '</strong>',
                 );
 
                 $ressourceGroupe = new GroupeHasRessource();
@@ -448,7 +460,7 @@ readonly class GroupeService
 
                 $source = '';
                 if ($bonus->getSourceTmp()) {
-                    $source .= $bonus->getSourceTmp().' - ';
+                    $source .= $bonus->getSourceTmp() . ' - ';
                 }
                 if ($bonus->getMerveille()) {
                     $source .= $bonus->getMerveille()->getLabel();
@@ -457,11 +469,11 @@ readonly class GroupeService
                     $source .= $bonus->getOrigine()->getNom();
                 }
                 $ressource->setLabel(
-                    '<strong>'.$ressource->getLabel().'</strong> fourni(e)s par <strong>'.$source.'</strong>',
+                    '<strong>' . $ressource->getLabel() . '</strong> fourni(e)s par <strong>' . $source . '</strong>',
                 );
 
                 $ressourceGroupe = new GroupeHasRessource();
-                $ressourceGroupe->setQuantite(((int) $data['nombre']) ?: 1);
+                $ressourceGroupe->setQuantite(((int)$data['nombre']) ?: 1);
                 $ressourceGroupe->setRessource($ressource);
 
                 $this->addRessourceToAll($ressourceGroupe, $all);
@@ -470,9 +482,9 @@ readonly class GroupeService
 
             // If we use bonus values instead (condition tested before)
             $ressourceGroupe = new GroupeHasRessource();
-            $ressourceGroupe->setQuantite((int) $bonus->getValeur());
+            $ressourceGroupe->setQuantite((int)$bonus->getValeur());
             $ressource = new Ressource();
-            $ressource->setLabel($bonus->getTitre().' - '.$bonus->getDescription());
+            $ressource->setLabel($bonus->getTitre() . ' - ' . $bonus->getDescription());
             $rarete = new Rarete();
             $rarete->setLabel($data['rarete'] ?? 'Commun');
             $ressource->setRarete($rarete);
@@ -525,19 +537,19 @@ readonly class GroupeService
                 //  Comptoir commercial
                 if (6 === $construction->getId()) {
                     $tresor += 5;
-                    $constructions[] = '+ 5 '.$construction->getLabel();
+                    $constructions[] = '+ 5 ' . $construction->getLabel();
                 }
 
                 // Foyer d'orfèvre
                 if (23 === $construction->getId()) {
                     $tresor += 10;
-                    $constructions[] = '+ 10 '.$construction->getLabel();
+                    $constructions[] = '+ 10 ' . $construction->getLabel();
                 }
 
                 // Port
                 if (10 === $construction->getId()) {
                     $tresor += 5;
-                    $constructions[] = '+ 5 '.$construction->getLabel();
+                    $constructions[] = '+ 5 ' . $construction->getLabel();
                 }
             }
 
@@ -556,7 +568,7 @@ readonly class GroupeService
                 $territoire->getNom(),
                 $territoire->isStable() ? 'stable' : 'instable 0.5 x',
                 $base,
-                $constructions ? ' '.implode(', ', $constructions) : '',
+                $constructions ? ' ' . implode(', ', $constructions) : '',
             );
 
             $histories[] = [
@@ -580,7 +592,7 @@ readonly class GroupeService
 
             $source = '';
             if ($bonus->getSourceTmp()) {
-                $source .= $bonus->getSourceTmp().' - ';
+                $source .= $bonus->getSourceTmp() . ' - ';
             }
             if ($bonus->getMerveille()) {
                 $source .= $bonus->getMerveille()->getLabel();
@@ -590,14 +602,13 @@ readonly class GroupeService
             }
 
             $histories[] = [
-                'label' => '<strong>'.$bonus->getTitre(
-                    ).'</strong> fourni(e)s par <strong>'.$source.'</strong></strong> fourni(e)s par <strong>'.$source.'</strong>',
-                'value' => (int) $bonus->getValeur(),
+                'label' => '<strong>' . $bonus->getTitre() . '</strong> fourni(e)s par <strong>' . $source . '</strong></strong> fourni(e)s par <strong>' . $source . '</strong>',
+                'value' => (int)$bonus->getValeur(),
             ];
         }
 
         if ($groupe->getRichesse() > 0) {
-            $histories[] = ['label' => $groupe->getRichesse()." pièces d'argent de richesse supplémentaire"];
+            $histories[] = ['label' => $groupe->getRichesse() . " pièces d'argent de richesse supplémentaire"];
         }
 
         return $histories;
@@ -605,7 +616,8 @@ readonly class GroupeService
 
     public function getGroupeBackgroundsVisibleForCurrentUser(
         Groupe $groupe,
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         return $this->filterVisibilityForCurrentUser($groupe, $groupe->getBackgrounds());
     }
 
@@ -682,7 +694,8 @@ readonly class GroupeService
 
     public function getGroupeDebriefingsVisibleForCurrentUser(
         Groupe $groupe,
-    ): ArrayCollection {
+    ): ArrayCollection
+    {
         return $this->filterVisibilityForCurrentUser($groupe, $groupe->getDebriefings());
     }
 
@@ -780,8 +793,9 @@ readonly class GroupeService
 
     public function hasPersonnageInSecondaryGroup(
         SecondaryGroup $secondaryGroup,
-        ?User $user = null,
-    ): bool {
+        ?User          $user = null,
+    ): bool
+    {
         foreach ($user?->getPersonnages() as $personnage) {
             if ($this->isInSecondaryGroup($secondaryGroup, $personnage)) {
                 return true;
@@ -793,9 +807,10 @@ readonly class GroupeService
 
     public function isInSecondaryGroup(
         SecondaryGroup $secondaryGroup,
-        ?Personnage $personnage = null,
-        ?User $user = null,
-    ): bool {
+        ?Personnage    $personnage = null,
+        ?User          $user = null,
+    ): bool
+    {
         // On se basera sur le personnage actif
         if ($user && !$personnage) {
             $personnage = $user->getPersonnage();

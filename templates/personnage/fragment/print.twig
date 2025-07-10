@@ -24,7 +24,8 @@
                     {{ personnage.classeName }}, {{ personnage.genre }}, <small>{{ personnage.ageReel|default('x') }}
                         ans ({{ personnage.age }})</small><br/>
                     {% if personnage.user %}{{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}{% else %}Ce personnage n'est pas lié à un joueur{% endif %}
-                    . {% if personnage.intrigue %}participe aux intrigues{% else %}ne participe pas aux intrigues{% endif %}
+                    .
+                    {#  {% if personnage.intrigue %}participe aux intrigues{% else %}ne participe pas aux intrigues{% endif %} #}
                     <br/> <strong>Titre : </strong>
                     {{ personnageService.getTitre(participant.personnage, participant.gn)|default('-') }}
                 </div>
@@ -75,13 +76,31 @@
         <th>Renommée</th>
         <th>Héroïsme</th>
         <th>Pugilat</th>
+        {% if personnage.domaines|length > 0 %}
+            <th>Domaines de magie</th>
+        {% endif %}
+        <th>Langages</th>
+        <th>Expérience</th>
     </tr>
     </thead>
     <tbody>
     <tr>
-        <td>{{ personnageService.allRenomme(personnage)|default(0) }}</td>
-        <td>{{ personnageService.allHeroisme(personnage)|default(0) }}</td>
-        <td>{{ personnageService.allPugilat(personnage)|default(0) }}</td>
+        <td class="print-center">{{ personnageService.allRenomme(personnage)|default(0) }}</td>
+        <td class="print-center">{{ personnageService.allHeroisme(personnage)|default(0) }}</td>
+        <td class="print-center">{{ personnageService.allPugilat(personnage)|default(0) }}</td>
+        {% if personnage.domaines|length > 0 %}
+            <td class="print-center">
+                {% for domaine in personnage.domaines %}
+                    {{ domaine.label }}<br/>
+                {% endfor %}
+            </td>
+        {% endif %}
+        <td class="print-center">
+            {% for personnageLangue in personnageService.allLangues(personnage) %}
+                <strong>{{ personnageLangue.langue }}</strong> ({{ personnageLangue.source }})<br/>
+            {% endfor %}
+        </td>
+        <td class="print-center">{{ personnage.xp|default(0) }} / {{ personnage.xpTotal }}xp</td>
     </tr>
     </tbody>
 </table>
@@ -89,10 +108,18 @@
 <table>
     <thead>
     <tr>
-        <th>Expérience</th>
         <th>Religions</th>
-        <th>Langages</th>
-        <th>Bracelets</th>
+        {#  <th>Bracelets</th> #}
+        {% if personnage.membres|length > 0 %}
+            <th>Groupes secondaires</th>{% endif %}
+        {% if personnage.sorts|length > 0 %}
+            <th>Sorts</th>{% endif %}
+        {% if personnage.potions|length > 0 %}
+            <th>Potions</th>{% endif %}
+        {% if personnage.prieres|length > 0 %}
+            <th>Prières</th>{% endif %}
+        {% if personnage.connaissances|length > 0 %}
+            <th>Connaissances</th>{% endif %}
         {% if qrCode is defined %}
             <th>Code</th>
         {% endif %}
@@ -100,20 +127,15 @@
     </thead>
     <tbody>
     <tr>
-        <td>{{ personnage.xp|default(0) }} / {{ personnage.xpTotal }} xp</td>
-        <td>
+        <td class="print-center">
             {% for personnageReligion in personnage.personnagesReligions %}
                 {% if personnageReligion.religion.secret %}
                     <strong>Secret</strong> - {% endif %}{{ personnageReligion.religion.label }} - {{ personnageReligion.religionLevel.label }}
                 <br/>
             {% endfor %}
         </td>
-        <td>
-            {% for personnageLangue in personnageService.allLangues(personnage) %}
-                <strong>{{ personnageLangue.langue }}</strong> ({{ personnageLangue.source }})<br/>
-            {% endfor %}
-        </td>
-        <td>
+        {#
+        <td class="print-center">
             <ul>
                 {% set bracelets = [] %}
                 {% if personnage.bracelet %}
@@ -133,8 +155,52 @@
                 {% endif %}
             </ul>
         </td>
-        {% if qrCode is defined %}
+        #}
+        {% if personnage.membres|length > 0 %}
+            <td class="print-center">
+                {% for membre in personnage.membres %}
+                    {% if membre.secondaryGroup.secret %}
+                        <strong>Secret</strong> - {% endif %}{{ membre.secondaryGroup }}<br/>
+                {% endfor %}
+
+                {% for postulant in personnage.postulants %}
+                    {{ postulant.secondaryGroup.label }} en attente de validation.<br/>
+                {% endfor %}
+            </td>
+        {% endif %}
+        {% if personnage.sorts|length > 0 %}
+            <td class="print-center">
+                {% for sort in personnage.sorts %}
+                    {% if sort.secret %}
+                        <strong>Secret</strong> - {% endif %}{{ sort.label }} - {{ sort.domaine.label }} - Niveau {{ sort.niveau }}
+                    <br/>
+                {% endfor %}
+            </td>
+        {% endif %}
+        {% if personnage.potions|length > 0 %}
+            <td class="print-center">
+                {% for potion in personnage.potions %}
+                    {% if potion.secret %}
+                        <strong>Secret</strong> - {% endif %}{{ potion.label }} - Niveau {{ potion.niveau }}<br/>
+                {% endfor %}
+            </td>
+        {% endif %}
+        {% if personnage.prieres|length > 0 %}
+            <td class="print-center">
+                {% for priere in personnage.prieres %}
+                    {{ priere.sphere.label }} - Niveau {{ priere.niveau }} ({{ priere.label }})<br/>
+                {% endfor %}
+            </td>
+        {% endif %}
+        {% if personnage.connaissances|length > 0 %}
             <td>
+                {% for connaissance in personnage.connaissances %}
+                    {% if connaissance.secret %}<strong>Secret</strong> - {% endif %}{{ connaissance.label }}<br/>
+                {% endfor %}
+            </td>
+        {% endif %}
+        {% if qrCode is defined %}
+            <td class="print-center">
                 <img src="{{ qr_code_url( path('gn.personnage', {'gn': participant.gn.id}) ) }}" width="150px"/>
             </td>
         {% endif %}
@@ -142,28 +208,37 @@
     </tbody>
 </table>
 
-<div style="border: 1px solid #000;padding: 5px;">
+<table style="border: 1px solid #000;padding: 5px;" cellpadding="0" cellspacing="0">
+    <tbody>
     {% for competence in personnageService.allCompetences(personnage) %}
-        <strong>{{ competence.competenceFamily.label }}&nbsp({{ competence.level.label }}
-            )</strong> : {{ competence.descriptionRaw }}<br/>
-    {% endfor %}
-</div>
+        {% if loop.first %}
+            <tr style="padding: 0;margin: 0;">
+        {% endif %}
 
+        <td style="padding: 0; margin: 0">
+            <strong>{{ competence.competenceFamily.label }}&nbsp({{ competence.level.label }}
+                )</strong> : {{ competence.descriptionRaw }}
+        </td>
+        {% if (loop.index%2 == 0) %}
+            </tr>
+            <tr style="padding: 0;margin: 0;">
+        {% endif %}
+        {% if loop.last and loop.index%2 != 0 %}
+            </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+
+{#
 <table>
     <thead>
     <tr>
-        <th>Domaines de magie</th>
-        <th>Inventaire</th>
-        <th>Groupes secondaires</th>
+         <th>Inventaire</th>
     </tr>
     </thead>
     <tbody>
     <tr>
-        <td>
-            {% for domaine in personnage.domaines %}
-                {{ domaine.label }}<br/>
-            {% endfor %}
-        </td>
         <td>
             {% for document in personnage.documents %}
                 {{ document.code }} - {{ document.titre }}<br/>
@@ -190,89 +265,31 @@
 
             {% if personnage.isSensible %}Brassard jaune avec un poing gravé<br/>.{% endif %}
         </td>
-        <td>
-            {% for membre in personnage.membres %}
-                {% if membre.secondaryGroup.secret %}
-                    <strong>Secret</strong> - {% endif %}{{ membre.secondaryGroup }}<br/>
-            {% endfor %}
 
-            {% for postulant in personnage.postulants %}
-                {{ postulant.secondaryGroup.label }} en attente de validation.<br/>
-            {% endfor %}
-        </td>
+
     </tr>
     </tbody>
 </table>
+#}
 
-<table>
-    <thead>
-    <tr>
-        <th>{% if personnage.sorts|length > 0 %}Sorts{% endif %}</th>
-        <th>{% if personnage.potions|length > 0 %}Potions{% endif %}</th>
-        <th>{% if personnage.prieres|length > 0 %}Prières{% endif %}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>
-            {% for sort in personnage.sorts %}
-                {% if sort.secret %}
-                    <strong>Secret</strong> - {% endif %}{{ sort.label }} - {{ sort.domaine.label }} - Niveau {{ sort.niveau }}
-                <br/>
-            {% endfor %}
-        </td>
-        <td>
-            {% for potion in personnage.potions %}
-                {% if potion.secret %}
-                    <strong>Secret</strong> - {% endif %}{{ potion.label }} - Niveau {{ potion.niveau }}<br/>
-            {% endfor %}
-        </td>
-        <td>
-            {% for priere in personnage.prieres %}
-                {{ priere.sphere.label }} - Niveau {{ priere.niveau }} ({{ priere.label }})<br/>
-            {% endfor %}
-        </td>
-    </tr>
-    </tbody>
-</table>
+{% if false and participant.personnageSecondaire %}
+    <br/>
+    <hr/>
+    <br/>
+    <div class="print-center">
+        <h3>Personnage secondaire<br/>
+            {{ participant.personnageSecondaire.classe.label }}
+        </h3>
+    </div>
 
-{% if personnage.connaissances|length > 0 %}
-    <table>
-        <thead>
-        <tr>
-            <th>Connaissances</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>
-                {% for connaissance in personnage.connaissances %}
-                    {% if connaissance.secret %}<strong>Secret</strong> - {% endif %}{{ connaissance.label }}<br/>
-                {% endfor %}
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <div style="border: 1px solid #000;padding: 5px;">
+        <h3><strong>Compétences</strong></h3>
+        {% for competence in participant.personnageSecondaire.competences %}
+            <strong>{{ competence.competenceFamily.label }}&nbsp({{ competence.level.label }}
+                )</strong> : {{ competence.descriptionRaw }}<br/>
+        {% endfor %}
+    </div>
 {% endif %}
-
-    {% if false and participant.personnageSecondaire %}
-        <br/>
-        <hr/>
-        <br/>
-        <div class="print-center">
-            <h3>Personnage secondaire<br/>
-                {{ participant.personnageSecondaire.classe.label }}
-            </h3>
-        </div>
-
-        <div style="border: 1px solid #000;padding: 5px;">
-            <h3><strong>Compétences</strong></h3>
-            {% for competence in participant.personnageSecondaire.competences %}
-                <strong>{{ competence.competenceFamily.label }}&nbsp({{ competence.level.label }}
-                    )</strong> : {{ competence.descriptionRaw }}<br/>
-            {% endfor %}
-        </div>
-    {% endif %}
 <br/>
 <hr/>
 <div class="print-avoid-break">

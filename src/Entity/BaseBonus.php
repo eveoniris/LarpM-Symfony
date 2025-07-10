@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\BonusApplication;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -117,13 +118,19 @@ abstract class BaseBonus
         return $this;
     }
 
-    public function getApplication(): ?string
+    public function getApplication(): ?BonusApplication
     {
-        return $this->application;
+        return BonusApplication::tryFrom($this->application);
     }
 
-    public function setApplication(?string $application): static
+    public function setApplication(string|BonusApplication|null $application): static
     {
+        if ($application instanceof BonusApplication) {
+            $this->application = $application->value;
+
+            return $this;
+        }
+
         $this->application = $application;
 
         return $this;

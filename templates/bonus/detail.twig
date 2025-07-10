@@ -29,15 +29,15 @@
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Ajouter"
                        href="{{ path('bonus.add') }}"><i
-                                class="fa fa-plus"></i> Ajouter</a>
+                            class="fa fa-plus"></i> Ajouter</a>
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Modifier"
                        href="{{ path('bonus.update',{'bonus':bonus.id}) }}"><i
-                                class="fa fa-pencil"></i> Modifier</a>
+                            class="fa fa-pencil"></i> Modifier</a>
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Supprimer"
                        href="{{ path('bonus.delete',{'bonus':bonus.id}) }}"><i
-                                class="fa fa-eraser"></i> Supprimer</a>
+                            class="fa fa-eraser"></i> Supprimer</a>
                 </div>
             </div>
         </div>
@@ -77,7 +77,7 @@
 
                     <div class="list-group-item">
                         <div class="list-group-item-heading fw-bold mb-1">Domaine d'application</div>
-                        <div class="list-group-item-text ps-1">{{ bonus.application }}</div>
+                        <div class="list-group-item-text ps-1">{{ bonus.application.value|default('-') }}</div>
                     </div>
 
                     <div class="list-group-item">

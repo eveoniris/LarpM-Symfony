@@ -41,6 +41,7 @@ use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Entity\Territoire;
 use App\Entity\User;
+use App\Enum\BonusApplication;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Enum\CompetenceFamilyType;
@@ -539,6 +540,7 @@ class PersonnageService
         bool          $withDisabled = false,
         ?BonusPeriode $periode = null,
         ?Collection   &$all = null,
+        array         $application = [],
     ): ArrayCollection
     {
         $all ??= new ArrayCollection();
@@ -553,6 +555,7 @@ class PersonnageService
             $withDisabled,
             $periode,
             $all,
+            [BonusApplication::FICHE_PJ, BonusApplication::ENVELOPPE_PJ, BonusApplication::LARPMANAGER],
         );
     }
 
@@ -687,6 +690,10 @@ class PersonnageService
 
         foreach ($this->getAllBonus($personnage, BonusType::INGREDIENT) as $bonus) {
             if (!$bonus->isIngredient()) {
+                continue;
+            }
+
+            if ($bonus->getApplication() === BonusApplication::ENVELOPPE_GROUPE || $bonus->getApplication() === BonusApplication::FICHE_GROUPE) {
                 continue;
             }
 
