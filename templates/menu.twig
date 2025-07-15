@@ -271,7 +271,7 @@
                     {% endif %}
                 </div>
             {% endif %}
-            {% if is_granted('IS_IMPERSONATOR') %}
+            {% if is_granted('IS_IMPERSONATOR') and impersonateUser is defined %}
                 <a class="btn btn-outline-secondary border-danger" data-bs-toggle="tooltip"
                    data-bs-placement="top" title="Reprendre la session de {{ impersonateUser.userName }}"
                    href="{{ impersonation_exit_path(path('homepage') ) }}">

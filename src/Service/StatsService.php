@@ -262,18 +262,20 @@ class StatsService
                         when 'instable' then CEILING((a.tresor + case h.construction_id	when 6 then 5 else 0 end + case l.construction_id when 10 then 5 else 0 end) / 2)
                         else a.tresor + case h.construction_id	when 6 then 5 else 0 end + case l.construction_id when 10 then 5 else 0 end
                       end as total_revenus
-                    , CASE WHEN suzerain.nom <> '' AND suzerain.nom IS NOT NULL
+                    , CASE WHEN (suzerain.nom <> '' AND suzerain.nom IS NOT NULL)
                         THEN suzerain.nom
-                        ELSE CASE WHEN groupe_leader.nom <> '' AND groupe_leader.nom IS NOT NULL
+                        ELSE
+                            CASE WHEN (groupe_leader.nom <> '' AND groupe_leader.nom IS NOT NULL)
                             THEN groupe_leader.nom
-                        ELSE a.dirigeant
-                    END as suzerain
+                            ELSE a.dirigeant
+                            END
+                        END as suzerain
                     , suzerain.renomme as renommee
                     , GROUP_CONCAT( DISTINCT q.label ORDER BY q.label ) as technologies
                     , GROUP_CONCAT( DISTINCT t.label ORDER BY t.label ) as exportations
                     , GROUP_CONCAT( DISTINCT v.label ORDER BY v.label ) as ingredients
                     , p.label as ressource
-                    , CONCAT("..\\\Links\\\",min(p.label),".ai") as '@export'
+                     , CONCAT("..\\\Links\\\",min(p.label),".ai") as '@export'
                 FROM `territoire` as a
                 left join groupe as b on b.id = a.groupe_id
                 left join territoire_has_construction as c on c.territoire_id = a.id and c.construction_id = 1
@@ -299,8 +301,8 @@ class StatsService
                 left join personnage as suzerain ON ggn.suzerin_id = suzerain.id
                 left join personnage as groupe_leader ON ggn.responsable_id = groupe_leader.id
                 WHERE a.territoire_id is not null
-                and a.tresor is not null
-                group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
+                  and a.tresor is not null
+                group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
                 order by b.nom, a.id;
                 SQL,
             $rsm,

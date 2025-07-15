@@ -79,7 +79,6 @@
         {% if personnage.domaines|length > 0 %}
             <th>Domaines de magie</th>
         {% endif %}
-        <th>Langages</th>
         <th>Expérience</th>
     </tr>
     </thead>
@@ -95,11 +94,6 @@
                 {% endfor %}
             </td>
         {% endif %}
-        <td class="print-center">
-            {% for personnageLangue in personnageService.allLangues(personnage) %}
-                <strong>{{ personnageLangue.langue }}</strong> ({{ personnageLangue.source }})<br/>
-            {% endfor %}
-        </td>
         <td class="print-center">{{ personnage.xp|default(0) }} / {{ personnage.xpTotal }}xp</td>
     </tr>
     </tbody>
@@ -108,6 +102,7 @@
 <table>
     <thead>
     <tr>
+        <th>Langages</th>
         <th>Religions</th>
         {#  <th>Bracelets</th> #}
         {% if personnage.membres|length > 0 %}
@@ -127,6 +122,11 @@
     </thead>
     <tbody>
     <tr>
+        <td class="print-center">
+            {% for personnageLangue in personnageService.allLangues(personnage) %}
+                <strong>{{ personnageLangue.langue }}</strong> ({{ personnageLangue.source }})<br/>
+            {% endfor %}
+        </td>
         <td class="print-center">
             {% for personnageReligion in personnage.personnagesReligions %}
                 {% if personnageReligion.religion.secret %}
@@ -215,7 +215,7 @@
             <tr style="padding: 0;margin: 0;">
         {% endif %}
 
-        <td style="padding: 0; margin: 0">
+        <td style="padding: 0; margin: 0; text-align: left;">
             <strong>{{ competence.competenceFamily.label }}&nbsp({{ competence.level.label }}
                 )</strong> : {{ competence.descriptionRaw }}
         </td>
