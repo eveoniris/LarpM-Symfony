@@ -6,9 +6,10 @@ use App\Repository\GroupeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
 #[Entity(repositoryClass: GroupeRepository::class)]
-class Groupe extends BaseGroupe implements \Stringable
+class Groupe extends BaseGroupe implements Stringable
 {
     /**
      * Contructeur.
@@ -49,26 +50,12 @@ class Groupe extends BaseGroupe implements \Stringable
      */
     public function getNextSession(): ?GroupeGn
     {
-        return $this->getGroupeGns()->last();
-    }
-
-    /**
-     * Fourni les informations pour une session de jeu.
-     */
-    public function getGroupeGn(Gn $gn)
-    {
-        foreach ($this->getGroupeGns() as $groupeGn) {
-            if ($groupeGn->getGn() == $gn) {
-                return $groupeGn;
-            }
-        }
-
-        return null;
+        return $this->getGroupeGns()->last() ?: null;
     }
 
     public function getLabel(): string
     {
-        return ($this->getNumero() ?: '?').' - '.$this->getNom();
+        return ($this->getNumero() ?: '?') . ' - ' . $this->getNom();
     }
 
     /**
@@ -77,51 +64,12 @@ class Groupe extends BaseGroupe implements \Stringable
     public function getGroupeGnById(int $gnId): ?GroupeGn
     {
         foreach ($this->getGroupeGns() as $groupeGn) {
-            if ((int) $groupeGn->getGn()->getId() === $gnId) {
+            if ((int)$groupeGn->getGn()->getId() === $gnId) {
                 return $groupeGn;
             }
         }
 
         return null;
-    }
-
-    /**
-     * Toutes les importations du groupe.
-     */
-    public function getImportations(): Collection
-    {
-        $ressources = new ArrayCollection();
-        foreach ($this->getTerritoires() as $territoire) {
-            $ressources = new ArrayCollection(array_merge($ressources->toArray(), $territoire->getImportations()->toArray()));
-        }
-
-        return $ressources;
-    }
-
-    /**
-     * Toutes les exporations du groupe.
-     */
-    public function getExportations(): Collection
-    {
-        $ressources = new ArrayCollection();
-        foreach ($this->getTerritoires() as $territoire) {
-            $ressources = new ArrayCollection(array_merge($ressources->toArray(), $territoire->getExportations()->toArray()));
-        }
-
-        return $ressources;
-    }
-
-    /**
-     * Fourni tous les ingrédients obtenu par le groupe grace à ses territoires.
-     */
-    public function getIngredients(): Collection
-    {
-        $ingredients = new ArrayCollection();
-        foreach ($this->getTerritoires() as $territoire) {
-            $ingredients = new ArrayCollection(array_merge($ingredients->toArray(), $territoire->getIngredients()->toArray()));
-        }
-
-        return $ingredients;
     }
 
     /**
@@ -153,6 +101,19 @@ class Groupe extends BaseGroupe implements \Stringable
     }
 
     /**
+     * Toutes les importations du groupe.
+     */
+    public function getImportations(): Collection
+    {
+        $ressources = new ArrayCollection();
+        foreach ($this->getTerritoires() as $territoire) {
+            $ressources = new ArrayCollection(array_merge($ressources->toArray(), $territoire->getImportations()->toArray()));
+        }
+
+        return $ressources;
+    }
+
+    /**
      * Vérifie si un groupe dispose de ressources.
      */
     public function hasRessource(): bool
@@ -164,6 +125,19 @@ class Groupe extends BaseGroupe implements \Stringable
         }
 
         return false;
+    }
+
+    /**
+     * Toutes les exporations du groupe.
+     */
+    public function getExportations(): Collection
+    {
+        $ressources = new ArrayCollection();
+        foreach ($this->getTerritoires() as $territoire) {
+            $ressources = new ArrayCollection(array_merge($ressources->toArray(), $territoire->getExportations()->toArray()));
+        }
+
+        return $ressources;
     }
 
     /**
@@ -208,6 +182,19 @@ class Groupe extends BaseGroupe implements \Stringable
     }
 
     /**
+     * Fourni tous les ingrédients obtenu par le groupe grace à ses territoires.
+     */
+    public function getIngredients(): Collection
+    {
+        $ingredients = new ArrayCollection();
+        foreach ($this->getTerritoires() as $territoire) {
+            $ingredients = new ArrayCollection(array_merge($ingredients->toArray(), $territoire->getIngredients()->toArray()));
+        }
+
+        return $ingredients;
+    }
+
+    /**
      * Fourni les backgrounds du groupe en fonction de la visibilitée.
      */
     public function getBacks(?string $visibility = null): Collection
@@ -242,51 +229,6 @@ class Groupe extends BaseGroupe implements \Stringable
     }
 
     /**
-     * Determine si un groupe est en attente d'alliance avec ce groupe.
-     */
-    public function isWaitingAlliance(Groupe $groupe): bool
-    {
-        foreach ($this->getWaitingAlliances() as $alliance) {
-            if ($alliance->getGroupe() == $groupe
-                || $alliance->getRequestedGroupe() == $groupe) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Determine si un groupe est ennemi avec ce groupe.
-     */
-    public function isEnemyTo(Groupe $groupe): bool
-    {
-        foreach ($this->getEnnemies() as $war) {
-            if ($war->getGroupe() == $groupe
-                || $war->getRequestedGroupe() == $groupe) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Determine si un groupe est ennemi avec ce groupe.
-     */
-    public function isWaitingPeaceTo(Groupe $groupe): bool
-    {
-        foreach ($this->getWaitingPeace() as $war) {
-            if ($war->getGroupe() == $groupe
-                || $war->getRequestedGroupe() == $groupe) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Fourni la liste des toutes les alliances de ce groupe.
      */
     public function getAlliances(): Collection
@@ -309,6 +251,21 @@ class Groupe extends BaseGroupe implements \Stringable
     }
 
     /**
+     * Determine si un groupe est en attente d'alliance avec ce groupe.
+     */
+    public function isWaitingAlliance(Groupe $groupe): bool
+    {
+        foreach ($this->getWaitingAlliances() as $alliance) {
+            if ($alliance->getGroupe() == $groupe
+                || $alliance->getRequestedGroupe() == $groupe) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Fourni la liste de toutes les alliances en cours de négotiation.
      */
     public function getWaitingAlliances(): Collection
@@ -328,6 +285,82 @@ class Groupe extends BaseGroupe implements \Stringable
         }
 
         return $alliances;
+    }
+
+    /**
+     * Determine si un groupe est ennemi avec ce groupe.
+     */
+    public function isEnemyTo(Groupe $groupe): bool
+    {
+        foreach ($this->getEnnemies() as $war) {
+            if ($war->getGroupe() == $groupe
+                || $war->getRequestedGroupe() == $groupe) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Fourni tous les ennemis du groupe.
+     */
+    public function getEnnemies(): Collection
+    {
+        $enemies = new ArrayCollection();
+
+        foreach ($this->groupeEnemyRelatedByGroupeIds as $enemy) {
+            if (false == $enemy->getGroupePeace() || false == $enemy->getGroupeEnemyPeace()) {
+                $enemies[] = $enemy;
+            }
+        }
+
+        foreach ($this->groupeEnemyRelatedByGroupeEnemyIds as $enemy) {
+            if (false == $enemy->getGroupePeace() || false == $enemy->getGroupeEnemyPeace()) {
+                $enemies[] = $enemy;
+            }
+        }
+
+        return $enemies;
+    }
+
+    /**
+     * Determine si un groupe est ennemi avec ce groupe.
+     */
+    public function isWaitingPeaceTo(Groupe $groupe): bool
+    {
+        foreach ($this->getWaitingPeace() as $war) {
+            if ($war->getGroupe() == $groupe
+                || $war->getRequestedGroupe() == $groupe) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Fournie toutes les negociation de paix en cours.
+     */
+    public function getWaitingPeace(): Collection
+    {
+        $enemies = new ArrayCollection();
+
+        foreach ($this->groupeEnemyRelatedByGroupeIds as $enemy) {
+            if ((true == $enemy->getGroupePeace() || true == $enemy->getGroupeEnemyPeace())
+                && (!(true == $enemy->getGroupePeace() && true == $enemy->getGroupeEnemyPeace()))) {
+                $enemies[] = $enemy;
+            }
+        }
+
+        foreach ($this->groupeEnemyRelatedByGroupeEnemyIds as $enemy) {
+            if ((true == $enemy->getGroupePeace() || true == $enemy->getGroupeEnemyPeace())
+                && (!(true == $enemy->getGroupePeace() && true == $enemy->getGroupeEnemyPeace()))) {
+                $enemies[] = $enemy;
+            }
+        }
+
+        return $enemies;
     }
 
     /**
@@ -363,28 +396,6 @@ class Groupe extends BaseGroupe implements \Stringable
     }
 
     /**
-     * Fourni tous les ennemis du groupe.
-     */
-    public function getEnnemies(): Collection
-    {
-        $enemies = new ArrayCollection();
-
-        foreach ($this->groupeEnemyRelatedByGroupeIds as $enemy) {
-            if (false == $enemy->getGroupePeace() || false == $enemy->getGroupeEnemyPeace()) {
-                $enemies[] = $enemy;
-            }
-        }
-
-        foreach ($this->groupeEnemyRelatedByGroupeEnemyIds as $enemy) {
-            if (false == $enemy->getGroupePeace() || false == $enemy->getGroupeEnemyPeace()) {
-                $enemies[] = $enemy;
-            }
-        }
-
-        return $enemies;
-    }
-
-    /**
      * Fourni la liste des anciens ennemis.
      */
     public function getOldEnemies(): Collection
@@ -399,30 +410,6 @@ class Groupe extends BaseGroupe implements \Stringable
 
         foreach ($this->groupeEnemyRelatedByGroupeEnemyIds as $enemy) {
             if (true == $enemy->getGroupePeace() && true == $enemy->getGroupeEnemyPeace()) {
-                $enemies[] = $enemy;
-            }
-        }
-
-        return $enemies;
-    }
-
-    /**
-     * Fournie toutes les negociation de paix en cours.
-     */
-    public function getWaitingPeace(): Collection
-    {
-        $enemies = new ArrayCollection();
-
-        foreach ($this->groupeEnemyRelatedByGroupeIds as $enemy) {
-            if ((true == $enemy->getGroupePeace() || true == $enemy->getGroupeEnemyPeace())
-                && (!(true == $enemy->getGroupePeace() && true == $enemy->getGroupeEnemyPeace()))) {
-                $enemies[] = $enemy;
-            }
-        }
-
-        foreach ($this->groupeEnemyRelatedByGroupeEnemyIds as $enemy) {
-            if ((true == $enemy->getGroupePeace() || true == $enemy->getGroupeEnemyPeace())
-                && (!(true == $enemy->getGroupePeace() && true == $enemy->getGroupeEnemyPeace()))) {
                 $enemies[] = $enemy;
             }
         }
@@ -498,6 +485,20 @@ class Groupe extends BaseGroupe implements \Stringable
         }
 
         return $availableClasses;
+    }
+
+    /**
+     * Fourni les informations pour une session de jeu.
+     */
+    public function getGroupeGn(Gn $gn)
+    {
+        foreach ($this->getGroupeGns() as $groupeGn) {
+            if ($groupeGn->getGn() == $gn) {
+                return $groupeGn;
+            }
+        }
+
+        return null;
     }
 
     /**

@@ -13,13 +13,15 @@ use App\Trait\EntityFileUploadTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
+use Exception;
 use Imagine\Gd\Imagine;
+use Stringable;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity(repositoryClass: PersonnageRepository::class)]
-class Personnage extends BasePersonnage implements \Stringable
+class Personnage extends BasePersonnage implements Stringable
 {
     use EntityFileUploadTrait;
 
@@ -58,7 +60,7 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function __toString(): string
     {
-        return (string) $this->getPublicName();
+        return (string)$this->getPublicName();
     }
 
     /**
@@ -153,7 +155,7 @@ class Personnage extends BasePersonnage implements \Stringable
                     $competences[] = $competence;
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // LOG $e ?
         }
 
@@ -169,7 +171,7 @@ class Personnage extends BasePersonnage implements \Stringable
                     $competences[] = $competence;
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // LOG $e ?
         }
 
@@ -183,12 +185,12 @@ class Personnage extends BasePersonnage implements \Stringable
 
     public function getIdName(): string
     {
-        return $this->getId().' - '.$this->getNameSurname();
+        return $this->getId() . ' - ' . $this->getNameSurname();
     }
 
     public function getNameSurname(): string
     {
-        return $this->getNom().(empty(trim($this->getSurnom())) ? '' : ' - ').$this->getSurnom();
+        return $this->getNom() . (empty(trim($this->getSurnom())) ? '' : ' - ') . $this->getSurnom();
     }
 
     /**
@@ -198,7 +200,7 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function addPugilat(int $pugilat): static
     {
-        $this->setPugilat($this->getPugilat() + (int) $pugilat);
+        $this->setPugilat($this->getPugilat() + (int)$pugilat);
 
         return $this;
     }
@@ -252,11 +254,9 @@ class Personnage extends BasePersonnage implements \Stringable
     {
         $niveau = 0;
         foreach ($this->getCompetences() as $competence) {
-            if ($label instanceof CompetenceFamilyType && $competence->getCompetenceFamily()?->getCompetenceFamilyType(
-                )?->getId() === $label->getId()) {
+            if ($label instanceof CompetenceFamilyType && $competence->getCompetenceFamily()?->getCompetenceFamilyType()?->getId() === $label->getId()) {
                 $niveau += $competence->getLevel()?->getIndex();
-            } elseif ($label instanceof CompetenceFamilyType && $competence->getCompetenceFamily()?->getId(
-                ) === $label->getId()) {
+            } elseif ($label instanceof CompetenceFamilyType && $competence->getCompetenceFamily()?->getId() === $label->getId()) {
                 $niveau += $competence->getLevel()?->getIndex();
             } elseif ($competence->getCompetenceFamily()?->getLabel() === $label) {
                 $niveau += $competence->getLevel()?->getIndex();
@@ -375,8 +375,8 @@ class Personnage extends BasePersonnage implements \Stringable
         foreach ($this->getCompetencesFromFamilyType($famillyType) as $competence) {
             $index = $competence->getLevel()?->getIndex();
 
-            if (null === $level || $niveau < (int) $index) {
-                $niveau = (int) $index;
+            if (null === $level || $niveau < (int)$index) {
+                $niveau = (int)$index;
                 $level = $competence->getLevel();
             }
         }
@@ -531,8 +531,9 @@ class Personnage extends BasePersonnage implements \Stringable
     public function handleUpload(
         FileUploader $fileUploader,
         DocumentType $docType = DocumentType::Photos,
-        FolderType $folderType = FolderType::Trombine,
-    ): void {
+        FolderType   $folderType = FolderType::Trombine,
+    ): void
+    {
         // la propriété « file » peut être vide si le champ n'est pas requis
         if (empty($this->file)) {
             return;
@@ -630,14 +631,14 @@ class Personnage extends BasePersonnage implements \Stringable
             }
         }
 
-        $identity = $this->getPublicName().' (';
+        $identity = $this->getPublicName() . ' (';
         if ($groupeLabel) {
-            $identity .= $nomGn.' - '.$groupeLabel;
+            $identity .= $nomGn . ' - ' . $groupeLabel;
         } else {
-            $identity .= $nomGn.' - *** GROUPE NON IDENTIFIABLE ***';
+            $identity .= $nomGn . ' - *** GROUPE NON IDENTIFIABLE ***';
         }
 
-        return $identity.')';
+        return $identity . ')';
     }
 
     /**
@@ -698,7 +699,7 @@ class Personnage extends BasePersonnage implements \Stringable
 
     public function getLigneeIdentity(bool $withId = true, bool $full = false): string
     {
-        return $this->getIdentity($withId, $full).' ('.$this->getAge()->getLabel().')';
+        return $this->getIdentity($withId, $full) . ' (' . $this->getAge()->getLabel() . ')';
     }
 
     /**
@@ -712,7 +713,7 @@ class Personnage extends BasePersonnage implements \Stringable
             return sprintf(
                 '%s (%s)',
                 $withId ? $this->getIdName() : $this->getPublicName(),
-                $participant?->getGn()?->getLabel().($groupeLabel ? ' - ' : '').$groupeLabel,
+                $participant?->getGn()?->getLabel() . ($groupeLabel ? ' - ' : '') . $groupeLabel,
             );
         }
 
@@ -817,14 +818,14 @@ class Personnage extends BasePersonnage implements \Stringable
             }
         }
 
-        $identity = $this->getPublicName().' (';
+        $identity = $this->getPublicName() . ' (';
         if ($groupeLabel) {
-            $identity .= $nomGn.' - '.$groupeLabel;
+            $identity .= $nomGn . ' - ' . $groupeLabel;
         } else {
-            $identity .= $nomGn.' - *** GROUPE NON IDENTIFIABLE ***';
+            $identity .= $nomGn . ' - *** GROUPE NON IDENTIFIABLE ***';
         }
 
-        return $identity.')';
+        return $identity . ')';
     }
 
     public function getResumeParticipations(): string
@@ -845,7 +846,7 @@ class Personnage extends BasePersonnage implements \Stringable
                         $first = false;
                     }
 
-                    $s = $s.' '.$participant->getGn()->getLabel();
+                    $s = $s . ' ' . $participant->getGn()->getLabel();
                 }
             }
 
@@ -854,7 +855,7 @@ class Personnage extends BasePersonnage implements \Stringable
             }
         }
 
-        return $s.' - '.$this->getClasseName();
+        return $s . ' - ' . $this->getClasseName();
     }
 
     /**
@@ -862,7 +863,7 @@ class Personnage extends BasePersonnage implements \Stringable
      */
     public function getFullName(): string
     {
-        return $this->getNom().(empty($this->getSurnom()) ? '' : ' ('.$this->getSurnom().')');
+        return $this->getNom() . (empty($this->getSurnom()) ? '' : ' (' . $this->getSurnom() . ')');
     }
 
     /**
@@ -1024,7 +1025,7 @@ class Personnage extends BasePersonnage implements \Stringable
             $this->initFile();
         }
 
-        return $this->getDocumentFilePath($projectDir).$this->getTrombineUrl();
+        return $this->getDocumentFilePath($projectDir) . $this->getTrombineUrl();
     }
 
     /**
@@ -1043,7 +1044,7 @@ class Personnage extends BasePersonnage implements \Stringable
     {
         $total = 0;
         foreach ($this->getExperienceGains() as $gain) {
-            $pos = strpos((string) $gain->getExplanation(), 'Suppression de la compétence');
+            $pos = strpos((string)$gain->getExplanation(), 'Suppression de la compétence');
             if (false === $pos) {
                 $total += $gain->getXpGain();
             }
@@ -1077,8 +1078,8 @@ class Personnage extends BasePersonnage implements \Stringable
         $maxLangueConnue = 0;
         $label = '';
         foreach ($this->getPersonnageLangues() as $personnageLangue) {
-            $label = $label.' '.$personnageLangue->getLangue();
-            if (str_starts_with((string) $personnageLangue->getLangue(), 'Ancien')) {
+            $label = $label . ' ' . $personnageLangue->getLangue();
+            if (str_starts_with((string)$personnageLangue->getLangue(), 'Ancien')) {
                 ++$compteLangueAncienne;
             } else {
                 ++$compteLangue;
@@ -1108,9 +1109,9 @@ class Personnage extends BasePersonnage implements \Stringable
         // On génère le message de restitution de l'anomalie.
         $return = '';
         if ($compteLangue > $maxLangueConnue) {
-            $return .= ($compteLangue - $maxLangueConnue).' langue(s) en trop à vérifier';
+            $return .= ($compteLangue - $maxLangueConnue) . ' langue(s) en trop à vérifier';
         } elseif ($compteLangue < $maxLangueConnue) {
-            $return .= ($maxLangueConnue - $compteLangue).' langue(s) manquante(s)';
+            $return .= ($maxLangueConnue - $compteLangue) . ' langue(s) manquante(s)';
         }
 
         if ('' != $return) {
@@ -1118,9 +1119,9 @@ class Personnage extends BasePersonnage implements \Stringable
         }
 
         if ($maxLangueAncienneConnue < $compteLangueAncienne) {
-            $return .= ($compteLangueAncienne - $maxLangueAncienneConnue).' langue(s) ancienne(s) en trop à vérifier';
+            $return .= ($compteLangueAncienne - $maxLangueAncienneConnue) . ' langue(s) ancienne(s) en trop à vérifier';
         } elseif ($maxLangueAncienneConnue > $compteLangueAncienne) {
-            $return .= ($maxLangueAncienneConnue - $compteLangueAncienne).' langue(s) ancienne(s) en manquante(s)';
+            $return .= ($maxLangueAncienneConnue - $compteLangueAncienne) . ' langue(s) ancienne(s) en manquante(s)';
         }
 
         return $return;
@@ -1157,11 +1158,11 @@ class Personnage extends BasePersonnage implements \Stringable
         for ($i = 0; $i < 4; ++$i) {
             // error_log($this->nom . " PA " . $expectedByLevel[$i] . " " . $countByLevel[$i]);
             if (null === $litteratureApprenti && $expectedByLevel[$i] < $countByLevel[$i]) {
-                return ($countByLevel[$i] - $expectedByLevel[$i]).' potion(s) de niveau '.($i + 1).' en trop à vérifier ';
+                return ($countByLevel[$i] - $expectedByLevel[$i]) . ' potion(s) de niveau ' . ($i + 1) . ' en trop à vérifier ';
             }
 
             if ($expectedByLevel[$i] > $countByLevel[$i]) {
-                return ($expectedByLevel[$i] - $countByLevel[$i]).' potion(s) de niveau '.($i + 1).' manquante(s)';
+                return ($expectedByLevel[$i] - $countByLevel[$i]) . ' potion(s) de niveau ' . ($i + 1) . ' manquante(s)';
             }
         }
 
@@ -1195,11 +1196,11 @@ class Personnage extends BasePersonnage implements \Stringable
 
         for ($i = 0; $i < 4; ++$i) {
             if (null == $litteratureApprenti && $expectedByLevel[$i] < $countByLevel[$i]) {
-                return ($countByLevel[$i] - $expectedByLevel[$i]).' sort(s) de niveau '.($i + 1).' en trop à vérifier ';
+                return ($countByLevel[$i] - $expectedByLevel[$i]) . ' sort(s) de niveau ' . ($i + 1) . ' en trop à vérifier ';
             }
 
             if ($expectedByLevel[$i] > $countByLevel[$i]) {
-                return ($expectedByLevel[$i] - $countByLevel[$i]).' sort(s) de niveau '.($i + 1).' manquant';
+                return ($expectedByLevel[$i] - $countByLevel[$i]) . ' sort(s) de niveau ' . ($i + 1) . ' manquant';
             }
         }
 
@@ -1231,11 +1232,11 @@ class Personnage extends BasePersonnage implements \Stringable
 
         for ($i = 0; $i < 4; ++$i) {
             if ($expectedByLevel[$i] < $countByLevel[$i]) {
-                return ($countByLevel[$i] - $expectedByLevel[$i]).' prière(s) de niveau '.($i + 1).' en trop à vérifier ';
+                return ($countByLevel[$i] - $expectedByLevel[$i]) . ' prière(s) de niveau ' . ($i + 1) . ' en trop à vérifier ';
             }
 
             if ($expectedByLevel[$i] > $countByLevel[$i]) {
-                return ($expectedByLevel[$i] - $countByLevel[$i]).' prière(s) de niveau '.($i + 1).' manquant';
+                return ($expectedByLevel[$i] - $countByLevel[$i]) . ' prière(s) de niveau ' . ($i + 1) . ' manquant';
             }
         }
 
@@ -1265,7 +1266,7 @@ class Personnage extends BasePersonnage implements \Stringable
                     return true;
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         return false;
@@ -1332,7 +1333,7 @@ class Personnage extends BasePersonnage implements \Stringable
                     return true;
                 }
 
-                if ((int) $religion->getReligionLevel()?->getId() === $levelId) {
+                if ((int)$religion->getReligionLevel()?->getIndex() >= $levelId) {
                     return true;
                 }
             }
