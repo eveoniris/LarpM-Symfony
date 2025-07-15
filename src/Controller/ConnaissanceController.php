@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Connaissance;
+use App\Enum\Role;
 use App\Form\ConnaissanceForm;
 use App\Repository\ConnaissanceRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,16 +20,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
+#[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA, Role::REGLE))]
 #[Route('/connaissance', name: 'connaissance.')]
 class ConnaissanceController extends AbstractController
 {
     #[Route(name: 'list')]
     public function listAction(
-        Request $request,
-        PagerService $pagerService,
+        Request                $request,
+        PagerService           $pagerService,
         ConnaissanceRepository $connaissanceRepository,
-    ): Response {
+    ): Response
+    {
         $pagerService->setRequest($request)->setRepository($connaissanceRepository);
 
         return $this->render('connaissance/list.twig', [
@@ -59,6 +62,41 @@ class ConnaissanceController extends AbstractController
             $request,
             $connaissance,
             ConnaissanceForm::class
+        );
+    }
+
+    protected function handleCreateOrUpdate(
+        Request   $request,
+                  $entity,
+        string    $formClass,
+        array     $breadcrumb = [],
+        array     $routes = [],
+        array     $msg = [],
+        ?callable $entityCallback = null,
+    ): RedirectResponse|Response
+    {
+        if (!$entityCallback) {
+            /** @var Connaissance $connaissance */
+            $entityCallback = fn(mixed $connaissance, FormInterface $form): ?Connaissance => $connaissance->handleUpload($this->fileUploader);
+        }
+
+        return parent::handleCreateOrUpdate(
+            request: $request,
+            entity: $entity,
+            formClass: $formClass,
+            breadcrumb: $breadcrumb,
+            routes: $routes,
+            msg: [
+                ...$msg,
+                'entity' => $this->translator->trans('connaissance'),
+                'entity_added' => $this->translator->trans('La connaissance a été ajoutée'),
+                'entity_updated' => $this->translator->trans('La connaissance a été mise à jour'),
+                'entity_deleted' => $this->translator->trans('La connaissance a été supprimée'),
+                'entity_list' => $this->translator->trans('Liste des connaissances'),
+                'title_add' => $this->translator->trans('Ajouter une connaissance'),
+                'title_update' => $this->translator->trans('Modifier une connaissance'),
+            ],
+            entityCallback: $entityCallback
         );
     }
 
@@ -113,11 +151,12 @@ class ConnaissanceController extends AbstractController
 
     #[Route('/{connaissance}/personnages', name: 'personnages', requirements: ['connaissance' => Requirement::DIGITS])]
     public function personnagesAction(
-        Request $request,
+        Request                   $request,
         #[MapEntity] Connaissance $connaissance,
-        PersonnageService $personnageService,
-        ConnaissanceRepository $connaissanceRepository,
-    ): Response {
+        PersonnageService         $personnageService,
+        ConnaissanceRepository    $connaissanceRepository,
+    ): Response
+    {
         $routeName = 'connaissance.personnages';
         $routeParams = ['connaissance' => $connaissance->getId()];
         $twigFilePath = 'connaissance/personnages.twig';
@@ -148,40 +187,6 @@ class ConnaissanceController extends AbstractController
         return $this->render(
             $twigFilePath,
             $viewParams
-        );
-    }
-
-    protected function handleCreateOrUpdate(
-        Request $request,
-        $entity,
-        string $formClass,
-        array $breadcrumb = [],
-        array $routes = [],
-        array $msg = [],
-        ?callable $entityCallback = null,
-    ): RedirectResponse|Response {
-        if (!$entityCallback) {
-            /** @var Connaissance $connaissance */
-            $entityCallback = fn (mixed $connaissance, FormInterface $form): ?Connaissance => $connaissance->handleUpload($this->fileUploader);
-        }
-
-        return parent::handleCreateOrUpdate(
-            request: $request,
-            entity: $entity,
-            formClass: $formClass,
-            breadcrumb: $breadcrumb,
-            routes: $routes,
-            msg: [
-                ...$msg,
-                'entity' => $this->translator->trans('connaissance'),
-                'entity_added' => $this->translator->trans('La connaissance a été ajoutée'),
-                'entity_updated' => $this->translator->trans('La connaissance a été mise à jour'),
-                'entity_deleted' => $this->translator->trans('La connaissance a été supprimée'),
-                'entity_list' => $this->translator->trans('Liste des connaissances'),
-                'title_add' => $this->translator->trans('Ajouter une connaissance'),
-                'title_update' => $this->translator->trans('Modifier une connaissance'),
-            ],
-            entityCallback: $entityCallback
         );
     }
 }

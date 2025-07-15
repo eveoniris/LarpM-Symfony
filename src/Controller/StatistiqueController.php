@@ -132,7 +132,7 @@ class StatistiqueController extends AbstractController
                     'technologies',
                     'exportations',
                     'ingredients',
-                    'export',
+                    '@export',
                 ],
             ),
             default => $this->render(

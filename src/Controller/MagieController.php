@@ -19,6 +19,7 @@ use App\Repository\PotionRepository;
 use App\Repository\PriereRepository;
 use App\Repository\SortRepository;
 use App\Repository\SphereRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,7 +33,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')] // TODO some action may be allowed to player
+#[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA, Role::REGLE))]
 #[Route('/magie', name: 'magie.')]
 class MagieController extends AbstractController
 {
