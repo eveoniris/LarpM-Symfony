@@ -19,6 +19,7 @@ use App\Repository\ReligionRepository;
 use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
+use JsonException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -139,6 +140,59 @@ class StatistiqueController extends AbstractController
                 'statistique/fiefsState.twig',
                 [
                     'fiefsStates' => $dataQuery->getResult(),
+                ],
+            ),
+        };
+    }
+
+    #[Route('/api/{gn}/sumAll', name: 'api.sumAll.gn')]
+    #[Route('/stats/{gn}/sumAll', name: 'stats.sumAll.gn')]
+    #[Route('/stats/{gn}/sumAll/csv', name: 'stats.sumAll.gn.csv')]
+    #[Route('/stats/{gn}/sumAll/json', name: 'stats.sumAll.gn.json')]
+    #[IsGranted(new MultiRolesExpression(Role::ADMIN))]
+    public function sumAll(#[MapEntity] Gn $gn, string $_route): Response|JsonResponse|StreamedResponse
+    {
+        $all = $this->groupeService->sumAll($gn, $this->personnageService);
+
+        foreach ($all as $id => $groupe) {
+            $ingredients = '';
+            foreach ($groupe['ingredient'] as $ingredient) {
+                $ingredients .= $ingredient['nb'] . ' ' . $ingredient['label'] . '.' . PHP_EOL;
+            }
+            $all[$id]['ingredient'] = $ingredients;
+
+            $langues = '';
+            foreach ($groupe['langues'] as $langue) {
+                $langues .= $langue['nb'] . ' ' . $langue['label'] . '.' . PHP_EOL;
+            }
+            $all[$id]['langues'] = $langues;
+
+            $ressources = '';
+            foreach ($groupe['ressources'] as $ressource) {
+                $ressources .= $ressource['nb'] . ' ' . $ressource['label'] . '.' . PHP_EOL;
+            }
+            $all[$id]['ressources'] = $ressources;
+        }
+
+        return match ($_route) {
+            'api.sumAll.gn', 'stats.sumAll.gn.json' => new JsonResponse($all),
+            'stats.sumAll.gn.csv' => $this->sendCsv(
+                title: 'eveoniris_sumAll_' . date('Ymd'),
+                header: [
+                    'id',
+                    'nom',
+                    'richesse',
+                    'renomme',
+                    'ingredient',
+                    'langues',
+                    'ressources',
+                ],
+                dataProvider: $all,
+            ),
+            default => $this->render(
+                'statistique/sumAll.twig',
+                [
+                    'all' => $all,
                 ],
             ),
         };
@@ -343,7 +397,7 @@ class StatistiqueController extends AbstractController
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     #[Route('/statistique', name: 'statistique')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access the admin dashboard.')]
