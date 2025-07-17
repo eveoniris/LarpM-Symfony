@@ -22,6 +22,11 @@
 
                 <ul class="list-group">
                     <li class="list-group-item">
+                        <a href="{{ path('user.detail', {'user':participant.user.id}) }}">
+                            {{ participant.user.displayName }}
+                        </a>
+                    </li>
+                    <li class="list-group-item">
                         {% if groupeGn %}
                             <a href="{{ path('groupe.detail', {'groupeGn': groupeGn.id, 'groupe': groupeGn.groupe.id}) }}"><i
                                     class="fa fa-users"></i>{{ groupeGn.groupe.nom }}</a>
