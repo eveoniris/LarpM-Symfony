@@ -1,10 +1,22 @@
+{% if showPersonnage is not defined %}
+    {% set showPersonnage = false %}
+{% endif %}
+
+{% if showUser is not defined %}
+    {% set showUser = true %}
+{% endif %}
+
+{% if showUser is defined and showPersonnage is not defined %}
+    {% set showPersonnage = not showUser %}
+{% endif %}
 <table class="table table-condensed table-striped table-bordered table-hover">
     {% include '_partials/thead.twig' with  { 'route': 'connaissance.list', 'rows': [
         {'name' : 'GN', 'css' : 'text-center'},
         {'name' : 'Statut', 'css' : 'text-center'},
         {'name' : 'Billet', 'css' : 'text-center'},
         {'name' : 'Groupe', 'css' : 'text-center'},
-        {'name' : 'Personnage', 'css' : 'text-center'},
+        {'name' : 'Personnage', 'css' : 'text-center', 'visible': showPersonnage},
+        {'name' : 'Utilisateur', 'css' : 'text-center', 'visible': showUser},
     ]} %}
     <tbody>
     {% for participant in participants|sort((a, b) => a.id <=> b.id) %}
@@ -49,29 +61,43 @@
                     </div>
                 {% endif %}
             </td>
-            <td class="col-4 align-middle">
-                {% if participant.personnage %}
-                    <i class="fa fa-user"></i> <a
-                    href="{{ path('personnage.detail',{'gn': participant.gn.id, 'personnage': participant.personnage.id, 'participant': participant.id }) }}">{{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}</a>
-                {% else %}
-                    {% if participant.session %}
-                        <div class="w-100 d-flex justify-content-center">
-                            <a class="btn btn-sm btn-secondary me-2"
-                               href="{{ path('participant.personnage.old', {'participant': participant.id}) }}">
-                                <i class="fa fa-clock-rotate-left"></i> Reprendre un ancien
-                            </a>
-                            <a class="btn btn-sm btn-secondary"
-                               href="{{ path('participant.personnage.new', {'participant': participant.id}) }}">
-                                <i class="fa-solid fa-user-plus"></i> Créer un nouveau
-                            </a>
-                        </div>
+            {% if showPersonnage %}
+                <td class="col-4 align-middle">
+                    {% if participant.personnage %}
+                        <i class="fa fa-user"></i> <a
+                        href="{{ path('personnage.detail',{'gn': participant.gn.id, 'personnage': participant.personnage.id, 'participant': participant.id }) }}">{{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}</a>
+                    {% else %}
+                        {% if participant.session %}
+                            <div class="w-100 d-flex justify-content-center">
+                                <a class="btn btn-sm btn-secondary me-2"
+                                   href="{{ path('participant.personnage.old', {'participant': participant.id}) }}">
+                                    <i class="fa fa-clock-rotate-left"></i> Reprendre un ancien
+                                </a>
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('participant.personnage.new', {'participant': participant.id}) }}">
+                                    <i class="fa-solid fa-user-plus"></i> Créer un nouveau
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="d-flex justify-content-center">
+                                <span class="text-danger">Requiert un groupe</span>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            {% endif %}
+            {% if showUser %}
+                <td class="col-4 align-middle">
+                    {% if participant.user %}
+                        <i class="fa fa-user"></i> <a
+                        href="{{ path('user.detail',{'user': participant.user.id }) }}">{{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}</a>
                     {% else %}
                         <div class="d-flex justify-content-center">
-                            <span class="text-danger">Requiert un groupe</span>
+                            <span class="text-danger">-</span>
                         </div>
                     {% endif %}
-                {% endif %}
-            </td>
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </tbody>

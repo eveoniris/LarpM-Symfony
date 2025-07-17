@@ -20,7 +20,7 @@
             {% if participants is not defined %}
                 {% set noParticipationHtml %}
                     Vous ne participez à aucun jeu. Nous vous proposons de parcourir <a
-                        href="{{ path('gn.list') }}">la liste des jeux
+                    href="{{ path('gn.list') }}">la liste des jeux
                     proposés</a> par Eve-Oniris et d'en sélectionner un.
                 {% endset %}
                 {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : noParticipationHtml} %}
@@ -32,7 +32,7 @@
                         natures</a>
                 </div>
 
-                {% include 'participant/fragment/participations.twig' with {'participants' : participants} %}
+                {% include 'participant/fragment/participations.twig' with {'participants' : participants, 'showPersonnage':true, 'showUser': false} %}
             {% endif %}
         </div>
 

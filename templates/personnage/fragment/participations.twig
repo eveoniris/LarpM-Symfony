@@ -8,7 +8,7 @@
     </div>
     <div class="list-group">
         {% if personnage.user %}
-            {% include 'participant/fragment/participations.twig' with {'participants' : personnage.user.participants} %}
+            {% include 'participant/fragment/participations.twig' with {'participants' : personnage.participants, 'showUser':true} %}
         {% else %}
             <div class="list-group-item">Ce personnage ne fait pas partie d'un groupe.</div>
         {% endif %}

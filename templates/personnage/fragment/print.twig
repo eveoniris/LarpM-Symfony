@@ -124,7 +124,7 @@
     <tr>
         <td class="print-center">
             {% for personnageLangue in personnageService.allLangues(personnage) %}
-                <strong>{{ personnageLangue.langue }}</strong> ({{ personnageLangue.source }})<br/>
+                <strong>{{ personnageLangue.langue }}</strong>{#  ({{ personnageLangue.source }})#}<br/>
             {% endfor %}
         </td>
         <td class="print-center">
