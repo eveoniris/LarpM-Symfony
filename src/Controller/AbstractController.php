@@ -21,11 +21,16 @@ use App\Service\MailService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use App\Service\StatsService;
+use DateTime;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use ErrorException;
+use Exception;
 use JetBrains\PhpStorm\Deprecated;
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
+use RuntimeException;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
@@ -44,6 +49,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
+use function in_array;
 
 abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
@@ -297,7 +303,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if ($entityToDelete) {
             // Soft or hard delete ?
             if (method_exists($entityToDelete, 'getDeletedAt')) {
-                $entityToDelete->setDeletedAt(new \DateTime('NOW'));
+                $entityToDelete->setDeletedAt(new DateTime('NOW'));
                 $this->entityManager->persist($entityToDelete);
             } else {
                 $this->entityManager->remove($entityToDelete);
@@ -314,7 +320,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 }
 
                 return $this->redirectToRoute($redirect, $redirectParams, 303);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return $this->redirect($redirect, '303');
             }
         }
@@ -380,7 +386,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $orderBy = $request->query->getString('order_by', $defOrderBy);
         $orderDir = $this->getRequestOrderDir($defOrderDir);
 
-        if (!empty($allowedFields) && !\in_array($orderBy, $allowedFields, true)) {
+        if (!empty($allowedFields) && !in_array($orderBy, $allowedFields, true)) {
             $orderBy = $defOrderBy;
         }
 
@@ -413,7 +419,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     {
         $repository = $this->entityManager->getRepository($entity::class);
         if (!$repository instanceof BaseRepository || !$repository->isEntity($entity)) {
-            throw new \RuntimeException('Entity must be a doctrine entity and have a repository');
+            throw new RuntimeException('Entity must be a doctrine entity and have a repository');
         }
 
         $form = $this->createForm($formClass, $entity);
@@ -421,13 +427,13 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
         try {
             $root = $routes['root']
-                ?? (new \ReflectionClass(static::class))
+                ?? (new ReflectionClass(static::class))
                 ?->getAttributes(Route::class)[0]
                 ?->getArguments()['name'] ?? '';
             $routes['root'] = $root; // ensure if from other
-        } catch (\ErrorException $e) {
+        } catch (ErrorException $e) {
             $this->logger->error($e);
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 <<<'EOF'
                 Unable to get the root route.
                 If you do not define a main route as class attributes (ie: #[Route('/groupe', name: 'groupe.')]),
@@ -576,7 +582,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     protected function log(mixed $entity, LogActionType $type, bool $flush = false): void
     {
         $logAction = new LogAction();
-        $logAction->setDate(new \DateTime());
+        $logAction->setDate(new DateTime());
         $logAction->setUser($this->getUser());
         $logAction->setType($type);
 
@@ -615,7 +621,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     /**
      * If entity have a getExportValue() export will use it, your headers can too.
      *
-     * @throws \ErrorException if not valid implementation
+     * @throws ErrorException if not valid implementation
      */
     protected function sendCsv(
         string                          $title,
@@ -623,10 +629,11 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         QueryBuilder|AbstractQuery|null $query = null,
         array                           $header = [],
         ?callable                       $content = null,
+        array                           $dataProvider = [],
     ): StreamedResponse
     {
-        if (!$repository && !$content && !$query) {
-            throw new \ErrorException('Method needs a repository, queryBuilder or a callable content');
+        if (!$repository && !$content && !$query && !$dataProvider) {
+            throw new ErrorException('Method needs a repository, queryBuilder or a callable content');
         }
 
         if ($query instanceof QueryBuilder) {
@@ -642,7 +649,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $response->headers->set('Expires', '0');
 
         if (null === $content) {
-            $content = static function () use ($repository, $header, $query) {
+            $content = static function () use ($repository, $header, $query, $dataProvider) {
                 $output = fopen('php://output', 'wb');
                 // fwrite($output, chr(255).chr(254)); // Excel BOM do a chinese chars
                 fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
@@ -653,11 +660,12 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                     fputcsv($output, $header, ';');
                 }
 
-                $dataProvider = [];
-                if ($repository) {
-                    $dataProvider = $repository->findIterable($query, iterableMode: $iterateMode);
-                } elseif ($query) {
-                    $dataProvider = $query->toIterable();
+                if (empty($dataProvider)) {
+                    if ($repository) {
+                        $dataProvider = $repository->findIterable($query, iterableMode: $iterateMode);
+                    } elseif ($query) {
+                        $dataProvider = $query->toIterable();
+                    }
                 }
 
                 foreach ($dataProvider as $data) {
@@ -688,7 +696,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         if (!is_object($entity)) {
-            throw new \RuntimeException('Entity must be an object');
+            throw new RuntimeException('Entity must be an object');
         }
 
         if (!$entity instanceof Document && method_exists($entity, 'getHasDocument')) {
@@ -701,15 +709,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         if ($entity && !method_exists($entity, 'getDocument')) {
-            throw new \RuntimeException('Missing method getDocument for given Entity');
+            throw new RuntimeException('Missing method getDocument for given Entity');
         }
 
         if ($entity && !method_exists($entity, 'getDocumentUrl')) {
-            throw new \RuntimeException('Missing method getDocumentUrl for given Entity');
+            throw new RuntimeException('Missing method getDocumentUrl for given Entity');
         }
 
         if ($entity && !method_exists($entity, 'getPrintLabel')) {
-            throw new \RuntimeException('Missing method getPrintLabel for given Entity');
+            throw new RuntimeException('Missing method getPrintLabel for given Entity');
         }
 
         $projectDir = $this->getParameter('kernel.project_dir')
