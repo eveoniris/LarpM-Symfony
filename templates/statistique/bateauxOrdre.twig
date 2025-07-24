@@ -49,11 +49,11 @@
         <div class="btn-toolbar" role="toolbar" aria-label="...">
             <div class="btn-group" role="group" aria-label="...">
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                   title="Télécharger" href="{{ path('stats.bateaux.gn.csv', {'gn':gn.id}) }}"><i
+                   title="Télécharger" href="{{ path('stats.bateaux-ordre.gn.csv', {'gn':gn.id}) }}"><i
                         class="fa fa-file-csv"></i>
                     Télécharger</a>
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                   title="format JSON" href="{{ path('stats.bateaux.gn.json', {'gn':gn.id}) }}"><i
+                   title="format JSON" href="{{ path('stats.bateaux-ordre.gn.json', {'gn':gn.id}) }}"><i
                         class="fa fa-file-lines"></i>
                     Json API</a>
             </div>
@@ -62,7 +62,7 @@
 
     <div class="well well-sm">
         <div class="header">
-            <h5>Total de bateaux par groupe sur {{ gn.label }}</h5>
+            <h5>Liste pour ordre de navigation pour {{ gn.label }}</h5>
         </div>
 
         <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
@@ -76,7 +76,7 @@
                 {'name' : 'navigateur', 'css': 'text-center'},
             ]} %}
             <tbody>
-            {% for bateau in all %}
+            {% for bateau in bateaux %}
                 <tr>
                     <td class="text-center col-1">
                         {{ bateau.numero }}
@@ -90,8 +90,8 @@
                     <td class="text-center col-2">
                         {{ bateau.groupe_nom }}
                     </td>
-                    <td class="text-center col-5">
-                        {{ bateau.emplacement }}
+                    <td class="col-5">
+                        {{ bateau.emplacement|nl2br }}
                     </td>
                     <td class="text-center col-1">
                         {{ bateau.suzerain }}
