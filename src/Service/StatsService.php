@@ -47,20 +47,52 @@ class StatsService
     public function getBateauxGn(Gn $gn): NativeQuery
     {
         $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('total', 'total', 'integer');
         $rsm->addScalarResult('groupe_id', 'groupe_id', 'integer');
+        $rsm->addScalarResult('groupe_numero', 'groupe_numero', 'integer');
         $rsm->addScalarResult('groupe_gn_id', 'groupe_gn_id', 'integer');
-        $rsm->addScalarResult('nom', 'nom', 'string');
+        $rsm->addScalarResult('groupe_nom', 'groupe_nom', 'string');
+        $rsm->addScalarResult('bateaux', 'bateaux', 'integer');
+        $rsm->addScalarResult('emplacement', 'emplacement', 'string');
 
         /* @noinspection SqlNoDataSourceInspection */
         return $this->entityManager->createNativeQuery(
             <<<SQL
-                SELECT SUM(bateaux) as total, groupe_id, ggn.id as groupe_gn_id, g.nom
+                SELECT groupe_id,  g.numero as groupe_numero, ggn.id as groupe_gn_id, g.nom as groupe_nom, bateaux, bateaux_localisation as emplacement
                 FROM groupe_gn ggn
-
-                         INNER JOIN groupe g ON ggn.groupe_id = g.id
+                INNER JOIN groupe g ON ggn.groupe_id = g.id
                 WHERE ggn.gn_id = :gnid
-                GROUP BY groupe_id
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId());
+    }
+
+    public function getBateauxOrdreGn(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('groupe_numero', 'groupe_numero', 'integer');
+        $rsm->addScalarResult('groupe_nom', 'groupe_nom', 'string');
+        $rsm->addScalarResult('bateaux', 'bateaux', 'integer');
+        $rsm->addScalarResult('emplacement', 'emplacement', 'string');
+        $rsm->addScalarResult('suzerain', 'suzerain', 'string');
+        $rsm->addScalarResult('navigateur', 'navigateur', 'string');
+        $rsm->addScalarResult('initiative', 'initiative', 'integer');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT g.numero             as groupe_numero,
+                       g.nom                as groupe_nom,
+                       bateaux,
+                       bateaux_localisation as emplacement,
+                       suzerain.nom as suzerain,
+                       navigateur.nom as navigateur,
+                       ggn.initiative
+                FROM groupe_gn ggn
+                         INNER JOIN groupe g ON ggn.groupe_id = g.id
+                         LEFT JOIN personnage as suzerain ON ggn.suzerin_id = suzerain.id
+                         LEFT JOIN personnage as navigateur ON ggn.navigateur_id = navigateur.id
+                WHERE ggn.gn_id = :gnid and bateaux > 0
+                ORDER BY g.numero ASC
                 SQL,
             $rsm,
         )->setParameter('gnid', $gn->getId());

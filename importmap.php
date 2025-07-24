@@ -23,13 +23,13 @@ return [
         'version' => '3.2.2',
     ],
     'bootstrap' => [
-        'version' => '5.3.6',
+        'version' => '5.3.7',
     ],
     '@popperjs/core' => [
         'version' => '2.11.8',
     ],
     'bootstrap/dist/css/bootstrap.min.css' => [
-        'version' => '5.3.6',
+        'version' => '5.3.7',
         'type' => 'css',
     ],
     'clipboard' => [
@@ -62,7 +62,7 @@ return [
         'version' => '8.0.13',
     ],
     '@fortawesome/fontawesome-free/css/all.css' => [
-        'version' => '6.7.2',
+        'version' => '7.0.0',
         'type' => 'css',
     ],
     '@fontsource-variable/roboto-condensed/index.min.css' => [
@@ -79,7 +79,7 @@ return [
         'version' => '1.3.4',
     ],
     'jquery' => [
-        'version' => '3.5.1',
+        'version' => '3.7.1',
     ],
     'datatables' => [
         'version' => '1.10.18',
