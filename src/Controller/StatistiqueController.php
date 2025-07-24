@@ -104,15 +104,41 @@ class StatistiqueController extends AbstractController
         $all = $this->statsService->getBateauxOrdreGn($gn)->getResult();
         $sub = [];
         $n = 0;
-        foreach ($all as $k => $row) {
-            $i = 1;
-            while ($i <= $row['bateaux']) {
+        foreach ($all as $row) {
+            $i = 0;
+            $zoneBuffer = [];
+            $nbZone = [];
+            while (++$i <= $row['bateaux']) {
                 $n++;
-                $i++;
                 $row['numero'] = $n;
+                // Handle multi boat area handly set
+                if ($row['bateaux'] > 1) {
+                    // Ensure emplacement format
+                    $replace = ';' . PHP_EOL;
+                    $row['emplacement'] = str_replace([' - ', ', ', "\r\n", '<br>', '<br />', '<br/>'], [$replace, $replace, $replace, $replace, $replace, $replace, $replace], $row['emplacement']);
+
+                    // Keep from first one
+                    if ($i === 1) {
+                        $zoneBuffer = explode($replace, $row['emplacement']);;
+                        $nbZone = count($zoneBuffer);
+                    }
+
+                    if (!empty($zoneBuffer)) {
+                        if (isset($zoneBuffer[$i])) {
+                            $row['emplacement'] = $zoneBuffer[$i];
+                        } elseif ($i > 1) {
+                            $row['emplacement'] = 'Voir ci-dessus';
+                        }
+                        if ($nbZone > $row['bateaux'] && $i === $row['bateaux']) {
+                            $row['emplacement'] = '';
+                            for ($x = $i; $x < $nbZone; $x++) {
+                                $row['emplacement'] .= $zoneBuffer[$x] . $replace;
+                            }
+                        }
+                    }
+                }
                 $sub[] = $row;
             }
-            unset($all[$k]['bateaux']);
         }
 
         return match ($_route) {

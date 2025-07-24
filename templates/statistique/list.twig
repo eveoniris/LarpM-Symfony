@@ -45,6 +45,9 @@
                                     <a class="link-underline link-underline-opacity-0"
                                        href="{{ path('stats.fiefsState') }}">Etat des fiefs</a>
                                 </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <i class="fa-solid fa-person-digging"></i> D'autre à venir ...
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -233,7 +236,9 @@
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
-                                    <i class="fa-solid fa-person-digging"></i> Emplacement des bateaux (WIP)
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.bateaux-ordre.gn', {'gn':gn.id}) }}">
+                                        Liste pour ordres de navigation sur {{ gn.label }}</a>
                                 </div>
                             </div>
                         </div>
