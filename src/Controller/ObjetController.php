@@ -18,20 +18,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
 #[Route('/item', name: 'item.')]
 class ObjetController extends AbstractController
 {
     /**
      * Suppression d'un objet de jeu.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     #[Route('/{item}/delete', name: 'delete')]
     public function deleteAction(
-        Request $request,
+        Request           $request,
         #[MapEntity] Item $item,
-    ): RedirectResponseAlias|Response {
+    ): RedirectResponseAlias|Response
+    {
         $form = $this->createForm(ItemDeleteForm::class, $item);
 
         $form->handleRequest($request);
@@ -57,9 +59,16 @@ class ObjetController extends AbstractController
     #[Route('/{item}', name: 'objet', requirements: ['item' => Requirement::DIGITS])]
     #[Route('/{item}/detail', name: 'detail', requirements: ['item' => Requirement::DIGITS])]
     #[Route('/objet/{item}/detail', name: 'objet.detail', requirements: ['item' => Requirement::DIGITS])] // Larp v1 route
+    #[IsGranted(new MultiRolesExpression(Role::USER))]
     public function detailAction(
         #[MapEntity] Item $item,
-    ): Response {
+    ): Response
+    {
+        // TODO RITUALISTE
+        if (!$this->isGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))) {
+            throw new AccessDeniedException();
+        }
+
         return $this->render('objet/detail.twig', [
             'item' => $item,
         ]);
@@ -70,6 +79,7 @@ class ObjetController extends AbstractController
      */
     #[Route('/', name: 'index')]
     #[Route('/', name: 'list')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function indexAction(Request $request, PagerService $pagerService, ItemRepository $itemRepository): Response
     {
         $pagerService->setRequest($request)->setRepository($itemRepository)->setLimit(25);
@@ -86,8 +96,9 @@ class ObjetController extends AbstractController
     #[Route('/{item}/link', name: 'link')]
     public function linkAction(
         Request $request,
-        Item $item,
-    ): RedirectResponseAlias|Response {
+        Item    $item,
+    ): RedirectResponseAlias|Response
+    {
         $form = $this->createForm(ItemLinkForm::class, $item);
 
         $form->handleRequest($request);
@@ -120,9 +131,10 @@ class ObjetController extends AbstractController
      */
     #[Route('/new/{objet}', name: 'new')]
     public function newAction(
-        Request $request,
+        Request            $request,
         #[MapEntity] Objet $objet,
-    ): RedirectResponseAlias|Response {
+    ): RedirectResponseAlias|Response
+    {
         $item = new Item();
         $item->setObjet($objet);
 
@@ -136,7 +148,7 @@ class ObjetController extends AbstractController
             // si le numéro est vide, générer un numéro en suivant l'ordre
             $numero = $item->getNumero();
             if (!$numero) {
-                $repo = $this->entityManager->getRepository('\\'.Item::class);
+                $repo = $this->entityManager->getRepository('\\' . Item::class);
                 $numero = $repo->findNextNumero();
                 if (!$numero) {
                     $numero = 0;
@@ -203,7 +215,7 @@ class ObjetController extends AbstractController
     public function printCsvAction(ItemRepository $itemRepository): StreamedResponse
     {
         return $this->sendCsv(
-            'eveoniris_game_item_'.date('Ymd'),
+            'eveoniris_game_item_' . date('Ymd'),
             repository: $itemRepository,
         );
     }
@@ -224,9 +236,10 @@ class ObjetController extends AbstractController
      */
     #[Route('/{item}/update', name: 'update')]
     public function updateAction(
-        Request $request,
+        Request           $request,
         #[MapEntity] Item $item,
-    ): RedirectResponseAlias|Response {
+    ): RedirectResponseAlias|Response
+    {
         $form = $this->createForm(ItemForm::class, $item);
 
         $form->handleRequest($request);

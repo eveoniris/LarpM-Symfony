@@ -76,16 +76,65 @@ class StatistiqueController extends AbstractController
                 title: 'eveoniris_bateaux_gn_' . $gn->getId() . '_' . date('Ymd'),
                 query: $dataQuery,
                 header: [
-                    'total',
-                    'id',
-                    'label',
-                    'level',
+                    'groupe_id',
+                    'groupe_numero',
+                    'groupe_gn_id',
+                    'groupe_nom',
+                    'bateaux',
+                    'emplacement',
                 ],
             ),
             default => $this->render(
                 'statistique/bateaux.twig',
                 [
                     'bateaux' => $dataQuery->getResult(),
+                    'gn' => $gn,
+                ],
+            ),
+        };
+    }
+
+    #[Route('/api/bateaux-ordre/{gn}', name: 'api.bateaux-ordre.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/bateaux-ordre/{gn}', name: 'stats.bateaux-ordre.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/bateaux-ordre/{gn}/csv', name: 'stats.bateaux-ordre.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/bateaux-ordre/{gn}/json', name: 'stats.bateaux-ordre.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    public function bateauxOrdreGnAction(#[MapEntity] Gn $gn, string $_route): Response|JsonResponse|StreamedResponse
+    {
+        $all = $this->statsService->getBateauxOrdreGn($gn)->getResult();
+        $sub = [];
+        $n = 0;
+        foreach ($all as $k => $row) {
+            $i = 1;
+            while ($i <= $row['bateaux']) {
+                $n++;
+                $i++;
+                $row['numero'] = $n;
+                $sub[] = $row;
+            }
+            unset($all[$k]['bateaux']);
+        }
+
+        return match ($_route) {
+            'api.bateaux-ordre.gn', 'stats.bateaux-ordre.gn.json' => new JsonResponse($sub),
+            'stats.bateaux-ordre.gn.csv' => $this->sendCsv(
+                title: 'eveoniris_bateaux_ordre_gn_' . $gn->getId() . '_' . date('Ymd'),
+                header: [
+                    'numero',
+                    'initiative',
+                    'groupe_numero',
+                    'groupe_nom',
+                    'emplacement',
+                    'suzerain',
+                    'navigateur',
+                    'initiative',
+                ],
+                dataProvider: $sub,
+            ),
+            default => $this->render(
+                'statistique/bateauxOrdre.twig',
+                [
+                    'bateaux' => $sub,
                     'gn' => $gn,
                 ],
             ),

@@ -67,23 +67,37 @@
 
         <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
             {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
-                {'name' : 'total', 'css': 'text-center'},
+                {'name' : 'numero', 'css': 'text-center'},
+                {'name' : 'initiative', 'css': 'text-center'},
+                {'name' : 'numero groupe', 'css': 'text-center'},
                 {'name' : 'groupe', 'css': 'text-center'},
                 {'name' : 'emplacement', 'css': 'text-center'},
+                {'name' : 'suzerain', 'css': 'text-center'},
+                {'name' : 'navigateur', 'css': 'text-center'},
             ]} %}
             <tbody>
-            {% for bateau in bateaux %}
+            {% for bateau in all %}
                 <tr>
-                    <td class="text-center col-4">
-                        {{ bateau.bateaux }}
+                    <td class="text-center col-1">
+                        {{ bateau.numero }}
                     </td>
-                    <td class="text-center col-4">
-                        <a href="{{ path('groupe.detail.groupeGn', {'groupe': bateau.groupe_id, 'gn' : gn.id, 'groupeGn': bateau.groupe_gn_id } ) }}">
-                            {{ bateau.groupe_numero }} - {{ bateau.groupe_nom }}
-                        </a>
+                    <td class="text-center col-1">
+                        {{ bateau.initiative }}
                     </td>
-                    <td class="col-4">
+                    <td class="text-center col-1">
+                        {{ bateau.groupe_numero }}
+                    </td>
+                    <td class="text-center col-2">
+                        {{ bateau.groupe_nom }}
+                    </td>
+                    <td class="text-center col-5">
                         {{ bateau.emplacement }}
+                    </td>
+                    <td class="text-center col-1">
+                        {{ bateau.suzerain }}
+                    </td>
+                    <td class="text-center col-1">
+                        {{ bateau.navigateur }}
                     </td>
                 </tr>
             {% endfor %}
