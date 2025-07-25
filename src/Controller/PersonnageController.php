@@ -2799,15 +2799,21 @@ class PersonnageController extends AbstractController
             // get old ?
             $paths = [
                 'v2' => $projectDir . FolderType::Private->value . DocumentType::Image->value . '/',
+                'v22' => $projectDir . FolderType::Trombine->value . DocumentType::Photos->value . '/',
                 'v1' => $projectDir . '/../larpmanager/private/img/',
                 'last' => $projectDir . '/../larpm/private/img/',
             ];
 
             foreach ($paths as $type => $path) {
                 $filename = $path . $personnage->getTrombineUrl();
+                if (!str_contains($personnage->getTrombineUrl(), '.')) {
+                    $filename .= '.jpg';
+                }
+
                 if (file_exists($filename)) {
                     break;
                 }
+
                 if ('last' === $type) {
                     return $this->sendNoImageAvailable($filename);
                 }
@@ -2818,7 +2824,7 @@ class PersonnageController extends AbstractController
             try {
                 $image = (new Imagine())->open($filename);
             } catch (RuntimeException $e) {
-                return $this->sendNoImageAvailable();
+                return $this->sendNoImageAvailable($filename);
             }
 
             $response = new StreamedResponse();
@@ -2839,7 +2845,7 @@ class PersonnageController extends AbstractController
             if (str_ends_with($ext, '.gif')) {
                 $response->headers->set('Content-Type', 'image/gif');
             }
-            $response->headers->set('Content-Type', 'image/jpeg');
+            $request->get('debug') && $response->headers->set('X-debug-FILE', $filename);
         }
 
         return $response;
@@ -3764,7 +3770,7 @@ class PersonnageController extends AbstractController
             $personnage = $form->getData();
             $personnage->handleUpload($this->fileUploader);
 
-            // todo can be too long dd($personnage->getTrombineUrl());
+            // todo can be too long            dd($personnage->getTrombineUrl());
             $this->entityManager->persist($personnage);
             $this->entityManager->flush();
 

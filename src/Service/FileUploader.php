@@ -47,7 +47,7 @@ final class FileUploader
 
     public function getStoredFileWithPath(): string
     {
-        return $this->getFilePath().'/'.$this->getStoredFileName();
+        return $this->getFilePath() . '/' . $this->getStoredFileName();
     }
 
     public function getFilePath(): string
@@ -67,23 +67,23 @@ final class FileUploader
      */
     public function upload(
         UploadedFile $file,
-        FolderType $folderType,
+        FolderType   $folderType,
         DocumentType $docType,
-        ?string $filename = null,
-        ?int $filenameMaxLength = null,
-        bool $useUniqueId = true,
-    ): self {
+        ?string      $filename = null,
+        ?int         $filenameMaxLength = null,
+        bool         $useUniqueId = true,
+    ): self
+    {
         $this->extension = $file->guessExtension();
 
         $filenameMaxLength ??= mb_strlen($this->getOriginalFilename($file));
 
-        $filename ??= mb_substr($this->getOriginalFilename($file), 0, $filenameMaxLength);
-        $uid = $useUniqueId ? str_replace('.', '-', '-'.uniqid('', true)) : '';
+        $uid = $useUniqueId ? str_replace('.', '-', '-' . uniqid('', true)) : '';
+        $filename ??= mb_substr($this->getOriginalFilename($file) . $uid, 0, $filenameMaxLength);
 
         $this->storedFileName = sprintf(
-            '%s%s.%s',
+            '%s.%s',
             $filename,
-            $uid,
             $this->extension,
         );
 
@@ -94,16 +94,14 @@ final class FileUploader
 
             // Keep for V1
             if (str_contains(__FILE__, 'larpmanager')) {
-                $mainProdFile = $this->getProjectDirectory(
-                    ).'../larpm/'.$folderType->value.$docType->value.'/'.$this->storedFileName;
+                $mainProdFile = $this->getProjectDirectory() . '../larpm/' . $folderType->value . $docType->value . '/' . $this->storedFileName;
             } else {
-                $mainProdFile = $this->getProjectDirectory(
-                    ).'../larpmanager/'.$folderType->value.$docType->value.'/'.$this->storedFileName;
+                $mainProdFile = $this->getProjectDirectory() . '../larpmanager/' . $folderType->value . $docType->value . '/' . $this->storedFileName;
             }
 
             if (!file_exists($mainProdFile)) {
                 $filesystem = new Filesystem();
-                $filesystem->copy($this->filePath.'/'.$this->storedFileName, $mainProdFile);
+                $filesystem->copy($this->filePath . '/' . $this->storedFileName, $mainProdFile);
             }
         } catch (FileException $e) {
             $this->logger->error($e);
@@ -127,7 +125,7 @@ final class FileUploader
 
     public function getDirectory(?FolderType $folderType, ?DocumentType $docType = null): string
     {
-        return $this->getProjectDirectory().($folderType->value ?? '').($docType->value ?? '');
+        return $this->getProjectDirectory() . ($folderType->value ?? '') . ($docType->value ?? '');
     }
 
     public function getProjectDirectory(): string

@@ -119,7 +119,7 @@ class StatistiqueController extends AbstractController
 
                     // Keep from first one
                     if ($i === 1) {
-                        $zoneBuffer = explode($replace, $row['emplacement']);;
+                        $zoneBuffer = explode($replace, $row['emplacement']);
                         $nbZone = count($zoneBuffer);
                     }
 
@@ -138,8 +138,24 @@ class StatistiqueController extends AbstractController
                     }
                 }
                 $sub[] = $row;
+
+
+                // Specific case for a group for lh7
+                if ($row['groupe_numero'] == 21 && $gn->getId() === 7 && $i == $row['bateaux']) {
+                    $sub[] = [
+                        'numero' => ++$n,
+                        'initiative' => 0,
+                        'groupe_numero' => 21,
+                        'groupe_nom' => 'Argos',
+                        'emplacement' => 'îles de Perles',
+                        'suzerain' => 'Orphellia',
+                        'navigateur' => 'Dandolo Locusta',
+                    ];
+                }
+
             }
         }
+
 
         return match ($_route) {
             'api.bateaux-ordre.gn', 'stats.bateaux-ordre.gn.json' => new JsonResponse($sub),
