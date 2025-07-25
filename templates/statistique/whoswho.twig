@@ -1,0 +1,144 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Bateaux sur {{ gn.label }}
+{% endblock title %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style media="all">
+        @page {
+            size: landscape;
+        }
+
+        .trombine {
+            max-height: 200px;
+            max-width: 200px;
+        }
+    </style>
+    <style media="print">
+        #menu, nav, .noprint {
+            display: none;
+        }
+
+        body {
+            background-image: none;
+            background-color: #FFF;
+        }
+
+        .toprint {
+            display: block;
+        }
+
+        .asTable {
+            display: table;
+            direction: rtl;
+        }
+
+        .asTableItem {
+            display: inline-block;
+            direction: ltr;
+        }
+
+        #content {
+            width: 100%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 5 per page ? 210mm x 297mm */
+        .printItem {
+            max-width: 42mm !important;
+            max-height: 280mm !important;
+        }
+
+        .trombine {
+            max-height: 200px;
+            max-width: 42mm;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Statistiques', 'route': path('stats.list') },
+            {'name' : 'WhosWho sur ' ~ gn.label },
+        ]
+    } %}
+
+    <div class="noprint">
+        <div class="d-flex justify-content-end">
+            <div class="btn-toolbar" role="toolbar" aria-label="...">
+                <div class="btn-group" role="group" aria-label="...">
+                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                       title="Télécharger" href="{{ path('stats.whoswho.gn.csv', {'gn':gn.id}) }}"><i
+                            class="fa fa-file-csv"></i>
+                        Télécharger</a>
+                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                       title="format JSON" href="{{ path('stats.whoswho.gn.json', {'gn':gn.id}) }}"><i
+                            class="fa fa-file-lines"></i>
+                        Json API</a>
+                    {#
+                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                       title="Imprimer" href="{{ path('stats.whoswho.gn.print', {'gn':gn.id}) }}"><i
+                            class="fa fa-print"></i>
+                        Imprimable</a> #}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Personnages illustres présents sur {{ gn.label }}</h5>
+        </div>
+
+        <div class="d-flex flex-wrap asTable" id="content">
+            {% for data in all %}
+                <div class="col asTableItem printItem">
+                    <div class="card m-1 print-avoid-break">
+                        <div class="card-header text-center bg-body-secondary d-flex justify-content-around">
+                            <h5>
+                                <a href="{{ path('personnage.detail', {'personnage': data.personnage_id}) }}">
+                                    {{ data.personnage_nom }}
+                                </a>
+                            </h5>
+                        </div>
+
+                        <div class="card-img text-center">
+                            {% if data.personnage_trombine_url %}
+                                <img class="media-object w-auto trombine"
+                                     src="{{ path('personnage.trombine', {'personnage' : data.personnage_id }) }}"
+                                     alt=""/>
+                            {% else %}
+                                <img class="media-object w-auto trombine noprint"
+                                     src="{{ app.request.basepath }}/img/no_trombine.png"/>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="list-group">
+                                <div class="list-group-item">
+                                    Groupe: <a href="{{ path('groupe.detail', {'groupe': data.groupe_id}) }}">
+                                        {{ data.groupe_nom }}
+                                    </a>
+                                </div>
+                                <div class="list-group-item">
+                                    Joué par: <a href="{{ path('user.detail', {'user': data.user_id}) }}">
+                                        {{ data.user_prenom }}
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+{% endblock %}
