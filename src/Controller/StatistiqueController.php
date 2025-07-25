@@ -61,6 +61,49 @@ class StatistiqueController extends AbstractController
         return new JsonResponse($this->statsService->getAlchimieHerboristeGn($gn)->getResult());
     }
 
+    #[Route('/api/whoswho/{gn}', name: 'api.whoswho.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/whoswho/{gn}', name: 'stats.whoswho.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/whoswho/{gn}/csv', name: 'stats.whoswho.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/whoswho/{gn}/json', name: 'stats.whoswho.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/whoswho/{gn}/print', name: 'stats.whoswho.gn.print', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    public function whoswhoAction(#[MapEntity] Gn $gn, string $_route, Request $request): Response|JsonResponse|StreamedResponse
+    {
+        $dataQuery = $this->statsService->getWhosWho($gn, $request->get('renomme', 20));
+
+        return match ($_route) {
+            'api.whoswho.gn', 'stats.whoswho.gn.json' => new JsonResponse($dataQuery->getResult()),
+            'stats.whoswho.gn.csv' => $this->sendCsv(
+                title: 'eveoniris_whoswho_gn_' . $gn->getId() . '_' . date('Ymd'),
+                query: $dataQuery,
+                header: [
+                    'renomme',
+                    'personnage_id',
+                    'personnage_nom',
+                    'groupe_id',
+                    'groupe_nom',
+                    'user_id',
+                    'user_prenom',
+                ],
+            ),
+            'stats.whoswho.gn.print' => $this->render(
+                'statistique/whoswho_print.twig',
+                [
+                    'all' => $dataQuery->getResult(),
+                    'gn' => $gn,
+                ],
+            ),
+            default => $this->render(
+                'statistique/whoswho.twig',
+                [
+                    'all' => $dataQuery->getResult(),
+                    'gn' => $gn,
+                ],
+            ),
+        };
+    }
+
+
     #[Route('/api/bateaux/{gn}', name: 'api.bateaux.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/bateaux/{gn}', name: 'stats.bateaux.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/bateaux/{gn}/csv', name: 'stats.bateaux.gn.csv', requirements: ['gn' => Requirement::DIGITS])]

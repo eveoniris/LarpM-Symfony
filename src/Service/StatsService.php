@@ -98,6 +98,35 @@ class StatsService
         )->setParameter('gnid', $gn->getId());
     }
 
+    public function getWhosWho(Gn $gn, int $renomme = 20): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('renomme', 'renomme', 'integer');
+        $rsm->addScalarResult('personnage_id', 'personnage_id', 'integer');
+        $rsm->addScalarResult('personnage_nom', 'personnage_nom', 'string');
+        $rsm->addScalarResult('personnage_trombine_url', 'personnage_trombine_url', 'string');
+        $rsm->addScalarResult('groupe_id', 'groupe_id', 'integer');
+        $rsm->addScalarResult('groupe_nom', 'groupe_nom', 'string');
+        $rsm->addScalarResult('user_id', 'user_id', 'integer');
+        $rsm->addScalarResult('user_prenom', 'user_prenom', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT p.renomme, p.id as personnage_id, p.nom personnage_nom, p.trombineUrl as personnage_trombine_url, g.id as groupe_id, g.nom as groupe_nom, u.id as user_id, ec.prenom as user_prenom
+                FROM `personnage` p
+                INNER JOIN participant pt ON pt.personnage_id = p.id
+                INNER JOIN groupe_gn ggn ON ggn.id = pt.groupe_gn_id
+                INNER JOIN groupe g ON ggn.groupe_id = g.id
+                INNER JOIN `user` u ON u.id = pt.user_id
+                INNER JOIN etat_civil ec ON u.etat_civil_id = ec.id
+                WHERE p.renomme >= :renomme and pt.gn_id = :gnid and p.vivant = 1
+                GROUP BY p.id
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId())->setParameter(':renomme', $renomme);
+    }
+
     public function getClassesGn(Gn $gn): NativeQuery
     {
         $rsm = new ResultSetMapping();
