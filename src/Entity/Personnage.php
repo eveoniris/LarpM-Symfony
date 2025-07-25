@@ -539,7 +539,7 @@ class Personnage extends BasePersonnage implements Stringable
             return;
         }
 
-        $fileUploader->upload($this->file, $folderType, $docType, null, 70);
+        $fileUploader->upload($this->file, $folderType, $docType, null, $this->getFilenameMaxLength());
 
         // Try Rezise
         /*
