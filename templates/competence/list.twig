@@ -73,8 +73,10 @@
                                title="Personnages associés sur {{ groupeService.nextSessionGn.label }}"
                                href="{{ path('competence.personnages.gn',{'competence':competence.id, gn:groupeService.nextSessionGn.id}) }}"><i
                                     class="fa fa-users"></i>
-                                ({{ personnageService.PersonnagesCompetenceGn(competence, groupeService.nextSessionGn)|length }}
-                                )</a>
+                                (
+                                {{ personnageService.PersonnagesCompetenceGn(competence, groupeService.nextSessionGn, true) }}
+                                )
+                            </a>
                             <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Supprimer"
                                href="{{ path('competence.delete',{'competence':competence.id}) }}"><i
