@@ -33,7 +33,7 @@
                             class="fa fa-users"></i>
                         (Personnages
                         {{ groupeService.nextSessionGn.label }}
-                        {{ personnageService.PersonnagesCompetenceGn(competence, groupeService.nextSessionGn)|length }})
+                        {{ personnageService.PersonnagesCompetenceGn(competence, groupeService.nextSessionGn, true) }})
                     </a>
                     {% if competence.documentUrl %}
                         <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"

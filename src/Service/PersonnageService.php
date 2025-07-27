@@ -274,12 +274,18 @@ class PersonnageService
         return false;
     }
 
-    public function getPersonnagesCompetenceGn(Competence $competence, Gn $gn): Query
+    public function getPersonnagesCompetenceGn(Competence $competence, Gn $gn, bool $count = false): QueryBuilder|int
     {
-        return $this->entityManager
+        $q = $this->entityManager
             ->getRepository(Competence::class)
-            ->getPersonnages($competence, $gn)
-            ->getQuery();
+            ->getPersonnages($competence, $gn);
+
+        // for some weird reason, twig count the builder itself instead of result
+        if ($count) {
+            return count($q->getQuery()->getResult());
+        }
+
+        return $q;
     }
 
     public function getPersonnages(
