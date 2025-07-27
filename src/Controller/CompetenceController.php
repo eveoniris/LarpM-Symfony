@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\AttributeType;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
+use App\Entity\Gn;
 use App\Entity\Level;
 use App\Enum\LevelType;
 use App\Enum\Role;
@@ -71,14 +72,15 @@ class CompetenceController extends AbstractController
     }
 
     protected function handleCreateOrUpdate(
-        Request $request,
-        $entity,
-        string $formClass,
-        array $breadcrumb = [],
-        array $routes = [],
-        array $msg = [],
+        Request   $request,
+                  $entity,
+        string    $formClass,
+        array     $breadcrumb = [],
+        array     $routes = [],
+        array     $msg = [],
         ?callable $entityCallback = null,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         if (!$entityCallback) {
             /** @var Competence $competence */
             $entityCallback = fn(mixed $competence, FormInterface $form): ?Competence => $competence->handleUpload(
@@ -114,7 +116,8 @@ class CompetenceController extends AbstractController
     #[IsGranted('ROLE_REGLE')]
     public function deleteAction(
         #[MapEntity] Competence $competence,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         return $this->genericDelete(
             $competence,
             'Supprimer une competence',
@@ -148,9 +151,10 @@ class CompetenceController extends AbstractController
     #[Route('/{competence}/document', name: 'document', requirements: ['competence' => Requirement::DIGITS])]
     // TODO a voter strategies ?
     public function getDocumentAction(
-        CompetenceRepository $competenceRepository,
+        CompetenceRepository    $competenceRepository,
         #[MapEntity] Competence $competence,
-    ) {
+    )
+    {
         // on ne peut télécharger que les documents des compétences que l'on connait
         if (!$this->getUser()) {
             return $this->render('security/denied.html.twig');
@@ -173,10 +177,11 @@ class CompetenceController extends AbstractController
      */
     #[Route('', name: 'list')]
     public function indexAction(
-        Request $request,
-        PagerService $pagerService,
+        Request              $request,
+        PagerService         $pagerService,
         CompetenceRepository $competenceRepository,
-    ): Response {
+    ): Response
+    {
         $pagerService->setRequest($request)->setRepository($competenceRepository)->setLimit(100);
 
         $alias = $competenceRepository->getAlias();
@@ -225,13 +230,16 @@ class CompetenceController extends AbstractController
     }
 
     #[Route('/{competence}/personnages', name: 'personnages', requirements: ['competence' => Requirement::DIGITS])]
+    #[Route('/{competence}/personnages/gn/{gn}', name: 'personnages.gn', requirements: ['competence' => Requirement::DIGITS, 'gn' => Requirement::DIGITS])]
     #[IsGranted('ROLE_REGLE')]
     public function personnagesAction(
-        Request $request,
+        Request                 $request,
         #[MapEntity] Competence $competence,
-        PersonnageService $personnageService,
-        CompetenceRepository $competenceRepository,
-    ): Response {
+        PersonnageService       $personnageService,
+        CompetenceRepository    $competenceRepository,
+        #[MapEntity] ?Gn        $gn = null,
+    ): Response
+    {
         $routeName = 'competence.personnages';
         $routeParams = ['competence' => $competence->getId()];
         $twigFilePath = 'personnage/sub_personnages.twig';
@@ -247,7 +255,7 @@ class CompetenceController extends AbstractController
             'competence' => $competence,
             'title' => 'Competence',
             'extraData' => $competenceFamily?->getCompetenceFamilyType()?->value,
-            'extraDataTitle' => 'Niveau de '.$competenceFamily?->getLabel(),
+            'extraDataTitle' => 'Niveau de ' . $competenceFamily?->getLabel(),
             'breadcrumb' => [
                 [
                     'name' => 'Liste des compétences',
@@ -271,7 +279,7 @@ class CompetenceController extends AbstractController
             $columnKeys,
             $additionalViewParams,
             $personnages,
-            $competenceRepository->getPersonnages($competence),
+            $competenceRepository->getPersonnages($competence, $gn),
         );
 
         return $this->render(
@@ -287,8 +295,9 @@ class CompetenceController extends AbstractController
     #[Route('/remove-document', name: 'document.remove')]
     public function removeDocumentAction(
         EntityManagerInterface $entityManager,
-        Competence $competence,
-    ): RedirectResponse {
+        Competence             $competence,
+    ): RedirectResponse
+    {
         $competence->setDocumentUrl(null);
 
         $entityManager->persist($competence);
@@ -304,9 +313,10 @@ class CompetenceController extends AbstractController
     #[Route('/{competence}/update', name: 'update')]
     #[IsGranted('ROLE_REGLE')]
     public function updateAction(
-        Request $request,
+        Request                 $request,
         #[MapEntity] Competence $competence,
-    ): RedirectResponse|Response {
+    ): RedirectResponse|Response
+    {
         return $this->handleCreateOrUpdate(
             $request,
             $competence,

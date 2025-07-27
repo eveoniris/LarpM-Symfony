@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
+use App\Entity\Gn;
 use App\Entity\Level;
 use App\Entity\Personnage;
 use App\Entity\User;
@@ -17,7 +18,7 @@ class CompetenceRepository extends BaseRepository
 {
     public function competenceFamily(QueryBuilder $query, CompetenceFamily $competenceFamily): QueryBuilder
     {
-        $query->andWhere($this->alias.'.competenceFamily = :value');
+        $query->andWhere($this->alias . '.competenceFamily = :value');
 
         return $query->setParameter('value', $competenceFamily);
     }
@@ -31,24 +32,32 @@ class CompetenceRepository extends BaseRepository
     {
         return $this->getEntityManager()
             ->createQuery(
-                'SELECT c FROM App\Entity\Competence c 
-                JOIN c.competenceFamily cf 
-                JOIN c.level l 
+                'SELECT c FROM App\Entity\Competence c
+                JOIN c.competenceFamily cf
+                JOIN c.level l
                 WHERE (c.secret = 0 OR c.secret IS NULL)
                 ORDER BY cf.label ASC, l.index ASC',
             )
             ->getResult();
     }
 
-    public function getPersonnages(Competence $competence): QueryBuilder
+    public function getPersonnages(Competence $competence, Gn $gn = null): QueryBuilder
     {
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
-        return $personnageRepository->createQueryBuilder('p')
+        $q = $personnageRepository->createQueryBuilder('p')
             ->innerJoin('p.competences', 'c')
             ->where('c.id = :cid')
             ->setParameter('cid', $competence->getId());
+
+        if ($gn) {
+            $q->innerJoin('p.participants', 'pt')
+                ->andWhere('pt.gn = :gnid')
+                ->setParameter('gnid', $gn->getId());
+        }
+
+        return $q;
     }
 
     /**
@@ -93,7 +102,7 @@ class CompetenceRepository extends BaseRepository
 
     public function level(QueryBuilder $query, LevelType|Level $level): QueryBuilder
     {
-        $query->andWhere($this->alias.'.level = :level');
+        $query->andWhere($this->alias . '.level = :level');
 
         $value = $level;
         if ($level instanceof LevelType) {
@@ -104,16 +113,17 @@ class CompetenceRepository extends BaseRepository
     }
 
     public function search(
-        mixed $search = null,
+        mixed             $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
-        ?OrderBy $orderBy = null,
-        ?string $alias = null,
-        ?QueryBuilder $query = null,
-    ): QueryBuilder {
+        ?OrderBy          $orderBy = null,
+        ?string           $alias = null,
+        ?QueryBuilder     $query = null,
+    ): QueryBuilder
+    {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias.'.competenceFamily', 'competenceFamily');
-        $query->join($alias.'.level', 'level');
+        $query->join($alias . '.competenceFamily', 'competenceFamily');
+        $query->join($alias . '.level', 'level');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
@@ -125,9 +135,9 @@ class CompetenceRepository extends BaseRepository
         return [
             ...parent::searchAttributes(),
             'level.label as level',
-            $alias.'.description', // => 'Description',
-            $alias.'.materiel',
-            $alias.'.secret',
+            $alias . '.description', // => 'Description',
+            $alias . '.materiel',
+            $alias . '.secret',
             'competenceFamily.label as competenceFamily',
         ];
     }
@@ -147,16 +157,16 @@ class CompetenceRepository extends BaseRepository
             ],
             ...parent::sortAttributes($alias),
             'description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
             'materiel' => [
-                OrderBy::ASC => [$alias.'.materiel' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.materiel' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.materiel' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.materiel' => OrderBy::DESC],
             ],
             'secret' => [
-                OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.secret' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.secret' => OrderBy::DESC],
             ],
         ];
     }
@@ -187,9 +197,9 @@ class CompetenceRepository extends BaseRepository
     public function secret(QueryBuilder $query, bool $secret): QueryBuilder
     {
         if (!$secret) {
-            $query->andWhere($this->alias.'.secret = :value OR '.$this->alias.'.secret IS NULL');
+            $query->andWhere($this->alias . '.secret = :value OR ' . $this->alias . '.secret IS NULL');
         } else {
-            $query->andWhere($this->alias.'.secret = :value');
+            $query->andWhere($this->alias . '.secret = :value');
         }
 
         return $query->setParameter('value', $secret);
@@ -204,7 +214,7 @@ class CompetenceRepository extends BaseRepository
         $query = $this->getEntityManager()
             ->createNativeQuery(
                 <<<SQL
-                SELECT 1 as exist 
+                SELECT 1 as exist
                 FROM `user` u
                 INNER JOIN participant p ON u.id = p.user_id
                 INNER JOIN personnage pe ON p.personnage_id = pe.id
@@ -217,6 +227,6 @@ class CompetenceRepository extends BaseRepository
             ->setParameter('uid', $user->getId())
             ->setParameter('cid', $competence->getId());
 
-        return (bool) $query->getResult();
+        return (bool)$query->getResult();
     }
 }

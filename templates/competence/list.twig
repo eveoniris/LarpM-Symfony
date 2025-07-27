@@ -41,7 +41,8 @@
                                 {{ competence.competenceFamily.description|markdown_to_html }}
                             </blockquote>
 
-                            <div class="card-title list-group-item list-group-item-secondary fw-bold ps-1">{{ competence.level.label }}</div>
+                            <div
+                                class="card-title list-group-item list-group-item-secondary fw-bold ps-1">{{ competence.level.label }}</div>
                             <div class="card-text">{{ competence.description|markdown_to_html }}</div>
                         </div>
                     </div>
@@ -55,23 +56,29 @@
                                 <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                    title="Télécharger le document associé"
                                    href="{{ path('competence.document', {'competence': competence.id, 'document': competence.documentUrl}) }}"><i
-                                            class="fa-solid fa-download"></i> </a>
+                                        class="fa-solid fa-download"></i> </a>
                             {% endif %}
                             <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Modifier"
                                href="{{ path('competence.update',{'competence':competence.id}) }}"><i
-                                        class="fa fa-pencil"></i> </a>
+                                    class="fa fa-pencil"></i> </a>
                             <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Détail" href="{{ path('competence.detail',{'competence':competence.id}) }}"><i
-                                        class="fa fa-eye"></i> </a>
+                                    class="fa fa-eye"></i> </a>
                             <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Personnages associés"
                                href="{{ path('competence.personnages',{'competence':competence.id}) }}"><i
-                                        class="fa fa-users"></i> ({{ competence.personnages|length }})</a>
+                                    class="fa fa-users"></i> ({{ competence.personnages|length }})</a>
+                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Personnages associés sur {{ groupeService.nextSessionGn.label }}"
+                               href="{{ path('competence.personnages.gn',{'competence':competence.id, gn:groupeService.nextSessionGn.id}) }}"><i
+                                    class="fa fa-users"></i>
+                                ({{ personnageService.PersonnagesCompetenceGn(competence, groupeService.nextSessionGn)|length }}
+                                )</a>
                             <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Supprimer"
                                href="{{ path('competence.delete',{'competence':competence.id}) }}"><i
-                                        class="fa fa-eraser"></i> </a>
+                                    class="fa fa-eraser"></i> </a>
                         </div>
                     </div>
                 {% endif %}
