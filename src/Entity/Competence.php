@@ -12,9 +12,12 @@ use App\Trait\EntityFileUploadTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
+use function count;
+use function in_array;
 
 #[Entity(repositoryClass: CompetenceRepository::class)]
-class Competence extends BaseCompetence implements \Stringable
+class Competence extends BaseCompetence implements Stringable
 {
     use EntityFileUploadTrait;
 
@@ -41,7 +44,7 @@ class Competence extends BaseCompetence implements \Stringable
 
     public function getLabel(): string
     {
-        return $this->getCompetenceFamily()?->getLabel().' - '.$this->getLevel()?->getLabel();
+        return $this->getCompetenceFamily()?->getLabel() . ' - ' . $this->getLevel()?->getLabel();
     }
 
     public function getAttributeValue($key)
@@ -55,13 +58,11 @@ class Competence extends BaseCompetence implements \Stringable
         return null;
     }
 
-    // TODO use a StringHelper
-
     public function getCompetenceAttributesAsString(): string
     {
         $r = '';
         foreach ($this->getCompetenceAttributes() as $attribute) {
-            $r .= $attribute->getAttributeTypeId().':'.$attribute->getValue().';';
+            $r .= $attribute->getAttributeTypeId() . ':' . $attribute->getValue() . ';';
         }
 
         return $r;
@@ -153,12 +154,12 @@ class Competence extends BaseCompetence implements \Stringable
 
             foreach ($entries as $entry) {
                 $arrayIdValue = explode(':', $entry, 2);
-                if (2 !== \count($arrayIdValue)) {
+                if (2 !== count($arrayIdValue)) {
                     continue;
                 }
 
-                $typeId = (int) $arrayIdValue[0];
-                $value = (int) $arrayIdValue[1];
+                $typeId = (int)$arrayIdValue[0];
+                $value = (int)$arrayIdValue[1];
 
                 $keepTypeIds[] = $typeId;
                 $attr = $this->findAttributeByTypeId($typeId);
@@ -178,7 +179,7 @@ class Competence extends BaseCompetence implements \Stringable
         // Si $value est null => $keepTypeIds est vide, on va donc tout supprimer.
 
         foreach ($this->getCompetenceAttributes() as $attr) {
-            if (\in_array($attr->getAttributeTypeId(), $keepTypeIds, true)) {
+            if (in_array($attr->getAttributeTypeId(), $keepTypeIds, true)) {
                 continue;
             }
 
@@ -202,15 +203,15 @@ class Competence extends BaseCompetence implements \Stringable
         return null;
     }
 
+    public function getDocument(string $projectDir): string
+    {
+        return $this->getDocumentFilePath($projectDir) . $this->getDocumentUrl();
+    }
+
     protected function afterUpload(FileUploader $fileUploader): FileUploader
     {
         $this->setDocumentUrl($fileUploader->getStoredFileName());
 
         return $fileUploader;
-    }
-
-    public function getDocument(string $projectDir): string
-    {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
     }
 }

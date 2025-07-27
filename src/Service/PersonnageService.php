@@ -60,6 +60,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -271,6 +272,21 @@ class PersonnageService
         }
 
         return false;
+    }
+
+    public function getPersonnagesCompetenceGn(Competence $competence, Gn $gn): Query
+    {
+        return $this->entityManager
+            ->getRepository(Competence::class)
+            ->getPersonnages($competence, $gn)
+            ->getQuery();
+    }
+
+    public function getPersonnages(
+        User $user,
+    ): string
+    {
+        return $user->getPersonnages();
     }
 
     /**
@@ -1692,13 +1708,6 @@ class PersonnageService
                 }
             }
         }
-    }
-
-    public function getPersonnages(
-        User $user,
-    ): string
-    {
-        return $user->getPersonnages();
     }
 
     public function lockGnSetDefaultCharacter(?Gn $gn = null): void
