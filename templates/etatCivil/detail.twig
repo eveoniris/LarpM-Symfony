@@ -54,7 +54,7 @@
             </tr>
             <tr>
                 <th>Restriction alimentaire</th>
-                <td>{% if etatCivil.user.restrictions|length > 0 %}{{ etatCivil.user.restrictions|join(', ') }}{% endif %}</td>
+                <td>{% if etatCivil.user.restrictions|length > 0 %}{{ etatCivil.user.restrictions|join(', ') }}{% else %}-{% endif %}</td>
             </tr>
             <tr>
                 <th>Problèmes médicaux</th>
