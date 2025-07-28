@@ -280,7 +280,7 @@ class ParticipantController extends AbstractController
     /**
      * Création d'un nouveau personnage. L'utilisateur doit être dans un groupe et son billet doit être valide.
      */
-    #[Route('/participant/{participant}/personnageNew', name: 'participant.personnage.new')]
+    #[Route('/participant/{participant}/personnageNew', name: 'admin.participant.personnage.new')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function adminPersonnageNewAction(
         Request           $request,
@@ -2786,7 +2786,7 @@ class ParticipantController extends AbstractController
         }*/
 
         $personnage = new Personnage();
-        $classes = $this->entityManager->getRepository('\\' . Classe::class)->findAllCreation();
+        $classes = $this->entityManager->getRepository(Classe::class)->findAllCreation();
 
         // j'ajoute ici certains champs du formulaires (les classes)
         // car j'ai besoin des informations du groupe pour les alimenter
@@ -2811,8 +2811,15 @@ class ParticipantController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
 
-            $personnage->setUser($this->getUser());
+            // use the one attached user to the participation and not the logged (could be an admin)
+            /** @var User $user */
+            $user = $participant->getUser();
+            $personnage->setUser();
             $participant->setPersonnage($personnage);
+            if (!$user->getPersonnage()) {
+                $user->setPersonnage($personnage);
+                $this->entityManager->persist($user);
+            }
 
             // Ajout des points d'expérience gagné à la création d'un personnage
             $personnage->setXp($participant->getGn()->getXpCreation());
@@ -3009,9 +3016,17 @@ class ParticipantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+            /** @var User $user */
+            $user = $participant->getUser();
             /** @var Personnage $personnage */
             $personnage = $data['personnage'];
+            $personnage->setUser($user);
             $participant->setPersonnage($personnage);
+
+            if (!$user->getPersonnage()) {
+                $user->setPersonnage($user);
+                $this->entityManager->persist($user);
+            }
 
             $territoire = $groupe->getTerritoire();
             if ($territoire) {
