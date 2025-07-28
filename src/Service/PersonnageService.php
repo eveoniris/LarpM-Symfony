@@ -1726,7 +1726,7 @@ class PersonnageService
 
         // Attribution par défaut
         /** @var PersonnageSecondaire $personnageSecondaire */
-        $personnageSecondaire = $personnageSecondaireRepository->findOneBy(['id' => 1]);
+        $personnageSecondaire = $personnageSecondaireRepository->findOneBy(['id' => 2]);
 
         // On force les joueurs sans personnage à être Soldat
         $classe = $classeRepository->findOneBy(['id' => 14]); // Soldat
@@ -1735,10 +1735,12 @@ class PersonnageService
         $territoire = $this->entityManager->getRepository(Territoire::class)->findOneBy(['id' => 1]);
         $genreM = $this->entityManager->getRepository(Genre::class)->findOneBy(['id' => 1]);
         $genreF = $this->entityManager->getRepository(Genre::class)->findOneBy(['id' => 2]);
+
         /** @var Participant $participant */
         foreach ($participantRepository->findAllWithoutPersonnage($gn) as $participant) {
             if (!$personnage = $participant->getPersonnage()) {
 
+                $groupe = $participant->getGroupe();
 
                 $personnage = new Personnage();
                 $personnage->setClasse($classe)
@@ -1748,7 +1750,10 @@ class PersonnageService
                     ->setGenre(random_int(1, 2) === 1 ? $genreM : $genreF)
                     ->setUser($participant->getUser())
                     ->setXp($participant->getGn()->getXpCreation())
-                    ->setTerritoire($territoire);
+                    ->setTerritoire($groupe?->getTerritoire() ?? $territoire);
+
+                // Langue
+                $this->addDefaultLangue($personnage, false);
 
                 // historique
                 $historique = new ExperienceGain();
@@ -1792,22 +1797,74 @@ class PersonnageService
         $this->entityManager->flush();
     }
 
-    public function lockGnSetDefaultLangue(?Gn $gn = null): void
+    public function addDefaultLangue(Personnage $personnage, bool $flush = false): void
     {
-        $gnRepository = $this->entityManager->getRepository(Gn::class);
         $langueRepository = $this->entityManager->getRepository(Langue::class);
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
-        $gn ??= $gnRepository->findNext();
+        $hasOne = false;
 
         // On force les personnages sans langue à avoir Aquillonien
-        $langue = $langueRepository->findOneBy(['id' => 2]); // Aquillonien
-        $cache = 0;
-        foreach ($personnageRepository->findAllWithoutLangue($gn) as $personnage) {
+        $baseLangue = $langueRepository->findOneBy(['id' => 2]); // Aquillonien
+
+        // Ajout des langues en fonction de l'origine du personnage
+        $langue = $personnage->getOrigine()?->getLangue();
+        if ($langue) {
+            $hasOne = true;
             $personnageLangue = new PersonnageLangues();
             $personnageLangue->setPersonnage($personnage);
             $personnageLangue->setLangue($langue);
+            $personnageLangue->setSource('ORIGINE');
+            $this->entityManager->persist($personnageLangue);
+        }
+
+        // Ajout des langues secondaires lié à l'origine du personnage
+        foreach ($personnage->getOrigine()?->getLangues() as $langue) {
+            if (!$personnage->isKnownLanguage($langue)) {
+                $hasOne = true;
+                $personnageLangue = new PersonnageLangues();
+                $personnageLangue->setPersonnage($personnage);
+                $personnageLangue->setLangue($langue);
+                $personnageLangue->setSource('ORIGINE SECONDAIRE');
+                $this->entityManager->persist($personnageLangue);
+            }
+        }
+
+        // Ajout de la langue du groupe
+        $territoire = $personnage->getGroupe()?->getTerritoire();
+        if ($territoire) {
+            $langue = $territoire->getLangue();
+            if ($langue && !$personnage->isKnownLanguage($langue)) {
+                $hasOne = true;
+                $personnageLangue = new PersonnageLangues();
+                $personnageLangue->setPersonnage($personnage);
+                $personnageLangue->setLangue($langue);
+                $personnageLangue->setSource('GROUPE');
+                $this->entityManager->persist($personnageLangue);
+            }
+        }
+
+        if (!$hasOne) {
+            $personnageLangue = new PersonnageLangues();
+            $personnageLangue->setPersonnage($personnage);
+            $personnageLangue->setLangue($baseLangue);
             $personnageLangue->setSource('ADMIN');
             $this->entityManager->persist($personnageLangue);
+        }
+
+        if ($flush) {
+            $this->entityManager->flush();
+        }
+    }
+
+    public function lockGnSetDefaultLangue(?Gn $gn = null): void
+    {
+        $gnRepository = $this->entityManager->getRepository(Gn::class);
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+        $gn ??= $gnRepository->findNext();
+
+        $cache = 0;
+        /** @var Personnage $personnage */
+        foreach ($personnageRepository->findAllWithoutLangue($gn) as $personnage) {
+            $this->addDefaultLangue($personnage, false);
 
             if (++$cache > 50) {
                 $cache = 0;
