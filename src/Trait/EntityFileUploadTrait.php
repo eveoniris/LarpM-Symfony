@@ -43,20 +43,21 @@ trait EntityFileUploadTrait
             ['old' => true, 'doc' => false],
         ];
         foreach ($legacies as $legacy) {
-            $filename = $this->getDocumentFilePath($projectDir, $legacy['old'], $legacy['doc']).$this->getDocumentUrl();
+            $filename = $this->getDocumentFilePath($projectDir, $legacy['old'], $legacy['doc']) . $this->getDocumentUrl();
             if (file_exists($filename)) {
                 return $filename;
             }
         }
 
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+        return $this->getDocumentFilePath($projectDir) . $this->getDocumentUrl();
     }
 
     public function getDocumentFilePath(
         ?string $projectDir = null,
-        bool $oldV1Prod = false,
-        bool $inDocInsteadOfDocuments = false,
-    ): string {
+        bool    $oldV1Prod = false,
+        bool    $inDocInsteadOfDocuments = false,
+    ): string
+    {
         $projectDir ??= $this->projectDir ?? '';
 
         if ($oldV1Prod) {
@@ -68,7 +69,7 @@ trait EntityFileUploadTrait
             $type = DocumentType::Doc->value;
         }
 
-        return $projectDir.$this->getFolderType()->value.$type.DIRECTORY_SEPARATOR;
+        return $projectDir . $this->getFolderType()->value . $type . DIRECTORY_SEPARATOR;
     }
 
     public function getDocumentType(): DocumentType
@@ -180,12 +181,12 @@ trait EntityFileUploadTrait
     #[NoReturn]
     public function getOldV1Document(?string $projectDir = null): string
     {
-        $filename = $this->getDocumentFilePath($projectDir, true).$this->getDocumentUrl();
+        $filename = $this->getDocumentFilePath($projectDir, true) . $this->getDocumentUrl();
         if (DocumentType::Document->value === $this->getDocumentType()->value && !file_exists($filename)) {
-            $filename = $this->getDocumentFilePath($projectDir, true, true).$this->getDocumentUrl();
+            $filename = $this->getDocumentFilePath($projectDir, true, true) . $this->getDocumentUrl();
         }
         if (DocumentType::Doc->value === $this->getDocumentType()->value && !file_exists($filename)) {
-            $filename = $this->getDocumentFilePath($projectDir, true, false).$this->getDocumentUrl();
+            $filename = $this->getDocumentFilePath($projectDir, true, false) . $this->getDocumentUrl();
         }
 
         return $filename;

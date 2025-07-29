@@ -23,7 +23,7 @@
             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                title="Ajouter une compétence"
                href="{{ path('personnage.add.competence', {'personnage': personnage.id}) }}"><i
-                        class="fa fa-plus"></i> Ajouter</a>
+                    class="fa fa-plus"></i> Ajouter</a>
         </div>
     {% endif %}
 
@@ -64,12 +64,20 @@
                     {% if participant is defined %}
                         <a class="btn btn-secondary btn-sm"
                            href="{{ path('participant.competence.detail',{'participant': participant.id, 'competence' : competence.id}) }}">
-                            <i class="fa fa-file"></i> Imprimer l'aide de jeu
+                            <i class="fa fa-eye"></i> Voir l'aide de jeu
+                        </a>
+                        <a class="btn btn-secondary btn-sm"
+                           href="{{ path('participant.competence.document',{'participant': participant.id, 'competence' : competence.id}) }}">
+                            <i class="fa fa-file"></i> Télécharger l'aide de jeu
                         </a>
                     {% elseif isAdmin %}
                         <a class="btn btn-secondary btn-sm"
                            href="{{ path('competence.detail',{'competence' : competence.id}) }}">
-                            <i class="fa fa-file"></i> Imprimer l'aide de jeu
+                            <i class="fa fa-file"></i> Voir l'aide de jeu
+                        </a>
+                        <a class="btn btn-secondary btn-sm"
+                           href="{{ path('competence.document',{'competence' : competence.id}) }}">
+                            <i class="fa fa-file"></i> Télécharger l'aide de jeu
                         </a>
                     {% endif %}
                 {% endif %}

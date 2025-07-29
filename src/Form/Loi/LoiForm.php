@@ -12,11 +12,6 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\Groupe\LoiForm.
- *
- * @author kevin
- */
 class LoiForm extends AbstractType
 {
     /**
@@ -33,10 +28,9 @@ class LoiForm extends AbstractType
                     'row' => 9,
                 ],
             ])
-            ->add('document', FileType::class, [
+            ->add('file', FileType::class, [
                 'label' => 'Téléversez un document',
                 'required' => true,
-                'mapped' => false,
             ])
             ->add('submit', SubmitType::class, ['label' => 'Valider']);
     }
