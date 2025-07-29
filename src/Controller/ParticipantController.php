@@ -51,6 +51,7 @@ use App\Form\CancelRequestedAllianceForm;
 use App\Form\CancelRequestedPeaceForm;
 use App\Form\DeclareWarForm;
 use App\Form\DeleteForm;
+use App\Form\EtatCivilForm;
 use App\Form\FindJoueurForm;
 use App\Form\Groupe\GroupeInscriptionForm;
 use App\Form\Groupe\GroupeSecondairePostulerForm;
@@ -61,6 +62,7 @@ use App\Form\Participant\ParticipantGroupeForm;
 use App\Form\Participant\ParticipantNewForm;
 use App\Form\Participant\ParticipantRemoveForm;
 use App\Form\ParticipantBilletForm;
+use App\Form\ParticipantForm;
 use App\Form\ParticipantPersonnageSecondaireForm;
 use App\Form\ParticipantRestaurationForm;
 use App\Form\Personnage\PersonnageEditForm;
@@ -1677,22 +1679,6 @@ class ParticipantController extends AbstractController
         ]);
     }
 
-    /**
-     * Detail d'un joueur (pour les orgas).
-     */
-    #[Route('/participant/orga/{participant}/detail', name: 'participant.orga.detail')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
-    public function detailOrgaAction(
-        #[MapEntity] Participant $participant,
-    ): RedirectResponse|Response
-    {
-        if ($participant) {
-            return $this->render('joueur/detail.twig', ['participant' => $participant]);
-        }
-        $this->addFlash('error', 'Le participant n\'a pas été trouvé.');
-
-        return $this->redirectToRoute('homepage');
-    }
 
     #[Route('/participant/{participant}/document/{document}', name: 'participant.document')]
     public function documentAction(
@@ -2281,6 +2267,12 @@ class ParticipantController extends AbstractController
             'participant' => $participant,
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/participant/list', name: 'participant.list')]
+    public function listAction(): Response
+    {
+        return $this->redirectToRoute('gn.participants', ['gn' => $this->groupeService->getNextSessionGn()->getId()]);
     }
 
     /**
@@ -4800,34 +4792,18 @@ class ParticipantController extends AbstractController
         return $this->sendDocument($technologie);
     }
 
-    /**
-     * Met à jour les informations d'un joueur.
-     */
-    #[Route('/participant/orga/{participant}/detail', name: 'participant.orga.detail')]
+    #[Route('/participant/{participant}/update', name: 'participant.update')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function updateAction(
-        Request     $request,
-        Participant $participant,
+        Request                  $request,
+        #[MapEntity] Participant $participant,
     ): RedirectResponse|Response
     {
-        $form = $this->createForm(JoueurForm::class, $participant)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $joueur = $form->getData();
-
-            $this->entityManager->persist($joueur);
-            $this->entityManager->flush();
-            $this->addFlash('success', 'Le joueur a été mis à jour.');
-
-            return $this->redirectToRoute('participant.orga.detail', ['participant' => $participant->getId()]);
-        }
-
-        return $this->render('joueur/update.twig', [
-            'joueur' => $participant,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleCreateOrUpdate(
+            $request,
+            $participant,
+            ParticipantForm::class,
+            routes: ['root' => 'participant.', 'list' => false],
+        );
     }
 }

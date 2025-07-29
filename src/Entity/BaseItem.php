@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -21,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BaseItem', 'extended' => 'Item'])]
 abstract class BaseItem
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
@@ -45,32 +46,28 @@ abstract class BaseItem
     protected string $couleur;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected \DateTime $date_creation;
+    protected DateTime $date_creation;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected \DateTime $date_update;
+    protected DateTime $date_update;
 
     #[Column(type: Types::INTEGER)]
     protected int $quantite = 0;
-
     #[ORM\ManyToOne(targetEntity: Quality::class, inversedBy: 'items')]
     #[ORM\JoinColumn(name: 'quality_id', referencedColumnName: 'id')]
     protected Quality $quality;
-
     #[ORM\ManyToOne(targetEntity: Statut::class, inversedBy: 'items')]
     #[ORM\JoinColumn(name: 'statut_id', referencedColumnName: 'id', nullable: false)]
     protected Statut $statut;
-
     #[ORM\ManyToOne(targetEntity: Objet::class, inversedBy: 'items')]
     #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
     protected Objet $objet;
-
     #[ORM\ManyToMany(targetEntity: Groupe::class, mappedBy: 'items')]
     protected Collection $groupes;
-
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'items')]
     protected Collection $personnages;
-
+    #[ORM\OneToMany(mappedBy: 'item', targetEntity: QrCodeScanLog::class)]
+    private Collection $qrCodeScanLogs;
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description_secrete = null;
 
@@ -81,6 +78,15 @@ abstract class BaseItem
     {
         $this->groupes = new ArrayCollection();
         $this->personnages = new ArrayCollection();
+        $this->qrCodeScanLogs = new ArrayCollection();
+    }
+
+    /**
+     * Get the value of id.
+     */
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     /**
@@ -94,11 +100,11 @@ abstract class BaseItem
     }
 
     /**
-     * Get the value of id.
+     * Get the value of label.
      */
-    public function getId(): int
+    public function getLabel(): string
     {
-        return $this->id;
+        return $this->label ?? '';
     }
 
     /**
@@ -112,11 +118,11 @@ abstract class BaseItem
     }
 
     /**
-     * Get the value of label.
+     * Get the value of description.
      */
-    public function getLabel(): string
+    public function getDescription(): string
     {
-        return $this->label ?? '';
+        return $this->description ?? '';
     }
 
     /**
@@ -130,11 +136,11 @@ abstract class BaseItem
     }
 
     /**
-     * Get the value of description.
+     * Get the value of numero.
      */
-    public function getDescription(): string
+    public function getNumero(): int
     {
-        return $this->description ?? '';
+        return $this->numero;
     }
 
     /**
@@ -148,11 +154,11 @@ abstract class BaseItem
     }
 
     /**
-     * Get the value of numero.
+     * Get the value of identification.
      */
-    public function getNumero(): int
+    public function getIdentification(): string
     {
-        return $this->numero;
+        return $this->identification;
     }
 
     /**
@@ -166,11 +172,11 @@ abstract class BaseItem
     }
 
     /**
-     * Get the value of identification.
+     * Get the value of special.
      */
-    public function getIdentification(): string
+    public function getSpecial(): string
     {
-        return $this->identification;
+        return $this->special ?? '';
     }
 
     /**
@@ -184,11 +190,11 @@ abstract class BaseItem
     }
 
     /**
-     * Get the value of special.
+     * Get the value of couleur.
      */
-    public function getSpecial(): string
+    public function getCouleur(): string
     {
-        return $this->special ?? '';
+        return $this->couleur ?? '';
     }
 
     /**
@@ -202,17 +208,17 @@ abstract class BaseItem
     }
 
     /**
-     * Get the value of couleur.
+     * Get the value of date_creation.
      */
-    public function getCouleur(): string
+    public function getDateCreation(): static
     {
-        return $this->couleur ?? '';
+        return $this->date_creation;
     }
 
     /**
      * Set the value of date_creation.
      *
-     * @param \DateTime $date_creation
+     * @param DateTime $date_creation
      */
     public function setDateCreation($date_creation): static
     {
@@ -222,39 +228,21 @@ abstract class BaseItem
     }
 
     /**
-     * Get the value of date_creation.
-     */
-    public function getDateCreation(): static
-    {
-        return $this->date_creation;
-    }
-
-    /**
-     * Set the value of date_update.
-     *
-     * @param \DateTime $date_update
-     */
-    public function setDateUpdate($date_update): static
-    {
-        $this->date_update = $date_update;
-
-        return $this;
-    }
-
-    /**
      * Get the value of date_update.
      */
-    public function getDateUpdate(): \DateTime
+    public function getDateUpdate(): DateTime
     {
         return $this->date_update;
     }
 
     /**
-     * Set the value of quantite.
+     * Set the value of date_update.
+     *
+     * @param DateTime $date_update
      */
-    public function setQuantite(int $quantite): static
+    public function setDateUpdate($date_update): static
     {
-        $this->quantite = $quantite;
+        $this->date_update = $date_update;
 
         return $this;
     }
@@ -268,11 +256,11 @@ abstract class BaseItem
     }
 
     /**
-     * Set Quality entity (many to one).
+     * Set the value of quantite.
      */
-    public function setQuality(?Quality $quality = null): static
+    public function setQuantite(int $quantite): static
     {
-        $this->quality = $quality;
+        $this->quantite = $quantite;
 
         return $this;
     }
@@ -286,11 +274,11 @@ abstract class BaseItem
     }
 
     /**
-     * Set Statut entity (many to one).
+     * Set Quality entity (many to one).
      */
-    public function setStatut(?Statut $statut = null): static
+    public function setQuality(?Quality $quality = null): static
     {
-        $this->statut = $statut;
+        $this->quality = $quality;
 
         return $this;
     }
@@ -304,11 +292,11 @@ abstract class BaseItem
     }
 
     /**
-     * Set Objet entity (many to one).
+     * Set Statut entity (many to one).
      */
-    public function setObjet(?Objet $objet = null): static
+    public function setStatut(?Statut $statut = null): static
     {
-        $this->objet = $objet;
+        $this->statut = $statut;
 
         return $this;
     }
@@ -319,6 +307,16 @@ abstract class BaseItem
     public function getObjet(): Objet
     {
         return $this->objet;
+    }
+
+    /**
+     * Set Objet entity (many to one).
+     */
+    public function setObjet(?Objet $objet = null): static
+    {
+        $this->objet = $objet;
+
+        return $this;
     }
 
     /**
@@ -402,6 +400,33 @@ abstract class BaseItem
     public function setDescriptionScenariste(?string $description_scenariste): static
     {
         $this->description_scenariste = $description_scenariste;
+
+        return $this;
+    }
+
+    public function getQrCodeScanLogs(): Collection
+    {
+        return $this->qrCodeScanLogs;
+    }
+
+    public function addQrCodeScanLog(QrCodeScanLog $qrCodeScanLog): static
+    {
+        if (!$this->qrCodeScanLogs->contains($qrCodeScanLog)) {
+            $this->qrCodeScanLogs->add($qrCodeScanLog);
+            $qrCodeScanLog->setItem($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQrCodeScanLog(QrCodeScanLog $qrCodeScanLog): static
+    {
+        if ($this->qrCodeScanLogs->removeElement($qrCodeScanLog)) {
+            // set the owning side to null (unless already changed)
+            if ($qrCodeScanLog->getItem() === $this) {
+                $qrCodeScanLog->setItem(null);
+            }
+        }
 
         return $this;
     }

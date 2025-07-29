@@ -2,16 +2,19 @@
 
 namespace App\Entity;
 
+use App\Repository\EtatCivilRepository;
+use DateTime;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
-#[Entity]
-class EtatCivil extends BaseEtatCivil implements \Stringable
+#[Entity(repositoryClass: EtatCivilRepository::class)]
+class EtatCivil extends BaseEtatCivil implements Stringable
 {
     public function __construct()
     {
         parent::__construct();
-        $this->setCreationDate(new \DateTime('NOW'));
-        $this->setUpdateDate(new \DateTime('NOW'));
+        $this->setCreationDate(new DateTime('NOW'));
+        $this->setUpdateDate(new DateTime('NOW'));
     }
 
     public function __toString(): string
@@ -21,6 +24,6 @@ class EtatCivil extends BaseEtatCivil implements \Stringable
 
     public function getFullName(): string
     {
-        return $this->getNom().' '.$this->getPrenom();
+        return $this->getNom() . ' ' . $this->getPrenom();
     }
 }

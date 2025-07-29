@@ -1,0 +1,48 @@
+<div class="header">
+    <h5>
+        Etat-civil du joueur
+    </h5>
+</div>
+<div class="well well-sm">
+    <div class="d-flex justify-content-end mb-2">
+        <div class="btn-group" role="group" aria-label="...">
+            <a class="btn btn-sm btn-secondary" role="button"
+               href="{{ path('etatCivil.update', {'etatCivil' : etatCivil.id}) }}">Modifier</a>
+        </div>
+    </div>
+
+    <div class="list-group">
+
+        <div class="list-group-item">
+            <h4 class="list-group-item-heading">
+                Informations
+            </h4>
+            <p class="list-group-item-text">
+                Nom civil : {{ etatCivil.nom }}
+            </p>
+            <p class="list-group-item-text">
+                Prénom civil : {{ etatCivil.prenom }}
+            </p>
+            <p class="list-group-item-text">
+                Prénom d'usage : {{ etatCivil.prenomUsage }}
+            </p>
+            <p class="list-group-item-text">
+                Numéro de téléphone : {{ etatCivil.telephone }}
+            </p>
+            <p class="list-group-item-text">
+                Problème médicaux : {{ etatCivil.problemeMedicaux }}
+            </p>
+            <p class="list-group-item-text">
+                Personne à prévenir en cas d'urgence : {{ etatCivil.personneAPrevenir }}
+            </p>
+            <p class="list-group-item-text">
+                Numéro de téléphone de la personne à prévenir : {{ etatCivil.telPap }}
+            </p>
+            <p class="list-group-item-text">
+                Numéro d'adhérant à la FédéGn : {{ etatCivil.fedegn }}
+            </p>
+        </div>
+
+
+    </div>
+</div>

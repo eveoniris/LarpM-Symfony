@@ -3,8 +3,35 @@
 {% block title %}Accès interdit{% endblock %}
 
 {% block body %}
-    <h3>
-        Par Crom! Agonie!
-    </h3>
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Accès non autorisé' }
+        ]
+    } %}
+
+    {% set errorHtml %}
+        {% if app.user %}
+            <div class="mb-2 display-6 text-danger">Par Crom: Agonie!</div>
+            <img src="{{ asset('img/conan.jpg') }}" alt="Conan">
+        {% else %}
+            <div class="text-danger">
+                Vous ne semblez plus être en connexion avec le monde d'Hyborée
+            </div>
+        {% endif %}
+        <div>
+            <button class="btn btn-sm bg-secondary mt-2" onclick="history.back()">Revenir en arrière</button>
+        </div>
+    {% endset %}
+
+    <div class="row d-flex justify-content-center" data-turbo="false">
+        <div class="p-0 m-2 col-sm-4">
+            {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'css': 'text-center', 'content' : errorHtml} %}
+        </div>
+    </div>
+
+    {% if not app.user %}
+        {% include 'security/_login.form.twig' %}
+    {% endif %}
 
 {% endblock %}

@@ -4,16 +4,18 @@ namespace App\Entity;
 
 use App\Enum\Role;
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserInterface, \Stringable
+class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserInterface, Stringable
 {
     public const ROLE_ADMIN = 'ROLE_ADMIN';
     public const ROLE_CARTOGRAPHE = 'ROLE_CARTOGRAPHE';
@@ -32,8 +34,38 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
 
         $this->email = $email;
-        $this->setCreationDate(new \DateTime('NOW'));
+        $this->setCreationDate(new DateTime('NOW'));
         parent::__construct();
+    }
+
+    public static function getAvailableRoles(): array
+    {
+        return Role::toArray();
+    }
+
+    public static function getAvailableRolesLabels(): array
+    {
+        return [
+            self::ROLE_ADMIN => 'Droit de modification sur tout',
+            self::ROLE_CARTOGRAPHE => 'Droit de modification sur l\'univers',
+            self::ROLE_MODERATOR => 'Modération du forum',
+            self::ROLE_ORGA => 'Organisateur',
+            self::ROLE_REDACTEUR => 'Droit de modification des annonces',
+            self::ROLE_REGLE => 'Droit de modification sur les règles',
+            self::ROLE_SCENARISTE => 'Droit de modification sur le scénario, les groupes et le background',
+            self::ROLE_STOCK => 'Droit de modification sur le stock',
+            self::ROLE_USER => 'Utilisateur de larpManager',
+            self::ROLE_WARGAME => 'Jeu de domaine de larpManager',
+        ];
+    }
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata): void
+    {
+        $metadata->addConstraint(new UniqueEntity([
+            'fields' => ['email'],
+        ]));
+
+        // ...
     }
 
     public function addCoeur(): static
@@ -58,7 +90,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
             return;
         }
 
-        $roles = explode(',', (string) $this->rights);
+        $roles = explode(',', (string)$this->rights);
 
         if (!$this->hasRole($role)) {
             $roles[] = $role;
@@ -97,8 +129,6 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     {
     }
 
-    // @deprecated
-
     public function generateToken(): string
     {
         return bin2hex(random_bytes(18));
@@ -118,7 +148,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         $gn_date = $this->getLastParticipant()->getGn()->getDateDebut();
         $interval = date_diff($gn_date, $naissance);
 
-        return (int) $interval->format('%y');
+        return (int)$interval->format('%y');
     }
 
     /**
@@ -131,27 +161,6 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         }
 
         return null;
-    }
-
-    public static function getAvailableRoles(): array
-    {
-        return Role::toArray();
-    }
-
-    public static function getAvailableRolesLabels(): array
-    {
-        return [
-            self::ROLE_ADMIN => 'Droit de modification sur tout',
-            self::ROLE_CARTOGRAPHE => 'Droit de modification sur l\'univers',
-            self::ROLE_MODERATOR => 'Modération du forum',
-            self::ROLE_ORGA => 'Organisateur',
-            self::ROLE_REDACTEUR => 'Droit de modification des annonces',
-            self::ROLE_REGLE => 'Droit de modification sur les règles',
-            self::ROLE_SCENARISTE => 'Droit de modification sur le scénario, les groupes et le background',
-            self::ROLE_STOCK => 'Droit de modification sur le stock',
-            self::ROLE_USER => 'Utilisateur de larpManager',
-            self::ROLE_WARGAME => 'Jeu de domaine de larpManager',
-        ];
     }
 
     /**
@@ -176,7 +185,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
      */
     public function getDisplayName()
     {
-        return $this->username ?: 'Anonymous '.$this->id;
+        return $this->username ?: 'Anonymous ' . $this->id;
     }
 
     /**
@@ -193,7 +202,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     public function getFuturEvents(): Collection
     {
         $futurEvents = new ArrayCollection();
-        $now = new \DateTime('NOW');
+        $now = new DateTime('NOW');
 
         foreach ($this->getParticipants() as $participant) {
             if ($participant->getGn()->getDateDebut() > $now) {
@@ -230,7 +239,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
      */
     public function getIdentity(): string
     {
-        return $this->getUsername().' '.$this->getEmail();
+        return $this->getUsername() . ' ' . $this->getEmail();
     }
 
     public function getLastPersonnage()
@@ -305,7 +314,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
      */
     public function hasFuturEvent(): bool
     {
-        $now = new \DateTime('NOW');
+        $now = new DateTime('NOW');
         foreach ($this->getParticipants() as $participant) {
             if ($participant->getGn()->getDateDebut() > $now) {
                 return true;
@@ -406,15 +415,6 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         return $timeRequested + $ttl < time();
     }
 
-    public static function loadValidatorMetadata(ClassMetadata $metadata): void
-    {
-        $metadata->addConstraint(new UniqueEntity([
-            'fields' => ['email'],
-        ]));
-
-        // ...
-    }
-
     /**
      * Remove the given role from the User.
      *
@@ -422,7 +422,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
      */
     public function removeRole($role): void
     {
-        $roles = explode(',', (string) $this->rights);
+        $roles = explode(',', (string)$this->rights);
 
         if (false !== $key = array_search(strtoupper($role), $roles, true)) {
             unset($roles[$key]);
