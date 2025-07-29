@@ -2,15 +2,13 @@
 
 namespace App\Form;
 
+use App\Entity\EtatCivil;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\JoueurForm.
- *
- * @author kevin
- */
 class JoueurForm extends AbstractType
 {
     /**
@@ -18,35 +16,35 @@ class JoueurForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('nom', TextType::class, [
             'label' => 'Nom civil',
             'required' => true,
         ])
-            ->add('prenom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('prenom', TextType::class, [
                 'label' => 'Prénom civil',
                 'required' => true,
             ])
-            ->add('prenom_usage', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('prenom_usage', TextType::class, [
                 'label' => "Nom d'usage",
                 'required' => false,
             ])
-            ->add('telephone', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('telephone', TextType::class, [
                 'label' => 'Numéro de téléphone',
                 'required' => true,
             ])
-            ->add('probleme_medicaux', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            ->add('probleme_medicaux', TextareaType::class, [
                 'label' => 'Eventuel problèmes médicaux',
                 'required' => true,
             ])
-            ->add('personne_a_prevenir', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('personne_a_prevenir', TextType::class, [
                 'label' => 'Personne à prévenir en cas de problème',
                 'required' => true,
             ])
-            ->add('tel_pap', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('tel_pap', TextType::class, [
                 'label' => 'Numéro de téléphone de la personne à prévenir',
                 'required' => true,
             ])
-            ->add('fedegn', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('fedegn', TextType::class, [
                 'label' => 'Numéro d’adhérent FédéGN',
                 'required' => true,
             ]);
@@ -58,7 +56,7 @@ class JoueurForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => 'App\Entity\Joueur',
+            'class' => EtatCivil::class,
         ]);
     }
 
@@ -67,6 +65,6 @@ class JoueurForm extends AbstractType
      */
     public function getName(): string
     {
-        return 'joueur';
+        return 'EtatCivil';
     }
 }

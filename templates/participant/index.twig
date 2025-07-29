@@ -8,6 +8,7 @@
         [
             {'name' : gn.label, 'route': path('gn.detail', {'gn':gn.id}) },
             {'name' : 'Liste des participants' , 'route': path('gn.participants', {'gn':participant.gn.id, 'participant':participant.id}) },
+            {'name' : 'Participation de ' ~ participant.userFullName, 'route': path('gn.participants', {'gn':participant.gn.id, 'participant':participant.id}) },
             {'name' : "Détail d'une participation" },
         ]
     } %}
@@ -76,6 +77,12 @@
                     <li class="list-group-item"><a
                             href="{{ path('participant.background', {'participant': participant.id}) }}"><i
                                 class="fa fa-book" aria-hidden="true"></i> Background</a></li>
+
+                    <li class="list-group-item">
+                        Couchage: {{ participant.couchage }}
+                        <a href="{{ path('participant.update', {'participant': participant.id}) }}"><i
+                                class="fa fa-pencil" aria-hidden="true"></i> Modifier</a>
+                    </li>
                 </ul>
 
                 {#
@@ -126,9 +133,12 @@
                     </li>
                 </ul>
 
-
+                <div class="header mt-2">
+                    {% include 'participant/fragment/etatCivil.twig' with {'etatCivil':participant.user.etatCivil} %}
+                </div>
             </div>
         </div>
+
         <div class="col-md-9">
 
             {% if not participant.billet
@@ -165,6 +175,19 @@
                             personnage secondaire. Vous devez impérativement choisir un personnage secondaire.
                         </p>{% endif %}
                     </div>
+                </div>
+            {% endif %}
+
+            {% if isAdmin %}
+                <div class="well well-sm">
+                    <div class="header">
+                        <h5>Spécial</h5>
+                    </div>
+                    <div class="d-flex justify-content-end mb-2">
+                        <a href="{{ path('participant.update', {'participant': participant.id}) }}"
+                           class="btn btn-sm bg-secondary">Modifier</a>
+                    </div>
+                    {{ participant.special|default('Rien') }}
                 </div>
             {% endif %}
 

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\BaseUserRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -60,7 +61,7 @@ abstract class BaseUser
     protected string $rights = '';
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $creation_date = null;
+    protected ?DateTime $creation_date = null;
 
     #[Column(name: 'isEnabled', type: Types::BOOLEAN)]
     protected ?bool $isEnabled = false;
@@ -74,7 +75,7 @@ abstract class BaseUser
     protected ?string $trombineUrl = null;
 
     #[Column(name: 'lastConnectionDate', type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $lastConnectionDate = null;
+    protected ?DateTime $lastConnectionDate = null;
 
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $coeur = 0;
@@ -190,6 +191,9 @@ abstract class BaseUser
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: true)]
     private Collection $logActions;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: QrCodeScanLog::class)]
+    private Collection $qrCodeScanLogs;
+
     #[Column(length: 255, nullable: true)]
     private ?string $email_contact = null;
 
@@ -217,6 +221,7 @@ abstract class BaseUser
         $this->rumeurs = new ArrayCollection();
         $this->restrictions = new ArrayCollection();
         $this->logActions = new ArrayCollection();
+        $this->qrCodeScanLogs = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -455,7 +460,8 @@ abstract class BaseUser
     }
 
     public function addSecondaryGroups(BaseSecondaryGroup $secondaryGroups,
-    ): static {
+    ): static
+    {
         if (!$this->secondaryGroups->contains($secondaryGroups)) {
             $this->secondaryGroups->add($secondaryGroups);
             $secondaryGroups->setScenariste($this);
@@ -535,7 +541,7 @@ abstract class BaseUser
     /**
      * Get the value of creation_date.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreationDate()
     {
@@ -545,7 +551,7 @@ abstract class BaseUser
     /**
      * Set the value of creation_date.
      *
-     * @param \DateTime $creation_date
+     * @param DateTime $creation_date
      */
     public function setCreationDate($creation_date): static
     {
@@ -682,7 +688,7 @@ abstract class BaseUser
     /**
      * Get the value of lastConnectionDate.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getLastConnectionDate()
     {
@@ -692,7 +698,7 @@ abstract class BaseUser
     /**
      * Set the value of lastConnectionDate.
      *
-     * @param \DateTime $lastConnectionDate
+     * @param DateTime $lastConnectionDate
      */
     public function setLastConnectionDate($lastConnectionDate): static
     {
@@ -991,7 +997,7 @@ abstract class BaseUser
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->username;
+        return (string)$this->username;
     }
 
     public function removeBackground(Background $background): static
@@ -1197,11 +1203,35 @@ abstract class BaseUser
     }
 
     public function removeSecondaryGroups(BaseSecondaryGroup $secondaryGroups,
-    ): static {
+    ): static
+    {
         if ($this->secondaryGroups->removeElement($secondaryGroups)) {
             // set the owning side to null (unless already changed)
             if ($secondaryGroups->getScenariste() === $this) {
                 $secondaryGroups->setScenariste(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+    public function addQrCodeScanLog(QrCodeScanLog $qrCodeScanLog): static
+    {
+        if (!$this->qrCodeScanLogs->contains($qrCodeScanLog)) {
+            $this->qrCodeScanLogs->add($qrCodeScanLog);
+            $qrCodeScanLog->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQrCodeScanLog(QrCodeScanLog $qrCodeScanLog): static
+    {
+        if ($this->qrCodeScanLogs->removeElement($qrCodeScanLog)) {
+            // set the owning side to null (unless already changed)
+            if ($qrCodeScanLog->getUser() === $this) {
+                $qrCodeScanLog->setUser(null);
             }
         }
 

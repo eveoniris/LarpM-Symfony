@@ -16,6 +16,15 @@
             <h5>Etat-civil d'un utilisateur de {{ etatCivil.prenom }} {{ etatCivil.nom }}</h5>
         </div>
 
+        {% if isAdmin or app.user.etatCivil.id == etatCivil.id %}
+            <div class="d-flex justify-content-end mb-2">
+                <div class="btn-group" role="group" aria-label="...">
+                    <a class="btn btn-secondary" role="button"
+                       href="{{ path('etatCivil.update', {'etatCivil' : etatCivil.id}) }}">Modifier</a>
+                </div>
+            </div>
+        {% endif %}
+
 
         <table class="table table-striped table-bordered table-condensed table-hover">
 

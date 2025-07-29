@@ -548,7 +548,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $this->entityManager->flush();
 
             return $form->has('update')
-                ? $this->redirectToRoute($routes['list'])
+                ? $this->redirectToRoute($routes['list'] ?: $routes['detail'], [trim($routes['root'], '.') => $entity->getId()])
                 : $this->redirectToRoute($routes['detail'], [trim($routes['root'], '.') => $entity->getId()]);
         }
 

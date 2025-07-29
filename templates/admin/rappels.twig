@@ -19,7 +19,7 @@
 
     <table class="table table-striped table-bordered table-condensed table-hover">
         <thead>
-        <tr >
+        <tr>
             <th class="col-sm-1">
                 <a href="{{ path('admin.rappels', {'order_by': 'id', 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')}) }}">
                     Id
@@ -52,7 +52,7 @@
         </thead>
         <tbody>
         {% for user in paginator %}
-            <tr >
+            <tr>
                 <td>{{ user.id }}</td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.email }}</td>
@@ -63,7 +63,8 @@
                                href="{{ path('user.view',{'user':user.id}) }}"><i class="fa fa-eye"></i></a>
                             {% if user.etatCivil %}<a class="btn btn-secondary" data-toggle="tooltip"
                                                       data-placement="top" title="Voir l'état civil"
-                                                      href="{{ path('etatCivil.detail', {'id':user.etatCivil.id}) }}"><i
+                                                      href="{{ path('etatCivil.detail', {'etatCivil':user.etatCivil.id}) }}">
+                                    <i
                                         class="fa fa-user"></i></a>{% endif %}
                             <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier"
                                href="{{ path('user.edit',{'user':user.id}) }}"><i class="fa fa-pencil"></i></a>

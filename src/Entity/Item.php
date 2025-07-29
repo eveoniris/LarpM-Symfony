@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ItemRepository;
+use DateTime;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: ItemRepository::class)]
@@ -10,8 +11,8 @@ class Item extends BaseItem
 {
     public function __construct()
     {
-        $this->setDateCreation(new \DateTime('NOW'));
-        $this->setDateUpdate(new \DateTime('NOW'));
+        $this->setDateCreation(new DateTime('NOW'));
+        $this->setDateUpdate(new DateTime('NOW'));
         $this->setQuantite(1);
         parent::__construct();
     }
@@ -30,8 +31,8 @@ class Item extends BaseItem
             'qualident' => $this->getQualident(),
             'couleur' => $this->getCouleur(),
             'label' => $this->getLabel(),
-            'description' => html_entity_decode(strip_tags((string) $this->getDescription())),
-            'special' => html_entity_decode(strip_tags((string) $this->getSpecial())),
+            'description' => html_entity_decode(strip_tags((string)$this->getDescription())),
+            'special' => html_entity_decode(strip_tags((string)$this->getSpecial())),
             'groupe' => $this->getGroupesAsString(),
             'personnage' => $this->getPersonnageAsString(),
             'rangement' => $objet?->getRangement()?->getAdresse(),
@@ -48,7 +49,7 @@ class Item extends BaseItem
     {
         $string = '';
         foreach ($this->getGroupes() as $groupe) {
-            $string .= $groupe->getNom().', ';
+            $string .= $groupe->getNom() . ', ';
         }
 
         return $string;
@@ -58,7 +59,7 @@ class Item extends BaseItem
     {
         $string = '';
         foreach ($this->getPersonnages() as $personnage) {
-            $string .= $personnage->getNom().', ';
+            $string .= $personnage->getNom() . ', ';
         }
 
         return $string;
@@ -66,11 +67,11 @@ class Item extends BaseItem
 
     public function getIdentite(): string
     {
-        return $this->getNumero().' - '.$this->getLabel();
+        return $this->getNumero() . ' - ' . $this->getLabel();
     }
 
     public function getIdentiteReverse(): string
     {
-        return $this->getLabel().' ('.$this->getNumero().')';
+        return $this->getLabel() . ' (' . $this->getNumero() . ')';
     }
 }

@@ -68,7 +68,8 @@
                                href="{{ path('user.view',{'user':user.id}) }}"><i class="fa fa-eye"></i></a>
                             {% if user.etatCivil %}<a class="btn btn-secondary" data-toggle="tooltip"
                                                       data-placement="top" title="Voir l'état civil"
-                                                      href="{{ path('etatCivil.detail', {'id':user.etatCivil.id}) }}"><i
+                                                      href="{{ path('etatCivil.detail', {'etatCivil':user.etatCivil.id}) }}">
+                                    <i
                                         class="fa fa-user"></i></a>{% endif %}
                             <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier"
                                href="{{ path('user.edit',{'user':user.id}) }}"><i class="fa fa-pencil"></i></a>

@@ -31,6 +31,7 @@ use App\Entity\PersonnageTrigger;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\PugilatHistory;
+use App\Entity\QrCodeScanLog;
 use App\Entity\Religion;
 use App\Entity\RenommeHistory;
 use App\Entity\Ressource;
@@ -2910,19 +2911,20 @@ class PersonnageController extends AbstractController
     }
 
     #[Route('/{personnage}/item/{item}', name: 'item.detail')]
+    #[IsGranted(Role::USER->value)]
     public function itemDetailAction(
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Item       $item,
     ): RedirectResponse|Response
     {
-        $canSee = $this->isGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE));
-        if (!$canSee && $personnage->hasCompetenceLevel(
+        $this->setCan(self::CAN_READ, $personnage->isKnownItem($item));
+        $this->setCan(self::CAN_READ_PRIVATE, $personnage->isKnownItem($item));
+        $this->setCan(self::IS_ADMIN, $this->isGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE)));
+
+        if (!$this->can(self::CAN_READ) && $personnage->hasCompetenceLevel(
                 CompetenceFamilyType::RITUALISM,
                 LevelType::INITIATED,
             )) {
-            // todo log
-            // TODO GN access ?
-
             /** @var Gn $gn */
             $gn = $this->groupeService->getNextSessionGn();
             $start = null;
@@ -2935,15 +2937,22 @@ class PersonnageController extends AbstractController
             }
 
             $now = Carbon::now();
-            if (!$start || !$end || $now < $start || $now > $end) {
-                $canSee = false;
+            if ($start && $end && $now > $start && $now < $end) {
+                $this->setCan(self::CAN_READ, true);
             }
-            // TODO LOG
         }
 
-        if (!$canSee || !$personnage->isKnownItem($item)) {
+        $qrCodeScanLog = new QrCodeScanLog(); // we don't really know if it's from a qrcode .. later !
+        $qrCodeScanLog->setUser($this->getUser()); // get from active session
+        $qrCodeScanLog->setDate(new DateTime('NOW'));
+        $qrCodeScanLog->setItem($item);
+        $qrCodeScanLog->setParticipant($personnage->getLastParticipant());
+        $qrCodeScanLog->setAllowed($this->can(self::CAN_READ));
+        $this->entityManager->persist($qrCodeScanLog);
+        $this->entityManager->flush();
+
+        if (!$this->can(self::CAN_READ)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas consulter cet objet.');
-            // todo log
 
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
@@ -3052,7 +3061,7 @@ class PersonnageController extends AbstractController
         // car elles ne sont pas en base mais calculées, ça compliquerait trop le sql
         $orderByCalculatedFields = new ArrayCollection(['pugilat', 'heroisme', 'user', 'hasAnomalie', 'status']);
         // TODO ?
-        if (false && $orderByCalculatedFields->contains($orderBy)) {
+        /*if (false && $orderByCalculatedFields->contains($orderBy)) {
             // recherche basée uniquement sur les filtres
             $filteredPersonnages = $repo->findList($criteria)->getResult();
             // on applique le tri
@@ -3062,7 +3071,7 @@ class PersonnageController extends AbstractController
             $personnages = $personnages->slice($offset, $limit);
 
             $paginator = new Paginator($personnages);
-        }
+        }*/
         // else {
         // recherche et applique directement en sql filtres + tri + pagination
         $personnages = $repo->findList(
@@ -3134,12 +3143,11 @@ class PersonnageController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
-            $this->getUser()->addPersonnage($personnage);
+            $this->getUser()?->addPersonnage($personnage);
             $this->entityManager->persist($this->getUser());
             $this->entityManager->persist($personnage);
             $this->entityManager->flush();
 
-            $app['personnage.manager']->setCurrentPersonnage($personnage);
             $this->addFlash('success', 'Votre personnage a été créé');
 
             return $this->redirectToRoute('homepage', [], 303);
@@ -3299,18 +3307,6 @@ class PersonnageController extends AbstractController
             'personnage' => $personnage,
             'competence' => $lastCompetence,
         ]);
-    }
-
-
-    public function selectAction(
-        Request    $request,
-
-        Personnage $personnage,
-    ): RedirectResponse
-    {
-        $app['personnage.manager']->setCurrentPersonnage($personnage->getId());
-
-        return $this->redirectToRoute('homepage', [], 303);
     }
 
     #[Route('/{personnage}/competence/test', name: 'test.competence')]
@@ -3511,14 +3507,6 @@ class PersonnageController extends AbstractController
             'personnage' => $personnage,
             'trigger' => $trigger,
         ]);
-    }
-
-
-    public function unselectAction(Request $request): RedirectResponse
-    {
-        $app['personnage.manager']->resetCurrentPersonnage();
-
-        return $this->redirectToRoute('homepage', [], 303);
     }
 
     /**
