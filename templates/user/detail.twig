@@ -32,7 +32,7 @@
                             <span class="text-muted">(visible to admins only)</span>
                             <span class="text-muted">{{ user.email }}</span>
                             <span class="text-muted"><a
-                                    href="{{ path('etatCivil.detail', 'etatCivil': user.etatCivil.id) }}">Etat-civil</a></span>
+                                    href="{{ path('etatCivil.detail', {'etatCivil': user.etatCivil.id}) }}">Etat-civil</a></span>
                         </div>
 
                     {% endif %}

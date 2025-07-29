@@ -48,7 +48,7 @@
                     </div>
                 </div>
 
-                {% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+                {% if isAdmin %}
                     <div class="position-absolute bottom-0 end-0 mb-4 me-3" role="toolbar">
                         <div class="btn-group" role="group">
                             {# TODO userhasCompetence for display doc dl ? #}

@@ -28,8 +28,12 @@ class LoiController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Loi $loi */
             $loi = $form->getData();
 
+            $loi->handleUpload($this->fileUploader);
+
+            /*
             $files = $request->files->get($form->getName());
 
             // Si un document est fourni, l'enregistrer
@@ -53,7 +57,7 @@ class LoiController extends AbstractController
 
                 $loi->setDocumentUrl($documentFilename);
             }
-
+        */
             $entityManager->persist($loi);
             $entityManager->flush();
 
@@ -72,10 +76,11 @@ class LoiController extends AbstractController
      */
     #[Route('/loi/{loi}/delete', name: 'loi.delete')]
     public function deleteAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Loi $loi,
-    ): Response|RedirectResponse {
+        #[MapEntity] Loi       $loi,
+    ): Response|RedirectResponse
+    {
         $form = $this->createForm(LoiDeleteForm::class, $loi)
             ->add('submit', SubmitType::class, ['label' => 'Supprimer']);
 
@@ -103,10 +108,11 @@ class LoiController extends AbstractController
      */
     #[Route('/loi/{loi}', name: 'loi.detail')]
     public function detailAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Loi $loi,
-    ): Response {
+        #[MapEntity] Loi       $loi,
+    ): Response
+    {
         return $this->render('loi\detail.twig', [
             'loi' => $loi,
         ]);
@@ -139,10 +145,11 @@ class LoiController extends AbstractController
      */
     #[Route('/loi/{loi}/removeDocument', name: 'loi.document.remove')]
     public function removeDocumentAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Loi $loi,
-    ): RedirectResponse {
+        #[MapEntity] Loi       $loi,
+    ): RedirectResponse
+    {
         $loi->setDocumentUrl(null);
 
         $entityManager->persist($loi);
@@ -157,22 +164,27 @@ class LoiController extends AbstractController
      */
     #[Route('/loi/{loi}/update', name: 'loi.update')]
     public function updateAction(
-        Request $request,
+        Request                $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Loi $loi,
-    ): Response|RedirectResponse {
+        #[MapEntity] Loi       $loi,
+    ): Response|RedirectResponse
+    {
         $form = $this->createForm(LoiForm::class, $loi);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Loi $loi */
             $loi = $form->getData();
 
+            $loi->handleUpload($this->fileUploader);
+
+            /*
             $files = $request->files->get($form->getName());
 
             // Si un document est fourni, l'enregistrer
             if (null != $files['document']) {
-                $path = __DIR__.'/../../private/documents/';
+                $path = __DIR__ . '/../../private/documents/';
                 $filename = $files['document']->getClientOriginalName();
                 $extension = 'pdf';
 
@@ -185,12 +197,12 @@ class LoiController extends AbstractController
                     return $this->redirectToRoute('loi.index', [], 303);
                 }
 
-                $documentFilename = hash('md5', $loi->getLabel().$filename.time()).'.'.$extension;
+                $documentFilename = hash('md5', $loi->getLabel() . $filename . time()) . '.' . $extension;
 
                 $files['document']->move($path, $documentFilename);
 
                 $loi->setDocumentUrl($documentFilename);
-            }
+            }*/
 
             $entityManager->persist($loi);
             $entityManager->flush();

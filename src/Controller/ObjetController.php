@@ -66,6 +66,10 @@ class ObjetController extends AbstractController
     {
         // TODO RITUALISTE
         if (!$this->isGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))) {
+            if ($this->isGranted(Role::USER->value)) {
+                // Player own this one or Ritualism check this one
+                return $this->redirectToRoute('personnage.item.detail', ['personnage' => $this->getPersonnage()->getId(), 'item' => $item->getId()], 303);
+            }
             throw new AccessDeniedException();
         }
 

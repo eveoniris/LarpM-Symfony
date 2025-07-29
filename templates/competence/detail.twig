@@ -23,36 +23,46 @@
 
             <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
                 <div class="btn-group" role="group">
-                    <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Personnages associés"
-                       href="{{ path('competence.personnages',{'competence':competence.id}) }}"><i
-                            class="fa fa-users"></i> Personnages {{ competence.personnages|length }}</a>
-                    <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Personnages associés sur {{ groupeService.nextSessionGn.label }}"
-                       href="{{ path('competence.personnages.gn',{'competence':competence.id, gn:groupeService.nextSessionGn.id}) }}"><i
-                            class="fa fa-users"></i>
-                        (Personnages
-                        {{ groupeService.nextSessionGn.label }}
-                        {{ personnageService.PersonnagesCompetenceGn(competence, groupeService.nextSessionGn, true) }})
-                    </a>
-                    {% if competence.documentUrl %}
+                    {% if isAdmin %}
                         <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                           title="Télécharger le document associé"
-                           href="{{ path('competence.document',{'competence':competence.id}) }}"><i
-                                class="fa fa-download"></i> Document</a>
+                           title="Personnages associés"
+                           href="{{ path('competence.personnages',{'competence':competence.id}) }}"><i
+                                class="fa fa-users"></i> Personnages {{ competence.personnages|length }}</a>
                         <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                           title="Supprimer le document"
+                           title="Personnages associés sur {{ groupeService.nextSessionGn.label }}"
+                           href="{{ path('competence.personnages.gn',{'competence':competence.id, gn:groupeService.nextSessionGn.id}) }}"><i
+                                class="fa fa-users"></i>
+                            (Personnages
+                            {{ groupeService.nextSessionGn.label }}
+                            {{ personnageService.PersonnagesCompetenceGn(competence, groupeService.nextSessionGn, true) }}
+                            )
+                        </a>
+                        {% if competence.documentUrl %}
+                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Télécharger le document associé"
+                               href="{{ path('competence.document',{'competence':competence.id}) }}"><i
+                                    class="fa fa-download"></i> Document</a>
+                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Supprimer le document"
+                               href="{{ path('competence.delete',{'competence':competence.id}) }}"><i
+                                    class="fa fa-file-excel"></i> Supprimer document</a>
+                        {% endif %}
+                        <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Modifier"
+                           href="{{ path('competence.update',{'competence':competence.id}) }}"><i
+                                class="fa fa-pencil"></i> Modifier</a>
+                        <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Supprimer"
                            href="{{ path('competence.delete',{'competence':competence.id}) }}"><i
-                                class="fa fa-file-excel"></i> Supprimer document</a>
+                                class="fa fa-eraser"></i> Supprimer</a>
+                    {% else %}
+                        {% if competence.documentUrl %}
+                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Télécharger le document associé"
+                               href="{{ path('competence.document',{'competence':competence.id}) }}"><i
+                                    class="fa fa-download"></i> Document</a>
+                        {% endif %}
                     {% endif %}
-                    <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Modifier"
-                       href="{{ path('competence.update',{'competence':competence.id}) }}"><i
-                            class="fa fa-pencil"></i> Modifier</a>
-                    <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Supprimer"
-                       href="{{ path('competence.delete',{'competence':competence.id}) }}"><i
-                            class="fa fa-eraser"></i> Supprimer</a>
                 </div>
             </div>
         </div>

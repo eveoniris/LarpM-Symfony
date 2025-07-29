@@ -87,6 +87,7 @@ use App\Security\MultiRolesExpression;
 use App\Service\CompetenceService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
+use Carbon\Carbon;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\IntegerType;
@@ -2914,14 +2915,35 @@ class PersonnageController extends AbstractController
         #[MapEntity] Item       $item,
     ): RedirectResponse|Response
     {
-        // TODO IS RITUALIST LIMIT
-        $canSee = $personnage->hasCompetenceLevel(
-            CompetenceFamilyType::RITUALISM,
-            LevelType::INITIATED,
-        );
+        $canSee = $this->isGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE));
+        if (!$canSee && $personnage->hasCompetenceLevel(
+                CompetenceFamilyType::RITUALISM,
+                LevelType::INITIATED,
+            )) {
+            // todo log
+            // TODO GN access ?
 
-        if ($canSee || !$personnage->isKnownItem($item)) {
+            /** @var Gn $gn */
+            $gn = $this->groupeService->getNextSessionGn();
+            $start = null;
+            if ($gn->getDateDebut()) {
+                $start = Carbon::createFromInterface($gn->getDateDebut());
+            }
+            $end = null;
+            if ($gn->getDateFin()) {
+                $end = Carbon::createFromInterface($gn->getDateFin());
+            }
+
+            $now = Carbon::now();
+            if (!$start || !$end || $now < $start || $now > $end) {
+                $canSee = false;
+            }
+            // TODO LOG
+        }
+
+        if (!$canSee || !$personnage->isKnownItem($item)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas consulter cet objet.');
+            // todo log
 
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
