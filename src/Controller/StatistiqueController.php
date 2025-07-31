@@ -15,8 +15,11 @@ use App\Entity\Religion;
 use App\Entity\User;
 use App\Enum\Role;
 use App\Manager\RandomColor;
+use App\Repository\QrCodeScanLogRepository;
 use App\Repository\ReligionRepository;
 use App\Security\MultiRolesExpression;
+use App\Service\OrderBy;
+use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use JsonException;
@@ -225,6 +228,49 @@ class StatistiqueController extends AbstractController
             ),
         };
     }
+
+    #[Route('/api/qrCodeScanList', name: 'api.qrCodeScanList')]
+    #[Route('/stats/qrCodeScanList', name: 'stats.qrCodeScanList')]
+    #[Route('/stats/qrCodeScanList/csv', name: 'stats.qrCodeScanList.csv')]
+    #[Route('/stats/qrCodeScanList/json', name: 'stats.qrCodeScanList.json')]
+    #[IsGranted(new MultiRolesExpression(Role::ADMIN))]
+    public function qrCodeScanList(
+        string                  $_route,
+        Request                 $request,
+        QrCodeScanLogRepository $repository,
+        PagerService            $pagerService
+    ): Response|JsonResponse|StreamedResponse
+    {
+        $pagerService->setRequest($request)
+            ->setRepository($repository)
+            ->setLimit(50)
+            ->setDefaultOrdersBy([$repository::getEntityAlias() . '.date' => OrderBy::DESC]);
+
+        // todo add and where > last GN start date ;
+        return match ($_route) {
+            'api.qrCodeScanList', 'stats.qrCodeScanList.json' => new JsonResponse($repository->findAll()),
+            'stats.qrCodeScanList.csv' => $this->sendCsv(
+                title: 'eveoniris_qrcodescan_' . date('Ymd'),
+                header: [
+                    'id',
+                    'user_id',
+                    'participant_id',
+                    'item_id',
+                    'date',
+                    'allowed',
+                ],
+                dataProvider: $repository->findAll(),
+            ),
+            default => $this->render(
+                'statistique/qrCodeScanList.twig',
+                [
+                    'paginator' => $repository->searchPaginated($pagerService),
+                    'pagerService' => $pagerService,
+                ],
+            ),
+        };
+    }
+
 
     #[Route('/api/fiefsState', name: 'api.fiefsState')]
     #[Route('/stats/fiefsState', name: 'stats.fiefsState')]
