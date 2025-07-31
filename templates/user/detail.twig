@@ -101,7 +101,7 @@
                                         {% else %}
                                             <a href="{{ path('gn.personnage',{'gn': participant.gn.id}) }}">{{ participant.personnage.identity }}</a>
                                         {% endif %}
-                                        {% if app.user.personnage is defined and participant.personnage.id == app.user.personnage.id %}
+                                        {% if participant.user.personnage is defined and participant.personnage.id == participant.user.personnage.id %}
                                             {% set hasDefaultPersonnage = true %}
                                             <span class="badge rounded-pill text-bg-secondary">Actif</span>
                                         {% endif %}
