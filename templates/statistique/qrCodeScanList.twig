@@ -1,0 +1,124 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Log scan qrcode{% endblock title %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css"/>
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
+
+
+    <script type="module">
+        jQuery(document).ready(function () {
+            new DataTable('#stats-table', {
+                'pageLength': 100,
+                'layout': {
+                    'topStart': {
+                        'buttons': ['copy', 'csv', 'excel', 'pdf', 'print']
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des actions sur le larpmanager' },
+        ]
+    } %}
+
+    {# LATER
+    <div class="d-flex justify-content-end">
+
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="Télécharger" href="{{ path('stats.qrCodeScanList.csv') }}"><i
+                        class="fa fa-file-csv"></i>
+                    Télécharger</a>
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                   title="format JSON" href="{{ path('stats.qrCodeScanList.json') }}"><i
+                        class="fa fa-file-lines"></i>
+                    Json API</a>
+            </div>
+        </div>
+    </div>
+    #}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Log scan qrcode</h5>
+        </div>
+
+        {% include '_partials/formListSearch.twig' with
+            {
+                'actionPath' : path('stats.qrCodeScanList')
+            } %}
+
+
+        {% include '_partials/pagination.html.twig' %}
+
+        {# stats table is disable by a 2 until we fix conflit with pagerservice order and datatable order #}
+        <table class="table table-condensed table-striped table-bordered table-hover" id="stats-table2">
+            {% include '_partials/thead.twig' with  { 'route': 'admin.action.logs', 'rows': [
+                {'name' : 'Id', 'field' : 'id', 'css' : 'text-center'},
+                {'name' : 'Quand', 'field' : 'date', 'css' : 'text-center'},
+                {'name' : 'Utilisateur', 'field' : 'user', 'css' : 'text-center'},
+                {'name' : 'Participant', 'field' : 'participant', 'css' : 'text-center'},
+                {'name' : 'Objet', 'field' : 'item', 'css' : 'text-center'},
+                {'name' : 'Autorisé', 'field' : 'allowed', 'css' : 'text-center'},
+            ]} %}
+            <tbody>
+            {% for row in paginator %}
+                <tr>
+                    <td class="text-center align-middle col-1">{{ row.id|highlight(pagerService.searchValue) }}</td>
+                    <td class="text-center align-middle col-1">{{ row.date|date("m/d/Y H:i:s")|highlight(pagerService.searchValue) }}</td>
+                    <td class="text-center align-middle col-3">
+                        <a href="{{ path('user.detail', {'user': row.user.id }) }}">
+                            {{ row.user.name|highlight(pagerService.searchValue) }}
+                        </a>
+                    </td>
+                    <td class="text-center align-middle col-3">
+                        <a href="{{ path('participant.detail', {'participant': row.participant.id }) }}">
+                            {{ row.participant.personnage.nom|highlight(pagerService.searchValue) }}
+                        </a>
+                    </td>
+                    <td class="text-center align-middle col-2">
+                        <a href="{{ path('personnage.item.detail', {'personnage': row.participant.personnage.id, 'item': row.item.id }) }}">
+                            {{ row.item.label|highlight(pagerService.searchValue) }}
+                        </a>
+                    </td>
+                    <td class="text-center align-middle col-1">
+                        {% if row.allowed %}
+                            <i class="fa fa-check text-success"></i> oui
+                        {% else %}
+                            <i class="fa fa-x text-danger"></i> non
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                {% include '_partials/noResultTableRow.twig' %}
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% include '_partials/pagination.html.twig' %}
+    </div>
+
+{% endblock %}
