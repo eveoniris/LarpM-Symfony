@@ -4793,7 +4793,7 @@ class ParticipantController extends AbstractController
     }
 
     #[Route('/participant/{participant}/update', name: 'participant.update')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    #[IsGranted(new MultiRolesExpression(Role::USER))]
     public function updateAction(
         Request                  $request,
         #[MapEntity] Participant $participant,
