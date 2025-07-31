@@ -3,15 +3,26 @@
 namespace App\Form;
 
 use App\Entity\Participant;
+use App\Enum\Role;
+use App\Security\MultiRolesExpression;
+use Doctrine\ORM\EntityManagerInterface;
+use PhpParser\Node\Expr\AssignOp\Mul;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ParticipantForm extends AbstractType
 {
+    public function __construct(
+        private readonly Security $security,
+    )
+    {
+    }
+
     /**
      * Construction du formulaire.
      */
@@ -21,10 +32,15 @@ class ParticipantForm extends AbstractType
             'label' => 'Type de couchage',
             'choices' => ['RP en jeu' => 'RP', 'HRP sur site' => 'HRP', 'Hors site de jeu' => 'HSJ'],
             'required' => true,
-        ])
-            ->add('special', TextType::class, [
-                'label' => 'special',
-            ]);
+        ]);
+
+        if (!$this->security->isGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))) {
+            return;
+        }
+
+        $builder->add('special', TextType::class, [
+            'label' => 'Informations complémentaires (animaux, besoin médicaux, ...)',
+        ]);
     }
 
     /**
