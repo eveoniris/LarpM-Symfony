@@ -459,6 +459,33 @@ class StatsService
             ->setParameter('gndate', (string)$gn->getDateInstallationJoueur()?->format('Y-m-d'));
     }
 
+    public function getListeArrivee(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('nom', 'nom', 'string');
+        $rsm->addScalarResult('prenom', 'prenom', 'string');
+        $rsm->addScalarResult('groupe', 'groupe', 'string');
+        $rsm->addScalarResult('couchage', 'couchage', 'string');
+        $rsm->addScalarResult('special', 'special', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                 SELECT ec.nom, ec.prenom, concat(g.numero, ' - ', g.nom) as groupe, pt.couchage, pt.special
+                    FROM `personnage` p
+                             INNER JOIN participant pt ON pt.personnage_id = p.id
+                             INNER JOIN groupe_gn ggn ON ggn.id = pt.groupe_gn_id
+                             INNER JOIN groupe g ON ggn.groupe_id = g.id
+                             INNER JOIN `user` u ON u.id = pt.user_id
+                             INNER JOIN etat_civil ec ON u.etat_civil_id = ec.id
+                    WHERE pt.gn_id = :gnid
+                    ORDER BY nom, prenom, numero;
+                SQL,
+            $rsm,
+        )
+            ->setParameter('gnid', $gn->getId());
+    }
+
     public function getPotionsDepartGn(Gn $gn): NativeQuery
     {
         $rsm = new ResultSetMapping();
