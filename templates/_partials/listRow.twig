@@ -1,16 +1,33 @@
 {# ROW #}
-<div class="container bg-body border border-secondary border-top-0 p-0">
+{% set firstDivCss = 'border-top-0' %}
+{% if isHeader is defined and isHeader %}
+    {% set firstDivCss = 'rounded-top' %}
+{% endif %}
+{% if isFooter is defined and isFooter %}
+    {% set firstDivCss = 'border-top-0 rounded-bottom' %}
+{% endif %}
+
+{% set secundDivCss = '' %}
+{% if isHeader is defined and isHeader %}
+    {% set secundDivCss = 'rounded-2 rounded-bottom-0 rounded-end-0' %}
+{% endif %}
+{% if isFooter is defined and isFooter %}
+    {% set secundDivCss = 'rounded-2 rounded-end-0 rounded-top-0' %}
+{% endif %}
+
+<div class="container bg-body border border-secondary p-0 {{ firstDivCss }}">
     <div class="d-flex justify-content-start">
-        <div class="align-middle w-25 lh-lg col-sm-3 p-1 text-center bg-body-secondary border-end fw-bold">
+        <div
+            class="align-middle w-25 lh-lg col-sm-3 p-1 text-center bg-body-secondary border-end fw-bold {{ secundDivCss }}">
             {{ title }}
         </div>
         <div class="w-100 mx-2 mt-1">
             <div class="d-flex justify-content-between lh-lg">
                 {% if item.collapse.id is defined %}
                     <div>
-                        {{ text }}
+                        {{ text|raw }}
                     </div>
-                    <button class="btn btn-sm btn-secondary ms-2" role="button"
+                    <button class="btn btn-sm btn-secondary ms-2 mb-1" role="button"
                             data-bs-toggle="collapse"
                             data-bs-target="#{{ item.collapse.id }}"
                             aria-expanded="false"
@@ -19,13 +36,48 @@
                         <i class="fa {% if item.collapse.icon is defined %}{{ item.collapse.icon }}{% else %}fa-info{% endif %}"
                            aria-hidden="true"></i>
                     </button>
+                {% elseif item.btns is defined %}
+                    <div class="align-middle">
+                        {{ text|raw }}
+                    </div>
+                    <div class="btn-group" role="group">
+                        {% for btn in item.btns %}
+                            {% if btn is iterable and btn is not empty %}
+
+                                {% if btn.css is not defined %}
+                                    {% set btn = btn|merge({'css': 'btn-secondary'}) %}
+                                {% endif %}
+
+                                {% if btn.type is defined %}
+                                    {% if btn.type == 'gamemaster' %}
+                                        {% set btn = btn|merge({'css': 'btn-outline-gamemaster'}) %}
+                                        {% set btn = btn|merge({'icon': 'fa-solid fa-feather'}) %}
+                                    {% endif %}
+                                {% endif %}
+
+                                <a href="{{ btn.path }}"
+                                   data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="{{ btn.tooltip|default('Modifier') }}"
+                                   class="btn btn-sm ms-2 mb-1 {{ btn.css }}">
+                                    {% if btn.icon is defined %}
+                                        <i class="fa {{ btn.icon }}" aria-hidden="true"></i>
+                                    {% endif %}
+                                    {% if btn.label is defined %}
+                                        {{ btn.label }}
+                                    {% endif %}
+                                </a>
+                            {% endif %}
+
+                        {% endfor %}
+                    </div>
                 {% else %}
-                    {{ text }}
+                    {{ text|raw }}
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
+
 {% if item.collapse.id is defined %}
     {% include '_partials/listCollapse.twig' with {'idCollapse': item.collapse.id, 'text': item.collapse.text} %}
 {% endif %}

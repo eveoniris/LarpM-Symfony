@@ -20,7 +20,7 @@
 
     {% if visible == true %}
         {% if head and loop.first %}
-            {% include '_partials/listRowHead.twig' with {'title': item.title, 'text': item.text, 'css':css} %}
+            {% include '_partials/listRow.twig' with {'title': item.title, 'text': item.text, 'css':css, 'isHeader': true} %}
         {% endif %}
 
         {% if (loop.first and not head) or (loop.last and not footer) or (not loop.first and not loop.last) %}
@@ -28,7 +28,7 @@
         {% endif %}
 
         {% if footer and loop.last %}
-            {% include '_partials/listRowBottom.twig' with {'title': item.title, 'text': item.text, 'css':css} %}
+            {% include '_partials/listRow.twig' with {'title': item.title, 'text': item.text, 'css':css, 'isFooter': true} %}
         {% endif %}
     {% endif %}
 
