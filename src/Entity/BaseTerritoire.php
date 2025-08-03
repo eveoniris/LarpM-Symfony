@@ -191,7 +191,7 @@ abstract class BaseTerritoire
 
     #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'importateurs')]
     #[ORM\JoinTable(name: 'territoire_importation')]
-    #[JoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $importations;
 

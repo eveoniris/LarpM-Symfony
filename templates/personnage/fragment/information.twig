@@ -117,21 +117,22 @@
 
     {# Scenariste #}
     {% set scenaristeHtml %}
-        <span class="text-danger">Ce personnage n'est pas lié à un joueur</span>
-        <a href="{{ path('personnage.transfert', {'personnage': personnage.id}) }}"
+        <span class="text-danger">Ce personnage n'est pas lié à un scénariste</span>
+        <a href="{{ path('personnage.update', {'personnage': personnage.id}) }}"
            data-bs-toggle="tooltip" data-bs-placement="bottom"
-           title="Transférer"
-           class="btn btn-sm btn-secondary ms-2">
+           title="Modifier"
+           class="btn btn-sm btn-secondary ms-2 mb-1">
             <i class="fa fa-edit" aria-hidden="true"></i>
         </a>
     {% endset %}
+
     {% if personnage.user %}
         {% if participant is not defined %}
             {% set participant = personnage.user.participants|last %}
         {% endif %}
 
         {% set scenaristeHtml %}
-            {% if participant.personnage is defined %}
+            {% if participant.groupeGn is defined %}
                 {% if participant.groupeGn %}
                     {% if participant.groupeGn.groupe %}
                         {% if not participant.groupeGn.groupe.scenariste %}
@@ -141,7 +142,7 @@
                                 scénariste.
                             </div>
                         {% else %}
-                            <a href="{{ path('user.view',{'user': personnage.user.id}) }}">
+                            <a href="{{ path('user.view',{'user': participant.groupeGn.groupe.scenariste.id}) }}">
                                 {{ participant.groupeGn.groupe.scenariste.etatCivil }}
                                 &nbsp;({{ participant.groupeGn.groupe.scenariste.email }})
                             </a>
@@ -331,7 +332,7 @@
                     <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}"
                        data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Modifier"
-                       class="btn btn-sm btn-secondary ms-2">
+                       class="btn btn-sm btn-secondary ms-2 mb-1">
                         <i class="fa fa-edit" aria-hidden="true"></i>
                     </a>
                 </div>

@@ -145,7 +145,7 @@ class TerritoireForm extends AbstractType
                 'mapped' => true,
                 'choice_label' => 'label',
                 'query_builder' => static function (RessourceRepository $rr) {
-                    return $rr->createQueryBuilder('rr')->orderBy('rr.label', 'ASC');
+                    return $rr->createQueryBuilder('rri')->orderBy('rri.label', 'ASC');
                 },
             ])
             ->add('exportations', EntityType::class, [
@@ -157,7 +157,7 @@ class TerritoireForm extends AbstractType
                 'mapped' => true,
                 'choice_label' => 'label',
                 'query_builder' => static function (RessourceRepository $rr) {
-                    return $rr->createQueryBuilder('rr')->orderBy('rr.label', 'ASC');
+                    return $rr->createQueryBuilder('rre')->orderBy('rre.label', 'ASC');
                 },
             ])
             ->add('languePrincipale', EntityType::class, [

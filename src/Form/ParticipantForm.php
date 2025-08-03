@@ -34,7 +34,7 @@ class ParticipantForm extends AbstractType
             'required' => true,
         ]);
 
-        if (!$this->security->isGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))) {
+        if (!$this->security->isGranted(new MultiRolesExpression(Role::ADMIN))) {
             return;
         }
 

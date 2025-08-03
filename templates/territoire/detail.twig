@@ -26,11 +26,11 @@
                    data-bs-placement="bottom"
                    title="Modifier"
                    href="{{ path('territoire.update', {'territoire' : territoire.id}) }}"><i
-                            class="fa fa-pencil"></i> Modifier</a>
+                        class="fa fa-pencil"></i> Modifier</a>
                 <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                    title="Supprimer"
                    href="{{ path('territoire.delete', {'territoire' : territoire.id}) }}"><i
-                            class="fa fa-eraser"></i> Supprimer</a>
+                        class="fa fa-eraser"></i> Supprimer</a>
             </div>
         </div>
     {% endif %}
@@ -164,7 +164,8 @@
                             </div>
                             <div class="card-body">
                                 <div class="list-group list-group-flush">
-                                    <div class="list-group-item">{{ territoire.culture.label|default('Non définie') }}</div>
+                                    <div
+                                        class="list-group-item">{{ territoire.culture.label|default('Non définie') }}</div>
                                     <div class="list-group-item">
                                         <h6>Description</h6>
                                         {% if territoire.culture.description is defined %}
@@ -307,23 +308,22 @@
                         <div class="card mb-2">
                             <div class="card-header d-flex justify-content-between">
                                 <h5 class="align-content-center">Economie</h5>
+
+                                {% set editImportBtns = [{}] %}
+                                {% set editExportBtns = [{}] %}
+                                {% set editIngredientBtns = [{}] %}
                                 {% if isAdmin %}
-
-                                    <a class="btn btn-sm btn-outline-gamemaster"
-                                       data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                       title="Modifier"
-                                       href="{{ path('territoire.updateIngredients', {'territoire': territoire.id}) }}">
-                                        <i class="fa-solid fa-feather"></i>
-                                    </a>
-
+                                    {% set editImportBtns = [{'type': 'gamemaster', 'path' : path('territoire.update', {'territoire': territoire.id}) ~ '#territoire_form_importations' }] %}
+                                    {% set editExportBtns = [{'type': 'gamemaster', 'path' : path('territoire.update', {'territoire': territoire.id}) ~ '#territoire_form_exportations' }] %}
+                                    {% set editIngredientBtns = [{'type': 'gamemaster', 'path' : path('territoire.updateIngredients', {'territoire': territoire.id}) }] %}
                                 {% endif %}
                             </div>
                             <div class="card-body">
                                 {% include '_partials/listItems.twig'
                                     with { 'items' : [
-                                    {'title': 'Exportation', 'text': territoire.importations|join(', ')|default('Rien') },
-                                    {'title': 'Production', 'text': territoire.exportations|join(', ')|default('Rien') },
-                                    {'title': 'Ingrédients', 'text': territoire.ingredients|join(', ')|default('Rien')},
+                                    {'title': 'Importation', 'text': territoire.importations|join(', ')|default('-'), 'btns': editImportBtns },
+                                    {'title': 'Production / Export', 'text': territoire.exportations|join(', ')|default('-'), 'btns': editExportBtns },
+                                    {'title': 'Ingrédients fournis', 'text': territoire.ingredients|join(', ')|default('-'), 'btns': editIngredientBtns},
                                 ]
                                 } %}
                             </div>
@@ -393,9 +393,9 @@
                                         </a>
                                         <br/>
                                         Renommée de <span
-                                            class="badge text-bg-secondary rounded-pill">
+                                        class="badge text-bg-secondary rounded-pill">
                                             {{ suzerain.renomme }}</span> pour <span
-                                            class="badge text-bg-secondary rounded-pill">
+                                        class="badge text-bg-secondary rounded-pill">
                                             {{ groupeService.getRenommeRequired(territoire) }}</span> requise pour {{ max(territoire.territoires|length|default(1), 1) }} fiefs.
                                         <br/>
                                         {% set infoStatut = groupeService.statutTerritoire(territoire).value %}
@@ -459,8 +459,8 @@
                                     {% if isAdmin %}
                                         <td class="text-center">
                                             <a
-                                                    class="btn btn-sm btn-outline-gamemaster"
-                                                    href="{{ path('territoire.constructionRemove', {'territoire': territoire.id, 'construction': construction.id}) }}">
+                                                class="btn btn-sm btn-outline-gamemaster"
+                                                href="{{ path('territoire.constructionRemove', {'territoire': territoire.id, 'construction': construction.id}) }}">
                                                 <i class="fa fa-eraser text-gamemaster"></i>
                                                 Retirer
                                             </a>
@@ -601,8 +601,8 @@
                                 </div>
                             {% else %}
                                 Aucun - <a
-                                    class="btn btn-sm btn-outline-gamemaster"
-                                    href="{{ path('territoire.updateBonus', {'territoire': territoire.id}) }}">
+                                class="btn btn-sm btn-outline-gamemaster"
+                                href="{{ path('territoire.updateBonus', {'territoire': territoire.id}) }}">
                                 <i class="fa-solid fa-feather text-gamemaster"></i> Modifier
                             </a>
                             {% endif %}

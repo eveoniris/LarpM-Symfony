@@ -1,15 +1,16 @@
 <div class="container bg-body border border-secondary rounded-top p-0">
     <div class="d-flex justify-content-start">
-        <div class="align-middle w-25 lh-lg col-sm-3 p-1 border-end fw-bold text-center bg-body-secondary rounded-2 rounded-bottom-0 rounded-end-0">
+        <div
+            class="align-middle w-25 lh-lg col-sm-3 p-1 border-end fw-bold text-center bg-body-secondary rounded-2 rounded-bottom-0 rounded-end-0">
             {{ title }}
         </div>
         <div class="w-100 mx-2 mt-1">
             <div class="d-flex justify-content-between lh-lg">
                 {% if item.collapse.id is defined %}
                     <div>
-                        {{ text }}
+                        {{ text|raw }}
                     </div>
-                    <button class="btn btn-sm btn-secondary ms-2" role="button"
+                    <button class="btn btn-sm btn-secondary ms-2 mb-1" role="button"
                             data-bs-toggle="collapse"
                             data-bs-target="#{{ item.collapse.id }}"
                             aria-expanded="false"
@@ -19,7 +20,7 @@
                            aria-hidden="true"></i>
                     </button>
                 {% else %}
-                    {{ text }}
+                    {{ text|raw }}
                 {% endif %}
             </div>
         </div>
