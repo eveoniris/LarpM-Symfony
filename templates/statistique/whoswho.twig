@@ -16,8 +16,8 @@
             max-width: 200px;
         }
     </style>
-    <style media="print">
-        #menu, nav, .noprint {
+    <style media="{% if app.request.get('print') == 1 %}all{% else %}print{% endif %}">
+        #menu, nav, .noprint, #footer {
             display: none;
         }
 
@@ -81,11 +81,10 @@
                        title="format JSON" href="{{ path('stats.whoswho.gn.json', {'gn':gn.id}) }}"><i
                             class="fa fa-file-lines"></i>
                         Json API</a>
-                    {#
                     <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                       title="Imprimer" href="{{ path('stats.whoswho.gn.print', {'gn':gn.id}) }}"><i
+                       title="Imprimer PDF" href="{{ path('stats.whoswho.gn', {'gn':gn.id, 'print': 1}) }}"><i
                             class="fa fa-print"></i>
-                        Imprimable</a> #}
+                        Imprimable pour les règles</a>
                 </div>
             </div>
         </div>
@@ -138,7 +137,6 @@
                 </div>
             {% endfor %}
         </div>
-
     </div>
 
 {% endblock %}

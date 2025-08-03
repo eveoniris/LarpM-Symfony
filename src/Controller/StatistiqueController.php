@@ -373,6 +373,39 @@ class StatistiqueController extends AbstractController
                 'statistique/sumAll.twig',
                 [
                     'all' => $all,
+                    'gn' => $gn,
+                ],
+            ),
+        };
+    }
+
+    #[Route('/api/{gn}/list/arrivee', name: 'api.list.arrivee.gn')]
+    #[Route('/stats/{gn}/list/arrivee', name: 'stats.list.arrivee.gn')]
+    #[Route('/stats/{gn}/list/arrivee/csv', name: 'stats.list.arrivee.gn.csv')]
+    #[Route('/stats/{gn}/list/arrivee/json', name: 'stats.list.arrivee.gn.json')]
+    #[IsGranted(new MultiRolesExpression(Role::ADMIN, Role::ORGA))]
+    public function listArriveeGnAction(#[MapEntity] Gn $gn, string $_route): Response|JsonResponse|StreamedResponse
+    {
+        $all = $this->statsService->getListeArrivee($gn);
+
+        return match ($_route) {
+            'api.list.arrivee.gn', 'stats.list.arrivee.gn.json' => new JsonResponse($all->getResult()),
+            'stats.list.arrivee.gn.csv' => $this->sendCsv(
+                title: 'eveoniris_liste_arrivee_' . date('Ymd'),
+                query: $all,
+                header: [
+                    'nom',
+                    'prenom',
+                    'groupe',
+                    'couchage',
+                    'special',
+                ],
+            ),
+            default => $this->render(
+                'statistique/listArrivee.twig',
+                [
+                    'all' => $all->getResult(),
+                    'gn' => $gn,
                 ],
             ),
         };

@@ -17,11 +17,11 @@
             <div class="btn-group" role="group" aria-label="...">
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
                    title="Télécharger" href="{{ path('stats.mineurs.gn.csv', {'gn' : gn.id}) }}"><i
-                            class="fa fa-file-csv"></i>
+                        class="fa fa-file-csv"></i>
                     Télécharger</a>
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
                    title="format JSON" href="{{ path('stats.mineurs.gn.json', {'gn' : gn.id}) }}"><i
-                            class="fa fa-file-lines"></i>
+                        class="fa fa-file-lines"></i>
                     Json API</a>
             </div>
         </div>
@@ -53,10 +53,10 @@
                     <td class="col-2">{{ mineur.email }}</td>
                     <td class="col-1">{{ mineur.email_contact }}</td>
                     <td class="col-2"><a
-                                href="{{ path('groupe.detail', {'groupe': mineur.groupeId}) }}">{{ mineur.groupe }}</a>
+                            href="{{ path('groupe.detail', {'groupe': mineur.groupeId}) }}">{{ mineur.groupe }}</a>
                     </td>
                     <td class="col-1"><a
-                                href="{{ path('personnage.detail', {'personnage': mineur.personnageId}) }}">{{ mineur.personnage }}</a>
+                            href="{{ path('personnage.detail', {'personnage': mineur.personnageId}) }}">{{ mineur.personnage }}</a>
                     </td>
                     <td class="col-1">{% if  mineur.sensible == 1 %}Oui{% else %}Non{% endif %}</td>
                 </tr>

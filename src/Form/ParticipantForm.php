@@ -30,7 +30,7 @@ class ParticipantForm extends AbstractType
     {
         $builder->add('couchage', ChoiceType::class, [
             'label' => 'Type de couchage',
-            'choices' => ['RP en jeu' => 'RP', 'HRP sur site' => 'HRP', 'Hors site de jeu' => 'HSJ'],
+            'choices' => ["Sur votre camps en tente RP, qu'elle soit définie en jeu ou non" => 'RP', "Dans le champ HRP hors du jeu" => 'HRP', "Hors de l'enceinte du site de jeu" => 'HSJ'],
             'required' => true,
         ]);
 
@@ -39,7 +39,8 @@ class ParticipantForm extends AbstractType
         }
 
         $builder->add('special', TextType::class, [
-            'label' => 'Informations complémentaires (animaux, besoin médicaux, ...)',
+            'label' => 'Spécial: Informations complémentaires (animaux, ...)',
+            'required' => false,
         ]);
     }
 

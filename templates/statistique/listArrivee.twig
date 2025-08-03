@@ -1,8 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% block title %}
-    Etat des fiefs
-{% endblock title %}
+{% block title %}Liste arrivée sur le GN{% endblock title %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -40,7 +38,7 @@
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
             {'name' : 'Statistiques', 'route': path('stats.list') },
-            {'name' : 'Sum ALL' },
+            {'name' : "Liste d'arrivée " ~ gn.label},
         ]
     } %}
 
@@ -49,11 +47,11 @@
         <div class="btn-toolbar" role="toolbar" aria-label="...">
             <div class="btn-group" role="group" aria-label="...">
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                   title="Télécharger" href="{{ path('stats.sumAll.gn.csv', {'gn': gn.id}) }}"><i
+                   title="Télécharger" href="{{ path('stats.list.arrivee.gn.csv', {'gn' : gn.id}) }}"><i
                         class="fa fa-file-csv"></i>
                     Télécharger</a>
                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                   title="format JSON" href="{{ path('stats.sumAll.gn.json', {'gn': gn.id}) }}"><i
+                   title="format JSON" href="{{ path('stats.list.arrivee.gn.json', {'gn' : gn.id}) }}"><i
                         class="fa fa-file-lines"></i>
                     Json API</a>
             </div>
@@ -62,41 +60,25 @@
 
     <div class="well well-sm">
         <div class="header">
-            <h5>Sum All sur {{ gn.label }}</h5>
+            <h5>Liste d'arrivée sur {{ gn.label }}</h5>
         </div>
 
         <table class="table table-striped table-bordered table-condensed table-hover" id="stats-table">
             {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
-                {'name' : 'nom','css': 'text-center'},
-                {'name' : 'richesse','css': 'text-center'},
-                {'name' : 'renomme','css': 'text-center'},
-                {'name' : 'ingredient','css': 'text-center'},
-                {'name' : 'langues','css': 'text-center'},
-                {'name' : 'ressources','css': 'text-center'},
+                {'name' : 'nom'},
+                {'name' : 'prenom'},
+                {'name' : 'groupe'},
+                {'name' : 'couchage'},
+                {'name' : 'special'},
             ]} %}
             <tbody>
-            {% for data in all %}
+            {% for row in all %}
                 <tr>
-                    <td class="text-center">
-                        <a href="{{ path('groupe.detail', {'groupe': data.id} ) }}">
-                            {{ data.nom }}
-                        </a>
-                    </td>
-                    <td class="text-center">
-                        {{ data.richesse }}
-                    </td>
-                    <td class="text-center">
-                        {{ data.renomme }}
-                    </td>
-                    <td class="text-center">
-                        {{ data.ingredient }}
-                    </td>
-                    <td class="text-center">
-                        {{ data.langues }}
-                    </td>
-                    <td class="text-center">
-                        {{ data.ressources }}
-                    </td>
+                    <td class="col-3">{{ row.nom }}</td>
+                    <td class="col-2">{{ row.prenom }}</td>
+                    <td class="col-3">{{ row.groupe }}</td>
+                    <td class="col-1">{{ row.couchage }}</td>
+                    <td class="col-3">{{ row.special }}</td>
                 </tr>
             {% endfor %}
             </tbody>
