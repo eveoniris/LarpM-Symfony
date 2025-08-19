@@ -1503,6 +1503,18 @@ class Personnage extends BasePersonnage implements Stringable
         return false;
     }
 
+    public function isKnownPotionDepart(Potion $p): bool
+    {
+        /** @var Potion $potion */
+        foreach ($this->getPotions() as $potion) {
+            if ($potion->getNumero() === $p->getNumero()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Vérifie si le personnage connait cette priere.
      */
