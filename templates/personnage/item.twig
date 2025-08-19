@@ -161,11 +161,14 @@
                         <h5>Description</h5>
                         {{ item.description|markdown_to_html }}
                     </div>
-                </div>
 
-                {# PJ ? Ritualiste
-                {{ item.special|markdown_to_html }}
-                #}
+                    {% if canRead %}
+                        <div class="list-group-item">
+                            <h5>Spécial</h5>
+                            {{ item.special|markdown_to_html }}
+                        </div>
+                    {% endif %}
+                </div>
 
             </div>
 

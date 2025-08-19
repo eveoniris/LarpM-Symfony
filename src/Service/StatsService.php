@@ -471,7 +471,15 @@ class StatsService
         /* @noinspection SqlNoDataSourceInspection */
         return $this->entityManager->createNativeQuery(
             <<<SQL
-                 SELECT ec.nom, ec.prenom, concat(g.numero, ' - ', g.nom) as groupe, pt.couchage, pt.special
+                 SELECT ec.nom, ec.prenom, concat(g.numero, ' - ', g.nom) as groupe,
+                    IF(pt.couchage = 'HSJ', 'Hors site', pt.couchage),
+                        CASE
+                            WHEN pt.couchage = 'HSJ' THEN "Hors site de jeu"
+                            WHEN pt.couchage = 'HRP' THEN "Camps HRP"
+                            WHEN pt.couchage = 'RP' THEN "Sur son camps"
+                            ELSE ""
+                        END as couchage
+                        , pt.special
                     FROM `personnage` p
                              INNER JOIN participant pt ON pt.personnage_id = p.id
                              INNER JOIN groupe_gn ggn ON ggn.id = pt.groupe_gn_id

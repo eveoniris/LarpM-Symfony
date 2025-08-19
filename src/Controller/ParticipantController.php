@@ -94,6 +94,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -3345,6 +3346,13 @@ class ParticipantController extends AbstractController
 
         $potions = $potionRepository->findByNiveau($niveau);
 
+        // Keep only new one
+        foreach ($potions as $k => $potion) {
+            if ($personnage->isKnownPotion($potion)) {
+                unset($potions[$k]);
+            }
+        }
+
         $form = $this->createFormBuilder()
             ->add('potion', ChoiceType::class, [
                 'required' => true,
@@ -3362,6 +3370,18 @@ class ParticipantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $potion = $form->getData()['potion'] ?? null;
+
+            foreach ($potions as $k => $potion) {
+                if ($personnage->isKnownPotion($potion)) {
+                    // TODO as form error ?
+                    $form->get('id')->addError(new FormError('Vous connaissez déjà cette potion.'));
+
+                    $this->addFlash('danger', 'Vous connaissez déjà cette potion.');
+
+                    return $this->redirectToRoute('participant.potion', ['niveau' => $niveau, 'participant' => $participant->getId()], 303);
+
+                }
+            }
 
             // Ajout de la potion au personnage
             $personnage->addPotion($potion);
@@ -3482,7 +3502,7 @@ class ParticipantController extends AbstractController
 
 
             if (!$personnage->isKnownPotion($potion)) {
-                $this->addFlash('error', 'Désolé, le personnage ne connait cette potion.');
+                $this->addFlash('error', 'Désolé, le personnage ne connait pas cette potion.');
 
                 return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
             }
