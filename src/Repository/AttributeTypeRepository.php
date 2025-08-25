@@ -36,7 +36,7 @@ class AttributeTypeRepository extends BaseRepository
         ];
     }
 
-    public function sortAttributes(string $alias = null): array
+    public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 

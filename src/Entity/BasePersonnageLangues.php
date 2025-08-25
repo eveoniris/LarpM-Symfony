@@ -64,7 +64,7 @@ abstract class BasePersonnageLangues
     /**
      * Set Langue entity (many to one).
      */
-    public function setLangue(Langue $langue = null): static
+    public function setLangue(?Langue $langue = null): static
     {
         $this->langue = $langue;
 
@@ -82,7 +82,7 @@ abstract class BasePersonnageLangues
     /**
      * Set Personnage entity (many to one).
      */
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 

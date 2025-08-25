@@ -118,7 +118,7 @@ class BaseChronologie
         return $this->visibilite;
     }
 
-    public function setTerritoire(Territoire $territoire = null): static
+    public function setTerritoire(?Territoire $territoire = null): static
     {
         $this->territoire = $territoire;
 

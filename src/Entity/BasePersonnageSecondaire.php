@@ -98,7 +98,7 @@ abstract class BasePersonnageSecondaire
     /**
      * Set Classe entity (many to one).
      */
-    public function setClasse(Classe $classe = null): static
+    public function setClasse(?Classe $classe = null): static
     {
         $this->classe = $classe;
 
@@ -170,7 +170,7 @@ abstract class BasePersonnageSecondaire
     /**
      * Remove User entity from collection (one to many).
      */
-    public function removeUser(User $user): ?User
+    public function removeUser(User $user): static
     {
         $this->users->removeElement($user);
 

@@ -72,7 +72,7 @@ abstract class BaseReponse
     /**
      * Set Question entity (many to one).
      */
-    public function setQuestion(Question $question = null): static
+    public function setQuestion(?Question $question = null): static
     {
         $this->question = $question;
 
@@ -90,7 +90,7 @@ abstract class BaseReponse
     /**
      * Set Participant entity (many to one).
      */
-    public function setParticipant(Participant $participant = null): static
+    public function setParticipant(?Participant $participant = null): static
     {
         $this->participant = $participant;
 

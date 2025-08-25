@@ -71,7 +71,7 @@ abstract class BaseQualityValeur
     /**
      * Set Quality entity (many to one).
      */
-    public function setQuality(Quality $quality = null): static
+    public function setQuality(?Quality $quality = null): static
     {
         $this->quality = $quality;
 
@@ -89,7 +89,7 @@ abstract class BaseQualityValeur
     /**
      * Set Monnaie entity (many to one).
      */
-    public function setMonnaie(Monnaie $monnaie = null): static
+    public function setMonnaie(?Monnaie $monnaie = null): static
     {
         $this->monnaie = $monnaie;
 

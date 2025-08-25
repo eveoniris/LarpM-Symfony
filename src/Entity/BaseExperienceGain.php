@@ -86,7 +86,7 @@ abstract class BaseExperienceGain
         return $this->xp_gain;
     }
 
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 

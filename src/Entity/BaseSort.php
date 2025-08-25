@@ -145,7 +145,7 @@ abstract class BaseSort
     /**
      * Set Domaine entity (many to one).
      */
-    public function setDomaine(Domaine $domaine = null): static
+    public function setDomaine(?Domaine $domaine = null): static
     {
         $this->domaine = $domaine;
 

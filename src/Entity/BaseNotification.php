@@ -107,7 +107,7 @@ abstract class BaseNotification
     /**
      * Set User entity (many to one).
      */
-    public function setUser(User $user = null): static
+    public function setUser(?User $user = null): static
     {
         $this->user = $user;
 

@@ -52,7 +52,7 @@ abstract class BaseIntrigueHasGroupeSecondaire
     /**
      * Set Intrigue entity (many to one).
      */
-    public function setIntrigue(Intrigue $intrigue = null): static
+    public function setIntrigue(?Intrigue $intrigue = null): static
     {
         $this->intrigue = $intrigue;
 
@@ -70,7 +70,7 @@ abstract class BaseIntrigueHasGroupeSecondaire
     /**
      * Set SecondaryGroup entity (many to one).
      */
-    public function setSecondaryGroup(SecondaryGroup $secondaryGroup = null): static
+    public function setSecondaryGroup(?SecondaryGroup $secondaryGroup = null): static
     {
         $this->secondaryGroup = $secondaryGroup;
 

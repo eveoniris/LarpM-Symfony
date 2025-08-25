@@ -52,7 +52,7 @@ abstract class BaseIntrigueHasLieu
     /**
      * Set Intrigue entity (many to one).
      */
-    public function setIntrigue(Intrigue $intrigue = null): static
+    public function setIntrigue(?Intrigue $intrigue = null): static
     {
         $this->intrigue = $intrigue;
 
@@ -70,7 +70,7 @@ abstract class BaseIntrigueHasLieu
     /**
      * Set Lieu entity (many to one).
      */
-    public function setLieu(Lieu $lieu = null): static
+    public function setLieu(?Lieu $lieu = null): static
     {
         $this->lieu = $lieu;
 

@@ -128,7 +128,7 @@ abstract class BaseRangement
     /**
      * Set Localisation entity (many to one).
      */
-    public function setLocalisation(Localisation $localisation = null): static
+    public function setLocalisation(?Localisation $localisation = null): static
     {
         $this->localisation = $localisation;
 

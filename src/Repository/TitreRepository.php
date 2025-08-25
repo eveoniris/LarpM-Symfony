@@ -24,7 +24,7 @@ class TitreRepository extends BaseRepository
             ->getResult();
     }
 
-    public function sortAttributes(string $alias = null): array
+    public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 

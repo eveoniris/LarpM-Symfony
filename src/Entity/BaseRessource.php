@@ -194,7 +194,7 @@ class BaseRessource
     /**
      * Set Rarete entity (many to one).
      */
-    public function setRarete(Rarete $rarete = null): static
+    public function setRarete(?Rarete $rarete = null): static
     {
         $this->rarete = $rarete;
 

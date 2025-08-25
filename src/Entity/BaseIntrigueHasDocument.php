@@ -52,7 +52,7 @@ abstract class BaseIntrigueHasDocument
     /**
      * Set Intrigue entity (many to one).
      */
-    public function setIntrigue(Intrigue $intrigue = null): static
+    public function setIntrigue(?Intrigue $intrigue = null): static
     {
         $this->intrigue = $intrigue;
 
@@ -70,7 +70,7 @@ abstract class BaseIntrigueHasDocument
     /**
      * Set Document entity (many to one).
      */
-    public function setDocument(Document $document = null): static
+    public function setDocument(?Document $document = null): static
     {
         $this->document = $document;
 

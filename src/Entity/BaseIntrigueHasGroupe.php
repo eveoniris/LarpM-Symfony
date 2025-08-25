@@ -52,7 +52,7 @@ abstract class BaseIntrigueHasGroupe
     /**
      * Set Intrigue entity (many to one).
      */
-    public function setIntrigue(Intrigue $intrigue = null): static
+    public function setIntrigue(?Intrigue $intrigue = null): static
     {
         $this->intrigue = $intrigue;
 
@@ -70,7 +70,7 @@ abstract class BaseIntrigueHasGroupe
     /**
      * Set Groupe entity (many to one).
      */
-    public function setGroupe(Groupe $groupe = null): static
+    public function setGroupe(?Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 

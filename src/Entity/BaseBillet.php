@@ -153,7 +153,7 @@ abstract class BaseBillet
         return $this->participants;
     }
 
-    public function setUser(User $user = null): self
+    public function setUser(?User $user = null): self
     {
         $this->user = $user;
 
@@ -165,7 +165,7 @@ abstract class BaseBillet
         return $this->user;
     }
 
-    public function setGn(Gn $gn = null): self
+    public function setGn(?Gn $gn = null): self
     {
         $this->gn = $gn;
         $this->gn_id = $gn?->getId();

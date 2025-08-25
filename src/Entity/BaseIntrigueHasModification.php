@@ -79,7 +79,7 @@ abstract class BaseIntrigueHasModification
     /**
      * Set Intrigue entity (many to one).
      */
-    public function setIntrigue(Intrigue $intrigue = null): static
+    public function setIntrigue(?Intrigue $intrigue = null): static
     {
         $this->intrigue = $intrigue;
 
@@ -97,9 +97,9 @@ abstract class BaseIntrigueHasModification
     /**
      * Set User entity (many to one).
      */
-    public function setUser(User $User = null): static
+    public function setUser(?User $user = null): static
     {
-        $this->user = $User;
+        $this->user = $user;
 
         return $this;
     }

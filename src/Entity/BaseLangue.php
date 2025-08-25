@@ -201,7 +201,7 @@ abstract class BaseLangue
     /**
      * Set GroupeLangue entity (many to one).
      */
-    public function setGroupeLangue(GroupeLangue $groupeLangue = null): static
+    public function setGroupeLangue(?GroupeLangue $groupeLangue = null): static
     {
         $this->groupeLangue = $groupeLangue;
 

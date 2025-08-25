@@ -47,7 +47,7 @@ abstract class BaseGroupeClasse
     /**
      * Set Groupe entity (many to one).
      */
-    public function setGroupe(Groupe $groupe = null): static
+    public function setGroupe(?Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 
@@ -65,7 +65,7 @@ abstract class BaseGroupeClasse
     /**
      * Set Classe entity (many to one).
      */
-    public function setClasse(Classe $classe = null): static
+    public function setClasse(?Classe $classe = null): static
     {
         $this->classe = $classe;
 
