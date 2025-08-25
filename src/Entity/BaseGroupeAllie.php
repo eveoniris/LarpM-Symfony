@@ -138,7 +138,7 @@ abstract class BaseGroupeAllie
     /**
      * Set Groupe entity related by `groupe_id` (many to one).
      */
-    public function setGroupeRelatedByGroupeId(Groupe $groupe = null): static
+    public function setGroupeRelatedByGroupeId(?Groupe $groupe = null): static
     {
         $this->groupeRelatedByGroupeId = $groupe;
 
@@ -156,7 +156,7 @@ abstract class BaseGroupeAllie
     /**
      * Set Groupe entity related by `groupe_allie_id` (many to one).
      */
-    public function setGroupeRelatedByGroupeAllieId(Groupe $groupe = null): static
+    public function setGroupeRelatedByGroupeAllieId(?Groupe $groupe = null): static
     {
         $this->groupeRelatedByGroupeAllieId = $groupe;
 

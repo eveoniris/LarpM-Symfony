@@ -71,7 +71,7 @@ abstract class BaseTitreTerritoire
     /**
      * Set Titre entity (many to one).
      */
-    public function setTitre(Titre $titre = null): static
+    public function setTitre(?Titre $titre = null): static
     {
         $this->titre = $titre;
 
@@ -89,7 +89,7 @@ abstract class BaseTitreTerritoire
     /**
      * Set Territoire entity (many to one).
      */
-    public function setTerritoire(Territoire $territoire = null): static
+    public function setTerritoire(?Territoire $territoire = null): static
     {
         $this->territoire = $territoire;
 

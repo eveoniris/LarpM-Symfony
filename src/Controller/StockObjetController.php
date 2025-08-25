@@ -75,7 +75,7 @@ class StockObjetController extends AbstractController
     public function handleObjetPost(
         FormInterfaceAlias $form,
         EntityManagerInterface $entityManager,
-        string $successMsg = null,
+        ?string $successMsg = null,
     ): mixed {
         $objet = $form->getData();
 

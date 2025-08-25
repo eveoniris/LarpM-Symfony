@@ -134,7 +134,7 @@ abstract class BaseGroupeEnemy
     /**
      * Set Groupe entity related by `groupe_id` (many to one).
      */
-    public function setGroupeRelatedByGroupeId(Groupe $groupe = null): static
+    public function setGroupeRelatedByGroupeId(?Groupe $groupe = null): static
     {
         $this->groupeRelatedByGroupeId = $groupe;
 
@@ -152,7 +152,7 @@ abstract class BaseGroupeEnemy
     /**
      * Set Groupe entity related by `groupe_enemy_id` (many to one).
      */
-    public function setGroupeRelatedByGroupeEnemyId(Groupe $groupe = null): static
+    public function setGroupeRelatedByGroupeEnemyId(?Groupe $groupe = null): static
     {
         $this->groupeRelatedByGroupeEnemyId = $groupe;
 

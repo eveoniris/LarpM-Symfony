@@ -52,7 +52,7 @@ abstract class BaseIntrigueHasEvenement
     /**
      * Set Intrigue entity (many to one).
      */
-    public function setIntrigue(Intrigue $intrigue = null): static
+    public function setIntrigue(?Intrigue $intrigue = null): static
     {
         $this->intrigue = $intrigue;
 
@@ -67,7 +67,7 @@ abstract class BaseIntrigueHasEvenement
         return $this->intrigue;
     }
 
-    public function setEvenement(Evenement $evenement = null): static
+    public function setEvenement(?Evenement $evenement = null): static
     {
         $this->evenement = $evenement;
 

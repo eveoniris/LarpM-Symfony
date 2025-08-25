@@ -71,7 +71,7 @@ abstract class BaseGroupeHasIngredient
     /**
      * Set Groupe entity (many to one).
      */
-    public function setGroupe(Groupe $groupe = null): static
+    public function setGroupe(?Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 
@@ -81,7 +81,7 @@ abstract class BaseGroupeHasIngredient
     /**
      * Get Groupe entity (many to one).
      */
-    public function getGroupe(): static
+    public function getGroupe(): Groupe
     {
         return $this->groupe;
     }
@@ -89,7 +89,7 @@ abstract class BaseGroupeHasIngredient
     /**
      * Set Ingredient entity (many to one).
      */
-    public function setIngredient(Ingredient $ingredient = null): static
+    public function setIngredient(?Ingredient $ingredient = null): static
     {
         $this->ingredient = $ingredient;
 

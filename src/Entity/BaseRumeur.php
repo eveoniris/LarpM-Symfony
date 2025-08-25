@@ -145,7 +145,7 @@ abstract class BaseRumeur
     /**
      * Set Gn entity (many to one).
      */
-    public function setGn(Gn $gn = null): static
+    public function setGn(?Gn $gn = null): static
     {
         $this->gn = $gn;
 
@@ -163,7 +163,7 @@ abstract class BaseRumeur
     /**
      * Set Territoire entity (many to one).
      */
-    public function setTerritoire(Territoire $territoire = null): static
+    public function setTerritoire(?Territoire $territoire = null): static
     {
         $this->territoire = $territoire;
 
@@ -181,7 +181,7 @@ abstract class BaseRumeur
     /**
      * Set User entity (many to one).
      */
-    public function setUser(User $user = null): static
+    public function setUser(?User $user = null): static
     {
         $this->user = $user;
 

@@ -71,7 +71,7 @@ abstract class BaseReligionDescription
     /**
      * Set Religion entity (many to one).
      */
-    public function setReligion(Religion $religion = null): static
+    public function setReligion(?Religion $religion = null): static
     {
         $this->religion = $religion;
 
@@ -89,7 +89,7 @@ abstract class BaseReligionDescription
     /**
      * Set ReligionLevel entity (many to one).
      */
-    public function setReligionLevel(ReligionLevel $religionLevel = null): static
+    public function setReligionLevel(?ReligionLevel $religionLevel = null): static
     {
         $this->religionLevel = $religionLevel;
 

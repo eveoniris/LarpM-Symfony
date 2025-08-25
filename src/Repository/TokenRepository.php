@@ -16,7 +16,7 @@ class TokenRepository extends BaseRepository
         return $this->findBy([], ['label' => 'ASC']);
     }
 
-    public function searchAttributes(string $alias = null): array
+    public function searchAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
@@ -28,7 +28,7 @@ class TokenRepository extends BaseRepository
         ];
     }
 
-    public function sortAttributes(string $alias = null): array
+    public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 

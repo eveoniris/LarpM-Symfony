@@ -71,7 +71,7 @@ abstract class BasePersonnageHasQuestion
     /**
      * Set Personnage entity (many to one).
      */
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -89,7 +89,7 @@ abstract class BasePersonnageHasQuestion
     /**
      * Set Question entity (many to one).
      */
-    public function setQuestion(Question $question = null): static
+    public function setQuestion(?Question $question = null): static
     {
         $this->question = $question;
 

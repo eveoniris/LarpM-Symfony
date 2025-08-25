@@ -100,7 +100,7 @@ class BaseRestriction
      *
      * @return \App\Entity\Restriction
      */
-    public function setUserRelatedByAuteurId(User $user = null): static
+    public function setUserRelatedByAuteurId(?User $user = null): static
     {
         $this->userRelatedByAuteurId = $user;
 

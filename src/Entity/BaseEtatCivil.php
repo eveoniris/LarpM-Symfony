@@ -84,7 +84,7 @@ class BaseEtatCivil
         return $this->date_naissance;
     }
 
-    public function setDateNaissance(?DateTime $date_naissance): string
+    public function setDateNaissance(?DateTime $date_naissance): static
     {
         $this->date_naissance = $date_naissance;
 
@@ -204,7 +204,7 @@ class BaseEtatCivil
         return $this->telephone;
     }
 
-    public function setTelephone(string $telephone): string
+    public function setTelephone(string $telephone): static
     {
         $this->telephone = $telephone;
 
@@ -228,7 +228,7 @@ class BaseEtatCivil
         return $this->user;
     }
 
-    public function setUser(User $user = null): static
+    public function setUser(?User $user = null): static
     {
         if (null !== $user) {
             $user->setEtatCivil($this);

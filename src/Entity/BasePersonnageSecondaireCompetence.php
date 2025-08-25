@@ -50,7 +50,7 @@ abstract class BasePersonnageSecondaireCompetence
     /**
      * Set PersonnageSecondaire entity (many to one).
      */
-    public function setPersonnageSecondaire(PersonnageSecondaire $personnageSecondaire = null): static
+    public function setPersonnageSecondaire(?PersonnageSecondaire $personnageSecondaire = null): static
     {
         $this->personnageSecondaire = $personnageSecondaire;
 
@@ -68,7 +68,7 @@ abstract class BasePersonnageSecondaireCompetence
     /**
      * Set Competence entity (many to one).
      */
-    public function setCompetence(Competence $competence = null): static
+    public function setCompetence(?Competence $competence = null): static
     {
         $this->competence = $competence;
 

@@ -143,7 +143,7 @@ class BaseAppelation
         return $this->territoires;
     }
 
-    public function setAppelation(Appelation $appelation = null): self
+    public function setAppelation(?Appelation $appelation = null): self
     {
         $this->appelation = $appelation;
 

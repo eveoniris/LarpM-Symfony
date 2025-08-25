@@ -43,7 +43,7 @@ abstract class BaseGroupeHasRessource
     /**
      * Set Groupe entity (many to one).
      */
-    public function setGroupe(Groupe $groupe = null): static
+    public function setGroupe(?Groupe $groupe = null): static
     {
         $this->groupe = $groupe;
 
@@ -97,7 +97,7 @@ abstract class BaseGroupeHasRessource
     /**
      * Set Ressource entity (many to one).
      */
-    public function setRessource(Ressource $ressource = null): static
+    public function setRessource(?Ressource $ressource = null): static
     {
         $this->ressource = $ressource;
 

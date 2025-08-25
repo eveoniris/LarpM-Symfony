@@ -41,7 +41,7 @@ class CompetenceRepository extends BaseRepository
             ->getResult();
     }
 
-    public function getPersonnages(Competence $competence, Gn $gn = null): QueryBuilder
+    public function getPersonnages(Competence $competence, ?Gn $gn = null): QueryBuilder
     {
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);

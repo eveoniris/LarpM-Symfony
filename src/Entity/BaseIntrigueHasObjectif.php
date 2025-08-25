@@ -53,7 +53,7 @@ abstract class BaseIntrigueHasObjectif
     /**
      * Set Intrigue entity (many to one).
      */
-    public function setIntrigue(Intrigue $intrigue = null): static
+    public function setIntrigue(?Intrigue $intrigue = null): static
     {
         $this->intrigue = $intrigue;
 
@@ -71,7 +71,7 @@ abstract class BaseIntrigueHasObjectif
     /**
      * Set Objectif entity (many to one).
      */
-    public function setObjectif(Objectif $objectif = null): static
+    public function setObjectif(?Objectif $objectif = null): static
     {
         $this->objectif = $objectif;
 

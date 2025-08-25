@@ -73,7 +73,7 @@ abstract class BaseExperienceUsage
         return $this->xp_use;
     }
 
-    public function setCompetence(Competence $competence = null): static
+    public function setCompetence(?Competence $competence = null): static
     {
         $this->competence = $competence;
 
@@ -85,7 +85,7 @@ abstract class BaseExperienceUsage
         return $this->competence;
     }
 
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 

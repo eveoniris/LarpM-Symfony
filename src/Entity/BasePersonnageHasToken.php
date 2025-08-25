@@ -49,7 +49,7 @@ abstract class BasePersonnageHasToken
     /**
      * Set Personnage entity (many to one).
      */
-    public function setPersonnage(Personnage $personnage = null): static
+    public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
 
@@ -67,7 +67,7 @@ abstract class BasePersonnageHasToken
     /**
      * Set Token entity (many to one).
      */
-    public function setToken(Token $token = null): static
+    public function setToken(?Token $token = null): static
     {
         $this->token = $token;
 
