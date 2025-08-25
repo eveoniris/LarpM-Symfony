@@ -1,0 +1,5 @@
+localhost:80 {
+    root * /app/public
+    php_server
+    file_server
+}
