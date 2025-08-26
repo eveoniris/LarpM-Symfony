@@ -164,8 +164,8 @@ Si oui faire un `docker compose down -v` puis faire un `docker compose up -d` et
 ##  Exemple pour mettre à jour les librairies de composer
     Mettre à jour composer.json sur la version visé puis
 
-- `composer update "doctrine/*" --with-all-dependencies`
-- `composer update "symfony/*" --with-all-dependencies`
+- `docker compose run --rm composer update "doctrine/*" --with-all-dependencies`
+- `docker compose run --rm composer update "symfony/*" --with-all-dependencies`
 
 ## Ajout de Imagine
 Si manquant 
