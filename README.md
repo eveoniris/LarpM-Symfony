@@ -147,12 +147,33 @@ docker compose exec frankenphp php bin/console server:run
 docker compose exec frankenphp php bin/console messenger:consume async -vv
 ```
 
+## Compiler les assets
+Voir https://symfony.com/doc/current/frontend/asset_mapper.html
+
+```
+docker compose exec frankenphp php bin/console asset-map:compile
+```
+
+## Debug les assets
+
+```
+docker compose exec frankenphp php bin/console debug:asset-map
+```
+
+## Maj ou install de l'importmap 
+
+```
+docker compose exec frankenphp php bin/console importmap:update
+docker compose exec frankenphp php bin/console importmap:install
+```
+
 ## Maj service du docker compose
 Pour mettre à jour les service définis dans le docker-compose.yml si une nouvelle version est disponible. Il faudra jouer la commande
 
 ```
 docker compose pull
 ```
+
 # Soucis possible
 
 Si vous avez un souci pour vous connecter
