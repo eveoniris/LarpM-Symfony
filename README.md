@@ -1,111 +1,178 @@
 # larpManager
 
-Live Action Role Playing Manager
+Live action role-playing game (LARP) Manager
 
 This tool was made for manage player subscription, player background and many other things on LARP event.
 
+Gestionnaire de jeu de rôle grandeur nature
+
 # Install
 
-You need
+Vous aurez besoin de
 
+- Git : https://git-scm.com/downloads
 - Docker : https://docs.docker.com/engine/install/
 - Docker compose : https://docs.docker.com/compose/install/
 
-1) Download the source:
+## 1- Source
 
 ```
-git clone git@github.com:eveoniris/LarpM-Symfony.git
+git clone git@github.com:eveoniris/LarpM-Symfony.git larpmanager
 ```
 
-2) Go to your project folder and type:
+## 2- compiler le projet
 
+Normalement inutile car gérer par le point suivant. Il pourra être parfois requis de recompiler. Voici 
+donc la commande.
 ```
 docker compose build
 ```
 
-3) After the build is done type:
+## 3- Lancer le projet
 
 ```
 docker compose up -d
 ```
 
-4) Goto : http://localhost:8082/
-   If it's say can't connect or network error
-   try `symfony server start` and then go to http://localhost:8000
+## 3- Charger une première fois les librairies externe (vendor) 
 
-5) Connection your Database IDE :
+```
+docker compose run --rm composer install
+```
 
-Use a mariadb as driver (prod use Mysql but Mysql Docker Image is only linux/x86_64)
-(You can choose another database by creating a local docker-compose file)
+## 4- Accéder au site
+aller sur http://localhost:8080/
 
+Vous pouvez utiliser un reverse proxy comme Caddy pour accéder plutot avec l'url http://larpmanager.test
+Pour cela, il faudra modifier votre fichier "hosts" /etc/hosts et y ajouter
+
+```
+127.0.0.1 larpmanager.test
+```
+
+## 5- Connection d'un IDE à la base de donnée 
+
+On utilise la même version que sur le serveur de production : Mysql 8.0+
+
+```
 - host : localhost
 - port : 30202
 - user : admin
 - pass : password
 - database : larpm
+```
 
-6) Symfony command
-   All symfony commands are availble inside the container. You can access to it by using Docker Desktop App or the
-   commande :
-   `docker exec -it larpm-symfony-app-1 bash`
+## 6- Voir les mails
 
-You can also install and use your local symfony as the whole project folder is mounted as a volume
+Tous les mails sont catché par mailpit et consultable sur : http://localhost:8025/
 
-7) Webpack command Js et CSS
+## 7- commande Symfony
+   
+Les commandes symfony sont disponibles via :
 
-`symfony composer req encore`
+```
+   docker compose exec frankenphp symfony
+```
 
-`npm install node-sass sass-loader --save-dev`
+Ou via 
 
-`npm install bootstrap @popperjs/core bs-custom-file-input --save-dev`
+```
+docker compose exec frankenphp php bin/console
+```
 
-Récuppérer jquery
-`npm install --save-dev jquery`
+## Voir les logs 
+```
+docker compose logs
+docker compose logs frankenphp
+docker compose logs mailer
+docker compose logs database
+```
 
-`npm install --save-dev bootstrap-select`
-`npm install tinymce`
-`npm install file-loader@^6.0.0`
-
-Pour relancer le app.js et css
-`symfony run npm run dev`
-
-Pour ne pas avoir à recompiler en cas de changement
-`symfony run -d npm run watch`
-
-8) Tips
-   Si le clear:cache échoue :
-   php -d memory_limit=-1 bin/console cache:clear
+## Base de donnée
 
 Export de la base de donnée
-`docker exec -it larpm-symfony-database-1 mariadb-dump -uadmin -ppassword --opt larpm > backup.sql`
+`docker exec -it larpmanager-database-1 mysqldump -uadmin -ppassword --opt larpm > backup.sql`
 
-Copier le fichier dans le container
-`docker cp backup.sql larpm-symfony-database-1:/tmp/backup.sql`
+Pour importer, créer un fichier puis le copier dans le container
+`docker cp backup.sql larpmanager-database-1:/tmp/backup.sql`
 
 Import de la base de donnée (le fichier doit être dans le container)
-`docker exec -it larpm-symfony-database-1 /bin/sh -c "mariadb -uadmin -ppassword larpm < /tmp/backup.sql"`
+`docker exec -it larpmanager-database-1 /bin/sh -c "mysql -uadmin -ppassword larpm < /tmp/backup.sql"`
 
-9) mise à jour
 
-- docker compose build
-- docker compose pull
--
+# Divers
 
+## Composer 
 Commande pour maj aller sur le container (voir point 6) puis faire :
 
-- composer install
-- composer recipes:install
+```
+docker compose run --rm composer install
+docker compose run --rm composer recipes:install
+```
 
-10) ajout de Imagine
-    `symfony composer req "imagine/imagine:^1.2"`
+# Commande utile
 
-11) ajout de Autocomplete
+## Vider le cache
+Nettoyer et recharger le cache
+```
+docker compose exec frankenphp php bin/console cache:clear
+```
 
-- `composer require symfony/stimulus-bundle`
-- `composer require symfony/ux-autocomplete`
+```
+docker compose exec frankenphp php bin/console cache:warmup
+```
 
-12) Exemple Maj cmposer
+Si le clear:cache échoue :
+```
+php -d memory_limit=-1 bin/console cache:clear
+``` 
+
+## Exécuter les migrations Doctrine
+```
+docker compose exec frankenphp php bin/console doctrine:migrations:migrate
+```
+
+## Lancer un serveur de développement (si nécessaire)
+```
+docker compose exec frankenphp php bin/console server:run
+```
+
+## Lancer un worker Messenger
+```
+docker compose exec frankenphp php bin/console messenger:consume async -vv
+```
+
+## Maj service du docker compose
+Pour mettre à jour les service définis dans le docker-compose.yml si une nouvelle version est disponible. Il faudra jouer la commande
+
+```
+docker compose pull
+```
+# Soucis possible
+
+Si vous avez un souci pour vous connecter
+
+fair un `docker compose ps` voir si un container est en "restarting"
+
+Si oui faire un `docker compose down -v` puis faire un `docker compose up -d` et vérifier les logs.
+
+##  Exemple pour mettre à jour les librairies de composer
     Mettre à jour composer.json sur la version visé puis
 
 - `composer update "doctrine/*" --with-all-dependencies`
 - `composer update "symfony/*" --with-all-dependencies`
+
+## Ajout de Imagine
+Si manquant 
+
+```
+docker compose exec frankenphp symfony composer req "imagine/imagine:^1.2"
+```
+
+##  Ajout de Autocomplete
+Si manquant
+
+- `docker compose run --rm composer require symfony/stimulus-bundle`
+- `docker compose run --rm composer require symfony/ux-autocomplete`
+
+

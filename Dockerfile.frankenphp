@@ -11,3 +11,7 @@ RUN apt-get update && \
 
 # Active les extensions
 RUN docker-php-ext-enable intl
+
+# Installe Symfony CLI
+RUN curl -sS https://get.symfony.com/cli/installer | bash \
+    &&  mv /root/.symfony5/bin/symfony /usr/local/bin

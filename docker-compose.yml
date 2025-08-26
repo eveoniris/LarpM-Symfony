@@ -10,14 +10,14 @@ services:
       #- "9000:9000"  # Port pour le mode worker (optionnel)
     volumes:
       - ./:/app
-      - ./docker/caddy/Caddyfile:/etc/frankenphp/Caddyfile      
+      - ./docker/caddy/Caddyfile:/etc/frankenphp/Caddyfile
     environment:
-      - SERVER_NAME=localhost
-      - PHP_EXTENSIONS=pdo,pdo_mysql,intl,ctype,iconv 
+      - SERVER_NAME=larpmanager.test
+      - PHP_EXTENSIONS=pdo,pdo_mysql,intl,ctype,iconv
     depends_on:
       - database
-      - mailer    
-  
+      - mailer
+
 
   database:
     image: mysql:8.0
@@ -33,7 +33,7 @@ services:
       - ./docker/db/data:/var/lib/mysql:rw # À comenter ou vider pour le premier démarrage
       - ./docker/db/initData:/docker-entrypoint-initdb.d # bootstrap .sql files on first strat
 
-  mailpit:
+  mailer:
     image: axllent/mailpit
     restart: unless-stopped
     volumes:

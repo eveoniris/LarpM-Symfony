@@ -3,3 +3,7 @@ localhost:80 {
     php_server
     file_server
 }
+
+larpmanager.test {
+	reverse_proxy localhost:80
+}
