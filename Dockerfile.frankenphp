@@ -2,9 +2,12 @@ FROM dunglas/frankenphp:latest
 
 # Installe les dépendances nécessaires pour PDO_MYSQL et INTL
 RUN apt-get update && \
-    apt-get install -y libonig-dev libxml2-dev libzip-dev && \
+    apt-get install -y --no-install-recommends \
+    libxml2-dev zlib1g-dev libzip-dev libfreetype6-dev libpng-dev libwebp-dev libxpm-dev \
+    libpq-dev libjpeg-dev libjpeg62-turbo-dev libicu-dev libgd-dev libonig-dev libxslt1-dev && \
     docker-php-ext-configure intl && \
-    docker-php-ext-install pdo pdo_mysql intl zip
+    docker-php-ext-configure gd --enable-gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ --with-webp=/usr/include/ && \
+    docker-php-ext-install pdo pdo_mysql intl zip sockets opcache calendar dom mbstring exif gd xsl mysqli
 
 # Active les extensions
 RUN docker-php-ext-enable intl
