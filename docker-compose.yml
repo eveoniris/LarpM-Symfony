@@ -16,13 +16,11 @@ services:
       - PHP_EXTENSIONS=pdo,pdo_mysql,intl,ctype,iconv 
     depends_on:
       - database
-      - mailer
-    networks:
-      - larp_network
+      - mailer    
+  
 
   database:
     image: mysql:8.0
-    # container_name: larpmanager_db
     ports:
       - "30202:3306"
     restart: unless-stopped
@@ -31,15 +29,11 @@ services:
       MYSQL_DATABASE: larpm
       MYSQL_USER: admin
       MYSQL_PASSWORD: password
-    networks:
-      - larp_network  
     volumes:
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      - ./docker/db/data:/var/lib/mysql:rw
+      - ./docker/db/data:/var/lib/mysql:rw # À comenter ou vider pour le premier démarrage
       - ./docker/db/initData:/docker-entrypoint-initdb.d # bootstrap .sql files on first strat
-      # - larpmanager_db_data:/var/lib/mysql
 
-  mailer:
+  mailpit:
     image: axllent/mailpit
     restart: unless-stopped
     volumes:
@@ -52,8 +46,6 @@ services:
       MP_DATA_FILE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
-    networks:
-      - larp_network    
 
   composer:
     image: composer:latest
@@ -61,7 +53,3 @@ services:
       - ./:/app
     working_dir: /app
     command: install
-    
-networks:
-  larp_network:
-    driver: bridge

@@ -1,3010 +1,2341 @@
--- current larp schema
-
-create table if not exists age
-(
-    id             int auto_increment
-        primary key,
-    label          varchar(100)  not null,
-    description    varchar(450)  null,
-    bonus          int           null,
-    enableCreation tinyint(1)    not null,
-    discr          varchar(255)  not null,
-    minimumValue   int default 0 not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists appelation
-(
-    id            int auto_increment
-        primary key,
-    appelation_id int          null,
-    label         varchar(45)  not null,
-    description   longtext     null,
-    titre         varchar(45)  null,
-    discr         varchar(255) not null,
-    constraint FK_68825BB0F9E65DDB
-        foreign key (appelation_id) references appelation (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_territoire_denomination_territoire_denomination1_idx
-    on appelation (appelation_id);
-
-create table if not exists attribute_type
-(
-    id    int auto_increment
-        primary key,
-    label varchar(45)  not null,
-    discr varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists classe
-(
-    id             int auto_increment
-        primary key,
-    label_masculin varchar(45)  null,
-    label_feminin  varchar(45)  null,
-    description    varchar(450) null,
-    discr          varchar(255) not null,
-    image_m        varchar(90)  null,
-    image_f        varchar(90)  null,
-    creation       tinyint(1)   null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists competence_family
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    description varchar(450) null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists classe_competence_family_creation
-(
-    classe_id            int not null,
-    competence_family_id int not null,
-    primary key (classe_id, competence_family_id),
-    constraint FK_4FC70A4B8F5EA509
-        foreign key (classe_id) references classe (id),
-    constraint FK_4FC70A4BF7EB2017
-        foreign key (competence_family_id) references competence_family (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_4FC70A4B8F5EA509
-    on classe_competence_family_creation (classe_id);
-
-create index if not exists IDX_4FC70A4BF7EB2017
-    on classe_competence_family_creation (competence_family_id);
-
-create table if not exists classe_competence_family_favorite
-(
-    classe_id            int not null,
-    competence_family_id int not null,
-    primary key (classe_id, competence_family_id),
-    constraint FK_70EC01E68F5EA509
-        foreign key (classe_id) references classe (id),
-    constraint FK_70EC01E6F7EB2017
-        foreign key (competence_family_id) references competence_family (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_70EC01E68F5EA509
-    on classe_competence_family_favorite (classe_id);
-
-create index if not exists IDX_70EC01E6F7EB2017
-    on classe_competence_family_favorite (competence_family_id);
-
-create table if not exists classe_competence_family_normale
-(
-    classe_id            int not null,
-    competence_family_id int not null,
-    primary key (classe_id, competence_family_id),
-    constraint FK_D65491848F5EA509
-        foreign key (classe_id) references classe (id),
-    constraint FK_D6549184F7EB2017
-        foreign key (competence_family_id) references competence_family (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_D65491848F5EA509
-    on classe_competence_family_normale (classe_id);
-
-create index if not exists IDX_D6549184F7EB2017
-    on classe_competence_family_normale (competence_family_id);
-
-create table if not exists connaissance
-(
-    id          int(11) unsigned auto_increment
-        primary key,
-    label       varchar(45) collate utf8mb3_unicode_ci                    not null,
-    description longtext                                                  null,
-    contraintes longtext collate utf8mb3_unicode_ci                       null,
-    documentUrl varchar(45) collate utf8mb3_unicode_ci                    null,
-    niveau      int(2) unsigned                        default 1          not null,
-    secret      tinyint(1)                             default 0          not null,
-    discr       varchar(45) collate utf8mb3_unicode_ci default 'extended' not null
-)
-    engine = InnoDB
-    charset = utf8mb3;
-
-create table if not exists construction
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    description longtext     null,
-    defense     int          not null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists culture
-(
-    id                   int unsigned auto_increment
-        primary key,
-    label                varchar(45)  not null,
-    description          longtext     not null,
-    discr                varchar(255) not null,
-    description_complete longtext     null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists domaine
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    description longtext     null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists etat
-(
-    id    int auto_increment
-        primary key,
-    label varchar(45)  not null,
-    discr varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists etat_civil
-(
-    id                  int auto_increment
-        primary key,
-    nom                 varchar(45)  null,
-    prenom              varchar(45)  null,
-    prenom_usage        varchar(45)  null,
-    telephone           varchar(45)  null,
-    photo               varchar(45)  null,
-    date_naissance      datetime     null,
-    probleme_medicaux   longtext     null,
-    personne_a_prevenir varchar(45)  null,
-    tel_pap             varchar(45)  null,
-    fedegn              varchar(45)  null,
-    creation_date       datetime     not null,
-    update_date         datetime     not null,
-    discr               varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists evenement
-(
-    id            int unsigned auto_increment
-        primary key,
-    text          varchar(450) not null,
-    date          varchar(45)  not null,
-    date_creation datetime     not null,
-    date_update   datetime     not null,
-    discr         varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists formulaire
-(
-    id    int          not null
-        primary key,
-    title varchar(45)  null,
-    discr varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists genre
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(100) not null,
-    description varchar(450) null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists groupe
-(
-    id              int auto_increment
-        primary key,
-    scenariste_id   int unsigned null,
-    responsable_id  int unsigned null,
-    topic_id        int          not null,
-    nom             varchar(100) null,
-    description     longtext     null,
-    numero          int          not null,
-    code            varchar(10)  null,
-    jeu_maritime    tinyint(1)   null,
-    jeu_strategique tinyint(1)   null,
-    classe_open     int          null,
-    pj              tinyint(1)   null,
-    discr           varchar(255) not null,
-    materiel        longtext     null,
-    `lock`          tinyint(1)   not null,
-    territoire_id   int          null,
-    richesse        int          null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_groupe_territoire1_idx
-    on groupe (territoire_id);
-
-create index if not exists fk_groupe_topic1_idx
-    on groupe (topic_id);
-
-create index if not exists fk_groupe_user2_idx
-    on groupe (responsable_id);
-
-create index if not exists fk_groupe_users1_idx
-    on groupe (scenariste_id);
-
-create table if not exists groupe_allie
-(
-    id                    int auto_increment
-        primary key,
-    groupe_id             int          not null,
-    groupe_allie_id       int          not null,
-    groupe_accepted       tinyint(1)   not null,
-    groupe_allie_accepted tinyint(1)   not null,
-    message               longtext     null,
-    discr                 varchar(255) not null,
-    message_allie         longtext     null,
-    constraint FK_8E0758767A45358C
-        foreign key (groupe_id) references groupe (id),
-    constraint FK_8E075876DA3B93A3
-        foreign key (groupe_allie_id) references groupe (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_groupe_allie_groupe1_idx
-    on groupe_allie (groupe_id);
-
-create index if not exists fk_groupe_allie_groupe2_idx
-    on groupe_allie (groupe_allie_id);
-
-create table if not exists groupe_classe
-(
-    id        int auto_increment
-        primary key,
-    groupe_id int          not null,
-    classe_id int          not null,
-    discr     varchar(255) not null,
-    constraint FK_E4B943AC7A45358C
-        foreign key (groupe_id) references groupe (id),
-    constraint FK_E4B943AC8F5EA509
-        foreign key (classe_id) references classe (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_groupe_classe_classe1_idx
-    on groupe_classe (classe_id);
-
-create index if not exists fk_groupe_classe_groupe1_idx
-    on groupe_classe (groupe_id);
-
-create table if not exists groupe_enemy
-(
-    id                 int auto_increment
-        primary key,
-    groupe_id          int          not null,
-    groupe_enemy_id    int          not null,
-    groupe_peace       tinyint(1)   not null,
-    groupe_enemy_peace tinyint(1)   not null,
-    message            longtext     null,
-    discr              varchar(255) not null,
-    message_enemy      longtext     null,
-    constraint FK_AE3294F91AE935F
-        foreign key (groupe_enemy_id) references groupe (id),
-    constraint FK_AE3294F97A45358C
-        foreign key (groupe_id) references groupe (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_groupe_enemy_groupe1_idx
-    on groupe_enemy (groupe_id);
-
-create index if not exists fk_groupe_enemy_groupe2_idx
-    on groupe_enemy (groupe_enemy_id);
-
-create table if not exists groupe_langue
-(
-    id      int auto_increment
-        primary key,
-    label   varchar(100) not null,
-    couleur varchar(45)  not null,
-    discr   varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists ingredient
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    description longtext     null,
-    niveau      int          not null,
-    dose        varchar(45)  not null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists groupe_has_ingredient
-(
-    id            int auto_increment
-        primary key,
-    groupe_id     int          not null,
-    ingredient_id int          not null,
-    quantite      int          not null,
-    discr         varchar(255) not null,
-    constraint FK_EAACBE7A7A45358C
-        foreign key (groupe_id) references groupe (id),
-    constraint FK_EAACBE7A933FE08C
-        foreign key (ingredient_id) references ingredient (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_groupe_has_ingredient_groupe1_idx
-    on groupe_has_ingredient (groupe_id);
-
-create index if not exists fk_groupe_has_ingredient_ingredient1_idx
-    on groupe_has_ingredient (ingredient_id);
-
-create table if not exists item_bak
-(
-    id             int unsigned auto_increment
-        primary key,
-    quality_id     int           not null,
-    statut_id      int           null,
-    label          varchar(45)   null,
-    description    longtext      null,
-    numero         int           not null,
-    identification int           not null,
-    special        longtext      null,
-    couleur        varchar(45)   not null,
-    date_creation  datetime      not null,
-    date_update    datetime      not null,
-    discr          varchar(255)  not null,
-    objet_id       int           not null,
-    quantite       int default 1 not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_item_objet1_idx
-    on item_bak (objet_id);
-
-create index if not exists fk_item_qualite1_idx
-    on item_bak (quality_id);
-
-create index if not exists fk_item_statut1_idx
-    on item_bak (statut_id);
-
-create table if not exists langue
-(
-    id               int auto_increment
-        primary key,
-    label            varchar(100)         not null,
-    description      varchar(450)         null,
-    discr            varchar(255)         not null,
-    diffusion        int                  null,
-    groupe_langue_id int                  not null,
-    secret           tinyint(1) default 0 not null,
-    documentUrl      varchar(45)          null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists groupe_langue_id_idx
-    on langue (groupe_langue_id);
-
-create table if not exists level
-(
-    id          int auto_increment
-        primary key,
-    `index`     int          not null,
-    label       varchar(45)  not null,
-    cout        int          null,
-    cout_favori int          null,
-    cout_meconu int          null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists competence
-(
-    id                   int auto_increment
-        primary key,
-    competence_family_id int          not null,
-    level_id             int          null,
-    description          longtext     null,
-    discr                varchar(255) not null,
-    documentUrl          varchar(45)  null,
-    materiel             longtext     null,
-    constraint FK_94D4687F5FB14BA7
-        foreign key (level_id) references level (id),
-    constraint FK_94D4687FF7EB2017
-        foreign key (competence_family_id) references competence_family (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_competence_niveau_competence1_idx
-    on competence (competence_family_id);
-
-create index if not exists fk_competence_niveau_niveau1_idx
-    on competence (level_id);
-
-create table if not exists competence_attribute
-(
-    competence_id     int          not null,
-    attribute_type_id int          not null,
-    value             int          not null,
-    discr             varchar(255) not null,
-    primary key (competence_id, attribute_type_id),
-    constraint FK_CECF998615761DAB
-        foreign key (competence_id) references competence (id),
-    constraint FK_CECF99864ED0D557
-        foreign key (attribute_type_id) references attribute_type (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_competence_has_attribute_type_attribute_type1_idx
-    on competence_attribute (attribute_type_id);
-
-create index if not exists fk_competence_has_attribute_type_competence1_idx
-    on competence_attribute (competence_id);
-
-create table if not exists lieu
-(
-    id          int auto_increment
-        primary key,
-    nom         varchar(45)  not null,
-    description longtext     null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists lignees
-(
-    id          int(11) unsigned auto_increment
-        primary key,
-    nom         varchar(255)                    not null,
-    description text                            null,
-    discr       varchar(255) default 'extended' not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists localisation
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    `precision` varchar(450) null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists loi
-(
-    id          int unsigned auto_increment
-        primary key,
-    label       varchar(45)  null,
-    documentUrl varchar(45)  null,
-    description longtext     null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists monnaie
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    description longtext     not null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists objectif
-(
-    id            int unsigned auto_increment
-        primary key,
-    text          varchar(450) not null,
-    date_creation datetime     not null,
-    date_update   datetime     not null,
-    discr         varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists personnage
-(
-    id            int auto_increment
-        primary key,
-    groupe_id     int          null,
-    classe_id     int          not null,
-    age_id        int          not null,
-    genre_id      int          not null,
-    nom           varchar(100) not null,
-    surnom        varchar(100) null,
-    intrigue      tinyint(1)   null,
-    renomme       int          null,
-    photo         varchar(100) null,
-    xp            int          null,
-    territoire_id int          null,
-    discr         varchar(255) not null,
-    materiel      longtext     null,
-    vivant        tinyint(1)   not null,
-    age_reel      int          null,
-    trombineUrl   varchar(45)  null,
-    user_id       int unsigned null,
-    richesse      int          null,
-    heroisme      int          null,
-    sensible      tinyint(1)   null,
-    bracelet      tinyint(1)   null,
-    constraint FK_6AEA486D4296D31F
-        foreign key (genre_id) references genre (id),
-    constraint FK_6AEA486D7A45358C
-        foreign key (groupe_id) references groupe (id),
-    constraint FK_6AEA486D8F5EA509
-        foreign key (classe_id) references classe (id),
-    constraint FK_6AEA486DCC80CD12
-        foreign key (age_id) references age (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists experience_gain
-(
-    id             int auto_increment
-        primary key,
-    personnage_id  int          not null,
-    explanation    varchar(100) not null,
-    operation_date datetime     not null,
-    xp_gain        int          not null,
-    discr          varchar(255) not null,
-    constraint FK_8485E21D5E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_experience_gain_personnage1_idx
-    on experience_gain (personnage_id);
-
-create table if not exists experience_usage
-(
-    id             int auto_increment
-        primary key,
-    competence_id  int          not null,
-    personnage_id  int          not null,
-    operation_date datetime     not null,
-    xp_use         int          not null,
-    discr          varchar(255) not null,
-    constraint FK_B3B9226615761DAB
-        foreign key (competence_id) references competence (id),
-    constraint FK_B3B922665E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_experience_usage_competence1_idx
-    on experience_usage (competence_id);
-
-create index if not exists fk_experience_usage_personnage1_idx
-    on experience_usage (personnage_id);
-
-create table if not exists heroisme_history
-(
-    id            int unsigned auto_increment
-        primary key,
-    personnage_id int          not null,
-    date          date         not null,
-    heroisme      int          not null,
-    explication   longtext     not null,
-    discr         varchar(255) not null,
-    constraint FK_23D4BD695E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_heroisme_history_personnage1_idx
-    on heroisme_history (personnage_id);
-
-create index if not exists fk_personnage_age1_idx
-    on personnage (age_id);
-
-create index if not exists fk_personnage_archetype1_idx
-    on personnage (classe_id);
-
-create index if not exists fk_personnage_genre1_idx
-    on personnage (genre_id);
-
-create index if not exists fk_personnage_groupe1_idx
-    on personnage (groupe_id);
-
-create index if not exists fk_personnage_territoire1_idx
-    on personnage (territoire_id);
-
-create index if not exists fk_personnage_user1_idx
-    on personnage (user_id);
-
-create table if not exists personnage_ingredient
-(
-    id            int unsigned auto_increment
-        primary key,
-    personnage_id int          not null,
-    ingredient_id int          not null,
-    nombre        int          null,
-    discr         varchar(255) not null,
-    constraint FK_F0FAA3655E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_F0FAA365933FE08C
-        foreign key (ingredient_id) references ingredient (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_F0FAA3655E315342
-    on personnage_ingredient (personnage_id);
-
-create index if not exists fk_personnage_ingredient_ingredient1_idx
-    on personnage_ingredient (ingredient_id);
-
-create table if not exists personnage_langues
-(
-    id            int auto_increment
-        primary key,
-    personnage_id int          not null,
-    langue_id     int          not null,
-    source        varchar(45)  not null,
-    discr         varchar(255) not null,
-    constraint FK_3D820E582AADBACD
-        foreign key (langue_id) references langue (id),
-    constraint FK_3D820E585E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_personnage_langues_langue1_idx
-    on personnage_langues (langue_id);
-
-create index if not exists fk_personnage_langues_personnage1_idx
-    on personnage_langues (personnage_id);
-
-create table if not exists personnage_secondaire
-(
-    id        int auto_increment
-        primary key,
-    classe_id int          not null,
-    discr     varchar(255) not null,
-    constraint FK_EACE838A8F5EA509
-        foreign key (classe_id) references classe (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_personnage_secondaire_classe1_idx
-    on personnage_secondaire (classe_id);
-
-create table if not exists personnage_secondaire_competence
-(
-    id                       int auto_increment
-        primary key,
-    personnage_secondaire_id int          not null,
-    competence_id            int          not null,
-    discr                    varchar(255) not null,
-    constraint FK_DF6A66D15761DAB
-        foreign key (competence_id) references competence (id),
-    constraint FK_DF6A66DE6917FB3
-        foreign key (personnage_secondaire_id) references personnage_secondaire (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_personnage_secondaire_competences_competence1_idx
-    on personnage_secondaire_competence (competence_id);
-
-create index if not exists fk_personnage_secondaire_competences_personnage_secondaire_idx
-    on personnage_secondaire_competence (personnage_secondaire_id);
-
-create table if not exists personnage_secondaires_competences
-(
-    id                       int auto_increment
-        primary key,
-    personnage_secondaire_id int          not null,
-    competence_id            int          not null,
-    discr                    varchar(255) not null,
-    constraint FK_A871317815761DAB
-        foreign key (competence_id) references competence (id),
-    constraint FK_A8713178E6917FB3
-        foreign key (personnage_secondaire_id) references personnage_secondaire (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_personnage_secondaires_competences_competence1_idx
-    on personnage_secondaires_competences (competence_id);
-
-create index if not exists fk_personnage_secondaires_competences_personnage_secondaire_idx
-    on personnage_secondaires_competences (personnage_secondaire_id);
-
-create table if not exists personnage_secondaires_skills
-(
-    id                       int auto_increment
-        primary key,
-    personnage_secondaire_id int          not null,
-    competence_id            int          not null,
-    discr                    varchar(255) not null,
-    constraint FK_C410AE5015761DAB
-        foreign key (competence_id) references competence (id),
-    constraint FK_C410AE50E6917FB3
-        foreign key (personnage_secondaire_id) references personnage_secondaire (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_personnage_secondaire_skills_competence1_idx
-    on personnage_secondaires_skills (competence_id);
-
-create index if not exists fk_personnage_secondaire_skills_personnage_secondaire_idx
-    on personnage_secondaires_skills (personnage_secondaire_id);
-
-create table if not exists personnage_trigger
-(
-    id            int auto_increment
-        primary key,
-    personnage_id int          not null,
-    tag           varchar(45)  not null,
-    done          tinyint(1)   not null,
-    discr         varchar(255) not null,
-    constraint FK_3674375C5E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_trigger_personnage1_idx
-    on personnage_trigger (personnage_id);
-
-create table if not exists personnages_chronologie
-(
-    id            int(11) unsigned auto_increment
-        primary key,
-    personnage_id int                                                        not null,
-    evenement     varchar(255) collate utf8mb3_unicode_ci                    not null,
-    annee         int(5)                                                     not null,
-    discr         varchar(255) collate utf8mb3_unicode_ci default 'extended' not null,
-    constraint FK_6ECC33456843
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    charset = latin1;
-
-create table if not exists personnages_competences
-(
-    competence_id int not null,
-    personnage_id int not null,
-    primary key (competence_id, personnage_id),
-    constraint FK_8AED412315761DAB
-        foreign key (competence_id) references competence (id),
-    constraint FK_8AED41235E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_8AED412315761DAB
-    on personnages_competences (competence_id);
-
-create index if not exists IDX_8AED41235E315342
-    on personnages_competences (personnage_id);
-
-create table if not exists personnages_connaissances
-(
-    id              int(11) unsigned auto_increment
-        primary key,
-    personnage_id   int                                                        not null,
-    connaissance_id int(11) unsigned                                           null,
-    discr           varchar(255) collate utf8mb3_unicode_ci default 'extended' not null,
-    constraint FK_CONNAISSANCES
-        foreign key (connaissance_id) references connaissance (id),
-    constraint FK_PERSONNAGES_CONNAISSANCES
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    charset = latin1;
-
-create table if not exists personnages_domaines
-(
-    personnage_id int not null,
-    domaine_id    int not null,
-    primary key (personnage_id, domaine_id),
-    constraint FK_C31CED644272FC9F
-        foreign key (domaine_id) references domaine (id),
-    constraint FK_C31CED645E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_C31CED644272FC9F
-    on personnages_domaines (domaine_id);
-
-create index if not exists IDX_C31CED645E315342
-    on personnages_domaines (personnage_id);
-
-create table if not exists personnages_lignee
-(
-    id            int(11) unsigned auto_increment
-        primary key,
-    personnage_id int                                                        not null,
-    parent1_id    int                                                        null,
-    parent2_id    int                                                        null,
-    lignee_id     int(11) unsigned                                           null,
-    discr         varchar(255) collate utf8mb3_unicode_ci default 'extended' not null,
-    constraint FK_6ECC33456844
-        foreign key (parent1_id) references personnage (id),
-    constraint FK_6ECC33456845
-        foreign key (parent2_id) references personnage (id),
-    constraint FK_6ECC33456846
-        foreign key (lignee_id) references lignees (id),
-    constraint FK_6ECC33456847
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    charset = latin1;
-
-create table if not exists photo
-(
-    id            int auto_increment
-        primary key,
-    name          varchar(45)  not null,
-    extension     varchar(45)  not null,
-    real_name     varchar(45)  not null,
-    data          longblob     null,
-    creation_date datetime     not null,
-    discr         varchar(255) not null,
-    filename      varchar(100) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists potion
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    description longtext     null,
-    documentUrl varchar(45)  null,
-    discr       varchar(255) not null,
-    niveau      int          not null,
-    numero      varchar(45)  not null,
-    secret      tinyint(1)   null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists personnages_potions
-(
-    personnage_id int not null,
-    potion_id     int not null,
-    primary key (personnage_id, potion_id),
-    constraint FK_D485198A5E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_D485198A7126B348
-        foreign key (potion_id) references potion (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_D485198A5E315342
-    on personnages_potions (personnage_id);
-
-create index if not exists IDX_D485198A7126B348
-    on personnages_potions (potion_id);
-
-create table if not exists proprietaire
-(
-    id      int auto_increment
-        primary key,
-    nom     varchar(100) null,
-    adresse varchar(450) null,
-    mail    varchar(100) null,
-    tel     varchar(100) null,
-    discr   varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists pugilat_history
-(
-    id            int unsigned auto_increment
-        primary key,
-    personnage_id int          not null,
-    date          date         not null,
-    pugilat       int          not null,
-    explication   longtext     not null,
-    discr         varchar(255) not null,
-    constraint FK_864C39CB5E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_pugilat_history_personnage1_idx
-    on pugilat_history (personnage_id);
-
-create table if not exists quality
-(
-    id     int auto_increment
-        primary key,
-    label  varchar(45)  not null,
-    numero int          null,
-    discr  varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists quality_valeur
-(
-    id         int unsigned auto_increment
-        primary key,
-    quality_id int          not null,
-    monnaie_id int          not null,
-    nombre     int          not null,
-    discr      varchar(255) not null,
-    constraint FK_A480028F98D3FE22
-        foreign key (monnaie_id) references monnaie (id),
-    constraint FK_A480028FBCFC6D57
-        foreign key (quality_id) references quality (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_quality_valeur_monnaie1_idx
-    on quality_valeur (monnaie_id);
-
-create index if not exists fk_quality_valeur_qualite1_idx
-    on quality_valeur (quality_id);
-
-create table if not exists rangement
-(
-    id              int auto_increment
-        primary key,
-    localisation_id int          null,
-    label           varchar(45)  null,
-    `precision`     varchar(450) null,
-    discr           varchar(255) not null,
-    constraint FK_90F17AA6C68BE09C
-        foreign key (localisation_id) references localisation (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_rangement_localisation1_idx
-    on rangement (localisation_id);
-
-create table if not exists rarete
-(
-    id    int auto_increment
-        primary key,
-    label varchar(45)  not null,
-    value int          not null,
-    discr varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists religion_level
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    `index`     int          not null,
-    description longtext     null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists renomme_history
-(
-    id            int unsigned auto_increment
-        primary key,
-    personnage_id int          not null,
-    renomme       int          not null,
-    explication   longtext     not null,
-    date          datetime     not null,
-    discr         varchar(255) not null,
-    constraint FK_40D972425E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_renomme_history_personnage1_idx
-    on renomme_history (personnage_id);
-
-create table if not exists ressource
-(
-    id        int auto_increment
-        primary key,
-    rarete_id int          not null,
-    label     varchar(100) not null,
-    discr     varchar(255) not null,
-    constraint FK_939F45449E795D2F
-        foreign key (rarete_id) references rarete (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists groupe_has_ressource
-(
-    id           int auto_increment
-        primary key,
-    groupe_id    int          not null,
-    ressource_id int          not null,
-    quantite     int          not null,
-    discr        varchar(255) not null,
-    constraint FK_2E4F82907A45358C
-        foreign key (groupe_id) references groupe (id),
-    constraint FK_2E4F8290FC6CD52A
-        foreign key (ressource_id) references ressource (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_groupe_has_ressource_groupe1_idx
-    on groupe_has_ressource (groupe_id);
-
-create index if not exists fk_groupe_has_ressource_ressource1_idx
-    on groupe_has_ressource (ressource_id);
-
-create table if not exists personnage_ressource
-(
-    id            int unsigned auto_increment
-        primary key,
-    personnage_id int          not null,
-    ressource_id  int          not null,
-    nombre        int          null,
-    discr         varchar(255) not null,
-    constraint FK_A286E0845E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_A286E084FC6CD52A
-        foreign key (ressource_id) references ressource (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_A286E0845E315342
-    on personnage_ressource (personnage_id);
-
-create index if not exists fk_personnage_ressource_ressource1_idx
-    on personnage_ressource (ressource_id);
-
-create index if not exists fk_ressource_rarete1_idx
-    on ressource (rarete_id);
-
-create table if not exists restauration
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    description longtext     null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists rule
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    url         varchar(45)  not null,
-    description longtext     null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists secondary_group_type
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    description longtext     null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists sort
-(
-    id          int auto_increment
-        primary key,
-    domaine_id  int                  not null,
-    label       varchar(45)          not null,
-    description longtext             null,
-    documentUrl varchar(45)          null,
-    niveau      int                  not null,
-    discr       varchar(255)         not null,
-    secret      tinyint(1) default 0 not null,
-    constraint FK_5124F2224272FC9F
-        foreign key (domaine_id) references domaine (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists personnages_sorts
-(
-    personnage_id int not null,
-    sort_id       int not null,
-    primary key (personnage_id, sort_id),
-    constraint FK_8ABC9FD747013001
-        foreign key (sort_id) references sort (id),
-    constraint FK_8ABC9FD75E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_8ABC9FD747013001
-    on personnages_sorts (sort_id);
-
-create index if not exists IDX_8ABC9FD75E315342
-    on personnages_sorts (personnage_id);
-
-create index if not exists fk_sort_domaine1_idx
-    on sort (domaine_id);
-
-create table if not exists sorts
-(
-    id          int auto_increment
-        primary key,
-    domaine_id  int          not null,
-    label       varchar(45)  not null,
-    description longtext     null,
-    documentUrl varchar(45)  null,
-    niveau      int          not null,
-    discr       varchar(255) not null,
-    constraint FK_CE3FAA1D4272FC9F
-        foreign key (domaine_id) references domaine (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_sorts_domaine1_idx
-    on sorts (domaine_id);
-
-create table if not exists sphere
-(
-    id    int auto_increment
-        primary key,
-    label varchar(45)  null,
-    discr varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists priere
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    description longtext     null,
-    annonce     longtext     null,
-    documentUrl varchar(45)  null,
-    niveau      int          not null,
-    discr       varchar(255) not null,
-    sphere_id   int          not null,
-    constraint FK_1111202C75FD4EF9
-        foreign key (sphere_id) references sphere (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists personnages_prieres
-(
-    priere_id     int not null,
-    personnage_id int not null,
-    primary key (priere_id, personnage_id),
-    constraint FK_4E610DAC5E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_4E610DACA8227EF5
-        foreign key (priere_id) references priere (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_4E610DAC5E315342
-    on personnages_prieres (personnage_id);
-
-create index if not exists IDX_4E610DACA8227EF5
-    on personnages_prieres (priere_id);
-
-create index if not exists fk_priere_sphere1_idx
-    on priere (sphere_id);
-
-create table if not exists statut
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  null,
-    description longtext     null,
-    discr       varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists tag
-(
-    id    int auto_increment
-        primary key,
-    nom   varchar(100) null,
-    discr varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists technologie
-(
-    id                   int unsigned auto_increment
-        primary key,
-    label                varchar(45)          not null,
-    description          longtext             not null,
-    discr                varchar(255)         not null,
-    secret               tinyint(1) default 0 not null,
-    documentUrl          varchar(45)          null,
-    competence_family_id int                  null,
-    constraint FK_technologie_competence_family
-        foreign key (competence_family_id) references competence_family (id)
-            on delete set null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists personnage_has_technologie
-(
-    personnage_id  int          not null,
-    technologie_id int unsigned not null,
-    primary key (personnage_id, technologie_id),
-    constraint FK_65F62F93261A27D2
-        foreign key (technologie_id) references technologie (id),
-    constraint FK_65F62F935E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_65F62F93261A27D2
-    on personnage_has_technologie (technologie_id);
-
-create index if not exists IDX_65F62F935E315342
-    on personnage_has_technologie (personnage_id);
-
-create table if not exists technologies_ressources
-(
-    id             int unsigned auto_increment
-        primary key,
-    technologie_id int unsigned not null,
-    ressource_id   int          not null,
-    quantite       int          not null,
-    discr          varchar(255) not null,
-    constraint FK_B15E3D68261A27D2
-        foreign key (technologie_id) references technologie (id)
-            on delete cascade,
-    constraint FK_B15E3D68FC6CD52A
-        foreign key (ressource_id) references ressource (id)
-)
-    engine = InnoDB
-    charset = latin1;
-
-create index if not exists fk_technologies_ressources_idx
-    on technologies_ressources (technologie_id);
-
-create table if not exists territoire_guerre
-(
-    id            int auto_increment
-        primary key,
-    puissance     int          null,
-    puissance_max int          null,
-    protection    int          null,
-    discr         varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists territoire_quete
-(
-    territoire_id       int not null,
-    territoire_cible_id int not null,
-    primary key (territoire_id, territoire_cible_id)
-)
-    engine = MyISAM
-    charset = utf8mb3;
-
-create index if not exists IDX_63718DCB011823
-    on territoire_quete (territoire_cible_id);
-
-create index if not exists IDX_63718DCD0F97A8
-    on territoire_quete (territoire_id);
-
-create table if not exists titre
-(
-    id      int auto_increment
-        primary key,
-    label   varchar(45)  not null,
-    renomme int          not null,
-    discr   varchar(255) not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists token
-(
-    id          int auto_increment
-        primary key,
-    label       varchar(45)  not null,
-    description longtext     null,
-    discr       varchar(255) not null,
-    tag         varchar(45)  not null
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists personnage_has_token
-(
-    id            int unsigned auto_increment
-        primary key,
-    personnage_id int          not null,
-    token_id      int          not null,
-    discr         varchar(255) not null,
-    constraint FK_95A7144541DEE7B9
-        foreign key (token_id) references token (id),
-    constraint FK_95A714455E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_95A714455E315342
-    on personnage_has_token (personnage_id);
-
-create index if not exists fk_personnage_has_token_token1_idx
-    on personnage_has_token (token_id);
-
-create table if not exists `trigger`
-(
-    id            int auto_increment
-        primary key,
-    personnage_id int          not null,
-    tag           varchar(45)  not null,
-    done          tinyint(1)   not null,
-    discr         varchar(255) not null,
-    constraint FK_1A6B0F5D5E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_trigger_idx
-    on `trigger` (personnage_id);
-
-create table if not exists user
-(
-    id                         int unsigned auto_increment
-        primary key,
-    etat_civil_id              int          null,
-    email                      varchar(100) not null,
-    password                   varchar(255) null,
-    salt                       varchar(255) not null,
-    rights                     varchar(255) not null,
-    creation_date              datetime     not null,
-    username                   varchar(100) not null,
-    isEnabled                  tinyint(1)   not null,
-    confirmationToken          varchar(100) null,
-    timePasswordResetRequested int unsigned null,
-    discr                      varchar(255) not null,
-    trombineUrl                varchar(45)  null,
-    lastConnectionDate         datetime     null,
-    personnage_id              int          null,
-    coeur                      int          null,
-    personnage_secondaire_id   int          null,
-    constraint email_UNIQUE
-        unique (email),
-    constraint id_UNIQUE
-        unique (id),
-    constraint username_UNIQUE
-        unique (username),
-    constraint FK_8D93D649191476EE
-        foreign key (etat_civil_id) references etat_civil (id),
-    constraint FK_8D93D6495E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_8D93D649E6917FB3
-        foreign key (personnage_secondaire_id) references personnage_secondaire (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists document
-(
-    id            int auto_increment
-        primary key,
-    user_id       int unsigned not null,
-    code          varchar(45)  not null,
-    titre         varchar(45)  not null,
-    documentUrl   varchar(45)  not null,
-    cryptage      tinyint(1)   not null,
-    statut        varchar(45)  null,
-    auteur        varchar(45)  null,
-    creation_date datetime     not null,
-    update_date   datetime     not null,
-    discr         varchar(255) not null,
-    description   longtext     null,
-    impression    tinyint(1)   not null,
-    constraint FK_D8698A76A76ED395
-        foreign key (user_id) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_document_user1_idx
-    on document (user_id);
-
-create table if not exists document_has_langue
-(
-    document_id int not null,
-    langue_id   int not null,
-    primary key (document_id, langue_id),
-    constraint FK_1EB6C9432AADBACD
-        foreign key (langue_id) references langue (id),
-    constraint FK_1EB6C943C33F7837
-        foreign key (document_id) references document (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_1EB6C9432AADBACD
-    on document_has_langue (langue_id);
-
-create index if not exists IDX_1EB6C943C33F7837
-    on document_has_langue (document_id);
-
-alter table groupe
-    add constraint FK_4B98C211674CEC6
-        foreign key (scenariste_id) references user (id);
-
-alter table groupe
-    add constraint FK_4B98C2153C59D72
-        foreign key (responsable_id) references user (id);
-
-create table if not exists groupe_has_document
-(
-    groupe_id   int not null,
-    Document_id int not null,
-    primary key (groupe_id, Document_id),
-    constraint FK_B55C428645A3F7E0
-        foreign key (Document_id) references document (id),
-    constraint FK_B55C42867A45358C
-        foreign key (groupe_id) references groupe (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_B55C42867A45358C
-    on groupe_has_document (groupe_id);
-
-create index if not exists IDX_B55C4286C33F7837
-    on groupe_has_document (Document_id);
-
-create table if not exists intrigue
-(
-    id            int unsigned auto_increment
-        primary key,
-    user_id       int unsigned not null,
-    titre         varchar(45)  not null,
-    text          longtext     not null,
-    resolution    longtext     null,
-    date_creation datetime     not null,
-    date_update   datetime     not null,
-    discr         varchar(255) not null,
-    description   longtext     not null,
-    state         varchar(45)  null,
-    constraint FK_688D271A76ED395
-        foreign key (user_id) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_intrigue_user1_idx
-    on intrigue (user_id);
-
-create table if not exists intrigue_has_document
-(
-    id          int unsigned auto_increment
-        primary key,
-    intrigue_id int unsigned not null,
-    document_id int          not null,
-    discr       varchar(255) not null,
-    constraint FK_928B0219631F6DBE
-        foreign key (intrigue_id) references intrigue (id),
-    constraint FK_928B02196AB21CC3
-        foreign key (document_id) references document (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_intrigue_has_document_document1_idx
-    on intrigue_has_document (document_id);
-
-create index if not exists fk_intrigue_has_document_intrigue1_idx
-    on intrigue_has_document (intrigue_id);
-
-create table if not exists intrigue_has_evenement
-(
-    id           int unsigned auto_increment
-        primary key,
-    intrigue_id  int unsigned not null,
-    evenement_id int unsigned not null,
-    discr        varchar(255) not null,
-    constraint FK_B5719C3C631F6BDE
-        foreign key (intrigue_id) references intrigue (id),
-    constraint FK_B5719C3CFD02F13
-        foreign key (evenement_id) references evenement (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_intrigue_has_evenement_evenement1_idx
-    on intrigue_has_evenement (evenement_id);
-
-create index if not exists fk_intrigue_has_evenement_intrigue1_idx
-    on intrigue_has_evenement (intrigue_id);
-
-create table if not exists intrigue_has_groupe
-(
-    id          int unsigned auto_increment
-        primary key,
-    intrigue_id int unsigned not null,
-    groupe_id   int          not null,
-    discr       varchar(255) not null,
-    constraint FK_347A1255631F6BDE
-        foreign key (intrigue_id) references intrigue (id),
-    constraint FK_347A12557A45358C
-        foreign key (groupe_id) references groupe (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_intrigue_has_groupe_groupe1_idx
-    on intrigue_has_groupe (groupe_id);
-
-create index if not exists fk_intrigue_has_groupe_intrigue1_idx
-    on intrigue_has_groupe (intrigue_id);
-
-create table if not exists intrigue_has_lieu
-(
-    id          int unsigned auto_increment
-        primary key,
-    intrigue_id int unsigned not null,
-    lieu_id     int          not null,
-    discr       varchar(255) not null,
-    constraint FK_928B0219631F6BDE
-        foreign key (intrigue_id) references intrigue (id),
-    constraint FK_928B02196AB213CC
-        foreign key (lieu_id) references lieu (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_intrigue_has_lieu_intrigue1_idx
-    on intrigue_has_lieu (intrigue_id);
-
-create index if not exists fk_intrigue_has_lieu_lieu1_idx
-    on intrigue_has_lieu (lieu_id);
-
-create table if not exists intrigue_has_modification
-(
-    id          int unsigned auto_increment
-        primary key,
-    intrigue_id int unsigned not null,
-    user_id     int unsigned not null,
-    date        datetime     not null,
-    discr       varchar(255) not null,
-    constraint FK_5172570C631F6BDE
-        foreign key (intrigue_id) references intrigue (id),
-    constraint FK_5172570CA76ED395
-        foreign key (user_id) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_intrigue_has_modification_intrigue1_idx
-    on intrigue_has_modification (intrigue_id);
-
-create index if not exists fk_intrigue_has_modification_user1_idx
-    on intrigue_has_modification (user_id);
-
-create table if not exists intrigue_has_objectif
-(
-    id          int unsigned auto_increment
-        primary key,
-    intrigue_id int unsigned not null,
-    objectif_id int unsigned not null,
-    discr       varchar(255) not null,
-    constraint FK_BE1C5A23157D1AD4
-        foreign key (objectif_id) references objectif (id),
-    constraint FK_BE1C5A23631F6BDE
-        foreign key (intrigue_id) references intrigue (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_intrigue_has_objectif_intrigue1_idx
-    on intrigue_has_objectif (intrigue_id);
-
-create index if not exists fk_intrigue_has_objectif_objectif1_idx
-    on intrigue_has_objectif (objectif_id);
-
-create table if not exists lieu_has_document
-(
-    document_id int not null,
-    lieu_id     int not null,
-    primary key (lieu_id, document_id),
-    constraint FK_487D3F926AB213CC
-        foreign key (lieu_id) references lieu (id),
-    constraint FK_487D3F92C33F7837
-        foreign key (document_id) references document (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_487D3F926AB213CC
-    on lieu_has_document (lieu_id);
-
-create index if not exists IDX_487D3F92C33F7837
-    on lieu_has_document (document_id);
-
-create table if not exists message
-(
-    id            int auto_increment
-        primary key,
-    auteur        int unsigned not null,
-    destinataire  int unsigned not null,
-    title         varchar(45)  null,
-    text          longtext     null,
-    creation_date datetime     null,
-    update_date   datetime     null,
-    lu            tinyint(1)   null,
-    discr         varchar(255) not null,
-    constraint FK_B6BD307F55AB140
-        foreign key (auteur) references user (id),
-    constraint FK_B6BD307FFEA9FF92
-        foreign key (destinataire) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_message_user1_idx
-    on message (auteur);
-
-create index if not exists fk_message_user2_idx
-    on message (destinataire);
-
-create table if not exists notification
-(
-    id      int unsigned auto_increment
-        primary key,
-    user_id int unsigned not null,
-    text    longtext     not null,
-    date    datetime     null,
-    url     varchar(45)  null,
-    discr   varchar(255) not null,
-    constraint FK_BF5476CAA76ED395
-        foreign key (user_id) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_notification_user1_idx
-    on notification (user_id);
-
-create table if not exists objet
-(
-    id              int auto_increment
-        primary key,
-    etat_id         int          null,
-    proprietaire_id int          null,
-    responsable_id  int unsigned null,
-    photo_id        int          null,
-    rangement_id    int          not null,
-    numero          varchar(45)  not null,
-    nom             varchar(100) not null,
-    description     varchar(450) null,
-    nombre          int          null,
-    cout            double       null,
-    budget          double       null,
-    investissement  tinyint(1)   null,
-    creation_date   datetime     null,
-    discr           varchar(255) not null,
-    constraint FK_46CD4C3853C59D72
-        foreign key (responsable_id) references user (id),
-    constraint FK_46CD4C3876C50E4A
-        foreign key (proprietaire_id) references proprietaire (id),
-    constraint FK_46CD4C387E9E4C8C
-        foreign key (photo_id) references photo (id)
-            on delete cascade,
-    constraint FK_46CD4C38A4DEB784
-        foreign key (rangement_id) references rangement (id),
-    constraint FK_46CD4C38D5E86FF
-        foreign key (etat_id) references etat (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists item
-(
-    id             int unsigned auto_increment
-        primary key,
-    quality_id     int          not null,
-    statut_id      int          null,
-    label          varchar(45)  null,
-    description    longtext     null,
-    numero         int          not null,
-    identification varchar(2)   not null,
-    special        longtext     null,
-    couleur        varchar(45)  not null,
-    date_creation  datetime     not null,
-    date_update    datetime     not null,
-    discr          varchar(255) not null,
-    objet_id       int          not null,
-    quantite       int          not null,
-    constraint FK_1F1B251EBCFC6D57
-        foreign key (quality_id) references quality (id),
-    constraint FK_1F1B251EF520CF5A
-        foreign key (objet_id) references objet (id),
-    constraint FK_1F1B251EF6203804
-        foreign key (statut_id) references statut (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists groupe_has_item
-(
-    groupe_id int          not null,
-    item_id   int unsigned not null,
-    primary key (groupe_id, item_id),
-    constraint FK_D3E5F531126F525E
-        foreign key (item_id) references item (id),
-    constraint FK_D3E5F5317A45358C
-        foreign key (groupe_id) references groupe (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_D3E5F531126F525E
-    on groupe_has_item (item_id);
-
-create index if not exists IDX_D3E5F5317A45358C
-    on groupe_has_item (groupe_id);
-
-create index if not exists fk_item_objet1_idx
-    on item (objet_id);
-
-create index if not exists fk_item_qualite1_idx
-    on item (quality_id);
-
-create index if not exists fk_item_statut1_idx
-    on item (statut_id);
-
-create index if not exists fk_objet_etat1_idx
-    on objet (etat_id);
-
-create index if not exists fk_objet_photo1_idx
-    on objet (photo_id);
-
-create index if not exists fk_objet_possesseur1_idx
-    on objet (proprietaire_id);
-
-create index if not exists fk_objet_rangement1_idx
-    on objet (rangement_id);
-
-create index if not exists fk_objet_users1_idx
-    on objet (responsable_id);
-
-create table if not exists objet_carac
-(
-    id       int auto_increment
-        primary key,
-    objet_id int          not null,
-    taille   varchar(45)  null,
-    poid     varchar(45)  null,
-    couleur  varchar(45)  null,
-    discr    varchar(255) not null,
-    constraint FK_6B20A761F520CF5A
-        foreign key (objet_id) references objet (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_objet_carac_objet1_idx
-    on objet_carac (objet_id);
-
-create table if not exists objet_tag
-(
-    objet_id int not null,
-    tag_id   int not null,
-    primary key (objet_id, tag_id),
-    constraint FK_E3164735BAD26311
-        foreign key (tag_id) references tag (id),
-    constraint FK_E3164735F520CF5A
-        foreign key (objet_id) references objet (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_E3164735BAD26311
-    on objet_tag (tag_id);
-
-create index if not exists IDX_E3164735F520CF5A
-    on objet_tag (objet_id);
-
-alter table personnage
-    add constraint FK_6AEA486DA76ED395
-        foreign key (user_id) references user (id);
-
-create table if not exists personnage_has_document
-(
-    personnage_id int not null,
-    Document_id   int not null,
-    primary key (personnage_id, Document_id),
-    constraint FK_EFBB065F45A3F7E0
-        foreign key (Document_id) references document (id),
-    constraint FK_EFBB065F5E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_EFBB065F45A3F7E0
-    on personnage_has_document (Document_id);
-
-create index if not exists IDX_EFBB065F5E315342
-    on personnage_has_document (personnage_id);
-
-create table if not exists personnage_has_item
-(
-    personnage_id int          not null,
-    item_id       int unsigned not null,
-    primary key (personnage_id, item_id),
-    constraint FK_356CD1EF126F525E
-        foreign key (item_id) references item (id),
-    constraint FK_356CD1EF5E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_356CD1EF126F525E
-    on personnage_has_item (item_id);
-
-create index if not exists IDX_356CD1EF5E315342
-    on personnage_has_item (personnage_id);
-
-create table if not exists question
-(
-    id      int unsigned auto_increment
-        primary key,
-    user_id int unsigned not null,
-    text    longtext     not null,
-    date    datetime     not null,
-    discr   varchar(255) not null,
-    choix   longtext     not null,
-    label   varchar(45)  not null,
-    constraint FK_B6F7494EA76ED395
-        foreign key (user_id) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists personnage_has_question
-(
-    id            int unsigned auto_increment
-        primary key,
-    personnage_id int          not null,
-    question_id   int unsigned not null,
-    reponse       tinyint(1)   not null,
-    discr         varchar(255) not null,
-    constraint FK_8125C5671E27F6BF
-        foreign key (question_id) references question (id),
-    constraint FK_8125C5675E315342
-        foreign key (personnage_id) references personnage (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_personnage_has_question_personnage1_idx
-    on personnage_has_question (personnage_id);
-
-create index if not exists fk_personnage_has_question_question1_idx
-    on personnage_has_question (question_id);
-
-create index if not exists fk_question_user1_idx
-    on question (user_id);
-
-create table if not exists relecture
-(
-    id          int unsigned auto_increment
-        primary key,
-    user_id     int unsigned not null,
-    intrigue_id int unsigned not null,
-    date        datetime     not null,
-    statut      varchar(45)  not null,
-    discr       varchar(255) not null,
-    remarque    longtext     null,
-    constraint FK_FC5CF714631F6BDE
-        foreign key (intrigue_id) references intrigue (id),
-    constraint FK_FC5CF714A76ED395
-        foreign key (user_id) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_relecture_intrigue1_idx
-    on relecture (intrigue_id);
-
-create index if not exists fk_relecture_user1_idx
-    on relecture (user_id);
-
-create table if not exists restriction
-(
-    id            int auto_increment
-        primary key,
-    label         varchar(90)  not null,
-    discr         varchar(255) not null,
-    auteur_id     int unsigned not null,
-    creation_date datetime     null,
-    update_date   datetime     null,
-    constraint FK_7A999BCE60BB6FE6
-        foreign key (auteur_id) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_restriction_user1_idx
-    on restriction (auteur_id);
-
-create table if not exists topic
-(
-    id            int auto_increment
-        primary key,
-    topic_id      int          null,
-    user_id       int unsigned null,
-    title         varchar(450) not null,
-    description   longtext     null,
-    creation_date datetime     null,
-    update_date   datetime     null,
-    `right`       varchar(45)  null,
-    object_id     int          null,
-    `key`         varchar(45)  null,
-    discr         varchar(255) not null,
-    constraint FK_9D40DE1B1F55203D
-        foreign key (topic_id) references topic (id),
-    constraint FK_9D40DE1BA76ED395
-        foreign key (user_id) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists gn
-(
-    id                       int auto_increment
-        primary key,
-    topic_id                 int             not null,
-    label                    varchar(45)     not null,
-    xp_creation              int             null,
-    description              longtext        null,
-    date_debut               datetime        null,
-    date_fin                 datetime        null,
-    date_installation_joueur datetime        null,
-    date_fin_orga            datetime        null,
-    adresse                  varchar(45)     null,
-    actif                    tinyint(1)      not null,
-    discr                    varchar(255)    not null,
-    billetterie              longtext        null,
-    conditions_inscription   longtext        null,
-    date_jeu                 int(5) unsigned null,
-    constraint FK_C16FA3C01F55203D
-        foreign key (topic_id) references topic (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists annonce
-(
-    id            int auto_increment
-        primary key,
-    title         varchar(45)  not null,
-    text          longtext     not null,
-    creation_date datetime     not null,
-    update_date   datetime     not null,
-    archive       tinyint(1)   not null,
-    discr         varchar(255) not null,
-    gn_id         int          null,
-    constraint FK_F65593E5AFC9C052
-        foreign key (gn_id) references gn (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_annonce_gn1_idx
-    on annonce (gn_id);
-
-create table if not exists background
-(
-    id            int auto_increment
-        primary key,
-    groupe_id     int          not null,
-    user_id       int unsigned not null,
-    text          longtext     null,
-    visibility    varchar(45)  null,
-    creation_date datetime     null,
-    update_date   datetime     null,
-    discr         varchar(255) not null,
-    gn_id         int          null,
-    titre         varchar(45)  not null,
-    constraint FK_BC68B4507A45358C
-        foreign key (groupe_id) references groupe (id),
-    constraint FK_BC68B450A76ED395
-        foreign key (user_id) references user (id),
-    constraint FK_BC68B450AFC9C052
-        foreign key (gn_id) references gn (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_background_gn1_idx
-    on background (gn_id);
-
-create index if not exists fk_background_groupe1_idx
-    on background (groupe_id);
-
-create index if not exists fk_background_user1_idx
-    on background (user_id);
-
-create table if not exists billet
-(
-    id            int auto_increment
-        primary key,
-    createur_id   int unsigned not null,
-    label         varchar(45)  not null,
-    description   longtext     null,
-    creation_date datetime     not null,
-    update_date   datetime     not null,
-    discr         varchar(255) not null,
-    gn_id         int          not null,
-    fedegn        tinyint(1)   not null,
-    constraint FK_1F034AF673A201E5
-        foreign key (createur_id) references user (id),
-    constraint FK_1F034AF6AFC9C052
-        foreign key (gn_id) references gn (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_billet_gn1_idx
-    on billet (gn_id);
-
-create index if not exists fk_billet_user1_idx
-    on billet (createur_id);
-
-create table if not exists debriefing
-(
-    id            int auto_increment
-        primary key,
-    groupe_id     int          not null,
-    user_id       int unsigned not null,
-    gn_id         int          null,
-    titre         varchar(45)  not null,
-    text          longtext     null,
-    visibility    varchar(45)  null,
-    creation_date datetime     null,
-    update_date   datetime     null,
-    discr         varchar(255) not null,
-    documentUrl   varchar(45)  null,
-    player_id     int unsigned null,
-    constraint FK_CB81225E7A45358C
-        foreign key (groupe_id) references groupe (id),
-    constraint FK_CB81225EA76ED395
-        foreign key (user_id) references user (id),
-    constraint FK_CB81225EAFC9C052
-        foreign key (gn_id) references gn (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_debriefing_gn1_idx
-    on debriefing (gn_id);
-
-create index if not exists fk_debriefing_groupe1_idx
-    on debriefing (groupe_id);
-
-create index if not exists fk_debriefing_player1_idx
-    on debriefing (player_id);
-
-create index if not exists fk_debriefing_user1_idx
-    on debriefing (user_id);
-
-create index if not exists fk_gn_topic1_idx
-    on gn (topic_id);
-
-alter table groupe
-    add constraint FK_4B98C211F55203D
-        foreign key (topic_id) references topic (id);
-
-create table if not exists groupe_gn
-(
-    id              int auto_increment
-        primary key,
-    groupe_id       int          not null,
-    gn_id           int          not null,
-    responsable_id  int          null,
-    discr           varchar(255) not null,
-    free            tinyint(1)   not null,
-    code            varchar(10)  null,
-    jeu_maritime    tinyint(1)   null,
-    jeu_strategique tinyint(1)   null,
-    place_available int          null,
-    agents          int          not null default 0,
-    bateaux         int          not null default 0,
-    sieges          int          not null default 0,
-    initiative      int          not null default 0,
-    constraint FK_413F11C7A45358C
-        foreign key (groupe_id) references groupe (id),
-    constraint FK_413F11CAFC9C052
-        foreign key (gn_id) references gn (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_groupe_gn_gn1_idx
-    on groupe_gn (gn_id);
-
-create index if not exists fk_groupe_gn_groupe1_idx
-    on groupe_gn (groupe_id);
-
-create index if not exists fk_groupe_gn_participant1_idx
-    on groupe_gn (responsable_id);
-
-create table if not exists participant
-(
-    id                       int auto_increment
-        primary key,
-    gn_id                    int          not null,
-    user_id                  int unsigned not null,
-    subscription_date        datetime     not null,
-    discr                    varchar(255) not null,
-    personnage_secondaire_id int          null,
-    personnage_id            int          null,
-    billet_id                int          null,
-    billet_date              datetime     null,
-    groupe_gn_id             int          null,
-    valide_ci_le             datetime     null,
-    constraint FK_D79F6B1144973C78
-        foreign key (billet_id) references billet (id),
-    constraint FK_D79F6B115E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_D79F6B11A76ED395
-        foreign key (user_id) references user (id),
-    constraint FK_D79F6B11AFC9C052
-        foreign key (gn_id) references gn (id),
-    constraint FK_D79F6B11E6917FB3
-        foreign key (personnage_secondaire_id) references personnage_secondaire (id),
-    constraint FK_D79F6B11FA640E02
-        foreign key (groupe_gn_id) references groupe_gn (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-alter table groupe_gn
-    add constraint FK_413F11C53C59D72
-        foreign key (responsable_id) references participant (id);
-
-create index if not exists fk_joueur_gn_gn1_idx
-    on participant (gn_id);
-
-create index if not exists fk_joueur_gn_user1_idx
-    on participant (user_id);
-
-create index if not exists fk_participant_billet1_idx
-    on participant (billet_id);
-
-create index if not exists fk_participant_groupe_gn1_idx
-    on participant (groupe_gn_id);
-
-create index if not exists fk_participant_personnage1_idx
-    on participant (personnage_id);
-
-create index if not exists fk_participant_personnage_secondaire1_idx
-    on participant (personnage_secondaire_id);
-
-create table if not exists participant_has_restauration
-(
-    id              int unsigned auto_increment
-        primary key,
-    participant_id  int          not null,
-    restauration_id int          not null,
-    date            datetime     not null,
-    discr           varchar(255) not null,
-    constraint FK_D2F2C8B47C6CB929
-        foreign key (restauration_id) references restauration (id),
-    constraint FK_D2F2C8B49D1C3019
-        foreign key (participant_id) references participant (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_participant_has_restauration_participant1_idx
-    on participant_has_restauration (participant_id);
-
-create index if not exists fk_participant_has_restauration_restauration1_idx
-    on participant_has_restauration (restauration_id);
-
-create table if not exists participant_potions_depart
-(
-    participant_id int not null,
-    potion_id      int not null,
-    primary key (participant_id, potion_id),
-    constraint FK_D485198A5E315343
-        foreign key (participant_id) references participant (id),
-    constraint FK_D485198A7126B349
-        foreign key (potion_id) references potion (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_D485198A5E315343
-    on participant_potions_depart (participant_id);
-
-create index if not exists IDX_D485198A7126B349
-    on participant_potions_depart (potion_id);
-
-create table if not exists personnage_background
-(
-    id            int auto_increment
-        primary key,
-    personnage_id int          not null,
-    user_id       int unsigned not null,
-    text          longtext     null,
-    visibility    varchar(45)  null,
-    creation_date datetime     not null,
-    update_date   datetime     not null,
-    discr         varchar(255) not null,
-    gn_id         int          not null,
-    constraint FK_273D6F455E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_273D6F45A76ED395
-        foreign key (user_id) references user (id),
-    constraint FK_273D6F45AFC9C052
-        foreign key (gn_id) references gn (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_personnage_background_gn1_idx
-    on personnage_background (gn_id);
-
-create index if not exists fk_personnage_background_personnage1_idx
-    on personnage_background (personnage_id);
-
-create index if not exists fk_personnage_background_user1_idx
-    on personnage_background (user_id);
-
-create table if not exists post
-(
-    id            int auto_increment
-        primary key,
-    topic_id      int          null,
-    user_id       int unsigned not null,
-    post_id       int          null,
-    title         varchar(450) not null,
-    text          longtext     not null,
-    creation_date datetime     null,
-    update_date   datetime     null,
-    discr         varchar(255) not null,
-    constraint FK_5A8A6C8D1F55203D
-        foreign key (topic_id) references topic (id),
-    constraint FK_5A8A6C8D4B89032C
-        foreign key (post_id) references post (id),
-    constraint FK_5A8A6C8DA76ED395
-        foreign key (user_id) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_post_post1_idx
-    on post (post_id);
-
-create index if not exists fk_post_topic1_idx
-    on post (topic_id);
-
-create index if not exists fk_post_user1_idx
-    on post (user_id);
-
-create table if not exists post_view
-(
-    id      int auto_increment
-        primary key,
-    post_id int          not null,
-    user_id int unsigned not null,
-    date    datetime     not null,
-    discr   varchar(255) not null,
-    constraint FK_37A8CC854B89032C
-        foreign key (post_id) references post (id),
-    constraint FK_37A8CC85A76ED395
-        foreign key (user_id) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_post_view_post1_idx
-    on post_view (post_id);
-
-create index if not exists fk_post_view_user1_idx
-    on post_view (user_id);
-
-create table if not exists religion
-(
-    id                     int auto_increment
-        primary key,
-    topic_id               int                  not null,
-    label                  varchar(45)          not null,
-    description            longtext             null,
-    discr                  varchar(255)         not null,
-    blason                 varchar(45)          null,
-    description_orga       longtext             null,
-    description_fervent    longtext             null,
-    description_pratiquant longtext             null,
-    description_fanatique  longtext             null,
-    secret                 tinyint(1) default 0 not null,
-    constraint FK_1055F4F91F55203D
-        foreign key (topic_id) references topic (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists personnage_religion_description
-(
-    personnage_id int not null,
-    religion_id   int not null,
-    primary key (personnage_id, religion_id),
-    constraint FK_874677E25E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_874677E2B7850CBD
-        foreign key (religion_id) references religion (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_874677E25E315342
-    on personnage_religion_description (personnage_id);
-
-create index if not exists IDX_874677E2B7850CBD
-    on personnage_religion_description (religion_id);
-
-create table if not exists personnages_religions
-(
-    id                int auto_increment
-        primary key,
-    religion_id       int          not null,
-    religion_level_id int          not null,
-    personnage_id     int          not null,
-    discr             varchar(255) not null,
-    constraint FK_8530B75F423EA53D
-        foreign key (religion_level_id) references religion_level (id),
-    constraint FK_8530B75F5E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_8530B75FB7850CBD
-        foreign key (religion_id) references religion (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_personnage_religion_religion1_idx
-    on personnages_religions (religion_id);
-
-create index if not exists fk_personnage_religion_religion_level1_idx
-    on personnages_religions (religion_level_id);
-
-create index if not exists fk_personnages_religions_personnage1_idx
-    on personnages_religions (personnage_id);
-
-create index if not exists fk_religion_topic1_idx
-    on religion (topic_id);
-
-create table if not exists religion_description
-(
-    id                int unsigned auto_increment
-        primary key,
-    religion_id       int          not null,
-    religion_level_id int          not null,
-    description       longtext     null,
-    discr             varchar(255) not null,
-    constraint FK_209A3DCE423EA53D
-        foreign key (religion_level_id) references religion_level (id),
-    constraint FK_209A3DCEB7850CBD
-        foreign key (religion_id) references religion (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_religion_description_religion1_idx
-    on religion_description (religion_id);
-
-create index if not exists fk_religion_description_religion_level1_idx
-    on religion_description (religion_level_id);
-
-create table if not exists religions_spheres
-(
-    sphere_id   int not null,
-    religion_id int not null,
-    primary key (sphere_id, religion_id),
-    constraint FK_65855EBE75FD4EF9
-        foreign key (sphere_id) references sphere (id),
-    constraint FK_65855EBEB7850CBD
-        foreign key (religion_id) references religion (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_65855EBE75FD4EF9
-    on religions_spheres (sphere_id);
-
-create index if not exists IDX_65855EBEB7850CBD
-    on religions_spheres (religion_id);
-
-create table if not exists reponse
-(
-    id             int unsigned auto_increment
-        primary key,
-    participant_id int          not null,
-    question_id    int unsigned not null,
-    reponse        varchar(45)  not null,
-    discr          varchar(255) not null,
-    constraint FK_5FB6DEC71E27F6BF
-        foreign key (question_id) references question (id),
-    constraint FK_5FB6DEC79D1C3019
-        foreign key (participant_id) references participant (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_reponse_idx
-    on reponse (question_id);
-
-create index if not exists fk_reponse_participant1_idx
-    on reponse (participant_id);
-
-create table if not exists secondary_group
-(
-    id                      int auto_increment
-        primary key,
-    secondary_group_type_id int          not null,
-    personnage_id           int          null,
-    topic_id                int          not null,
-    label                   varchar(45)  not null,
-    description             longtext     null,
-    discr                   varchar(255) not null,
-    description_secrete     longtext     null,
-    secret                  tinyint(1)   null,
-    materiel                longtext     null,
-    constraint FK_717A91A31F55203D
-        foreign key (topic_id) references topic (id),
-    constraint FK_717A91A35E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_717A91A3B27217D1
-        foreign key (secondary_group_type_id) references secondary_group_type (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists intrigue_has_groupe_secondaire
-(
-    id                 int unsigned auto_increment
-        primary key,
-    intrigue_id        int unsigned not null,
-    secondary_group_id int          not null,
-    discr              varchar(255) not null,
-    constraint FK_5C689C98631F6BDE
-        foreign key (intrigue_id) references intrigue (id),
-    constraint FK_5C689C9865F50501
-        foreign key (secondary_group_id) references secondary_group (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_intrigue_has_groupe_secondaire_intrigue1_idx
-    on intrigue_has_groupe_secondaire (intrigue_id);
-
-create index if not exists fk_intrigue_has_groupe_secondaire_secondary_group1_idx
-    on intrigue_has_groupe_secondaire (secondary_group_id);
-
-create table if not exists membre
-(
-    id                 int auto_increment
-        primary key,
-    personnage_id      int          not null,
-    secondary_group_id int          not null,
-    secret             tinyint(1)   null,
-    discr              varchar(255) not null,
-    constraint FK_F6B4FB295E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_F6B4FB2965F50501
-        foreign key (secondary_group_id) references secondary_group (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_personnage_groupe_secondaire_personnage1_idx
-    on membre (personnage_id);
-
-create index if not exists fk_personnage_groupe_secondaire_secondary_group1_idx
-    on membre (secondary_group_id);
-
-create table if not exists postulant
-(
-    id                 int auto_increment
-        primary key,
-    secondary_group_id int          not null,
-    personnage_id      int          not null,
-    date               datetime     null,
-    explanation        longtext     not null,
-    discr              varchar(255) not null,
-    waiting            tinyint(1)   null,
-    constraint FK_F79395125E315342
-        foreign key (personnage_id) references personnage (id),
-    constraint FK_F793951265F50501
-        foreign key (secondary_group_id) references secondary_group (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_postulant_personnage1_idx
-    on postulant (personnage_id);
-
-create index if not exists fk_postulant_secondary_group1_idx
-    on postulant (secondary_group_id);
-
-create index if not exists fk_secondary_group_personnage1_idx
-    on secondary_group (personnage_id);
-
-create index if not exists fk_secondary_group_topic1_idx
-    on secondary_group (topic_id);
-
-create index if not exists fk_secondary_groupe_secondary_group_type1_idx
-    on secondary_group (secondary_group_type_id);
-
-create table if not exists territoire
-(
-    id                   int auto_increment
-        primary key,
-    territoire_id        int          null,
-    territoire_guerre_id int          null,
-    appelation_id        int          not null,
-    langue_id            int          null,
-    topic_id             int          not null,
-    religion_id          int          null,
-    nom                  varchar(45)  not null,
-    description          longtext     null,
-    capitale             varchar(45)  null,
-    politique            varchar(45)  null,
-    dirigeant            varchar(45)  null,
-    population           varchar(45)  null,
-    symbole              varchar(45)  null,
-    tech_level           varchar(45)  null,
-    type_racial          longtext     null,
-    inspiration          longtext     null,
-    armes_predilection   longtext     null,
-    vetements            longtext     null,
-    noms_masculin        longtext     null,
-    noms_feminin         longtext     null,
-    frontieres           longtext     null,
-    discr                varchar(255) not null,
-    geojson              longtext     null,
-    color                varchar(7)   null,
-    groupe_id            int          null,
-    tresor               int          null,
-    resistance           int          null,
-    blason               varchar(45)  null,
-    description_secrete  longtext     null,
-    statut               varchar(45)  null,
-    culture_id           int unsigned null,
-    ordre_social         int          not null,
-    constraint FK_B8655F541F55203D
-        foreign key (topic_id) references topic (id),
-    constraint FK_B8655F542AADBACD
-        foreign key (langue_id) references langue (id),
-    constraint FK_B8655F54682CA693
-        foreign key (territoire_guerre_id) references territoire_guerre (id),
-    constraint FK_B8655F547A45358C
-        foreign key (groupe_id) references groupe (id),
-    constraint FK_B8655F54B108249D
-        foreign key (culture_id) references culture (id),
-    constraint FK_B8655F54B7850CBD
-        foreign key (religion_id) references religion (id),
-    constraint FK_B8655F54D0F97A8
-        foreign key (territoire_id) references territoire (id),
-    constraint FK_B8655F54F9E65DDB
-        foreign key (appelation_id) references appelation (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create table if not exists chronologie
-(
-    id                int auto_increment
-        primary key,
-    zone_politique_id int          not null,
-    description       longtext     not null,
-    discr             varchar(255) not null,
-    year              int          not null,
-    month             int          null,
-    day               int          null,
-    visibilite        varchar(45)  not null,
-    constraint FK_6ECC33A72FE85823
-        foreign key (zone_politique_id) references territoire (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_chronologie_zone_politique1_idx
-    on chronologie (zone_politique_id);
-
-alter table groupe
-    add constraint FK_4B98C21D0F97A8
-        foreign key (territoire_id) references territoire (id);
-
-alter table personnage
-    add constraint FK_6AEA486DD0F97A8
-        foreign key (territoire_id) references territoire (id);
-
-create table if not exists rumeur
-(
-    id            int unsigned auto_increment
-        primary key,
-    territoire_id int          null,
-    user_id       int unsigned not null,
-    text          longtext     not null,
-    creation_date datetime     not null,
-    update_date   datetime     not null,
-    visibility    varchar(45)  not null,
-    discr         varchar(255) not null,
-    gn_id         int          not null,
-    constraint FK_AD09D960A76ED395
-        foreign key (user_id) references user (id),
-    constraint FK_AD09D960AFC9C052
-        foreign key (gn_id) references gn (id),
-    constraint FK_AD09D960D0F97A8
-        foreign key (territoire_id) references territoire (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_rumeur_gn1_idx
-    on rumeur (gn_id);
-
-create index if not exists fk_rumeur_territoire1_idx
-    on rumeur (territoire_id);
-
-create index if not exists fk_rumeur_user1_idx
-    on rumeur (user_id);
-
-create index if not exists fk_territoire_appelation1_idx
-    on territoire (appelation_id);
-
-create index if not exists fk_territoire_culture1_idx
-    on territoire (culture_id);
-
-create index if not exists fk_territoire_groupe1_idx
-    on territoire (groupe_id);
-
-create index if not exists fk_territoire_langue1_idx
-    on territoire (langue_id);
-
-create index if not exists fk_territoire_religion1_idx
-    on territoire (religion_id);
-
-create index if not exists fk_territoire_territoire_guerre1_idx
-    on territoire (territoire_guerre_id);
-
-create index if not exists fk_territoire_topic1_idx
-    on territoire (topic_id);
-
-create index if not exists fk_zone_politique_zone_politique1_idx
-    on territoire (territoire_id);
-
-create table if not exists territoire_exportation
-(
-    territoire_id int not null,
-    ressource_id  int not null,
-    primary key (territoire_id, ressource_id),
-    constraint FK_BC24449DD0F97A8
-        foreign key (territoire_id) references territoire (id),
-    constraint FK_BC24449DFC6CD52A
-        foreign key (ressource_id) references ressource (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_BC24449DD0F97A8
-    on territoire_exportation (territoire_id);
-
-create index if not exists IDX_BC24449DFC6CD52A
-    on territoire_exportation (ressource_id);
-
-create table if not exists territoire_has_construction
-(
-    territoire_id   int not null,
-    construction_id int not null,
-    primary key (territoire_id, construction_id),
-    constraint FK_FEB4D8E9CF48117A
-        foreign key (construction_id) references construction (id),
-    constraint FK_FEB4D8E9D0F97A8
-        foreign key (territoire_id) references territoire (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_FEB4D8E9CF48117A
-    on territoire_has_construction (construction_id);
-
-create index if not exists IDX_FEB4D8E9D0F97A8
-    on territoire_has_construction (territoire_id);
-
-create table if not exists territoire_has_loi
-(
-    loi_id        int unsigned not null,
-    territoire_id int          not null,
-    primary key (territoire_id, loi_id),
-    constraint FK_5470401BAB82AB5
-        foreign key (loi_id) references loi (id),
-    constraint FK_5470401BD0F97A8
-        foreign key (territoire_id) references territoire (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_5470401BAB82AB5
-    on territoire_has_loi (loi_id);
-
-create index if not exists IDX_5470401BD0F97A8
-    on territoire_has_loi (territoire_id);
-
-create table if not exists territoire_importation
-(
-    territoire_id int not null,
-    ressource_id  int not null,
-    primary key (territoire_id, ressource_id),
-    constraint FK_77B99CF6D0F97A8
-        foreign key (territoire_id) references territoire (id),
-    constraint FK_77B99CF6FC6CD52A
-        foreign key (ressource_id) references ressource (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_77B99CF6D0F97A8
-    on territoire_importation (territoire_id);
-
-create index if not exists IDX_77B99CF6FC6CD52A
-    on territoire_importation (ressource_id);
-
-create table if not exists territoire_ingredient
-(
-    territoire_id int not null,
-    ingredient_id int not null,
-    primary key (territoire_id, ingredient_id),
-    constraint FK_9B7BF292933FE08C
-        foreign key (ingredient_id) references ingredient (id),
-    constraint FK_9B7BF292D0F97A8
-        foreign key (territoire_id) references territoire (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_9B7BF292933FE08C
-    on territoire_ingredient (ingredient_id);
-
-create index if not exists IDX_9B7BF292D0F97A8
-    on territoire_ingredient (territoire_id);
-
-create table if not exists territoire_langue
-(
-    territoire_id int not null,
-    langue_id     int not null,
-    primary key (territoire_id, langue_id),
-    constraint FK_C9327BC32AADBACD
-        foreign key (langue_id) references langue (id),
-    constraint FK_C9327BC3D0F97A8
-        foreign key (territoire_id) references territoire (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_C9327BC32AADBACD
-    on territoire_langue (langue_id);
-
-create index if not exists IDX_C9327BC3D0F97A8
-    on territoire_langue (territoire_id);
-
-create table if not exists territoire_religion
-(
-    territoire_id int not null,
-    religion_id   int not null,
-    primary key (territoire_id, religion_id),
-    constraint FK_B23AB2D3B7850CBD
-        foreign key (religion_id) references religion (id),
-    constraint FK_B23AB2D3D0F97A8
-        foreign key (territoire_id) references territoire (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_B23AB2D3B7850CBD
-    on territoire_religion (religion_id);
-
-create index if not exists IDX_B23AB2D3D0F97A8
-    on territoire_religion (territoire_id);
-
-create table if not exists titre_territoire
-(
-    id            int auto_increment
-        primary key,
-    titre_id      int          not null,
-    territoire_id int          not null,
-    label         varchar(45)  not null,
-    discr         varchar(255) not null,
-    constraint FK_FA93160ED0F97A8
-        foreign key (territoire_id) references territoire (id),
-    constraint FK_FA93160ED54FAE5E
-        foreign key (titre_id) references titre (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists fk_titre_territoire_territoire1_idx
-    on titre_territoire (territoire_id);
-
-create index if not exists fk_titre_territoire_titre1_idx
-    on titre_territoire (titre_id);
-
-create index if not exists fk_topic_topic1_idx
-    on topic (topic_id);
-
-create index if not exists fk_topic_user1_idx
-    on topic (user_id);
-
-create index if not exists fk_user_etat_civil1_idx
-    on user (etat_civil_id);
-
-create index if not exists fk_user_personnage1_idx
-    on user (personnage_id);
-
-create index if not exists fk_user_personnage_secondaire1_idx
-    on user (personnage_secondaire_id);
-
-create table if not exists user_has_restriction
-(
-    user_id        int unsigned not null,
-    restriction_id int          not null,
-    primary key (user_id, restriction_id),
-    constraint FK_1A57746A76ED395
-        foreign key (user_id) references user (id),
-    constraint FK_1A57746E6160631
-        foreign key (restriction_id) references restriction (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_1A57746A76ED395
-    on user_has_restriction (user_id);
-
-create index if not exists IDX_1A57746E6160631
-    on user_has_restriction (restriction_id);
-
-create table if not exists watching_user
-(
-    post_id int          not null,
-    user_id int unsigned not null,
-    primary key (post_id, user_id),
-    constraint FK_FFDC43024B89032C
-        foreign key (post_id) references post (id),
-    constraint FK_FFDC4302A76ED395
-        foreign key (user_id) references user (id)
-)
-    engine = InnoDB
-    collate = utf8mb3_unicode_ci;
-
-create index if not exists IDX_FFDC43024B89032C
-    on watching_user (post_id);
-
-create index if not exists IDX_FFDC4302A76ED395
-    on watching_user (user_id);
-
-create table if not exists wt_heroisme_ad
-(
-    id            int auto_increment
-        primary key,
-    gn_id         int    not null,
-    personnage_id int    not null,
-    competence_id int(3) not null
-)
-    engine = MyISAM
-    charset = utf8mb3;
-
-create table if not exists wt_litterature_top
-(
-    id            int auto_increment
-        primary key,
-    gn_id         int    not null,
-    personnage_id int    not null,
-    Compétence    int(2) not null
-)
-    engine = MyISAM
-    charset = utf8mb3;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+
+CREATE TABLE IF NOT EXISTS `age` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` varchar(450) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `bonus` int DEFAULT NULL,
+  `enableCreation` tinyint(1) NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `minimumValue` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `annonce` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `text` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `creation_date` datetime NOT NULL,
+  `update_date` datetime NOT NULL,
+  `archive` tinyint(1) NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `gn_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_annonce_gn1_idx` (`gn_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `appelation` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `appelation_id` int DEFAULT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `titre` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_territoire_denomination_territoire_denomination1_idx` (`appelation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `attribute_type` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `background` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `groupe_id` int NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `text` longtext COLLATE utf8mb3_unicode_ci,
+  `visibility` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `creation_date` datetime DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `gn_id` int DEFAULT NULL,
+  `titre` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_background_groupe1_idx` (`groupe_id`),
+  KEY `fk_background_user1_idx` (`user_id`),
+  KEY `fk_background_gn1_idx` (`gn_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `billet` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `createur_id` int UNSIGNED NOT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `creation_date` datetime NOT NULL,
+  `update_date` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `gn_id` int NOT NULL,
+  `fedegn` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_billet_user1_idx` (`createur_id`),
+  KEY `fk_billet_gn1_idx` (`gn_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `bonus` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `titre` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8mb4_unicode_ci,
+  `type` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `valeur` int DEFAULT NULL,
+  `periode` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `application` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `competence_id` int DEFAULT NULL,
+  `json_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT '(DC2Type:json)',
+  `discr` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_competence_idx` (`competence_id`)
+) ;
+
+CREATE TABLE IF NOT EXISTS `chronologie` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `zone_politique_id` int NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `year` int NOT NULL,
+  `month` int DEFAULT NULL,
+  `day` int DEFAULT NULL,
+  `visibilite` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_chronologie_zone_politique1_idx` (`zone_politique_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `classe` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label_masculin` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `label_feminin` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `description` varchar(450) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `image_m` varchar(90) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `image_f` varchar(90) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `creation` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `classe_competence_family_creation` (
+  `classe_id` int NOT NULL,
+  `competence_family_id` int NOT NULL,
+  PRIMARY KEY (`classe_id`,`competence_family_id`),
+  KEY `IDX_4FC70A4B8F5EA509` (`classe_id`),
+  KEY `IDX_4FC70A4BF7EB2017` (`competence_family_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `classe_competence_family_favorite` (
+  `classe_id` int NOT NULL,
+  `competence_family_id` int NOT NULL,
+  PRIMARY KEY (`classe_id`,`competence_family_id`),
+  KEY `IDX_70EC01E68F5EA509` (`classe_id`),
+  KEY `IDX_70EC01E6F7EB2017` (`competence_family_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `classe_competence_family_normale` (
+  `classe_id` int NOT NULL,
+  `competence_family_id` int NOT NULL,
+  PRIMARY KEY (`classe_id`,`competence_family_id`),
+  KEY `IDX_D65491848F5EA509` (`classe_id`),
+  KEY `IDX_D6549184F7EB2017` (`competence_family_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `competence` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `competence_family_id` int NOT NULL,
+  `level_id` int DEFAULT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `documentUrl` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `materiel` longtext COLLATE utf8mb3_unicode_ci,
+  `secret` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_competence_niveau_competence1_idx` (`competence_family_id`),
+  KEY `fk_competence_niveau_niveau1_idx` (`level_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `competence_attribute` (
+  `competence_id` int NOT NULL,
+  `attribute_type_id` int NOT NULL,
+  `value` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`competence_id`,`attribute_type_id`),
+  KEY `fk_competence_has_attribute_type_attribute_type1_idx` (`attribute_type_id`),
+  KEY `fk_competence_has_attribute_type_competence1_idx` (`competence_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `competence_family` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` varchar(450) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `connaissance` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext,
+  `contraintes` longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `documentUrl` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `niveau` int UNSIGNED NOT NULL DEFAULT '1',
+  `secret` tinyint(1) NOT NULL DEFAULT '0',
+  `discr` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'extended',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+CREATE TABLE IF NOT EXISTS `construction` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `defense` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `culture` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description_complete` longtext COLLATE utf8mb3_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `debriefing` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `groupe_id` int NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `gn_id` int DEFAULT NULL,
+  `titre` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `text` longtext COLLATE utf8mb3_unicode_ci,
+  `visibility` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `creation_date` datetime DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `documentUrl` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `player_id` int UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_debriefing_groupe1_idx` (`groupe_id`),
+  KEY `fk_debriefing_user1_idx` (`user_id`),
+  KEY `fk_debriefing_gn1_idx` (`gn_id`),
+  KEY `fk_debriefing_player1_idx` (`player_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `doctrine_migration_versions` (
+  `version` varchar(191) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `executed_at` datetime DEFAULT NULL,
+  `execution_time` int DEFAULT NULL,
+  PRIMARY KEY (`version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `document` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int UNSIGNED NOT NULL,
+  `code` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `titre` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `documentUrl` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `cryptage` tinyint(1) NOT NULL,
+  `statut` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `auteur` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `creation_date` datetime NOT NULL,
+  `update_date` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `impression` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_document_user1_idx` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `document_has_langue` (
+  `document_id` int NOT NULL,
+  `langue_id` int NOT NULL,
+  PRIMARY KEY (`document_id`,`langue_id`),
+  KEY `IDX_1EB6C943C33F7837` (`document_id`),
+  KEY `IDX_1EB6C9432AADBACD` (`langue_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `domaine` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `espece` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nom` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8mb4_unicode_ci,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `secret` tinyint(1) NOT NULL,
+  `description_secrete` longtext COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `espece_personnage` (
+  `espece_id` int NOT NULL,
+  `personnage_id` int NOT NULL,
+  PRIMARY KEY (`espece_id`,`personnage_id`),
+  KEY `IDX_D7C6D24D2D191E7A` (`espece_id`),
+  KEY `IDX_D7C6D24D5E315342` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `etat` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `etat_civil` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nom` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `prenom` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `prenom_usage` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `telephone` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `photo` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `date_naissance` datetime DEFAULT NULL,
+  `probleme_medicaux` longtext COLLATE utf8mb3_unicode_ci,
+  `personne_a_prevenir` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `tel_pap` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `fedegn` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `creation_date` datetime NOT NULL,
+  `update_date` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `evenement` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `text` varchar(450) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `date` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `date_creation` datetime NOT NULL,
+  `date_update` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `experience_gain` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `explanation` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `operation_date` datetime NOT NULL,
+  `xp_gain` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_experience_gain_personnage1_idx` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `experience_usage` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `competence_id` int NOT NULL,
+  `personnage_id` int NOT NULL,
+  `operation_date` datetime NOT NULL,
+  `xp_use` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_experience_usage_competence1_idx` (`competence_id`),
+  KEY `fk_experience_usage_personnage1_idx` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `formulaire` (
+  `id` int NOT NULL,
+  `title` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `genre` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` varchar(450) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `gn` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `topic_id` int DEFAULT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `xp_creation` int DEFAULT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `date_debut` datetime DEFAULT NULL,
+  `date_fin` datetime DEFAULT NULL,
+  `date_installation_joueur` datetime DEFAULT NULL,
+  `date_fin_orga` datetime DEFAULT NULL,
+  `adresse` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `actif` tinyint(1) NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `billetterie` longtext COLLATE utf8mb3_unicode_ci,
+  `conditions_inscription` longtext COLLATE utf8mb3_unicode_ci,
+  `date_jeu` int UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_gn_topic1_idx` (`topic_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `groupe` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `scenariste_id` int UNSIGNED DEFAULT NULL,
+  `responsable_id` int UNSIGNED DEFAULT NULL,
+  `topic_id` int NOT NULL,
+  `nom` varchar(100) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `numero` int NOT NULL,
+  `code` varchar(10) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `jeu_maritime` tinyint(1) DEFAULT NULL,
+  `jeu_strategique` tinyint(1) DEFAULT NULL,
+  `classe_open` int DEFAULT NULL,
+  `pj` tinyint(1) DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `materiel` longtext COLLATE utf8mb3_unicode_ci,
+  `lock` tinyint(1) NOT NULL,
+  `territoire_id` int DEFAULT NULL,
+  `richesse` int DEFAULT NULL,
+  `discord` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `description_membres` text COLLATE utf8mb3_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `fk_groupe_users1_idx` (`scenariste_id`),
+  KEY `fk_groupe_user2_idx` (`responsable_id`),
+  KEY `fk_groupe_topic1_idx` (`topic_id`),
+  KEY `fk_groupe_territoire1_idx` (`territoire_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `groupe_allie` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `groupe_id` int NOT NULL,
+  `groupe_allie_id` int NOT NULL,
+  `groupe_accepted` tinyint(1) NOT NULL,
+  `groupe_allie_accepted` tinyint(1) NOT NULL,
+  `message` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `message_allie` longtext COLLATE utf8mb3_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `fk_groupe_allie_groupe1_idx` (`groupe_id`),
+  KEY `fk_groupe_allie_groupe2_idx` (`groupe_allie_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `groupe_bonus` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `groupe_id` int NOT NULL,
+  `bonus_id` int NOT NULL,
+  `creation_date` datetime NOT NULL,
+  `status` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_bonus_idx` (`bonus_id`),
+  KEY `fk_groupe_idx` (`groupe_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `groupe_classe` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `groupe_id` int NOT NULL,
+  `classe_id` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_groupe_classe_groupe1_idx` (`groupe_id`),
+  KEY `fk_groupe_classe_classe1_idx` (`classe_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `groupe_enemy` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `groupe_id` int NOT NULL,
+  `groupe_enemy_id` int NOT NULL,
+  `groupe_peace` tinyint(1) NOT NULL,
+  `groupe_enemy_peace` tinyint(1) NOT NULL,
+  `message` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `message_enemy` longtext COLLATE utf8mb3_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `fk_groupe_enemy_groupe1_idx` (`groupe_id`),
+  KEY `fk_groupe_enemy_groupe2_idx` (`groupe_enemy_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `groupe_gn` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `groupe_id` int NOT NULL,
+  `gn_id` int NOT NULL,
+  `responsable_id` int DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `free` tinyint(1) NOT NULL,
+  `code` varchar(10) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `jeu_maritime` tinyint(1) DEFAULT NULL,
+  `jeu_strategique` tinyint(1) DEFAULT NULL,
+  `place_available` int DEFAULT NULL,
+  `agents` int NOT NULL DEFAULT '0',
+  `bateaux` int NOT NULL DEFAULT '0',
+  `sieges` int NOT NULL DEFAULT '0',
+  `initiative` int NOT NULL DEFAULT '0',
+  `suzerin_id` int DEFAULT NULL,
+  `connetable_id` int DEFAULT NULL,
+  `intendant_id` int DEFAULT NULL,
+  `navigateur_id` int DEFAULT NULL,
+  `camarilla_id` int DEFAULT NULL,
+  `bateaux_localisation` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `diplomate_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_groupe_gn_groupe1_idx` (`groupe_id`),
+  KEY `fk_groupe_gn_gn1_idx` (`gn_id`),
+  KEY `fk_groupe_gn_participant1_idx` (`responsable_id`),
+  KEY `IDX_413F11C30EF1B89` (`suzerin_id`),
+  KEY `IDX_413F11CB42EB948` (`connetable_id`),
+  KEY `IDX_413F11C7B52884` (`intendant_id`),
+  KEY `IDX_413F11C7EAA3A12` (`navigateur_id`),
+  KEY `IDX_413F11C13776DBA` (`camarilla_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `groupe_has_document` (
+  `groupe_id` int NOT NULL,
+  `Document_id` int NOT NULL,
+  PRIMARY KEY (`groupe_id`,`Document_id`),
+  KEY `IDX_B55C42867A45358C` (`groupe_id`),
+  KEY `IDX_B55C4286C33F7837` (`Document_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `groupe_has_ingredient` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `groupe_id` int NOT NULL,
+  `ingredient_id` int NOT NULL,
+  `quantite` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_groupe_has_ingredient_groupe1_idx` (`groupe_id`),
+  KEY `fk_groupe_has_ingredient_ingredient1_idx` (`ingredient_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `groupe_has_item` (
+  `groupe_id` int NOT NULL,
+  `item_id` int UNSIGNED NOT NULL,
+  PRIMARY KEY (`groupe_id`,`item_id`),
+  KEY `IDX_D3E5F5317A45358C` (`groupe_id`),
+  KEY `IDX_D3E5F531126F525E` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `groupe_has_ressource` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `groupe_id` int NOT NULL,
+  `ressource_id` int NOT NULL,
+  `quantite` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_groupe_has_ressource_groupe1_idx` (`groupe_id`),
+  KEY `fk_groupe_has_ressource_ressource1_idx` (`ressource_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `groupe_langue` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `couleur` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `heroisme_history` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `date` date NOT NULL,
+  `heroisme` int NOT NULL,
+  `explication` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_heroisme_history_personnage1_idx` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `ingredient` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `niveau` int NOT NULL,
+  `dose` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `intrigue` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int UNSIGNED NOT NULL,
+  `titre` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `text` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `resolution` longtext COLLATE utf8mb3_unicode_ci,
+  `date_creation` datetime NOT NULL,
+  `date_update` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `state` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_intrigue_user1_idx` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `intrigue_has_document` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `intrigue_id` int UNSIGNED NOT NULL,
+  `document_id` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_intrigue_has_document_intrigue1_idx` (`intrigue_id`),
+  KEY `fk_intrigue_has_document_document1_idx` (`document_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `intrigue_has_evenement` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `intrigue_id` int UNSIGNED NOT NULL,
+  `evenement_id` int UNSIGNED NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_intrigue_has_evenement_evenement1_idx` (`evenement_id`),
+  KEY `fk_intrigue_has_evenement_intrigue1_idx` (`intrigue_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `intrigue_has_groupe` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `intrigue_id` int UNSIGNED NOT NULL,
+  `groupe_id` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_intrigue_has_groupe_groupe1_idx` (`groupe_id`),
+  KEY `fk_intrigue_has_groupe_intrigue1_idx` (`intrigue_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `intrigue_has_groupe_secondaire` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `intrigue_id` int UNSIGNED NOT NULL,
+  `secondary_group_id` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_intrigue_has_groupe_secondaire_intrigue1_idx` (`intrigue_id`),
+  KEY `fk_intrigue_has_groupe_secondaire_secondary_group1_idx` (`secondary_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `intrigue_has_lieu` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `intrigue_id` int UNSIGNED NOT NULL,
+  `lieu_id` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_intrigue_has_lieu_intrigue1_idx` (`intrigue_id`),
+  KEY `fk_intrigue_has_lieu_lieu1_idx` (`lieu_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `intrigue_has_modification` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `intrigue_id` int UNSIGNED NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `date` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_intrigue_has_modification_intrigue1_idx` (`intrigue_id`),
+  KEY `fk_intrigue_has_modification_user1_idx` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `intrigue_has_objectif` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `intrigue_id` int UNSIGNED NOT NULL,
+  `objectif_id` int UNSIGNED NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_intrigue_has_objectif_objectif1_idx` (`objectif_id`),
+  KEY `fk_intrigue_has_objectif_intrigue1_idx` (`intrigue_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `item` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `quality_id` int NOT NULL,
+  `statut_id` int DEFAULT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `numero` int NOT NULL,
+  `identification` varchar(2) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `special` longtext COLLATE utf8mb3_unicode_ci,
+  `couleur` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `date_creation` datetime NOT NULL,
+  `date_update` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `objet_id` int NOT NULL,
+  `quantite` int NOT NULL,
+  `description_secrete` longtext COLLATE utf8mb3_unicode_ci,
+  `description_scenariste` longtext COLLATE utf8mb3_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `fk_item_statut1_idx` (`statut_id`),
+  KEY `fk_item_qualite1_idx` (`quality_id`),
+  KEY `fk_item_objet1_idx` (`objet_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `item_bak` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `quality_id` int NOT NULL,
+  `statut_id` int DEFAULT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `numero` int NOT NULL,
+  `identification` int NOT NULL,
+  `special` longtext COLLATE utf8mb3_unicode_ci,
+  `couleur` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `date_creation` datetime NOT NULL,
+  `date_update` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `objet_id` int NOT NULL,
+  `quantite` int NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `fk_item_statut1_idx` (`statut_id`),
+  KEY `fk_item_qualite1_idx` (`quality_id`),
+  KEY `fk_item_objet1_idx` (`objet_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `langue` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` varchar(450) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `diffusion` int DEFAULT NULL,
+  `groupe_langue_id` int NOT NULL,
+  `secret` tinyint(1) NOT NULL DEFAULT '0',
+  `documentUrl` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `groupe_langue_id_idx` (`groupe_langue_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `level` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `index` int NOT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `cout` int DEFAULT NULL,
+  `cout_favori` int DEFAULT NULL,
+  `cout_meconu` int DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `lieu` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nom` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `lieu_has_document` (
+  `document_id` int NOT NULL,
+  `lieu_id` int NOT NULL,
+  PRIMARY KEY (`lieu_id`,`document_id`),
+  KEY `IDX_487D3F92C33F7837` (`document_id`),
+  KEY `IDX_487D3F926AB213CC` (`lieu_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `lignees` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nom` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'extended',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `localisation` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `precision` varchar(450) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `log_action` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int UNSIGNED DEFAULT NULL,
+  `data` json DEFAULT NULL COMMENT '(DC2Type:json)',
+  `date` datetime NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_5236DF30A76ED395` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `loi` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `documentUrl` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `membre` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `secondary_group_id` int NOT NULL,
+  `secret` tinyint(1) DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `private` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_personnage_groupe_secondaire_personnage1_idx` (`personnage_id`),
+  KEY `fk_personnage_groupe_secondaire_secondary_group1_idx` (`secondary_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `merveille` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `territoire_id` int DEFAULT NULL,
+  `bonus_id` int DEFAULT NULL,
+  `nom` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8mb4_unicode_ci,
+  `description_scenariste` longtext COLLATE utf8mb4_unicode_ci,
+  `description_cartographe` longtext COLLATE utf8mb4_unicode_ci,
+  `statut` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `date_creation` date DEFAULT NULL,
+  `date_destruction` date DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_D70330D0D0F97A8` (`territoire_id`),
+  KEY `IDX_D70330D069545666` (`bonus_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `message` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `auteur` int UNSIGNED NOT NULL,
+  `destinataire` int UNSIGNED NOT NULL,
+  `title` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `text` longtext COLLATE utf8mb3_unicode_ci,
+  `creation_date` datetime DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `lu` tinyint(1) DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_message_user1_idx` (`auteur`),
+  KEY `fk_message_user2_idx` (`destinataire`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `messenger_messages` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `body` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `headers` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue_name` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL,
+  `available_at` datetime NOT NULL,
+  `delivered_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_75EA56E0FB7336F0` (`queue_name`),
+  KEY `IDX_75EA56E0E3BD61CE` (`available_at`),
+  KEY `IDX_75EA56E016BA31DB` (`delivered_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `monnaie` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `notification` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int UNSIGNED NOT NULL,
+  `text` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `date` datetime DEFAULT NULL,
+  `url` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_notification_user1_idx` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `objectif` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `text` varchar(450) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `date_creation` datetime NOT NULL,
+  `date_update` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `objet` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `etat_id` int DEFAULT NULL,
+  `proprietaire_id` int DEFAULT NULL,
+  `responsable_id` int UNSIGNED DEFAULT NULL,
+  `photo_id` int DEFAULT NULL,
+  `rangement_id` int NOT NULL,
+  `numero` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `nom` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` varchar(450) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `nombre` int DEFAULT NULL,
+  `cout` double DEFAULT NULL,
+  `budget` double DEFAULT NULL,
+  `investissement` tinyint(1) DEFAULT NULL,
+  `creation_date` datetime DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_objet_etat1_idx` (`etat_id`),
+  KEY `fk_objet_possesseur1_idx` (`proprietaire_id`),
+  KEY `fk_objet_users1_idx` (`responsable_id`),
+  KEY `fk_objet_photo1_idx` (`photo_id`),
+  KEY `fk_objet_rangement1_idx` (`rangement_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `objet_carac` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `objet_id` int NOT NULL,
+  `taille` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `poid` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `couleur` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_objet_carac_objet1_idx` (`objet_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `objet_tag` (
+  `objet_id` int NOT NULL,
+  `tag_id` int NOT NULL,
+  PRIMARY KEY (`objet_id`,`tag_id`),
+  KEY `IDX_E3164735F520CF5A` (`objet_id`),
+  KEY `IDX_E3164735BAD26311` (`tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `origine_bonus` (
+  `bonus_id` int NOT NULL,
+  `territoire_id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `status` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `creation_date` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `bonus_territoire` (`bonus_id`,`territoire_id`),
+  KEY `IDX_BE69354769545666` (`bonus_id`),
+  KEY `IDX_BE693547D0F97A8` (`territoire_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `participant` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `gn_id` int NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `subscription_date` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `personnage_secondaire_id` int DEFAULT NULL,
+  `personnage_id` int DEFAULT NULL,
+  `billet_id` int DEFAULT NULL,
+  `billet_date` datetime DEFAULT NULL,
+  `groupe_gn_id` int DEFAULT NULL,
+  `valide_ci_le` datetime DEFAULT NULL,
+  `couchage` varchar(32) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `special` longtext COLLATE utf8mb3_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `fk_joueur_gn_gn1_idx` (`gn_id`),
+  KEY `fk_joueur_gn_user1_idx` (`user_id`),
+  KEY `fk_participant_personnage_secondaire1_idx` (`personnage_secondaire_id`),
+  KEY `fk_participant_personnage1_idx` (`personnage_id`),
+  KEY `fk_participant_billet1_idx` (`billet_id`),
+  KEY `fk_participant_groupe_gn1_idx` (`groupe_gn_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `participant_has_restauration` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `participant_id` int NOT NULL,
+  `restauration_id` int NOT NULL,
+  `date` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_participant_has_restauration_participant1_idx` (`participant_id`),
+  KEY `fk_participant_has_restauration_restauration1_idx` (`restauration_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `participant_potions_depart` (
+  `participant_id` int NOT NULL,
+  `potion_id` int NOT NULL,
+  PRIMARY KEY (`participant_id`,`potion_id`),
+  KEY `IDX_D485198A5E315343` (`participant_id`),
+  KEY `IDX_D485198A7126B349` (`potion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `groupe_id` int DEFAULT NULL,
+  `classe_id` int NOT NULL,
+  `age_id` int NOT NULL,
+  `genre_id` int NOT NULL,
+  `nom` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `surnom` varchar(100) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `intrigue` tinyint(1) DEFAULT NULL,
+  `renomme` int DEFAULT NULL,
+  `photo` varchar(100) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `xp` int DEFAULT NULL,
+  `territoire_id` int DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `materiel` longtext COLLATE utf8mb3_unicode_ci,
+  `vivant` tinyint(1) NOT NULL,
+  `age_reel` int DEFAULT NULL,
+  `trombineUrl` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `user_id` int UNSIGNED DEFAULT NULL,
+  `richesse` int DEFAULT NULL,
+  `heroisme` int DEFAULT NULL,
+  `sensible` tinyint(1) DEFAULT NULL,
+  `bracelet` tinyint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_personnage_groupe1_idx` (`groupe_id`),
+  KEY `fk_personnage_archetype1_idx` (`classe_id`),
+  KEY `fk_personnage_age1_idx` (`age_id`),
+  KEY `fk_personnage_genre1_idx` (`genre_id`),
+  KEY `fk_personnage_territoire1_idx` (`territoire_id`),
+  KEY `fk_personnage_user1_idx` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnages_chronologie` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `evenement` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `annee` int NOT NULL,
+  `discr` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'extended',
+  PRIMARY KEY (`id`),
+  KEY `FK_6ECC33456843` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `personnages_competences` (
+  `competence_id` int NOT NULL,
+  `personnage_id` int NOT NULL,
+  PRIMARY KEY (`competence_id`,`personnage_id`),
+  KEY `IDX_8AED412315761DAB` (`competence_id`),
+  KEY `IDX_8AED41235E315342` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnages_connaissances` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `connaissance_id` int UNSIGNED DEFAULT NULL,
+  `discr` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'extended',
+  PRIMARY KEY (`id`),
+  KEY `FK_PERSONNAGES_CONNAISSANCES` (`personnage_id`),
+  KEY `FK_CONNAISSANCES` (`connaissance_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `personnages_domaines` (
+  `personnage_id` int NOT NULL,
+  `domaine_id` int NOT NULL,
+  PRIMARY KEY (`personnage_id`,`domaine_id`),
+  KEY `IDX_C31CED645E315342` (`personnage_id`),
+  KEY `IDX_C31CED644272FC9F` (`domaine_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnages_lignee` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `parent1_id` int DEFAULT NULL,
+  `parent2_id` int DEFAULT NULL,
+  `lignee_id` int UNSIGNED DEFAULT NULL,
+  `discr` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'extended',
+  PRIMARY KEY (`id`),
+  KEY `FK_6ECC33456847` (`personnage_id`),
+  KEY `FK_6ECC33456844` (`parent1_id`),
+  KEY `FK_6ECC33456845` (`parent2_id`),
+  KEY `FK_6ECC33456846` (`lignee_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `personnages_potions` (
+  `personnage_id` int NOT NULL,
+  `potion_id` int NOT NULL,
+  PRIMARY KEY (`personnage_id`,`potion_id`),
+  KEY `IDX_D485198A5E315342` (`personnage_id`),
+  KEY `IDX_D485198A7126B348` (`potion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnages_prieres` (
+  `priere_id` int NOT NULL,
+  `personnage_id` int NOT NULL,
+  PRIMARY KEY (`priere_id`,`personnage_id`),
+  KEY `IDX_4E610DACA8227EF5` (`priere_id`),
+  KEY `IDX_4E610DAC5E315342` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnages_religions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `religion_id` int NOT NULL,
+  `religion_level_id` int NOT NULL,
+  `personnage_id` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_personnage_religion_religion1_idx` (`religion_id`),
+  KEY `fk_personnage_religion_religion_level1_idx` (`religion_level_id`),
+  KEY `fk_personnages_religions_personnage1_idx` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnages_sorts` (
+  `personnage_id` int NOT NULL,
+  `sort_id` int NOT NULL,
+  PRIMARY KEY (`personnage_id`,`sort_id`),
+  KEY `IDX_8ABC9FD75E315342` (`personnage_id`),
+  KEY `IDX_8ABC9FD747013001` (`sort_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_apprentissage` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personnage_id` int DEFAULT NULL,
+  `enseignant_id` int NOT NULL,
+  `date_enseignement` int DEFAULT NULL,
+  `date_usage` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `competence_id` int DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_EA259B515E315342` (`personnage_id`),
+  KEY `IDX_EA259B51E455FCC0` (`enseignant_id`),
+  KEY `IDX_EA259B5115761DAB` (`competence_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_background` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `text` longtext COLLATE utf8mb3_unicode_ci,
+  `visibility` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `creation_date` datetime NOT NULL,
+  `update_date` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `gn_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_personnage_background_personnage1_idx` (`personnage_id`),
+  KEY `fk_personnage_background_user1_idx` (`user_id`),
+  KEY `fk_personnage_background_gn1_idx` (`gn_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_bonus` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personnage_id` int DEFAULT NULL,
+  `bonus_id` int NOT NULL,
+  `creation_date` datetime DEFAULT NULL,
+  `status` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_35CB734069545666` (`bonus_id`,`personnage_id`) USING BTREE,
+  KEY `IDX_35CB73405E315342` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_has_document` (
+  `personnage_id` int NOT NULL,
+  `Document_id` int NOT NULL,
+  PRIMARY KEY (`personnage_id`,`Document_id`),
+  KEY `IDX_EFBB065F5E315342` (`personnage_id`),
+  KEY `IDX_EFBB065F45A3F7E0` (`Document_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_has_item` (
+  `personnage_id` int NOT NULL,
+  `item_id` int UNSIGNED NOT NULL,
+  PRIMARY KEY (`personnage_id`,`item_id`),
+  KEY `IDX_356CD1EF5E315342` (`personnage_id`),
+  KEY `IDX_356CD1EF126F525E` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_has_question` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `question_id` int UNSIGNED NOT NULL,
+  `reponse` tinyint(1) NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_personnage_has_question_personnage1_idx` (`personnage_id`),
+  KEY `fk_personnage_has_question_question1_idx` (`question_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_has_technologie` (
+  `personnage_id` int NOT NULL,
+  `technologie_id` int UNSIGNED NOT NULL,
+  PRIMARY KEY (`personnage_id`,`technologie_id`),
+  KEY `IDX_65F62F935E315342` (`personnage_id`),
+  KEY `IDX_65F62F93261A27D2` (`technologie_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_has_token` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `token_id` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_95A714455E315342` (`personnage_id`),
+  KEY `fk_personnage_has_token_token1_idx` (`token_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_ingredient` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `ingredient_id` int NOT NULL,
+  `nombre` int DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_F0FAA3655E315342` (`personnage_id`),
+  KEY `fk_personnage_ingredient_ingredient1_idx` (`ingredient_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_langues` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `langue_id` int NOT NULL,
+  `source` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_personnage_langues_personnage1_idx` (`personnage_id`),
+  KEY `fk_personnage_langues_langue1_idx` (`langue_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_religion_description` (
+  `personnage_id` int NOT NULL,
+  `religion_id` int NOT NULL,
+  PRIMARY KEY (`personnage_id`,`religion_id`),
+  KEY `IDX_874677E25E315342` (`personnage_id`),
+  KEY `IDX_874677E2B7850CBD` (`religion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_ressource` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `ressource_id` int NOT NULL,
+  `nombre` int DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_A286E0845E315342` (`personnage_id`),
+  KEY `fk_personnage_ressource_ressource1_idx` (`ressource_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_secondaire` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `classe_id` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_personnage_secondaire_classe1_idx` (`classe_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_secondaires_competences` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personnage_secondaire_id` int NOT NULL,
+  `competence_id` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_personnage_secondaires_competences_personnage_secondaire_idx` (`personnage_secondaire_id`),
+  KEY `fk_personnage_secondaires_competences_competence1_idx` (`competence_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_secondaires_skills` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personnage_secondaire_id` int NOT NULL,
+  `competence_id` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_personnage_secondaire_skills_personnage_secondaire_idx` (`personnage_secondaire_id`),
+  KEY `fk_personnage_secondaire_skills_competence1_idx` (`competence_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_secondaire_competence` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personnage_secondaire_id` int NOT NULL,
+  `competence_id` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_personnage_secondaire_competences_personnage_secondaire_idx` (`personnage_secondaire_id`),
+  KEY `fk_personnage_secondaire_competences_competence1_idx` (`competence_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `personnage_trigger` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `tag` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `done` tinyint(1) NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_trigger_personnage1_idx` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `photo` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `extension` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `real_name` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `data` longblob,
+  `creation_date` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `filename` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `post` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `topic_id` int DEFAULT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `post_id` int DEFAULT NULL,
+  `title` varchar(450) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `text` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `creation_date` datetime DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_post_topic1_idx` (`topic_id`),
+  KEY `fk_post_user1_idx` (`user_id`),
+  KEY `fk_post_post1_idx` (`post_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `postulant` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `secondary_group_id` int NOT NULL,
+  `personnage_id` int NOT NULL,
+  `date` datetime DEFAULT NULL,
+  `explanation` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `waiting` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_postulant_secondary_group1_idx` (`secondary_group_id`),
+  KEY `fk_postulant_personnage1_idx` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `post_view` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `post_id` int NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `date` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_post_view_post1_idx` (`post_id`),
+  KEY `fk_post_view_user1_idx` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `potion` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `documentUrl` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `niveau` int NOT NULL,
+  `numero` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `secret` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `priere` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `annonce` longtext COLLATE utf8mb3_unicode_ci,
+  `documentUrl` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `niveau` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `sphere_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_priere_sphere1_idx` (`sphere_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `proprietaire` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nom` varchar(100) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `adresse` varchar(450) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `mail` varchar(100) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `tel` varchar(100) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `pugilat_history` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `date` date NOT NULL,
+  `pugilat` int NOT NULL,
+  `explication` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_pugilat_history_personnage1_idx` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `qr_code_scan_log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int UNSIGNED NOT NULL,
+  `participant_id` int DEFAULT NULL,
+  `item_id` int UNSIGNED DEFAULT NULL,
+  `date` datetime NOT NULL,
+  `allowed` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_4F1CE7B0A76ED395` (`user_id`),
+  KEY `IDX_4F1CE7B09D1C3019` (`participant_id`),
+  KEY `IDX_4F1CE7B0126F525E` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `quality` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `numero` int DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `quality_valeur` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `quality_id` int NOT NULL,
+  `monnaie_id` int NOT NULL,
+  `nombre` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_quality_valeur_qualite1_idx` (`quality_id`),
+  KEY `fk_quality_valeur_monnaie1_idx` (`monnaie_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `question` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int UNSIGNED NOT NULL,
+  `text` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `date` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `choix` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_question_user1_idx` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `rangement` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `localisation_id` int DEFAULT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `precision` varchar(450) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_rangement_localisation1_idx` (`localisation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `rarete` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `value` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `relecture` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int UNSIGNED NOT NULL,
+  `intrigue_id` int UNSIGNED NOT NULL,
+  `date` datetime NOT NULL,
+  `statut` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `remarque` longtext COLLATE utf8mb3_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `fk_relecture_user1_idx` (`user_id`),
+  KEY `fk_relecture_intrigue1_idx` (`intrigue_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `religion` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `topic_id` int NOT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `blason` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `description_orga` longtext COLLATE utf8mb3_unicode_ci,
+  `description_fervent` longtext COLLATE utf8mb3_unicode_ci,
+  `description_pratiquant` longtext COLLATE utf8mb3_unicode_ci,
+  `description_fanatique` longtext COLLATE utf8mb3_unicode_ci,
+  `secret` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `fk_religion_topic1_idx` (`topic_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `religions_spheres` (
+  `sphere_id` int NOT NULL,
+  `religion_id` int NOT NULL,
+  PRIMARY KEY (`sphere_id`,`religion_id`),
+  KEY `IDX_65855EBE75FD4EF9` (`sphere_id`),
+  KEY `IDX_65855EBEB7850CBD` (`religion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `religion_description` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `religion_id` int NOT NULL,
+  `religion_level_id` int NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_religion_description_religion1_idx` (`religion_id`),
+  KEY `fk_religion_description_religion_level1_idx` (`religion_level_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `religion_level` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `index` int NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `renomme_history` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `renomme` int NOT NULL,
+  `explication` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `date` datetime NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_renomme_history_personnage1_idx` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `reponse` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `participant_id` int NOT NULL,
+  `question_id` int UNSIGNED NOT NULL,
+  `reponse` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_reponse_participant1_idx` (`participant_id`),
+  KEY `fk_reponse_idx` (`question_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `ressource` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `rarete_id` int NOT NULL,
+  `label` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_ressource_rarete1_idx` (`rarete_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `restauration` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `restriction` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(90) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `auteur_id` int UNSIGNED NOT NULL,
+  `creation_date` datetime DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_restriction_user1_idx` (`auteur_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `rule` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `url` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `rumeur` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `territoire_id` int DEFAULT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `text` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `creation_date` datetime NOT NULL,
+  `update_date` datetime NOT NULL,
+  `visibility` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `gn_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_rumeur_territoire1_idx` (`territoire_id`),
+  KEY `fk_rumeur_user1_idx` (`user_id`),
+  KEY `fk_rumeur_gn1_idx` (`gn_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `secondary_group` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `secondary_group_type_id` int NOT NULL,
+  `personnage_id` int DEFAULT NULL,
+  `topic_id` int NOT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description_secrete` longtext COLLATE utf8mb3_unicode_ci,
+  `secret` tinyint(1) DEFAULT NULL,
+  `materiel` longtext COLLATE utf8mb3_unicode_ci,
+  `discord` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `private` tinyint(1) DEFAULT NULL,
+  `scenariste_id` int UNSIGNED DEFAULT NULL,
+  `show_discord` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_secondary_groupe_secondary_group_type1_idx` (`secondary_group_type_id`),
+  KEY `fk_secondary_group_personnage1_idx` (`personnage_id`),
+  KEY `fk_secondary_group_topic1_idx` (`topic_id`),
+  KEY `IDX_717A91A31674CEC6` (`scenariste_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `secondary_group_type` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `sort` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `domaine_id` int NOT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `documentUrl` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `niveau` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `secret` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `fk_sort_domaine1_idx` (`domaine_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `sorts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `domaine_id` int NOT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `documentUrl` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `niveau` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_sorts_domaine1_idx` (`domaine_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `sphere` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `statut` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `tag` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nom` varchar(100) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `technologie` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `secret` tinyint(1) NOT NULL DEFAULT '0',
+  `documentUrl` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `competence_family_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_technologie_competence_family` (`competence_family_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `technologies_ressources` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `technologie_id` int UNSIGNED NOT NULL,
+  `ressource_id` int NOT NULL,
+  `quantite` int NOT NULL,
+  `discr` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_technologies_ressources_idx` (`technologie_id`),
+  KEY `FK_B15E3D68FC6CD52A` (`ressource_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `territoire` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `territoire_id` int DEFAULT NULL,
+  `territoire_guerre_id` int DEFAULT NULL,
+  `appelation_id` int NOT NULL,
+  `langue_id` int DEFAULT NULL,
+  `religion_id` int DEFAULT NULL,
+  `nom` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `capitale` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `politique` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `dirigeant` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `population` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `symbole` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `tech_level` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `type_racial` longtext COLLATE utf8mb3_unicode_ci,
+  `inspiration` longtext COLLATE utf8mb3_unicode_ci,
+  `armes_predilection` longtext COLLATE utf8mb3_unicode_ci,
+  `vetements` longtext COLLATE utf8mb3_unicode_ci,
+  `noms_masculin` longtext COLLATE utf8mb3_unicode_ci,
+  `noms_feminin` longtext COLLATE utf8mb3_unicode_ci,
+  `frontieres` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `geojson` longtext COLLATE utf8mb3_unicode_ci,
+  `color` varchar(7) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `groupe_id` int DEFAULT NULL,
+  `tresor` int DEFAULT NULL,
+  `resistance` int DEFAULT NULL,
+  `blason` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `description_secrete` longtext COLLATE utf8mb3_unicode_ci,
+  `statut` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `culture_id` int UNSIGNED DEFAULT NULL,
+  `ordre_social` int NOT NULL,
+  `topic_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_zone_politique_zone_politique1_idx` (`territoire_id`),
+  KEY `fk_territoire_territoire_guerre1_idx` (`territoire_guerre_id`),
+  KEY `fk_territoire_appelation1_idx` (`appelation_id`),
+  KEY `fk_territoire_langue1_idx` (`langue_id`),
+  KEY `fk_territoire_religion1_idx` (`religion_id`),
+  KEY `fk_territoire_groupe1_idx` (`groupe_id`),
+  KEY `fk_territoire_culture1_idx` (`culture_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `territoire_exportation` (
+  `territoire_id` int NOT NULL,
+  `ressource_id` int NOT NULL,
+  PRIMARY KEY (`territoire_id`,`ressource_id`),
+  KEY `IDX_BC24449DD0F97A8` (`territoire_id`),
+  KEY `IDX_BC24449DFC6CD52A` (`ressource_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `territoire_guerre` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `puissance` int DEFAULT NULL,
+  `puissance_max` int DEFAULT NULL,
+  `protection` int DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `territoire_has_construction` (
+  `territoire_id` int NOT NULL,
+  `construction_id` int NOT NULL,
+  PRIMARY KEY (`territoire_id`,`construction_id`),
+  KEY `IDX_FEB4D8E9D0F97A8` (`territoire_id`),
+  KEY `IDX_FEB4D8E9CF48117A` (`construction_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `territoire_has_loi` (
+  `loi_id` int UNSIGNED NOT NULL,
+  `territoire_id` int NOT NULL,
+  PRIMARY KEY (`territoire_id`,`loi_id`),
+  KEY `IDX_5470401BAB82AB5` (`loi_id`),
+  KEY `IDX_5470401BD0F97A8` (`territoire_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `territoire_importation` (
+  `territoire_id` int NOT NULL,
+  `ressource_id` int NOT NULL,
+  PRIMARY KEY (`territoire_id`,`ressource_id`),
+  KEY `IDX_77B99CF6D0F97A8` (`territoire_id`),
+  KEY `IDX_77B99CF6FC6CD52A` (`ressource_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `territoire_ingredient` (
+  `territoire_id` int NOT NULL,
+  `ingredient_id` int NOT NULL,
+  PRIMARY KEY (`territoire_id`,`ingredient_id`),
+  KEY `IDX_9B7BF292D0F97A8` (`territoire_id`),
+  KEY `IDX_9B7BF292933FE08C` (`ingredient_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `territoire_langue` (
+  `territoire_id` int NOT NULL,
+  `langue_id` int NOT NULL,
+  PRIMARY KEY (`territoire_id`,`langue_id`),
+  KEY `IDX_C9327BC3D0F97A8` (`territoire_id`),
+  KEY `IDX_C9327BC32AADBACD` (`langue_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `territoire_quete` (
+  `territoire_id` int NOT NULL,
+  `territoire_cible_id` int NOT NULL,
+  PRIMARY KEY (`territoire_id`,`territoire_cible_id`),
+  KEY `IDX_63718DCD0F97A8` (`territoire_id`),
+  KEY `IDX_63718DCB011823` (`territoire_cible_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+
+CREATE TABLE IF NOT EXISTS `territoire_religion` (
+  `territoire_id` int NOT NULL,
+  `religion_id` int NOT NULL,
+  PRIMARY KEY (`territoire_id`,`religion_id`),
+  KEY `IDX_B23AB2D3D0F97A8` (`territoire_id`),
+  KEY `IDX_B23AB2D3B7850CBD` (`religion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `titre` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `renomme` int NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `titre_territoire` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `titre_id` int NOT NULL,
+  `territoire_id` int NOT NULL,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_titre_territoire_titre1_idx` (`titre_id`),
+  KEY `fk_titre_territoire_territoire1_idx` (`territoire_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `token` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `label` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `tag` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `topic` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `topic_id` int DEFAULT NULL,
+  `user_id` int UNSIGNED DEFAULT NULL,
+  `title` varchar(450) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb3_unicode_ci,
+  `creation_date` datetime DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `right` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `object_id` int DEFAULT NULL,
+  `key` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_topic_topic1_idx` (`topic_id`),
+  KEY `fk_topic_user1_idx` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `trigger` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `personnage_id` int NOT NULL,
+  `tag` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `done` tinyint(1) NOT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_trigger_idx` (`personnage_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `etat_civil_id` int DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `salt` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `rights` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `creation_date` datetime NOT NULL,
+  `username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `isEnabled` tinyint(1) NOT NULL,
+  `confirmationToken` varchar(100) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `timePasswordResetRequested` int UNSIGNED DEFAULT NULL,
+  `discr` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `trombineUrl` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `lastConnectionDate` datetime DEFAULT NULL,
+  `personnage_id` int DEFAULT NULL,
+  `coeur` int DEFAULT NULL,
+  `personnage_secondaire_id` int DEFAULT NULL,
+  `roles` json NOT NULL COMMENT '(DC2Type:json)',
+  `is_enabled` tinyint DEFAULT NULL,
+  `pwd` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `email_contact` varchar(255) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email_UNIQUE` (`email`),
+  UNIQUE KEY `username_UNIQUE` (`username`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `fk_user_etat_civil1_idx` (`etat_civil_id`),
+  KEY `fk_user_personnage_secondaire1_idx` (`personnage_secondaire_id`),
+  KEY `fk_user_personnage1_idx` (`personnage_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `user_has_restriction` (
+  `user_id` int UNSIGNED NOT NULL,
+  `restriction_id` int NOT NULL,
+  PRIMARY KEY (`user_id`,`restriction_id`),
+  KEY `IDX_1A57746A76ED395` (`user_id`),
+  KEY `IDX_1A57746E6160631` (`restriction_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `watching_user` (
+  `post_id` int NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  PRIMARY KEY (`post_id`,`user_id`),
+  KEY `IDX_FFDC43024B89032C` (`post_id`),
+  KEY `IDX_FFDC4302A76ED395` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `wt_heroisme_ad` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `gn_id` int NOT NULL,
+  `personnage_id` int NOT NULL,
+  `competence_id` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+
+CREATE TABLE IF NOT EXISTS `wt_litterature_top` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `gn_id` int NOT NULL,
+  `personnage_id` int NOT NULL,
+  `Compétence` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+
+
+ALTER TABLE `annonce`
+  ADD CONSTRAINT `FK_F65593E5AFC9C052` FOREIGN KEY (`gn_id`) REFERENCES `gn` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `appelation`
+  ADD CONSTRAINT `FK_68825BB0F9E65DDB` FOREIGN KEY (`appelation_id`) REFERENCES `appelation` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `background`
+  ADD CONSTRAINT `FK_BC68B4507A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_BC68B450A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_BC68B450AFC9C052` FOREIGN KEY (`gn_id`) REFERENCES `gn` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `billet`
+  ADD CONSTRAINT `FK_1F034AF673A201E5` FOREIGN KEY (`createur_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_1F034AF6AFC9C052` FOREIGN KEY (`gn_id`) REFERENCES `gn` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `bonus`
+  ADD CONSTRAINT `FK_9F987F7A15761DAB` FOREIGN KEY (`competence_id`) REFERENCES `competence` (`id`);
+
+ALTER TABLE `chronologie`
+  ADD CONSTRAINT `FK_6ECC33A72FE85823` FOREIGN KEY (`zone_politique_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `classe_competence_family_creation`
+  ADD CONSTRAINT `FK_4FC70A4B8F5EA509` FOREIGN KEY (`classe_id`) REFERENCES `classe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_4FC70A4BF7EB2017` FOREIGN KEY (`competence_family_id`) REFERENCES `competence_family` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `classe_competence_family_favorite`
+  ADD CONSTRAINT `FK_70EC01E68F5EA509` FOREIGN KEY (`classe_id`) REFERENCES `classe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_70EC01E6F7EB2017` FOREIGN KEY (`competence_family_id`) REFERENCES `competence_family` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `classe_competence_family_normale`
+  ADD CONSTRAINT `FK_D65491848F5EA509` FOREIGN KEY (`classe_id`) REFERENCES `classe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_D6549184F7EB2017` FOREIGN KEY (`competence_family_id`) REFERENCES `competence_family` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `competence`
+  ADD CONSTRAINT `FK_94D4687F5FB14BA7` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_94D4687FF7EB2017` FOREIGN KEY (`competence_family_id`) REFERENCES `competence_family` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `competence_attribute`
+  ADD CONSTRAINT `FK_CECF998615761DAB` FOREIGN KEY (`competence_id`) REFERENCES `competence` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_CECF99864ED0D557` FOREIGN KEY (`attribute_type_id`) REFERENCES `attribute_type` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `debriefing`
+  ADD CONSTRAINT `FK_CB81225E7A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_CB81225EA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_CB81225EAFC9C052` FOREIGN KEY (`gn_id`) REFERENCES `gn` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `document`
+  ADD CONSTRAINT `FK_D8698A76A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `document_has_langue`
+  ADD CONSTRAINT `FK_1EB6C9432AADBACD` FOREIGN KEY (`langue_id`) REFERENCES `langue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_1EB6C943C33F7837` FOREIGN KEY (`document_id`) REFERENCES `document` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `espece_personnage`
+  ADD CONSTRAINT `FK_D7C6D24D2D191E7A` FOREIGN KEY (`espece_id`) REFERENCES `espece` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_D7C6D24D5E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `experience_gain`
+  ADD CONSTRAINT `FK_8485E21D5E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `experience_usage`
+  ADD CONSTRAINT `FK_B3B9226615761DAB` FOREIGN KEY (`competence_id`) REFERENCES `competence` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B3B922665E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `gn`
+  ADD CONSTRAINT `FK_C16FA3C01F55203D` FOREIGN KEY (`topic_id`) REFERENCES `topic` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `groupe`
+  ADD CONSTRAINT `FK_4B98C211674CEC6` FOREIGN KEY (`scenariste_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_4B98C2153C59D72` FOREIGN KEY (`responsable_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_4B98C21D0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `groupe_allie`
+  ADD CONSTRAINT `FK_8E0758767A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_8E075876DA3B93A3` FOREIGN KEY (`groupe_allie_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `groupe_bonus`
+  ADD CONSTRAINT `FK_CA35B12A69545666` FOREIGN KEY (`bonus_id`) REFERENCES `bonus` (`id`),
+  ADD CONSTRAINT `FK_CA35B12A7A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`);
+
+ALTER TABLE `groupe_classe`
+  ADD CONSTRAINT `FK_E4B943AC7A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_E4B943AC8F5EA509` FOREIGN KEY (`classe_id`) REFERENCES `classe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `groupe_enemy`
+  ADD CONSTRAINT `FK_AE3294F91AE935F` FOREIGN KEY (`groupe_enemy_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_AE3294F97A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `groupe_gn`
+  ADD CONSTRAINT `FK_413F11C13776DBA` FOREIGN KEY (`camarilla_id`) REFERENCES `personnage` (`id`),
+  ADD CONSTRAINT `FK_413F11C30EF1B89` FOREIGN KEY (`suzerin_id`) REFERENCES `personnage` (`id`),
+  ADD CONSTRAINT `FK_413F11C53C59D72` FOREIGN KEY (`responsable_id`) REFERENCES `participant` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_413F11C7A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_413F11C7B52884` FOREIGN KEY (`intendant_id`) REFERENCES `personnage` (`id`),
+  ADD CONSTRAINT `FK_413F11C7EAA3A12` FOREIGN KEY (`navigateur_id`) REFERENCES `personnage` (`id`),
+  ADD CONSTRAINT `FK_413F11CAFC9C052` FOREIGN KEY (`gn_id`) REFERENCES `gn` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_413F11CB42EB948` FOREIGN KEY (`connetable_id`) REFERENCES `personnage` (`id`);
+
+ALTER TABLE `groupe_has_document`
+  ADD CONSTRAINT `FK_B55C428645A3F7E0` FOREIGN KEY (`Document_id`) REFERENCES `document` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B55C42867A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `groupe_has_ingredient`
+  ADD CONSTRAINT `FK_EAACBE7A7A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_EAACBE7A933FE08C` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `groupe_has_item`
+  ADD CONSTRAINT `FK_D3E5F531126F525E` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_D3E5F5317A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `groupe_has_ressource`
+  ADD CONSTRAINT `FK_2E4F82907A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_2E4F8290FC6CD52A` FOREIGN KEY (`ressource_id`) REFERENCES `ressource` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `heroisme_history`
+  ADD CONSTRAINT `FK_23D4BD695E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `intrigue`
+  ADD CONSTRAINT `FK_688D271A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `intrigue_has_document`
+  ADD CONSTRAINT `FK_928B0219631F6DBE` FOREIGN KEY (`intrigue_id`) REFERENCES `intrigue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_928B02196AB21CC3` FOREIGN KEY (`document_id`) REFERENCES `document` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `intrigue_has_evenement`
+  ADD CONSTRAINT `FK_B5719C3C631F6BDE` FOREIGN KEY (`intrigue_id`) REFERENCES `intrigue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B5719C3CFD02F13` FOREIGN KEY (`evenement_id`) REFERENCES `evenement` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `intrigue_has_groupe`
+  ADD CONSTRAINT `FK_347A1255631F6BDE` FOREIGN KEY (`intrigue_id`) REFERENCES `intrigue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_347A12557A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `intrigue_has_groupe_secondaire`
+  ADD CONSTRAINT `FK_5C689C98631F6BDE` FOREIGN KEY (`intrigue_id`) REFERENCES `intrigue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_5C689C9865F50501` FOREIGN KEY (`secondary_group_id`) REFERENCES `secondary_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `intrigue_has_lieu`
+  ADD CONSTRAINT `FK_928B0219631F6BDE` FOREIGN KEY (`intrigue_id`) REFERENCES `intrigue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_928B02196AB213CC` FOREIGN KEY (`lieu_id`) REFERENCES `lieu` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `intrigue_has_modification`
+  ADD CONSTRAINT `FK_5172570C631F6BDE` FOREIGN KEY (`intrigue_id`) REFERENCES `intrigue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_5172570CA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `intrigue_has_objectif`
+  ADD CONSTRAINT `FK_BE1C5A23157D1AD4` FOREIGN KEY (`objectif_id`) REFERENCES `objectif` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_BE1C5A23631F6BDE` FOREIGN KEY (`intrigue_id`) REFERENCES `intrigue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `item`
+  ADD CONSTRAINT `FK_1F1B251EBCFC6D57` FOREIGN KEY (`quality_id`) REFERENCES `quality` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_1F1B251EF520CF5A` FOREIGN KEY (`objet_id`) REFERENCES `objet` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_1F1B251EF6203804` FOREIGN KEY (`statut_id`) REFERENCES `statut` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `lieu_has_document`
+  ADD CONSTRAINT `FK_487D3F926AB213CC` FOREIGN KEY (`lieu_id`) REFERENCES `lieu` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_487D3F92C33F7837` FOREIGN KEY (`document_id`) REFERENCES `document` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `log_action`
+  ADD CONSTRAINT `FK_5236DF30A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+
+ALTER TABLE `membre`
+  ADD CONSTRAINT `FK_F6B4FB295E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_F6B4FB2965F50501` FOREIGN KEY (`secondary_group_id`) REFERENCES `secondary_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `merveille`
+  ADD CONSTRAINT `FK_D70330D069545666` FOREIGN KEY (`bonus_id`) REFERENCES `bonus` (`id`),
+  ADD CONSTRAINT `FK_D70330D0D0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`);
+
+ALTER TABLE `message`
+  ADD CONSTRAINT `FK_B6BD307F55AB140` FOREIGN KEY (`auteur`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B6BD307FFEA9FF92` FOREIGN KEY (`destinataire`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `notification`
+  ADD CONSTRAINT `FK_BF5476CAA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `objet`
+  ADD CONSTRAINT `FK_46CD4C3853C59D72` FOREIGN KEY (`responsable_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_46CD4C3876C50E4A` FOREIGN KEY (`proprietaire_id`) REFERENCES `proprietaire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_46CD4C387E9E4C8C` FOREIGN KEY (`photo_id`) REFERENCES `photo` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_46CD4C38A4DEB784` FOREIGN KEY (`rangement_id`) REFERENCES `rangement` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_46CD4C38D5E86FF` FOREIGN KEY (`etat_id`) REFERENCES `etat` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `objet_carac`
+  ADD CONSTRAINT `FK_6B20A761F520CF5A` FOREIGN KEY (`objet_id`) REFERENCES `objet` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `objet_tag`
+  ADD CONSTRAINT `FK_E3164735BAD26311` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_E3164735F520CF5A` FOREIGN KEY (`objet_id`) REFERENCES `objet` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `origine_bonus`
+  ADD CONSTRAINT `FK_BE69354769545666` FOREIGN KEY (`bonus_id`) REFERENCES `bonus` (`id`),
+  ADD CONSTRAINT `FK_BE693547D0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `participant`
+  ADD CONSTRAINT `FK_D79F6B1144973C78` FOREIGN KEY (`billet_id`) REFERENCES `billet` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_D79F6B115E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_D79F6B11A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_D79F6B11AFC9C052` FOREIGN KEY (`gn_id`) REFERENCES `gn` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_D79F6B11E6917FB3` FOREIGN KEY (`personnage_secondaire_id`) REFERENCES `personnage_secondaire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_D79F6B11FA640E02` FOREIGN KEY (`groupe_gn_id`) REFERENCES `groupe_gn` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `participant_has_restauration`
+  ADD CONSTRAINT `FK_D2F2C8B47C6CB929` FOREIGN KEY (`restauration_id`) REFERENCES `restauration` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_D2F2C8B49D1C3019` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `participant_potions_depart`
+  ADD CONSTRAINT `FK_D485198A5E315343` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_D485198A7126B349` FOREIGN KEY (`potion_id`) REFERENCES `potion` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage`
+  ADD CONSTRAINT `FK_6AEA486D4296D31F` FOREIGN KEY (`genre_id`) REFERENCES `genre` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_6AEA486D7A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_6AEA486D8F5EA509` FOREIGN KEY (`classe_id`) REFERENCES `classe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_6AEA486DA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_6AEA486DCC80CD12` FOREIGN KEY (`age_id`) REFERENCES `age` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_6AEA486DD0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnages_chronologie`
+  ADD CONSTRAINT `FK_6ECC33456843` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnages_competences`
+  ADD CONSTRAINT `FK_8AED412315761DAB` FOREIGN KEY (`competence_id`) REFERENCES `competence` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_8AED41235E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnages_connaissances`
+  ADD CONSTRAINT `FK_CONNAISSANCES` FOREIGN KEY (`connaissance_id`) REFERENCES `connaissance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_PERSONNAGES_CONNAISSANCES` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnages_domaines`
+  ADD CONSTRAINT `FK_C31CED644272FC9F` FOREIGN KEY (`domaine_id`) REFERENCES `domaine` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_C31CED645E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnages_lignee`
+  ADD CONSTRAINT `FK_6ECC33456844` FOREIGN KEY (`parent1_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_6ECC33456845` FOREIGN KEY (`parent2_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_6ECC33456846` FOREIGN KEY (`lignee_id`) REFERENCES `lignees` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_6ECC33456847` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnages_potions`
+  ADD CONSTRAINT `FK_D485198A5E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_D485198A7126B348` FOREIGN KEY (`potion_id`) REFERENCES `potion` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnages_prieres`
+  ADD CONSTRAINT `FK_4E610DAC5E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_4E610DACA8227EF5` FOREIGN KEY (`priere_id`) REFERENCES `priere` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnages_religions`
+  ADD CONSTRAINT `FK_8530B75F423EA53D` FOREIGN KEY (`religion_level_id`) REFERENCES `religion_level` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_8530B75F5E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_8530B75FB7850CBD` FOREIGN KEY (`religion_id`) REFERENCES `religion` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnages_sorts`
+  ADD CONSTRAINT `FK_8ABC9FD747013001` FOREIGN KEY (`sort_id`) REFERENCES `sort` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_8ABC9FD75E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_apprentissage`
+  ADD CONSTRAINT `FK_EA259B5115761DAB` FOREIGN KEY (`competence_id`) REFERENCES `competence` (`id`),
+  ADD CONSTRAINT `FK_EA259B515E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`),
+  ADD CONSTRAINT `FK_EA259B51E455FCC0` FOREIGN KEY (`enseignant_id`) REFERENCES `personnage` (`id`);
+
+ALTER TABLE `personnage_background`
+  ADD CONSTRAINT `FK_273D6F455E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_273D6F45A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_273D6F45AFC9C052` FOREIGN KEY (`gn_id`) REFERENCES `gn` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_bonus`
+  ADD CONSTRAINT `FK_35CB73405E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`),
+  ADD CONSTRAINT `FK_35CB734069545666` FOREIGN KEY (`bonus_id`) REFERENCES `bonus` (`id`);
+
+ALTER TABLE `personnage_has_document`
+  ADD CONSTRAINT `FK_EFBB065F45A3F7E0` FOREIGN KEY (`Document_id`) REFERENCES `document` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_EFBB065F5E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_has_item`
+  ADD CONSTRAINT `FK_356CD1EF126F525E` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_356CD1EF5E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_has_question`
+  ADD CONSTRAINT `FK_8125C5671E27F6BF` FOREIGN KEY (`question_id`) REFERENCES `question` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_8125C5675E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_has_technologie`
+  ADD CONSTRAINT `FK_65F62F93261A27D2` FOREIGN KEY (`technologie_id`) REFERENCES `technologie` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_65F62F935E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_has_token`
+  ADD CONSTRAINT `FK_95A7144541DEE7B9` FOREIGN KEY (`token_id`) REFERENCES `token` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_95A714455E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_ingredient`
+  ADD CONSTRAINT `FK_F0FAA3655E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_F0FAA365933FE08C` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_langues`
+  ADD CONSTRAINT `FK_3D820E582AADBACD` FOREIGN KEY (`langue_id`) REFERENCES `langue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_3D820E585E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_religion_description`
+  ADD CONSTRAINT `FK_874677E25E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_874677E2B7850CBD` FOREIGN KEY (`religion_id`) REFERENCES `religion` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_ressource`
+  ADD CONSTRAINT `FK_A286E0845E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_A286E084FC6CD52A` FOREIGN KEY (`ressource_id`) REFERENCES `ressource` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_secondaire`
+  ADD CONSTRAINT `FK_EACE838A8F5EA509` FOREIGN KEY (`classe_id`) REFERENCES `classe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_secondaires_competences`
+  ADD CONSTRAINT `FK_A871317815761DAB` FOREIGN KEY (`competence_id`) REFERENCES `competence` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_A8713178E6917FB3` FOREIGN KEY (`personnage_secondaire_id`) REFERENCES `personnage_secondaire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_secondaires_skills`
+  ADD CONSTRAINT `FK_C410AE5015761DAB` FOREIGN KEY (`competence_id`) REFERENCES `competence` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_C410AE50E6917FB3` FOREIGN KEY (`personnage_secondaire_id`) REFERENCES `personnage_secondaire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_secondaire_competence`
+  ADD CONSTRAINT `FK_DF6A66D15761DAB` FOREIGN KEY (`competence_id`) REFERENCES `competence` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_DF6A66DE6917FB3` FOREIGN KEY (`personnage_secondaire_id`) REFERENCES `personnage_secondaire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `personnage_trigger`
+  ADD CONSTRAINT `FK_3674375C5E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `post`
+  ADD CONSTRAINT `FK_5A8A6C8D1F55203D` FOREIGN KEY (`topic_id`) REFERENCES `topic` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_5A8A6C8D4B89032C` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_5A8A6C8DA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `postulant`
+  ADD CONSTRAINT `FK_F79395125E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_F793951265F50501` FOREIGN KEY (`secondary_group_id`) REFERENCES `secondary_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `post_view`
+  ADD CONSTRAINT `FK_37A8CC854B89032C` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_37A8CC85A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `priere`
+  ADD CONSTRAINT `FK_1111202C75FD4EF9` FOREIGN KEY (`sphere_id`) REFERENCES `sphere` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `pugilat_history`
+  ADD CONSTRAINT `FK_864C39CB5E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `qr_code_scan_log`
+  ADD CONSTRAINT `FK_4F1CE7B0126F525E` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
+  ADD CONSTRAINT `FK_4F1CE7B09D1C3019` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`id`),
+  ADD CONSTRAINT `FK_4F1CE7B0A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+
+ALTER TABLE `quality_valeur`
+  ADD CONSTRAINT `FK_A480028F98D3FE22` FOREIGN KEY (`monnaie_id`) REFERENCES `monnaie` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_A480028FBCFC6D57` FOREIGN KEY (`quality_id`) REFERENCES `quality` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `question`
+  ADD CONSTRAINT `FK_B6F7494EA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `rangement`
+  ADD CONSTRAINT `FK_90F17AA6C68BE09C` FOREIGN KEY (`localisation_id`) REFERENCES `localisation` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `relecture`
+  ADD CONSTRAINT `FK_FC5CF714631F6BDE` FOREIGN KEY (`intrigue_id`) REFERENCES `intrigue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_FC5CF714A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `religion`
+  ADD CONSTRAINT `FK_1055F4F91F55203D` FOREIGN KEY (`topic_id`) REFERENCES `topic` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `religions_spheres`
+  ADD CONSTRAINT `FK_65855EBE75FD4EF9` FOREIGN KEY (`sphere_id`) REFERENCES `sphere` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_65855EBEB7850CBD` FOREIGN KEY (`religion_id`) REFERENCES `religion` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `religion_description`
+  ADD CONSTRAINT `FK_209A3DCE423EA53D` FOREIGN KEY (`religion_level_id`) REFERENCES `religion_level` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_209A3DCEB7850CBD` FOREIGN KEY (`religion_id`) REFERENCES `religion` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `renomme_history`
+  ADD CONSTRAINT `FK_40D972425E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `reponse`
+  ADD CONSTRAINT `FK_5FB6DEC71E27F6BF` FOREIGN KEY (`question_id`) REFERENCES `question` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_5FB6DEC79D1C3019` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `ressource`
+  ADD CONSTRAINT `FK_939F45449E795D2F` FOREIGN KEY (`rarete_id`) REFERENCES `rarete` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `restriction`
+  ADD CONSTRAINT `FK_7A999BCE60BB6FE6` FOREIGN KEY (`auteur_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `rumeur`
+  ADD CONSTRAINT `FK_AD09D960A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_AD09D960AFC9C052` FOREIGN KEY (`gn_id`) REFERENCES `gn` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_AD09D960D0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `secondary_group`
+  ADD CONSTRAINT `FK_717A91A31674CEC6` FOREIGN KEY (`scenariste_id`) REFERENCES `user` (`id`),
+  ADD CONSTRAINT `FK_717A91A31F55203D` FOREIGN KEY (`topic_id`) REFERENCES `topic` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_717A91A35E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_717A91A3B27217D1` FOREIGN KEY (`secondary_group_type_id`) REFERENCES `secondary_group_type` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `sort`
+  ADD CONSTRAINT `FK_5124F2224272FC9F` FOREIGN KEY (`domaine_id`) REFERENCES `domaine` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `sorts`
+  ADD CONSTRAINT `FK_CE3FAA1D4272FC9F` FOREIGN KEY (`domaine_id`) REFERENCES `domaine` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `technologie`
+  ADD CONSTRAINT `FK_technologie_competence_family` FOREIGN KEY (`competence_family_id`) REFERENCES `competence_family` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT;
+
+ALTER TABLE `technologies_ressources`
+  ADD CONSTRAINT `FK_B15E3D68261A27D2` FOREIGN KEY (`technologie_id`) REFERENCES `technologie` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B15E3D68FC6CD52A` FOREIGN KEY (`ressource_id`) REFERENCES `ressource` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `territoire`
+  ADD CONSTRAINT `FK_B8655F542AADBACD` FOREIGN KEY (`langue_id`) REFERENCES `langue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B8655F54682CA693` FOREIGN KEY (`territoire_guerre_id`) REFERENCES `territoire_guerre` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B8655F547A45358C` FOREIGN KEY (`groupe_id`) REFERENCES `groupe` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B8655F54B108249D` FOREIGN KEY (`culture_id`) REFERENCES `culture` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B8655F54B7850CBD` FOREIGN KEY (`religion_id`) REFERENCES `religion` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B8655F54D0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B8655F54F9E65DDB` FOREIGN KEY (`appelation_id`) REFERENCES `appelation` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `territoire_exportation`
+  ADD CONSTRAINT `FK_BC24449DD0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_BC24449DFC6CD52A` FOREIGN KEY (`ressource_id`) REFERENCES `ressource` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `territoire_has_construction`
+  ADD CONSTRAINT `FK_FEB4D8E9CF48117A` FOREIGN KEY (`construction_id`) REFERENCES `construction` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_FEB4D8E9D0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `territoire_has_loi`
+  ADD CONSTRAINT `FK_5470401BAB82AB5` FOREIGN KEY (`loi_id`) REFERENCES `loi` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_5470401BD0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `territoire_importation`
+  ADD CONSTRAINT `FK_77B99CF6D0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_77B99CF6FC6CD52A` FOREIGN KEY (`ressource_id`) REFERENCES `ressource` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `territoire_ingredient`
+  ADD CONSTRAINT `FK_9B7BF292933FE08C` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_9B7BF292D0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `territoire_langue`
+  ADD CONSTRAINT `FK_C9327BC32AADBACD` FOREIGN KEY (`langue_id`) REFERENCES `langue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_C9327BC3D0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `territoire_religion`
+  ADD CONSTRAINT `FK_B23AB2D3B7850CBD` FOREIGN KEY (`religion_id`) REFERENCES `religion` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_B23AB2D3D0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `titre_territoire`
+  ADD CONSTRAINT `FK_FA93160ED0F97A8` FOREIGN KEY (`territoire_id`) REFERENCES `territoire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_FA93160ED54FAE5E` FOREIGN KEY (`titre_id`) REFERENCES `titre` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `topic`
+  ADD CONSTRAINT `FK_9D40DE1B1F55203D` FOREIGN KEY (`topic_id`) REFERENCES `topic` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_9D40DE1BA76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `trigger`
+  ADD CONSTRAINT `FK_1A6B0F5D5E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `user`
+  ADD CONSTRAINT `FK_8D93D649191476EE` FOREIGN KEY (`etat_civil_id`) REFERENCES `etat_civil` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_8D93D6495E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_8D93D649E6917FB3` FOREIGN KEY (`personnage_secondaire_id`) REFERENCES `personnage_secondaire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `user_has_restriction`
+  ADD CONSTRAINT `FK_1A57746A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_1A57746E6160631` FOREIGN KEY (`restriction_id`) REFERENCES `restriction` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE `watching_user`
+  ADD CONSTRAINT `FK_FFDC43024B89032C` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `FK_FFDC4302A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
