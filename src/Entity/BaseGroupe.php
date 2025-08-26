@@ -662,7 +662,7 @@ class BaseGroupe
      */
     public function getPj(): bool
     {
-        return $this->pj;
+        return $this->pj ?? true;
     }
 
     /**
