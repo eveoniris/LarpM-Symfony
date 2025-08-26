@@ -110,6 +110,11 @@ docker compose run --rm composer install
 docker compose run --rm composer recipes:install
 ```
 
+Au besoin pour mettre à jour le recipes : 
+```
+docker compose run --rm composer recipes:update
+```
+
 # Commande utile
 
 ## Vider le cache
