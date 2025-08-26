@@ -70,10 +70,10 @@ return [
         'type' => 'css',
     ],
     'axios' => [
-        'version' => '1.10.0',
+        'version' => '1.11.0',
     ],
     'tinymce/tinymce' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'bs-custom-file-input' => [
         'version' => '1.3.4',
@@ -85,88 +85,88 @@ return [
         'version' => '1.10.18',
     ],
     'tinymce' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/themes/silver' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/link' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/code' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/table' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/lists' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/insertdatetime' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/preview' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/media' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/wordcount' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/autolink' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/autoresize' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/anchor' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/charmap' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/image' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/models/dom' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/visualblocks' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/advlist' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/help' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/searchreplace' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/fullscreen' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/skins/ui/oxide-dark/skin' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/skins/ui/oxide/skin' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/icons/default' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/skins/ui/oxide-dark/content' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/plugins/help/js/i18n/keynav/en' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/skins/ui/oxide/content' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tinymce/skins/content/dark/content' => [
-        'version' => '7.9.1',
+        'version' => '8.0.2',
     ],
     'tom-select/dist/css/tom-select.default.css' => [
         'version' => '2.4.3',
