@@ -99,6 +99,14 @@ Pour importer, créer un fichier puis le copier dans le container
 Import de la base de donnée (le fichier doit être dans le container)
 `docker exec -it larpmanager-database-1 /bin/sh -c "mysql -uadmin -ppassword larpm < /tmp/backup.sql"`
 
+# Export des données uniquement 
+On utilise --no-create-info avant d'indiquer la base 
+
+# Export de la structure uniquement
+On utilise --no-data avant d'indiquer la base
+
+Noter: --compact pour un fichier sans commentaire, et --no-create-db pour éviter la partie création 
+
 
 # Divers
 
