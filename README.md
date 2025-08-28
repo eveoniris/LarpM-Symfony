@@ -90,6 +90,9 @@ docker compose logs database
 
 ## Base de donnée
 
+Lors du docker compose up -d, est installé pour la première fois (tant que /docker/db/data est vide) les fichiers 
+contenus dans docker/db/initData par ordre alphabetique
+
 Export de la base de donnée
 `docker exec -it larpmanager-database-1 mysqldump -uadmin -ppassword --opt larpm > backup.sql`
 
