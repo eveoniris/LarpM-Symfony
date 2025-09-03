@@ -4,6 +4,7 @@
 
 ###> local dev
 docker/db/data
+docker/db/export
 /docker/db/initData/z_insertLocalPrivateData.sql
 ###< local dev
 
