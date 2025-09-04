@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Repository\ObjetRepository;
+use DateTime;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: ObjetRepository::class)]
@@ -13,7 +14,7 @@ class Objet extends BaseObjet
     public function __construct()
     {
         parent::__construct();
-        $this->setCreationDate(new \DateTime('NOW'));
+        $this->setCreationDate(new DateTime('NOW'));
     }
 
     /**
@@ -33,7 +34,7 @@ class Objet extends BaseObjet
             $this->photo = null; // on ne clone pas la photo par comodité
         }
 
-        $this->setCreationDate(new \DateTime('NOW'));
+        $this->setCreationDate(new DateTime('NOW'));
     }
 
     /**
@@ -42,14 +43,15 @@ class Objet extends BaseObjet
     public function getExportValue(): array
     {
         return [
+            'id' => $this->getId(),
             'numero' => $this->getNumero(),
             'nom' => ('' !== $this->getNom() && '0' !== $this->getNom()) ? $this->getNom() : '',
             'code' => ($this->getcode()) ? $this->getCode() : '',
-            'description' => ('' !== $this->getDescription() && '0' !== $this->getDescription(
-            )) ? html_entity_decode(strip_tags((string) $this->getDescription())) : '',
+            'description' => ('' !== $this->getDescription() && '0' !== $this->getDescription()) ? html_entity_decode(strip_tags((string)$this->getDescription())) : '',
             'photo' => ($this->getPhoto()) ? $this->getPhoto()?->getRealName() : '',
             'tag' => implode(', ', $this->getTags()->toArray()),
-            'rangement' => ($this->getRangement()) ? $this->getRangement()->getAdresse() : '',
+            'rangement' => $this->getRangement()?->getLabel() ?? '',
+            'localisation' => $this->getRangement()?->getLocalisation()->getLabel() ?? '',
             'etat' => ($this->getEtat()) ? $this->getEtat()->getLabel() : '',
             'proprietaire' => ($this->getProprietaire()) ? $this->getProprietaire()->getNom() : '',
             'responsable' => ($this->getResponsable()) ? $this->getResponsable()->getUserName() : '',
@@ -69,7 +71,7 @@ class Objet extends BaseObjet
             $code .= substr($this->getRangement()->getLabel(), 0, 3);
         }
 
-        return $code.('-'.$this->getNumero());
+        return $code . ('-' . $this->getNumero());
     }
 
     /**
@@ -86,7 +88,7 @@ class Objet extends BaseObjet
     {
         $string = '';
         foreach ($this->getItems() as $item) {
-            $string .= $item->getNumero().' - '.$item->getLabel();
+            $string .= $item->getNumero() . ' - ' . $item->getLabel();
         }
 
         return $string;
@@ -94,8 +96,7 @@ class Objet extends BaseObjet
 
     public function getPhotoFilePath(string $projectDir): string
     {
-        return $projectDir.$this->getPhotosFolderType()->value.$this->getPhotosDocumentType(
-        )->value.DIRECTORY_SEPARATOR;
+        return $projectDir . $this->getPhotosFolderType()->value . $this->getPhotosDocumentType()->value . DIRECTORY_SEPARATOR;
     }
 
     public function getPhotosFolderType(): FolderType
