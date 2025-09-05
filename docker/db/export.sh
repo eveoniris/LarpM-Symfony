@@ -2,7 +2,7 @@
 # This file must not be set as executable, otherwise the mysql docker image
 # entrypoint script runs it in a subshell and the job will not stop.
 
-set -ex
+set -e
 
 echo Running mysqldump on initial database
 
