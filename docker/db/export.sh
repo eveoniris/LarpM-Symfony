@@ -28,6 +28,7 @@ echo Obfuscating secret data
 
 mysql --user=root --password="${MYSQL_ROOT_PASSWORD}" \
     --database="${MYSQL_DATABASE}" <<EOF
+-- Replace sensitive fields with placeholder text
 SET @LOREM = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas imperdiet lacinia enim, sed sollicitudin urna sagittis eu. Integer nisl massa, aliquet dapibus fermentum non.';
 SET @LOREM_LIGHT = 'lorem ipsum';
 UPDATE message SET title =  concat('Titre_', id), text = @LOREM WHERE id > 0;
@@ -45,6 +46,15 @@ UPDATE pugilat_history SET explication = @LOREM_LIGHT WHERE id > 0;
 UPDATE renomme_history SET explication = @LOREM_LIGHT WHERE id > 0;
 UPDATE topic SET title = concat('Title_', id), description = @LOREM WHERE id > 0;
 UPDATE user SET roles = '["ROLE_USER"]', email = concat('email_', id, '@noreply.com'), password = '\$2y\$13\$EpRnVPQP6sj/JiCDoiyhxOpYRdWuchOxSw30446I9xiIIJfOAp8SO', pwd = '\$2y\$13\$EpRnVPQP6sj/JiCDoiyhxOpYRdWuchOxSw30446I9xiIIJfOAp8SO', salt ='5um2fz77pbkswo0osswocog4wswc0g', username = concat('user_', id) WHERE id > 0;
+
+-- truncate unused tables
+UPDATE objet SET photo_id = NULL;
+TRUNCATE TABLE photo;
+TRUNCATE TABLE watching_user;
+TRUNCATE TABLE post_view;
+TRUNCATE TABLE post;
+TRUNCATE TABLE message;
+TRUNCATE TABLE messenger_message;
 EOF
 
 echo Running mysqldump on temporary database
