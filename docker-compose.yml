@@ -24,14 +24,61 @@ services:
     ports:
       - "30202:3306"
     restart: unless-stopped
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - >-
+            mysql --database="$${MYSQL_DATABASE}" --execute="SELECT 1"
+            --user="$${MYSQL_USER}" --password="$${MYSQL_PASSWORD}"
+      interval: 5m
+      timeout: 5s
+      retries: 6
+      start_interval: 5s
+      start_period : 60s
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: larpm
       MYSQL_USER: admin
       MYSQL_PASSWORD: password
     volumes:
-      - ./docker/db/data:/var/lib/mysql:rw # À comenter ou vider pour le premier démarrage
-      - ./docker/db/initData:/docker-entrypoint-initdb.d # bootstrap .sql files on first strat
+      - database_data:/var/lib/mysql:rw
+      - ./docker/db/initData:/docker-entrypoint-initdb.d:ro # bootstrap .sql files on first start
+
+ #exporter:
+ #  image: mysql:8.0
+ #  restart: no
+ #  entrypoint:
+ #    - /bin/sh
+ #    - -c
+ #    - "chmod -v a+rw /export; /entrypoint.sh mysqld"
+ #  environment:
+ #    EXPORTER_REMOTE_MYSQL_USER: admin
+ #    EXPORTER_REMOTE_MYSQL_PASSWORD: password
+ #    EXPORTER_REMOTE_MYSQL_HOST: database
+ #    EXPORTER_REMOTE_MYSQL_DATABASE: larpm
+ #    EXPORTER_FILENAME: /export/export.sql
+ #    EXPORTER_OBFUSCATE_SQL_FILE: /obfuscate.sql
+ #    MYSQL_ROOT_PASSWORD: password
+ #    MYSQL_DATABASE: exporter
+ #  tmpfs:
+ #    - /var/lib/mysql
+ #  volumes:
+ #    - ./docker/db/export.sh:/docker-entrypoint-initdb.d/99-export.sh:ro
+ #    - ./docker/db/obfuscate.sql:/obfuscate.sql:ro
+ #    - ./docker/db/export:/export:rw
+ #  depends_on:
+ #    database:
+ #      condition: service_healthy
+
+ #adminer:
+ #  image: adminer:5.3.0
+ #  restart: always
+ #  environment:
+ #    ADMINER_DEFAULT_SERVER: database:3306
+ #  ports:
+ #    - 8081:8080
+ #  depends_on:
+ #    - database
 
   mailer:
     image: axllent/mailpit
@@ -53,3 +100,6 @@ services:
       - ./:/app
     working_dir: /app
     command: install
+
+volumes:
+  database_data:
