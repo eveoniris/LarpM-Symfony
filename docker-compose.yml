@@ -47,12 +47,16 @@ services:
  #exporter:
  #  image: mysql:8.0
  #  restart: no
+ #  entrypoint:
+ #    - /bin/sh
+ #    - -c
+ #    - "chmod -v a+rw /export; /entrypoint.sh mysqld"
  #  environment:
  #    EXPORTER_REMOTE_MYSQL_USER: admin
  #    EXPORTER_REMOTE_MYSQL_PASSWORD: password
  #    EXPORTER_REMOTE_MYSQL_HOST: database
  #    EXPORTER_REMOTE_MYSQL_DATABASE: larpm
- #    EXPORTER_FILENAME: /var/lib/export/export.sql
+ #    EXPORTER_FILENAME: /export/export.sql
  #    EXPORTER_OBFUSCATE_SQL_FILE: /obfuscate.sql
  #    MYSQL_ROOT_PASSWORD: password
  #    MYSQL_DATABASE: exporter
@@ -61,7 +65,7 @@ services:
  #  volumes:
  #    - ./docker/db/export.sh:/docker-entrypoint-initdb.d/99-export.sh:ro
  #    - ./docker/db/obfuscate.sql:/obfuscate.sql:ro
- #    - ./docker/db/export:/var/lib/export:rw
+ #    - ./docker/db/export:/export:rw
  #  depends_on:
  #    database:
  #      condition: service_healthy

@@ -19,9 +19,9 @@ UPDATE user SET roles = '["ROLE_USER"]', email = concat('email_', id, '@noreply.
 
 -- truncate unused or voluminous tables
 UPDATE objet SET photo_id = NULL;
-TRUNCATE TABLE photo;
-TRUNCATE TABLE watching_user;
-TRUNCATE TABLE post_view;
-TRUNCATE TABLE post;
-TRUNCATE TABLE message;
-TRUNCATE TABLE messenger_message;
+DELETE FROM photo;
+DELETE FROM watching_user;
+DELETE FROM post_view;
+DELETE FROM post;
+DELETE FROM message;
+DELETE FROM messenger_messages;
