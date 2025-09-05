@@ -52,14 +52,15 @@ services:
  #    EXPORTER_REMOTE_MYSQL_PASSWORD: password
  #    EXPORTER_REMOTE_MYSQL_HOST: database
  #    EXPORTER_REMOTE_MYSQL_DATABASE: larpm
- #    EXPORTER_OBFUSCATE_SECRET_DATA: "1"
  #    EXPORTER_FILENAME: /var/lib/export/export.sql
+ #    EXPORTER_OBFUSCATE_SQL_FILE: /obfuscate.sql
  #    MYSQL_ROOT_PASSWORD: password
  #    MYSQL_DATABASE: exporter
  #  tmpfs:
  #    - /var/lib/mysql
  #  volumes:
  #    - ./docker/db/export.sh:/docker-entrypoint-initdb.d/99-export.sh:ro
+ #    - ./docker/db/obfuscate.sql:/obfuscate.sql:ro
  #    - ./docker/db/export:/var/lib/export:rw
  #  depends_on:
  #    database:
