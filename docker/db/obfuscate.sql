@@ -50,6 +50,7 @@ UPDATE objectif SET text =  concat('Texte_', id) WHERE id > 0;
 UPDATE objet SET nom =  concat('Nom_', id), description = @LOREM WHERE id > 0;
 -- UPDATE photo SET name =  concat('Name_', id), real_name =  concat('RealName_', id), filename = concat('filename', id) WHERE id > 0;
 UPDATE personnage SET nom = concat('Nom_', id), surnom = nom = concat('Surnom_', id) WHERE id > 0;
+UPDATE personnage_background SET text = null WHERE id > 0;
 UPDATE postulant SET explanation = @LOREM WHERE id > 0;
 UPDATE potion SET label =  concat('Label_', id), description = @LOREM, documentUrl = null WHERE id > 0;
 UPDATE priere SET label =  concat('Label_', id), description = @LOREM, documentUrl = null WHERE id > 0;
