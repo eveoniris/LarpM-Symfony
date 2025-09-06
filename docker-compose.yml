@@ -44,31 +44,32 @@ services:
             - database_data:/var/lib/mysql:rw
             - ./docker/db/initData:/docker-entrypoint-initdb.d:ro # bootstrap .sql files on first start
 
-    #exporter:
-    #  image: mysql:8.4
-    #  restart: no
-    #  entrypoint:
-    #    - /bin/sh
-    #    - -c
-    #    - "chmod -v a+rw /export; /entrypoint.sh mysqld"
-    #  environment:
-    #    EXPORTER_REMOTE_MYSQL_USER: admin
-    #    EXPORTER_REMOTE_MYSQL_PASSWORD: password
-    #    EXPORTER_REMOTE_MYSQL_HOST: database
-    #    EXPORTER_REMOTE_MYSQL_DATABASE: larpm
-    #    EXPORTER_FILENAME: /export/export.sql
-    #    EXPORTER_OBFUSCATE_SQL_FILE: /obfuscate.sql
-    #    MYSQL_ROOT_PASSWORD: password
-    #    MYSQL_DATABASE: exporter
-    #  tmpfs:
-    #    - /var/lib/mysql
-    #  volumes:
-    #    - ./docker/db/export.sh:/docker-entrypoint-initdb.d/99-export.sh:ro
-    #    - ./docker/db/obfuscate.sql:/obfuscate.sql:ro
-    #    - ./docker/db/export:/export:rw
-    #  depends_on:
-    #    database:
-    #      condition: service_healthy
+    exporter:
+        image: mysql:8.4
+        restart: no
+        entrypoint:
+            - /bin/sh
+            - -c
+            - "chmod -v a+rw /export; docker-entrypoint.sh mysqld"
+        environment:
+            EXPORTER_REMOTE_MYSQL_USER: admin
+            EXPORTER_REMOTE_MYSQL_PASSWORD: password
+            EXPORTER_REMOTE_MYSQL_HOST: database
+            EXPORTER_REMOTE_MYSQL_DATABASE: larpm
+            EXPORTER_FILENAME_SCHEMA: /export/1-initSchema.sql
+            EXPORTER_FILENAME_DATA: /export/2-insertAnonData.sql
+            EXPORTER_OBFUSCATE_SQL_FILE: /obfuscate.sql
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: exporter
+        tmpfs:
+            - /var/lib/mysql
+        volumes:
+            - ./docker/db/export.sh:/docker-entrypoint-initdb.d/99-export.sh:ro
+            - ./docker/db/obfuscate.sql:/obfuscate.sql:ro
+            - ./docker/db/export:/export:rw
+        depends_on:
+            database:
+                condition: service_healthy
 
     #adminer:
     #  image: adminer:5.3.0
