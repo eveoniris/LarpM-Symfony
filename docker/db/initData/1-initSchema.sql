@@ -1,9 +1,8 @@
-mysqldump: [Warning] Using a password on the command line interface can be insecure.
--- MySQL dump 10.13  Distrib 8.0.43, for Linux (aarch64)
+-- MySQL dump 10.13  Distrib 8.4.6, for Linux (aarch64)
 --
--- Host: localhost    Database: larpm
+-- Host: localhost    Database: exporter
 -- ------------------------------------------------------
--- Server version	8.0.43
+-- Server version	8.4.6
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -15,7 +14,6 @@ mysqldump: [Warning] Using a password on the command line interface can be insec
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-mysqldump: Error: 'Access denied; you need (at least one of) the PROCESS privilege(s) for this operation' when trying to dump tablespaces
 
 --
 -- Table structure for table `age`
@@ -3403,4 +3401,4 @@ CREATE TABLE `wt_litterature_top` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-09-06 18:18:39
+-- Dump completed on 2025-09-06 20:10:05
