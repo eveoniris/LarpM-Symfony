@@ -1,88 +1,97 @@
 openapi: 3.1.0
 info:
-  description: |-
-    Doc of LarpManager API
-  title: LarpManager API
-  version: '1.0'
+    description: |-
+        Doc of LarpManager API
+    title: LarpManager API
+    version: '1.0'
 servers:
-  - url: https://larpm.eveoniris.com/api
+    -   url: https://larpm.eveoniris.com/api
 tags:
-  - name: auth
-    description: Get your access
-  - name: gn
-    description: GN mean LARP, all data belong to it
+    -   name: auth
+        description: Get your access
+    -   name: gn
+        description: GN mean LARP, all data belong to it
 paths:
-  /{gn}/gdata:
-    get:
-      tags:
-        - gn
-      summary: Get gn groups data
-      parameters:
-        - name: gn
-          in: path
-          description: ID of the GN
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: A list of group with their leader and game master
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: /components/schemas/gn/gdata.yaml
-  /religions/pratiquants/{gn}:
-    get:
-      tags:
-        - gn
-      summary: get the list of practitioners of a religion
-    parameters:
-      - name: gn
-        in: path
-        description: ID of the GN
-        required: true
-        schema:
-          type: integer
-          format: int64
-  /login_check:
-    #$ref: "/paths/login_check.yaml"
-    post:
-      tags:
-        - auth
-      summary: get token
-      description: Get a token for your Api Call by using your credential
-      operationId: auth
-      parameters:
-        - name: username
-          in: query
-          description: Your LarpManager login (should be email)
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: Your LarpManager password
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation, return a bearer token
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "/components/schemas/Token.yaml"
-        '401':
-          $ref: '/components/responses/UnauthorizedError.yaml'
+    /{gn}/gdata:
+        get:
+            description: New endpoint
+            responses:
+                200:
+                    description: New response
+                    content:
+                        application/json:
+                            schema:
+                              :
+        get:
+            tags:
+                - gn
+            summary: Get gn groups data
+            parameters:
+                -   name: gn
+                    in: path
+                    description: ID of the GN
+                    required: true
+                    schema:
+                        type: integer
+                        format: int64
+            responses:
+                '200':
+                    description: A list of group with their leader and game master
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: /components/schemas/gn/gdata.yaml
+    /religions/pratiquants/{gn}:
+        get:
+            tags:
+                - gn
+            summary: get the list of practitioners of a religion
+        parameters:
+            -   name: gn
+                in: path
+                description: ID of the GN
+                required: true
+                schema:
+                    type: integer
+                    format: int64
+    /login_check:
+        #$ref: "/paths/login_check.yaml"
+        post:
+            tags:
+                - auth
+            summary: get token
+            description: Get a token for your Api Call by using your credential
+            operationId: auth
+            parameters:
+                -   name: username
+                    in: query
+                    description: Your LarpManager login (should be email)
+                    required: true
+                    schema:
+                        type: string
+                -   name: password
+                    in: query
+                    description: Your LarpManager password
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: successful operation, return a bearer token
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "/components/schemas/Token.yaml"
+                '401':
+                    $ref: '/components/responses/UnauthorizedError.yaml'
 components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    securitySchemes:
+        BearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
 security:
-  - bearerAuth: []
+    -   bearerAuth: [ ]

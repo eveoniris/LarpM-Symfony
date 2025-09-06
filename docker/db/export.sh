@@ -14,9 +14,8 @@ mysqldump --complete-insert --no-tablespaces \
     > /tmp/export.sql
 
 if [ -z "${EXPORTER_OBFUSCATE_SQL_FILE}" ]; then
-    mv /tmp/export.sql "${EXPORTER_FILENAME}"
-    echo "Database dumped into '${EXPORTER_FILENAME}'"
-    exit 0
+    echo "Missing EXPORTER_OBFUSCATE_SQL_FILE"
+    exit 1
 fi
 
 echo Importing dump in temporary database...
@@ -31,11 +30,16 @@ mysql --user=root --password="${MYSQL_ROOT_PASSWORD}" \
 
 echo Running mysqldump on temporary database
 
-mysqldump --complete-insert --no-tablespaces \
+mysqldump --complete-insert --replace --no-tablespaces --no-data \
     --user="root" --password="${MYSQL_ROOT_PASSWORD}" \
     "${MYSQL_DATABASE}" \
-    > "${EXPORTER_FILENAME}"
+    > "${EXPORTER_FILENAME_SCHEMA}"
 
-echo "Database dumped into '${EXPORTER_FILENAME}'"
+mysqldump --complete-insert --no-tablespaces --no-create-info \
+    --user="root" --password="${MYSQL_ROOT_PASSWORD}" \
+    "${MYSQL_DATABASE}" \
+    > "${EXPORTER_FILENAME_DATA}"
+
+echo "Database dumped into '${EXPORTER_FILENAME_SCHEMA}' and '${EXPORTER_FILENAME_DATA}'"
 
 exit 0
