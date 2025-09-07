@@ -4,13 +4,11 @@
 
 {% block body %}
 
-	@
+    <div class="well">
+        <div class="header">
+            <h5>Modification de {{ personnage.publicName }}</h5>
+        </div>
+        {{ form(form) }}
+    </div>
 
-	<div class="well">
-		<div class="header">
-			<h5>Modification de {{ personnage.publicName }}</h5>
-		</div>
-		{{ form(form) }}
-	</div>
-	
 {% endblock body %}

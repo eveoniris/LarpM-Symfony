@@ -1258,6 +1258,25 @@ class Personnage extends BasePersonnage implements Stringable
         return false;
     }
 
+    public function getLastAnneeGn(): int
+    {
+        return $this->getLastParticipantGn()?->getDateJeu() ?? 1000;
+    }
+
+    public function getNbFruitEtLegumesUsed(): int
+    {
+        $nb = 0;
+
+        /** @var PersonnageChronologie $personnageChronologie */
+        foreach ($this->personnageChronologie as $personnageChronologie) {
+            if ($personnageChronologie->isFruitsEtLegumes()) {
+                $nb++;
+            }
+        }
+
+        return $nb;
+    }
+
     public function hasCompetenceId(int $id): bool
     {
         try {
