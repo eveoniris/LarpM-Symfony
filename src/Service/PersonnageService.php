@@ -24,6 +24,7 @@ use App\Entity\Loi;
 use App\Entity\OrigineBonus;
 use App\Entity\Participant;
 use App\Entity\Personnage;
+use App\Entity\PersonnageChronologie;
 use App\Entity\PersonnageIngredient;
 use App\Entity\PersonnageLangues;
 use App\Entity\PersonnageRessource;
@@ -1897,6 +1898,67 @@ class PersonnageService
             }
         }
         $this->entityManager->flush();
+    }
+
+    /**
+     * Le personnage atteint 60 ans (age rang 5 ou 6)
+     *
+     */
+    public function checkDieOfOldAge(Personnage $personnage): void
+    {
+        // In v1 we test Token; new rules in V2
+        $baseAgeLimit = 60;
+
+        if (!$personnage->getVivant()) {
+            // Bas heu non ...
+            return;
+        }
+
+        $ageLimit = $baseAgeLimit;
+
+        // Rang d'age "immortel"
+        if ($personnage->getAge() > 6) {
+            return;
+        }
+
+        if ($personnage->hasCompetenceLevel(CompetenceFamilyType::SURVIVAL, LevelType::MASTER)) {
+            $ageLimit += 10;
+        }
+
+        if ($personnage->hasCompetenceLevel(CompetenceFamilyType::SURVIVAL, LevelType::GRAND_MASTER)) {
+            $ageLimit += 20;
+        }
+
+        // Max use of Fruits And Vegetables is 2 for now
+        $nbFruitsAndVegetables = max($personnage->getNbFruitEtLegumesUsed(), 2);
+        $ageLimit += $nbFruitsAndVegetables * 5;
+
+        if ($personnage->getAgeReel() < $ageLimit) {
+            return;
+        }
+
+        // Still there? Well it's time to die
+        $personnage->setVivant(false);
+
+        // let randomize a little
+        $randLastAge = $personnage->getAgeReel() - $baseAgeLimit;
+        if ($randLastAge > 0) {
+            $dateKill = random_int(1, 4);
+            $personnage->setAgeReel($personnage->getAgeReel() - $dateKill);
+        }
+        $lastGn = $this->groupeService->getLastDoneSessionGn()?->getDateJeu() ?? 1000;
+        $anneeGN = max($personnage->getLastParticipantGn()?->getDateJeu() ?? 0, $lastGn) + $dateKill;
+        $this->entityManager->persist($personnage);
+        $personnageChronologie = new PersonnageChronologie();
+        $personnageChronologie->setAnnee($anneeGN);
+        $personnageChronologie->setEvenement('Mort de vieillesse');
+        $personnageChronologie->setPersonnage($personnage);
+        $this->entityManager->persist($personnageChronologie);
+    }
+
+    public function getLastAnneeGn(Personnage $personnage): int
+    {
+            $personnage->getLastParticipantGn()?->getDateJeu() ?? 1000;
     }
 
     /**

@@ -38,7 +38,9 @@ use App\Entity\Ressource;
 use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Entity\Token;
+use App\Entity\Trigger;
 use App\Entity\User;
+use App\Enum\ChronologyType;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
@@ -1463,7 +1465,7 @@ class PersonnageController extends AbstractController
                 $personnage->setVivant(false);
                 foreach ($personnage->getParticipants() as $participant) {
                     if (null != $participant->getGn()) {
-                        $anneeGN = $participant->getGn()->getDateJeu() + rand(1, 4);
+                        $anneeGN = $participant->getGn()->getDateJeu() + random_int(1, 4);
                     }
                 }
 
@@ -1510,7 +1512,7 @@ class PersonnageController extends AbstractController
         // Chronologie : Fruits & Légumes
         foreach ($personnage->getParticipants() as $participant) {
             if (null != $participant->getGn()) {
-                $anneeGN = $participant->getGn()->getDateJeu() + rand(-2, 2);
+                $anneeGN = $participant->getGn()->getDateJeu() + random_int(-2, 2);
             }
         }
 
@@ -1557,7 +1559,17 @@ class PersonnageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var PersonnageTrigger $trigger */
             $trigger = $form->getData();
+
+            if ($trigger->getTag() === TriggerType::FRUITS_ET_LEGUMES) {
+                $annee = $personnage->getLastParticipantGn()?->getDateJeu() ?? 1000;
+                $personnageChronologie = new PersonnageChronologie();
+                $personnageChronologie->setEvenement(ChronologyType::FRUITS_AND_VEGETABLES->value);
+                $personnageChronologie->setAnnee($annee);
+                $personnageChronologie->setPersonnage($personnage);
+                $this->entityManager->persist($personnageChronologie);
+            }
 
             $this->entityManager->persist($trigger);
             $this->entityManager->flush();
@@ -3806,9 +3818,9 @@ class PersonnageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $personnages = $this->entityManager->getRepository('\\' . Personnage::class)->findAll();
-            $token = $this->entityManager->getRepository('\\' . Token::class)->findOneByTag('VIEILLESSE');
-            $ages = $this->entityManager->getRepository('\\' . Age::class)->findAll();
+            $personnages = $this->entityManager->getRepository(Personnage::class)->findAll();
+            $token = $this->entityManager->getRepository(Token::class)->findOneByTag('VIEILLESSE');
+            $ages = $this->entityManager->getRepository(Age::class)->findAll();
 
             if (!$token) {
                 $this->addFlash('error', "Le jeton VIEILLESSE n'existe pas !");
@@ -3816,7 +3828,13 @@ class PersonnageController extends AbstractController
                 return $this->redirectToRoute('homepage', [], 303);
             }
 
+            /** @var Personnage $personnage */
             foreach ($personnages as $personnage) {
+                if (!$personnage->getVivant()) {
+                    // un mort ça ne vieillit pas
+                    continue;
+                }
+
                 // donne un jeton vieillesse
                 $personnageHasToken = new PersonnageHasToken();
                 $personnageHasToken->setToken($token);
@@ -3824,31 +3842,22 @@ class PersonnageController extends AbstractController
                 $personnage->addPersonnageHasToken($personnageHasToken);
                 $this->entityManager->persist($personnageHasToken);
 
-                if ($personnage->getVivant()) {
-                    $personnage->setAgeReel($personnage->getAgeReel() + 5); // ajoute 5 ans à l'age réél
-                }
+                $personnage->setAgeReel($personnage->getAgeReel() + 5); // ajoute 5 ans à l'age réél
 
-                if (0 == $personnage->getPersonnageHasTokens()->count() % 2 && $personnage->getVivant()) {
-                    if ($personnage->getAge()->getId() < 5) {
-                        $personnage->setAge($ages[$personnage->getAge()->getId()]);
-                    } elseif (5 == $personnage->getAge()->getId()) {
-                        $personnage->setVivant(false);
-                        foreach ($personnage->getParticipants() as $participant) {
-                            if (null != $participant->getGn()) {
-                                $anneeGN = $participant->getGn()->getDateJeu() + rand(1, 4);
-                            }
-                        }
-
-                        $evenement = 'Mort de vieillesse';
-                        $personnageChronologie = new PersonnageChronologie();
-                        $personnageChronologie->setAnnee($anneeGN);
-                        $personnageChronologie->setEvenement($evenement);
-                        $personnageChronologie->setPersonnage($personnage);
-                        $this->entityManager->persist($personnageChronologie);
+                // TODO : gérer mieux l'ajout de tranche d'age tous les 10 ans selon age réel !
+                // TODO : ajouter une vérif des dates/chronology pour assurer qu'on ne vieillit qu'une fois par GN
+                // Seule les tranches d'age "mortel" évoluent
+                /* TODO if ($personnage->getAge()->getId() < 6) {
+                    if (!isset($ages[$personnage->getAge()->getId() + 1])) {
+                        $msg = sprintf("Le personnage %d ne peut pas gagner en age, il est au niveau d'age n°%d !", $personnage->getId(), $personnage->getAge()->getId());
+                        $this->addFlash('error', $msg);
+                        $this->logger->error($msg);
+                    } else {
+                        $personnage->setAge($ages[$personnage->getAge()->getId() + 1]);
                     }
-                }
+                }*/
 
-                $this->entityManager->persist($personnage);
+                $this->personnageService->checkDieOfOldAge($personnage);
             }
 
             $this->entityManager->flush();

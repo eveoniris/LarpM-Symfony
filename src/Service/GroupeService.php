@@ -31,8 +31,10 @@ use App\Enum\BonusType;
 use App\Enum\Role;
 use App\Enum\TerritoireStatut;
 use App\Service\PersonnageService;
+use Carbon\Carbon;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -827,6 +829,16 @@ readonly class GroupeService
     public function getNextSessionGn()
     {
         return $this->entityManager->getRepository(Gn::class)->findNext();
+    }
+
+    public function getLastDoneSessionGn(): ?Gn
+    {
+        $criteria = new Criteria();
+        $criteria->where(Criteria::expr()?->lt('date_fin', Carbon::now()->toDateTimeString()))
+            ->orderBy(['date_fin' => 'DESC']);
+        return $this->entityManager->getRepository(Gn::class)
+            ->matching($criteria)
+            ->first();
     }
 
     public function getStatutTerritoire(Territoire $territoire): TerritoireStatut

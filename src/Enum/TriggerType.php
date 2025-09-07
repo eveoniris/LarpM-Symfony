@@ -2,6 +2,8 @@
 
 namespace App\Enum;
 
+use Exception;
+
 enum TriggerType: string
 {
     use EnumTraits;
@@ -40,7 +42,7 @@ enum TriggerType: string
             self::DOMAINE_MAGIE->value => 'permet de choisir un domaine de magie',
             self::LANGUE_COURANTE->value => 'permet de choisir une langue commune',
             self::LANGUE_ANCIENNE->value => 'permet de choisir une langue ancienne',
-            default => throw new \Exception('Unexpected match value '.$this->value),
+            default => throw new Exception('Unexpected match value ' . $this->value),
         };
     }
 
@@ -107,5 +109,10 @@ enum TriggerType: string
     public function isTechnologie(): bool
     {
         return $this->value === self::TECHNOLOGIE->value;
+    }
+
+    public function isFruitsEtLegumes(): bool
+    {
+        return $this->value === self::FRUITS_ET_LEGUMES->value;
     }
 }
