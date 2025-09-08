@@ -834,7 +834,7 @@ readonly class GroupeService
     public function getLastDoneSessionGn(): ?Gn
     {
         $criteria = new Criteria();
-        $criteria->where(Criteria::expr()?->lt('date_fin', Carbon::now()->toDateTimeString()))
+        $criteria->where(Criteria::expr()?->lt('date_fin', Carbon::now()))
             ->orderBy(['date_fin' => 'DESC']);
         return $this->entityManager->getRepository(Gn::class)
             ->matching($criteria)

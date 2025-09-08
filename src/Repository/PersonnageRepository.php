@@ -8,6 +8,7 @@ use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\PersonnageLignee;
 use App\Entity\Titre;
+use Doctrine\DBAL\Result;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
 
@@ -30,6 +31,19 @@ class PersonnageRepository extends BaseRepository
                 DQL,
             );
         $query->setParameter('gnid', $gn->getId());
+
+        return $query->getResult();
+    }
+
+    public function findAllVivant()
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                    SELECT p FROM App\Entity\Personnage p
+                    WHERE p.vivant = 1
+                DQL,
+            );
 
         return $query->getResult();
     }
@@ -105,8 +119,8 @@ class PersonnageRepository extends BaseRepository
             'pa',
             'with',
             'pa.id =
- (SELECT MAX(pa2.id) 
-FROM App\Entity\Personnage p2 
+ (SELECT MAX(pa2.id)
+FROM App\Entity\Personnage p2
 LEFT JOIN p2.participants pa2
  WHERE p2 = p
 )',
@@ -152,7 +166,7 @@ LEFT JOIN p2.participants pa2
         }
 
         if (array_key_exists('nom', $criteria)) {
-            $qb->andWhere('p.nom LIKE :nom OR p.surnom LIKE :nom')->setParameter('nom', '%'.$criteria['nom'].'%');
+            $qb->andWhere('p.nom LIKE :nom OR p.surnom LIKE :nom')->setParameter('nom', '%' . $criteria['nom'] . '%');
         }
     }
 
@@ -208,7 +222,7 @@ LEFT JOIN p2.participants pa2
                     // $qb->addOrderBy('p.genre', $orderDir);
                     break;
                 default:
-                    $qb->orderBy('p.'.$orderBy, $orderDir);
+                    $qb->orderBy('p.' . $orderBy, $orderDir);
             }
         }
 
@@ -240,18 +254,62 @@ LEFT JOIN p2.participants pa2
         $qb->from(Personnage::class, $this->alias);
         $qb = $this->gender($qb, $genderId, $ambigus);
 
-        return $qb->orderBy($this->alias.'.nom', 'ASC');
+        return $qb->orderBy($this->alias . '.nom', 'ASC');
     }
 
     public function gender(QueryBuilder $qb, int $gender, ?int $ambigus = null): QueryBuilder
     {
         if (!$ambigus) {
-            $qb->andWhere($this->alias.'.genre = :value');
+            $qb->andWhere($this->alias . '.genre = :value');
         } else {
-            $qb->andWhere($this->alias.'.genre = :value OR '.$this->alias.'.genre = :ambigus');
+            $qb->andWhere($this->alias . '.genre = :value OR ' . $this->alias . '.genre = :ambigus');
             $qb->setParameter('ambigus', $ambigus);
         }
 
         return $qb->setParameter('value', $gender);
+    }
+
+    public function findAllElder(int $age = 60): array
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select($this->alias);
+        $qb->from(Personnage::class, $this->alias);
+        $qb->andWhere($this->alias . '.age_reel >= :age');
+        $qb->andWhere($this->alias . '.vivant = 1');
+        $qb->setParameter('age', $age);
+        return $qb->getQuery()->getResult();
+    }
+
+    public function vieillirAll(int $year = 5): Result
+    {
+        $connection = $this->getEntityManager()->getConnection();
+
+        // On ajoute le nombre de nouvelles années et maj la tranche d'age
+        $sql =
+            <<<SQL
+                UPDATE personnage p
+                JOIN (
+                    SELECT p.id,
+                           p.age_reel + :addyear AS new_age,
+                           a.id AS new_id_age
+                    FROM personnage p
+                    JOIN age a
+                      ON a.minimumValue <= p.age_reel + :addyear
+                    WHERE p.vivant = 1
+                    AND NOT EXISTS (
+                        SELECT 1
+                          FROM age a2
+                          WHERE a2.minimumValue <= p.age_reel + :addyear
+                    AND a2.minimumValue > a.minimumValue
+                      )
+                ) sub ON p.id = sub.id
+                SET p.age_reel = sub.new_age,
+                    p.age_id   = sub.new_id_age;
+            SQL;
+
+        $statement = $connection->prepare($sql);
+        $statement->bindValue('addyear', $year);
+        return $statement->executeQuery();
+
     }
 }

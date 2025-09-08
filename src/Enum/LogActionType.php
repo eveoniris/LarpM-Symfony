@@ -7,6 +7,7 @@ enum LogActionType: string
     use EnumTraits;
 
     case ADD_COMPETENCE = 'AddCompetence';
+    case AGING_CHARACTERS = 'AgingCharacters';
     case ENTITY_UPDATE = 'entity_update';
     case ENTITY_DELETE = 'entity_delete';
     case ENTITY_ADD = 'entity_add';
