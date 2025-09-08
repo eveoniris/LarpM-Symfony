@@ -38,7 +38,6 @@ use App\Entity\Ressource;
 use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Entity\Token;
-use App\Entity\Trigger;
 use App\Entity\User;
 use App\Enum\ChronologyType;
 use App\Enum\CompetenceFamilyType;
@@ -73,6 +72,7 @@ use App\Form\TriggerDeleteForm;
 use App\Form\TriggerForm;
 use App\Form\TrombineForm;
 use App\Manager\GroupeManager;
+use App\Repository\AgeRepository;
 use App\Repository\CompetenceRepository;
 use App\Repository\ConnaissanceRepository;
 use App\Repository\DomaineRepository;
@@ -92,6 +92,7 @@ use App\Service\PersonnageService;
 use Carbon\Carbon;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\IntegerType;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
@@ -3806,7 +3807,7 @@ class PersonnageController extends AbstractController
     }
 
     #[Route('/vieillir', name: 'vieillir')]
-    public function vieillirAction(Request $request): RedirectResponse|Response
+    public function vieillirAction(Request $request, AgeRepository $ageRepository): RedirectResponse|Response
     {
         $form = $this->createForm()
             ->add(
@@ -3818,9 +3819,21 @@ class PersonnageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $personnages = $this->entityManager->getRepository(Personnage::class)->findAll();
+
+            foreach ($this->personnageService->vieillirTous() as $result) {
+                $this->logger->info(
+                    match (get_class($result)) {
+                        Personnage::class => sprintf('Le personnage %d est mort de vieillesse', $result->getId()),
+                        Result::class => sprintf('%d Personnages vieillis', $result->rowCount()),
+                        default => var_export($result, true),
+                    }
+                );
+            }
+
+            /* OLD :
+
+            $personnages = $this->entityManager->getRepository(Personnage::class)->findAllVivant();
             $token = $this->entityManager->getRepository(Token::class)->findOneByTag('VIEILLESSE');
-            $ages = $this->entityManager->getRepository(Age::class)->findAll();
 
             if (!$token) {
                 $this->addFlash('error', "Le jeton VIEILLESSE n'existe pas !");
@@ -3828,14 +3841,14 @@ class PersonnageController extends AbstractController
                 return $this->redirectToRoute('homepage', [], 303);
             }
 
-            /** @var Personnage $personnage */
+
             foreach ($personnages as $personnage) {
                 if (!$personnage->getVivant()) {
                     // un mort ça ne vieillit pas
                     continue;
                 }
 
-                // donne un jeton vieillesse
+                // donne un jeton vieillesse (mécanique v1 gardé pour le moment même si plus d'utilité dans le nouveau calcule)
                 $personnageHasToken = new PersonnageHasToken();
                 $personnageHasToken->setToken($token);
                 $personnageHasToken->setPersonnage($personnage);
@@ -3844,23 +3857,18 @@ class PersonnageController extends AbstractController
 
                 $personnage->setAgeReel($personnage->getAgeReel() + 5); // ajoute 5 ans à l'age réél
 
-                // TODO : gérer mieux l'ajout de tranche d'age tous les 10 ans selon age réel !
+                // TODO use while QUERY age = age + 5 and then get from elder
                 // TODO : ajouter une vérif des dates/chronology pour assurer qu'on ne vieillit qu'une fois par GN
-                // Seule les tranches d'age "mortel" évoluent
-                /* TODO if ($personnage->getAge()->getId() < 6) {
-                    if (!isset($ages[$personnage->getAge()->getId() + 1])) {
-                        $msg = sprintf("Le personnage %d ne peut pas gagner en age, il est au niveau d'age n°%d !", $personnage->getId(), $personnage->getAge()->getId());
-                        $this->addFlash('error', $msg);
-                        $this->logger->error($msg);
-                    } else {
-                        $personnage->setAge($ages[$personnage->getAge()->getId() + 1]);
-                    }
-                }*/
-
                 $this->personnageService->checkDieOfOldAge($personnage);
+                // Seule les tranches d'age "mortel" évoluent
+                if ($personnage->getAge()->getId() < 6) {
+                    $personnage->setAge($ageRepository->findOneByAgeReel($personnage->getAgeReel()));
+                }
+
             }
 
             $this->entityManager->flush();
+            */
 
             $this->addFlash('success', 'Tous les personnages ont reçu un jeton vieillesse.');
 

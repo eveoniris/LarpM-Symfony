@@ -20,6 +20,7 @@ use App\Entity\Ingredient;
 use App\Entity\Item;
 use App\Entity\Langue;
 use App\Entity\Level;
+use App\Entity\LogAction;
 use App\Entity\Loi;
 use App\Entity\OrigineBonus;
 use App\Entity\Participant;
@@ -47,6 +48,7 @@ use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\LevelType;
+use App\Enum\LogActionType;
 use App\Enum\TriggerType;
 use App\Form\Participant\ParticipantRemoveForm;
 use App\Form\PersonnageFindForm;
@@ -64,6 +66,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Exception;
+use Generator;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -1900,25 +1903,78 @@ class PersonnageService
         $this->entityManager->flush();
     }
 
+    public function getLastAnneeGn(Personnage $personnage): int
+    {
+        return $this->groupeService->getLastDoneSessionGn()?->getDateJeu()
+            ?? $personnage->getLastParticipantGn()?->getDateJeu()
+            ?? 1000;
+    }
+
+    /**
+     * @param int $year nombre d'années prises par tous les personnages
+     * @param int $maxAge age maximum de base pour les mortels
+     *
+     * Add year to personnage age, update age range and then test if personnage die because of old age
+     */
+    public function vieillirTous(int $year = 5, int $maxAge = 60, bool $force = false): Generator
+    {
+        $this->logger->info('Starting to update age of all personnage');
+
+        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
+        $logActionReprository = $this->entityManager->getRepository(LogAction::class);
+        $lastActionDate = $logActionReprository->getLastAgingActionDate();
+        $dateJeu = $this->groupeService->getLastDoneSessionGn()?->getDateJeu() ?? 1000;
+
+        if (!$force && $lastActionDate && $dateJeu === $lastActionDate) {
+            $this->logger->warning("L'action de vieillir a déjà été faite. On vérifie les morts, sinon utiliser le paramètre 'force'");
+        } else {
+            $result = $personnageRepository->vieillirAll($year);
+
+            $log = new LogAction();
+            $log->setDate(new DateTime());
+            $log->setType(LogActionType::AGING_CHARACTERS);
+            $log->setUser($this->security->getUser());
+            $log->setData(['gn_date' => $dateJeu]);
+            $this->entityManager->persist($log);
+            $this->entityManager->flush();
+
+            $this->logger->info(sprintf('Age of all personnage updated, %d affected', $result->rowCount()));
+
+            yield $result;
+        }
+
+        // Check die on over 60
+        $this->logger->info('Check if personnage die from an old age');
+        $i = 0;
+        foreach ($personnageRepository->findAllElder($maxAge) as $personnage) {
+            if ($this->checkDieOfOldAge($personnage)) {
+                $i++;
+            }
+
+            yield $personnage;
+            unset($personnage);
+            gc_collect_cycles();
+        }
+        $this->logger->info(sprintf('Done, %d personnages has died', $i));
+    }
+
     /**
      * Le personnage atteint 60 ans (age rang 5 ou 6)
      *
      */
-    public function checkDieOfOldAge(Personnage $personnage): void
+    public function checkDieOfOldAge(Personnage $personnage, int $baseAgeLimit = 60): bool
     {
         // In v1 we test Token; new rules in V2
-        $baseAgeLimit = 60;
-
         if (!$personnage->getVivant()) {
             // Bas heu non ...
-            return;
+            return false;
         }
 
         $ageLimit = $baseAgeLimit;
 
         // Rang d'age "immortel"
-        if ($personnage->getAge() > 6) {
-            return;
+        if ($personnage->getAge()->getId() > 6) {
+            return false;
         }
 
         if ($personnage->hasCompetenceLevel(CompetenceFamilyType::SURVIVAL, LevelType::MASTER)) {
@@ -1933,8 +1989,19 @@ class PersonnageService
         $nbFruitsAndVegetables = max($personnage->getNbFruitEtLegumesUsed(), 2);
         $ageLimit += $nbFruitsAndVegetables * 5;
 
+        // TODO clean Token Vieillesse to only keep one added as +5 year to ageReel
+
         if ($personnage->getAgeReel() < $ageLimit) {
-            return;
+            $this->logger->info(
+                sprintf(
+                    'Le personnage %d %s a atteint %d ans pour une espérance de vie de %d ans',
+                    $personnage->getId(),
+                    $personnage->getNom(),
+                    $personnage->getAgeReel(),
+                    $ageLimit
+                )
+            );
+            return false;
         }
 
         // Still there? Well it's time to die
@@ -1954,11 +2021,9 @@ class PersonnageService
         $personnageChronologie->setEvenement('Mort de vieillesse');
         $personnageChronologie->setPersonnage($personnage);
         $this->entityManager->persist($personnageChronologie);
-    }
+        $this->entityManager->flush();
 
-    public function getLastAnneeGn(Personnage $personnage): int
-    {
-            $personnage->getLastParticipantGn()?->getDateJeu() ?? 1000;
+        return true;
     }
 
     /**

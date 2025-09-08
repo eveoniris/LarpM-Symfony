@@ -3,6 +3,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Age;
 use App\Service\OrderBy;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
@@ -33,9 +34,20 @@ class AgeRepository extends BaseRepository
             ->getResult();
     }
 
+    public function findOneByAgeReel(int $ageReel): ?Age
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.minimumValue <= :ageReel')
+            ->setParameter('ageReel', $ageReel)
+            ->orderBy('a.minimumValue', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getSingleResult();
+    }
+
     public function enableCreation(QueryBuilder $query, bool $enable): QueryBuilder
     {
-        return $query->andWhere($query->getRootAliases()[0].'.enableCreation = :enable')
+        return $query->andWhere($query->getRootAliases()[0] . '.enableCreation = :enable')
             ->setParameter('enable', $enable);
     }
 
@@ -45,11 +57,11 @@ class AgeRepository extends BaseRepository
 
         return [
             ...parent::searchAttributes(),
-            $alias.'.label',
-            $alias.'.description',
-            $alias.'.bonus',
-            $alias.'.enableCreation',
-            $alias.'.minimumValue',
+            $alias . '.label',
+            $alias . '.description',
+            $alias . '.bonus',
+            $alias . '.enableCreation',
+            $alias . '.minimumValue',
         ];
     }
 
@@ -59,10 +71,10 @@ class AgeRepository extends BaseRepository
 
         return [
             ...parent::sortAttributes($alias),
-            'minimumValue' => [OrderBy::ASC => [$alias.'.minimumValue' => OrderBy::ASC], OrderBy::DESC => [$alias.'.minimumValue' => OrderBy::DESC]],
-            'bonus' => [OrderBy::ASC => [$alias.'.bonus' => OrderBy::ASC], OrderBy::DESC => [$alias.'.bonus' => OrderBy::DESC]],
-            'enableCreation' => [OrderBy::ASC => [$alias.'.enableCreation' => OrderBy::ASC], OrderBy::DESC => [$alias.'.enableCreation' => OrderBy::DESC]],
-            'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
+            'minimumValue' => [OrderBy::ASC => [$alias . '.minimumValue' => OrderBy::ASC], OrderBy::DESC => [$alias . '.minimumValue' => OrderBy::DESC]],
+            'bonus' => [OrderBy::ASC => [$alias . '.bonus' => OrderBy::ASC], OrderBy::DESC => [$alias . '.bonus' => OrderBy::DESC]],
+            'enableCreation' => [OrderBy::ASC => [$alias . '.enableCreation' => OrderBy::ASC], OrderBy::DESC => [$alias . '.enableCreation' => OrderBy::DESC]],
+            'label' => [OrderBy::ASC => [$alias . '.label' => OrderBy::ASC], OrderBy::DESC => [$alias . '.label' => OrderBy::DESC]],
         ];
     }
 

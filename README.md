@@ -22,8 +22,9 @@ git clone git@github.com:eveoniris/LarpM-Symfony.git larpmanager
 
 ## 2- compiler le projet
 
-Normalement inutile car gérer par le point suivant. Il pourra être parfois requis de recompiler. Voici 
+Normalement inutile car gérer par le point suivant. Il pourra être parfois requis de recompiler. Voici
 donc la commande.
+
 ```
 docker compose build
 ```
@@ -34,13 +35,14 @@ docker compose build
 docker compose up -d
 ```
 
-## 3- Charger une première fois les librairies externe (vendor) 
+## 3- Charger une première fois les librairies externe (vendor)
 
 ```
 docker compose run --rm composer install
 ```
 
 ## 4- Accéder au site
+
 aller sur http://localhost:8080/
 
 Vous pouvez utiliser un reverse proxy comme Caddy pour accéder plutot avec l'url http://larpmanager.test
@@ -50,7 +52,7 @@ Pour cela, il faudra modifier votre fichier "hosts" /etc/hosts et y ajouter
 127.0.0.1 larpmanager.test
 ```
 
-## 5- Connection d'un IDE à la base de donnée 
+## 5- Connection d'un IDE à la base de donnée
 
 On utilise la même version que sur le serveur de production : Mysql 8.0+
 
@@ -67,20 +69,21 @@ On utilise la même version que sur le serveur de production : Mysql 8.0+
 Tous les mails sont catché par mailpit et consultable sur : http://localhost:8025/
 
 ## 7- commande Symfony
-   
+
 Les commandes symfony sont disponibles via :
 
 ```
    docker compose exec frankenphp symfony
 ```
 
-Ou via 
+Ou via
 
 ```
 docker compose exec frankenphp php bin/console
 ```
 
-## Voir les logs 
+## Voir les logs
+
 ```
 docker compose logs
 docker compose logs frankenphp
@@ -90,7 +93,7 @@ docker compose logs database
 
 ## Base de donnée
 
-Lors du docker compose up -d, est installé pour la première fois (tant que /docker/db/data est vide) les fichiers 
+Lors du docker compose up -d, est installé pour la première fois (tant que /docker/db/data est vide) les fichiers
 contenus dans docker/db/initData par ordre alphabetique
 
 Export de la base de donnée
@@ -102,18 +105,36 @@ Pour importer, créer un fichier puis le copier dans le container
 Import de la base de donnée (le fichier doit être dans le container)
 `docker exec -it larpmanager-database-1 /bin/sh -c "mysql -uadmin -ppassword larpm < /tmp/backup.sql"`
 
-# Export des données uniquement 
-On utilise --no-create-info avant d'indiquer la base 
+# Export des données uniquement
+
+On utilise --no-create-info avant d'indiquer la base
 
 # Export de la structure uniquement
+
 On utilise --no-data avant d'indiquer la base
 
-Noter: --compact pour un fichier sans commentaire, et --no-create-db pour éviter la partie création 
+Noter: --compact pour un fichier sans commentaire, et --no-create-db pour éviter la partie création
 
+# Tests
+
+Lancez les tests PHPUnit:
+
+```
+docker compose exec frankenphp ./vendor/bin/phpunit
+```
+
+Notes:
+
+- L'environnement de test utilise APP_ENV=test (défini dans phpunit.dist.xml).
+- Un test d'exemple est fourni: tests/UtilitiesTest.php (unit test pur) et tests/Smoke/KernelBootTest.php (vérifie le
+  boot du Kernel sans toucher à la base de données).
+- Des exemples de tests API via fichiers HTTP se trouvent dans tests/rest (ex: tests/rest/stats.http) et peuvent être
+  exécutés depuis un IDE compatible.
 
 # Divers
 
-## Composer 
+## Composer
+
 Commande pour maj aller sur le container (voir point 6) puis faire :
 
 ```
@@ -121,7 +142,8 @@ docker compose run --rm composer install
 docker compose run --rm composer recipes:install
 ```
 
-Au besoin pour mettre à jour le recipes : 
+Au besoin pour mettre à jour le recipes :
+
 ```
 docker compose run --rm composer recipes:update
 ```
@@ -129,7 +151,9 @@ docker compose run --rm composer recipes:update
 # Commande utile
 
 ## Vider le cache
+
 Nettoyer et recharger le cache
+
 ```
 docker compose exec frankenphp php bin/console cache:clear
 ```
@@ -139,26 +163,31 @@ docker compose exec frankenphp php bin/console cache:warmup
 ```
 
 Si le clear:cache échoue :
+
 ```
 php -d memory_limit=-1 bin/console cache:clear
 ``` 
 
 ## Exécuter les migrations Doctrine
+
 ```
 docker compose exec frankenphp php bin/console doctrine:migrations:migrate
 ```
 
 ## Lancer un serveur de développement (si nécessaire)
+
 ```
 docker compose exec frankenphp php bin/console server:run
 ```
 
 ## Lancer un worker Messenger
+
 ```
 docker compose exec frankenphp php bin/console messenger:consume async -vv
 ```
 
 ## Compiler les assets
+
 Voir https://symfony.com/doc/current/frontend/asset_mapper.html
 
 ```
@@ -171,7 +200,7 @@ docker compose exec frankenphp php bin/console asset-map:compile
 docker compose exec frankenphp php bin/console debug:asset-map
 ```
 
-## Maj ou install de l'importmap 
+## Maj ou install de l'importmap
 
 ```
 docker compose exec frankenphp php bin/console importmap:update
@@ -179,7 +208,9 @@ docker compose exec frankenphp php bin/console importmap:install
 ```
 
 ## Maj service du docker compose
-Pour mettre à jour les service définis dans le docker-compose.yml si une nouvelle version est disponible. Il faudra jouer la commande
+
+Pour mettre à jour les service définis dans le docker-compose.yml si une nouvelle version est disponible. Il faudra
+jouer la commande
 
 ```
 docker compose pull
@@ -193,20 +224,23 @@ fair un `docker compose ps` voir si un container est en "restarting"
 
 Si oui faire un `docker compose down -v` puis faire un `docker compose up -d` et vérifier les logs.
 
-##  Exemple pour mettre à jour les librairies de composer
+## Exemple pour mettre à jour les librairies de composer
+
     Mettre à jour composer.json sur la version visé puis
 
 - `docker compose run --rm composer update "doctrine/*" --with-all-dependencies`
 - `docker compose run --rm composer update "symfony/*" --with-all-dependencies`
 
 ## Ajout de Imagine
-Si manquant 
+
+Si manquant
 
 ```
 docker compose exec frankenphp symfony composer req "imagine/imagine:^1.2"
 ```
 
-##  Ajout de Autocomplete
+## Ajout de Autocomplete
+
 Si manquant
 
 - `docker compose run --rm composer require symfony/stimulus-bundle`
