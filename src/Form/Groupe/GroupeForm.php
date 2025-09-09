@@ -59,7 +59,7 @@ class GroupeForm extends AbstractType
                     'label' => 'Scénariste',
                     'required' => false,
                     'class' => User::class,
-                    'choice_label' => 'name',
+                    'choice_label' => static fn(User $user) => sprintf('%s - %s', $user->getName(), $user->getEtatCivil()?->getFullName() ?? ''),
                     'autocomplete' => true,
                     'query_builder' => static function (EntityRepository $er) {
                         $qb = $er->createQueryBuilder('u');
