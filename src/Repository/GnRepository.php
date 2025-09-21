@@ -121,17 +121,27 @@ class GnRepository extends BaseRepository
 
     public function lockAllGroup(Gn $gn): Result
     {
+        return $this->toggleLock($gn, true);
+    }
+
+    public function unlockAllGroup(Gn $gn): Result
+    {
+        return $this->toggleLock($gn, false);
+    }
+
+    private function toggleLock(Gn $gn, bool $lock): Result {
         $connection = $this->entityManager->getConnection();
 
         $sql =
             <<<SQL
                  UPDATE groupe g
                  INNER JOIN groupe_gn AS ggn ON g.id = ggn.groupe_id
-                 SET `lock` = 1
+                 SET `lock` = :lockvalue
                  WHERE ggn.gn_id = :gnid
                 SQL;
 
         $statement = $connection->prepare($sql);
+        $statement->bindValue('lockvalue', $lock ? 1: 0);
         $statement->bindValue('gnid', $gn->getId());
 
         return $statement->executeQuery();
