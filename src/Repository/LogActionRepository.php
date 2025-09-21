@@ -66,6 +66,10 @@ class LogActionRepository extends BaseRepository
             ->setParameter('type', LogActionType::AGING_CHARACTERS->value)
             ->getOneOrNullResult();
 
-        return json_decode($data['data'] ?? '', true, 512, JSON_THROW_ON_ERROR)['gn_date'] ?? null;
+        if (empty($data['data'])) {
+            return null;
+        }
+
+        return json_decode($data['data'], true, 512, JSON_THROW_ON_ERROR)['gn_date'] ?? null;
     }
 }

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Gn;
 use App\Entity\Personnage;
+use Carbon\Carbon;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\QueryBuilder;
@@ -97,6 +98,18 @@ class GnRepository extends BaseRepository
         return $gns[0] ?? null;
     }
 
+    /**
+     * Recherche le précédent GN joué encore actif
+     */
+    public function findCurrentActive()
+    {
+        $gns = $this->getEntityManager()
+            ->createQuery('SELECT g FROM App\Entity\Gn g WHERE g.actif = true ORDER BY g.date_debut DESC')
+            ->getResult();
+
+        return $gns[0] ?? null;
+    }
+
     public function getParticipant(Gn $gn): QueryBuilder
     {
         /** @var ParticipantRepository $participantRepository */
@@ -129,7 +142,8 @@ class GnRepository extends BaseRepository
         return $this->toggleLock($gn, false);
     }
 
-    private function toggleLock(Gn $gn, bool $lock): Result {
+    private function toggleLock(Gn $gn, bool $lock): Result
+    {
         $connection = $this->entityManager->getConnection();
 
         $sql =
@@ -141,8 +155,34 @@ class GnRepository extends BaseRepository
                 SQL;
 
         $statement = $connection->prepare($sql);
-        $statement->bindValue('lockvalue', $lock ? 1: 0);
+        $statement->bindValue('lockvalue', $lock ? 1 : 0);
         $statement->bindValue('gnid', $gn->getId());
+
+        return $statement->executeQuery();
+    }
+
+    public function giveParticipationXp(Gn $gn, int $xp): Result
+    {
+        $connection = $this->entityManager->getConnection();
+
+        $text = sprintf('+ %d XP PARTICIPATION %s PAR GESTION', $xp, $gn->getLabel());
+        $sql =
+            <<<SQL
+                 INSERT into experience_gain (personnage_id, explanation, operation_date, xp_gain, discr)
+                    SELECT p.personnage_id, ':text1', ':date', :xpgain, 'extended'
+                    FROM participant p
+                    where p.gn_id = :gnid
+                      and personnage_id is not null
+                      and personnage_id not in
+                          (select personnage_id from experience_gain where explanation = ':text2')
+                SQL;
+
+        $statement = $connection->prepare($sql);
+        $statement->bindValue('text1', $text);
+        $statement->bindValue('text2', $text);
+        $statement->bindValue('xpgain', $xp);
+        $statement->bindValue('gnid', $gn->getId());
+        $statement->bindValue('date', Carbon::now()->format('Y-m-d H:i:s'));
 
         return $statement->executeQuery();
     }
