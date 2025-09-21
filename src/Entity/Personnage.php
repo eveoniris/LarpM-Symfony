@@ -1630,14 +1630,14 @@ class Personnage extends BasePersonnage implements Stringable
     {
         $user = $this->getUser();
         if (!$user) {
-            return $this->getSensible();
+            return $this->getSensible() ?? false;
         }
 
         if ($user->getAgeJoueur() < 18) {
             return true;
         }
 
-        return $this->getSensible();
+        return $this->getSensible() ?? false;
     }
 
     /**

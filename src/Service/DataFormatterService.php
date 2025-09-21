@@ -45,10 +45,15 @@ class DataFormatterService
                 $codeKey = str_replace('_id', '', $codeKey);
                 $displayKey = $codeKey;
 
+                $entityKey = match($codeKey) {
+                    'enseignant', 'scenariste' => 'user',
+                    default => $codeKey,
+                };
+
                 // Ajout du décorateur spécial
                 if (!isset($this->decorators[$key])) {
                     try {
-                        $repo = $this->entityManager->getRepository((new ('App\Entity\\'.ucfirst($codeKey))())::class);
+                        $repo = $this->entityManager->getRepository((new ('App\Entity\\'.ucfirst($entityKey))())::class);
                     } catch (\Exception $e) {
                         $repo = null;
                         $this->logger->info($e);
