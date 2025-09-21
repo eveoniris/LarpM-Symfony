@@ -200,7 +200,7 @@
         {% set renommeCollapse = {'id':'renommeHistory', 'icon': 'fa-history', 'text': renommeCollapseHtml} %}
     {% endif %}
 
-    {% set itrigueHtml %}
+    {% set intrigueHtml %}
         {% if personnage.intrigue %}
             Participe aux intrigues
         {% else %}
@@ -365,7 +365,7 @@
             {'title': 'Genre', 'text':  personnage.genre },
             {'title': 'Espèce', 'text':  especeHtml, 'visible': canSeeDetail },
             {'title': 'Origine', 'text': origineHtml},
-            {'title': 'Intrigue', 'text': itrigueHtml, 'visible': canSeeDetail},
+            {'title': 'Intrigue', 'text': intrigueHtml, 'visible': canSeeDetail},
             {'title': 'Sensibilité', 'text': 'Ce personnage est sensible', 'visible': personnage.isSensible, 'collapse': {'id': 'sensibility', 'text': sensibilityHtml}},
             {'title': 'Experience', 'text': personnage.xp|default(0), 'collapse': experienceCollapse, 'visible': canSeeDetail},
             {'title': 'Pugilat', 'text': pugilat, 'collapse': pugilatCollapse, 'visible': canSeeDetail},

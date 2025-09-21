@@ -145,10 +145,15 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         }
 
         $naissance = $etat_civil->getDateNaissance();
-        $gn_date = $this->getLastParticipant()->getGn()->getDateDebut();
+        $gn_date = $this->getLastParticipant()?->getGn()->getDateDebut();
+
+        if (!$naissance || !$gn_date) {
+            return 0;
+        }
+
         $interval = date_diff($gn_date, $naissance);
 
-        return (int)$interval->format('%y');
+        return (int) $interval->format('%y');
     }
 
     /**

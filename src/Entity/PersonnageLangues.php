@@ -12,7 +12,7 @@ class PersonnageLangues extends BasePersonnageLangues
         return [
             'personnage_id' => $this->personnage->getId(),
             'source' => $this->getSource(),
-            'langue_id' => $this->getLangue()->getId(),
+            'langue_id' => $this->getLangue()?->getId(),
         ];
     }
 }
