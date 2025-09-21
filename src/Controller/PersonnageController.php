@@ -611,6 +611,14 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
+        $this->log(
+            [
+                'personnage_id' => $personnage->getId(),
+                'connaissance_id' => $connaissance->getId(),
+            ]
+            , LogActionType::ADD_CONNAISSANCE
+        );
+
         $personnage->addConnaissance($connaissance);
         $this->entityManager->flush();
 
@@ -697,6 +705,8 @@ class PersonnageController extends AbstractController
         $nomPotion = $potion->getLabel();
 
         $personnage->addPotion($potion);
+
+        $this->log(['personnage_id' => $personnage->getId(), 'potion_id' => $potion->getId()], LogActionType::ADD_POTION);
 
         $this->entityManager->flush();
 
@@ -835,6 +845,8 @@ class PersonnageController extends AbstractController
         }
 
         $personnage->addSort($sort);
+
+        $this->log(['personnage_id' => $personnage->getId(), 'sort_id' => $sort->getId()], LogActionType::ADD_SORT);
 
         $this->entityManager->flush();
 
@@ -1147,6 +1159,14 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
+        $this->log(
+            [
+                'personnage_id' => $personnage->getId(),
+                'connaissance_id' => $connaissance->getId(),
+            ]
+            , LogActionType::ADD_CONNAISSANCE
+        );
+
         $personnage->removeConnaissance($connaissance);
         $this->entityManager->flush();
 
@@ -1251,6 +1271,8 @@ class PersonnageController extends AbstractController
         $nomPotion = $potion->getLabel();
         $personnage->removePotion($potion);
 
+        $this->log(['personnage_id' => $personnage->getId(), 'potion_id' => $potion->getId()], LogActionType::REMOVE_POTION);
+
         $this->entityManager->flush();
 
         $this->addFlash('success', $nomPotion . ' a été retirée.');
@@ -1342,6 +1364,8 @@ class PersonnageController extends AbstractController
         }
 
         $personnage->removeSort($sort);
+
+        $this->log(['personnage_id' => $personnage->getId(), 'sort_id' => $sort->getId()], LogActionType::REMVOVE_SORT);
 
         $this->entityManager->flush();
 
@@ -2097,6 +2121,8 @@ class PersonnageController extends AbstractController
             $renomme_history->setExplication($explication);
             $renomme_history->setPersonnage($personnage);
             $personnage->addRenomme($renomme);
+
+            $this->log($renomme_history, LogActionType::ADD_RENOMME);
 
             $this->entityManager->persist($renomme_history);
             $this->entityManager->persist($personnage);
@@ -3737,6 +3763,8 @@ class PersonnageController extends AbstractController
                     }
                 }
             }
+
+            $this->log($personnageLangue, LogActionType::ADD_LANGUE);
 
             $this->entityManager->persist($personnage);
             $this->entityManager->flush();

@@ -1625,21 +1625,19 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Indique si le personnage est sensible.
-     *
-     * @return bool
      */
-    public function isSensible()
+    public function isSensible(): bool
     {
-        $User = $this->getUser();
-        if (!$User) {
+        $user = $this->getUser();
+        if (!$user) {
             return $this->getSensible();
         }
 
-        if ($User->getAgeJoueur() < 18) {
+        if ($user->getAgeJoueur() < 18) {
             return true;
-        } else {
-            return $this->getSensible();
         }
+
+        return $this->getSensible();
     }
 
     /**

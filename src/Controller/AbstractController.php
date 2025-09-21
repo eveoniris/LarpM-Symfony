@@ -592,7 +592,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $entityValue = (array)$entity;
             // Clean a bit
             foreach ($entityValue as $key => $value) {
-                $cleanKey = str_replace([is_array($entity) ? '_' : $entity::class, ' ', '*'], ['', '', ''], $key);
+                $cleanKey = str_replace([is_array($entity) ? null : $entity::class, ' ', '*'], ['', '', ''], $key);
                 if ($cleanKey !== $key) {
                     $entityValue[$cleanKey] = $value;
                     unset($entityValue[$key]);
@@ -600,7 +600,11 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             }
         }
 
-        $entityData = ['class' => is_array($entity) ? '_' : $entity::class, 'data' => $entityValue];
+        $entityData = ['data' => $entityValue];
+
+        if (!is_array($entity)) {
+            $entityData['class'] = is_array($entity);
+        }
 
         $logAction->setData($entityData);
         $this->entityManager->persist($logAction);
