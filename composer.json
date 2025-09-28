@@ -53,6 +53,7 @@
     "symfony/validator": "^7.3",
     "symfony/web-link": "^7.3",
     "symfony/yaml": "^7.3",
+    "team-reflex/discord-php": "*",
     "twig/extra-bundle": "*",
     "twig/intl-extra": "^3.21",
     "twig/markdown-extra": "*",
