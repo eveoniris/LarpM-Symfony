@@ -10,9 +10,9 @@ parameters:
     fromEmailAddress: "no-reply@eveoniris.com"
     fromEmailName: "Eve-oniris"
     passwordTokenTTL: 600
-    discord.api.key: "%env(DISCORD_API_KEY)%"
-    discord.bot.id: "%env(DISCORD_BOT_ID)%"
-    discord.bot.token: "%env(DISCORD_BOT_TOKEN)%"
+    discord.api.key: "%env(string:DISCORD_API_KEY)%"
+    discord.bot.id: "%env(string:DISCORD_BOT_ID)%"
+    discord.bot.token: "%env(string:DISCORD_BOT_TOKEN)%"
 
 services:
     # default configuration for services in *this* file
