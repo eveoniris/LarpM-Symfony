@@ -38,7 +38,9 @@ services:
         arguments:
             $projectDirectory: '%projectDir%'
 
-    App\Command\Discord:
+    App\Command\DiscordBot:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
             $botId: '%discord.bot.id%'
             $botToken: '%discord.bot.token%'
             $apiKey: '%discord.api.key%'
