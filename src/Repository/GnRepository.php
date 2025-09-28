@@ -177,6 +177,7 @@ class GnRepository extends BaseRepository
                           (select personnage_id from experience_gain where explanation = ':text2')
                 SQL;
 
+        // TODO FIX binding error + add 2xp to personnage.xp !
         $statement = $connection->prepare($sql);
         $statement->bindValue('text1', $text);
         $statement->bindValue('text2', $text);
