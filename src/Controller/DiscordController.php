@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use Discord\Discord;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -38,6 +37,6 @@ class DiscordController extends AbstractController
             });
         });
 
-        $this->getDiscord->run();
+        $this->getDiscord()?->run();
     }
 }
