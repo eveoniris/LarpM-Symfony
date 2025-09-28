@@ -38,6 +38,11 @@ services:
         arguments:
             $projectDirectory: '%projectDir%'
 
+    App\Command\Discord:
+            $botId: '%discord.bot.id%'
+            $botToken: '%discord.bot.token%'
+            $apiKey: '%discord.api.key%'
+
     App\EventListener\AccessEventListener:
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }

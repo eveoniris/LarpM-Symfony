@@ -29,14 +29,19 @@ class Discord extends Command
     private function getDiscord()
     {
         self::$discord ??= new Discord([
-            'token' => $this->getParameter('discord.bot.token'),
+            'token' => $this->botToken,
             'loadAllMembers' => true,
         ]);
 
         return self::$discord;
     }
 
-    public function __construct(protected readonly EntityManagerInterface $entityManager)
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager,
+        protected readonly string $botId,
+        protected readonly string $botToken,
+        protected readonly string $apiKey
+    )
     {
         parent::__construct();
     }
