@@ -33,6 +33,8 @@ class DiscordBot extends Command
         protected readonly string $botId,
         protected readonly string $botToken,
         protected readonly string $apiKey,
+        protected readonly string $oauthId,
+        protected readonly string $oauthSecret,
     ) {
         parent::__construct();
     }

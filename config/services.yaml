@@ -13,6 +13,8 @@ parameters:
     discord.api.key: "%env(string:DISCORD_API_KEY)%"
     discord.bot.id: "%env(string:DISCORD_BOT_ID)%"
     discord.bot.token: "%env(string:DISCORD_BOT_TOKEN)%"
+    discord.oauth.id: "%env(string:DISCORD_OAUTH_ID)%"
+    discord.oauth.secret: "%env(string:DISCORD_OAUTH_SECRET)%"
 
 services:
     # default configuration for services in *this* file
@@ -44,6 +46,8 @@ services:
             $botId: '%discord.bot.id%'
             $botToken: '%discord.bot.token%'
             $apiKey: '%discord.api.key%'
+            $oauthId: '%discord.oauth.id%'
+            $oauthSecret: '%discord.oauth.secret%'
 
     App\EventListener\AccessEventListener:
         tags:
