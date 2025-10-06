@@ -209,7 +209,7 @@
     {% endset %}
 
     {% set experienceCollapse = false %}
-    {% if canSeeDetail and personnage.xp|default(0) > 0 %}
+    {% if canSeeDetail and personnage.xp|default(-1) >= 0 %}
         {% set experienceCollapseHtml %}
             <div class="list-group">
                 <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
@@ -275,9 +275,9 @@
         {% set experienceCollapse = {'id':'experienceHistory1', 'icon': 'fa-history', 'text': experienceCollapseHtml} %}
     {% endif %}
 
-    {% set pugilat = personnageService.allPugilat(personnage)|default(0) %}
+    {% set pugilat = personnageService.allPugilat(personnage)|default(-1) %}
     {% set pugilatCollapse = false %}
-    {% if canSeeDetail and pugilat > 0 %}
+    {% if canSeeDetail and pugilat >= 0 %}
         {% set pugilatCollapseHtml %}
             <div class="list-group">
                 <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
@@ -305,10 +305,10 @@
         {% set pugilatCollapse = {'id':'pugilatHistory1', 'icon': 'fa-history', 'text': pugilatCollapseHtml} %}
     {% endif %}
 
-    {% set heroisme = personnageService.allHeroisme(personnage)|default(0) %}
+    {% set heroisme = personnageService.allHeroisme(personnage)|default(-1) %}
 
     {% set heroismeCollapse = false %}
-    {% if canSeeDetail and heroisme > 0 %}
+    {% if canSeeDetail and heroisme >= 0 %}
         {% set heroismeCollapseHtml %}
             <div class="list-group">
                 {% for historique in personnageService.allHeroismeDisplay(personnage) %}
