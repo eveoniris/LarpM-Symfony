@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'experience_gain')]
@@ -17,16 +19,17 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseExperienceGain', 'extended' => 'ExperienceGain'])]
 abstract class BaseExperienceGain
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
+    #[Column(type: Types::STRING, length: 100)]
+    #[Assert\Length(max: 100)]
     protected string $explanation;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected \DateTime $operation_date;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $xp_gain;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'experienceGains')]
@@ -45,14 +48,9 @@ abstract class BaseExperienceGain
         return $this->id;
     }
 
-    /**
-     * Set the value of explanation.
-     *
-     * @return \App\Entity\ExperienceGain
-     */
     public function setExplanation(string $explanation): static
     {
-        $this->explanation = $explanation;
+        $this->explanation = substr($explanation, 0, 100);
 
         return $this;
     }
@@ -97,9 +95,4 @@ abstract class BaseExperienceGain
     {
         return $this->personnage;
     }
-
-    /* public function __sleep()
-    {
-        return ['id', 'explanation', 'operation_date', 'xp_gain', 'personnage_id'];
-    } */
 }

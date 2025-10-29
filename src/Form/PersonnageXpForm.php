@@ -4,33 +4,35 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Type;
 
-/**
- * LarpManager\Form\PersonnageXpForm.
- *
- * @author kevin
- */
 class PersonnageXpForm extends AbstractType
 {
-    /**
-     * Construction du formulaire.
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('xp', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+        $builder->add('xp', IntegerType::class, [
             'label' => 'Expérience à ajouter',
             'required' => true,
+            'constraints' => [
+                new Type(['integer']),
+                new NotBlank(),
+            ],
         ])
-            ->add('explanation', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('explanation', TextType::class, [
                 'label' => 'Explication',
                 'required' => true,
+                'constraints' => [
+                    new Length(['max' => 100]),
+                    new NotBlank(),
+                ],
             ]);
     }
 
-    /**
-     * Nom du formulaire.
-     */
     public function getName(): string
     {
         return 'personnageXp';
