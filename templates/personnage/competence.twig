@@ -90,27 +90,36 @@
             <div class="row ps-2">
                 {% for competence in competences|sort %}
                     <div class="col-md-6 list-group mb-2">
-                    <div class="list-group-item">
-                        <div class="list-group-item-heading d-flex justify-content-between">
-                            <h6>
-                                {{ competence.label }}
-                                {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
-                                    <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top"
-                                       title="Favorite"></i>
-                                {% elseif not personnage.classe.isCommonCompetenceFamily(competence.competenceFamily) %}
-                                    <i class="fa fa-face-tired text-danger" data-toggle="tooltip" data-placement="top"
-                                       title="Méconnue"></i>
-                                {% endif %}
-                                &nbsp;({{ personnageService.getCompetenceCout(personnage, competence) }} xp)
-                            </h6>
-                            {% set apprentissage = personnage.getApprentissage(competence) %}
-                            {% if apprentissage %}
-                                <small><i class="fa fa-graduation-cap text-info" data-toggle="tooltip" data-placement="top"
-                                   title="Apprentissage"></i> Enseignée par {{ apprentissage.enseignant.publicName }} en {{ apprentissage.dateEnseignement }}</small>
+                        <div class="list-group-item">
+                            <div class="list-group-item-heading d-flex justify-content-between">
+                                <h6>
+                                    <a href="{{ path('competence.detail', {"competence":competence.id}) }}">{{ competence.label }}</a>
+                                    {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
+                                        <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top"
+                                           title="Favorite"></i>
+                                    {% elseif not personnage.classe.isCommonCompetenceFamily(competence.competenceFamily) %}
+                                        <i class="fa fa-face-tired text-danger" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Méconnue"></i>
+                                    {% endif %}
+                                    &nbsp;({{ personnageService.getCompetenceCout(personnage, competence) }} xp)
+                                </h6>
+                            </div>
+                            {% set apprentissages = personnage.getApprentissage(competence) %}
+                            {% if apprentissages and apprentissages|length > 0 %}
+                                <div class="list-group mb-1">
+                                    {% for apprentissage in apprentissages %}
+
+                                        <small class="list-group-item"><i class="fa fa-graduation-cap text-info"
+                                                                          data-toggle="tooltip" data-placement="top"
+                                                                          title="Apprentissage"></i> Enseignée
+                                            par {{ apprentissage.enseignant.publicName }}
+                                            en {{ apprentissage.dateEnseignement }}</small>
+                                    {% endfor %}
+                                </div>
                             {% endif %}
+                            <div class="list-group-item-text">{{ competence.description|markdown_to_html }}</div>
                         </div>
-                        <div class="list-group-item-text">{{ competence.description|markdown_to_html }}</div>
-                    </div>
                     </div>
                 {% endfor %}
             </div>

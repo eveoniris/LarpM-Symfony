@@ -6,7 +6,14 @@
 
     {% include '_partials/breadcrumb.twig' with {'items' :[{'name' : "Mes personnages par défaut" }]} %}
 
+    {% set notifHtml %}
+        La notion de « personnage actif » est utilisée uniquement par le LarpManager. Elle permet de déterminer sur quel personnage se baser pour vos actions envers d’autres joueurs ou pour vous-même, en dehors de la fiche du personnage.
+        Par exemple : signature de vos messages, candidature à un groupe principal ou transverse, etc.
+    {% endset %}
+    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : notifHtml } %}
+
     <div class="well well-sm">
+        <div class="header"><h5>Choix du personnage actif sur LarpManager</h5></div>
         {{ form(form) }}
     </div>
 

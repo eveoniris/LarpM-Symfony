@@ -336,7 +336,7 @@
                         <i class="fa fa-edit" aria-hidden="true"></i>
                     </a>
                 </div>
-            {% else %}
+            {% elseif participant %}
                 <a class="text-danger"
                    href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">
                     Choisir son personnage secondaire

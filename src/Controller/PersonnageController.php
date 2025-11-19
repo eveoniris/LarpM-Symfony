@@ -395,6 +395,7 @@ class PersonnageController extends AbstractController
 
     /**
      * Ajout d'un personnage (orga seulement).
+     * Depuis le Search HEADER uniquement
      */
     #[Route('/admin/add', name: 'admin.add')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
@@ -2430,17 +2431,7 @@ class PersonnageController extends AbstractController
         PersonnageApprentissageRepository $personnageApprentissageRepository,
     ): RedirectResponse|Response
     {
-        $availableCompetences = $personnageService->getAvailableCompetences($personnage);
-
-        // Remove competences after Expert
-        /**
-         * @var Competence $competence
-         */
-        foreach ($availableCompetences as $key => $competence) {
-            if ($competence->getLevel()?->getIndex() > Level::NIVEAU_4) {
-                unset($availableCompetences[$key]);
-            }
-        }
+        $availableCompetences = $personnageService->getApprentissageCompetences($personnage);
 
         $formBuilder = $this->createFormBuilder()
             ->add('enseignant', EntityType::class, [
@@ -2543,13 +2534,7 @@ class PersonnageController extends AbstractController
             $competence = $data['competence'];
             $annee = $data['annee'];
 
-            if (
-                !$enseignant->isKnownCompetence($competence)
-                || !$enseignant->hasCompetenceLevel(
-                    $competence->getCompetenceFamily()?->getCompetenceFamilyType(),
-                    LevelType::EXPERT,
-                )
-            ) {
+            if (!$this->personnageService->canTeachCompetence($enseignant, $competence)) {
                 $form->addError(
                     new FormError(
                         sprintf(
@@ -3164,9 +3149,9 @@ class PersonnageController extends AbstractController
 
     /**
      * Création d'un nouveau personnage.
+     * Méthode de base pour tout le monde
      */
     #[Route('/{personnage}/add', name: 'add')]
-    // TODO Ou est-ce utilisé ?
     public function newAction(
         Request $request,
     ): RedirectResponse|Response

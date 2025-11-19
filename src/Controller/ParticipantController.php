@@ -281,6 +281,7 @@ class ParticipantController extends AbstractController
     }
 
     /**
+     * Where it's used ?
      * Création d'un nouveau personnage. L'utilisateur doit être dans un groupe et son billet doit être valide.
      */
     #[Route('/participant/{participant}/personnageNew', name: 'admin.participant.personnage.new')]

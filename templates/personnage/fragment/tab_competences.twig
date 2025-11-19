@@ -17,7 +17,7 @@
         {% include 'personnage/fragment/language.twig' with {'personnage': personnage, 'participant': participant} %}
         {% include 'personnage/fragment/technologie.twig' with {'personnage': personnage, 'participant': participant} %}
         {% include 'personnage/fragment/connaissance.twig' with {'personnage': personnage, 'participant': participant} %}
-        {% include 'personnage/fragment/politique.twig' with {'personnage': personnage, 'participant': participant, 'lois': participant.personnage.origine.lois} %}
+        {% include 'personnage/fragment/politique.twig' with {'personnage': personnage, 'participant': participant, 'lois': personnage.origine.lois} %}
         {% include 'personnage/fragment/prieres.twig' with {'personnage': personnage, 'participant': participant} %}
         {% include 'personnage/fragment/document.twig' with {'personnage': personnage, 'participant': participant} %}
         {% include 'personnage/fragment/item.twig' with {'personnage': personnage, 'participant': participant} %}

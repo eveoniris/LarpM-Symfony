@@ -8,6 +8,7 @@ use App\Entity\Personnage;
 use App\Entity\Territoire;
 use App\Repository\TerritoireRepository;
 use Doctrine\ORM\EntityRepository;
+use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -15,6 +16,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+#[Deprecated]
+/**
+ * @see \App\Form\Personnage\PersonnageForm
+ */
 class PersonnageForm extends AbstractType
 {
     /**

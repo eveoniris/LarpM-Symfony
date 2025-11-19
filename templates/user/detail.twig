@@ -41,9 +41,23 @@
                     </div>
                 {% endif %}
 
-                <div>
-                    <a href="{{ path('message.new', {'to': user.id}) }}"><i class="fa fa-envelope"></i> Envoyer un
-                        message</a>
+                <div class="m-2 d-flex justify-content-between">
+                    {% if isAdmin or app.user.id != user.id %}
+                        <a class="btn btn-secondary" href="{{ path('message.new', {'to': user.id}) }}"><span
+                                class="fa fa-envelope"
+                                style="margin-right: 5px;"></span>Contacter</a>
+                    {% endif %}
+
+                    {% if isAdmin or app.user.id == user.id %}
+                        <a class="btn btn-secondary" href="{{ path('user.edit', {'user': user.id}) }}"><span
+                                class="fa fa-edit"
+                                style="margin-right: 5px;"></span>Modifier</a>
+                        {# todo ?
+                        <a class="btn btn-secondary" href="{{ path('etatCivil.update', {'etatCivil': user.etatCivil.id}) }}"><span
+                                class="fa fa-edit"
+                                style="margin-right: 5px;"></span>Modifier Etat-Civil</a>
+                        #}
+                    {% endif %}
                 </div>
 
                 {% if is_granted('ROLE_SUPER_ADMIN', user) %}
@@ -62,71 +76,84 @@
             </div>
 
             {% if is_granted('ROLE_ORGA', user) or app.user.id == user.id %}
-                <div class="col-md-6">
+            <div class="col-md-6">
 
 
-                    <div class="header">
-                        <h5>Participations</h5>
-                    </div>
-
-
-                    <div class="list-group">
-                        {% set hasDefaultPersonnage = false %}
-                        {% for participant in user.participants %}
-                            <div class="list-group-item">
-                                <div>
-                                    <a href="{{ path('participant.detail', {'participant': participant.id}) }}">Participe</a>
-                                    à <a
-                                        href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">{{ participant.gn.label }}</a>.
-                                </div>
-
-                                {% if participant.groupeGn %}
-                                    <div>
-                                        Membre du groupe :
-                                        {% if is_granted('ROLE_ORGA', app.user) %}
-                                            <a href="{{ path('groupe.detail',{'groupe':participant.groupeGn.groupe.id}) }}">#{{ participant.groupeGn.groupe.numero }}
-                                                - {{ participant.groupeGn.groupe.nom }}</a>
-                                        {% else %}
-                                            <a href="{{ path('groupe.detail',{'groupeGn':participant.groupeGn.id, 'groupe':participant.groupeGn.groupe.id}) }}">#{{ participant.groupeGn.groupe.numero }}
-                                                - {{ participant.groupeGn.groupe.nom }}</a>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-
-                                {% if participant.personnage %}
-                                    <div>
-                                        Personnage :
-                                        {% if is_granted('ROLE_ORGA', app.user) %}
-                                            <a href="{{ path('personnage.detail',{'personnage': participant.personnage.id}) }}">{{ participant.personnage.identity }}</a>
-                                        {% else %}
-                                            <a href="{{ path('gn.personnage',{'gn': participant.gn.id}) }}">{{ participant.personnage.identity }}</a>
-                                        {% endif %}
-                                        {% if participant.user.personnage is defined and participant.personnage.id == participant.user.personnage.id %}
-                                            {% set hasDefaultPersonnage = true %}
-                                            <span class="badge rounded-pill text-bg-secondary">Actif</span>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
-                        {% if not hasDefaultPersonnage %}
-                            <div class="mt-2">
-                                {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : "Vous n'avez pas de personnage actif"} %}
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="m-2 d-flex justify-content-between">
-                        <a class="btn btn-secondary" href="{{ path('user.edit', {'user': user.id}) }}"><span
-                                class="fa fa-edit"
-                                style="margin-right: 5px;"></span>Modifier</a>
-                        <a class="btn btn-secondary"
-                           href="{{ path('user.personnageDefault', {'user': user.id}) }}"><span
-                                class="fa fa-users" style="margin-right: 5px;"></span>
-                            Choisir le personnage actif</a>
-                    </div>
-
+                <div class="header">
+                    <h5>Participations</h5>
                 </div>
+
+                <div class="list-group">
+                    {% set hasDefaultPersonnage = false %}
+                    {% for participant in user.participants %}
+                        <div class="list-group-item">
+                            <div>
+                                <a href="{{ path('participant.detail', {'participant': participant.id}) }}">Participe</a>
+                                à <a
+                                    href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">{{ participant.gn.label }}</a>.
+                            </div>
+
+                            {% if participant.groupeGn %}
+                                <div>
+                                    Membre du groupe :
+                                    {% if is_granted('ROLE_ORGA', app.user) %}
+                                        <a href="{{ path('groupe.detail',{'groupe':participant.groupeGn.groupe.id}) }}">#{{ participant.groupeGn.groupe.numero }}
+                                            - {{ participant.groupeGn.groupe.nom }}</a>
+                                    {% else %}
+                                        <a href="{{ path('groupe.detail',{'groupeGn':participant.groupeGn.id, 'groupe':participant.groupeGn.groupe.id}) }}">#{{ participant.groupeGn.groupe.numero }}
+                                            - {{ participant.groupeGn.groupe.nom }}</a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            {% if participant.personnage %}
+                                <div>
+                                    Personnage :
+                                    {% if is_granted('ROLE_ORGA', app.user) %}
+                                        <a href="{{ path('personnage.detail',{'personnage': participant.personnage.id}) }}">{{ participant.personnage.identity }}</a>
+                                    {% else %}
+                                        <a href="{{ path('gn.personnage',{'gn': participant.gn.id}) }}">{{ participant.personnage.identity }}</a>
+                                    {% endif %}
+                                    {% if participant.user.personnage is defined and participant.personnage.id == participant.user.personnage.id %}
+                                        {% set hasDefaultPersonnage = true %}
+                                        <span class="badge rounded-pill text-bg-secondary">Actif</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    {% if not hasDefaultPersonnage %}
+                    <div class="mt-2">
+                        {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : "Vous n'avez pas de personnage actif"#
+                        } %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="m-2 d-flex justify-content-between">
+                    {# BetaTest #}
+                    {% if isAdmin and personnageService.canCreatePersonnage(user) %}
+                    <a class="btn btn-secondary"
+                       href="{{ path('user.personnage.add', {'user': user.id}) }}"><span
+                                    class="fa fa-user" style="margin-right: 5px;"></span>
+                        Nouveau</a>
+                    {% endif %}
+                    <a class="btn btn-secondary"
+                       href="{{ path('user.personnageDefault', {'user': user.id}) }}"><span
+                            class="fa fa-users" style="margin-right: 5px;"></span>
+                        Choisir le personnage actif</a>
+                </div>
+
+            </div>
+
+            {# BetaTest
+            {% if isAdmin %}
+                <div class="col-md-6">
+                    <div class="header">
+                        <h5>Personnages</h5>
+                    </div>
+                </div>
+            {% endif %}#}
             {% endif %}
         </div>
 

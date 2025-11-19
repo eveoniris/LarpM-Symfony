@@ -7,6 +7,7 @@
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
             {'name' : 'Liste des competences', 'route': path('competence.list') },
+            {'name' : 'Famille de competence', 'route': path('competenceFamily.detail', {"competenceFamily":competence.competenceFamily.id}) },
             {'name' : competence.label }
         ]
     } %}

@@ -11,7 +11,7 @@
     </ol>
 
     <div class="well well-sm">
-        <div class="header"><h5>Liste des familles de compétences</h5></div>
+        <div class="header"><h5>Détails d'une famille de compétences</h5></div>
 
         <div class="card">
             <div class="card-header">
@@ -23,16 +23,55 @@
         </div>
 
         {% if is_granted('ROLE_REGLE', app.user) %}
-        <div class="list-group">
-            <div class="list-group-item">
-                <div class="btn-group" role="group">
-                    <a class="btn btn-secondary" role="button"
-                       href="{{ path('competenceFamily.update', {competenceFamily : competenceFamily.id}) }}"><i
+            <div class="list-group">
+                <div class="list-group-item">
+                    <div class="btn-group" role="group">
+                        <a class="btn btn-secondary" role="button"
+                           href="{{ path('competenceFamily.update', {competenceFamily : competenceFamily.id}) }}"><i
                                 class="fa fa-edit"></i> Modifier</a>
+                    </div>
                 </div>
             </div>
-        </div>
         {% endif %}
+    </div>
+
+    <div class="well well-sm">
+        <div class="header"><h5>Liste des niveaux de la famille de compétence</h5></div>
+
+        <ul class="list-group">
+            {% for competence in competenceFamily.competences %}
+                <li class="list-group-item">
+                    <h6>
+                        <a href="{{ path('competence.detail', {"competence":competence.id}) }}">{{ competence.level.label }}</a>
+                    </h6>
+                    <div
+                        class="list-group-item-text border-top mt-1">{{ competence.description|markdown_to_html }}</div>
+                    {% if competence.documentUrl %}
+                        <div class="list-group-item-text">
+                            {% if participant is defined %}
+                                <a class="btn btn-secondary btn-sm"
+                                   href="{{ path('participant.competence.detail',{'participant': participant.id, 'competence' : competence.id}) }}">
+                                    <i class="fa fa-eye"></i> Voir l'aide de jeu
+                                </a>
+                                <a class="btn btn-secondary btn-sm"
+                                   href="{{ path('participant.competence.document',{'participant': participant.id, 'competence' : competence.id}) }}">
+                                    <i class="fa fa-file"></i> Télécharger l'aide de jeu
+                                </a>
+                            {% elseif isAdmin %}
+                                <a class="btn btn-secondary btn-sm"
+                                   href="{{ path('competence.detail',{'competence' : competence.id}) }}">
+                                    <i class="fa fa-file"></i> Voir l'aide de jeu
+                                </a>
+                                <a class="btn btn-secondary btn-sm"
+                                   href="{{ path('competence.document',{'competence' : competence.id}) }}">
+                                    <i class="fa fa-file"></i> Télécharger l'aide de jeu
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 
 

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Form\User;
 
 use App\Entity\Personnage;
@@ -20,19 +19,17 @@ class UserPersonnageDefaultForm extends AbstractType
     {
         $builder->add('personnage', EntityType::class, [
             'required' => false,
-            'label' => 'Choisissez votre personnage par défaut. Ce personnage sera utilisé pour signer vos messages',
+            'label' => 'Choisissez votre personnage actif sur votre session.',
             'multiple' => false,
             'expanded' => true,
             'class' => Personnage::class,
             'choice_label' => 'identity',
             'placeholder' => 'Aucun',
             'empty_data' => null,
-            'query_builder' => static function (EntityRepository $er) use ($options) {
-                return $er->createQueryBuilder('p')
+            'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('p')
                     ->join('p.user', 'u')
                     ->where('u.id = :userId')
-                    ->setParameter('userId', $options['user_id']);
-            },
+                    ->setParameter('userId', $options['user_id']),
         ]);
     }
 
@@ -42,7 +39,6 @@ class UserPersonnageDefaultForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
             'user_id' => null,
         ]);
     }

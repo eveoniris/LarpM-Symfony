@@ -34,7 +34,6 @@
                             {% if buttons is not defined %}
                                 {% set buttons = {} %}
                             {% endif %}
-
                             {% if canAdd is defined and canAdd %}
                                 {% set buttons = buttons|merge([{'title': canAdd.title, 'route': canAdd.path, 'icon': 'fa-plus', 'label': 'Ajouter'}]) %}
                             {% endif %}

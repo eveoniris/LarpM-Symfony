@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity(repositoryClass: RenommeHistoryRepository::class)]
 class RenommeHistory extends BaseRenommeHistory
 {
+    const SILK_USAGE = 'Utilisation soie';
+
     public function toLog(): array
     {
         return [
@@ -15,5 +17,10 @@ class RenommeHistory extends BaseRenommeHistory
             'renomme' => $this->getRenomme(),
             'personnage_id' => $this->getPersonnage()->getId(),
         ];
+    }
+
+    public function isBySilk(): bool
+    {
+        return self::SILK_USAGE === $this->getExplication();
     }
 }

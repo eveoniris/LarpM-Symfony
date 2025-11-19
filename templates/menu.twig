@@ -18,6 +18,13 @@
                                     compte</a></li>
                             <li><a class="dropdown-item text-body-emphasis" href="{{ path('gn.list') }}">Mes Grandeurs
                                     natures</a></li>
+                            {# BetaTest: #}
+                            {% if isAdmin %}
+                                <li><a class="dropdown-item text-body-emphasis"
+                                       href="{{ path('user.personnage.list', {'user':app.user.id}) }}">Mes
+                                        personnages</a>
+                                </li>
+                            {% endif %}
                             <li><a class="dropdown-item text-body-emphasis" href="{{ path('messagerie') }}">Ma
                                     messagerie</a></li>
                             <li>
@@ -278,6 +285,30 @@
                     <i class="fa fa-people-arrows text-danger"></i>
                 </a>
             {% endif %}
+
+            {% if app.user %}
+                {% if app.user.personnage(true) %}
+                    <div class="d-flex">
+                        <a class="btn btn-dark shadow me-2" data-bs-placement="bottom"
+                           data-bs-toggle="tooltip"
+                           data-bs-original-title="Personnage actif: {{ app.user.personnage.label }}"
+                           href="{{ path('user.personnageDefault', {"user":app.user.id}) }}">
+                            <i class="fa fa-user-secret text-warning"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <a class="btn btn-dark shadow me-2 position-relative" data-bs-toggle="tooltip"
+                       data-bs-placement="bottom" data-bs-original-title="Choisir un personnage actif"
+                       href="{{ path('user.personnageDefault', {"user":app.user.id}) }}">
+                    <span
+                        class="position-absolute top-0 end-0 translate-middle badge z-3 p-1 bg-danger border border-light rounded-circle">
+									        <span class="visually-hidden">!</span>
+									    </span>
+                        <i class="fa fa-user-secret text-warning"></i>
+                    </a>
+                {% endif %}
+            {% endif %}
+
             <div class="d-flex">
                 <button class="btn btn-dark shadow" id="btnSwitch" data-bs-placement="bottom"
                         title="Changer mode sombre/claire"><i class="fa fa-toggle-on"></i></button>

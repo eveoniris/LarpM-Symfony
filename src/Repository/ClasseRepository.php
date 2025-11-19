@@ -76,7 +76,7 @@ class ClasseRepository extends BaseRepository
     public function findAllCreation()
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT c FROM App\Entity\Classe c WHERE c.creation = true ORDER BY c.label_masculin ASC')
+            ->createQuery('SELECT DISTINCT c FROM App\Entity\Classe c WHERE c.creation = true ORDER BY c.label_masculin ASC')
             ->getResult();
     }
 
