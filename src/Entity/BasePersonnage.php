@@ -274,6 +274,7 @@ abstract class BasePersonnage
      */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageApprentissage::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[OrderBy(['date_enseignement' => 'ASC', 'id' => 'ASC'])]
     private ?Collection $apprentissages;
 
     /**

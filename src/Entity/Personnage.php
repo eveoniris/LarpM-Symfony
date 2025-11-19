@@ -320,16 +320,19 @@ class Personnage extends BasePersonnage implements Stringable
         return $all;
     }
 
-    public function getApprentissage(Competence $competence): ?PersonnageApprentissage
+    public function getApprentissage(Competence $competence): Collection
     {
+        $apprentissages = new ArrayCollection();
+
         /** @var PersonnageApprentissage $apprentissage */
         foreach ($this->getApprentissages() as $apprentissage) {
-            if ($apprentissage->getCompetence()?->getId() === $competence->getId()) {
-                return $apprentissage;
+            // Get available one for a bonus and prefer to use FamilyType instead of if (null === $apprentissage->getDateUsage() && $apprentissage->getCompetence()?->getId() === $competence->getId()) {
+            if (null === $apprentissage->getDateUsage() && $apprentissage->getCompetence()?->getCompetenceFamily()?->getId() === $competence->getCompetenceFamily()?->getId()) {
+                $apprentissages->add($apprentissage);
             }
         }
 
-        return null;
+        return $apprentissages;
     }
 
     /**

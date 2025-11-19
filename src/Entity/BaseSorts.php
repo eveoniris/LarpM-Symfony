@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -17,19 +18,19 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseSorts', 'extended' => 'Sorts'])]
 abstract class BaseSorts
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(name: 'documentUrl', type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
+    #[Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $niveau = 0;
 
     #[ManyToOne(targetEntity: Domaine::class, inversedBy: 'sorts')]
@@ -129,7 +130,7 @@ abstract class BaseSorts
     /**
      * Set Domaine entity (many to one).
      */
-    public function setDomaine(Domaine $domaine = null): static
+    public function setDomaine(?Domaine $domaine = null): static
     {
         $this->domaine = $domaine;
 

@@ -42,7 +42,7 @@
             {% if loop.first or currentFamillyId != competence.competenceFamily.id %}
                 <li class="list-group-item">
                 <h5 class="__{{ competence.competenceFamily.id }}__{{ currentFamillyId }}">
-                    {{ competence.competenceFamily.label }}
+                    <a href="{{ path('competenceFamily.detail', {"competenceFamily":competence.competenceFamily.id}) }}">{{ competence.competenceFamily.label }}</a>
                     {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
                         <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top"
                            title="Favorite"></i>
@@ -57,10 +57,12 @@
             {% endif %}
 
             <h6 class="__{{ competence.competenceFamily.id }}__{{ currentFamillyId }}"
-                id="comp_{{ competence.id }}">{{ competence.level.label }}</h6>
+                id="comp_{{ competence.id }}">
+                <a href="{{ path('competence.detail', {"competence":competence.id}) }}">{{ competence.level.label }}</a>
+            </h6>
             <div class="list-group-item-text border-top mt-1">{{ competence.description|markdown_to_html }}</div>
-            <p class="list-group-item-text">
                 {% if competence.documentUrl %}
+                <div class="list-group-item-text">
                     {% if participant is defined %}
                         <a class="btn btn-secondary btn-sm"
                            href="{{ path('participant.competence.detail',{'participant': participant.id, 'competence' : competence.id}) }}">
@@ -80,8 +82,8 @@
                             <i class="fa fa-file"></i> Télécharger l'aide de jeu
                         </a>
                     {% endif %}
+                </div>
                 {% endif %}
-            </p>
 
             {% if loop.last %}
                 </li>

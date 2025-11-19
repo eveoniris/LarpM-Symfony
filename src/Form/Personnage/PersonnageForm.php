@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Form\Personnage;
 
 use App\Entity\Age;
@@ -8,22 +7,24 @@ use App\Entity\Classe;
 use App\Entity\Genre;
 use App\Entity\Personnage;
 use App\Entity\Territoire;
-use Doctrine\ORM\EntityRepository;
 use App\Repository\ClasseRepository;
 use App\Repository\TerritoireRepository;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-
 class PersonnageForm extends AbstractType
 {
-    /**
-     * Construction du formulaire.
-     */
+    public function __construct(
+        private readonly ClasseRepository $classeRepository,
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('nom', TextType::class, [
@@ -92,12 +93,18 @@ class PersonnageForm extends AbstractType
                 'required' => true,
                 'choices' => ['Non' => false, 'Oui' => true],
                 'label' => 'Possédez-vous votre propre bracelet pour les langues du jeu ?',
+            ])
+            ->add('classe', EntityType::class, [
+                'label' => 'Classes disponibles',
+                'choice_label' => 'label',
+                'class' => Classe::class,
+                'choices' => $this->classeRepository->findAllCreation(),
+            ])
+            ->add('save', SubmitType::class, [
+                'label' => 'Valider le personnage',
             ]);
     }
 
-    /**
-     * Définition de l'entité concerné.
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
@@ -105,9 +112,6 @@ class PersonnageForm extends AbstractType
         ]);
     }
 
-    /**
-     * Nom du formulaire.
-     */
     public function getName(): string
     {
         return 'personnage';

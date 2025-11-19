@@ -8,6 +8,8 @@ use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\PersonnageLignee;
 use App\Entity\Titre;
+use App\Entity\User;
+use App\Service\OrderBy;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\QueryBuilder;
 use JetBrains\PhpStorm\Deprecated;
@@ -166,7 +168,7 @@ LEFT JOIN p2.participants pa2
         }
 
         if (array_key_exists('nom', $criteria)) {
-            $qb->andWhere('p.nom LIKE :nom OR p.surnom LIKE :nom')->setParameter('nom', '%' . $criteria['nom'] . '%');
+            $qb->andWhere('p.nom LIKE :nom OR p.surnom LIKE :nom')->setParameter('nom', '%'.$criteria['nom'].'%');
         }
     }
 
@@ -222,7 +224,7 @@ LEFT JOIN p2.participants pa2
                     // $qb->addOrderBy('p.genre', $orderDir);
                     break;
                 default:
-                    $qb->orderBy('p.' . $orderBy, $orderDir);
+                    $qb->orderBy('p.'.$orderBy, $orderDir);
             }
         }
 
@@ -254,15 +256,15 @@ LEFT JOIN p2.participants pa2
         $qb->from(Personnage::class, $this->alias);
         $qb = $this->gender($qb, $genderId, $ambigus);
 
-        return $qb->orderBy($this->alias . '.nom', 'ASC');
+        return $qb->orderBy($this->alias.'.nom', 'ASC');
     }
 
     public function gender(QueryBuilder $qb, int $gender, ?int $ambigus = null): QueryBuilder
     {
         if (!$ambigus) {
-            $qb->andWhere($this->alias . '.genre = :value');
+            $qb->andWhere($this->alias.'.genre = :value');
         } else {
-            $qb->andWhere($this->alias . '.genre = :value OR ' . $this->alias . '.genre = :ambigus');
+            $qb->andWhere($this->alias.'.genre = :value OR '.$this->alias.'.genre = :ambigus');
             $qb->setParameter('ambigus', $ambigus);
         }
 
@@ -274,9 +276,10 @@ LEFT JOIN p2.participants pa2
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select($this->alias);
         $qb->from(Personnage::class, $this->alias);
-        $qb->andWhere($this->alias . '.age_reel >= :age');
-        $qb->andWhere($this->alias . '.vivant = 1');
+        $qb->andWhere($this->alias.'.age_reel >= :age');
+        $qb->andWhere($this->alias.'.vivant = 1');
         $qb->setParameter('age', $age);
+
         return $qb->getQuery()->getResult();
     }
 
@@ -309,7 +312,111 @@ LEFT JOIN p2.participants pa2
 
         $statement = $connection->prepare($sql);
         $statement->bindValue('addyear', $year);
-        return $statement->executeQuery();
 
+        return $statement->executeQuery();
+    }
+
+    public function search(
+        mixed $search = null,
+        string|array|null $attributes = self::SEARCH_NOONE,
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null,
+    ): QueryBuilder {
+        $alias ??= static::getEntityAlias();
+        $query ??= $this->createQueryBuilder($alias);
+        $query->join($alias.'.user', 'user');
+       // $query->leftJoin('user.etatCivil', 'etatCivil');
+
+        return parent::search($search, $attributes, $orderBy, $alias, $query);
+    }
+
+    public function searchAttributes(): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            self::SEARCH_ALL,
+            $alias.'.nom',
+            $alias.'.surnom',
+       //     'user.username as username',
+         //   'etatCivil.nom as user_nom',
+         //   'etatCivil.prenom as user_prenom',
+         //   'user.email as email',
+          //  "CONCAT(etatCivil.nom, ' ', etatCivil.prenom) AS HIDDEN nomPrenom",
+        ];
+    }
+
+    public function sortAttributes(?string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            ...parent::sortAttributes($alias),
+            $alias.'.nom' => [
+                OrderBy::ASC => [$alias.'.nom' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.nom' => OrderBy::DESC],
+            ],
+           /* 'email' => [
+                OrderBy::ASC => ['email' => OrderBy::ASC],
+                OrderBy::DESC => ['email' => OrderBy::DESC],
+            ],
+            'username' => [
+                OrderBy::ASC => ['username' => OrderBy::ASC],
+                OrderBy::DESC => ['username' => OrderBy::DESC],
+            ],*/
+          /*  'etatCivil.nom' => [
+                OrderBy::ASC => ['etatCivil.nom' => OrderBy::ASC],
+                OrderBy::DESC => ['etatCivil.nom' => OrderBy::DESC],
+            ],
+            'etatCivil.prenom' => [
+                OrderBy::ASC => ['etatCivil.prenom' => OrderBy::ASC],
+                OrderBy::DESC => ['etatCivil.prenom' => OrderBy::DESC],
+            ],
+            'nomPrenom' => [
+                OrderBy::ASC => ['nomPrenom' => OrderBy::ASC],
+                OrderBy::DESC => ['nomPrenom' => OrderBy::DESC],
+            ],*/
+        ];
+    }
+
+    public function translateAttributes(): array
+    {
+        return [
+            'email' => $this->translator->trans('Email', domain: 'repository'),
+            'etatCivil.nom' => $this->translator->trans('Nom joueur', domain: 'repository'),
+            'etatCivil.prenom' => $this->translator->trans('Prenom', domain: 'repository'),
+            'username' => $this->translator->trans('Pseudo', domain: 'repository'),
+            'pseudo' => $this->translator->trans('Surnom', domain: 'repository'),
+            'nom' => $this->translator->trans('Nom', domain: 'repository'),
+            'prenom' => $this->translator->trans('Prenom', domain: 'repository'),
+            'nomPrenom',
+            'HIDDEN nomPrenom' => $this->translator->trans('Nom prénom', domain: 'repository'),
+        ];
+    }
+
+    public function user(QueryBuilder $query, User $user): QueryBuilder
+    {
+        $query->andWhere($this->alias.'.user = :value');
+
+        return $query->setParameter('value', $user->getId());
+    }
+
+    /**
+     * Count alive personnage per user
+     */
+    public function countUser(User $user): int
+    {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                <<<DQL
+                    SELECT COUNT(p) FROM App\Entity\Personnage p
+                    INNER JOIN p.user u
+                    WHERE u.id = :uid AND p.vivant = 1
+                DQL,
+            );
+        $query->setParameter('uid', $user->getId());
+
+        return (int) $query->getSingleScalarResult();
     }
 }

@@ -229,7 +229,7 @@
             {% set groupeGn = groupe.nextSession %}
         {% endif %}
 
-        {% if groupeGn.gn is defined and groupeGn.gn.id == groupeService.nextSessionGn.id %}
+        {% if groupeGn.gn is defined and groupeService.nextSessionGn and groupeGn.gn.id == groupeService.nextSessionGn.id %}
             <div class="card text-bg mb-3 overflow-auto">
                 <div class="header"><h5>Résume pour {{ groupeGn.gn.label }}</h5></div>
                 <div class="card-body">

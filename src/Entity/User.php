@@ -260,8 +260,12 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         return $last?->getPersonnage();
     }
 
-    public function getPersonnage(): ?Personnage
+    public function getPersonnage(bool $onlyActive = false): ?Personnage
     {
+        if ($onlyActive)  {
+            return parent::getPersonnage();
+        }
+
         return parent::getPersonnage() // actif
             ?? $this->getPersonnages()->last()
             ?? $this->getParticipants()->last()?->getPersonnage()
