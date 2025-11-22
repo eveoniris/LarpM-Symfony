@@ -9,7 +9,7 @@ class PersonnageApprentissageRepository extends BaseRepository
     public function hasApprentissage(Personnage $personnage, ?int $fromDate = null, ?int $toDate = null): bool
     {
         // handle bad param
-        if ($fromDate > $toDate) {
+        if ($toDate && $fromDate && $fromDate > $toDate) {
             $tmpDate = $fromDate;
             $fromDate = $toDate;
             $toDate = $tmpDate;
@@ -17,7 +17,7 @@ class PersonnageApprentissageRepository extends BaseRepository
 
         $dql = <<<DQL
                 SELECT COUNT(pa) AS exists
-                FROM App\Entity\PersonnageApprentissage pa 
+                FROM App\Entity\PersonnageApprentissage pa
                 WHERE pa.personnage = :pid AND pa.deleted_at IS NULL
                 DQL;
 
