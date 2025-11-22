@@ -113,7 +113,7 @@ class PersonnageApprentissage
             $this->getEnseignant()?->getIdName(),
             $this->getPersonnage()?->getIdName(),
             $this->getDateEnseignement(),
-            !$this->getDateUsage() ?: '. Utilisé le '.$this->getDateUsage()->format('d/m/Y')
+            !$this->getDateUsage() ? '' : '. Utilisé le '.$this->getDateUsage()->format('d/m/Y')
         );
     }
 
