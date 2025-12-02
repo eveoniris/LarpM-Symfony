@@ -16,33 +16,43 @@
         </div>
 
         {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ORGA', app.user) %}
-            Actions (visible uniquement par scénariste ou orga) :
-            <ul>
-                <li><a href="{{ path('groupe.add') }}">Ajouter un groupe</a></li>
-                <li><a href="{{ path('gn.groupes.enveloppes',{'gn': gn.id}) }}">Imprimer les enveloppes</a></li>
-                <li><a href="{{ path('gn.groupes.backgrounds.chefs',{'gn': gn.id}) }}">Imprimer les backgrounds des chefs
-                        de groupes</a></li>
-                <li><a href="{{ path('gn.groupes.backgrounds.groupes',{'gn': gn.id}) }}">Imprimer les backgrounds des
-                        groupes</a></li>
-                <li><a href="{{ path('gn.groupes.backgrounds.membres',{'gn': gn.id}) }}">Imprimer les backgrounds des
-                        membres de groupes</a></li>
-            </ul>
+            {% set gameMasterHtml %}
+                Actions (visible uniquement par scénariste ou orga) :
+                <ul>
+                    <li><a href="{{ path('groupe.add') }}">Ajouter un groupe</a></li>
+                    <li><a href="{{ path('gn.groupes.enveloppes',{'gn': gn.id}) }}">Imprimer les enveloppes</a>
+                    </li>
+                    <li><a href="{{ path('gn.groupes.backgrounds.chefs',{'gn': gn.id}) }}">Imprimer les
+                            backgrounds des chefs
+                            de groupes</a></li>
+                    <li><a href="{{ path('gn.groupes.backgrounds.groupes',{'gn': gn.id}) }}">Imprimer les
+                            backgrounds des
+                            groupes</a></li>
+                    <li><a href="{{ path('gn.groupes.backgrounds.membres',{'gn': gn.id}) }}">Imprimer les
+                            backgrounds des
+                            membres de groupes</a></li>
+                </ul>
+            {% endset %}
+            {% include '_partials/cardNotif.twig' with {'type': 'gamemaster', 'content' : gameMasterHtml} %}
         {% endif %}
 
         {% for groupe in groupes %}
-            {% if groupe.pj %}
+
                 {% set session = groupe.getSession(gn) %}
                 <div class="card text-bg mb-3">
                     <div class="card-header">
                         <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
-                            <h5>  {{ groupe.numero }} - {{ groupe.nom }}</h5>
+                            <h5> {{ groupe.numero }} - {{ groupe.nom }}</h5>
                             {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ORGA', app.user) %}
                                 <div class="btn-group" role="group">
                                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Modifier"
+                                       href="{{ path('groupeGn.update', {'groupeGn': session.id}) }}"><i
+                                            class="fa fa-edit"></i> Modifier</a>
+                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                        title="Detail"
                                        href="{{ path('groupe.detail', {'groupe': groupe.id}) }}"><i
-                                                class="fa fa-eye"></i> Détail</a>
-
+                                            class="fa fa-eye"></i> Détail</a>
                                 </div>
                             {% endif %}
                         </div>
@@ -52,16 +62,19 @@
 
                         <li class="list-group-item m-0 p-0 g-0">
                             <div class="d-flex justify-content-start">
-                                <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                                <div
+                                    class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
                                     Statut
                                 </div>
-                                <div class="col-md-10 px-2 py-1">{% if session.free %}Ce groupe est libre{% else %}Ce groupe est réservé{% endif %}</div>
+                                <div
+                                    class="col-md-10 px-2 py-1">{% if session.free %}Ce groupe est libre{% else %}Ce groupe est réservé{% endif %}</div>
                             </div>
                         </li>
 
                         <li class="list-group-item m-0 p-0 g-0">
                             <div class="d-flex justify-content-start">
-                                <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                                <div
+                                    class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
                                     Nombre de membres recherchées
                                 </div>
                                 <div class="col-md-10 px-2 py-1">{{ session.placeAvailable|default(0) }}</div>
@@ -70,14 +83,15 @@
 
                         <li class="list-group-item m-0 p-0 g-0">
                             <div class="d-flex justify-content-start">
-                                <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                                <div
+                                    class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
                                     Contact
                                 </div>
                                 <div class="col-md-10 px-2 py-1">
                                     {% if session.responsable %}
                                         {{ session.responsable.user }}. <a
-                                            href="{{ path('message.new', {'to': session.responsable.user.id }) }}"
-                                            class="btn btn-primary">Envoyer un
+                                        href="{{ path('message.new', {'to': session.responsable.user.id }) }}"
+                                        class="btn btn-primary">Envoyer un
                                         message</a>
                                     {% else %}
                                         Aucun
@@ -88,7 +102,8 @@
 
                         <li class="list-group-item m-0 p-0 g-0">
                             <div class="d-flex justify-content-start">
-                                <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                                <div
+                                    class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
                                     Description
                                 </div>
                                 <div class="col-md-10 px-2 py-1">
@@ -105,7 +120,7 @@
                     </ul>
 
                 </div>
-            {% endif %}
+
         {% else %}
             {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Ce GN ne dispose d'aucun groupe qui cherche des membres"} %}
         {% endfor %}

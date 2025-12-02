@@ -37,7 +37,7 @@
                 {% set iconPjConfirmed = '<span title="PJ participant au GN actif">✅</span>' %}
                 {% set iconPjDead = '<span title="Personnage mort">💀</span>' %}
                 {% set iconPnj = '<span title="PNJ">🎭</span>' %}
-                {% set iconPjOld = '<span title="Ancien PJ ne participant pas au GN actif"><i class="fa-solid fa-hourglass"></i>➖</span>' %}
+                {% set iconPjOld = '<span title="Ancien PJ ne participant pas au GN actif"><i class="fa-solid fa-hourglass"></i></span>' %}
 
                 <div class="panel-body">
                     <div class="legend"><span class="legend-header">Légende Statut : </span>{{ iconPjConfirmed | raw }} = PJ Actif, {{ iconPnj | raw }} = PNJ, {{ iconPjOld | raw }} = PJ Non actif, {{ iconPjDead | raw }} = Mort</div>
@@ -65,7 +65,7 @@
                                 {% else %}
                                     {{ iconPjOld | raw }}
                                 {% endif %}
-                                </td>                                 
+                                </td>
                                 <td><a href="{{ path('personnage.detail', {'personnage': personnageLignee.personnage.id}) }}">{{ personnageLignee.personnage.nom}}</a></td>
 
                                 {% if personnageLignee.personnage.groupe == NULL %}

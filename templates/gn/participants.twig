@@ -15,9 +15,16 @@
             <h5>Liste des participants à {{ gn.label }}</h5>
         </div>
 
+        {% set buttons = [] %}
+        {% if isAdmin %}
+            {% set buttons = [
+                {'title': "Télécharger la liste", 'route': path('gn.participants.csv', {'gn':gn.id}), 'icon': 'fa-file-csv', 'label': 'Télécharger'}
+            ] %}
+        {% endif %}
         {% include '_partials/formListSearch.twig' with
             {
-                'actionPath' : path('gn.participants', {'gn':gn.id})
+                'actionPath' : path('gn.participants', {'gn':gn.id}),
+                'buttons' : buttons
             } %}
 
         <div class="text-center">

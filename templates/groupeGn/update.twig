@@ -6,10 +6,22 @@
 
     <ol class="breadcrumb">
         <li><a href="{{ path('homepage') }}">Accueil</a></li>
-        <li><a href="{{ path("groupe.list") }}">Liste des groupes</a></li>
+        <li><a href="{{ path("gn.detail", {'gn': groupeGn.gn.id}) }}">{{ groupeGn.gn.label }}</a></li>
         <li><a href="{{ path("groupe.detail", {'groupe': groupe.id}) }}">{{ groupe.nom }}</a></li>
+        <li><a href="{{ path("groupeGn.list", {'groupe': groupe.id}) }}">Sessions de jeu</a></li>
         <li class="active">Session de jeu d'un groupe</li>
     </ol>
+
+    <div class="d-flex justify-content-end">
+        <div class="w-auto mb-2 p-0 btn-toolbar d-flex justify-content-between m-0 p-0" role="toolbar">
+            <div class="btn-group m-0 p-0" role="group">
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Voir la liste de tous les groupes"
+                       href="{{ path('groupe.list') }}"><i
+                            class="fa fa-users-line"></i> Voir tous les groupes</a>
+            </div>
+        </div>
+    </div>
 
     {% set descriptionHtml %}
         <h6>Fonctionnement des titres</h6>

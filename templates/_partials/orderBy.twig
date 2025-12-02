@@ -14,7 +14,7 @@
 
 {% if pagerService is defined %}
     {% set path = pagerService.getSearchOrderPathLinkForField(field) %}
-{% else %}
+{% elseif order is defined %}
     {% set routeOptions = routeOptions|merge({'order_by': order}) %}
     {% if pagerService is defined %}
         {% set routeOptions = routeOptions|merge({"search":pagerService.getSearchValue}) %}

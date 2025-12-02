@@ -625,7 +625,7 @@ class ParticipantController extends AbstractController
 
         $this->checkHasAccess(
             $roles,
-            fn() => $participant->getPersonnage()?->getUser()?->getId() === $this->getUser()?->getId(),
+            fn() => $participant?->getUser()?->getId() === $this->getUser()?->getId(),
         );
     }
 
@@ -1883,7 +1883,7 @@ class ParticipantController extends AbstractController
         }
 
         $form = $this->createForm(GroupeInscriptionForm::class, [])
-            ->add('subscribe', SubmitType::class, ['label' => "S'inscrire"]);
+            ->add('subscribe', SubmitType::class, ['label' => "S'inscrire", 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
 
@@ -3178,7 +3178,7 @@ class ParticipantController extends AbstractController
     {
         $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
 
-        if (!$isAdmin && $participant->getPersonnage()?->getUser()?->getId() !== $this->getUser()?->getId()) {
+        if (!$isAdmin && $participant->getUser()?->getId() !== $this->getUser()?->getId()) {
             throw new AccessDeniedException();
         }
 
@@ -3298,7 +3298,7 @@ class ParticipantController extends AbstractController
         $groupes = new ArrayCollection();
         foreach ($groupeGns as $groupeGn) {
             $groupe = $groupeGn->getGroupe();
-            // Seul els groupes avec un territoire ?
+            // Seul les groupes avec un territoire ?
             if ($groupe->getTerritoires()->count() > 0) {
                 $groupes[] = $groupe;
             }

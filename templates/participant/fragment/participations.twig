@@ -99,6 +99,15 @@
                 </td>
             {% endif %}
         </tr>
+    {% else %}
+        {% if participant.id is defined %}
+            {% set joinGroupHtml %}
+                <a href="{{ path('participant.groupe.join', {'participant': participant.id}) }}"><i
+                        class="fa fa-users"></i> Rejoindre un groupe</a>
+            {% endset %}
+            {% include '_partials/noResultTableRow.twig' with {'content': joinGroupHtml } %}
+        {% endif %}
+        {% include '_partials/noResultTableRow.twig' %}
     {% endfor %}
     </tbody>
 </table>

@@ -236,6 +236,7 @@
                     {% set nbPlace = groupe.placeTotal|default(0) %}
                     {% set nbMembres =  groupeGn.participants|length|default(0) %}
                     {% set nbLibre =  nbPlace - nbMembres %}
+                    {% set nbAvailable =  groupeGn.placeAvailable|default(0) %}
                     {% set lockHtml %}
                         {% if groupe.lock %}
                             Le groupe est fermé. Les joueurs ne peuvent plus et modifier leur personnage
@@ -249,6 +250,7 @@
                         {'title': 'Places totales', 'text': nbPlace ~ ' joueurs possibles dans ce groupe.'},
                         {'title': 'Membres', 'text': nbMembres},
                         {'title': 'Places libre', 'text': nbLibre},
+                        {'title': 'Recherche de places', 'text': nbAvailable},
                         {'title': 'Etat du groupe', 'text': lockHtml},
                     ]
                     } %}

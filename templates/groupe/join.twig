@@ -4,25 +4,23 @@
 
 {% block body %}
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage') }}">Page d'accueil</a></li>
-		<li><a href="{{ path('participant.index', {'participant' : participant.id}) }}">{{ participant.gn.label }}</a></li>
-		<li class="active">Rejoindre un groupe</li>
-	</ol>
-	
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des grandeurs nature', 'route': path('gn.list') },
+            {'name' : participant.gn.label, 'route': path('participant.index', {'participant': participant.id}) },
+            {'name' : 'Rejoindre un groupe' }
+        ]
+    } %}
+
 	<div class="well well-sm">
 
 		<div class="header">
 			<h5>Rejoindre un groupe</h5>
 		</div>
-							
-		<p>Vous n'êtes pour le moment inscrit dans aucun groupe. Entrez le code de votre groupe dans le formulaire ci-dessous. Le code doit vous être transmis par le responsable de votre groupe.</p>
-						
-						
-		{{ form_start(form, {"attr": {"action": path('participant.groupe.join', {'participant': participant.id}) }}) }}
-			
-			{{ form(form) }}
-		{{ form_end(form) }}
+
+        {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Attention, cet age n'a pas de description."} %}
+
+        {{ form(form) }}
 	</div>
-	
+
 {% endblock body %}

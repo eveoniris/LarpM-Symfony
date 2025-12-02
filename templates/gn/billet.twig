@@ -3,50 +3,62 @@
 {% block title %}Gn -- {{ gn.label }}{% endblock title %}
 
 {% block body %}
-	<div class="well well-sm clearfix">
-		<ol class="breadcrumb">
-			<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-			<li><a href="{{path('gn.list') }}">Liste des GNs</a></li>
-			<li><a href="{{path('gn.detail', {'gn': gn.id}) }}">{{ gn.label }}</a></li>
-			<li class="active">Billets</li>
-		</ol>
 
-		<blockquote>
-			Gestion des billets
-		</blockquote>
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des GNs', 'route': path('gn.list') },
+            {'name' : gn.label, 'route': path('gn.detail', {'gn':gn.id}) },
+            {'name' : 'Billets' }
+        ]
+    } %}
 
-		<ul>
-			<li><a href="{{ path('billet.add',{'gn': gn.id}) }}"><i class="fa fa-plus"></i> Ajouter un billet</a></li>
-		</ul>
+    <div class="well well-sm clearfix">
 
-				<table class="table">
-				<thead>
-					<tr>
-						<th>Billet</th>
-						<th>Quantité</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-				{% for billet in gn.billets %}
-					<tr>
-						<td>{{ billet.label }}</td>
-						<td>{{ billet.participants|length }}</td>
-						<td>
-							<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
-								<div class="btn-group" role="group" aria-label="...">
-									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Liste" href="{{ path('billet.participants', {'billet': billet.id}) }}"><i class="fa fa-users" aria-hidden="true"></i></a>
-									<a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('billet.update',{'billet':billet.id}) }}"><i class="fa fa-pencil"></i></a>
-									<a class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('billet.delete',{'billet':billet.id}) }}"><i class="fa fa-eraser"></i></a>
-								</div>
-							</div>
-						</td>
-					</tr>
-				{% endfor %}
-					</tbody>
-				</table>
+        <div class="header">
+            <h5>Gestion des billets</h5>
+        </div>
 
-	</div>
+        <div class="btn-toolbar" role="toolbar" aria-label="...">
+            <div class="btn-group" role="group" aria-label="...">
+                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Export CSV"
+                   href="{{ path('billet.add', {'gn': gn.id}) }}"><i class="fa fa-add"></i> Ajouter un billet</a>
+            </div>
+        </div>
+
+
+    </div>
+
+    <table class="table table-condensed table-striped table-bordered table-hover">
+        {% include '_partials/thead.twig' with  { 'route': 'gn.participants.withoutbillet', 'routeOptions': {'gn': gn.id}, 'rows': [
+            {'name' : 'Billet'},
+            {'name' : 'Quantité'},
+            {'name' : 'Action'},
+        ]} %}
+        <tbody>
+        {% for billet in gn.billets %}
+            <tr>
+                <td>{{ billet.label }}</td>
+                <td>{{ billet.participants|length }}</td>
+                <td>
+                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Liste"
+                               href="{{ path('billet.participants', {'billet': billet.id}) }}"><i class="fa fa-users"
+                                                                                                  aria-hidden="true"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier"
+                               href="{{ path('billet.update',{'billet':billet.id}) }}"><i class="fa fa-pencil"></i></a>
+                            <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Supprimer"
+                               href="{{ path('billet.delete',{'billet':billet.id}) }}"><i class="fa fa-eraser"></i></a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            {% include '_partials/noResultTableRow.twig' %}
+        {% endfor %}
+        </tbody>
+    </table>
+
 
 
 {% endblock %}
