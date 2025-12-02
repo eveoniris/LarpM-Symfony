@@ -12,6 +12,8 @@ use App\Enum\CompetenceFamilyType;
 use App\Enum\LevelType;
 use App\Service\OrderBy;
 use App\Service\PagerService;
+use Doctrine\ORM\NativeQuery;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
@@ -157,6 +159,44 @@ class ParticipantRepository extends BaseRepository
         $query->andWhere($this->alias . '.gn = :gnId');
 
         return $query->setParameter('gnId', $gn->getId());
+    }
+
+    public function getParticipantsGn(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('id', 'id', 'integer');
+        $rsm->addScalarResult('participant', 'participant', 'string');
+        $rsm->addScalarResult('groupe_numero', 'groupe_nom', 'integer');
+        $rsm->addScalarResult('groupe_nom', 'groupe_nom', 'string');
+        $rsm->addScalarResult('email', 'email', 'string');
+        $rsm->addScalarResult('restauration', 'restauration', 'string');
+        $rsm->addScalarResult('billet', 'billet', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                SELECT pt.id,
+                       CONCAT(ec.nom, ' ', ec.prenom) as participant,
+                       g.numero                       as groupe_numero,
+                       g.nom                          as groupe_nom,
+                       u.email,
+                       GROUP_CONCAT(r.label)          as restauration,
+                       b.label                        as billet
+                FROM participant pt
+                         INNER JOIN gn ON pt.gn_id = gn.id
+                         LEFT JOIN `user` u ON u.id = pt.user_id
+                         LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
+                         LEFT JOIN participant_has_restauration pr ON pr.participant_id = pt.id
+                         LEFT JOIN restauration r ON r.id = pr.restauration_id
+                         LEFT JOIN groupe_gn ggn ON pt.groupe_gn_id = ggn.id
+                         LEFT JOIN groupe g ON ggn.groupe_id = g.id
+                         LEFT JOIN billet b ON b.id = pt.billet_id
+                WHERE pt.gn_id = 10
+                GROUP BY id, participant, g.numero, g.nom, email, billet
+                ORDER BY participant ASC;
+                SQL,
+            $rsm,
+        )->setParameter('gnid', $gn->getId());
     }
 
     public function searchPaginatedByGn(PagerService $pageRequest, int $gnid): Paginator

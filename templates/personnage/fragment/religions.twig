@@ -7,6 +7,7 @@
         <h5>Religions du personnage</h5>
     </div>
 
+    {% if participant.id is defined %}
     <div class="d-flex justify-content-end mb-2">
 
         <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
@@ -15,6 +16,8 @@
             <i class="fa-solid fa-person-praying"></i>
             Nouvelle</a>
     </div>
+    {% endif %}
+
     <div class="card">
         <div class="list-group">
             {% for personnageReligion in personnage.personnagesReligions %}

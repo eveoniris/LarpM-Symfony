@@ -19,7 +19,7 @@
                             <li><a class="dropdown-item text-body-emphasis" href="{{ path('gn.list') }}">Mes Grandeurs
                                     natures</a></li>
                             {# BetaTest: #}
-                            {% if isAdmin %}
+                            {% if isAdmin is defined and isAdmin %}
                                 <li><a class="dropdown-item text-body-emphasis"
                                        href="{{ path('user.personnage.list', {'user':app.user.id}) }}">Mes
                                         personnages</a>
@@ -286,7 +286,7 @@
                 </a>
             {% endif %}
 
-            {% if app.user %}
+            {% if app.user and personnageService.hasPersonnages > 0 %}
                 {% if app.user.personnage(true) %}
                     <div class="d-flex">
                         <a class="btn btn-dark shadow me-2" data-bs-placement="bottom"

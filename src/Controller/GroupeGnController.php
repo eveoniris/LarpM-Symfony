@@ -255,11 +255,8 @@ class GroupeGnController extends AbstractController
      * Liste des sessions de jeu pour un groupe.
      */
     #[Route('/groupeGn/{groupe}/list/', name: 'groupeGn.list')]
-    public function listAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        Groupe $groupe,
-    ): Response {
+    public function listAction(Groupe $groupe): Response
+    {
         return $this->render('groupeGn/list.twig', [
             'groupe' => $groupe,
         ]);
@@ -274,7 +271,7 @@ class GroupeGnController extends AbstractController
         Request $request,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
-        //$form = $this->createForm(GroupeGnForm::class, $groupeGn)
+        // $form = $this->createForm(GroupeGnForm::class, $groupeGn)
         //    ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
         // TODO Migrate to V2
         $form = $this->createFormBuilder()
@@ -473,7 +470,6 @@ class GroupeGnController extends AbstractController
 
         $this->hasAccess($groupeGn, [Role::WARGAME]);
 
-
         $form = $this->createForm(
             GroupeGnForm::class,
             $groupeGn,
@@ -503,7 +499,7 @@ class GroupeGnController extends AbstractController
             foreach ($idsArray as $child => $id) {
                 if ($id) {
                     if (isset($ids[$id])) {
-                        $ids[$id]++;
+                        ++$ids[$id];
                         $form->get($child)->addError(new FormError("Un personnage ne peut avoir qu'un seul titre"));
                     } else {
                         $ids[$id] = 1;
@@ -519,7 +515,7 @@ class GroupeGnController extends AbstractController
             // Titre si territoire
             if (null === $groupeGn->getGroupe()->getTerritoire()) {
                 if ($groupeGn->getSuzerain() || $groupeGn->getIntendant() || $groupeGn->getCamarilla(
-                    ) || $groupeGn->getConnetable() || $groupeGn->getNavigateur() || $groupeGn->getDiplomate()) {
+                ) || $groupeGn->getConnetable() || $groupeGn->getNavigateur() || $groupeGn->getDiplomate()) {
                     $this->addFlash('error', 'Les titres ne sont possibles que si le groupe à un territoire');
                 }
                 $groupeGn->setSuzerain(null);
@@ -588,7 +584,7 @@ class GroupeGnController extends AbstractController
 
         $this->checkHasAccess(
             $roles,
-            fn() => $this->can(self::CAN_READ),
+            fn () => $this->can(self::CAN_READ),
         );
     }
 }

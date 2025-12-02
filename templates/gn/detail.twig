@@ -1,6 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Gn -- {{ gn.label }}{% endblock title %}
+{% block title %}Gn - {{ gn.label }}{% endblock title %}
 
 {% block body %}
 
@@ -16,6 +16,7 @@
         <div class="card-title">
             <div class="header"><h5>{{ gn.label }}</h5></div>
         </div>
+
         <div class="card-body">
             <div class="card-text	">
                 {% if gn.description %}
@@ -30,102 +31,147 @@
 
 
     {% if is_granted('ROLE_ADMIN', app.user) %}
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-2">
-                    <div class="header">
-                        <h5>Administratif (Ceci n'est visible que pour les ADMIN)</h5>
-                    </div>
+        <div class="card mb-2 border-danger">
+            <div class="card-header"><i
+                    class="fa fa-user-ninja text-danger"></i> Administratif
+            </div>
 
-                    <div class="card-body">
-                        <ul>
-                            <li><strong>Nombre de point d'expérience à la création d'un personnage
-                                    : </strong>{{ gn.xpCreation }}</li>
-                            <li><a href="{{ path('gn.billet', {'gn': gn.id}) }}">Gestion des billets</a></li>
-                            <li><a href="{{ path('gn.update', {'gn': gn.id}) }}">Modifier le GN</a></li>
-                            <li><a href="{{ path('gn.delete', {'gn': gn.id}) }}">Supprimer le GN</a></li>
-                        </ul>
-
-                        <ul>
-                            <li><a href="{{ path('gn.participants', {'gn': gn.id}) }}"><i class="fa fa-users"></i>
-                                    Participants
-                                    ({{ gn.participants|length }})</a></li>
-                            <li><a href="{{ path('gn.participants.csv', {'gn': gn.id}) }}"><i
-                                            class="fa fa-file-csv"></i>
-                                    Participants CSV ({{ gn.participants|length }})</a></li>
-                            <li><a href="{{ path('gn.groupes', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Groupes
-                                    ({{ gn.groupeGns|length }})</a></li>
-                            <li><a href="{{ path('gn.pnjs', {'gn': gn.id}) }}"><i class="fa fa-users"></i> Participants
-                                    PNJs
-                                    ({{ gn.participantspnj|length }})</a></li>
-                            <li><a href="{{ path('gn.participants.withoutbillet', {'gn': gn.id}) }}"><i
-                                            class="fa fa-users"></i>
-                                    Participants sans billet ({{ gn.participantswithoutbillet|length }})</a></li>
-                            <li><a href="{{ path('gn.participants.withoutgroup', {'gn': gn.id}) }}"><i
-                                            class="fa fa-users"></i>
-                                    Participants sans groupe (mais avec billet)
-                                    ({{ gn.participantswithoutgroup|length }})</a>
-                            </li>
-                            <li><a href="{{ path('gn.participants.withoutperso', {'gn': gn.id}) }}"><i
-                                            class="fa fa-users"></i>
-                                    Participants sans personnage ({{ gn.participantswithoutperso|length }})</a></li>
-                            <li><a href="{{ path('gn.groupesReserves', {'gn': gn.id}) }}"><i class="fa fa-download"></i>
-                                    Groupes
-                                    réservés</a></li>
-                            <li><a href="{{ path('gn.fedegn', {'gn': gn.id}) }}"><i class="fa fa-download"></i> Document
-                                    FédéGN</a>
-                            </li>
-                            <li><a href="{{ path('billet.add',{'gn': gn.id}) }}"><i class="fa fa-plus"></i> Ajouter un
-                                    billet</a></li>
-                        </ul>
-                    </div>
+            <div class="d-flex justify-content-end btn-toolbar" role="toolbar" aria-label="...">
+                <div class="btn-group" role="group" aria-label="...">
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Gestions des billets"
+                       href="{{ path('gn.billet',{'gn': gn.id}) }}">
+                        <i class="fa-solid fa-ticket"></i>
+                        Billets</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier le Grandeur Nature"
+                       href="{{ path('gn.update',{'gn': gn.id}) }}">
+                        <i class="fa-solid fa-edit"></i>
+                        Modifier</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer le Grandeur Nature"
+                       href="{{ path('gn.delete',{'gn': gn.id}) }}">
+                        <i class="fa-solid fa-eraser"></i>
+                        Supprimer</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Télécharger le document FédéGN"
+                       href="{{ path('gn.fedegn', {'gn': gn.id}) }}"><i
+                            class="fa fa-download"></i>
+                        Document FédéGN</a>
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div class="card mb-2">
-                    <div class="header m-0">
-                        <h5 class="m-0">Résumer des billets</h5>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-2">
+                            <div class="header">
+                                <h5>Gestion</h5>
+                            </div>
+
+                            <div class="card-body row">
+
+                                <div class="col-md-12 mb-2">
+                                    <strong>Nombre de points d'expérience à la création d'un personnage
+                                        : </strong>{{ gn.xpCreation }}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <ul class="list-group">
+                                        <li class="list-group-item header bg-body-secondary rounded-bottom-0">
+                                            Participants
+                                        </li>
+                                        <li class="list-group-item"><a
+                                                href="{{ path('gn.participants', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-receipt"></i>
+                                                Inscrits
+                                                ({{ gn.participants|length }})</a></li>
+                                        <li class="list-group-item"><a href="{{ path('gn.pnjs', {'gn': gn.id}) }}"><i
+                                                    class="fa-solid fa-masks-theater"></i>
+                                                PNJs
+                                                ({{ gn.participantspnj|length }})</a></li>
+                                        <li class="list-group-item"><a
+                                                href="{{ path('gn.participants.withoutbillet', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-ticket-simple"></i>
+                                                Sans billet ({{ gn.participantswithoutbillet|length }})</a>
+                                        </li>
+                                        <li class="list-group-item"><a
+                                                href="{{ path('gn.participants.withoutgroup', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-location"></i>
+                                                Sans groupe (mais avec billet)
+                                                ({{ gn.participantswithoutgroup|length }})</a>
+                                        </li>
+                                        <li class="list-group-item"><a
+                                                href="{{ path('gn.participants.withoutperso', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-face-sad-tear"></i>
+                                                Sans personnage ({{ gn.participantswithoutperso|length }})</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-group">
+                                        <li class="list-group-item header bg-body-secondary rounded-bottom-0">Groupes
+                                        </li>
+                                        <li class="list-group-item"><a
+                                                href="{{ path('gn.groupesReserves', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-registered"></i>
+                                                Réservés</a>
+                                        <li class="list-group-item"><a href="{{ path('gn.groupes', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-list-check"></i>
+                                                Inscrits
+                                                ({{ gn.groupeGns|length }})</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body p-0">
-                        <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
-                            <thead>
-                            <tr>
-                                <th>Billet</th>
-                                <th class="col-1">Quantité</th>
-                                <th class="col-1">Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for billet in gn.billets %}
-                                <tr>
-                                    <td>{{ billet.label }}</td>
-                                    <td>{{ billet.participants|length }}</td>
-                                    <td>
-                                        <div class="btn-toolbar" role="toolbar">
-                                            <div class="btn-group" role="group">
-                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip"
-                                                   data-bs-placement="bottom"
-                                                   title="Liste"
-                                                   href="{{ path('billet.participants', {'billet': billet.id}) }}"><i
-                                                            class="fa fa-users" aria-hidden="true"></i></a>
-                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip"
-                                                   data-bs-placement="bottom"
-                                                   title="Modifier"
-                                                   href="{{ path('billet.update',{'billet':billet.id}) }}"><i
-                                                            class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip"
-                                                   data-bs-placement="bottom"
-                                                   title="Supprimer"
-                                                   href="{{ path('billet.delete',{'billet':billet.id}) }}"><i
-                                                            class="fa fa-eraser"></i></a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+
+                    <div class="col-md-6">
+                        <div class="card mb-2">
+                            <div class="header m-0">
+                                <h5 class="m-0">Résumé des billets</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                                    <thead>
+                                    <tr>
+                                        <th>Billet</th>
+                                        <th class="col-1">Quantité</th>
+                                        <th class="col-1">Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for billet in gn.billets %}
+                                        <tr>
+                                            <td>{{ billet.label }}</td>
+                                            <td>{{ billet.participants|length }}</td>
+                                            <td>
+                                                <div class="btn-toolbar" role="toolbar">
+                                                    <div class="btn-group" role="group">
+                                                        <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip"
+                                                           data-bs-placement="bottom"
+                                                           title="Liste"
+                                                           href="{{ path('billet.participants', {'billet': billet.id}) }}"><i
+                                                                class="fa fa-users" aria-hidden="true"></i></a>
+                                                        <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip"
+                                                           data-bs-placement="bottom"
+                                                           title="Modifier"
+                                                           href="{{ path('billet.update',{'billet':billet.id}) }}"><i
+                                                                class="fa fa-pencil"></i></a>
+                                                        <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip"
+                                                           data-bs-placement="bottom"
+                                                           title="Supprimer"
+                                                           href="{{ path('billet.delete',{'billet':billet.id}) }}"><i
+                                                                class="fa fa-eraser"></i></a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -148,7 +194,7 @@
                     <ul>
                         <li>
                             {% if participant %}
-                                Vous participez à ce jeu
+                                <span class="text-success"><i class="fa fa-check"></i>Vous participez à ce jeu</span>
                             {% else %}
                                 <a href="{{ path('user.gn.participe', {'gn': gn.id}) }}"><i class="fa fa-check"
                                                                                             aria-hidden="true"></i>&nbsp;Participer
@@ -220,7 +266,7 @@
                         {{ annonce.text|markdown_to_html }}
                         {% if is_granted('ROLE_REDACTEUR', app.user) %}
                             <a class="btn btn-primary" href="{{ path('annonce.update', {'annonce': annonce.id}) }}"><i
-                                        class="fa fa-pencil"></i></a>
+                                    class="fa fa-pencil"></i></a>
                         {% endif %}
                     {% else %}
                         {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Ce GN ne dispose d'aucune annonce"} %}
@@ -272,46 +318,58 @@
                     <div class="header"><h5>Votre personnage</h5></div>
 
                     <div class="card-body">
-                        <ul>
+                        <ul class="list-group list-group-flush">
                             {% if participant.personnage %}
-                                <li>
+                                <li class="list-group-item">
                                     <a href="{{ path('gn.personnage', {'gn': gn.id}) }}"><i class="fa fa-user"
                                                                                             aria-hidden="true"></i>&nbsp;
                                         {{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}
-                                        &nbsp;--&nbsp;{{ participant.personnage.classeName }}
+                                        &nbsp;-&nbsp;{{ participant.personnage.classeName }}
                                     </a>
                                 </li>
                             {% else %}
                                 {% if participant.session %}
-                                    <li>
+                                    <li class="list-group-item">
                                         <a href="{{ path('participant.personnage.old', {'participant': participant.id}) }}"><i
-                                                    class="fa fa-plus" aria-hidden="true"></i> Reprendre un ancien
+                                                class="fa fa-plus" aria-hidden="true"></i> Reprendre un ancien
                                             personnage</a></li>
-                                    <li>
+                                    <li class="list-group-item">
                                         <a href="{{ path('participant.personnage.new', {'participant': participant.id}) }}"><i
-                                                    class="fa fa-plus" aria-hidden="true"></i> Créer un nouveau
+                                                class="fa fa-plus" aria-hidden="true"></i> Créer un nouveau
                                             personnage</a></li>
                                 {% else %}
-                                    <li>Vous devez <strong>rejoindre un groupe</strong> avant d'accéder à votre
-                                        personnage.
+                                    <li class="list-group-item">
+                                        {% set groupeMissingHtml %}
+                                            Vous devez <strong>rejoindre un
+                                            groupe</strong> avant d'accéder à la session de
+                                            jeu de votre
+                                            personnage.
+                                        {% endset %}
+                                        {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : groupeMissingHtml } %}
                                     </li>
                                 {% endif %}
                             {% endif %}
 
                             {% if participant.personnageSecondaire %}
-                                <li>Personnage secondaire
+                                <li class="list-group-item">Personnage secondaire
                                     :&nbsp;<strong>{{ participant.personnageSecondaire.classe.label }}</strong></li>
-                            {% else %}
-                                <li>Vous n'avez pas de personne secondaire, choisissez-en !</li>
+                            {% elseif participant.user.id == app.user.id %}
+                                <li class="list-group-item">
+                                    {% set personnageMissingHtml %}
+                                        Vous n'avez pas de personne secondaire par défaut, choisissez-en !<br/>
+                                        <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">
+                                            <i class="fa fa-pencil" aria-hidden="true">
+                                            </i> Modifier votre personnage secondaire
+                                        </a>
+                                    {% endset %}
+                                    {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : personnageMissingHtml } %}
+                                </li>
                             {% endif %}
-                            <li>
-                                <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}"><i
-                                            class="fa fa-pencil" aria-hidden="true"></i> Modifier votre personnage
-                                    secondaire</a></li>
+
                             {% if participant.session %}
-                                <li>
+                                <li class="list-group-item">
                                     <a href="{{ path('personnage.detail.tab', {'personnage': participant.personnage.id, 'tab': 'biographie'}) }}"><i
-                                                class="fa fa-book" aria-hidden="true"></i> Votre background</a></li>
+                                            class="fa fa-book" aria-hidden="true"></i> Votre background</a></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -325,33 +383,42 @@
                         <ul class="list-group">
                             {% if participant.session %}
                                 <li class="list-group-item"><a
-                                            href="{{ path('groupe.detail', {'groupeGn': participant.session.id, 'groupe': participant.session.groupe.id }) }}"><i
-                                                class="fa fa-users"></i> {{ participant.session.groupe.nom }}</a></li>
+                                        href="{{ path('groupe.detail', {'groupeGn': participant.session.id, 'groupe': participant.session.groupe.id }) }}"><i
+                                            class="fa fa-users"></i> {{ participant.session.groupe.nom }}</a></li>
                             {% else %}
                                 <li class="list-group-item"><a
-                                            href="{{ path('participant.groupe.join', {'participant': participant.id}) }}"><i
-                                                class="fa fa-users"></i> Rejoindre un groupe</a></li>
+                                        href="{{ path('participant.groupe.join', {'participant': participant.id}) }}"><i
+                                            class="fa fa-users"></i> Rejoindre un groupe</a></li>
                             {% endif %}
                         </ul>
 
-                        <strong>Groupes Transverses :</strong>
-                        <ul class="list-group">
-                            {% if participant.personnage %}
+                        {% if participant.personnage %}
+                            <strong>Groupes Transverses :</strong>
+                            <ul class="list-group">
+
                                 {% for membre in participant.personnage.membres %}
                                     <li class="list-group-item">{% if membre.secondaryGroup.secret %}
                                         <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
                                            data-placement="top"
                                            title="Secret"></i> Secret -
                                         {% endif %}<a
-                                                href="{{ path('participant.groupeSecondaire.detail', {'participant': participant.id, 'groupeSecondaire': membre.secondaryGroup.id}) }}">{{ membre.secondaryGroup }}</a>
+                                            href="{{ path('participant.groupeSecondaire.detail', {'participant': participant.id, 'groupeSecondaire': membre.secondaryGroup.id}) }}">{{ membre.secondaryGroup }}</a>
                                     </li>
+                                {% else %}
+                                    <li class="list-group-item">Aucun</li>
                                 {% endfor %}
-                                {% for postulant in participant.personnage.postulants %}
-                                    <li class="list-group-item">{{ postulant.secondaryGroup }} -- En attente</li>
-                                {% endfor %}
-                            {% endif %}
-                        </ul>
+                            </ul>
 
+                            <strong>Candidat aux groupes Transverses</strong>
+                            <ul class="list-group">
+
+                                {% for postulant in participant.personnage.postulants %}
+                                    <li class="list-group-item">{{ postulant.secondaryGroup }} - En attente</li>
+                                {% else %}
+                                    <li class="list-group-item">Aucun</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
                     </div>
                 </div>
             {% endif %}

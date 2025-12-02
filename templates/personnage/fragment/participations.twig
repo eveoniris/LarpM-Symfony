@@ -7,7 +7,7 @@
         <h5>Historique des participations</h5>
     </div>
     <div class="list-group">
-        {% if personnage.user %}
+        {% if personnage.user and personnage.participants %}
             {% include 'participant/fragment/participations.twig' with {'participants' : personnage.participants, 'showUser':true} %}
         {% else %}
             <div class="list-group-item">Ce personnage ne fait pas partie d'un groupe.</div>

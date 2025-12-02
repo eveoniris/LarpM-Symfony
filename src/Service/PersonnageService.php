@@ -205,7 +205,7 @@ class PersonnageService
             );
     }
 
-    public function hasPersonnages(?User $user): bool
+    public function hasPersonnages(?User $user = null): bool
     {
         /** @var User $user */
         $user ??= $this->security->getUser();
@@ -253,6 +253,11 @@ class PersonnageService
         // If we preset value from something else than a Form
         if (is_callable($personnagePreset)) {
             $personnagePreset($personnage);
+        }
+
+        // enforce to false
+        if (!$personnage->isBracelet()) {
+            $personnage->setBracelet(false);
         }
 
         if ($participant) {

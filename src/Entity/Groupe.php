@@ -6,6 +6,7 @@ use App\Repository\GroupeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
+use mysql_xdevapi\Session;
 use Stringable;
 
 #[Entity(repositoryClass: GroupeRepository::class)]
@@ -34,7 +35,7 @@ class Groupe extends BaseGroupe implements Stringable
     /**
      * Fourni la session d'un groupe relatif à un GN.
      */
-    public function getSession(Gn $gn)
+    public function getSession(Gn $gn): ?GroupeGn
     {
         foreach ($this->getGroupeGns() as $groupeGn) {
             if ($groupeGn->getGn() === $gn) {

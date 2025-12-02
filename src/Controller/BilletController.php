@@ -134,7 +134,7 @@ class BilletController extends AbstractController
     public function deleteAction(Request $request, Billet $billet, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $form = $this->createForm(BilletDeleteForm::class, $billet)
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+            ->add('submit', SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn btn-danger']]);
 
         $form->handleRequest($request);
 

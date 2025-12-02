@@ -59,6 +59,7 @@ class Gn extends BaseGn implements \Stringable
 
     /**
      * Fourni la liste des groupes de PJ prévu sur un jeu.
+     * @return Collection GroupeGn[]
      */
     public function getGroupeGnsPj(): Collection
     {
@@ -89,11 +90,13 @@ class Gn extends BaseGn implements \Stringable
 
     /**
      * Fourni la liste des groupes réservés sur le jeu.
+     * @return Collection Groupe[]
      */
     public function getGroupesReserves(): Collection
     {
         $groupes = new ArrayCollection();
 
+        /** @var GroupeGn $groupeGn */
         foreach ($this->getGroupeGns() as $groupeGn) {
             if (!$groupeGn->getFree()) {
                 $groupes[] = $groupeGn->getGroupe();

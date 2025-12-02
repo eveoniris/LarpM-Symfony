@@ -786,7 +786,7 @@ class UserController extends AbstractController
         $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
         $this->setCan(static::CAN_WRITE, true);
 
-        $pagerService->setRequest($request)->setRepository($personnageRepository);
+        $pagerService->setRequest($request)->setLimit(25)->setRepository($personnageRepository);
 
         $queryBuilder = $personnageRepository->user(
             $personnageRepository->createQueryBuilder($personnageRepository->getAlias()),
@@ -814,7 +814,7 @@ class UserController extends AbstractController
         $form = $this->createForm(PersonnageForm::class, new Personnage());
 
         // Check if user can create new personnage, admin always can
-        if (!$this->can(self::IS_ADMIN) && $personnageRepository->countUser($user) && PersonnageService::MAX_PER_USER <= $personnageRepository->countUser($user)) {
+        if (!$this->can(self::IS_ADMIN) && PersonnageService::MAX_PER_USER <= $personnageRepository->countUser($user)) {
             $form->addError(
                 new FormError(
                     'Vous avez atteind le nombre maximum de personnage possible',

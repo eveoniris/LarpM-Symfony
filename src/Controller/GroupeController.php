@@ -592,7 +592,7 @@ class GroupeController extends AbstractController
      */
     #[Route('/{groupe}', name: 'detail')]
     #[Route('/{groupe}/detail/{tab}', name: 'detail.tab')]
-    #[Route('/{groupe}/gn/{gn}', name: 'detail.gn')]
+    #[Route('/{groupe}/gn/{gn}', name: 'detail.gn')] // TODO ne va pas pour la liste rejoindre groupe
     #[Route('/{groupe}/gn/{gn}/{groupeGn}', name: 'groupeGn')]
     #[Route('/{groupe}/detail/{tab}/gn/{gn}/groupeGn/{groupeGn}', name: 'detail.groupeGn')]
     public function detailAction(

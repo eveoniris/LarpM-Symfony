@@ -9,82 +9,119 @@
         {'name' : "Liste des personnages de l'utilisateur" }
     ]} %}
 
-    <div class="well well-sm">
+    {% if isAdmin or paginator.count > 25 %}
+        <div class="well well-sm">
 
-        <div class="header">
-            <h5>Liste des personnages</h5>
-        </div>
-
-        {% include '_partials/formListSearch.twig' with
-            {
-                'canAdd': false,
-                'actionPath' : path('user.personnage.add', {'user': user.id}),
-                'display' : true
-            } %}
-    </div>
-
-    {% if personnageService.canCreatePersonnage(user) %}
-        <div class="d-flex justify-content-end">
-            <div class="w-auto mb-2 p-0 btn-toolbar d-flex justify-content-between m-0 p-0" role="toolbar">
-                <div class="btn-group m-0 p-0" role="group">
-                    {% if personnageService.canCreatePersonnage(user) %}
-                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Modifier"
-                       href="{{ path('user.personnage.add', {'user': user.id}) }}"><i
-                            class="fa fa-plus"></i> Ajouter</a>
-                    {% endif %}
-                    {% if personnageService.hasPersonnages(user) %}
-                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                           title="Choisir le personnage principal actif"
-                           href="{{ path('user.personnageDefault', {'user': user.id}) }}"
-                        ><span
-                                class="fa fa-users" style="margin-right: 5px;"></span>
-                            Principal</a>
-                    {% endif %}
-
-                </div>
+            <div class="header">
+                <h5>Liste des personnages</h5>
             </div>
+
+            {% include '_partials/formListSearch.twig' with
+                {
+                    'canAdd': false,
+                    'actionPath' : path('user.personnage.add', {'user': user.id}),
+                    'display' : true
+                } %}
         </div>
     {% endif %}
 
+    <div class="d-flex justify-content-end">
+        <div class="w-auto mb-2 p-0 btn-toolbar d-flex justify-content-between m-0 p-0" role="toolbar">
+            <div class="btn-group m-0 p-0" role="group">
+                {% if personnageService.canCreatePersonnage(user) %}
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
+                       href="{{ path('user.personnage.add', {'user': user.id}) }}"><i
+                            class="fa fa-plus"></i> Ajouter</a>
+                {% endif %}
+                {% if personnageService.hasPersonnages(user) %}
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Choisir le personnage principal actif"
+                       href="{{ path('user.personnageDefault', {'user': user.id}) }}"
+                    ><span
+                            class="fa fa-users" style="margin-right: 5px;"></span>
+                        Choisir principal</a>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
     {% include '_partials/pagination.html.twig' %}
 
-    <table class="table table-striped table-bordered table-condensed table-hover">
-        {% include '_partials/thead.twig' with  { 'route': 'user.personnage.list', 'rows': [
-            {'name' : '#', 'field' : 'personnage.id', 'css' : 'text-center'},
-            {'name' : 'nom', 'field' : 'personnage.nom', 'css' : 'text-center'},
-            {'name' : 'surnom', 'field' : 'personnage.surnom', 'css' : 'text-center'},
-            {'name' : 'Participations', 'css' : 'text-center'},
-        ]} %}
-        <tbody>
-        {% for personnage in paginator %}
-            <tr>
-                <td class="text-center"><a href="{{ path('personnage.detail', {"personnage" : personnage.id}) }}">{{ personnage.id }}</a></td>
-                <td><a href="{{ path('personnage.detail', {"personnage" : personnage.id}) }}">{{ personnage.nom }}</a></td>
-                <td>
-                    {% if personnage.surnom %}
-                    <a href="{{ path('personnage.detail', {"personnage" : personnage.id}) }}">{{ personnage.surnom }}</a>
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>
-                    {% for participant in personnage.participants %}
-                        <strong><a
-                                href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">{{ participant.gn.label }}</a></strong>&nbsp;-&nbsp;
-                        <a href="{{ path('user.detail', {'user': participant.user.id}) }}">{{ participant.userFullName }}</a>
-                        <br/>
-                    {% else %}
-                        Aucune
-                    {% endfor %}
-                </td>
-            </tr>
-        {% else %}
-            {% include '_partials/noResultTableRow.twig' %}
-        {% endfor %}
-        </tbody>
-    </table>
+    {% set iconPjConfirmed = '<span title="PJ participant au GN actif"><i class="fa fa-hand-fist"></i></span>' %}
+    {% set iconPjDead = '<span title="Personnage mort"><i class="fa-solid fa-skull"></i></span>' %}
+    {% set iconPnj = '<span title="PNJ"><i class="fa-solid fa-masks-theater"></i></span>' %}
+    {% set iconPjOld = '<span title="Ancien PJ ne participant pas au GN actif"><i class="fa-solid fa-hourglass-end"></i></span>' %}
+    {% set iconPjActive = '<span title="Personnage principal actif sur le LarpManager"><i class="fa-solid fa-star"></i></span>' %}
 
+    <div class="well well-sm">
+        {% if not isAdmin or paginator.count <= 25 %}
+            <div class="header">
+                <h5>Liste des personnages</h5>
+            </div>
+        {% endif %}
+
+        <table class="table table-striped table-bordered table-condensed table-hover">
+            {% include '_partials/thead.twig' with  { 'route': 'user.personnage.list', 'rows': [
+                {'name' : '#', 'field' : 'personnage.id', 'css' : 'text-center'},
+                {'name' : 'S', 'css' : 'text-center'},
+                {'name' : 'nom', 'field' : 'personnage.nom', 'css' : 'text-center'},
+                {'name' : 'surnom', 'field' : 'personnage.surnom', 'css' : 'text-center'},
+                {'name' : 'classe', 'field' : 'personnage.classe', 'css' : 'text-center'},
+                {'name' : 'Participations', 'css' : 'text-center'},
+            ]} %}
+            <tbody>
+            {% for personnage in paginator %}
+                <tr>
+                    <td class="text-center"><a
+                            href="{{ path('personnage.detail', {"personnage" : personnage.id}) }}">{{ personnage.id }}</a>
+                    </td>
+                    <td class="text-center">
+                        {% if personnage.vivant == 0 %}
+                            {{ iconPjDead | raw }}
+                        {% elseif personnage.isLastParticipantOnActiveGn() %}
+                            {{ iconPjConfirmed | raw }}
+                        {% else %}
+                            {{ iconPjOld | raw }}
+                        {% endif %}
+                        {% if personnage.isPnj() %}
+                            {{ iconPnj | raw }}
+                        {% endif %}
+                        {% if app.user.personnage(true).id is defined and personnage.id == app.user.personnage(true).id %}
+                            {{ iconPjActive | raw }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('personnage.detail', {"personnage" : personnage.id}) }}">{{ personnage.nom }}</a>
+                    </td>
+                    <td>
+                        {% if personnage.surnom %}
+                            <a href="{{ path('personnage.detail', {"personnage" : personnage.id}) }}">{{ personnage.surnom }}</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('personnage.detail', {"personnage" : personnage.id}) }}">{{ personnage.classe }}</a>
+                    </td>
+                    <td>
+                        {% for participant in personnage.participants %}
+                            <strong><a
+                                    href="{{ path('gn.detail', {'gn': participant.gn.id}) }}">{{ participant.gn.label }}</a></strong>&nbsp;-&nbsp;
+                            <a href="{{ path('user.detail', {'user': participant.user.id}) }}">{{ participant.userFullName }}</a>
+                            <br/>
+                        {% else %}
+                            Aucune
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% else %}
+                {% include '_partials/noResultTableRow.twig' %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     {% include '_partials/pagination.html.twig' %}
 

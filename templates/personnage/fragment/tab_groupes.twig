@@ -4,11 +4,11 @@
 {# Groupe principal #}
 <div class="row">
     <div class="col-md-6">
-        <div class="{{ css }}">
-            {% if participant %}
+        {% if participant %}
+            <div class="{{ css }}">
                 {% include 'personnage/fragment/groupe.twig' with {'participant': participant, 'css': 'panel'} %}
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
         {% include 'personnage/fragment/participations.twig' %}
 
     </div>
