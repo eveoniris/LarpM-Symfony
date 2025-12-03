@@ -45,14 +45,12 @@
                     <div class="pull-right">
                         <div class="btn-toolbar" role="toolbar" aria-label="...">
                             <div class="btn-group" role="group" aria-label="...">
-                                {% if participant %}
+                                {% if personnage %}
                                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                        title="Choisir une nouvelle religion"
-                                       href="{{ path('participant.religion.add',{'participant': participant.id}) }}"><i
-                                                class="fa fa-cloud"
-                                                aria-hidden="true"></i></a>
-                                {% endif %}
-                                {% if personnage %}
+                                       href="{{ path('personnage.religion.add',{'personnage': personnage.id}) }}"><i
+                                            class="fa fa-cloud"
+                                            aria-hidden="true"></i></a>
                                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                        title="Acheter une compétence"
                                        href="{{ path('personnage.add.competence', {'personnage': personnage.id}) }}"><i

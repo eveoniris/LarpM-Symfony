@@ -18,13 +18,10 @@
                                     compte</a></li>
                             <li><a class="dropdown-item text-body-emphasis" href="{{ path('gn.list') }}">Mes Grandeurs
                                     natures</a></li>
-                            {# BetaTest: #}
-                            {% if isAdmin is defined and isAdmin %}
-                                <li><a class="dropdown-item text-body-emphasis"
-                                       href="{{ path('user.personnage.list', {'user':app.user.id}) }}">Mes
-                                        personnages</a>
-                                </li>
-                            {% endif %}
+                            <li><a class="dropdown-item text-body-emphasis"
+                                   href="{{ path('user.personnage.list', {'user':app.user.id}) }}">Mes
+                                    personnages</a>
+                            </li>
                             <li><a class="dropdown-item text-body-emphasis" href="{{ path('messagerie') }}">Ma
                                     messagerie</a></li>
                             <li>

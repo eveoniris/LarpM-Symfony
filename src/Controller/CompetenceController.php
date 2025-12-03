@@ -139,9 +139,26 @@ class CompetenceController extends AbstractController
      * Detail d'une compétence.
      */
     #[Route('/{competence}', name: 'detail')]
-    #[IsGranted('ROLE_REGLE')]
+    #[IsGranted('ROLE_USER')]
     public function detailAction(#[MapEntity] Competence $competence): Response
     {
+        $this->checkHasAccess([Role::REGLE], function () use ($competence): bool {
+            if (!$personnage = $this->getPersonnage()) {
+                return false;
+            }
+            if ($personnage->isKnownCompetence($competence)) {
+                $this->setCan(static::CAN_READ_PRIVATE, true);
+                return true;
+            }
+            $availableCompetences = $this->personnageService->getAvailableCompetences($personnage);
+            if ($availableCompetences?->contains($competence)) {
+                $this->setCan(static::CAN_READ, true);
+                return true;
+            }
+
+            return false;
+        });
+
         return $this->render('competence/detail.twig', ['competence' => $competence]);
     }
 

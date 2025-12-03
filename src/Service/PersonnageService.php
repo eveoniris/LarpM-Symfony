@@ -1388,7 +1388,7 @@ class PersonnageService
     ): ArrayCollection {
         $availableCompetences = new ArrayCollection();
 
-        // les compétences de niveau supérieur sont disponnibles
+        // les compétences de niveau supérieur sont disponibles
         $currentCompetences = $personnage->getCompetences();
         foreach ($currentCompetences as $competence) {
             $nextCompetence = $competence->getNext();

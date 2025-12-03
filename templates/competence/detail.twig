@@ -56,7 +56,7 @@
                            title="Supprimer"
                            href="{{ path('competence.delete',{'competence':competence.id}) }}"><i
                                 class="fa fa-eraser"></i> Supprimer</a>
-                    {% else %}
+                    {% elseif canReadPrivate %}
                         {% if competence.documentUrl %}
                             <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Télécharger le document associé"
@@ -87,10 +87,12 @@
                         {% endif %}
                     </div>
                 </div>
+                {% if canReadPrivate %}
                 <div class="list-group-item">
                     <div class="list-group-item-heading fw-bold mb-1">Materiel</div>
                     <div class="list-group-item-text ps-1">{{ competence.materiel|markdown_to_html }}</div>
                 </div>
+                {% endif     %}
             </div>
 
         </div>

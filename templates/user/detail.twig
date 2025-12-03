@@ -130,8 +130,7 @@
                 </div>
 
                 <div class="m-2 d-flex justify-content-between">
-                    {# BetaTest #}
-                    {% if isAdmin and personnageService.canCreatePersonnage(user) %}
+                    {% if personnageService.canCreatePersonnage(user) %}
                     <a class="btn btn-secondary"
                        href="{{ path('user.personnage.add', {'user': user.id}) }}"><span
                                     class="fa fa-user" style="margin-right: 5px;"></span>
@@ -144,15 +143,6 @@
                 </div>
 
             </div>
-
-            {# BetaTest
-            {% if isAdmin %}
-                <div class="col-md-6">
-                    <div class="header">
-                        <h5>Personnages</h5>
-                    </div>
-                </div>
-            {% endif %}#}
             {% endif %}
         </div>
 
