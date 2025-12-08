@@ -64,6 +64,8 @@ class GroupeSecondaireForm extends AbstractType
                             $qb->expr()->orX(
                                 $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
                                 $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
+                                $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')),
+                                $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%'))
                             ),
                         );
 

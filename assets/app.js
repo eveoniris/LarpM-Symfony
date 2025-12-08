@@ -200,6 +200,7 @@ $(document).ready(function () {
 
     let tinyMCEThemeDark = {
         selector: 'textarea.tinymce',
+        license_key: 'gpl',
         plugins: tinyMCEPlugins,
         toolbar: tinyMCEtoolbar,
         link_assume_external_targets: true,
@@ -209,6 +210,7 @@ $(document).ready(function () {
     };
     let tinyMCEThemeLight = {
         selector: 'textarea.tinymce',
+        license_key: 'gpl',
         plugins: tinyMCEPlugins,
         toolbar: tinyMCEtoolbar,
         link_assume_external_targets: true,
@@ -246,6 +248,7 @@ $(document).ready(function () {
         activeEditor.destroy();
 
         if (mode === 'dark') {
+
             tinymce.init(tinyMCEThemeDark);
             //tinymce.init(tinyMCEThemeDarkFull);
         } else {

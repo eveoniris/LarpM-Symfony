@@ -10,14 +10,13 @@
         <li class="active">Ajout d'un groupe transverse</li>
     </ol>
 
-    <div class="well bs-component">
-        {{ form_start(form, {"attr": {"action": path('groupeSecondaire.add') }}) }}
-        <fieldset>
-            <legend>Ajout d'un groupe transverse</legend>
+    <div class="well well-sm bs-component">
+        <div class="header">
+            <h5>Ajout d'un groupe transverse</h5>
+        </div>
 
-            {{ form(form) }}
-        </fieldset>
-        {{ form_end(form) }}
+        {{ form(form) }}
+
     </div>
 
 {% endblock body %}

@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'secondary_group')]
@@ -26,9 +27,11 @@ abstract class BaseSecondaryGroup
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
-    protected string $label = '';
+    #[Assert\NotBlank()]
+    protected ?string $label = '';
 
     #[Column(type: Types::TEXT, nullable: true)]
+    #[Assert\NotBlank()]
     protected ?string $description = null;
 
     #[Column(type: Types::TEXT, nullable: true)]
@@ -37,7 +40,7 @@ abstract class BaseSecondaryGroup
     #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $secret = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $materiel = null;
 
     #[OneToMany(mappedBy: 'secondaryGroup', targetEntity: IntrigueHasGroupeSecondaire::class)]
@@ -58,7 +61,7 @@ abstract class BaseSecondaryGroup
     protected SecondaryGroupType $secondaryGroupType;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'secondaryGroups')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: true)]
     protected ?Personnage $personnage = null;
 
     #[Column(length: 255, nullable: true)]
@@ -122,9 +125,9 @@ abstract class BaseSecondaryGroup
     /**
      * Set the value of description.
      */
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
-        $this->description = $description;
+        $this->description = $description ?? '';
 
         return $this;
     }
@@ -140,9 +143,9 @@ abstract class BaseSecondaryGroup
     /**
      * Set the value of description_secrete.
      */
-    public function setDescriptionSecrete(string $description_secrete): static
+    public function setDescriptionSecrete(?string $description_secrete): static
     {
-        $this->description_secrete = $description_secrete;
+        $this->description_secrete = $description_secrete ?? '';
 
         return $this;
     }
@@ -196,9 +199,9 @@ abstract class BaseSecondaryGroup
     /**
      * Set the value of label.
      */
-    public function setLabel(string $label): static
+    public function setLabel(?string $label): static
     {
-        $this->label = $label;
+        $this->label = $label ?? '';
 
         return $this;
     }
