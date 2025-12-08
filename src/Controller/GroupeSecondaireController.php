@@ -165,6 +165,8 @@ class GroupeSecondaireController extends AbstractController
                 $groupeSecondaire->addMembre($membre);
             }
 
+
+
             $this->entityManager->persist($groupeSecondaire);
             $this->entityManager->flush();
 

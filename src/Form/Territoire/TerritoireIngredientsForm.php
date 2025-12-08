@@ -3,16 +3,14 @@
 
 namespace App\Form\Territoire;
 
+use App\Entity\Ingredient;
+use App\Entity\Territoire;
 use App\Repository\IngredientRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\TerritoireIngredientsForm.
- *
- * @author kevin
- */
 class TerritoireIngredientsForm extends AbstractType
 {
     /**
@@ -20,17 +18,15 @@ class TerritoireIngredientsForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('ingredients', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+        $builder->add('ingredients', EntityType::class, [
             'required' => false,
             'label' => 'Ingrédients',
-            'class' => \App\Entity\Ingredient::class,
+            'class' => Ingredient::class,
             'multiple' => true,
             'expanded' => true,
             'mapped' => true,
             'choice_label' => 'label',
-            'query_builder' => static function (IngredientRepository $er) {
-                return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC')->groupby('i.label');
-            },
+            'query_builder' => static fn (IngredientRepository $er) => $er->createQueryBuilder('i')->distinct(true)->orderBy('i.label', 'ASC'),
         ]);
     }
 
@@ -40,7 +36,7 @@ class TerritoireIngredientsForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Territoire::class,
+            'data_class' => Territoire::class,
         ]);
     }
 
