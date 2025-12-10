@@ -40,7 +40,16 @@
 
         <ul class="list-group">
             {% for competence in competenceFamily.competences %}
-                <li class="list-group-item">
+                {% if
+                    competence.level.index == 1
+                    or isAdmin
+                    or (
+                        participant.personnage is defined
+                        and personnageService.canSeeCompetence(participant.personnage , competence)
+                    )
+
+                %}
+                    <li class="list-group-item">
                     <h6>
                         <a href="{{ path('competence.detail', {"competence":competence.id}) }}">{{ competence.level.label }}</a>
                     </h6>
@@ -69,6 +78,7 @@
                             {% endif %}
                         </div>
                     {% endif %}
+                {% endif %}
                 </li>
             {% endfor %}
         </ul>
