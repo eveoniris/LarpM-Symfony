@@ -1383,6 +1383,15 @@ class PersonnageService
         return $all ?? 0;
     }
 
+    public function canSeeCompetence(Personnage $personnage, Competence $competence): bool
+    {
+        return $personnage->isKnownCompetence($competence) || $this->isAvailableCompetences($personnage, $competence);
+    }
+    public function isAvailableCompetences(Personnage $personnage, Competence $competence): bool
+    {
+        return $this->getAvailableCompetences($personnage)?->contains($competence);
+    }
+
     public function getAvailableCompetences(
         Personnage $personnage,
     ): ArrayCollection {
