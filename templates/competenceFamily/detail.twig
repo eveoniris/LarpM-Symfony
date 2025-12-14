@@ -57,13 +57,13 @@
                         class="list-group-item-text border-top mt-1">{{ competence.description|markdown_to_html }}</div>
                     {% if competence.documentUrl %}
                         <div class="list-group-item-text">
-                            {% if participant is defined %}
+                            {% if personnage is defined %}
                                 <a class="btn btn-secondary btn-sm"
-                                   href="{{ path('participant.competence.detail',{'participant': participant.id, 'competence' : competence.id}) }}">
+                                   href="{{ path('personnage.competence.detail',{'personnage': personnage.id, 'competence' : competence.id}) }}">
                                     <i class="fa fa-eye"></i> Voir l'aide de jeu
                                 </a>
                                 <a class="btn btn-secondary btn-sm"
-                                   href="{{ path('participant.competence.document',{'participant': participant.id, 'competence' : competence.id}) }}">
+                                   href="{{ path('personnage.competence.document',{'personnage': personnage.id, 'competence' : competence.id}) }}">
                                     <i class="fa fa-file"></i> Télécharger l'aide de jeu
                                 </a>
                             {% elseif isAdmin %}
