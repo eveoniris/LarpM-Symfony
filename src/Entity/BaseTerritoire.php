@@ -20,6 +20,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'territoire')]
@@ -39,27 +40,35 @@ abstract class BaseTerritoire
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
+    #[Assert\Length(max: 45)]
     protected string $nom = '';
 
     #[Column(type: Types::STRING, length: 180, unique: true)]
     protected ?string $description = null;
 
-    #[Column(type: Types::STRING, length: 180, unique: true)]
+    #[Column(type: Types::STRING, length: 45, unique: true)]
+    #[Assert\Length(max: 45)]
+
     protected ?string $capitale = null;
 
-    #[Column(type: Types::STRING, length: 180, unique: true)]
+    #[Column(type: Types::STRING, length: 45, unique: true)]
+    #[Assert\Length(max: 45)]
     protected ?string $politique = null;
 
-    #[Column(type: Types::STRING, length: 180, unique: true)]
+    #[Column(type: Types::STRING, length: 45, unique: true)]
+    #[Assert\Length(max: 45)]
     protected ?string $dirigeant = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Assert\Length(max: 45)]
     protected ?string $population = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Assert\Length(max: 45)]
     protected ?string $symbole = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Assert\Length(max: 45)]
     protected ?string $tech_level = null;
 
     #[Column(type: Types::STRING, nullable: true)]
@@ -87,6 +96,7 @@ abstract class BaseTerritoire
     protected ?string $geojson = null;
 
     #[Column(type: Types::STRING, length: 7, nullable: true)]
+    #[Assert\Length(max: 7)]
     protected ?string $color = null;
 
     #[Column(type: Types::INTEGER, nullable: true)]
@@ -96,12 +106,14 @@ abstract class BaseTerritoire
     protected ?int $resistance = 0;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Assert\Length(max: 45)]
     protected ?string $blason = null;
 
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description_secrete = null;
 
     #[Column(type: Types::TEXT, length: 45, nullable: true)]
+    #[Assert\Length(max: 45)]
     protected ?string $statut = null;
 
     #[Column(type: Types::INTEGER)]

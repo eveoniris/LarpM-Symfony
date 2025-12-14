@@ -2,8 +2,16 @@
     {% set css = 'well' %}
 {% endif %}
 
+{% if personnage is not defined and participant is defined %}
+    {% set personnage = participant.personnage %}
+{% endif %}
+
+{% if personnage is not defined %}
+    {% set personnage = app.user.personnage %}
+{% endif %}
+
 {% set alchemyTrigger %}
-    {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
+    {% if participant is defined and personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
         {% for niveau in 1..personnage.getCompetenceNiveau(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
             {% if niveau > 0 and not participant.hasPotionsDepartByLevel(niveau) %}
                 <li class="list-group-item"><a
@@ -32,12 +40,12 @@
 
                    {% if  trigger.tag and trigger.tag.isLangueCourante %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.langueCourante', {'participant': participant.id}) }}">
+                                   href="{{ path('personnage.langueCourante', {'personnage': personnage.id}) }}">
                                Choisir une langue courante supplémentaire</a></li>
                    {% endif %}
                    {% if  trigger.tag and trigger.tag.isLangueAncienne %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.langueAncienne', {'participant': participant.id}) }}">
+                                   href="{{ path('personnage.langueAncienne', {'personnage': personnage.id}) }}">
                                Choisir une langue ancienne supplémentaire</a></li>
                    {% endif %}
                    {% if  trigger.tag and trigger.tag.isAlchimieApprenti %}
@@ -87,7 +95,7 @@
                    {% endif %}
                    {% if trigger.tag and trigger.tag.isPretriseInitie %}
                        <li class="list-group-item"><a
-                                   href="{{ path('personnage.religion.description', {'personnage': participant.personnage.id}) }}">
+                                   href="{{ path('personnage.religion.description', {'personnage': personnage.id}) }}">
                                Choisir une description de religion</a></li>
                    {% endif %}
                    {% if trigger.tag and trigger.tag.isTechnologie %}
@@ -96,7 +104,7 @@
                                Choisir une technologie</a></li>
                    {% endif %}
 
-                   {% if loop.last and personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
+                   {% if participant is defined and loop.last and personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
 
                        {% for niveau in 1..personnage.getCompetenceNiveau(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY')) %}
                            {% if niveau > 0 and not participant.hasPotionsDepartByLevel(niveau) %}

@@ -4,27 +4,20 @@
 
 {% block body %}
 
-<div class="container-fluid">
+    <div class="container-fluid">
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-		<li><a href="{{ path('gn.detail', {'gn' : participant.gn.id}) }}">{{ participant.gn.label }}</a></li>
-		<li><a href="{{ path('gn.personnage', {'gn': participant.gn.id}) }}">{{ participant.personnage.nom }}</a></li>
-		<li class="active">Choix d'une nouvelle langue</li>
-	</ol>
-	
-	<div class="well bs-component">
-	{{ form_start(form, {"attr": {"action": path('participant.langueCommune',{'participant':participant.id}) }}) }}
-		<fieldset>
-			<blockquote>Votre compétence vous permet de choisir une nouvelle langue commune.</blockquote>
+        {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Choix d'une nouvelle langue"} %}
 
-			
-			
-			{{ form_row(form.langue) }}
-			{{ form_rest(form) }}
-		</fieldset>
-	{{ form_end(form) }}
-	</div>
-</div>
+        <div class="well well-sm bs-component">
+
+            <div class="header">
+                <h5>Nouvelle langue commune</h5>
+            </div>
+
+            <p>Votre compétence vous permet de choisir une nouvelle langue commune.</p>
+
+            {{ form(form) }}
+        </div>
+    </div>
 
 {% endblock body %}

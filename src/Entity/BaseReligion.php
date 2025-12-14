@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'religion')]
@@ -23,6 +24,8 @@ abstract class BaseReligion
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
+    #[Assert\NotBlank()]
+    #[Assert\NotNull()]
     protected string $label = '';
 
     #[Column(type: Types::STRING, nullable: true)]
@@ -98,9 +101,9 @@ abstract class BaseReligion
     /**
      * Set the value of label.
      */
-    public function setLabel(string $label): static
+    public function setLabel(?string $label): static
     {
-        $this->label = $label;
+        $this->label = $label ?? '';
 
         return $this;
     }
@@ -116,9 +119,9 @@ abstract class BaseReligion
     /**
      * Set the value of description.
      */
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
-        $this->description = $description;
+        $this->description = $description ?? '';
 
         return $this;
     }
