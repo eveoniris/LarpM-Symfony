@@ -6,6 +6,7 @@ use App\Entity\Age;
 use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\Connaissance;
+use App\Entity\Document;
 use App\Entity\Domaine;
 use App\Entity\Espece;
 use App\Entity\ExperienceGain;
@@ -104,9 +105,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
@@ -1291,7 +1294,6 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-
     /**
      * Choix d'une nouvelle langue ancienne.
      */
@@ -1412,7 +1414,6 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-
     /**
      * Retire une langue d'un personnage.
      */
@@ -1451,6 +1452,485 @@ class PersonnageController extends AbstractController
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageLangue' => $personnageLangue,
+        ]);
+    }
+
+    /**
+     * Choix d'une nouvelle potion.
+     */
+    #[Route('/{personnage}/potion/{niveau}/add', name: 'potion')]
+    #[IsGranted(Role::USER->value)]
+    public function potionAddAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+        PotionRepository $potionRepository,
+        int $niveau,
+    ): RedirectResponse|Response {
+        $niveaux = [
+            1 => TriggerType::ALCHIMIE_APPRENTI,
+            2 => TriggerType::ALCHIMIE_INITIE,
+            3 => TriggerType::ALCHIMIE_EXPERT,
+            4 => TriggerType::ALCHIMIE_MAITRE,
+        ];
+        foreach ($niveaux as $i => $tag) {
+            if ($niveau === $i && (!$personnage->hasTrigger($tag))) {
+                $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions supplémentaires.');
+
+                return $this->redirectToRoute('gn.personnage', ['personnage.detail' => $personnage->getId()], 303);
+            }
+        }
+
+        $potions = $potionRepository->findByNiveau($niveau);
+
+        // Keep only the new one
+        foreach ($potions as $k => $potion) {
+            if ($personnage->isKnownPotion($potion)) {
+                unset($potions[$k]);
+            }
+        }
+
+        $form = $this->createFormBuilder()
+            ->add('potion', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre potion',
+                'multiple' => false,
+                // 'autocomplete' => true,
+                'expanded' => true,
+                'choices' => $potions,
+                'choice_label' => 'fullLabel',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre potion'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $potion = $form->getData()['potion'] ?? null;
+
+            foreach ($potions as $potion) {
+                if ($personnage->isKnownPotion($potion)) {
+                    $form->get('id')->addError(new FormError('Vous connaissez déjà cette potion.'));
+
+                    $this->addFlash('danger', 'Vous connaissez déjà cette potion.');
+
+                    return $this->redirectToRoute('personnage.potion', ['niveau' => $niveau, 'personnage' => $personnage->getId()], 303);
+                }
+            }
+
+            // Ajout de la potion au personnage
+            $personnage->addPotion($potion);
+            $this->entityManager->persist($personnage);
+
+            // suppression du trigger
+            switch ($niveau) {
+                case 1:
+                    $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_APPRENTI);
+                    // May not come from trigger
+                    if ($trigger) {
+                        $this->entityManager->remove($trigger);
+                    }
+                    break;
+                case 2:
+                    $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_INITIE);
+                    // May not come from trigger
+                    if ($trigger) {
+                        $this->entityManager->remove($trigger);
+                    }
+                    break;
+                case 3:
+                    $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_EXPERT);
+                    // May not come from trigger
+                    if ($trigger) {
+                        $this->entityManager->remove($trigger);
+                    }
+                    break;
+                case 4:
+                    // May not come from trigger
+                    $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_MAITRE);
+                    if ($trigger) {
+                        $this->entityManager->remove($trigger);
+                    }
+                    break;
+            }
+
+            $logAction = new LogAction();
+            $logAction->setDate(new \DateTime());
+            $logAction->setUser($this->getUser());
+            $logAction->setType(LogActionType::ADD_POTION);
+            $logAction->setData(
+                [
+                    'personnage_id' => $personnage->getId(),
+                    'potion' => $potion->getId(),
+                ],
+            );
+            $this->entityManager->persist($logAction);
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/potion.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+            'potions' => $potions,
+            'niveau' => $niveau,
+        ]);
+    }
+
+    /**
+     * Choix d'un domaine de magie.
+     */
+    #[Route('/{personnage}/domaineMagie', name: 'domaine')]
+    public function domaineMagieAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+        PersonnageService $personnageService,
+    ): RedirectResponse|Response {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->hasTrigger(TriggerType::DOMAINE_MAGIE)) {
+            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de domaine de magie supplémentaire.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $availableDomaines = $personnageService->getAvailableDomaines($personnage);
+
+        $form = $this->createFormBuilder()
+            ->add('domaine', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre domaine de magie',
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => $availableDomaines,
+                'choice_label' => 'label',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre domaine de magie'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $domaine = $data['domaine'];
+
+            // Ajout du domaine de magie au personnage
+            $personnage->addDomaine($domaine);
+            $this->entityManager->persist($personnage);
+
+            // suppression du trigger
+            if ($trigger = $personnage->getTrigger(TriggerType::DOMAINE_MAGIE)) {
+                $this->entityManager->remove($trigger);
+            }
+
+            $logAction = new LogAction();
+            $logAction->setDate(new \DateTime());
+            $logAction->setUser($this->getUser());
+            $logAction->setType(LogActionType::ADD_SORT);
+            $logAction->setData(
+                [
+                    'personnage_id' => $personnage->getId(),
+                    'domaine_id' => $domaine->getId(),
+                ],
+            );
+            $this->entityManager->persist($logAction);
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/domaineMagie.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+            'domaines' => $availableDomaines,
+        ]);
+    }
+
+    /**
+     * Choix d'un nouveau sortilège.
+     */
+    #[Route('/{personnage}/sort/{sort}', name: 'sort.choose', requirements: ['personnage' => Requirement::DIGITS])]
+    public function chooseSortAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+        int $sort,
+    ): RedirectResponse|Response {
+        $this->hasAccess($personnage);
+
+        $niveau = $sort;
+
+        if (!$personnage->hasTrigger(TriggerType::SORT_APPRENTI)
+            && !$personnage->hasTrigger(TriggerType::SORT_INITIE)
+            && !$personnage->hasTrigger(TriggerType::SORT_EXPERT)
+            && !$personnage->hasTrigger(TriggerType::SORT_MAITRE)) {
+            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de sorts supplémentaires.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $sorts = $this->personnageService->getAvailableSorts($personnage, $niveau);
+
+        $form = $this->createFormBuilder()
+            ->add('sort', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre sort',
+                'multiple' => false,
+                'expanded' => true,
+                'autocomplete' => true,
+                'choices' => $sorts,
+                'choice_label' => 'fullLabel',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre sort'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $sort = $data['sort'];
+
+            // Ajout du domaine de magie au personnage
+            $personnage->addSort($sort);
+            $this->entityManager->persist($personnage);
+
+            // suppression du trigger
+            switch ($niveau) {
+                case 1:
+                    if ($trigger = $personnage->getTrigger(TriggerType::SORT_APPRENTI)) {
+                        $this->entityManager->remove($trigger);
+                    }
+                    break;
+                case 2:
+                    if ($trigger = $personnage->getTrigger(TriggerType::SORT_INITIE)) {
+                        $this->entityManager->remove($trigger);
+                    }
+                    break;
+                case 3:
+                    if ($trigger = $personnage->getTrigger(TriggerType::SORT_EXPERT)) {
+                        $this->entityManager->remove($trigger);
+                    }
+                    break;
+                case 4:
+                    if ($trigger = $personnage->getTrigger(TriggerType::SORT_MAITRE)) {
+                        $this->entityManager->remove($trigger);
+                    }
+                    break;
+            }
+
+            $logAction = new LogAction();
+            $logAction->setDate(new \DateTime());
+            $logAction->setUser($this->getUser());
+            $logAction->setType(LogActionType::ADD_SORT);
+            $logAction->setData(
+                [
+                    'personnage_id' => $personnage->getId(),
+                    'niveau' => $niveau,
+                    'sort_id' => $sort->getId(),
+                ],
+            );
+            $this->entityManager->persist($logAction);
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/sort.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+            'sorts' => $sorts,
+            'niveau' => $niveau,
+        ]);
+    }
+
+    /**
+     * Choix d'une technologie.
+     */
+    #[Route('/{personnage}/technologie', name: 'technologie')]
+    public function technologieAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+    ): RedirectResponse|Response {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->hasTrigger('TECHNOLOGIE')) {
+            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de technologie supplémentaire.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $technologies = $this->personnageService->getAvailableTechnologies($personnage);
+
+        $form = $this->createFormBuilder()
+            ->add('technologies', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre technologie',
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => $technologies,
+                'choice_label' => 'label',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre technologie'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $technologie = $data['technologies'];
+
+            // Ajout de la technologie au personnage
+            $personnage->addTechnologie($technologie);
+            $this->entityManager->persist($personnage);
+
+            // suppression du trigger
+            $trigger = $personnage->getTrigger(TriggerType::TECHNOLOGIE);
+            $this->entityManager->remove($trigger);
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute(
+                'personnage.detail',
+                ['personnage' => $personnage->getId(), 'tab' => 'competence'],
+                303,
+            );
+        }
+
+        return $this->render('personnage/technologie.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+            'technologies' => $technologies,
+        ]);
+    }
+
+    /**
+     * Obtenir le document lié à un sort.
+     */
+    #[Route('/{personnage}/sort/{sort}/document', name: 'sort.document')]
+    public function sortDocumentAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Sort $sort,
+    ): BinaryFileResponse|RedirectResponse {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->isKnownSort($sort)) {
+            $this->addFlash('error', 'Vous ne connaissez pas ce sort !');
+
+            return $this->redirectToRoute('personnage.detail', ['personage' => $personnage->getId()], 303);
+        }
+
+        return $this->sendDocument($sort);
+    }
+
+    /**
+     * Obtenir le document lié à une technologie.
+     */
+    #[Route('/{personnage}/technologie/{technologie}/document', name: 'technologie.document')]
+    public function technologieDocumentAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Technologie $technologie,
+    ): BinaryFileResponse|RedirectResponse {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->isKnownTechnologie($technologie)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->sendDocument($technologie);
+    }
+
+    /**
+     * Detail d'une competence.
+     */
+    #[Route('/{personnage}/competence/{competence}/detail', name: 'competence.detail')]
+    public function competenceDetailAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Competence $competence,
+    ): RedirectResponse|Response {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->isKnownCompetence($competence)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette compétence !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('competence/detail.twig', [
+            'competence' => $competence,
+            'personnage' => $personnage,
+            'filename' => $competence->getPrintLabel(),
+        ]);
+    }
+
+    #[Route('/{personnage}/connaissance/{connaissance}', name: 'connaissance.detail', requirements: ['connaissance' => Requirement::DIGITS])]
+    public function connaissanceDetailAction(#[MapEntity] Personnage $personnage, #[MapEntity] Connaissance $connaissance): Response
+    {
+        $this->hasAccess($personnage);
+        if (!$personnage->isKnownConnaissance($connaissance)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette connaissance !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('connaissance/detail.twig', [
+            'connaissance' => $connaissance,
+        ]);
+    }
+
+    /**
+     * Obtenir le document lié à une competence.
+     */
+    #[Route('/{personnage}/competence/{competence}/document', name: 'competence.document')]
+    public function competenceDocumentAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Competence $competence,
+    ): BinaryFileResponse|RedirectResponse {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->isKnownCompetence($competence)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette compétence !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $filename = __DIR__.'/../../private/doc/'.$competence->getDocumentUrl();
+        $file = new File($filename);
+
+        return $this->file($file, $competence->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+    }
+
+    /**
+     * Detail d'un document.
+     */
+    #[Route('/{personnage}/document/{document}/detail', name: 'document.detail')]
+    public function documentDetailAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Document $document,
+    ): RedirectResponse|Response {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->isKnownDocument($document)) {
+            $this->addFlash('error', 'Vous ne connaissez pas ce document !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('document/detail.twig', [
+            'document' => $document,
+            'personnage' => $personnage,
+            'filename' => $document->getPrintLabel(),
         ]);
     }
 

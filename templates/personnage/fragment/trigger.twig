@@ -50,47 +50,47 @@
                    {% endif %}
                    {% if  trigger.tag and trigger.tag.isAlchimieApprenti %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.potion', {'niveau' : 1, 'participant' : participant.id}) }}">
+                                   href="{{ path('personnage.potion', {'niveau' : 1, 'personnage' : personnage.id}) }}">
                                Choisir une nouvelle recette de potion de niveau Apprenti</a></li>
                    {% endif %}
                    {% if  trigger.tag and trigger.tag.isAlchimieInitie %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.potion', {'niveau' : 2, 'participant' : participant.id}) }}">
+                                   href="{{ path('personnage.potion', {'niveau' : 2, 'personnage' : personnage.id}) }}">
                                Choisir une nouvelle recette de potion de niveau Initié</a></li>
                    {% endif %}
                    {% if  trigger.tag and trigger.tag.isAlchimieExpert %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.potion', {'niveau' : 3, 'participant' : participant.id}) }}">
+                                   href="{{ path('personnage.potion', {'niveau' : 3, 'personnage' : personnage.id}) }}">
                                Choisir une nouvelle recette de potion de niveau Expert</a></li>
                    {% endif %}
                    {% if  trigger.tag and trigger.tag.isAlchimieMaitre %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.potion', {'niveau' : 4, 'participant' : participant.id}) }}">
+                                   href="{{ path('personnage.potion', {'niveau' : 4, 'personnage' : personnage.id}) }}">
                                Choisir une nouvelle recette de potion de niveau Maitre</a></li>
                    {% endif %}
                    {% if  trigger.tag and trigger.tag.isDomaineMagie %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.personnage.domaine', {'participant': participant.id}) }}">
+                                   href="{{ path('personnage.domaine', {'personnage': personnage.id}) }}">
                                Choisir un domaine de magie</a></li>
                    {% endif %}
                    {% if  trigger.tag and trigger.tag.isSortApprenti %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.sort.choose', {'participant': participant.id, 'sort' : 1}) }}">
+                                   href="{{ path('personnage.sort.choose', {'personnage': personnage.id, 'sort' : 1}) }}">
                                Choisir un sort de niveau Apprenti</a></li>
                    {% endif %}
                    {% if trigger.tag and trigger.tag.isSortInitie %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.sort.choose', {'participant': participant.id, 'sort' : 2}) }}">
+                                   href="{{ path('personnage.sort.choose', {'personnage': personnage.id, 'sort' : 2}) }}">
                                Choisir un sort de niveau Initié</a></li>
                    {% endif %}
                    {% if trigger.tag and trigger.tag.isSortExpert %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.sort.choose', {'participant': participant.id, 'sort' : 3}) }}">
+                                   href="{{ path('personnage.sort.choose', {'personnage': personnage.id, 'sort' : 3}) }}">
                                Choisir un sort de niveau Expert</a></li>
                    {% endif %}
                    {% if trigger.tag and  trigger.tag.isSortMaitre %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.sort.choose', {'participant': participant.id, 'sort' : 4}) }}">
+                                   href="{{ path('personnage.sort.choose', {'personnage': personnage.id, 'sort' : 4}) }}">
                                Choisir un sort de niveau Maitre</a></li>
                    {% endif %}
                    {% if trigger.tag and trigger.tag.isPretriseInitie %}
@@ -100,7 +100,7 @@
                    {% endif %}
                    {% if trigger.tag and trigger.tag.isTechnologie %}
                        <li class="list-group-item"><a
-                                   href="{{ path('participant.technologie', {'participant': participant.id}) }}">
+                                   href="{{ path('personnage.technologie', {'personnage': personnage.id}) }}">
                                Choisir une technologie</a></li>
                    {% endif %}
 

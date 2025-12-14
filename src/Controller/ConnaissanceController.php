@@ -43,7 +43,7 @@ class ConnaissanceController extends AbstractController
      * Detail d'une connaissance.
      */
     #[Route('/{connaissance}', name: 'detail', requirements: ['connaissance' => Requirement::DIGITS])]
-    public function detailAction(Request $request, #[MapEntity] Connaissance $connaissance): Response
+    public function detailAction(#[MapEntity] Connaissance $connaissance): Response
     {
         return $this->render('connaissance/detail.twig', [
             'connaissance' => $connaissance,

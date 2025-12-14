@@ -56,20 +56,20 @@
                 </h5>
             {% endif %}
 
-            <h6 class="__{{ competence.competenceFamily.id }}__{{ currentFamillyId }}"
+            <h6 class="__{{ competence.competenceFamily.id }}__{{ currentFamillyId }} mt-2"
                 id="comp_{{ competence.id }}">
                 <a href="{{ path('competence.detail', {"competence":competence.id}) }}">{{ competence.level.label }}</a>
             </h6>
             <div class="list-group-item-text border-top mt-1">{{ competence.description|markdown_to_html }}</div>
                 {% if competence.documentUrl %}
                 <div class="list-group-item-text">
-                    {% if participant.id is defined %}
+                    {% if personnage.id is defined %}
                         <a class="btn btn-secondary btn-sm"
-                           href="{{ path('participant.competence.detail',{'participant': participant.id, 'competence' : competence.id}) }}">
+                           href="{{ path('personnage.competence.detail',{'personnage': personnage.id, 'competence' : competence.id}) }}">
                             <i class="fa fa-eye"></i> Voir l'aide de jeu
                         </a>
                         <a class="btn btn-secondary btn-sm"
-                           href="{{ path('participant.competence.document',{'participant': participant.id, 'competence' : competence.id}) }}">
+                           href="{{ path('personnage.competence.document',{'personnage': personnage.id, 'competence' : competence.id}) }}">
                             <i class="fa fa-file"></i> Télécharger l'aide de jeu
                         </a>
                     {% elseif isAdmin %}

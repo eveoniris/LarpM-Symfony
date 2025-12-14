@@ -38,9 +38,9 @@
                                         >
                                             <i class="fa-solid fa-file"></i>
                                         </a>
-                                    {% elseif participant is defined %}
+                                    {% elseif personnage is defined %}
                                         <a class="btn btn-sm btn-secondary"
-                                           href="{{ path('participant.technologie.document',{'technologie':technologie.id, 'participant': participant.id,'document': technologie.documentUrl}) }}"
+                                           href="{{ path('personnage.technologie.document',{'technologie':technologie.id, 'personnage': personnage.id,'document': technologie.documentUrl}) }}"
                                         >
                                             <i class="fa-solid fa-file"></i>
                                         </a>
