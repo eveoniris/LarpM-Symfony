@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -19,16 +20,16 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseCulture', 'extended' => 'Culture'])]
 abstract class BaseCulture
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[ORM\Column(type: Types::STRING, length: 45)]
     protected string $label;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT)]
     protected string $description;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     protected ?string $description_complete = null;
 
     #[OneToMany(mappedBy: 'culture', targetEntity: Territoire::class)]

@@ -6,17 +6,19 @@
 
 <div class="container-fluid">
 
-	<ol class="breadcrumb">
-		<li><a href="{{ path('homepage')  }}">Accueil</a></li>
-		<li><a href="{{ path('gn.detail', {'gn' : participant.gn.id}) }}">{{ participant.gn.label }}</a></li>
-		<li><a href="{{ path('gn.personnage', {'gn': participant.gn.id}) }}">{{ participant.personnage.nom }}</a></li>
-		<li class="active">Choix d'une nouvelle langue</li>
-	</ol>
-	
-	<div class="well well-sm bs-component">
-			<blockquote>Votre compétence vous permet de choisir une nouvelle langue ancienne.</blockquote>
-			{{ form(form) }}
-	</div>
+    {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Choix d'une nouvelle langue"} %}
+
+    <div class="well well-sm bs-component">
+
+        <div class="header">
+            <h5>Nouvelle langue ancienne</h5>
+        </div>
+
+        <p>Votre compétence vous permet de choisir une nouvelle langue ancienne.</p>
+
+        {{ form(form) }}
+    </div>
 </div>
+
 
 {% endblock body %}

@@ -1233,6 +1233,187 @@ class PersonnageController extends AbstractController
     }
 
     /**
+     * Choix d'une nouvelle langue courante.
+     */
+    #[Route('/{personnage}/langueCourante', name: 'langueCourante')]
+    public function langueCouranteAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+    ): RedirectResponse|Response {
+        if (!$personnage->hasTrigger('LANGUE COURANTE')) {
+            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue courante supplémentaire.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $availableLangues = $this->personnageService->getAvailableLangues($personnage, 1);
+
+        $form = $this->createFormBuilder()
+            ->add('langue', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre nouvelle langue',
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => $availableLangues,
+                'choice_label' => 'fullDescription',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $langue = $data['langue'];
+
+            $personnageLangue = new PersonnageLangues();
+            $personnageLangue->setPersonnage($personnage);
+            $personnageLangue->setLangue($langue);
+            $personnageLangue->setSource('LITTERATURE');
+            $this->entityManager->persist($personnageLangue);
+
+            if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_COURANTE)) {
+                $this->entityManager->remove($trigger);
+            }
+
+            $this->log($personnageLangue, LogActionType::ADD_LANGUE);
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/langueCourante.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+        ]);
+    }
+
+
+    /**
+     * Choix d'une nouvelle langue ancienne.
+     */
+    #[Route('/{personnage}/langueAncienne', name: 'langueAncienne')]
+    public function langueAncienneAction(
+        Request $request,
+        #[MapEntity] Personnage $personnage,
+    ): RedirectResponse|Response {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->hasTrigger(TriggerType::LANGUE_ANCIENNE)) {
+            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue ancienne supplémentaire.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $availableLangues = $this->personnageService->getAvailableLangues($personnage, 0);
+
+        $form = $this->createFormBuilder()
+            ->add('langue', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre nouvelle langue',
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => $availableLangues,
+                'choice_label' => 'fullDescription',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $langue = $data['langue'];
+
+            $personnageLangue = new PersonnageLangues();
+            $personnageLangue->setPersonnage($personnage);
+            $personnageLangue->setLangue($langue);
+            $personnageLangue->setSource('LITTERATURE');
+            $this->entityManager->persist($personnageLangue);
+
+            if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_ANCIENNE)) {
+                $this->entityManager->remove($trigger);
+            }
+
+            $this->log($personnageLangue, LogActionType::ADD_LANGUE);
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/langueAncienne.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+        ]);
+    }
+
+    /**
+     * Choix d'une nouvelle langue commune.
+     */
+    #[Route('/{personnage}/langueCommune', name: 'langueCommune')]
+    public function langueCommuneAction(
+        Request $request,
+        Personnage $personnage,
+    ): RedirectResponse|Response {
+        if (!$personnage->hasTrigger(TriggerType::LANGUE_COURANTE)) {
+            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue commune supplémentaire.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $availableLangues = $this->personnageService->getAvailableLangues($personnage, 2);
+
+        $form = $this->createFormBuilder()
+            ->add('langue', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre nouvelle langue',
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => $availableLangues,
+                'choice_label' => 'fullDescription',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $langue = $data['langue'];
+
+            $personnageLangue = new PersonnageLangues();
+            $personnageLangue->setPersonnage($personnage);
+            $personnageLangue->setLangue($langue);
+            $personnageLangue->setSource('LITTERATURE');
+            $this->entityManager->persist($personnageLangue);
+
+            if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_COURANTE)) {
+                $this->entityManager->remove($trigger);
+            }
+
+            $this->log($personnageLangue, LogActionType::ADD_LANGUE);
+
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/langueCommune.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+        ]);
+    }
+
+
+    /**
      * Retire une langue d'un personnage.
      */
     #[Route('/{personnage}/deleteLangue/{personnageLangue}', name: 'delete.langue')]
