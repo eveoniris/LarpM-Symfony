@@ -26,10 +26,10 @@
 
             <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
                 <div class="btn-group" role="group">
-                    {% if participant is defined and potion.documentUrl %}
+                    {% if personnage is defined and potion.documentUrl %}
                         <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                            title="Télécharger le document associé"
-                           href="{{ path('participant.potion.document',{'potion':potion.id, 'participant': participant.id,'document': potion.documentUrl}) }}"><i
+                           href="{{ path('personnage.potion.document',{'potion':potion.id, 'personnage': personnage.id,'document': potion.documentUrl}) }}"><i
                                     class="fa fa-download"></i> Document</a>
                     {% endif %}
                     {% if isAdmin %}

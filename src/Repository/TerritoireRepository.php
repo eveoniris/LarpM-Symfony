@@ -89,13 +89,16 @@ class TerritoireRepository extends BaseRepository
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('distinct t');
+        $qb->select('distinct t')
+            ->addSelect('tgr')
+            ->addSelect('tpr')
+            ->addSelect('tp');
         $qb->from(Territoire::class, 't');
 
         $qb->leftJoin('t.groupe', 'tgr');
-        $qb->join('t.territoire', 'tpr');
+        $qb->leftjoin('t.territoire', 'tpr');
         $qb->leftjoin('tpr.territoire', 'tp');
-        $qb->andWhere('t.territoire IS NOT NULL');
+       // $qb->andWhere('t.territoire IS NOT NULL');
 
         $count = 0;
         foreach ($criteria as $key => $value) {

@@ -40,7 +40,7 @@
                             <a class="btn btn-secondary btn-sm"
                                title="Télécharger l'abécédaire" data-bs-toggle="tooltip"
                                data-bs-placement="top"
-                               href="{{ path('participant.langue.document',{'participant': participant.id, 'langue' : personnageLangue.langue.id, 'filename': personnageLangue.langue.printlabel }) }}">
+                               href="{{ path('personnage.langue.document',{'personnage': personnageLangue.personnage.id, 'langue' : personnageLangue.langue.id, 'filename': personnageLangue.langue.printlabel }) }}">
                                 <i class="fa fa-file"></i>
                             </a>
                         {% endif %}

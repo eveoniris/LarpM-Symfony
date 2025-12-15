@@ -32,19 +32,19 @@ class FiefForm extends AbstractType
                     'Nom du fief' => 'nomFief',
                 ],
             ])
-            ->add('pays', EntityType::class, [
-                'required' => false,
-                'label' => 'Par pays',
-                'class' => Territoire::class,
-                'choices' => $options['listePays'],
-                'placeholder' => 'Filtrer par pays',
-            ])
             ->add('province', EntityType::class, [
                 'required' => false,
                 'label' => 'Par province',
                 'class' => Territoire::class,
                 'choices' => $options['listeProvinces'],
                 'placeholder' => 'Filtrer par province',
+            ])
+            ->add('pays', EntityType::class, [
+                'required' => false,
+                'label' => 'Par pays',
+                'class' => Territoire::class,
+                'choices' => $options['listePays'],
+                'placeholder' => 'Filtrer par pays',
             ])
             ->add('groupe', EntityType::class, [
                 'required' => false,

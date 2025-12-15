@@ -61,8 +61,10 @@
                             <a href="{{ path('personnage.detail', {'personnage':personnage.id}) }}">{{ personnage.fullName }}</a>
                         {% elseif fieldName == 'classe' %}
                             {{ personnage.classeName }}
-                        {% elseif fieldName == 'groupe' and gn.id is defined %}
-                            {% set gn = personnage.getLastParticipantGn() ?: 'LH1' %}
+                        {% elseif fieldName == 'groupe' %}
+                            {% if gn.id is not defined %}
+                                {% set gn = personnage.getLastParticipantGn() ?: 'LH1' %}
+                            {% endif %}
                             {% set groupe = personnage.getLastParticipantGnGroupe() %}
                             <strong><a
                                     href="{{ path('gn.detail', {'gn': gn.id}) }}">{{ gn }}</a></strong> {% if groupe.id is defined %}-

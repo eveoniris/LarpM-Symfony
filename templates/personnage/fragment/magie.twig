@@ -35,7 +35,7 @@
             {% for sort in personnage.sorts %}
                 <div class="list-group-item d-flex justify-content-between">
                     <div>
-                        <a href="{{ path('participant.sort.detail', {'participant': participant.id, 'sort': sort.id}) }}">
+                        <a href="{{ path('personnage.sort.detail', {'personnage': personnage.id, 'sort': sort.id}) }}">
                             {% if sort.secret %}
                                 <i class="fa fa-user-secret text-warning" data-bs-toggle="tooltip"
                                    data-bs-placement="top"
@@ -62,9 +62,9 @@
                                    role="button">
                                     <i class="fa-solid fa-file"></i>
                                 </a>
-                            {% elseif participant is defined %}
+                            {% elseif personnage is defined %}
                                 <a class="btn btn-sm btn-secondary"
-                                   href="{{ path('participant.sort.document',{'sort':sort.id, 'participant': participant.id,'document': sort.documentUrl}) }}"
+                                   href="{{ path('personnage.sort.document',{'sort':sort.id, 'personnage': personnage.id,'document': sort.documentUrl}) }}"
                                    role="button">
                                     <i class="fa-solid fa-file"></i>
                                 </a>
