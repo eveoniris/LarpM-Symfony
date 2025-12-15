@@ -4,13 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Age;
 use App\Entity\Classe;
-use App\Entity\Competence;
-use App\Entity\Connaissance;
-use App\Entity\Document;
 use App\Entity\ExperienceGain;
-use App\Entity\Groupe;
-use App\Entity\GroupeAllie;
-use App\Entity\GroupeEnemy;
 use App\Entity\GroupeGn;
 use App\Entity\Langue;
 use App\Entity\LogAction;
@@ -25,7 +19,6 @@ use App\Entity\PersonnageLangues;
 use App\Entity\PersonnageTrigger;
 use App\Entity\Postulant;
 use App\Entity\Potion;
-use App\Entity\Priere;
 use App\Entity\Question;
 use App\Entity\Religion;
 use App\Entity\RenommeHistory;
@@ -33,7 +26,6 @@ use App\Entity\Reponse;
 use App\Entity\Rule;
 use App\Entity\SecondaryGroup;
 use App\Entity\Sort;
-use App\Entity\Technologie;
 use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\CompetenceFamilyType;
@@ -41,12 +33,6 @@ use App\Enum\LevelType;
 use App\Enum\LogActionType;
 use App\Enum\Role;
 use App\Enum\TriggerType;
-use App\Form\AcceptAllianceForm;
-use App\Form\AcceptPeaceForm;
-use App\Form\BreakAllianceForm;
-use App\Form\CancelRequestedAllianceForm;
-use App\Form\CancelRequestedPeaceForm;
-use App\Form\DeclareWarForm;
 use App\Form\DeleteForm;
 use App\Form\FindJoueurForm;
 use App\Form\Groupe\GroupeInscriptionForm;
@@ -57,7 +43,6 @@ use App\Form\MessageForm;
 use App\Form\Participant\ParticipantGroupeForm;
 use App\Form\Participant\ParticipantNewForm;
 use App\Form\Participant\ParticipantRemoveForm;
-use App\Form\ParticipantBilletForm;
 use App\Form\ParticipantForm;
 use App\Form\ParticipantPersonnageSecondaireForm;
 use App\Form\ParticipantRestaurationForm;
@@ -65,10 +50,6 @@ use App\Form\Personnage\PersonnageEditForm;
 use App\Form\Personnage\PersonnageForm;
 use App\Form\Personnage\PersonnageOriginForm;
 use App\Form\PersonnageOldFindForm;
-use App\Form\RefuseAllianceForm;
-use App\Form\RefusePeaceForm;
-use App\Form\RequestAllianceForm;
-use App\Form\RequestPeaceForm;
 use App\Form\TrombineForm;
 use App\Repository\DomaineRepository;
 use App\Repository\GnRepository;
@@ -92,7 +73,6 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -2048,68 +2028,6 @@ class ParticipantController extends AbstractController
         return $this->sendDocument($potion);
     }
 
-    /**
-     * Detail d'une priere.
-     */
-    #[Route('/participant/{participant}/priere/{priere}/detail', name: 'participant.priere.detail')]
-    public function priereDetailAction(
-        #[MapEntity] Participant $participant,
-        #[MapEntity] Priere $priere,
-    ): RedirectResponse|Response {
-        $this->hasAccess($participant);
-
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        if (!$personnage->isKnownPriere($priere)) {
-            $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        return $this->render('priere/detail.twig', [
-            'priere' => $priere,
-            'participant' => $participant,
-            'filename' => $priere->getPrintLabel(),
-        ]);
-    }
-
-    /**
-     * Obtenir le document lié à une priere.
-     */
-    #[Route('/participant/{participant}/priere/{priere}/document', name: 'participant.priere.document')]
-    #[IsGranted(Role::USER->value)]
-    public function priereDocumentAction(
-        #[MapEntity] Participant $participant,
-        #[MapEntity] Priere $priere,
-    ): BinaryFileResponse|RedirectResponse {
-        $this->hasAccess($participant);
-
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        if (!$personnage->isKnownPriere($priere)) {
-            $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        return $this->sendDocument($priere);
-        /*$filename = __DIR__.'/../../private/doc/'.$priere->getDocumentUrl();
-        $file = new File($filename);
-
-        return $this->file($file, $priere->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);*/
-    }
 
     /**
      * RefUser la paix.
