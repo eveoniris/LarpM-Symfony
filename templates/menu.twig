@@ -304,6 +304,15 @@
                         <i class="fa fa-user-secret text-warning"></i>
                     </a>
                 {% endif %}
+            {% else %}
+                <div class="d-flex">
+                    <a class="btn btn-dark shadow me-2" data-bs-placement="bottom"
+                       data-bs-toggle="tooltip"
+                       data-bs-original-title="Se connecter"
+                       href="{{ path('app_login') }}">
+                        <i class="fa fa-user text-info"></i>
+                    </a>
+                </div>
             {% endif %}
 
             <div class="d-flex">

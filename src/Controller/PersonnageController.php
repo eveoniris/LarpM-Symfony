@@ -16,6 +16,7 @@ use App\Entity\Ingredient;
 use App\Entity\Item;
 use App\Entity\Langue;
 use App\Entity\LogAction;
+use App\Entity\Loi;
 use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\PersonnageApprentissage;
@@ -2011,6 +2012,44 @@ class PersonnageController extends AbstractController
         ]);
     }
 
+
+
+    /**
+     * Obtenir le document lié à une langue.
+     */
+    #[Route('/{personnage}/langue/{langue}/document', name: 'langue.document')]
+    public function langueDocumentAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Langue $langue,
+    ): BinaryFileResponse|RedirectResponse {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->isKnownLanguage($langue)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette langue !');
+
+            return $this->redirectToRoute('personnage.detail', ['gn' => $personnage->getId()], 303);
+        }
+
+        return $this->sendDocument($langue);
+    }
+
+    #[Route('/{personnage}/loi/{loi}/document', name: 'loi.document')]
+    public function loiDocumentAction(
+        Personnage $personnage,
+        Loi $loi,
+    ): BinaryFileResponse|RedirectResponse {
+        $this->hasAccess($personnage);
+
+        if (!$this->personnageService->isKnownLoi($personnage, $loi)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette loi !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->sendDocument($loi);
+    }
+
+
     /**
      * Retire une religion d'un personnage.
      */
@@ -3824,9 +3863,76 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         DomaineRepository $domaineRepository,
     ): RedirectResponse|Response {
+        $this->hasAccess($personnage);
+
         return $this->render('personnage/magie.twig', [
             'domaines' => $domaineRepository->findAll(),
             'personnage' => $personnage,
+        ]);
+    }
+
+    /**
+     * Detail d'un sort.
+     */
+    #[Route('/{personnage}/sort/{sort}/detail', name: 'sort.detail', requirements: ['personnage' => Requirement::DIGITS])]
+    public function sortDetailAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Sort $sort,
+    ): RedirectResponse|Response {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->isKnownSort($sort)) {
+            $this->addFlash('error', 'Vous ne connaissez pas ce sort !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('sort/detail.twig', [
+            'sort' => $sort,
+            'personnage' => $personnage,
+            'filename' => $sort->getPrintLabel(),
+        ]);
+    }
+
+    /**
+     * Obtenir le document lié à une potion.
+     */
+    #[Route('/{personnage}/potion/{potion}/document', name: 'potion.document')]
+    public function potionDocumentAction(
+        Personnage $personnage,
+        Potion $potion,
+    ): BinaryFileResponse|RedirectResponse {
+       $this->hasAccess($personnage);
+
+        if (!$personnage->isKnownPotion($potion)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette potion !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->sendDocument($potion);
+    }
+
+    /**
+     * Detail d'une potion.
+     */
+    #[Route('/{personnage}/potion/{potion}/detail', name: 'potion.detail')]
+    public function potionDetailAction(
+        Personnage $personnage,
+        Potion $potion,
+    ): RedirectResponse|Response {
+         $this->hasAccess($personnage);
+
+        if (!$personnage->isKnownPotion($potion)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette potion !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('potion/detail.twig', [
+            'potion' => $potion,
+            'personnage' => $personnage,
+            'filename' => $potion->getPrintLabel(),
         ]);
     }
 

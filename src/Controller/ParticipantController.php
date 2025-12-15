@@ -965,83 +965,6 @@ class ParticipantController extends AbstractController
     }
 
     /**
-     * Obtenir le document lié à une langue.
-     */
-    #[Route('/participant/{participant}/langue/{langue}/document', name: 'participant.langue.document')]
-    public function langueDocumentAction(
-        #[MapEntity] Participant $participant,
-        #[MapEntity] Langue $langue,
-    ): BinaryFileResponse|RedirectResponse {
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        if (!$personnage->isKnownLanguage($langue)) {
-            $this->addFlash('error', 'Vous ne connaissez pas cette langue !');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        return $this->sendDocument($langue);
-        /*
-        $filename = __DIR__.'/../../private/doc/'.$langue->getDocumentUrl();
-        $file = new File($filename);
-
-        return $this->file($file, $langue->getPrintLabel().'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
-        */
-    }
-
-    #[Route('/participant/{participant}/loi/{loi}/document', name: 'participant.loi.document')]
-    public function loiDocumentAction(
-        Participant $participant,
-        PersonnageService $personnageService,
-        Loi $loi,
-    ): BinaryFileResponse|RedirectResponse {
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        if (!$personnageService->isKnownLoi($personnage, $loi)) {
-            $this->addFlash('error', 'Vous ne connaissez pas cette loi !');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        return $this->sendDocument($loi);
-    }
-
-    /**
-     * Découverte de la magie, des domaines et sortilèges.
-     */
-    #[Route('/participant/{participant}/magie', name: 'participant.magie')]
-    public function magieAction(
-        Participant $participant,
-        DomaineRepository $domaineRepository,
-    ): RedirectResponse|Response {
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        return $this->render('magie/index.twig', [
-            'domaines' => $domaineRepository->findAll(),
-            'personnage' => $personnage,
-            'participant' => $participant,
-        ]);
-    }
-
-    /**
      * Création d'un nouveau participant.
      */
     #[Route('/participant/new', name: 'participant.new')]
@@ -2029,10 +1952,7 @@ class ParticipantController extends AbstractController
     }
 
 
-    /**
-     * RefUser la paix.
-     */
-    // #[Route('/participant/{participant}/groupe/{groupe}/refusePeace', name: 'participant.groupe.refusePeace')]
+
     /**
      * Détail d'une règle.
      */
@@ -2413,36 +2333,7 @@ class ParticipantController extends AbstractController
         ]);
     }
 
-    /**
-     * Detail d'un sort.
-     */
-    #[Route('/participant/{participant}/sort/{sort}/detail', name: 'participant.sort.detail', requirements: ['personnage' => Requirement::DIGITS])]
-    public function sortDetailAction(
-        #[MapEntity] Participant $participant,
-        #[MapEntity] Sort $sort,
-    ): RedirectResponse|Response {
-        $this->hasAccess($participant);
 
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        if (!$personnage->isKnownSort($sort)) {
-            $this->addFlash('error', 'Vous ne connaissez pas ce sort !');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        return $this->render('sort/detail.twig', [
-            'sort' => $sort,
-            'participant' => $participant,
-            'filename' => $sort->getPrintLabel(),
-        ]);
-    }
 
     #[Route('/participant/{participant}/update', name: 'participant.update')]
     #[IsGranted(new MultiRolesExpression(Role::USER))]

@@ -49,9 +49,9 @@
                             <i class="fa-solid fa-circle-info"></i>
                         </button>
                         {% if loi.documentUrl %}
-                            {% if participant is defined %}
+                            {% if personnage is defined %}
                                 <a class="btn btn-sm btn-secondary"
-                                   href="{{ path('participant.loi.document',{ 'loi': loi.id, 'participant': participant.id}) }}"
+                                   href="{{ path('personnage.loi.document',{ 'loi': loi.id, 'personnage': personnage.id}) }}"
                                    aria-expanded="false"
                                    role="button">
                                     <i class="fa-solid fa-file"></i>

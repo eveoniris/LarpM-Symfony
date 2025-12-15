@@ -26,7 +26,7 @@
                     {% if isAdmin %}
                         {% set potionPath = path('magie.potion.detail', {'potion': potion.id}) %}
                     {% else %}
-                        {% set potionPath = path('participant.potion.detail', {'participant': participant.id, 'potion': potion.id}) %}
+                        {% set potionPath = path('personnage.potion.detail', {'personnage': personnage.id, 'potion': potion.id}) %}
                     {% endif %}
                     <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                         <div>
@@ -54,9 +54,9 @@
                                             role="button">
                                         <i class="fa-solid fa-file"></i>
                                     </button>
-                                {% elseif participant is defined %}
+                                {% elseif personnage is defined %}
                                     <button class="btn btn-sm btn-secondary"
-                                            href="{{ path('participant.potion.document',{'potion':potion.id, 'participant': participant.id,'document': potion.documentUrl}) }}"
+                                            href="{{ path('personnage.potion.document',{'potion':potion.id, 'personnage': personnage.id,'document': potion.documentUrl}) }}"
                                             role="button">
                                         <i class="fa-solid fa-file"></i>
                                     </button>
@@ -93,7 +93,7 @@
                     {% if isAdmin %}
                         {% set potionPath = path('magie.potion.detail', {'potion': potion.id}) %}
                     {% else %}
-                        {% set potionPath = path('participant.potion.detail', {'participant': participant.id, 'potion': potion.id}) %}
+                        {% set potionPath = path('personnage.potion.detail', {'personnage': personnage.id, 'potion': potion.id}) %}
                     {% endif %}
 
                     <div class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
@@ -122,9 +122,9 @@
                                             role="button">
                                         <i class="fa-solid fa-file"></i>
                                     </a>
-                                {% elseif participant is defined %}
+                                {% elseif personnage is defined %}
                                     <a class="btn btn-sm btn-secondary"
-                                            href="{{ path('participant.potion.document',{'potion':potion.id, 'participant': participant.id,'document': potion.documentUrl}) }}"
+                                            href="{{ path('personnage.potion.document',{'potion':potion.id, 'personnage': personnage.id,'document': potion.documentUrl}) }}"
                                             role="button">
                                         <i class="fa-solid fa-file"></i>
                                     </a>
