@@ -1991,6 +1991,26 @@ class PersonnageController extends AbstractController
         );
     }
 
+    #[Route('/{personnage}/priere/{priere}/detail', name: 'priere.detail')]
+    public function priereDetailAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Priere $priere,
+    ): RedirectResponse|Response {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->isKnownPriere($priere)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('priere/detail.twig', [
+            'priere' => $priere,
+            'personnage' => $personnage,
+            'filename' => $priere->getPrintLabel(),
+        ]);
+    }
+
     /**
      * Retire une religion d'un personnage.
      */
@@ -3450,6 +3470,26 @@ class PersonnageController extends AbstractController
         }
 
         return $this->render('personnage/list.twig', []);
+    }
+
+    /**
+     * Obtenir le document lié à une priere.
+     */
+    #[Route('/{personnage}/priere/{priere}/document', name: 'priere.document')]
+    #[IsGranted(Role::USER->value)]
+    public function priereDocumentAction(
+        #[MapEntity] Personnage $personnage,
+        #[MapEntity] Priere $priere,
+    ): BinaryFileResponse|RedirectResponse {
+        $this->hasAccess($personnage);
+
+        if (!$personnage->isKnownPriere($priere)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->sendDocument($priere);
     }
 
     /**

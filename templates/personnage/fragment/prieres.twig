@@ -45,9 +45,9 @@
                                 >
                                     <i class="fa-solid fa-file"></i>
                                 </a>
-                            {% elseif participant is defined %}
+                            {% elseif personnage is defined %}
                                 <a class="btn btn-sm btn-secondary"
-                                   href="{{ path('participant.priere.document',{'priere':priere.id, 'participant': participant.id,'document': priere.documentUrl}) }}"
+                                   href="{{ path('personnage.priere.document',{'priere':priere.id, 'personnage': personnage.id,'document': priere.documentUrl}) }}"
                                 >
                                     <i class="fa-solid fa-file"></i>
                                 </a>
