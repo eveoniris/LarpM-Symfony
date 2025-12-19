@@ -154,7 +154,7 @@ class BaseBackground
         return $this;
     }
 
-    public function getVisibility(): string|VisibilityType|null
+    public function getVisibility(): VisibilityType
     {
         return VisibilityType::tryFrom($this->visibility) ?? VisibilityType::PUBLIC;
     }
