@@ -279,7 +279,7 @@
                                         <i class="fa-solid fa-circle-info"></i>
                                     </button>
                                 </div>
-                                
+
                             {% endif %}
                         </div>
                         <div class="list-group-item bg-body-secondary collapse p-0"
@@ -305,8 +305,8 @@
                                            data-bs-placement="bottom"
                                            title="Télécharger le document associé"
                                            href="{{ path(
-                                               'participant.priere.document',
-                                               {'participant': personnage.lastParticipant.id, 'priere': priere.id, 'document': priere.documentUrl}
+                                               'personnage.priere.document',
+                                               {'personnage': personnage.id, 'priere': priere.id, 'document': priere.documentUrl}
                                            ) }}">
                                             <i class="fa-solid fa-download"></i> Télécharger</a>
                                     </li>
