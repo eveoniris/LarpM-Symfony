@@ -287,10 +287,9 @@ class TerritoireController extends AbstractController
 
         $this->checkHasAccess(
             $roles,
-            fn() => $this->can(self::CAN_READ),
+            fn () => $this->can(self::CAN_READ),
         );
     }
-
 
     #[Route('/territoire/{territoire}/eventAdd', name: 'territoire.eventAdd')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
@@ -415,14 +414,13 @@ class TerritoireController extends AbstractController
         $groupe = isset($formData['groupe']) ? $this->entityManager->find(Groupe::class, $formData['groupe']) : null;
         $optionalParameters = '';
 
-        // $listeGroupes = $entityManager->getRepository('\\'.Groupe::class)->findList(null, null, ['by' => 'nom', 'dir' => 'ASC'], 1000, 0);
         $listeGroupes = $this->entityManager->getRepository(Groupe::class)->findBy([], ['nom' => 'ASC']);
         $listePays = $this->entityManager->getRepository(Territoire::class)->findRoot();
         $listeProvinces = $this->entityManager->getRepository(Territoire::class)->findProvinces();
 
         $form = $this->createForm(
             FiefForm::class,
-            null,
+            ['type' => ''],
             [
                 'data' => [
                     'pays' => $pays,
@@ -447,12 +445,16 @@ class TerritoireController extends AbstractController
             $province = $data['province'] ?? null;
             $groupe = $data['groupe'] ?? null;
 
-            if ($type && $value) {
+            if ($value) {
                 switch ($type) {
                     case 'idFief':
                         $criteria['t.id'] = $value;
                         break;
                     case 'nomFief':
+                        $criteria['t.nom'] = $value;
+                        break;
+                    default:
+                        $criteria['t.id'] = $value;
                         $criteria['t.nom'] = $value;
                         break;
                 }
@@ -599,18 +601,18 @@ class TerritoireController extends AbstractController
         echo 'Comparons la proximité Géo de Asgard avec Hyperborée : <br />';
         foreach ($pointsCorrespondants as $match) {
             echo sprintf(
-                    "<br />Points trouvés : [%f, %f] et [%f, %f] - Distance : %.2f km\n",
-                    $match['point1'][0],
-                    $match['point1'][1],
-                    $match['point2'][0],
-                    $match['point2'][1],
-                    $match['distance'],
-                ).PHP_EOL;
+                "<br />Points trouvés : [%f, %f] et [%f, %f] - Distance : %.2f km\n",
+                $match['point1'][0],
+                $match['point1'][1],
+                $match['point2'][0],
+                $match['point2'][1],
+                $match['distance'],
+            ).PHP_EOL;
         }
 
         echo '<br /><br />Soit un total de '.count(
-                $pointsCorrespondants,
-            ).' points géographiquement proches de moins de '.$mDist.'km';
+            $pointsCorrespondants,
+        ).' points géographiquement proches de moins de '.$mDist.'km';
 
         return new Response();
     }

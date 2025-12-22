@@ -5,6 +5,10 @@ namespace App\Repository;
 use App\Entity\Construction;
 use App\Entity\Territoire;
 use App\Service\OrderBy;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\NativeQuery;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 
 class TerritoireRepository extends BaseRepository
@@ -24,7 +28,7 @@ class TerritoireRepository extends BaseRepository
     /**
      * Fourni la liste des territoires n'étant pas dépendant d'un autre territoire.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function findRoot()
     {
@@ -81,11 +85,8 @@ class TerritoireRepository extends BaseRepository
 
     /**
      * Trouve les fiefs correspondant aux critères de recherche.
-     *
-     * @param unknown $limit
-     * @param unknown $offset
      */
-    public function findFiefsList($limit, $offset, array $criteria = [], array $order = [])
+    public function findFiefsList(int $limit, int $offset, array $criteria = [], array $order = []): Query
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -98,15 +99,24 @@ class TerritoireRepository extends BaseRepository
         $qb->leftJoin('t.groupe', 'tgr');
         $qb->leftjoin('t.territoire', 'tpr');
         $qb->leftjoin('tpr.territoire', 'tp');
-       // $qb->andWhere('t.territoire IS NOT NULL');
 
         $count = 0;
+
+        if (isset($criteria['t.id']) && isset($criteria['t.nom'])) {
+            $qb->andWhere('LOWER(t.nom) LIKE ?1 OR t.id LIKE ?2')
+                ->setParameter(1, '%'.preg_replace('/[\'"<>=*;]/', '', strtolower((string) $criteria['t.nom'])).'%')
+                ->setParameter(2, '%'.$criteria['t.id'].'%');
+
+            unset($criteria['t.id'], $criteria['t.nom']);
+            $count = 2;
+        }
+
         foreach ($criteria as $key => $value) {
-            if ('t.nom' == $key) {
-                $qb->andWhere(sprintf('LOWER(%s) LIKE ?', $key) . $count)
-                    ->setParameter($count, '%' . preg_replace('/[\'"<>=*;]/', '', strtolower((string)$value)) . '%');
+            if ('t.nom' === $key) {
+                $qb->andWhere(sprintf('LOWER(%s) LIKE ?', $key).$count)
+                    ->setParameter($count, '%'.preg_replace('/[\'"<>=*;]/', '', strtolower((string) $value)).'%');
             } else {
-                $qb->andWhere($key . ' = ?' . $count)
+                $qb->andWhere($key.' = ?'.$count)
                     ->setParameter($count, $value);
             }
 
@@ -116,8 +126,8 @@ class TerritoireRepository extends BaseRepository
         $qb->setFirstResult($offset);
         $qb->setMaxResults($limit);
 
-        $defaultEntityAlias = strstr((string)$order['by'], '.') ? '' : 't.';
-        $qb->orderBy($defaultEntityAlias . $order['by'], $order['dir']);
+        $defaultEntityAlias = str_contains((string) $order['by'], '.') ? '' : 't.';
+        $qb->orderBy($defaultEntityAlias.$order['by'], $order['dir']);
 
         return $qb->getQuery();
     }
@@ -143,11 +153,11 @@ class TerritoireRepository extends BaseRepository
         $count = 0;
         foreach ($criteria as $key => $value) {
             if ('t.nom' == $key) {
-                $qb->andWhere($key . sprintf(' LIKE %%?%d%%', $count))
-                    ->setParameter('' . $count, $value);
+                $qb->andWhere($key.sprintf(' LIKE %%?%d%%', $count))
+                    ->setParameter(''.$count, $value);
             } else {
-                $qb->andWhere($key . (' = ?' . $count))
-                    ->setParameter('' . $count, $value);
+                $qb->andWhere($key.(' = ?'.$count))
+                    ->setParameter(''.$count, $value);
             }
 
             ++$count;
@@ -172,17 +182,16 @@ class TerritoireRepository extends BaseRepository
     }
 
     public function search(
-        mixed             $search = null,
+        mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
-        ?OrderBy          $orderBy = null,
-        ?string           $alias = null,
-        ?QueryBuilder     $query = null
-    ): QueryBuilder
-    {
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null,
+    ): QueryBuilder {
         $alias ??= static::getEntityAlias();
 
         $query ??= $this->createQueryBuilder($alias);
-        $query->leftJoin($alias . '.appelation', 'appelation');
+        $query->leftJoin($alias.'.appelation', 'appelation');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
@@ -203,8 +212,8 @@ class TerritoireRepository extends BaseRepository
 
         return [
             ...parent::searchAttributes($alias, false),
-            $alias . '.nom', // => 'Libellé',
-            $alias . '.description', // => 'Description',
+            $alias.'.nom', // => 'Libellé',
+            $alias.'.description', // => 'Description',
             'appelation.label as appelation',
         ];
     }
@@ -215,13 +224,13 @@ class TerritoireRepository extends BaseRepository
 
         return [
             ...parent::sortAttributes($alias),
-            $alias . '.nom' => [
-                OrderBy::ASC => [$alias . '.nom' => OrderBy::ASC],
-                OrderBy::DESC => [$alias . '.nom' => OrderBy::DESC],
+            $alias.'.nom' => [
+                OrderBy::ASC => [$alias.'.nom' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.nom' => OrderBy::DESC],
             ],
-            $alias . '.description' => [
-                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
+            $alias.'.description' => [
+                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
             ],
             'appelation' => [
                 OrderBy::ASC => ['appelation.label' => OrderBy::ASC],
@@ -243,9 +252,9 @@ class TerritoireRepository extends BaseRepository
     public function root(QueryBuilder $query, bool $root): QueryBuilder
     {
         if ($root) {
-            $query->andWhere($this->alias . '.territoire = :value OR ' . $this->alias . '.territoire IS NULL');
+            $query->andWhere($this->alias.'.territoire = :value OR '.$this->alias.'.territoire IS NULL');
         } else {
-            $query->andWhere($this->alias . '.territoire = :value');
+            $query->andWhere($this->alias.'.territoire = :value');
         }
 
         return $query->setParameter('value', $root);
@@ -261,4 +270,42 @@ class TerritoireRepository extends BaseRepository
         ];
     }
 
+    public function getTerritoiresWithSiblings(?string $search = null, ?int $paysId = null, ?int $provinceId = null): NativeQuery
+    {
+        // TODO filter by groupe, province, region, pays ?
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('id', 'territoire_id', 'integer');
+        $rsm->addScalarResult('nom', 'territoire_nom', 'string');
+        $rsm->addScalarResult('t2_id', 'province_id', 'integer');
+        $rsm->addScalarResult('t2_nom', 'province_nom', 'string');
+        $rsm->addScalarResult('t3_id', 'pays_id', 'integer');
+        $rsm->addScalarResult('t3_nom', 'pays_nom', 'string');
+        $rsm->addScalarResult('depth', 'depth', 'integer');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(
+            <<<SQL
+                 SELECT
+                    t.id  AS id,
+                    t.nom AS nom,
+
+                    COALESCE(t2.id, t.id)  AS t2_id,
+                    COALESCE(t2.nom, t.nom) AS t2_nom,
+
+                    COALESCE(t3.id, t2.id, t.id)  AS t3_id,
+                    COALESCE(t3.nom, t2.nom, t.nom) AS t3_nom,
+
+                    CASE
+                        WHEN t3.id IS NOT NULL THEN 3
+                        WHEN t2.id IS NOT NULL THEN 2
+                        ELSE 1
+                    END AS depth
+                FROM territoire t
+                LEFT JOIN territoire t2 ON t2.id = t.territoire_id
+                LEFT JOIN territoire t3 ON t3.id = t2.territoire_id
+                ORDER BY t.id;
+                SQL,
+            $rsm,
+        );
+    }
 }
