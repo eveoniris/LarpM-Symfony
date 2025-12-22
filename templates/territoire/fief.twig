@@ -96,17 +96,23 @@
                     <a href="{{ path('territoire.detail', {'territoire': fief.territoire.id}) }}">
                         {{ fief.territoire.nom }}
                     </a>
+                    {% else %}
+                        <a href="{{ path('territoire.detail', {'territoire': fief.id}) }}">{{ fief.nom }}</a>
+                    {% endif %}
                 </td>
-                {% else %}
-                    -
-                {% endif %}
                 <td>
                     {% if fief.territoire.territoire.id is defined %}
                         <a href="{{ path('territoire.detail', {'territoire': fief.territoire.territoire.id}) }}">
                             {{ fief.territoire.territoire.nom }}
                         </a>
                     {% else %}
-                        -
+                        {% if fief.territoire.id is defined %}
+                            <a href="{{ path('territoire.detail', {'territoire': fief.territoire.id}) }}">
+                                {{ fief.territoire.nom }}
+                            </a>
+                        {% else %}
+                            <a href="{{ path('territoire.detail', {'territoire': fief.id}) }}">{{ fief.nom }}</a>
+                        {% endif %}
                     {% endif %}
                 </td>
                 <td>
@@ -120,8 +126,11 @@
                 <td>
                     {% if fief.groupe %}
                         {% for session in fief.groupe.groupeGns %}
-                            {{ session.gn.label }} : {{ session.participants|length }}&nbsp;/&nbsp;
+                            <span
+                                class="badge bg-secondary rounded-pill">{{ session.gn.label }} : {{ session.participants|length }}</span>
                         {% endfor %}
+                    {% else %}
+                        -
                     {% endif %}
                 </td>
             </tr>

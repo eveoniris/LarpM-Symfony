@@ -28,6 +28,7 @@ class FiefForm extends AbstractType
             ->add('type', ChoiceType::class, [
                 'required' => false,
                 'choices' => [
+                    'Tous' => '',
                     'Id du fief' => 'idFief',
                     'Nom du fief' => 'nomFief',
                 ],
