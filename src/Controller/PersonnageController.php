@@ -1890,6 +1890,19 @@ class PersonnageController extends AbstractController
         ]);
     }
 
+    #[Route('/{personnage}/connaissance/{connaissance}/document', name: 'connaissance.document', requirements: ['connaissance' => Requirement::DIGITS])]
+    public function connaissanceDocumentAction(#[MapEntity] Personnage $personnage, #[MapEntity] Connaissance $connaissance): Response
+    {
+        $this->hasAccess($personnage);
+        if (!$personnage->isKnownConnaissance($connaissance)) {
+            $this->addFlash('error', 'Vous ne connaissez pas cette connaissance !');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->sendDocument($connaissance);
+    }
+
     /**
      * Obtenir le document lié à une competence.
      */

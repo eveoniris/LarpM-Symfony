@@ -40,9 +40,9 @@
                                         role="button">
                                     <i class="fa-solid fa-file"></i>
                                 </button>
-                            {% elseif participant is defined %}
+                            {% elseif personnage is defined %}
                                 <button class="btn btn-sm btn-secondary"
-                                        href="{{ path('participant.connaissance.document',{'connaissance':connaissance.id, 'participant': participant.id,'document': connaissance.documentUrl}) }}"
+                                        href="{{ path('personnage.connaissance.document',{'connaissance':connaissance.id, 'personnage': personnage.id,'document': connaissance.documentUrl}) }}"
                                         role="button">
                                     <i class="fa-solid fa-file"></i>
                                 </button>
