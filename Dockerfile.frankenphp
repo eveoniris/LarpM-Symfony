@@ -7,7 +7,7 @@ RUN apt-get update && \
     libpq-dev libjpeg-dev libjpeg62-turbo-dev libicu-dev libgd-dev libonig-dev libxslt1-dev && \
     docker-php-ext-configure intl && \
     docker-php-ext-configure gd --enable-gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ --with-webp=/usr/include/ && \
-    docker-php-ext-install pdo pdo_mysql intl zip sockets opcache calendar dom mbstring exif gd xsl mysqli
+    docker-php-ext-install pdo pdo_mysql intl zip sockets calendar mbstring exif gd xsl mysqli
 
 # Active les extensions
 RUN docker-php-ext-enable intl

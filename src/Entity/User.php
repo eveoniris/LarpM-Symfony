@@ -318,6 +318,18 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         return $personnages_vivants;
     }
 
+    public function getPersonnagesAvailableToParticipation(): array
+    {
+        $available = [];
+        foreach ($this->personnages as $personnage) {
+            if ($personnage->getVivant() && $personnage->getId() !== $this->getPersonnageSecondaire()?->getId()) {
+                $available[] = $personnage;
+            }
+        }
+
+        return $available;
+    }
+
     /**
      * Recherche si l'utilisateur à un événement futur de prévu.
      */

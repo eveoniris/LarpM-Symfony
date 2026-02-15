@@ -43,6 +43,7 @@ use App\Form\MessageForm;
 use App\Form\Participant\ParticipantGroupeForm;
 use App\Form\Participant\ParticipantNewForm;
 use App\Form\Participant\ParticipantRemoveForm;
+use App\Form\ParticipantBilletForm;
 use App\Form\ParticipantForm;
 use App\Form\ParticipantPersonnageSecondaireForm;
 use App\Form\ParticipantRestaurationForm;
@@ -443,6 +444,43 @@ class ParticipantController extends AbstractController
         ]);
     }
 
+    /**
+     * Ajout d'un billet à un utilisateur. L'utilisateur doit participer au même jeu que celui du billet qui lui est affecté.
+     */
+    #[Route('/participant/{participant}/billet', name: 'participant.billet')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
+    public function billetAction(
+        Request                  $request,
+        #[MapEntity] Participant $participant,
+    ): RedirectResponse|Response
+    {
+        $form = $this->createForm(
+            ParticipantBilletForm::class,
+            $participant,
+            ['gnId' => $participant->getGn()->getId()],
+        )
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $participant = $form->getData();
+            $participant->setBilletDate(new \DateTime('NOW'));
+            $this->entityManager->persist($participant);
+            $this->entityManager->flush();
+
+            // TODO NOTIFY $app['notify']->newBillet($participant->getUser(), $participant->getBillet()); // TODO
+
+            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        return $this->render('participant/billet.twig', [
+            'participant' => $participant,
+            'form' => $form->createView(),
+        ]);
+    }
 
     protected function hasAccess(Participant $participant, array $roles = [Role::ORGA]): void
     {
@@ -1365,7 +1403,7 @@ class ParticipantController extends AbstractController
                 'label' => 'Choisissez votre personnage',
                 'choice_label' => 'resumeParticipations',
                 'class' => Personnage::class,
-                'choices' => array_unique($participant->getUser()?->getPersonnagesVivants()),
+                'choices' => array_unique($participant->getUser()?->getPersonnagesAvailableToParticipation()),
                 'data' => $default,
             ])
             ->add('save', SubmitType::class, ['label' => 'Valider'])

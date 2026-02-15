@@ -19,6 +19,7 @@ use App\Form\User\UserForgotPasswordForm;
 use App\Form\User\UserNewForm;
 use App\Form\User\UserNewPasswordForm;
 use App\Form\User\UserPersonnageDefaultForm;
+use App\Form\User\UserPersonnageSecondaireForm;
 use App\Form\UserFindForm;
 use App\Form\UserRegisterForm;
 use App\Form\UserRestrictionForm;
@@ -754,14 +755,13 @@ class UserController extends AbstractController
     public function personnageDefaultAction(Request $request, #[MapEntity] User $user): RedirectResponse|Response
     {
         $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
-        $form = $this->createForm(UserPersonnageDefaultForm::class, null, ['user_id' => $user->getId()])
+        $form = $this->createForm(UserPersonnageDefaultForm::class, $user, ['user_id' => $user->getId(), 'secondaire_id' => (int) $user->getPersonnageSecondaire()?->getId()])
             ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $user->setPersonnage($data['personnage']);
+            $user = $form->getData();
 
             $this->entityManager->persist($user);
             $this->entityManager->flush();
@@ -771,6 +771,41 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/personnageDefault.twig', [
+            'form' => $form->createView(),
+            'User' => $user,
+        ]);
+    }
+
+    #[Route('/user/{user}/personage/secondaire', name: 'user.personnageSecondaire')]
+    public function personnageSecondaireAction(Request $request, #[MapEntity] User $user): RedirectResponse|Response
+    {
+        $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
+
+        if ($user->getPersonnageSecondaire() && !$this->can(self::IS_ADMIN)) {
+            $this->addFlash('error', 'Vous avez déjà un personnage secondaire');
+
+            return $this->redirectToRoute('user.detail', ['user' => $user->getId()], 303);
+        }
+
+        $principalIds = null;
+        foreach ($user->getParticipants() as $participant) {
+            $principalIds[] = $participant->getId();
+        }
+
+        $form = $this->createForm(UserPersonnageSecondaireForm::class, $user, ['user_id' => $user->getId(), 'principal_ids' => $principalIds])
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $form->getData();
+
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Vos informations ont été enregistrées.');
+        }
+
+        return $this->render('user/personnageSecondary.twig', [
             'form' => $form->createView(),
             'User' => $user,
         ]);
@@ -807,8 +842,7 @@ class UserController extends AbstractController
         #[MapEntity] User $user,
         PersonnageService $personnageService,
         PersonnageRepository $personnageRepository,
-    ): RedirectResponse|Response
-    {
+    ): RedirectResponse|Response {
         $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
 
         $form = $this->createForm(PersonnageForm::class, new Personnage());
@@ -820,7 +854,8 @@ class UserController extends AbstractController
                     'Vous avez atteind le nombre maximum de personnage possible',
                 ),
             );
-            $this->addFlash('error','Vous avez atteind le nombre maximum de personnage possible');
+            $this->addFlash('error', 'Vous avez atteind le nombre maximum de personnage possible');
+
             return $this->redirectToRoute('user.self', [], 303);
         }
 
@@ -838,7 +873,7 @@ class UserController extends AbstractController
         return $this->render('personnage/add.twig', [
             'form' => $form->createView(),
         ]);
-       // $this->redirectToRoute('personnage.add');
+        // $this->redirectToRoute('personnage.add');
     }
 
     #[Route('/user/register ', name: 'user.register')]
