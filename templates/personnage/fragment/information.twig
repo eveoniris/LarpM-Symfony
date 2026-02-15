@@ -115,6 +115,15 @@
         {% endset %}
     {% endif %}
 
+    {# Secondaire #}
+    {% set canSeeSecondaire = false %}
+    {% if personnage.user.personnageSecondaire.id is defined %}
+    {% set canSeeSecondaire = personnage.user.personnageSecondaire.id == personnage.id %}
+    {% endif %}
+    {% set secondaireHtml %}
+        <span class="text-danger">Personnage secondaire du joueur</span>
+    {% endset %}
+
     {# Scenariste #}
     {% set scenaristeHtml %}
         <span class="text-danger">Ce personnage n'est pas lié à un scénariste</span>
@@ -159,7 +168,7 @@
         {% endset %}
     {% endif %}
 
-    {% set santeHtml %}
+    {% set santeHtml %}cab
         {% if personnage.vivant %}
             <span class="text-success">Vivant</span>
         {% else %}
@@ -356,6 +365,7 @@
         {% include '_partials/listItems.twig'
             with { 'items' : [
             {'title': 'Joueur', 'text': joueurHtml, 'visible': canSeeDetail},
+            {'title': 'Secondaire', 'text': secondaireHtml, 'visible': canSeeDetail and canSeeSecondaire},
             {'title': 'Nom', 'text': personnage.nom},
             {'title': 'Surnom', 'text': personnage.surnom|default('-') },
             {'title': 'Numéro', 'text': personnage.id, 'visible': canSeeDetail },
