@@ -1,0 +1,26 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Mes personnages par défaut{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :[{'name' : "Mes personnages par défaut" }]} %}
+
+    {% set notifHtml %}
+        Un personnage secondaire est interprétable si tôt que votre personnage principal n'est plus jouable.
+        Suite à un destin funeste, une séquestration de longue durée, une sortie de jeu. Ou pour les arènes.
+    {% endset %}
+    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : notifHtml } %}
+
+    {% set notifWarnHtml %}
+        Vous ne pouvez choisir qu'un seul personnage et il ne pourra plus être modifié par la suite.
+    {% endset %}
+    {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : notifWarnHtml } %}
+
+
+    <div class="well well-sm">
+        <div class="header"><h5>Choix du personnage secondaire</h5></div>
+        {{ form(form) }}
+    </div>
+
+{% endblock body %}

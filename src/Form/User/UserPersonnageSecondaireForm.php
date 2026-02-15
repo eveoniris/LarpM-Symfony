@@ -10,16 +10,16 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UserPersonnageDefaultForm extends AbstractType
+class UserPersonnageSecondaireForm extends AbstractType
 {
     /**
      * Construction du formulaire.
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('personnage', EntityType::class, [
+        $builder->add('personnage_secondaire', EntityType::class, [
             'required' => false,
-            'label' => 'Choisissez votre personnage actif sur votre session.',
+            'label' => 'Choisissez votre personnage secondaire.',
             'multiple' => false,
             'expanded' => true,
             'class' => Personnage::class,
@@ -27,10 +27,10 @@ class UserPersonnageDefaultForm extends AbstractType
             'placeholder' => 'Aucun',
             'empty_data' => null,
             'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('p')
-                ->join('p.user', 'u')
-                ->where('u.id = :userId and p.id <> :secondaireId')
-                ->setParameter('userId', $options['user_id'])
-                ->setParameter('secondaireId', $options['secondaire_id']),
+                    ->join('p.user', 'u')
+                    ->where('u.id = :userId AND p.id not in (:principalIds)')
+                    ->setParameter('userId', $options['user_id'])
+                    ->setParameter('principalIds', implode(',', $options['principal_ids'] ?? [0])),
         ]);
     }
 
@@ -42,7 +42,7 @@ class UserPersonnageDefaultForm extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'user_id' => null,
-            'secondaire_id' => null,
+            'principal_ids' => null,
         ]);
     }
 
