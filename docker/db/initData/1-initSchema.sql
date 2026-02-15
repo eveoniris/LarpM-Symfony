@@ -3320,7 +3320,7 @@ CREATE TABLE `user` (
   KEY `fk_user_personnage1_idx` (`personnage_id`),
   CONSTRAINT `FK_8D93D649191476EE` FOREIGN KEY (`etat_civil_id`) REFERENCES `etat_civil` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FK_8D93D6495E315342` FOREIGN KEY (`personnage_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `FK_8D93D649E6917FB3` FOREIGN KEY (`personnage_secondaire_id`) REFERENCES `personnage_secondaire` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT `FK_8D93D649E6917FB3` FOREIGN KEY (`personnage_secondaire_id`) REFERENCES `personnage` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=5791 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

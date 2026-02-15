@@ -113,6 +113,9 @@
                             <br/>
                         {% else %}
                             Aucune
+                            {% if user.personnageSecondaire.id is defined and user.personnageSecondaire.id == personnage.id %}
+                                (personnage secondaire)
+                            {% endif %}
                         {% endfor %}
                     </td>
                 </tr>

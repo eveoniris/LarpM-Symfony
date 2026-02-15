@@ -26,8 +26,10 @@
                     {% if personnage.user %}{{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}{% else %}Ce personnage n'est pas lié à un joueur{% endif %}
                     .
                     {#  {% if personnage.intrigue %}participe aux intrigues{% else %}ne participe pas aux intrigues{% endif %} #}
-                    <br/> <strong>Titre : </strong>
-                    {{ personnageService.getTitre(participant.personnage, participant.gn)|default('-') }}
+                    {% if participant.personnage is defined %}
+                        <br/> <strong>Titre : </strong>
+                        {{ personnageService.getTitre(participant.personnage, participant.gn)|default('-') }}
+                    {% endif %}
                 </div>
 
             </td>
@@ -39,9 +41,12 @@
                         {{ participantHasRestauration.restauration.label }}<br/>
                     {% endfor %}
                     <strong>Personnage Secondaire : </strong>
+                    {% if personnage.user.personnageSecondaire %}
+                        {{ personnage.user.personnageSecondaire.printLabel }}
+                    {% endif %}
                     {% if participant.personnageSecondaire %}
                         {{ participant.personnageSecondaire.classe.label }}
-                    {% else %}
+                    {% elseif not personnage.user.personnageSecondaire %}
                         PAS DE PERSONNAGE SECONDAIRE
                     {% endif %}
                 {% endif %}
@@ -124,7 +129,7 @@
     <tr>
         <td class="print-center">
             {% for personnageLangue in personnageService.allLangues(personnage) %}
-                <strong>{{ personnageLangue.langue }}</strong>{#  ({{ personnageLangue.source }})#}<br/>
+                <strong>{{ personnageLangue.langue }}</strong>{#  ({{ personnageLangue.source }}) #}<br/>
             {% endfor %}
         </td>
         <td class="print-center">

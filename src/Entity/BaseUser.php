@@ -166,9 +166,9 @@ abstract class BaseUser
     #[JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
     protected ?EtatCivil $etatCivil = null;
 
-    #[ORM\ManyToOne(targetEntity: PersonnageSecondaire::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
+    #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
     #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id')]
-    protected ?PersonnageSecondaire $personnageSecondaire = null;
+    protected ?Personnage $personnageSecondaire = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
@@ -805,7 +805,7 @@ abstract class BaseUser
     /**
      * Get PersonnageSecondaire entity (many to one).
      */
-    public function getPersonnageSecondaire(): ?PersonnageSecondaire
+    public function getPersonnageSecondaire(): ?Personnage
     {
         return $this->personnageSecondaire;
     }
@@ -813,7 +813,7 @@ abstract class BaseUser
     /**
      * Set PersonnageSecondaire entity (many to one).
      */
-    public function setPersonnageSecondaire(?PersonnageSecondaire $personnageSecondaire = null): static
+    public function setPersonnageSecondaire(?Personnage $personnageSecondaire = null): static
     {
         $this->personnageSecondaire = $personnageSecondaire;
 

@@ -84,7 +84,7 @@
 
                 <div class="list-group">
                     {% set hasDefaultPersonnage = false %}
-                    {% set hasSecondaryPersonnage = false %}
+                    {% set hasSecondaryPersonnage = user.personnageSecondaire %}
                     {% for participant in user.participants %}
                         <div class="list-group-item">
                             <div>
@@ -150,7 +150,7 @@
                        href="{{ path('user.personnageDefault', {'user': user.id}) }}"><span
                             class="fa fa-users" style="margin-right: 5px;"></span>
                         Choisir le personnage actif</a>
-                    {% if not hasDefaultPersonnage %}
+                    {% if not hasSecondaryPersonnage %}
                     <a class="btn btn-secondary"
                        href="{{ path('user.personnageSecondaire', {'user': user.id}) }}"><span
                             class="fa fa-mask" style="margin-right: 5px;"></span>

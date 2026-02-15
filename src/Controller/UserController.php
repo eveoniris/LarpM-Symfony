@@ -789,7 +789,9 @@ class UserController extends AbstractController
 
         $principalIds = null;
         foreach ($user->getParticipants() as $participant) {
-            $principalIds[] = $participant->getId();
+            if ($persoId = $participant->getPersonnage()?->getId()) {
+                $principalIds[] = $persoId;
+            }
         }
 
         $form = $this->createForm(UserPersonnageSecondaireForm::class, $user, ['user_id' => $user->getId(), 'principal_ids' => $principalIds])
