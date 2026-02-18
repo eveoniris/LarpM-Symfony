@@ -313,7 +313,7 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    protected function hasAccess(Personnage $personnage, array $roles = []): void
+    protected function hasAccess(Personnage $personnage, array $roles = [Role::ORGA, Role::ADMIN]): void
     {
         $isAdmin = false;
         foreach ($roles as $role) {
@@ -1303,7 +1303,7 @@ class PersonnageController extends AbstractController
         Request $request,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
-        $this->hasAccess($personnage);
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
 
         if (!$personnage->hasTrigger(TriggerType::LANGUE_ANCIENNE)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue ancienne supplémentaire.');
@@ -1590,7 +1590,7 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
-        $this->hasAccess($personnage);
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
 
         if (!$personnage->hasTrigger(TriggerType::DOMAINE_MAGIE)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de domaine de magie supplémentaire.');
@@ -1662,7 +1662,7 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         int $sort,
     ): RedirectResponse|Response {
-        $this->hasAccess($personnage);
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
 
         $niveau = $sort;
 
@@ -1760,7 +1760,7 @@ class PersonnageController extends AbstractController
         Request $request,
         #[MapEntity] Personnage $personnage,
     ): RedirectResponse|Response {
-        $this->hasAccess($personnage);
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
 
         if (!$personnage->hasTrigger('TECHNOLOGIE')) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de technologie supplémentaire.');
@@ -1822,7 +1822,7 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Sort $sort,
     ): BinaryFileResponse|RedirectResponse {
-        $this->hasAccess($personnage);
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
 
         if (!$personnage->isKnownSort($sort)) {
             $this->addFlash('error', 'Vous ne connaissez pas ce sort !');
@@ -1841,7 +1841,7 @@ class PersonnageController extends AbstractController
         #[MapEntity] Personnage $personnage,
         #[MapEntity] Technologie $technologie,
     ): BinaryFileResponse|RedirectResponse {
-        $this->hasAccess($personnage);
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
 
         if (!$personnage->isKnownTechnologie($technologie)) {
             $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
