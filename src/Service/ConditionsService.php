@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Entity\CompetenceFamily;
@@ -60,26 +62,20 @@ use App\Enum\LevelType;
  */
 class ConditionsService
 {
+    /**
+     * @param array<mixed> $list
+     */
     public function isAllConditionsValid(Groupe|Personnage|CompetenceFamily $entity, array $list): bool
     {
         if (empty($list)) {
             return true;
         }
         foreach ($list as $key => $row) {
-            if (
-                in_array(
-                    $key,
-                    ['condition', 'conditions'],
-
-                    true,
-                ) && !$this->isValidConditions(
-                    $entity,
-                    $row,
-                )) {
+            if (\in_array($key, ['condition', 'conditions'], true) && !$this->isValidConditions($entity, $row)) {
                 return false;
             }
 
-            if (is_array($row) && !$this->isAllConditionsValid($entity, $row)) {
+            if (\is_array($row) && !$this->isAllConditionsValid($entity, $row)) {
                 return false;
             }
         }
@@ -87,16 +83,23 @@ class ConditionsService
         return true;
     }
 
+    /**
+     * @param array<mixed> $conditions
+     */
     public function isValidConditions(
         Groupe|Personnage|CompetenceFamily $entity,
         array $conditions,
         mixed $service = null,
         bool $isDataSet = false, // find and pick conditions in the "conditions" Array data
-    ): bool
-    {
+    ): bool {
         return null !== $this->getValidConditions($entity, $conditions, $service, $isDataSet);
     }
 
+    /**
+     * @param array<mixed> $conditions
+     *
+     * @return array<mixed>|null
+     */
     public function getValidConditions(
         Groupe|Personnage|CompetenceFamily $entity,
         array $conditions,
@@ -119,18 +122,18 @@ class ConditionsService
         $mode = 'AND';
         foreach ($conditions as $key => $condition) {
             // Par défaut les conditions sont des AND
-            if (is_string($condition) && 'OR' === strtoupper($condition)) {
+            if (\is_string($condition) && 'OR' === strtoupper($condition)) {
                 $mode = 'OR';
                 continue;
             }
 
-            if (is_string($condition) && 'AND' === strtoupper($condition)) {
+            if (\is_string($condition) && 'AND' === strtoupper($condition)) {
                 $mode = 'AND';
                 continue;
             }
 
             // for some short condition data
-            if (!is_array($condition)) {
+            if (!\is_array($condition)) {
                 $condition = ['type' => $key, 'value' => $condition];
             }
 
@@ -149,14 +152,22 @@ class ConditionsService
     }
 
     /** Return the current data as a whole condition or the condition key of the dataset */
+    /**
+     * @param array<mixed> $data
+     *
+     * @return array<mixed>
+     */
     public function getConditionsFromDataset(array $data): array
     {
         return $this->getKeyValue('condition', $data) ?? [];
     }
 
+    /**
+     * @param array<mixed> $data
+     */
     public function getKeyValue(string $key, array $data): mixed
     {
-        foreach ([$key, $key.'s', rtrim($key, 's')] as $multiKey) {
+        foreach ([$key, $key . 's', rtrim($key, 's')] as $multiKey) {
             foreach ([$multiKey, strtolower($multiKey), strtoupper($multiKey)] as $k) {
                 if ($data[$k] ?? false) {
                     return $data[$k];
@@ -167,9 +178,12 @@ class ConditionsService
         return null;
     }
 
+    /**
+     * @param array<mixed> $data
+     */
     public function isKey(string $key, array $data): mixed
     {
-        foreach ([$key, $key.'s', rtrim($key, 's')] as $multiKey) {
+        foreach ([$key, $key . 's', rtrim($key, 's')] as $multiKey) {
             foreach ([$multiKey, strtolower($multiKey), strtoupper($multiKey)] as $k) {
                 if ($data[$k] ?? false) {
                     return true;
@@ -180,6 +194,9 @@ class ConditionsService
         return false;
     }
 
+    /**
+     * @param array<mixed> $condition
+     */
     protected function isValidCondition(
         Groupe|Personnage|CompetenceFamily $entity,
         array $condition,
@@ -191,11 +208,7 @@ class ConditionsService
         }
 
         // Le personnage doit avoir cette origine pour que le bonus soit actif
-        if (
-            $entity instanceof Personnage
-            && 'ORIGINE' === $this->getConditionType($condition)
-            && $entity->getOrigine()?->getId() === (int) $this->getConditionValue($condition)
-        ) {
+        if ($entity instanceof Personnage && 'ORIGINE' === $this->getConditionType($condition) && $entity->getOrigine()?->getId() === (int) $this->getConditionValue($condition)) {
             return true;
         }
 
@@ -204,10 +217,11 @@ class ConditionsService
             $hasRequired = false;
             /** @var PersonnageLangues $languePersonnage */
             foreach ($entity->getPersonnageLangues() as $languePersonnage) {
-                if ($languePersonnage->getLangue()?->getId() === (int) $this->getConditionValue($condition)) {
-                    // Do not return yet : if personnage had already the bonus langue
-                    $hasRequired = true;
+                if ($languePersonnage->getLangue()?->getId() !== (int) $this->getConditionValue($condition)) {
+                    continue;
                 }
+
+                $hasRequired = true;
             }
             if ($hasRequired) {
                 return true;
@@ -220,10 +234,7 @@ class ConditionsService
                 return $entity->hasCompetenceId((int) $this->getConditionValue($condition));
             }
 
-            return $entity->hasCompetenceLevel(
-                CompetenceFamilyType::tryFrom($this->getConditionValue($condition)),
-                LevelType::tryFrom($this->getKeyValue('level', $condition)),
-            );
+            return $entity->hasCompetenceLevel(CompetenceFamilyType::tryFrom($this->getConditionValue($condition)), LevelType::tryFrom($this->getKeyValue('level', $condition)));
         }
 
         // Parmi les familles de competence du personnage
@@ -233,17 +244,11 @@ class ConditionsService
                     return true;
                 }
 
-                if (is_numeric($this->getConditionValue($condition)) && $service->getCompetence()
-                        ->getCompetenceFamily()
-                        ?->getId() === (int) $this->getConditionValue($condition)) {
+                if (is_numeric($this->getConditionValue($condition)) && $service->getCompetence()->getCompetenceFamily()?->getId() === (int) $this->getConditionValue($condition)) {
                     return true;
                 }
 
-                if (strtoupper(
-                        $service->getCompetence()
-                            ->getCompetenceFamily()
-                            ?->getCompetenceFamilyType()?->value,
-                    ) === strtoupper($this->getConditionValue($condition))) {
+                if (strtoupper($service->getCompetence()->getCompetenceFamily()?->getCompetenceFamilyType()?->value) === strtoupper($this->getConditionValue($condition))) {
                     return true;
                 }
             }
@@ -255,24 +260,16 @@ class ConditionsService
                 return true;
             }
 
-            if (
-                strtoupper($entity->getCompetenceFamilyType()?->value) === $this->getConditionValue($condition)
-            ) {
+            if (strtoupper($entity->getCompetenceFamilyType()?->value) === $this->getConditionValue($condition)) {
                 return true;
             }
 
             if ($service instanceof CompetenceService) {
-                if (is_numeric($this->getConditionValue($condition)) && $service->getCompetence()
-                        ->getCompetenceFamily()
-                        ?->getId() === (int) $this->getConditionValue($condition)) {
+                if (is_numeric($this->getConditionValue($condition)) && $service->getCompetence()->getCompetenceFamily()?->getId() === (int) $this->getConditionValue($condition)) {
                     return true;
                 }
 
-                if (strtoupper(
-                        $service->getCompetence()
-                            ->getCompetenceFamily()
-                            ?->getCompetenceFamilyType()?->value,
-                    ) === $this->getConditionValue($condition)) {
+                if (strtoupper($service->getCompetence()->getCompetenceFamily()?->getCompetenceFamilyType()?->value) === $this->getConditionValue($condition)) {
                     return true;
                 }
             }
@@ -280,10 +277,7 @@ class ConditionsService
 
         // Parmi les religions "basique" du personnage (sinon boucle infinie)
         if ($entity instanceof Personnage && 'RELIGION' === $this->getConditionType($condition)) {
-            return $entity->hasReligionId(
-                (int) $this->getConditionValue($condition),
-                $this->getKeyValue('level', $condition),
-            );
+            return $entity->hasReligionId((int) $this->getConditionValue($condition), $this->getKeyValue('level', $condition));
         }
 
         // Parmi les religions "basique" du personnage (sinon boucle infinie)
@@ -294,11 +288,17 @@ class ConditionsService
         return false;
     }
 
+    /**
+     * @param array<mixed> $condition
+     */
     public function getConditionType(array $condition): string
     {
         return strtoupper($this->getKeyValue('type', $condition) ?? '');
     }
 
+    /**
+     * @param array<mixed> $condition
+     */
     public function getConditionValue(array $condition): string
     {
         return strtoupper($this->getKeyValue('value', $condition) ?? '');

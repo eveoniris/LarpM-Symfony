@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -19,20 +22,20 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseRumeur', 'extended' => 'Rumeur'])]
 abstract class BaseRumeur
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, name: 'text')]
     protected string $text = '';
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
-    protected ?\DateTime $creation_date = null;
+    protected ?DateTime $creation_date = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
-    protected ?\DateTime $update_date = null;
+    protected ?DateTime $update_date = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
-    protected $visibility = '';
+    protected string $visibility = '';
 
     #[ManyToOne(targetEntity: Gn::class, inversedBy: 'rumeurs')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: false)]
@@ -48,8 +51,8 @@ abstract class BaseRumeur
 
     public function __construct()
     {
-        $this->creation_date = new \DateTime('now');
-        $this->update_date = new \DateTime('now');
+        $this->creation_date = new DateTime('now');
+        $this->update_date = new DateTime('now');
     }
 
     /**
@@ -91,7 +94,7 @@ abstract class BaseRumeur
     /**
      * Set the value of creation_date.
      */
-    public function setCreationDate(\DateTime $creation_date): static
+    public function setCreationDate(DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -101,7 +104,7 @@ abstract class BaseRumeur
     /**
      * Get the value of creation_date.
      */
-    public function getCreationDate(): \DateTime
+    public function getCreationDate(): DateTime
     {
         return $this->creation_date;
     }
@@ -109,7 +112,7 @@ abstract class BaseRumeur
     /**
      * Set the value of update_date.
      */
-    public function setUpdateDate(\DateTime $update_date): static
+    public function setUpdateDate(DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
@@ -119,7 +122,7 @@ abstract class BaseRumeur
     /**
      * Get the value of update_date.
      */
-    public function getUpdateDate(): \DateTime
+    public function getUpdateDate(): DateTime
     {
         return $this->update_date;
     }
@@ -197,7 +200,7 @@ abstract class BaseRumeur
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'text', 'gn_id', 'territoire_id', 'User_id', 'creation_date', 'update_date', 'visibility'];
-    } */
+     * {
+     * return ['id', 'text', 'gn_id', 'territoire_id', 'User_id', 'creation_date', 'update_date', 'visibility'];
+     * } */
 }

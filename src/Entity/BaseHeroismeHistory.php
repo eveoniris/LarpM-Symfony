@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use DateTime;
@@ -18,21 +20,21 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseHeroismeHistory', 'extended' => 'HeroismeHistory'])]
 abstract class BaseHeroismeHistory
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Column(type: Types::DATETIME_MUTABLE)]
     protected DateTime $date;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $heroisme;
 
-    #[ORM\Column(type: Types::STRING)]
+    #[Column(type: Types::STRING)]
     protected string $explication;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'heroismeHistories')]
     #[ORM\JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
-    protected $personnage;
+    protected ?Personnage $personnage = null;
 
     public function __construct()
     {
@@ -129,7 +131,7 @@ abstract class BaseHeroismeHistory
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'date', 'heroisme', 'explication', 'personnage_id'];
-    } */
+     * {
+     * return ['id', 'date', 'heroisme', 'explication', 'personnage_id'];
+     * } */
 }

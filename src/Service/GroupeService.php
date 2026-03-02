@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Entity\Background;
@@ -11,7 +13,6 @@ use App\Entity\GroupeBonus;
 use App\Entity\GroupeGn;
 use App\Entity\GroupeHasIngredient;
 use App\Entity\GroupeHasRessource;
-use App\Entity\GroupeLangue;
 use App\Entity\Ingredient;
 use App\Entity\Item;
 use App\Entity\Loi;
@@ -25,12 +26,10 @@ use App\Entity\Ressource;
 use App\Entity\SecondaryGroup;
 use App\Entity\Territoire;
 use App\Entity\User;
-use App\Enum\BonusApplication;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Enum\Role;
 use App\Enum\TerritoireStatut;
-use App\Service\PersonnageService;
 use Carbon\Carbon;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -45,15 +44,17 @@ readonly class GroupeService
 {
     public function __construct(
         protected EntityManagerInterface $entityManager,
-        protected ValidatorInterface     $validator,
-        protected FormFactoryInterface   $formFactory,
-        protected UrlGeneratorInterface  $urlGenerator,
-        protected ConditionsService      $conditionsService,
-        protected Security               $security,
-    )
-    {
+        protected ValidatorInterface $validator,
+        protected FormFactoryInterface $formFactory,
+        protected UrlGeneratorInterface $urlGenerator,
+        protected ConditionsService $conditionsService,
+        protected Security $security,
+    ) {
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     public function sumAll(Gn $gn, PersonnageService $personnageService): array
     {
         $all = [];
@@ -80,7 +81,10 @@ readonly class GroupeService
                     continue;
                 }
                 if (!isset($all[$id]['ingredient'][$ingredient->getId()])) {
-                    $all[$id]['ingredient'][$ingredient->getId()] = ['nb' => 0, 'label' => strip_tags($ingredient->getLabel())];
+                    $all[$id]['ingredient'][$ingredient->getId()] = [
+                        'nb' => 0,
+                        'label' => strip_tags($ingredient->getLabel()),
+                    ];
                 }
 
                 $all[$id]['ingredient'][$ingredient->getId()]['nb'] += $groupeIngredient->getQuantite();
@@ -89,12 +93,11 @@ readonly class GroupeService
             /** @var GroupeHasRessource $groupeRessource */
             foreach ($this->getAllRessource($groupe) as $groupeRessource) {
                 $ressource = $groupeRessource->getRessource();
-                if (!$ressource) {
-                    continue;
-                }
-
                 if (!isset($all[$id]['ressources'][$ressource->getId()])) {
-                    $all[$id]['ressources'][$ressource->getId()] = ['nb' => 0, 'label' => strip_tags($ressource->getLabel())];
+                    $all[$id]['ressources'][$ressource->getId()] = [
+                        'nb' => 0,
+                        'label' => strip_tags($ressource->getLabel()),
+                    ];
                 }
                 $all[$id]['ressources'][$ressource->getId()]['nb'] += $ressource->getQuantite();
             }
@@ -129,7 +132,7 @@ readonly class GroupeService
                     if (!isset($all[$id]['langues'][$langue->getId()])) {
                         $all[$id]['langues'][$langue->getId()] = ['nb' => 0, 'label' => $langue->getLabel()];
                     }
-                    $all[$id]['langues'][$langue->getId()]['nb'] += 1;
+                    ++$all[$id]['langues'][$langue->getId()]['nb'];
                 }
 
                 /** @var PersonnageRessource $personnageRessource */
@@ -159,6 +162,9 @@ readonly class GroupeService
         return $all;
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     public function getAllRichesseDisplay(Groupe $groupe): array
     {
         // (base + bonus) x3 [x0.5 si instable]
@@ -200,7 +206,7 @@ readonly class GroupeService
             // arrondi au sup
             $value = ceil($value);
 
-            $label = sprintf(
+            $label = \sprintf(
                 "<strong>%s pièces d'argent</strong> fournies par <strong>%s</strong>. Etat %s 3 x (%d %s)",
                 $value,
                 $territoire->getNom(),
@@ -220,10 +226,7 @@ readonly class GroupeService
                 continue;
             }
 
-            if (!$this->conditionsService->isValidConditions(
-                $groupe,
-                $bonus->getJsonData()['condition'] ?? [],
-            )) {
+            if (!$this->conditionsService->isValidConditions($groupe, $bonus->getJsonData()['condition'] ?? [])) {
                 // on passe à l'item suivant
                 continue;
             }
@@ -241,7 +244,7 @@ readonly class GroupeService
 
             $histories[] = [
                 'label' => '<strong>' . $bonus->getTitre() . '</strong> fourni(e)s par <strong>' . $source . '</strong></strong> fourni(e)s par <strong>' . $source . '</strong>',
-                'value' => (int)$bonus->getValeur(),
+                'value' => (int) $bonus->getValeur(),
             ];
         }
 
@@ -256,12 +259,11 @@ readonly class GroupeService
      * @return Collection<int, Bonus>
      */
     public function getAllBonus(
-        Groupe        $groupe,
-        ?BonusType    $type = null,
-        bool          $withDisabled = false,
+        Groupe $groupe,
+        ?BonusType $type = null,
+        bool $withDisabled = false,
         ?BonusPeriode $periode = null,
-    ): Collection
-    {
+    ): Collection {
         $all = new ArrayCollection();
 
         $this->getGroupeBonus($groupe, $type, $withDisabled, $periode, $all);
@@ -271,14 +273,18 @@ readonly class GroupeService
         return $all;
     }
 
+    /**
+     * @param Collection<int, Bonus>|null $all
+     *
+     * @return Collection<int, Bonus>
+     */
     public function getGroupeBonus(
-        Groupe        $groupe,
-        ?BonusType    $type = null,
-        bool          $withDisabled = false,
+        Groupe $groupe,
+        ?BonusType $type = null,
+        bool $withDisabled = false,
         ?BonusPeriode $periode = null,
-        ?Collection   &$all = null,
-    ): ArrayCollection
-    {
+        ?Collection &$all = null,
+    ): Collection {
         $all ??= new ArrayCollection();
 
         /** @var GroupeBonus $groupeBonus */
@@ -303,23 +309,24 @@ readonly class GroupeService
         return $all;
     }
 
+    /**
+     * @param Collection<int, Bonus>|null $all
+     * @param array<int, mixed>           $applications
+     *
+     * @return Collection<int, Bonus>
+     */
     public function getMerveilleBonus(
-        Groupe        $groupe,
-        ?BonusType    $type = null,
-        bool          $withDisabled = false,
+        Groupe $groupe,
+        ?BonusType $type = null,
+        bool $withDisabled = false,
         ?BonusPeriode $periode = null,
-        ?Collection   &$all = null,
-        array         $applications = [],
-    ): ArrayCollection
-    {
+        ?Collection &$all = null,
+        array $applications = [],
+    ): Collection {
         $all ??= new ArrayCollection();
         // On ne prend que celui du dernier groupe actif
         /** @var Territoire $territoire */
         foreach ($groupe->getTerritoires() as $territoire) {
-            if (null === $territoire->getMerveilles()) {
-                continue;
-            }
-
             /** @var Merveille $merveille */
             foreach ($territoire->getMerveilles() as $merveille) {
                 if (!$merveille->isActive()) {
@@ -384,9 +391,7 @@ readonly class GroupeService
                     $nb = ceil($nb * 0.5);
                 }
 
-                $ingredient->setLabel(
-                    '<strong>' . $ingredient->getLabel() . '</strong> fourni(e)s par <strong>' . $territoire->getNom() . '</strong>',
-                );
+                $ingredient->setLabel('<strong>' . $ingredient->getLabel() . '</strong> fourni(e)s par <strong>' . $territoire->getNom() . '</strong>');
 
                 $groupeHasIngredident = new GroupeHasIngredient();
                 $groupeHasIngredident->setQuantite($nb);
@@ -408,24 +413,22 @@ readonly class GroupeService
                     continue;
                 }
 
-                if (!$this->conditionsService->isValidConditions(
-                    $groupe,
-                    $bonus->getConditions($ingredientData['condition'] ?? []),
-                )) {
+                if (!$this->conditionsService->isValidConditions($groupe, $bonus->getConditions($ingredientData['condition'] ?? []))) {
                     // on passe à l'item suivant
                     continue;
                 }
 
                 // Attribution
-                $ingredient = $this->entityManager
-                    ->getRepository(Ingredient::class)
-                    ->findOneBy(['id' => $ingredientData['id']]);
+                $ingredient = $this->entityManager->getRepository(Ingredient::class)->findOneBy(['id' => $ingredientData['id']]);
 
                 if (!$ingredient) {
                     // Generate one
                     $ingredient = new Ingredient();
+                    /* @phpstan-ignore nullCoalesce.offset */
                     $ingredient->setLabel($data['label'] ?? $bonus->getTitre() ?: 'BONUS');
-                    $ingredient->setNiveau((int)($data['niveau'] ?? 1));
+                    /* @phpstan-ignore nullCoalesce.offset */
+                    $ingredient->setNiveau((int) ($data['niveau'] ?? 1));
+                    /* @phpstan-ignore nullCoalesce.offset */
                     $ingredient->setDose($data['dose'] ?? 'unité');
                 }
 
@@ -440,12 +443,11 @@ readonly class GroupeService
                     $source .= $bonus->getOrigine()->getNom();
                 }
 
-                $ingredient->setLabel(
-                    '<strong>' . $ingredient->getLabel() . '</strong> fourni(e)s par <strong>' . $source . '</strong>',
-                );
+                $ingredient->setLabel('<strong>' . $ingredient->getLabel() . '</strong> fourni(e)s par <strong>' . $source . '</strong>');
 
                 $groupeHasIngredident = new GroupeHasIngredient();
-                $groupeHasIngredident->setQuantite(((int)($data['nombre'] ?? $bonus->getValeur())) ?: 1);
+                /* @phpstan-ignore nullCoalesce.offset */
+                $groupeHasIngredident->setQuantite((int) ($data['nombre'] ?? $bonus->getValeur()) ?: 1);
                 $groupeHasIngredident->setIngredient($ingredient);
                 $groupeHasIngredident->setGroupe($groupe);
 
@@ -456,12 +458,12 @@ readonly class GroupeService
         return $all;
     }
 
+    /** @param Collection<int, GroupeHasIngredient> $all */
     private function addIngredientToAll(GroupeHasIngredient $groupeIngredient, Collection $all): void
     {
         /** @var GroupeHasIngredient $existing */
         foreach ($all as $existing) {
-            if (($existing->getIngredient()?->getId() === $groupeIngredient->getIngredient()?->getId())
-                && ($existing->getIngredient()?->getLabel() === $groupeIngredient->getIngredient()?->getLabel())) {
+            if ($existing->getIngredient()?->getId() === $groupeIngredient->getIngredient()?->getId() && $existing->getIngredient()?->getLabel() === $groupeIngredient->getIngredient()?->getLabel()) {
                 return;
             }
         }
@@ -488,9 +490,7 @@ readonly class GroupeService
                 if (!$territoire->isStable()) {
                     $nbRessource = ceil($nbRessource * 0.5);
                 }
-                $ressource->setLabel(
-                    '<strong>' . $ressource->getLabel() . '</strong> fourni(e)s par <strong>' . $territoire->getNom() . '</strong>',
-                );
+                $ressource->setLabel('<strong>' . $ressource->getLabel() . '</strong> fourni(e)s par <strong>' . $territoire->getNom() . '</strong>');
 
                 $ressourceGroupe = new GroupeHasRessource();
                 $ressourceGroupe->setQuantite($nbRessource);
@@ -507,10 +507,8 @@ readonly class GroupeService
             }
 
             // this condition is tested before JSON value if we use bonus value only
-            if (!$this->conditionsService->isValidConditions(
-                $groupe,
-                $bonus->getConditions()['condition'] ?? [],
-            )) {
+            /* @phpstan-ignore nullCoalesce.offset */
+            if (!$this->conditionsService->isValidConditions($groupe, $bonus->getConditions()['condition'] ?? [])) {
                 // on passe au bonus suivant
                 continue;
             }
@@ -530,15 +528,15 @@ readonly class GroupeService
                 }
 
                 // Attribution
-                $ressource = $this->entityManager
-                    ->getRepository(Ressource::class)
-                    ->findOneBy(['id' => $row['id']]);
+                $ressource = $this->entityManager->getRepository(Ressource::class)->findOneBy(['id' => $row['id']]);
 
                 if (!$ressource) {
                     // Generate one
                     $ressource = new Ressource();
+                    /* @phpstan-ignore nullCoalesce.offset */
                     $ressource->setLabel($data['titre'] ?? $bonus->getTitre());
                     $rarete = new Rarete();
+                    /* @phpstan-ignore nullCoalesce.offset */
                     $rarete->setLabel($data['rarete'] ?? 'Commun');
                     $ressource->setRarete($rarete);
                 }
@@ -553,12 +551,11 @@ readonly class GroupeService
                 if ($bonus->getOrigine()) {
                     $source .= $bonus->getOrigine()->getNom();
                 }
-                $ressource->setLabel(
-                    '<strong>' . $ressource->getLabel() . '</strong> fourni(e)s par <strong>' . $source . '</strong>',
-                );
+                $ressource->setLabel('<strong>' . $ressource->getLabel() . '</strong> fourni(e)s par <strong>' . $source . '</strong>');
 
                 $ressourceGroupe = new GroupeHasRessource();
-                $ressourceGroupe->setQuantite(((int)$data['nombre']) ?: 1);
+                /* @phpstan-ignore offsetAccess.notFound */
+                $ressourceGroupe->setQuantite((int) $data['nombre'] ?: 1);
                 $ressourceGroupe->setRessource($ressource);
 
                 $this->addRessourceToAll($ressourceGroupe, $all);
@@ -567,10 +564,11 @@ readonly class GroupeService
 
             // If we use bonus values instead (condition tested before)
             $ressourceGroupe = new GroupeHasRessource();
-            $ressourceGroupe->setQuantite((int)$bonus->getValeur());
+            $ressourceGroupe->setQuantite((int) $bonus->getValeur());
             $ressource = new Ressource();
             $ressource->setLabel($bonus->getTitre() . ' - ' . $bonus->getDescription());
             $rarete = new Rarete();
+            /* @phpstan-ignore nullCoalesce.offset */
             $rarete->setLabel($data['rarete'] ?? 'Commun');
             $ressource->setRarete($rarete);
             $ressourceGroupe->setRessource($ressource);
@@ -581,14 +579,12 @@ readonly class GroupeService
         return $all;
     }
 
+    /** @param Collection<int, GroupeHasRessource> $all */
     private function addRessourceToAll(GroupeHasRessource $groupeHasRessource, Collection $all): void
     {
         /** @var GroupeHasRessource $existing */
         foreach ($all as $existing) {
-            if (
-                ($existing->getRessource()->getId() === $groupeHasRessource->getRessource()->getId())
-                && ($existing->getRessource()->getLabel() === $groupeHasRessource->getRessource()->getLabel())
-            ) {
+            if ($existing->getRessource()->getId() === $groupeHasRessource->getRessource()->getId() && $existing->getRessource()->getLabel() === $groupeHasRessource->getRessource()->getLabel()) {
                 return;
             }
         }
@@ -596,6 +592,9 @@ readonly class GroupeService
         $all->add($groupeHasRessource);
     }
 
+    /**
+     * @return Collection<int, Personnage>
+     */
     public function getPersonnages(GroupeGn $groupeGn): Collection
     {
         return $groupeGn->getPersonnages();
@@ -626,20 +625,19 @@ readonly class GroupeService
                 }
 
                 // Attribution
-                $item = $this->entityManager
-                    ->getRepository(Item::class)
-                    ->findOneBy(['id' => $itemData['id']]);
+                $item = $this->entityManager->getRepository(Item::class)->findOneBy(['id' => $itemData['id']]);
 
                 if (!$item) {
                     // Generate one
                     $item = new Item();
                     $item->setLabel($itemData['label'] ?? $bonus->getTitre());
-                    $item->setNumero($itemData['numero'] ?? (int)$bonus->getValeur());
+                    $item->setNumero($itemData['numero'] ?? (int) $bonus->getValeur());
                     $item->setIdentification($itemData['identification'] ?? 0);
                     $item->setCouleur($itemData['couleur'] ?? 'aucune');
                     $item->setDescription($itemData['description'] ?? $bonus->getDescription());
                     $item->setSpecial($itemData['special'] ?? null);
-                    $item->setQuality(isset($itemData['quality']) ? (int)$itemData['quality'] : null);
+                    /* @phpstan-ignore argument.type */
+                    $item->setQuality(isset($itemData['quality']) ? (int) $itemData['quality'] : null);
                 }
 
                 $source = '';
@@ -661,14 +659,12 @@ readonly class GroupeService
         return $all;
     }
 
+    /** @param Collection<int, Item> $items */
     private function addItemToAll(Groupe $groupe, Item $item, Collection $items): void
     {
         /** @var Item $row */
         foreach ($items as $row) {
-            if (
-                $row?->getId() === $item->getId()
-                && $row?->getLabel() === $item->getLabel()
-            ) {
+            if ($row->getId() === $item->getId() && $row->getLabel() === $item->getLabel()) {
                 return;
             }
         }
@@ -676,6 +672,9 @@ readonly class GroupeService
         $items->add($item);
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getAllMateriel(Groupe $groupe): array
     {
         $all = $groupe->getMateriel() ? [$groupe->getMateriel()] : [];
@@ -685,10 +684,7 @@ readonly class GroupeService
                 continue;
             }
 
-            if (!$this->conditionsService->isValidConditions(
-                $groupe,
-                $bonus->getJsonData()['condition'] ?? [],
-            )) {
+            if (!$this->conditionsService->isValidConditions($groupe, $bonus->getJsonData()['condition'] ?? [])) {
                 // on passe à l'item suivant
                 continue;
             }
@@ -709,27 +705,24 @@ readonly class GroupeService
                 $prefix = 'RETOUR DE JEU : ';
             }
 
-            $all[] = sprintf(
-                '%s<strong>%s</strong> : <strong>%s</strong>%s',
-                $prefix,
-                $source,
-                $bonus->getTitre(),
-                ' ' . $bonus->getDescription(),
-            );
+            $all[] = \sprintf('%s<strong>%s</strong> : <strong>%s</strong>%s', $prefix, $source, $bonus->getTitre(), ' ' . $bonus->getDescription());
         }
 
         return $all;
     }
 
-    public function getGroupeBackgroundsVisibleForCurrentUser(
-        Groupe $groupe,
-    ): ArrayCollection
+    /**
+     * @return ArrayCollection<int, Background>
+     */
+    public function getGroupeBackgroundsVisibleForCurrentUser(Groupe $groupe): ArrayCollection
     {
         return $this->filterVisibilityForCurrentUser($groupe, $groupe->getBackgrounds());
     }
 
     /**
-     * @param Collection<Debriefing|Background> $datas
+     * @param Collection<int, mixed> $datas
+     *
+     * @return ArrayCollection<int, mixed>
      */
     public function filterVisibilityForCurrentUser(Groupe $groupe, Collection $datas): ArrayCollection
     {
@@ -739,7 +732,7 @@ readonly class GroupeService
         /** @var User $user */
         $user = $this->security->getUser();
 
-        if (!$user || !$this->security->isGranted(Role::USER->value)) {
+        if (!$this->security->isGranted(Role::USER->value)) {
             return $filtred;
         }
 
@@ -759,16 +752,16 @@ readonly class GroupeService
 
             /** @var Personnage $personnage */
             foreach ($groupeGn->getPersonnages() as $personnage) {
-                if (isset($personnagesIds[$personnage->getId()]) && $groupeGn->getGn()->getId()) {
-                    $groupeMemberForGn[$groupeGn->getGn()->getId()] = true;
+                if (!(isset($personnagesIds[$personnage->getId()]) && $groupeGn->getGn()->getId())) {
+                    continue;
                 }
+
+                $groupeMemberForGn[$groupeGn->getGn()->getId()] = true;
             }
         }
 
         foreach ($datas as $data) {
-            if ($this->security->isGranted(Role::SCENARISTE->value)
-                || $data->getVisibility()?->isPublic()
-            ) {
+            if ($this->security->isGranted(Role::SCENARISTE->value) || $data->getVisibility()?->isPublic()) {
                 $filtred->add($data);
                 continue;
             }
@@ -794,22 +787,23 @@ readonly class GroupeService
         return $filtred;
     }
 
-    public function getGroupeDebriefingsVisibleForCurrentUser(
-        Groupe $groupe,
-    ): ArrayCollection
+    /**
+     * @return ArrayCollection<int, Debriefing>
+     */
+    public function getGroupeDebriefingsVisibleForCurrentUser(Groupe $groupe): ArrayCollection
     {
         return $this->filterVisibilityForCurrentUser($groupe, $groupe->getDebriefings());
     }
 
     /**
-     * @return array|Collection<int, Loi>
+     * @return array<int, Loi>|Collection<int, Loi>
      */
     public function getLois(Groupe $groupe): array|Collection
     {
         // Lois du pays du personnage initié
         $lois = new ArrayCollection();
         /** @var Territoire $territoire */
-        foreach ($groupe->getTerritoires() ?? new ArrayCollection() as $territoire) {
+        foreach ($groupe->getTerritoires() as $territoire) {
             /** @var Territoire $fief */
             foreach ($territoire->getAncestors() as $fief) {
                 foreach ($fief->getLois() as $loi) {
@@ -826,7 +820,7 @@ readonly class GroupeService
         return 3;
     }
 
-    public function getNextSessionGn()
+    public function getNextSessionGn(): ?Gn
     {
         return $this->entityManager->getRepository(Gn::class)->findNext();
     }
@@ -834,9 +828,10 @@ readonly class GroupeService
     public function getLastDoneSessionGn(): ?Gn
     {
         $criteria = new Criteria();
-        $criteria->where(Criteria::expr()?->lt('date_fin', Carbon::now()))
-            ->orderBy(['date_fin' => 'DESC']);
-        return $this->entityManager->getRepository(Gn::class)
+        $criteria->where(Criteria::expr()->lt('date_fin', Carbon::now()))->orderBy(['date_fin' => 'DESC']);
+
+        return $this->entityManager
+            ->getRepository(Gn::class)
             ->matching($criteria)
             ->first();
     }
@@ -862,7 +857,7 @@ readonly class GroupeService
 
     public function getSuzerain(Territoire $territoire): ?Personnage
     {
-        /** @var GroupeGn $lastGroupeGn */
+        /** @var GroupeGn|false $lastGroupeGn */
         $lastGroupeGn = $territoire->getGroupe()?->getGroupeGns()?->last();
         if (!$lastGroupeGn) {
             return null;
@@ -892,9 +887,11 @@ readonly class GroupeService
 
     public function hasOnePersonnageSuzerain(GroupeGn $groupeGn, ?User $user = null): bool
     {
-        /** @var User $user */
         $user ??= $this->security->getUser();
-        foreach ($user?->getPersonnages() as $personnage) {
+        if (!$user instanceof User) {
+            return false;
+        }
+        foreach ($user->getPersonnages() as $personnage) {
             if ($personnage->getId() === $groupeGn->getSuzerain()?->getId()) {
                 return true;
             }
@@ -903,10 +900,7 @@ readonly class GroupeService
         return false;
     }
 
-    public function hasPersonnageInSecondaryGroup(
-        SecondaryGroup $secondaryGroup,
-        ?User          $user = null,
-    ): bool
+    public function hasPersonnageInSecondaryGroup(SecondaryGroup $secondaryGroup, ?User $user = null): bool
     {
         foreach ($user?->getPersonnages() as $personnage) {
             if ($this->isInSecondaryGroup($secondaryGroup, $personnage)) {
@@ -919,10 +913,9 @@ readonly class GroupeService
 
     public function isInSecondaryGroup(
         SecondaryGroup $secondaryGroup,
-        ?Personnage    $personnage = null,
-        ?User          $user = null,
-    ): bool
-    {
+        ?Personnage $personnage = null,
+        ?User $user = null,
+    ): bool {
         // On se basera sur le personnage actif
         if ($user && !$personnage) {
             $personnage = $user->getPersonnage();
@@ -932,13 +925,12 @@ readonly class GroupeService
             return false;
         }
 
-        return $secondaryGroup->isMembre($personnage)
-            || $secondaryGroup->isResponsable($personnage);
+        return $secondaryGroup->isMembre($personnage) || $secondaryGroup->isResponsable($personnage);
     }
 
     public function isUserIsGroupeMember(Groupe $groupe): bool
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->security->getUser();
         if (!$user) {
             return false;
@@ -949,19 +941,17 @@ readonly class GroupeService
 
     public function isUserIsGroupeResponsable(Groupe $groupe): bool
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->security->getUser();
         if (!$user) {
             return false;
         }
-
-        /** @var GroupeGn $groupeGn */
+        /** @var GroupeGn|false $groupeGn */
         $groupeGn = $groupe->getGroupeGns()->last();
         if (!$groupeGn) {
             return false;
         }
 
-        return ($groupeGn->getParticipant()?->getUser()?->getId()
-                ?? $groupe->getUserRelatedByResponsableId()?->getId()) === $user->getId();
+        return ($groupeGn->getParticipant()?->getUser()?->getId() ?? $groupe->getUserRelatedByResponsableId()?->getId()) === $user->getId();
     }
 }

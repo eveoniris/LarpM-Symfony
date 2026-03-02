@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Culture;
 
@@ -23,28 +24,25 @@ class CultureForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', TextType::class)
-            ->add('description', TextareaType::class, [
-                'required' => false,
-                'label' => 'Description succinte',
-                'attr' => [
-                    'class' => 'tinymce',
-                    'row' => 9,
-                ],
-            ])
-            ->add('descriptionComplete', TextareaType::class, [
-                'required' => false,
-                'label' => 'Description complète de la culture (accessible aux joueurs membres des territoires correspondant à cette culture)',
-                'attr' => [
-                    'class' => 'tinymce',
-                    'row' => 9,
-                ],
-            ])
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+        $builder->add('label', TextType::class)->add('description', TextareaType::class, [
+            'required' => false,
+            'label' => 'Description succinte',
+            'attr' => [
+                'class' => 'tinymce',
+                'row' => 9,
+            ],
+        ])->add('descriptionComplete', TextareaType::class, [
+            'required' => false,
+            'label' => 'Description complète de la culture (accessible aux joueurs membres des territoires correspondant à cette culture)',
+            'attr' => [
+                'class' => 'tinymce',
+                'row' => 9,
+            ],
+        ])->add('submit', SubmitType::class, ['label' => 'Valider']);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {

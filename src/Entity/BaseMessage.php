@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -19,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BaseMessage', 'extended' => 'Message'])]
 class BaseMessage
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Assert\Length(max: 255)]
@@ -30,10 +33,10 @@ class BaseMessage
     protected ?string $text = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $creation_date;
+    protected ?DateTime $creation_date;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $update_date = null;
+    protected ?DateTime $update_date = null;
 
     #[Column(type: Types::BOOLEAN)]
     protected ?bool $lu = false;
@@ -48,13 +51,13 @@ class BaseMessage
 
     public function __construct()
     {
-        $this->creation_date = new \DateTime('now');
+        $this->creation_date = new DateTime('now');
     }
 
     /**
      * Get the value of creation_date.
      */
-    public function getCreationDate(): \DateTime
+    public function getCreationDate(): DateTime
     {
         return $this->creation_date;
     }
@@ -62,7 +65,7 @@ class BaseMessage
     /**
      * Set the value of creation_date.
      */
-    public function setCreationDate(\DateTime $creation_date): static
+    public function setCreationDate(DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -144,7 +147,7 @@ class BaseMessage
     /**
      * Get the value of update_date.
      */
-    public function getUpdateDate(): \DateTime
+    public function getUpdateDate(): DateTime
     {
         return $this->update_date;
     }
@@ -152,7 +155,7 @@ class BaseMessage
     /**
      * Set the value of update_date.
      */
-    public function setUpdateDate(\DateTime $update_date): static
+    public function setUpdateDate(DateTime $update_date): static
     {
         $this->update_date = $update_date;
 

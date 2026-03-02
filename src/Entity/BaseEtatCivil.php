@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -18,46 +19,47 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseEtatCivil', 'extended' => 'EtatCivil'])]
 class BaseEtatCivil
 {
+    /** @var ArrayCollection<int, User> */
     public ArrayCollection $users;
 
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $nom = null;
 
-    #[ORM\Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $prenom = null;
 
-    #[ORM\Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $prenom_usage = null;
 
-    #[ORM\Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $telephone = null;
 
-    #[ORM\Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $photo = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?DateTime $date_naissance = null;
 
-    #[ORM\Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::STRING, nullable: true)]
     protected ?string $probleme_medicaux = null;
 
-    #[ORM\Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $personne_a_prevenir = null;
 
-    #[ORM\Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $tel_pap = null;
 
-    #[ORM\Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $fedegn = null;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
     protected DateTime $creation_date;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected $update_date;
+    protected ?DateTime $update_date = null;
 
     #[ORM\OneToOne(mappedBy: 'etatCivil', targetEntity: User::class, cascade: ['persist', 'remove'])]
     protected User $user;
@@ -96,7 +98,7 @@ class BaseEtatCivil
         return $this->fedegn;
     }
 
-    public function setFedegn($fedegn): static
+    public function setFedegn(?string $fedegn): static
     {
         $this->fedegn = $fedegn;
 
@@ -231,6 +233,7 @@ class BaseEtatCivil
     public function setUser(?User $user = null): static
     {
         if (null !== $user) {
+            /* @phpstan-ignore argument.type */
             $user->setEtatCivil($this);
             $this->user = $user;
         }

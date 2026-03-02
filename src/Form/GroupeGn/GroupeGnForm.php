@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\GroupeGn;
 
 use App\Entity\Gn;
@@ -39,12 +41,13 @@ class GroupeGnForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if ($this->security->isGranted(Role::WARGAME->value)) {
-            $builder->add('gn', EntityType::class, [
-                'label' => 'Jeu',
-                'required' => true,
-                'class' => Gn::class,
-                'choice_label' => 'label',
-            ])
+            $builder
+                ->add('gn', EntityType::class, [
+                    'label' => 'Jeu',
+                    'required' => true,
+                    'class' => Gn::class,
+                    'choice_label' => 'label',
+                ])
                 ->add('free', ChoiceType::class, [
                     'label' => 'Groupe disponible ou réservé ?',
                     'required' => false,
@@ -61,13 +64,13 @@ class GroupeGnForm extends AbstractType
                     'label' => 'Nombre de place disponible',
                 ])
                 /*->add('jeuStrategique', CheckboxType::class, [
-                    'label' => 'Participe au jeu stratégique',
-                    'required' => false,
-                ])
-                ->add('jeuMaritime', CheckboxType::class, [
-                    'label' => 'Participe au jeu maritime',
-                    'required' => false,
-                ])*/
+                 * 'label' => 'Participe au jeu stratégique',
+                 * 'required' => false,
+                 * ])
+                 * ->add('jeuMaritime', CheckboxType::class, [
+                 * 'label' => 'Participe au jeu maritime',
+                 * 'required' => false,
+                 * ])*/
                 ->add('agents', IntegerType::class, [
                     'label' => "Nombre d'agents",
                     'required' => false,
@@ -101,11 +104,7 @@ class GroupeGnForm extends AbstractType
         /** @var User $user */
         $user = $this->security->getUser();
         $suzerain = $groupeGn->getSuzerain(false);
-        if (
-            !$this->security->isGranted(Role::WARGAME->value)
-            && $suzerain?->getId() !== $user?->getPersonnage()?->getId()
-        ) {
-            /** @var Personnage $personnage */
+        if (!$this->security->isGranted(Role::WARGAME->value) && $suzerain->getId() !== $user->getPersonnage()?->getId()) {
             // TODO : TEMP !
             $allow = false;
 
@@ -114,11 +113,13 @@ class GroupeGnForm extends AbstractType
             }
 
             if (!$allow) { // TODO ou est le CHEF
-                foreach ($user?->getPersonnages() as $personnage) {
-                    if ($personnage->getId() === $suzerain?->getId()) {
-                        $allow = true;
-                        break;
+                foreach ($user->getPersonnages() as $personnage) {
+                    if ($personnage->getId() !== $suzerain?->getId()) {
+                        continue;
                     }
+
+                    $allow = true;
+                    break;
                 }
             }
 
@@ -127,104 +128,75 @@ class GroupeGnForm extends AbstractType
             }
         }
 
-        $builder->add(
-            'suzerin',
-            EntityType::class,
-            [
-                'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId(
-                ).' - '.$personnage->getNameSurname(),
-                'autocomplete' => true,
-                'required' => false,
-                'class' => Personnage::class,
-                'placeholder' => 'Choisissez un personnage',
-                'empty_data' => null,
-                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
-                'query_builder' => static fn (PersonnageRepository $personnageRepository,
-                ) => $personnageRepository // TODO? and PID not IN groupeGn titres
+        $builder->add('suzerin', EntityType::class, [
+            'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId() . ' - ' . $personnage->getNameSurname(),
+            'autocomplete' => true,
+            'required' => false,
+            'class' => Personnage::class,
+            'placeholder' => 'Choisissez un personnage',
+            'empty_data' => null,
+            // On veut tous les personnages vivant du GN (pas que ceux du groupe)
+            'query_builder' => static fn (PersonnageRepository $personnageRepository) => $personnageRepository
                 ->createQueryBuilder('p')
-                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
-                    ->innerjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn')
-                    ->where('p.vivant = :vivant AND parti.gn = :gnid AND parti.groupeGn = :groupe_gn_id')
-                    ->setParameter('vivant', true)
-                    ->setParameter('gnid', $groupeGn->getGn()->getId())
-                    ->setParameter('groupe_gn_id', $builder->getData()->getId())
-                    ->orderBy('p.nom', 'ASC'),
-                'constraints' => [
-                    new Assert\Callback([
-                        'callback' => function (?Personnage $personnage, ExecutionContextInterface $context) use (
-                            $groupeGn,
-                        ) {
-                            if (!$personnage) {
-                                return;
-                            }
+                ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
+                ->innerjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn')
+                ->where('p.vivant = :vivant AND parti.gn = :gnid AND parti.groupeGn = :groupe_gn_id')
+                ->setParameter('vivant', true)
+                ->setParameter('gnid', $groupeGn->getGn()->getId())
+                ->setParameter('groupe_gn_id', $builder->getData()->getId())
+                ->orderBy('p.nom', 'ASC'), // TODO? and PID not IN groupeGn titres
+            'constraints' => [
+                /* @phpstan-ignore argument.type */
+                new Assert\Callback([
+                    'callback' => function (?Personnage $personnage, ExecutionContextInterface $context) use ($groupeGn): void {
+                        if (!$personnage) {
+                            return;
+                        }
 
-                            /** @var GroupeGnRepository $groupeGnRepository */
-                            $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
+                        /** @var GroupeGnRepository $groupeGnRepository */
+                        $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
 
-                            // Has titres in other groupe
-                            $titres = $groupeGnRepository->getTitres(
-                                $personnage,
-                                $groupeGn?->getGn(),
-                                $groupeGn,
-                            );
+                        // Has titres in other groupe
+                        $titres = $groupeGnRepository->getTitres($personnage, $groupeGn->getGn(), $groupeGn);
 
-                            if (!empty($titres)) {
-                                $context
-                                    ->buildViolation(
-                                        $this->translator->trans(
-                                            'groupeGn.titre.unique',
-                                            [
-                                                '%personnageName%' => $personnage->getIdName(),
-                                                '%titres%' => $titres,
-                                            ],
-                                        ),
-                                    )
-                                    ->atPath('[suzerin]')
-                                    ->addViolation();
-                            }
+                        if (!empty($titres)) {
+                            $context
+                                ->buildViolation($this->translator->trans('groupeGn.titre.unique', [
+                                    '%personnageName%' => $personnage->getIdName(),
+                                    '%titres%' => $titres,
+                                ]))
+                                ->atPath('[suzerin]')
+                                ->addViolation();
+                        }
 
-                            // has more than one title
-                            $nbTitresInGroupe = $groupeGnRepository->countTitres(
-                                $personnage,
-                                $groupeGn?->getGn(),
-                            );
+                        // has more than one title
+                        $nbTitresInGroupe = $groupeGnRepository->countTitres($personnage, $groupeGn->getGn());
 
-                            if ($nbTitresInGroupe > 1) {
-                                $context
-                                    ->buildViolation(
-                                        $this->translator->trans(
-                                            'groupeGn.titre.unique',
-                                            [
-                                                '%personnageName%' => $personnage->getIdName(),
-                                                '%titres%' => $groupeGnRepository->getTitres(
-                                                    $personnage,
-                                                    $groupeGn?->getGn(),
-                                                ),
-                                            ],
-                                        ),
-                                    )
-                                    ->atPath('[suzerin]')
-                                    ->addViolation();
-                            }
-                        },
-                    ]),
-                ],
+                        if ($nbTitresInGroupe > 1) {
+                            $context
+                                ->buildViolation($this->translator->trans('groupeGn.titre.unique', [
+                                    '%personnageName%' => $personnage->getIdName(),
+                                    '%titres%' => $groupeGnRepository->getTitres($personnage, $groupeGn->getGn()),
+                                ]))
+                                ->atPath('[suzerin]')
+                                ->addViolation();
+                        }
+                    },
+                ]),
             ],
-        );
+        ]);
 
         $fieldCallback = function (string $child, string $label) use ($groupeGn) {
             return [
-                'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId(
-                ).' - '.$personnage->getNameSurname(),
+                'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId() . ' - ' . $personnage->getNameSurname(),
                 'autocomplete' => true,
                 'required' => false,
                 'class' => Personnage::class,
                 'placeholder' => 'Choisissez un personnage',
                 'empty_data' => null,
                 // On veut tous les personnages vivant du GN (pas que ceux du groupe)
-                'query_builder' => static fn (PersonnageRepository $personnageRepository,
-                ) => $personnageRepository // TODO? and PID not IN groupeGn titres
-                ->createQueryBuilder('p')
+                'query_builder' => static fn (PersonnageRepository $personnageRepository) => $personnageRepository // TODO? and PID not IN groupeGn titres
+                    ->createQueryBuilder('p')
                     ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
                     // ->leftjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn') // AND titre_id is null
                     ->where('p.vivant = :vivant AND parti.gn = :gnid')
@@ -234,11 +206,9 @@ class GroupeGnForm extends AbstractType
                     // ->setParameter('groupe_gn_id', $builder->getData()->getId())
                     ->orderBy('p.nom', 'ASC'),
                 'constraints' => [
+                    /* @phpstan-ignore argument.type */
                     new Assert\Callback([
-                        'callback' => function (?Personnage $personnage, ExecutionContextInterface $context) use (
-                            $child,
-                            $groupeGn,
-                        ) {
+                        'callback' => function (?Personnage $personnage, ExecutionContextInterface $context) use ($child, $groupeGn): void {
                             if (!$personnage) {
                                 return;
                             }
@@ -247,48 +217,28 @@ class GroupeGnForm extends AbstractType
                             $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
 
                             // Has titres in other groupe
-                            $titres = $groupeGnRepository->getTitres(
-                                $personnage,
-                                $groupeGn?->getGn(),
-                                $groupeGn,
-                            );
+                            $titres = $groupeGnRepository->getTitres($personnage, $groupeGn->getGn(), $groupeGn);
 
                             if (!empty($titres)) {
                                 $context
-                                    ->buildViolation(
-                                        $this->translator->trans(
-                                            'groupeGn.titre.unique',
-                                            [
-                                                '%personnageName%' => $personnage->getIdName(),
-                                                '%titres%' => $titres,
-                                            ],
-                                        ),
-                                    )
-                                    ->atPath('['.$child.']')
+                                    ->buildViolation($this->translator->trans('groupeGn.titre.unique', [
+                                        '%personnageName%' => $personnage->getIdName(),
+                                        '%titres%' => $titres,
+                                    ]))
+                                    ->atPath('[' . $child . ']')
                                     ->addViolation();
                             }
 
                             // has more than one title
-                            $nbTitresInGroupe = $groupeGnRepository->countTitres(
-                                $personnage,
-                                $groupeGn?->getGn(),
-                            );
+                            $nbTitresInGroupe = $groupeGnRepository->countTitres($personnage, $groupeGn->getGn());
 
                             if ($nbTitresInGroupe > 1) {
                                 $context
-                                    ->buildViolation(
-                                        $this->translator->trans(
-                                            'groupeGn.titre.unique',
-                                            [
-                                                '%personnageName%' => $personnage->getIdName(),
-                                                '%titres%' => $groupeGnRepository->getTitres(
-                                                    $personnage,
-                                                    $groupeGn?->getGn(),
-                                                ),
-                                            ],
-                                        ),
-                                    )
-                                    ->atPath('['.$child.']')
+                                    ->buildViolation($this->translator->trans('groupeGn.titre.unique', [
+                                        '%personnageName%' => $personnage->getIdName(),
+                                        '%titres%' => $groupeGnRepository->getTitres($personnage, $groupeGn->getGn()),
+                                    ]))
+                                    ->atPath('[' . $child . ']')
                                     ->addViolation();
                             }
                         },

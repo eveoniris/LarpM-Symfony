@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Personnage;
 
 use App\Entity\Age;
@@ -27,10 +29,11 @@ class PersonnageForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', TextType::class, [
-            'required' => true,
-            'label' => '',
-        ])
+        $builder
+            ->add('nom', TextType::class, [
+                'required' => true,
+                'label' => '',
+            ])
             ->add('surnom', TextType::class, [
                 'required' => false,
                 'label' => '',

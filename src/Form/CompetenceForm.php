@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -25,30 +26,26 @@ class CompetenceForm extends AbstractType
             'required' => true,
             'class' => CompetenceFamily::class,
             'choice_label' => 'label',
-        ])
-            ->add('level', EntityType::class, [
-                'label' => 'Niveau',
-                'required' => true,
-                'class' => Level::class,
-                'choice_label' => 'label',
-            ])
-            ->add('description', TextareaType::class, [
-                'required' => false,
-                'attr' => [
-                    'class' => 'tinymce',
-                ],
-            ])
-            ->add('file', FileType::class, [
-                'label' => 'Téléversez un document',
-                'required' => true,
-            ])
-            ->add('materiel', TextareaType::class, [
-                'label' => 'Matériel necessaire',
-                'required' => false,
-                'attr' => [
-                    'class' => 'tinymce',
-                ],
-            ]);
+        ])->add('level', EntityType::class, [
+            'label' => 'Niveau',
+            'required' => true,
+            'class' => Level::class,
+            'choice_label' => 'label',
+        ])->add('description', TextareaType::class, [
+            'required' => false,
+            'attr' => [
+                'class' => 'tinymce',
+            ],
+        ])->add('file', FileType::class, [
+            'label' => 'Téléversez un document',
+            'required' => true,
+        ])->add('materiel', TextareaType::class, [
+            'label' => 'Matériel necessaire',
+            'required' => false,
+            'attr' => [
+                'class' => 'tinymce',
+            ],
+        ]);
     }
 
     /**

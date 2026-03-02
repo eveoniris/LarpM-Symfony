@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\User;
 
 use App\Entity\Billet;
@@ -19,26 +21,22 @@ class UserNewForm extends AbstractType
         $builder->add('email', TextType::class, [
             'label' => 'Adresse mail',
             'required' => true,
-        ])
-            ->add('email_contact', TextType::class, [
-                'label' => 'Adresse mail de contact',
-            ])
-            ->add('username', TextType::class, [
-                'label' => "Nom d'utilisateur",
-                'required' => true,
-            ])
-            ->add('gn', EntityType::class, [
-                'label' => 'Jeu auquel le nouvel utilisateur participe',
-                'class' => Gn::class,
-                'choice_label' => 'label',
-                'query_builder' => static fn ($er) => $er->createQueryBuilder('gn')->orderBy('gn.id', 'DESC'),
-            ])
-            ->add('billet', EntityType::class, [
-                'label' => 'Choisissez le billet à donner à cet utilisateur',
-                'class' => Billet::class,
-                'choice_label' => 'fullLabel',
-                'query_builder' => static fn ($er) => $er->createQueryBuilder('b')->orderBy('b.gn', 'DESC'),
-            ]);
+        ])->add('email_contact', TextType::class, [
+            'label' => 'Adresse mail de contact',
+        ])->add('username', TextType::class, [
+            'label' => "Nom d'utilisateur",
+            'required' => true,
+        ])->add('gn', EntityType::class, [
+            'label' => 'Jeu auquel le nouvel utilisateur participe',
+            'class' => Gn::class,
+            'choice_label' => 'label',
+            'query_builder' => static fn ($er) => $er->createQueryBuilder('gn')->orderBy('gn.id', 'DESC'),
+        ])->add('billet', EntityType::class, [
+            'label' => 'Choisissez le billet à donner à cet utilisateur',
+            'class' => Billet::class,
+            'choice_label' => 'fullLabel',
+            'query_builder' => static fn ($er) => $er->createQueryBuilder('b')->orderBy('b.gn', 'DESC'),
+        ]);
     }
 
     /**

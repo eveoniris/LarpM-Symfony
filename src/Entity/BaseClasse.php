@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,7 +24,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseClasse', 'extended' => 'Classe'])]
 abstract class BaseClasse
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'label_masculin', type: Types::STRING, length: 45, nullable: true)]
@@ -64,6 +66,7 @@ abstract class BaseClasse
     #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: false)]
     protected Collection $personnageSecondaires;
 
+    /** @var Collection<int, CompetenceFamily> */
     #[JoinTable(name: 'classe_competence_family_favorite')]
     #[JoinColumn(name: 'classe_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
@@ -71,6 +74,7 @@ abstract class BaseClasse
     #[ORM\OrderBy(['label' => 'ASC', 'id' => 'ASC'])]
     protected Collection $competenceFamilyFavorites;
 
+    /** @var Collection<int, CompetenceFamily> */
     #[JoinTable(name: 'classe_competence_family_normale')]
     #[JoinColumn(name: 'classe_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
@@ -78,6 +82,7 @@ abstract class BaseClasse
     #[ORM\OrderBy(['label' => 'ASC', 'id' => 'ASC'])]
     protected Collection $competenceFamilyNormales;
 
+    /** @var Collection<int, CompetenceFamily> */
     #[JoinTable(name: 'classe_competence_family_creation')]
     #[JoinColumn(name: 'classe_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'competence_family_id', referencedColumnName: 'id')]
@@ -98,6 +103,7 @@ abstract class BaseClasse
 
     public function addCompetenceFamilyCreation(CompetenceFamily $competenceFamily): static
     {
+        /* @phpstan-ignore argument.type */
         $competenceFamily->addClasseCreation($this);
         $this->competenceFamilyCreations[] = $competenceFamily;
 
@@ -106,6 +112,7 @@ abstract class BaseClasse
 
     public function addCompetenceFamilyFavorite(CompetenceFamily $competenceFamily): static
     {
+        /* @phpstan-ignore argument.type */
         $competenceFamily->addClasseFavorite($this);
         $this->competenceFamilyFavorites[] = $competenceFamily;
 
@@ -114,6 +121,7 @@ abstract class BaseClasse
 
     public function addCompetenceFamilyNormale(CompetenceFamily $competenceFamily): static
     {
+        /* @phpstan-ignore argument.type */
         $competenceFamily->addClasseNormale($this);
         $this->competenceFamilyNormales[] = $competenceFamily;
 
@@ -141,16 +149,19 @@ abstract class BaseClasse
         return $this;
     }
 
+    /** @return Collection<int, CompetenceFamily> */
     public function getCompetenceFamilyCreations(): Collection
     {
         return $this->competenceFamilyCreations;
     }
 
+    /** @return Collection<int, CompetenceFamily> */
     public function getCompetenceFamilyFavorites(): Collection
     {
         return $this->competenceFamilyFavorites;
     }
 
+    /** @return Collection<int, CompetenceFamily> */
     public function getCompetenceFamilyNormales(): Collection
     {
         return $this->competenceFamilyNormales;
@@ -161,7 +172,7 @@ abstract class BaseClasse
         return $this->creation;
     }
 
-    public function setCreation(string $creation): static
+    public function setCreation(?bool $creation): static
     {
         $this->creation = $creation;
 
@@ -180,6 +191,7 @@ abstract class BaseClasse
         return $this;
     }
 
+    /** @return Collection<int, GroupeClasse> */
     public function getGroupeClasses(): Collection
     {
         return $this->groupeClasses;
@@ -245,11 +257,13 @@ abstract class BaseClasse
         return $this;
     }
 
+    /** @return Collection<int, PersonnageSecondaire> */
     public function getPersonnageSecondaires(): Collection
     {
         return $this->personnageSecondaires;
     }
 
+    /** @return Collection<int, Personnage> */
     public function getPersonnages(): Collection
     {
         return $this->personnages;
@@ -257,6 +271,7 @@ abstract class BaseClasse
 
     public function removeCompetenceFamilyCreation(CompetenceFamily $competenceFamily): static
     {
+        /* @phpstan-ignore argument.type */
         $competenceFamily->removeClasseCreation($this);
         $this->competenceFamilyCreations->removeElement($competenceFamily);
 
@@ -265,6 +280,7 @@ abstract class BaseClasse
 
     public function removeCompetenceFamilyFavorite(CompetenceFamily $competenceFamily): static
     {
+        /* @phpstan-ignore argument.type */
         $competenceFamily->removeClasseFavorite($this);
         $this->competenceFamilyFavorites->removeElement($competenceFamily);
 
@@ -273,6 +289,7 @@ abstract class BaseClasse
 
     public function removeCompetenceFamilyNormale(CompetenceFamily $competenceFamily): static
     {
+        /* @phpstan-ignore argument.type */
         $competenceFamily->removeClasseNormale($this);
         $this->competenceFamilyNormales->removeElement($competenceFamily);
 

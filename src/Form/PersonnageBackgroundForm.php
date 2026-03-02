@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -25,29 +26,26 @@ class PersonnageBackgroundForm extends AbstractType
             'label' => 'Background',
             'attr' => [
                 'class' => 'tinymce',
-                'rows' => 9],
-        ])
-            ->add('gn', EntityType::class, [
-                'required' => true,
-                'label' => 'GN',
-                'class' => Gn::class,
-                'choice_label' => 'label',
-                'placeholder' => 'Choisissez le GN auquel est lié ce background',
-                'empty_data' => null,
-            ])
-            ->add('visibility', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Visibilité',
-                'choices' => [
-                    'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
-                    'Le proprietaire du personnage peut voir ceci' => 'OWNER',
-                ],
-            ])
-            ->add(
-                'save',
-                SubmitType::class,
-                ['label' => 'Valider les modifications', 'attr' => ['class' => 'btn btn-secondary']]
-            );
+                'rows' => 9,
+            ],
+        ])->add('gn', EntityType::class, [
+            'required' => true,
+            'label' => 'GN',
+            'class' => Gn::class,
+            'choice_label' => 'label',
+            'placeholder' => 'Choisissez le GN auquel est lié ce background',
+            'empty_data' => null,
+        ])->add('visibility', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Visibilité',
+            'choices' => [
+                'Seul les scénaristes peuvent voir ceci' => 'PRIVATE',
+                'Le proprietaire du personnage peut voir ceci' => 'OWNER',
+            ],
+        ])->add('save', SubmitType::class, [
+            'label' => 'Valider les modifications',
+            'attr' => ['class' => 'btn btn-secondary'],
+        ]);
     }
 
     /**

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,22 +23,23 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseRestriction', 'extended' => 'Restriction'])]
 class BaseRestriction
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected int $id;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 90)]
     protected string $label;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $creation_date = null;
+    protected ?DateTime $creation_date = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $update_date = null;
+    protected ?DateTime $update_date = null;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'restrictionRelatedByAuteurIds')]
     #[JoinColumn(name: 'auteur_id', referencedColumnName: 'id', nullable: false)]
     protected User $userRelatedByAuteurId;
 
+    /** @var Collection<int, User> */
     #[ManyToMany(targetEntity: User::class, mappedBy: 'restrictions')]
     protected Collection $users;
 
@@ -68,7 +72,7 @@ class BaseRestriction
         return $this->label ?? '';
     }
 
-    public function setCreationDate(\DateTime $creation_date): static
+    public function setCreationDate(DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -78,27 +82,25 @@ class BaseRestriction
     /**
      * Get the value of creation_date.
      */
-    public function getCreationDate(): ?\DateTime
+    public function getCreationDate(): ?DateTime
     {
         return $this->creation_date;
     }
 
-    public function setUpdateDate(\DateTime $update_date): static
+    public function setUpdateDate(DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
         return $this;
     }
 
-    public function getUpdateDate(): ?\DateTime
+    public function getUpdateDate(): ?DateTime
     {
         return $this->update_date;
     }
 
     /**
      * Set User entity related by `auteur_id` (many to one).
-     *
-     * @return \App\Entity\Restriction
      */
     public function setUserRelatedByAuteurId(?User $user = null): static
     {
@@ -109,8 +111,6 @@ class BaseRestriction
 
     /**
      * Get User entity related by `auteur_id` (many to one).
-     *
-     * @return \App\Entity\User
      */
     public function getUserRelatedByAuteurId(): User
     {
@@ -131,13 +131,14 @@ class BaseRestriction
         return $this;
     }
 
+    /** @return Collection<int, User> */
     public function getUsers(): Collection
     {
         return $this->users;
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'creation_date', 'update_date', 'auteur_id'];
-    } */
+     * {
+     * return ['id', 'label', 'creation_date', 'update_date', 'auteur_id'];
+     * } */
 }

@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 final class Utilities
 {
-    public static function stable_uasort(array &$array, $value_compare_func): true
+    /** @param array<mixed, mixed> $array */
+    public static function stable_uasort(array &$array, callable $value_compare_func): true
     {
         $index = 0;
         foreach ($array as &$item) {
@@ -22,15 +25,13 @@ final class Utilities
         return $result;
     }
 
-    public static function sortBy($a, $b): int
+    public static function sortBy(mixed $a, mixed $b): int
     {
         return $a <=> $b;
     }
 
-    public static function sortByDesc($a, $b): int
+    public static function sortByDesc(mixed $a, mixed $b): int
     {
         return self::sortBy($a, $b) * -1;
     }
-
-
 }

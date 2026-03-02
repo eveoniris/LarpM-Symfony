@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Lignee;
 
 use Symfony\Component\Form\AbstractType;
@@ -22,18 +24,16 @@ class LigneeForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('nom', TextType::class, [
-                'required' => true,
-                'attr' => [
-                    'placeholder' => 'Nom de la lignée',
-                ],
-            ]
-        )
-            ->add('description', TextareaType::class, [
-                'required' => false,
-                'attr' => [
-                    'placeholder' => 'Description de la lignée (aperçu et/ou effet de jeu)',
-                ],
-            ]);
+            'required' => true,
+            'attr' => [
+                'placeholder' => 'Nom de la lignée',
+            ],
+        ])->add('description', TextareaType::class, [
+            'required' => false,
+            'attr' => [
+                'placeholder' => 'Description de la lignée (aperçu et/ou effet de jeu)',
+            ],
+        ]);
     }
 
     /**

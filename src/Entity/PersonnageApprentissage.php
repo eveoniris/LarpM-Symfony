@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\PersonnageApprentissageRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
@@ -24,20 +27,20 @@ class PersonnageApprentissage
     private Competence $competence;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $created_at = null;
+    private ?DateTimeInterface $created_at = null;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $date_enseignement = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_usage = null;
+    private ?DateTimeInterface $date_usage = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'apprentissageEnseignants')]
     #[JoinColumn(nullable: false)]
     private ?Personnage $enseignant = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $deleted_at = null;
+    private ?DateTimeInterface $deleted_at = null;
 
     public function getCompetence(): ?Competence
     {
@@ -51,7 +54,7 @@ class PersonnageApprentissage
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->created_at;
     }
@@ -69,12 +72,12 @@ class PersonnageApprentissage
         return $this;
     }
 
-    public function getDateUsage(): ?\DateTimeInterface
+    public function getDateUsage(): ?DateTimeInterface
     {
         return $this->date_usage;
     }
 
-    public function setDateUsage(?\DateTimeInterface $date_usage): static
+    public function setDateUsage(?DateTimeInterface $date_usage): static
     {
         $this->date_usage = $date_usage;
 
@@ -107,23 +110,24 @@ class PersonnageApprentissage
 
     public function getDescription(): string
     {
-        return sprintf(
+        return \sprintf(
             '%s enseigné par %s pour %s le %s%s',
             $this->getCompetence()?->getLabel(),
             $this->getEnseignant()?->getIdName(),
             $this->getPersonnage()?->getIdName(),
             $this->getDateEnseignement(),
-            !$this->getDateUsage() ? '' : '. Utilisé le '.$this->getDateUsage()->format('d/m/Y')
+            !$this->getDateUsage() ? '' : '. Utilisé le ' . $this->getDateUsage()->format('d/m/Y'),
         );
     }
 
-    public function setCreatedAt(?\DateTimeInterface $createdAt): static
+    public function setCreatedAt(?DateTimeInterface $createdAt): static
     {
         $this->created_at = $createdAt;
 
         return $this;
     }
 
+    /** @return array<string, mixed> */
     public function toLog(): array
     {
         return [
@@ -144,12 +148,12 @@ class PersonnageApprentissage
         return $this;
     }
 
-    public function getDeletedAt(): ?\DateTimeInterface
+    public function getDeletedAt(): ?DateTimeInterface
     {
         return $this->deleted_at;
     }
 
-    public function setDeletedAt(?\DateTimeInterface $deleted_at): static
+    public function setDeletedAt(?DateTimeInterface $deleted_at): static
     {
         $this->deleted_at = $deleted_at;
 

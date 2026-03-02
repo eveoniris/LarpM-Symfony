@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Connaissance;
@@ -26,11 +28,10 @@ class ConnaissanceController extends AbstractController
 {
     #[Route(name: 'list')]
     public function listAction(
-        Request                $request,
-        PagerService           $pagerService,
+        Request $request,
+        PagerService $pagerService,
         ConnaissanceRepository $connaissanceRepository,
-    ): Response
-    {
+    ): Response {
         $pagerService->setRequest($request)->setRepository($connaissanceRepository);
 
         return $this->render('connaissance/list.twig', [
@@ -58,26 +59,24 @@ class ConnaissanceController extends AbstractController
     {
         $connaissance = new Connaissance();
 
-        return $this->handleCreateOrUpdate(
-            $request,
-            $connaissance,
-            ConnaissanceForm::class
-        );
+        return $this->handleCreateOrUpdate($request, $connaissance, ConnaissanceForm::class);
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
-        Request   $request,
-                  $entity,
-        string    $formClass,
-        array     $breadcrumb = [],
-        array     $routes = [],
-        array     $msg = [],
+        Request $request,
+        object $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
         ?callable $entityCallback = null,
-    ): RedirectResponse|Response
-    {
+    ): RedirectResponse|Response {
         if (!$entityCallback) {
-            /** @var Connaissance $connaissance */
-            $entityCallback = fn(mixed $connaissance, FormInterface $form): ?Connaissance => $connaissance->handleUpload($this->fileUploader);
+            $entityCallback = fn (
+                mixed $connaissance,
+                FormInterface $form,
+            ): ?Connaissance => $connaissance->handleUpload($this->fileUploader);
         }
 
         return parent::handleCreateOrUpdate(
@@ -96,7 +95,7 @@ class ConnaissanceController extends AbstractController
                 'title_add' => $this->translator->trans('Ajouter une connaissance'),
                 'title_update' => $this->translator->trans('Modifier une connaissance'),
             ],
-            entityCallback: $entityCallback
+            entityCallback: $entityCallback,
         );
     }
 
@@ -106,38 +105,33 @@ class ConnaissanceController extends AbstractController
     #[Route('/{connaissance}/update', name: 'update', requirements: ['connaissance' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Connaissance $connaissance): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $connaissance,
-            ConnaissanceForm::class
-        );
+        return $this->handleCreateOrUpdate($request, $connaissance, ConnaissanceForm::class);
     }
 
     /**
      * Supprime une connaissance.
      */
-    #[Route('/{connaissance}/delete', name: 'delete', requirements: ['connaissance' => Requirement::DIGITS], methods: [
-        'DELETE',
-        'GET',
-        'POST',
-    ])]
+    #[Route(
+        '/{connaissance}/delete',
+        name: 'delete',
+        requirements: ['connaissance' => Requirement::DIGITS],
+        methods: [
+            'DELETE',
+            'GET',
+            'POST',
+        ],
+    )]
     public function deleteAction(#[MapEntity] Connaissance $connaissance): RedirectResponse|Response
     {
-        return $this->genericDelete(
-            $connaissance,
-            'Supprimer une connaissance',
-            'La connaissance a été supprimée',
-            'connaissance.list',
+        return $this->genericDelete($connaissance, 'Supprimer une connaissance', 'La connaissance a été supprimée', 'connaissance.list', [
+            ['route' => $this->generateUrl('connaissance.list'), 'name' => 'Liste des connaissances'],
             [
-                ['route' => $this->generateUrl('connaissance.list'), 'name' => 'Liste des connaissances'],
-                [
-                    'route' => $this->generateUrl('connaissance.detail', ['connaissance' => $connaissance->getId()]),
-                    'connaissance' => $connaissance->getId(),
-                    'name' => $connaissance->getLabel(),
-                ],
-                ['name' => 'Supprimer une connaissance'],
-            ]
-        );
+                'route' => $this->generateUrl('connaissance.detail', ['connaissance' => $connaissance->getId()]),
+                'connaissance' => $connaissance->getId(),
+                'name' => $connaissance->getLabel(),
+            ],
+            ['name' => 'Supprimer une connaissance'],
+        ]);
     }
 
     /**
@@ -151,12 +145,12 @@ class ConnaissanceController extends AbstractController
 
     #[Route('/{connaissance}/personnages', name: 'personnages', requirements: ['connaissance' => Requirement::DIGITS])]
     public function personnagesAction(
-        Request                   $request,
-        #[MapEntity] Connaissance $connaissance,
-        PersonnageService         $personnageService,
-        ConnaissanceRepository    $connaissanceRepository,
-    ): Response
-    {
+        Request $request,
+        #[MapEntity]
+        Connaissance $connaissance,
+        PersonnageService $personnageService,
+        ConnaissanceRepository $connaissanceRepository,
+    ): Response {
         $routeName = 'connaissance.personnages';
         $routeParams = ['connaissance' => $connaissance->getId()];
         $twigFilePath = 'connaissance/personnages.twig';
@@ -181,12 +175,9 @@ class ConnaissanceController extends AbstractController
             $columnKeys,
             $additionalViewParams,
             $personnages,
-            $connaissanceRepository->getPersonnages($connaissance)
+            $connaissanceRepository->getPersonnages($connaissance),
         );
 
-        return $this->render(
-            $twigFilePath,
-            $viewParams
-        );
+        return $this->render($twigFilePath, $viewParams);
     }
 }

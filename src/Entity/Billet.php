@@ -1,34 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use App\Repository\BilletRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
-use App\Repository\BilletRepository;
+use Stringable;
 
 #[Entity(repositoryClass: BilletRepository::class)]
-class Billet extends BaseBillet implements \Stringable
+class Billet extends BaseBillet implements Stringable
 {
     public function __construct()
     {
         parent::__construct();
-        $this->setCreationDate(new \DateTime('NOW'));
-        $this->setUpdateDate(new \DateTime('NOW'));
+        $this->setCreationDate(new DateTime('NOW'));
+        $this->setUpdateDate(new DateTime('NOW'));
         $this->setFedegn(false);
     }
 
     public function __toString(): string
     {
-        return $this->getGn()?->getLabel().' - '.$this->getLabel();
+        return $this->getGn()?->getLabel() . ' - ' . $this->getLabel();
     }
 
+    /** @return Collection<int, User> */
     public function getUsers(): Collection
     {
         $result = new ArrayCollection();
 
         foreach ($this->getParticipants() as $participant) {
-            $result[] = $participant->getUser();
+            $result->add($participant->getUser());
         }
 
         return $result;
@@ -48,7 +53,7 @@ class Billet extends BaseBillet implements \Stringable
 
     public function fullLabel(): string
     {
-        return $this->getGn()?->getLabel().' - '.$this->getLabel();
+        return $this->getGn()?->getLabel() . ' - ' . $this->getLabel();
     }
 
     public function isPnj(): bool

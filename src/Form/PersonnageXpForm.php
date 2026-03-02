@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -22,15 +23,14 @@ class PersonnageXpForm extends AbstractType
                 new Type(['integer']),
                 new NotBlank(),
             ],
-        ])
-            ->add('explanation', TextType::class, [
-                'label' => 'Explication',
-                'required' => true,
-                'constraints' => [
-                    new Length(['max' => 100]),
-                    new NotBlank(),
-                ],
-            ]);
+        ])->add('explanation', TextType::class, [
+            'label' => 'Explication',
+            'required' => true,
+            'constraints' => [
+                new Length(['max' => 100]),
+                new NotBlank(),
+            ],
+        ]);
     }
 
     public function getName(): string

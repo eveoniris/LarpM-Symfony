@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\DomaineRepository;
@@ -10,6 +12,6 @@ class Domaine extends BaseDomaine
 {
     public function getFullDescription(): string
     {
-        return $this->getLabel().' - '.$this->getDescription();
+        return $this->getLabel() . ' - ' . $this->getDescription();
     }
 }

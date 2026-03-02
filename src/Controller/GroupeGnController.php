@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Groupe;
@@ -15,7 +17,6 @@ use App\Repository\GroupeGnRepository;
 use App\Repository\ParticipantRepository;
 use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
-use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -36,10 +37,8 @@ class GroupeGnController extends AbstractController
     #[Route('/groupeGn/{groupe}/add/', name: 'groupeGn.add')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
     // TODO maybe not work : test migration to V2
-    public function addAction(
-        Request $request,
-        #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    public function addAction(Request $request, #[MapEntity] Groupe $groupe): RedirectResponse|Response
+    {
         $groupeGn = new GroupeGn();
         $groupeGn->setGroupe($groupe);
 
@@ -52,8 +51,10 @@ class GroupeGnController extends AbstractController
             $groupeGn->setJeuMaritime($jeu->getJeuMaritime());
         }
 
-        $form = $this->createForm(GroupeGnForm::class, $groupeGn)
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
+        $form = $this->createForm(GroupeGnForm::class, $groupeGn)->add('submit', SubmitType::class, [
+            'label' => 'Enregistrer',
+            'attr' => ['class' => 'btn btn-secondary'],
+        ]);
 
         $form->handleRequest($request);
 
@@ -78,11 +79,8 @@ class GroupeGnController extends AbstractController
      */
     // #[Route('/groupeGn/{groupeGn}/detail', name: 'groupeGn.detail')]
     // #[Route('/groupeGn/{groupeGn}', name: 'groupeGn.groupe')]
-    #[Deprecated]
-    public function groupeAction(
-        Request $request,
-        #[MapEntity] GroupeGn $groupeGn,
-    ): Response {
+    public function groupeAction(Request $request, #[MapEntity] GroupeGn $groupeGn): Response
+    {
         $participant = $this->getUser()?->getParticipant($groupeGn->getGn());
 
         if (!$participant) {
@@ -114,10 +112,6 @@ class GroupeGnController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$user) {
-            return $throw ? throw new AccessDeniedException() : false;
-        }
-
         $groupe = $groupeGn?->getGroupe();
 
         // Est le responsable ?
@@ -135,10 +129,6 @@ class GroupeGnController extends AbstractController
         }
         /** @var User $user */
         $user = $this->getUser();
-
-        if (!$user) {
-            return $throw ? throw new AccessDeniedException() : false;
-        }
 
         if (!$groupeGn) {
             return $throw ? throw new AccessDeniedException() : false;
@@ -164,8 +154,7 @@ class GroupeGnController extends AbstractController
         Groupe $groupe,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeGnOrdreForm::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(GroupeGnOrdreForm::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -197,7 +186,8 @@ class GroupeGnController extends AbstractController
     ): RedirectResponse|Response {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
-        $form = $this->createFormBuilder()
+        $form = $this
+            ->createFormBuilder()
             ->add('participant', EntityType::class, [
                 'label' => 'Choisissez le nouveau membre de votre groupe',
                 'required' => false,
@@ -238,10 +228,10 @@ class GroupeGnController extends AbstractController
                 $this->addFlash('success', 'Le joueur a été ajouté à votre groupe.');
             }
 
-            return $this->redirectToRoute(
-                'groupe.detail',
-                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
-            );
+            return $this->redirectToRoute('groupe.detail', [
+                'groupeGn' => $groupeGn->getId(),
+                'groupe' => $groupeGn->getGroupe()->getId(),
+            ]);
         }
 
         return $this->render('groupeGn/add.twig', [
@@ -267,14 +257,13 @@ class GroupeGnController extends AbstractController
      */
     #[Route('/groupeGn/{groupeGn}/participants/add/', name: 'groupeGn.participants.add')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
-    public function participantAddAction(
-        Request $request,
-        GroupeGn $groupeGn,
-    ): RedirectResponse|Response {
+    public function participantAddAction(Request $request, GroupeGn $groupeGn): RedirectResponse|Response
+    {
         // $form = $this->createForm(GroupeGnForm::class, $groupeGn)
         //    ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
         // TODO Migrate to V2
-        $form = $this->createFormBuilder()
+        $form = $this
+            ->createFormBuilder()
             ->add('participant', EntityType::class, [
                 'label' => 'Nouveau participant',
                 'required' => true,
@@ -332,9 +321,7 @@ class GroupeGnController extends AbstractController
         GroupeGn $groupeGn,
         Participant $participant,
     ): RedirectResponse|Response {
-        $form = $this->createFormBuilder()
-            ->add('submit', SubmitType::class, ['label' => 'Retirer'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('submit', SubmitType::class, ['label' => 'Retirer'])->getForm();
 
         $form->handleRequest($request);
 
@@ -371,8 +358,9 @@ class GroupeGnController extends AbstractController
     ): RedirectResponse|Response {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
-        $form = $this->createForm(GroupeGnPlaceAvailableForm::class, $groupeGn)
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(GroupeGnPlaceAvailableForm::class, $groupeGn)->add('submit', SubmitType::class, [
+            'label' => 'Enregistrer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -383,10 +371,10 @@ class GroupeGnController extends AbstractController
 
             $this->addFlash('success', 'Vos modifications ont été enregistré.');
 
-            return $this->redirectToRoute(
-                'groupe.groupe.detail',
-                ['groupeGn' => $groupeGn->getId(), 'groupe' => $groupeGn->getGroupe()->getId()],
-            );
+            return $this->redirectToRoute('groupe.groupe.detail', [
+                'groupeGn' => $groupeGn->getId(),
+                'groupe' => $groupeGn->getGroupe()->getId(),
+            ]);
         }
 
         return $this->render('groupeGn/placeAvailable.twig', [
@@ -407,30 +395,28 @@ class GroupeGnController extends AbstractController
         Groupe $groupe,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeGnResponsableForm::class, $groupeGn)
-            ->add('responsable', EntityType::class, [
-                'label' => 'Responsable',
-                'required' => false,
-                'class' => Participant::class,
-                'choice_label' => 'user.etatCivil',
-                'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
-                    $qb = $er->createQueryBuilder('p');
-                    $qb->join('p.user', 'u');
-                    $qb->join('p.groupeGn', 'gg');
-                    $qb->join('u.etatCivil', 'ec');
-                    $qb->orderBy('ec.nom', 'ASC');
-                    $qb->where('gg.id = :groupeGnId');
-                    $qb->setParameter('groupeGnId', $groupeGn->getId());
+        $form = $this->createForm(GroupeGnResponsableForm::class, $groupeGn)->add('responsable', EntityType::class, [
+            'label' => 'Responsable',
+            'required' => false,
+            'class' => Participant::class,
+            'choice_label' => 'user.etatCivil',
+            'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
+                $qb = $er->createQueryBuilder('p');
+                $qb->join('p.user', 'u');
+                $qb->join('p.groupeGn', 'gg');
+                $qb->join('u.etatCivil', 'ec');
+                $qb->orderBy('ec.nom', 'ASC');
+                $qb->where('gg.id = :groupeGnId');
+                $qb->setParameter('groupeGnId', $groupeGn->getId());
 
-                    return $qb;
-                },
-                'attr' => [
-                    // 'class' => 'selectpicker',
-                    'data-live-search' => 'true',
-                    'placeholder' => 'Responsable',
-                ],
-            ])
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+                return $qb;
+            },
+            'attr' => [
+                // 'class' => 'selectpicker',
+                'data-live-search' => 'true',
+                'placeholder' => 'Responsable',
+            ],
+        ])->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -457,10 +443,8 @@ class GroupeGnController extends AbstractController
      * Modification de la participation à un jeu du groupe.
      */
     #[Route('/groupeGn/{groupeGn}/update', name: 'groupeGn.update')]
-    public function updateAction(
-        Request $request,
-        #[MapEntity] GroupeGn $groupeGn,
-    ): RedirectResponse|Response {
+    public function updateAction(Request $request, #[MapEntity] GroupeGn $groupeGn): RedirectResponse|Response
+    {
         $this->checkGroupeLocked($groupeGn->getGroupe());
         if ($r = $this->checkGroupeLocked($groupeGn->getGroupe())) {
             return $r;
@@ -470,12 +454,9 @@ class GroupeGnController extends AbstractController
 
         $this->hasAccess($groupeGn, [Role::WARGAME]);
 
-        $form = $this->createForm(
-            GroupeGnForm::class,
-            $groupeGn,
-            ['allow_extra_fields' => true],
-        )
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
+        $form = $this->createForm(GroupeGnForm::class, $groupeGn, [
+            'allow_extra_fields' => true,
+        ])->add('submit', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
 
         if ($redirect) {
             $form->add('redirect', HiddenType::class, ['data' => $redirect, 'mapped' => false]);
@@ -497,13 +478,15 @@ class GroupeGnController extends AbstractController
             ];
 
             foreach ($idsArray as $child => $id) {
-                if ($id) {
-                    if (isset($ids[$id])) {
-                        ++$ids[$id];
-                        $form->get($child)->addError(new FormError("Un personnage ne peut avoir qu'un seul titre"));
-                    } else {
-                        $ids[$id] = 1;
-                    }
+                if (!$id) {
+                    continue;
+                }
+
+                if (isset($ids[$id])) {
+                    ++$ids[$id];
+                    $form->get($child)->addError(new FormError("Un personnage ne peut avoir qu'un seul titre"));
+                } else {
+                    $ids[$id] = 1;
                 }
             }
         }
@@ -514,8 +497,7 @@ class GroupeGnController extends AbstractController
 
             // Titre si territoire
             if (null === $groupeGn->getGroupe()->getTerritoire()) {
-                if ($groupeGn->getSuzerain() || $groupeGn->getIntendant() || $groupeGn->getCamarilla(
-                ) || $groupeGn->getConnetable() || $groupeGn->getNavigateur() || $groupeGn->getDiplomate()) {
+                if ($groupeGn->getSuzerain() || $groupeGn->getIntendant() || $groupeGn->getCamarilla() || $groupeGn->getConnetable() || $groupeGn->getNavigateur() || $groupeGn->getDiplomate()) {
                     $this->addFlash('error', 'Les titres ne sont possibles que si le groupe à un territoire');
                 }
                 $groupeGn->setSuzerain(null);
@@ -536,24 +518,26 @@ class GroupeGnController extends AbstractController
                 return $this->redirect($redirect);
             }
 
-            return $this->redirectToRoute(
-                'groupe.detail',
-                [
-                    'groupe' => $groupeGn->getGroupe()->getId(),
-                    'gn' => $groupeGn->getGn()->getId(),
-                    'groupeGn' => $groupeGn->getId(),
-                    'tab' => 'domaine',
-                ],
-            );
+            return $this->redirectToRoute('groupe.detail', [
+                'groupe' => $groupeGn->getGroupe()->getId(),
+                'gn' => $groupeGn->getGn()->getId(),
+                'groupeGn' => $groupeGn->getId(),
+                'tab' => 'domaine',
+            ]);
         }
 
-        return $this->render('groupeGn/update.twig', [
-            'groupe' => $groupeGn->getGroupe(),
-            'groupeGn' => $groupeGn,
-            'form' => $form->createView(),
-        ], new Response(null, !$form->isSubmitted() || $form->isValid() ? 200 : 422));
+        return $this->render(
+            'groupeGn/update.twig',
+            [
+                'groupe' => $groupeGn->getGroupe(),
+                'groupeGn' => $groupeGn,
+                'form' => $form->createView(),
+            ],
+            new Response(null, !$form->isSubmitted() || $form->isValid() ? 200 : 422),
+        );
     }
 
+    /** @param array<int, Role> $roles */
     protected function hasAccess(GroupeGn $groupeGn, array $roles = []): void
     {
         $isResponsable = $this->getUser()?->getId() === $groupeGn->getParticipant()?->getUser()?->getId();
@@ -562,14 +546,16 @@ class GroupeGnController extends AbstractController
         if (!$isMembre) {
             /** @var Participant $participant */
             foreach ($groupeGn->getParticipants() as $participant) {
-                if ($participant->getUser()?->getId() === $this->getUser()?->getId()) {
-                    $isMembre = true;
+                if ($participant->getUser()?->getId() !== $this->getUser()?->getId()) {
+                    continue;
                 }
+
+                $isMembre = true;
             }
         }
 
         $isSuzerain = false;
-        if ($this->getPersonnage() && $this->getPersonnage()->getId() === $groupeGn?->getSuzerain()?->getId()) {
+        if ($this->getPersonnage() && $this->getPersonnage()->getId() === $groupeGn->getSuzerain()?->getId()) {
             $isSuzerain = true;
         }
 
@@ -582,9 +568,6 @@ class GroupeGnController extends AbstractController
         $this->setCan(self::CAN_WRITE, $isResponsable || $isSuzerain);
         $this->setCan(self::CAN_READ, $isMembre || $isSuzerain);
 
-        $this->checkHasAccess(
-            $roles,
-            fn () => $this->can(self::CAN_READ),
-        );
+        $this->checkHasAccess($roles, fn () => $this->can(self::CAN_READ));
     }
 }

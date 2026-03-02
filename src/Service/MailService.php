@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Entity\Message;
 use App\Entity\User;
-use App\Repository\BaseRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use LogicException;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,16 +19,15 @@ use Twig\Environment;
 
 final class MailService
 {
-    protected ?Request $request;
-    protected ?BaseRepository $repository = null;
+    private ?Request $request;
 
     public function __construct(
-        protected readonly Environment $twig,
-        protected readonly EntityManagerInterface $entityManager,
+        private readonly Environment $twig,
+        private readonly EntityManagerInterface $entityManager,
         private readonly RequestStack $requestStack,
         private readonly MailerInterface $mailer,
         private readonly UrlGeneratorInterface $router,
-        protected readonly Security $security,
+        private readonly Security $security,
     ) {
     }
 
@@ -38,14 +40,17 @@ final class MailService
     ): void {
         $message = new Message();
 
-        $auteur ??= $this->security->getUser();
+        if (null === $auteur) {
+            $securityUser = $this->security->getUser();
+            $auteur = $securityUser instanceof User ? $securityUser : null;
+        }
 
         $message->setTitle($sujet ?: 'Nouveau message');
         $message->setText($msg);
         $message->setUserRelatedByAuteur($auteur);
         $message->setUserRelatedByDestinataire($destinataire);
-        $message->setCreationDate(new \DateTime('NOW'));
-        $message->setUpdateDate(new \DateTime('NOW'));
+        $message->setCreationDate(new DateTime('NOW'));
+        $message->setUpdateDate(new DateTime('NOW'));
 
         $this->entityManager->persist($message);
         $this->entityManager->flush();
@@ -55,33 +60,34 @@ final class MailService
         }
     }
 
-
     public function notify(Message $message): void
     {
-        if (!$email = $message->getUserRelatedByDestinataire()?->getEmail()) {
+        if (!($email = $message->getUserRelatedByDestinataire()?->getEmail())) {
             return; // unable to send
         }
 
         $this->mailer->send(
-            $this->getTemplatedEmail(
-                'user/email/message.twig',
-                ['message' => $message->getText()],
-                $message->getTitle() ?: 'Nouveau message de '.$message->getUserRelatedByAuteur()?->getDisplayName(),
-            )
+            $this
+                ->getTemplatedEmail(
+                    'user/email/message.twig',
+                    ['message' => $message->getText()],
+                    $message->getTitle() ?: 'Nouveau message de ' . $message->getUserRelatedByAuteur()?->getDisplayName(),
+                )
                 // TODO ->locale($user->getLocal())
                 ->to($email),
         );
     }
 
+    /** @param array<string, mixed> $context */
     private function getTemplatedEmail(
         string $template,
         array $context,
         ?string $subject = 'Par Crom!: Lis',
     ): TemplatedEmail {
-        $subject = $this->twig->load($template)->renderBlock('subject', $context) ?? $subject;
+        $subject = $this->twig->load($template)->renderBlock('subject', $context);
         $textBody = $this->twig->load($template)->renderBlock('body_text', $context);
 
-        return (new TemplatedEmail())
+        return new TemplatedEmail()
             ->subject($subject)
             ->text($textBody)
             ->htmlTemplate($template)
@@ -102,17 +108,14 @@ final class MailService
         ];
 
         $this->mailer->send(
-            $this->getTemplatedEmail(
-                'user/email/confirm-email.twig',
-                $context,
-                'Bienvenue ! Merci de confirmer votre adresse email.',
-            )
+            $this
+                ->getTemplatedEmail('user/email/confirm-email.twig', $context, 'Bienvenue ! Merci de confirmer votre adresse email.')
                 // TODO ->locale($user->getLocal())
                 ->to($user->getEmail()),
         );
     }
 
-    public function setRequest(Request $request): MailService
+    public function setRequest(Request $request): self
     {
         $this->request = $request;
 
@@ -124,7 +127,7 @@ final class MailService
         $this->request ??= $this->requestStack->getCurrentRequest();
 
         if (null === $this->request) {
-            throw new \LogicException('Request should exist so it can be processed for error.');
+            throw new LogicException('Request should exist so it can be processed for error.');
         }
 
         return $this->request;

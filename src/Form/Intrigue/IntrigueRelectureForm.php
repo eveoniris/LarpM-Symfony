@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Intrigue;
 
@@ -27,20 +28,19 @@ class IntrigueRelectureForm extends AbstractType
                 'Validé' => 'Validé',
                 'Non validé' => 'Non validé',
             ],
-        ])
-            ->add('remarque', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'label' => 'Vos remarques éventuelles',
-                'required' => false,
-                'attr' => [
-                    'class' => 'tinymce',
-                    'row' => '9',
-                    'help' => 'Vos remarques vis à vis de cette intrigue.',
-                ],
-            ]);
+        ])->add('remarque', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'label' => 'Vos remarques éventuelles',
+            'required' => false,
+            'attr' => [
+                'class' => 'tinymce',
+                'row' => '9',
+                'help' => 'Vos remarques vis à vis de cette intrigue.',
+            ],
+        ]);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {

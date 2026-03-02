@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Groupe;
 
@@ -18,35 +19,32 @@ class GroupeRessourceForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('randomCommun', IntegerType::class, [
-                'mapped' => false,
-                'label' => 'X ressources communes choisies au hasard',
-                'required' => false,
-                'attr' => [
-                    'help' => 'Indiquez combien de ressources COMMUNES il faut ajouter à ce groupe.',
-                ],
-            ])
-            ->add('randomRare', IntegerType::class, [
-                'mapped' => false,
-                'label' => 'X ressources rares choisies au hasard',
-                'required' => false,
-                'attr' => [
-                    'help' => 'Indiquez combien de ressources RARES il faut ajouter à ce groupe.',
-                ],
-            ])
-            ->add('groupeHasRessources', CollectionType::class, [
-                'label' => 'Ressources',
-                'required' => false,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'entry_type' => GroupeHasRessourceType::class,
-            ]);
+        $builder->add('randomCommun', IntegerType::class, [
+            'mapped' => false,
+            'label' => 'X ressources communes choisies au hasard',
+            'required' => false,
+            'attr' => [
+                'help' => 'Indiquez combien de ressources COMMUNES il faut ajouter à ce groupe.',
+            ],
+        ])->add('randomRare', IntegerType::class, [
+            'mapped' => false,
+            'label' => 'X ressources rares choisies au hasard',
+            'required' => false,
+            'attr' => [
+                'help' => 'Indiquez combien de ressources RARES il faut ajouter à ce groupe.',
+            ],
+        ])->add('groupeHasRessources', CollectionType::class, [
+            'label' => 'Ressources',
+            'required' => false,
+            'allow_add' => true,
+            'allow_delete' => true,
+            'by_reference' => false,
+            'entry_type' => GroupeHasRessourceType::class,
+        ]);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {

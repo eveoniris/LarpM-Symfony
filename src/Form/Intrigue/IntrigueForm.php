@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Intrigue;
 
@@ -17,7 +18,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-
 class IntrigueForm extends AbstractType
 {
     /**
@@ -25,10 +25,11 @@ class IntrigueForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('titre', TextType::class, [
-            'label' => 'Le titre de votre intrigue',
-            'required' => true,
-        ])
+        $builder
+            ->add('titre', TextType::class, [
+                'label' => 'Le titre de votre intrigue',
+                'required' => true,
+            ])
             ->add('intrigueHasGroupes', CollectionType::class, [
                 'label' => 'Groupes concernés',
                 'required' => false,
@@ -107,7 +108,7 @@ class IntrigueForm extends AbstractType
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {

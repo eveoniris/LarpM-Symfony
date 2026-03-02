@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Twig;
 
 use App\Helper\StringHelper;
@@ -8,6 +10,7 @@ use Twig\TwigFilter;
 
 final class HighlightTwigExtension extends AbstractExtension
 {
+    /** @return list<TwigFilter> */
     public function getFilters(): array
     {
         return [
@@ -15,17 +18,16 @@ final class HighlightTwigExtension extends AbstractExtension
         ];
     }
 
-    public function highlightFilter($text, $words, array $options = []): array|string|null
+    /**
+     * @return array<int, string>|string|null
+     */
+    public function highlightFilter(mixed $text, array|string|null $words, array $options = []): array|string|null
     {
         if (!$words || !$text) {
             return (string) $text;
         }
 
-        if (\is_string($words) || \is_numeric($words)) {
-            $words = [(string) $words];
-        }
-
-        return StringHelper::highlightWords($text, $words, $options);
+        return StringHelper::highlightWords($text, \is_array($words) ? $words : [(string) $words], $options);
     }
 
     public function getName(): string

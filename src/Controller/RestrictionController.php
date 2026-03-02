@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Restriction;
@@ -9,7 +11,6 @@ use App\Form\RestrictionForm;
 use App\Repository\RestrictionRepository;
 use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
-use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -27,13 +28,11 @@ class RestrictionController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $form = $this->createForm(RestrictionForm::class, new Restriction())
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add(
-                'save_continue',
-                \Symfony\Component\Form\Extension\Core\Type\SubmitType::class,
-                ['label' => 'Sauvegarder & continuer'],
-            );
+        $form = $this->createForm(RestrictionForm::class, new Restriction())->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('save_continue', SubmitType::class, [
+            'label' => 'Sauvegarder & continuer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -46,10 +45,10 @@ class RestrictionController extends AbstractController
 
             $this->addFlash('success', 'La restriction a été ajouté.');
 
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('restriction.list', [], 303);
             }
-            if ($form->get('save_continue')->isClicked()) {
+            if ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('restriction.add', [], 303);
             }
         }
@@ -66,11 +65,13 @@ class RestrictionController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function deleteAction(
         Request $request,
-        #[MapEntity] Restriction $restriction,
+        #[MapEntity]
+        Restriction $restriction,
         EntityManagerInterface $entityManager,
     ): Response {
-        $form = $this->createForm(RestrictionDeleteForm::class, $restriction)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(RestrictionDeleteForm::class, $restriction)->add('save', SubmitType::class, [
+            'label' => 'Supprimer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -103,14 +104,13 @@ class RestrictionController extends AbstractController
     /**
      * Télécharger la liste des restrictions alimentaires.
      */
-    #[NoReturn]
     #[Route('/restriction/download', name: 'restriction.download')]
     public function downloadAction(Request $request, RestrictionRepository $repository): void
     {
         $restrictions = $repository->findAllOrderedByLabel();
 
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_restrictions_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_restrictions_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
@@ -128,8 +128,8 @@ class RestrictionController extends AbstractController
 
         foreach ($restrictions as $restriction) {
             $line = [];
-            $line[] = mb_convert_encoding((string)$restriction->getLabel(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding((string)$restriction->getUsers()->count(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $restriction->getLabel(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $restriction->getUsers()->count(), 'ISO-8859-1');
             fputcsv($output, $line, ';');
         }
 
@@ -145,23 +145,11 @@ class RestrictionController extends AbstractController
     {
         $alias = 'r';
 
-        $orderBy = $this->getRequestOrder(
-            defOrderBy: 'label',
-            alias: $alias,
-            allowedFields: $repository->getFieldNames(),
-        );
+        $orderBy = $this->getRequestOrder(defOrderBy: 'label', alias: $alias, allowedFields: $repository->getFieldNames());
 
-        $paginator = $repository->getPaginator(
-            limit: $this->getRequestLimit(25),
-            page: $this->getRequestPage(),
-            orderBy: $orderBy,
-            alias: $alias,
-        );
+        $paginator = $repository->getPaginator(limit: $this->getRequestLimit(25), page: $this->getRequestPage(), orderBy: $orderBy, alias: $alias);
 
-        return $this->render(
-            'restriction/list.twig',
-            ['paginator' => $paginator],
-        );
+        return $this->render('restriction/list.twig', ['paginator' => $paginator]);
     }
 
     /**
@@ -182,11 +170,13 @@ class RestrictionController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function updateAction(
         Request $request,
-        #[MapEntity] Restriction $restriction,
+        #[MapEntity]
+        Restriction $restriction,
         EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
-        $form = $this->createForm(RestrictionForm::class, $restriction)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(RestrictionForm::class, $restriction)->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ]);
 
         $form->handleRequest($request);
 

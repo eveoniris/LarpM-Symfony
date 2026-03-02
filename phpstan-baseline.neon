@@ -1,0 +1,3343 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#1 \\$gn of method App\\\\Repository\\\\GnRepository\\:\\:lockAllGroup\\(\\) expects App\\\\Entity\\\\Gn, object\\|null given\\.$#"
+			count: 1
+			path: src/Command/GnLock.php
+
+		-
+			message: "#^Parameter \\#1 \\$gn of method App\\\\Repository\\\\ParticipantRepository\\:\\:countAllByCompentenceFamilyLevel\\(\\) expects App\\\\Entity\\\\Gn, object\\|null given\\.$#"
+			count: 4
+			path: src/Command/GnLockGiveLiterature.php
+
+		-
+			message: "#^Parameter \\#1 \\$gn of method App\\\\Service\\\\PersonnageService\\:\\:lockGnGiveLiteratureGnBonus\\(\\) expects App\\\\Entity\\\\Gn\\|null, object\\|null given\\.$#"
+			count: 1
+			path: src/Command/GnLockGiveLiterature.php
+
+		-
+			message: "#^Parameter \\#1 \\$gn of method App\\\\Repository\\\\ParticipantRepository\\:\\:countAllByCompentenceFamilyLevel\\(\\) expects App\\\\Entity\\\\Gn, object\\|null given\\.$#"
+			count: 1
+			path: src/Command/GnLockGiveRenomme.php
+
+		-
+			message: "#^Parameter \\#1 \\$gn of method App\\\\Service\\\\PersonnageService\\:\\:lockGnGiveNoblityGnRenomme\\(\\) expects App\\\\Entity\\\\Gn\\|null, object\\|null given\\.$#"
+			count: 1
+			path: src/Command/GnLockGiveRenomme.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:setActif\\(\\)\\.$#"
+			count: 1
+			path: src/Command/GnUnLock.php
+
+		-
+			message: "#^Parameter \\#1 \\$gn of method App\\\\Repository\\\\GnRepository\\:\\:unlockAllGroup\\(\\) expects App\\\\Entity\\\\Gn, object given\\.$#"
+			count: 1
+			path: src/Command/GnUnLock.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:getId\\(\\)\\.$#"
+			count: 1
+			path: src/Controller/AbstractController.php
+
+		-
+			message: "#^Cannot call method toLog\\(\\) on class\\-string\\|object\\.$#"
+			count: 1
+			path: src/Controller/AbstractController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: src/Controller/AbstractController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fprintf expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: src/Controller/AbstractController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fputcsv expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: src/Controller/AbstractController.php
+
+		-
+			message: "#^Parameter \\#1 \\$type of method Symfony\\\\Bundle\\\\FrameworkBundle\\\\Controller\\\\AbstractController\\:\\:createForm\\(\\) expects class\\-string\\<Symfony\\\\Component\\\\Form\\\\FormTypeInterface\\<object\\>\\>, string given\\.$#"
+			count: 1
+			path: src/Controller/AbstractController.php
+
+		-
+			message: "#^Parameter \\#1 \\$url of method Symfony\\\\Bundle\\\\FrameworkBundle\\\\Controller\\\\AbstractController\\:\\:redirect\\(\\) expects string, array\\<string, string\\>\\|string given\\.$#"
+			count: 1
+			path: src/Controller/AbstractController.php
+
+		-
+			message: "#^Parameter \\#2 \\$parameters of method Symfony\\\\Bundle\\\\FrameworkBundle\\\\Controller\\\\AbstractController\\:\\:redirectToRoute\\(\\) expects array, array\\|string given\\.$#"
+			count: 1
+			path: src/Controller/AbstractController.php
+
+		-
+			message: "#^Argument of an invalid type array\\<int, string\\>\\|false supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Controller/AdminController.php
+
+		-
+			message: "#^Parameter \\#1 \\$bytes of method App\\\\Controller\\\\AdminController\\:\\:getSymbolByQuantity\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: src/Controller/AdminController.php
+
+		-
+			message: "#^Parameter \\#1 \\$bytes of method App\\\\Controller\\\\AdminController\\:\\:getSymbolByQuantity\\(\\) expects int, float\\|int\\<min, \\-1\\>\\|int\\<1, max\\> given\\.$#"
+			count: 1
+			path: src/Controller/AdminController.php
+
+		-
+			message: "#^Parameter \\#1 \\$haystack of function str_contains expects string, array\\|string\\|false given\\.$#"
+			count: 1
+			path: src/Controller/AdminController.php
+
+		-
+			message: "#^Parameter \\#1 \\$size of method App\\\\Controller\\\\AdminController\\:\\:parse_size\\(\\) expects string, string\\|false given\\.$#"
+			count: 2
+			path: src/Controller/AdminController.php
+
+		-
+			message: "#^Parameter \\#1 \\$sort of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:orderBy\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\Expr\\\\OrderBy\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Controller/AnnonceController.php
+
+		-
+			message: "#^Parameter \\#2 \\$order of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:orderBy\\(\\) expects string\\|null, string\\|false given\\.$#"
+			count: 1
+			path: src/Controller/AnnonceController.php
+
+		-
+			message: "#^Parameter \\#1 \\$gnId of method App\\\\Repository\\\\BackgroundRepository\\:\\:findBackgrounds\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: src/Controller/BackgroundController.php
+
+		-
+			message: "#^Parameter \\#1 \\$gnId of method App\\\\Repository\\\\GroupeGnRepository\\:\\:findByGn\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: src/Controller/BackgroundController.php
+
+		-
+			message: "#^Parameter \\#1 \\$groupe of method App\\\\Service\\\\GroupeService\\:\\:isUserIsGroupeMember\\(\\) expects App\\\\Entity\\\\Groupe, App\\\\Entity\\\\Groupe\\|null given\\.$#"
+			count: 1
+			path: src/Controller/BackgroundController.php
+
+		-
+			message: "#^Parameter \\#1 \\$groupe of method App\\\\Service\\\\GroupeService\\:\\:isUserIsGroupeResponsable\\(\\) expects App\\\\Entity\\\\Groupe, App\\\\Entity\\\\Groupe\\|null given\\.$#"
+			count: 1
+			path: src/Controller/BackgroundController.php
+
+		-
+			message: "#^Parameter \\#1 \\$sort of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:orderBy\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\Expr\\\\OrderBy\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Controller/BilletController.php
+
+		-
+			message: "#^Parameter \\#2 \\$order of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:orderBy\\(\\) expects string\\|null, string\\|false given\\.$#"
+			count: 1
+			path: src/Controller/BilletController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\|null\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/BonusController.php
+
+		-
+			message: "#^Parameter \\#1 \\$content of class Symfony\\\\Component\\\\HttpFoundation\\\\Response constructor expects string\\|null, string\\|false given\\.$#"
+			count: 1
+			path: src/Controller/ClasseController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\|null\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/ClasseController.php
+
+		-
+			message: "#^Parameter \\#1 \\$level of method App\\\\Entity\\\\BaseCompetence\\:\\:setLevel\\(\\) expects App\\\\Entity\\\\Level\\|null, object given\\.$#"
+			count: 1
+			path: src/Controller/CompetenceController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\|null\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/CompetenceController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/ConnaissanceController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/ConstructionController.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on DateTime\\|null\\.$#"
+			count: 2
+			path: src/Controller/DocumentController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: src/Controller/DocumentController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fputcsv expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: src/Controller/DocumentController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/DocumentController.php
+
+		-
+			message: "#^Offset 'nombre' does not exist on array\\{label\\: string, nombre\\: int, territoires\\: array\\}\\|null\\.$#"
+			count: 2
+			path: src/Controller/EconomieController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: src/Controller/EconomieController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fputcsv expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: src/Controller/EconomieController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\|null\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/EspeceController.php
+
+		-
+			message: "#^Parameter \\$routes of method App\\\\Controller\\\\AbstractController\\:\\:handleCreateOrUpdate\\(\\) expects array\\<string, string\\>, array\\<string, string\\|false\\> given\\.$#"
+			count: 1
+			path: src/Controller/EtatCivilController.php
+
+		-
+			message: "#^Cannot call method getDateNaissance\\(\\) on App\\\\Entity\\\\EtatCivil\\|null\\.$#"
+			count: 2
+			path: src/Controller/GnController.php
+
+		-
+			message: "#^Cannot call method getEmail\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Controller/GnController.php
+
+		-
+			message: "#^Cannot call method getEtatCivil\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 6
+			path: src/Controller/GnController.php
+
+		-
+			message: "#^Cannot call method getFedeGn\\(\\) on App\\\\Entity\\\\EtatCivil\\|null\\.$#"
+			count: 2
+			path: src/Controller/GnController.php
+
+		-
+			message: "#^Cannot call method getNom\\(\\) on App\\\\Entity\\\\EtatCivil\\|null\\.$#"
+			count: 1
+			path: src/Controller/GnController.php
+
+		-
+			message: "#^Cannot call method getPrenom\\(\\) on App\\\\Entity\\\\EtatCivil\\|null\\.$#"
+			count: 1
+			path: src/Controller/GnController.php
+
+		-
+			message: "#^Parameter \\#1 \\$participant of method App\\\\Repository\\\\QuestionRepository\\:\\:findByParticipant\\(\\) expects App\\\\Entity\\\\Participant, App\\\\Entity\\\\Participant\\|null given\\.$#"
+			count: 1
+			path: src/Controller/GnController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 4
+			path: src/Controller/GnController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fputcsv expects resource, resource\\|false given\\.$#"
+			count: 8
+			path: src/Controller/GnController.php
+
+		-
+			message: "#^Cannot call method getBackground\\(\\) on App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Cannot call method getClasseOpen\\(\\) on App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Cannot call method getData\\(\\) on Symfony\\\\Component\\\\Form\\\\FormInterface\\<mixed\\>\\|null\\.$#"
+			count: 3
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Cannot call method getGroupeGns\\(\\) on App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 1
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 2
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Cannot call method getParticipants\\(\\) on App\\\\Entity\\\\GroupeGn\\|null\\.$#"
+			count: 2
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Cannot call method getPersonnage\\(\\) on App\\\\Entity\\\\Participant\\|null\\.$#"
+			count: 1
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Cannot call method removeGroupe\\(\\) on App\\\\Entity\\\\Participant\\|null\\.$#"
+			count: 1
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Cannot call method setClasseOpen\\(\\) on App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:persist\\(\\) expects object, App\\\\Entity\\\\Groupe\\|null given\\.$#"
+			count: 1
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:persist\\(\\) expects object, App\\\\Entity\\\\Participant\\|null given\\.$#"
+			count: 1
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fputcsv expects resource, resource\\|false given\\.$#"
+			count: 4
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/GroupeController.php
+
+		-
+			message: "#^Cannot call method getCode\\(\\) on App\\\\Entity\\\\GroupeGn\\|false\\.$#"
+			count: 1
+			path: src/Controller/GroupeGnController.php
+
+		-
+			message: "#^Cannot call method getJeuMaritime\\(\\) on App\\\\Entity\\\\GroupeGn\\|false\\.$#"
+			count: 1
+			path: src/Controller/GroupeGnController.php
+
+		-
+			message: "#^Cannot call method getJeuStrategique\\(\\) on App\\\\Entity\\\\GroupeGn\\|false\\.$#"
+			count: 1
+			path: src/Controller/GroupeGnController.php
+
+		-
+			message: "#^Cannot call method getParticipant\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 2
+			path: src/Controller/GroupeGnController.php
+
+		-
+			message: "#^Cannot call method getPlaceAvailable\\(\\) on App\\\\Entity\\\\GroupeGn\\|false\\.$#"
+			count: 1
+			path: src/Controller/GroupeGnController.php
+
+		-
+			message: "#^Parameter \\#1 \\$jeu_maritime of method App\\\\Entity\\\\BaseGroupeGn\\:\\:setJeuMaritime\\(\\) expects bool, bool\\|null given\\.$#"
+			count: 1
+			path: src/Controller/GroupeGnController.php
+
+		-
+			message: "#^Parameter \\#1 \\$jeu_strategique of method App\\\\Entity\\\\BaseGroupeGn\\:\\:setJeuStrategique\\(\\) expects bool, bool\\|null given\\.$#"
+			count: 1
+			path: src/Controller/GroupeGnController.php
+
+		-
+			message: "#^Cannot call method getData\\(\\) on Symfony\\\\Component\\\\Form\\\\FormInterface\\<mixed\\>\\|null\\.$#"
+			count: 1
+			path: src/Controller/GroupeSecondaireController.php
+
+		-
+			message: "#^Parameter \\#1 \\$destinataire of method App\\\\Service\\\\MailService\\:\\:newMessage\\(\\) expects App\\\\Entity\\\\User, App\\\\Entity\\\\User\\|null given\\.$#"
+			count: 1
+			path: src/Controller/GroupeSecondaireController.php
+
+		-
+			message: "#^Parameter \\#2 \\$personnagesId of method App\\\\Repository\\\\SecondaryGroupRepository\\:\\:visibleForPersonnage\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: src/Controller/GroupeSecondaireController.php
+
+		-
+			message: "#^Parameter \\#4 \\$redirect of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<string, string\\>\\|string, array\\<string, array\\<string, int\\>\\|string\\> given\\.$#"
+			count: 1
+			path: src/Controller/GroupeSecondaireController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/GroupeSecondaireController.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type App\\\\Entity\\\\User\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: src/Controller/IndexController.php
+
+		-
+			message: "#^Parameter \\#1 \\$sql of method Doctrine\\\\DBAL\\\\Connection\\:\\:prepare\\(\\) expects string, string\\|false given\\.$#"
+			count: 2
+			path: src/Controller/InstallController.php
+
+		-
+			message: "#^Cannot call method getGroupeScenariste\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 2
+			path: src/Controller/IntrigueController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: src/Controller/LieuController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fputcsv expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: src/Controller/LieuController.php
+
+		-
+			message: "#^Cannot call method getData\\(\\) on Symfony\\\\Component\\\\Form\\\\FormInterface\\<mixed\\>\\|null\\.$#"
+			count: 3
+			path: src/Controller/LigneeController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:remove\\(\\) expects object, App\\\\Entity\\\\PersonnageLignee\\|null given\\.$#"
+			count: 1
+			path: src/Controller/LigneeController.php
+
+		-
+			message: "#^Call to an undefined method App\\\\Entity\\\\Potion\\|App\\\\Entity\\\\Priere\\|App\\\\Entity\\\\Sort\\|App\\\\Entity\\\\Sphere\\:\\:handleUpload\\(\\)\\.$#"
+			count: 1
+			path: src/Controller/MagieController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\|null\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/MerveilleController.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Controller/NotificationController.php
+
+		-
+			message: "#^Cannot call method setLastConnectionDate\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Controller/NotificationController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:persist\\(\\) expects object, App\\\\Entity\\\\User\\|null given\\.$#"
+			count: 1
+			path: src/Controller/NotificationController.php
+
+		-
+			message: "#^Cannot call method getGn\\(\\) on App\\\\Entity\\\\GroupeGn\\|null\\.$#"
+			count: 2
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Cannot call method getGroupe\\(\\) on App\\\\Entity\\\\GroupeGn\\|null\\.$#"
+			count: 8
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Cannot call method getGroupeGns\\(\\) on App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 1
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 1
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Cannot call method getUsername\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Cannot call method getXp\\(\\) on App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 2
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Cannot call method setXp\\(\\) on App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Parameter \\#1 \\$annee of method App\\\\Entity\\\\BasePersonnageChronologie\\:\\:setAnnee\\(\\) expects int, int\\|null given\\.$#"
+			count: 2
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_unique expects array, array\\<int, App\\\\Entity\\\\Personnage\\>\\|null given\\.$#"
+			count: 1
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:persist\\(\\) expects object, App\\\\Entity\\\\Personnage\\|null given\\.$#"
+			count: 1
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:persist\\(\\) expects object, App\\\\Entity\\\\User\\|null given\\.$#"
+			count: 1
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:remove\\(\\) expects object, App\\\\Entity\\\\PersonnageTrigger\\|null given\\.$#"
+			count: 1
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Parameter \\$routes of method App\\\\Controller\\\\AbstractController\\:\\:handleCreateOrUpdate\\(\\) expects array\\<string, string\\>, array\\<string, string\\|false\\> given\\.$#"
+			count: 1
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: "#^Argument of an invalid type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Personnage\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Binary operation \"\\.\" between array\\<int, string\\>\\|string\\|null and '\\.pdf' results in an error\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Cannot assign new offset to array\\<int, string\\>\\|string\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Cannot call method getData\\(\\) on Symfony\\\\Component\\\\Form\\\\FormInterface\\<mixed\\>\\|null\\.$#"
+			count: 3
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Cannot call method getDateJeu\\(\\) on App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Cannot call method getErrorsAsString\\(\\) on App\\\\Service\\\\CompetenceService\\|null\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Cannot call method getGn\\(\\) on App\\\\Entity\\\\Participant\\|null\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Potion\\|null\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Cannot call method getLabel\\(\\) on App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Cannot call method getLabel\\(\\) on App\\\\Entity\\\\Potion\\|null\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Cannot call method getXpCreation\\(\\) on App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 2
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Cannot call method hasErrors\\(\\) on App\\\\Service\\\\CompetenceService\\|null\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Method App\\\\Controller\\\\PersonnageController\\:\\:getErrorMessages\\(\\) should return array\\<string, mixed\\> but returns array\\<int\\<0, max\\>\\|string, array\\<int\\<0, max\\>\\|string, mixed\\>\\|string\\>\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:persist\\(\\) expects object, App\\\\Entity\\\\User\\|null given\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:remove\\(\\) expects object, App\\\\Entity\\\\PersonnageLangues\\|null given\\.$#"
+			count: 2
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:remove\\(\\) expects object, App\\\\Entity\\\\PersonnageTrigger\\|null given\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Parameter \\#1 \\$potion of method App\\\\Entity\\\\BasePersonnage\\:\\:addPotion\\(\\) expects App\\\\Entity\\\\Potion, App\\\\Entity\\\\Potion\\|null given\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Parameter \\#1 \\$start of function range expects float\\|int\\|string, int\\|null given\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Parameter \\#1 \\$url of method Symfony\\\\Bundle\\\\FrameworkBundle\\\\Controller\\\\AbstractController\\:\\:redirect\\(\\) expects string, string\\|null given\\.$#"
+			count: 2
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Parameter \\#2 \\$competence of method App\\\\Service\\\\PersonnageService\\:\\:getCompetenceCout\\(\\) expects App\\\\Entity\\\\Competence, object given\\.$#"
+			count: 4
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Parameter \\#2 \\$end of function range expects float\\|int\\|string, int\\|null given\\.$#"
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: "#^Cannot call method getParticipantsPnj\\(\\) on App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 1
+			path: src/Controller/PnjController.php
+
+		-
+			message: "#^Cannot call method getUsername\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Controller/ReligionController.php
+
+		-
+			message: "#^Parameter \\#1 \\$content of class Symfony\\\\Component\\\\HttpFoundation\\\\Response constructor expects string\\|null, string\\|false given\\.$#"
+			count: 1
+			path: src/Controller/ReligionController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: src/Controller/ReligionController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fputcsv expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: src/Controller/ReligionController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: src/Controller/RestaurationController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fputcsv expects resource, resource\\|false given\\.$#"
+			count: 4
+			path: src/Controller/RestaurationController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: src/Controller/RestrictionController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fputcsv expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: src/Controller/RestrictionController.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:getId\\(\\)\\.$#"
+			count: 2
+			path: src/Controller/RuleController.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:getLabel\\(\\)\\.$#"
+			count: 1
+			path: src/Controller/RuleController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\|null\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/RuleController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\>\\> given\\.$#"
+			count: 1
+			path: src/Controller/RumeurController.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of method Symfony\\\\Component\\\\Mime\\\\Email\\:\\:text\\(\\) expects resource\\|string\\|null, string\\|false given\\.$#"
+			count: 1
+			path: src/Controller/SecurityController.php
+
+		-
+			message: "#^Parameter \\#1 \\$subject of method Symfony\\\\Component\\\\Mime\\\\Email\\:\\:subject\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: src/Controller/SecurityController.php
+
+		-
+			message: "#^Parameter \\#1 \\$role of method App\\\\Service\\\\StatsService\\:\\:getUsersRole\\(\\) expects App\\\\Enum\\\\Role, App\\\\Enum\\\\Role\\|null given\\.$#"
+			count: 1
+			path: src/Controller/StatistiqueController.php
+
+		-
+			message: "#^Cannot call method getData\\(\\) on Symfony\\\\Component\\\\Form\\\\FormInterface\\<mixed\\>\\|null\\.$#"
+			count: 1
+			path: src/Controller/StockObjetController.php
+
+		-
+			message: "#^Parameter \\#1 \\$sort of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:orderBy\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\Expr\\\\OrderBy\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Controller/StockObjetController.php
+
+		-
+			message: "#^Parameter \\#2 \\$order of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:orderBy\\(\\) expects string\\|null, string\\|false given\\.$#"
+			count: 1
+			path: src/Controller/StockObjetController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: src/Controller/StrategieController.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fputcsv expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: src/Controller/StrategieController.php
+
+		-
+			message: "#^Parameter \\#5 \\$breadcrumb of method App\\\\Controller\\\\AbstractController\\:\\:genericDelete\\(\\) expects array\\<int, array\\<string, string\\|null\\>\\>, array\\<int, array\\<string, int\\|string\\>\\> given\\.$#"
+			count: 2
+			path: src/Controller/TechnologieController.php
+
+		-
+			message: "#^Argument of an invalid type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\OrigineBonus\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Controller/TerritoireController.php
+
+		-
+			message: "#^Cannot call method getUsername\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Controller/TerritoireController.php
+
+		-
+			message: "#^Parameter \\#1 \\$content of class Symfony\\\\Component\\\\HttpFoundation\\\\Response constructor expects string\\|null, string\\|false given\\.$#"
+			count: 1
+			path: src/Controller/TerritoireController.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|null given\\.$#"
+			count: 2
+			path: src/Controller/TerritoireController.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 1
+			path: src/Controller/TrombinoscopeController.php
+
+		-
+			message: "#^Parameter \\#2 \\$gnid of method App\\\\Repository\\\\ParticipantRepository\\:\\:searchPaginatedByGn\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: src/Controller/TrombinoscopeController.php
+
+		-
+			message: "#^Cannot call method setValideCiLe\\(\\) on App\\\\Entity\\\\Participant\\|null\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Parameter \\#1 \\$body of method Symfony\\\\Component\\\\Mime\\\\Email\\:\\:text\\(\\) expects resource\\|string\\|null, string\\|false given\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Parameter \\#1 \\$email of method App\\\\Entity\\\\BaseUser\\:\\:setEmail\\(\\) expects string, bool\\|float\\|int\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Parameter \\#1 \\$email_contact of method App\\\\Entity\\\\BaseUser\\:\\:setEmailContact\\(\\) expects string\\|null, bool\\|float\\|int\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:persist\\(\\) expects object, App\\\\Entity\\\\Participant\\|null given\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:persist\\(\\) expects object, App\\\\Entity\\\\User\\|null given\\.$#"
+			count: 2
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Parameter \\#1 \\$password of method App\\\\Entity\\\\User\\:\\:validatePasswordStrength\\(\\) expects string, float\\|int\\<min, \\-1\\>\\|int\\<1, max\\>\\|string\\|true given\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Parameter \\#1 \\$subject of method Symfony\\\\Component\\\\Mime\\\\Email\\:\\:subject\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Parameter \\#1 \\$username of method App\\\\Entity\\\\BaseUser\\:\\:setUsername\\(\\) expects string, bool\\|float\\|int\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Parameter \\#2 \\$plainPassword of method Symfony\\\\Component\\\\PasswordHasher\\\\Hasher\\\\UserPasswordHasherInterface\\:\\:hashPassword\\(\\) expects string, float\\|int\\<min, \\-1\\>\\|int\\<1, max\\>\\|string\\|true given\\.$#"
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\VisibilityType\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/BaseBackground.php
+
+		-
+			message: "#^Cannot call method removeElement\\(\\) on \\(Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Participant\\>&iterable\\<App\\\\Entity\\\\Participant\\>\\)\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseBillet.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseBillet\\:\\:getParticipants\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Participant\\> but returns \\(Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Participant\\>&iterable\\<App\\\\Entity\\\\Participant\\>\\)\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseBillet.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseBillet\\:\\:\\$participants \\(\\(Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Participant\\>&iterable\\<App\\\\Entity\\\\Participant\\>\\)\\|null\\) does not accept array\\{App\\\\Entity\\\\Participant\\}\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Participant\\>\\.$#"
+			count: 1
+			path: src/Entity/BaseBillet.php
+
+		-
+			message: "#^Cannot call method add\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseBonus.php
+
+		-
+			message: "#^Cannot call method contains\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseBonus.php
+
+		-
+			message: "#^Cannot call method removeElement\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null\\.$#"
+			count: 2
+			path: src/Entity/BaseBonus.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseBonus\\:\\:getGroupeBonus\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\> but returns Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseBonus.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\BonusApplication\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/BaseBonus.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\BonusType\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/BaseBonus.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseBonus\\:\\:\\$competence \\(App\\\\Entity\\\\Competence\\) does not accept App\\\\Entity\\\\Competence\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseBonus.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseChronologie\\:\\:\\$territoire \\(App\\\\Entity\\\\Territoire\\) does not accept App\\\\Entity\\\\Territoire\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseChronologie.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseClasse\\:\\:getCreation\\(\\) should return bool but returns bool\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseClasse.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseClasse\\:\\:getLabelFeminin\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseClasse.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseClasse\\:\\:getLabelMasculin\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseClasse.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseCompetence\\:\\:\\$competenceFamily \\(App\\\\Entity\\\\CompetenceFamily\\) does not accept App\\\\Entity\\\\CompetenceFamily\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseCompetence.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseCompetenceAttribute\\:\\:\\$attributeType \\(App\\\\Entity\\\\AttributeType\\) does not accept App\\\\Entity\\\\AttributeType\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseCompetenceAttribute.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseCompetenceAttribute\\:\\:\\$competence \\(App\\\\Entity\\\\Competence\\) does not accept App\\\\Entity\\\\Competence\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseCompetenceAttribute.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseConnaissance\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseConnaissance.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseConstruction\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseConstruction.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseCulture\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseCulture.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseDebriefing\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseDebriefing.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\VisibilityType\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/BaseDebriefing.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseDebriefing\\:\\:\\$groupe \\(App\\\\Entity\\\\Groupe\\) does not accept App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseDebriefing.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseDebriefing\\:\\:\\$user \\(App\\\\Entity\\\\User\\) does not accept App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseDebriefing.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseDocument\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseDocument.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseDocument\\:\\:getUser\\(\\) should return App\\\\Entity\\\\User but returns App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseDocument.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseDomaine\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseDomaine.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseEtat\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseEtat.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseEtatCivil\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseEtatCivil.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseEtatCivil\\:\\:\\$creation_date \\(DateTime\\) does not accept DateTime\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseEtatCivil.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseEvenement\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseEvenement.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseExperienceGain\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseExperienceGain.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseExperienceGain\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseExperienceGain.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseExperienceUsage\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseExperienceUsage.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseExperienceUsage\\:\\:\\$competence \\(App\\\\Entity\\\\Competence\\) does not accept App\\\\Entity\\\\Competence\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseExperienceUsage.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseExperienceUsage\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseExperienceUsage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseFormulaire\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseFormulaire.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGenre\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGenre.php
+
+		-
+			message: "#^Cannot call method add\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupe.php
+
+		-
+			message: "#^Cannot call method contains\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupe.php
+
+		-
+			message: "#^Cannot call method removeElement\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupe.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGroupe\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupe.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGroupeAllie\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeAllie.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseGroupeAllie\\:\\:\\$groupeRelatedByGroupeAllieId \\(App\\\\Entity\\\\Groupe\\) does not accept App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeAllie.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseGroupeAllie\\:\\:\\$groupeRelatedByGroupeId \\(App\\\\Entity\\\\Groupe\\) does not accept App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeAllie.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGroupeClasse\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeClasse.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseGroupeClasse\\:\\:\\$classe \\(App\\\\Entity\\\\Classe\\) does not accept App\\\\Entity\\\\Classe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeClasse.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseGroupeClasse\\:\\:\\$groupe \\(App\\\\Entity\\\\Groupe\\) does not accept App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeClasse.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGroupeEnemy\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeEnemy.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGroupeEnemy\\:\\:getMessage\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeEnemy.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGroupeEnemy\\:\\:getMessageEnemy\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeEnemy.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseGroupeEnemy\\:\\:\\$groupeRelatedByGroupeEnemyId \\(App\\\\Entity\\\\Groupe\\) does not accept App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeEnemy.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseGroupeEnemy\\:\\:\\$groupeRelatedByGroupeId \\(App\\\\Entity\\\\Groupe\\) does not accept App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeEnemy.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGroupeGn\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeGn.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseGroupeGn\\:\\:\\$gn \\(App\\\\Entity\\\\Gn\\) does not accept App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeGn.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseGroupeGn\\:\\:\\$groupe \\(App\\\\Entity\\\\Groupe\\) does not accept App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeGn.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGroupeGnOrdre\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeGnOrdre.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGroupeHasIngredient\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeHasIngredient.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseGroupeHasIngredient\\:\\:\\$groupe \\(App\\\\Entity\\\\Groupe\\) does not accept App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeHasIngredient.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGroupeHasRessource\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeHasRessource.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseGroupeHasRessource\\:\\:\\$groupe \\(App\\\\Entity\\\\Groupe\\) does not accept App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeHasRessource.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseGroupeHasRessource\\:\\:\\$ressource \\(App\\\\Entity\\\\Ressource\\) does not accept App\\\\Entity\\\\Ressource\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeHasRessource.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseGroupeLangue\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseGroupeLangue.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseHeroismeHistory\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseHeroismeHistory.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseHeroismeHistory\\:\\:getPersonnage\\(\\) should return App\\\\Entity\\\\Personnage but returns App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseHeroismeHistory.php
+
+		-
+			message: "#^Cannot call method removeElement\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeHasIngredient\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIngredient.php
+
+		-
+			message: "#^Cannot call method removeElement\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageIngredient\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIngredient.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIngredient\\:\\:getGroupeHasIngredients\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeHasIngredient\\> but returns Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeHasIngredient\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIngredient.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIngredient\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIngredient.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIngredient\\:\\:getPersonnageIngredients\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageIngredient\\> but returns Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageIngredient\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIngredient.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIngredient\\:\\:\\$groupeHasIngredients \\(Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeHasIngredient\\>\\|null\\) does not accept array\\{App\\\\Entity\\\\GroupeHasIngredient\\}\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeHasIngredient\\>\\.$#"
+			count: 1
+			path: src/Entity/BaseIngredient.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIngredient\\:\\:\\$personnageIngredients \\(Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageIngredient\\>\\|null\\) does not accept array\\{App\\\\Entity\\\\PersonnageIngredient\\}\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageIngredient\\>\\.$#"
+			count: 1
+			path: src/Entity/BaseIngredient.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIntrigue\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigue.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIntrigue\\:\\:getUser\\(\\) should return App\\\\Entity\\\\User but returns App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigue.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIntrigueHasDocument\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasDocument.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasDocument\\:\\:\\$document \\(App\\\\Entity\\\\Document\\) does not accept App\\\\Entity\\\\Document\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasDocument.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasDocument\\:\\:\\$intrigue \\(App\\\\Entity\\\\Intrigue\\) does not accept App\\\\Entity\\\\Intrigue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasDocument.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIntrigueHasEvenement\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasEvenement.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIntrigueHasEvenement\\:\\:getIntrigue\\(\\) should return App\\\\Entity\\\\Intrigue but returns App\\\\Entity\\\\Intrigue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasEvenement.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasEvenement\\:\\:\\$evenement \\(App\\\\Entity\\\\Evenement\\) does not accept App\\\\Entity\\\\Evenement\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasEvenement.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIntrigueHasGroupe\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasGroupe.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasGroupe\\:\\:\\$groupe \\(App\\\\Entity\\\\Groupe\\) does not accept App\\\\Entity\\\\Groupe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasGroupe.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasGroupe\\:\\:\\$intrigue \\(App\\\\Entity\\\\Intrigue\\) does not accept App\\\\Entity\\\\Intrigue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasGroupe.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIntrigueHasGroupeSecondaire\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasGroupeSecondaire.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasGroupeSecondaire\\:\\:\\$intrigue \\(App\\\\Entity\\\\Intrigue\\) does not accept App\\\\Entity\\\\Intrigue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasGroupeSecondaire.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasGroupeSecondaire\\:\\:\\$secondaryGroup \\(App\\\\Entity\\\\SecondaryGroup\\) does not accept App\\\\Entity\\\\SecondaryGroup\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasGroupeSecondaire.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIntrigueHasLieu\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasLieu.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasLieu\\:\\:\\$intrigue \\(App\\\\Entity\\\\Intrigue\\) does not accept App\\\\Entity\\\\Intrigue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasLieu.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasLieu\\:\\:\\$lieu \\(App\\\\Entity\\\\Lieu\\) does not accept App\\\\Entity\\\\Lieu\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasLieu.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIntrigueHasModification\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasModification.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIntrigueHasModification\\:\\:getUser\\(\\) should return App\\\\Entity\\\\User but returns App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasModification.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasModification\\:\\:\\$intrigue \\(App\\\\Entity\\\\Intrigue\\) does not accept App\\\\Entity\\\\Intrigue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasModification.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseIntrigueHasObjectif\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasObjectif.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasObjectif\\:\\:\\$intrigue \\(App\\\\Entity\\\\Intrigue\\) does not accept App\\\\Entity\\\\Intrigue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasObjectif.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseIntrigueHasObjectif\\:\\:\\$objectif \\(App\\\\Entity\\\\Objectif\\) does not accept App\\\\Entity\\\\Objectif\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseIntrigueHasObjectif.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseItem\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseItem.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseItem\\:\\:\\$objet \\(App\\\\Entity\\\\Objet\\) does not accept App\\\\Entity\\\\Objet\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseItem.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseItem\\:\\:\\$quality \\(App\\\\Entity\\\\Quality\\) does not accept App\\\\Entity\\\\Quality\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseItem.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseItem\\:\\:\\$statut \\(App\\\\Entity\\\\Statut\\) does not accept App\\\\Entity\\\\Statut\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseItem.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseLangue\\:\\:\\$groupeLangue \\(App\\\\Entity\\\\GroupeLangue\\) does not accept App\\\\Entity\\\\GroupeLangue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLangue.php
+
+		-
+			message: "#^Cannot call method removeElement\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Competence\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLevel.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseLevel\\:\\:getCompetences\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Competence\\> but returns Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Competence\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLevel.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseLevel\\:\\:getCout\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLevel.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseLevel\\:\\:getCoutFavori\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLevel.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseLevel\\:\\:getCoutMeconu\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLevel.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseLevel\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLevel.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseLevel\\:\\:\\$competences \\(Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Competence\\>\\|null\\) does not accept array\\{App\\\\Entity\\\\Competence\\}\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Competence\\>\\.$#"
+			count: 1
+			path: src/Entity/BaseLevel.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseLieu\\:\\:getDescription\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLieu.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseLieu\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLieu.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseLignee\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLignee.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseLocalisation\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLocalisation.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseLoi\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseLoi.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseMembre\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseMembre.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseMembre\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseMembre.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseMembre\\:\\:\\$secondaryGroup \\(App\\\\Entity\\\\SecondaryGroup\\) does not accept App\\\\Entity\\\\SecondaryGroup\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseMembre.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseMessage\\:\\:getCreationDate\\(\\) should return DateTime but returns DateTime\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseMessage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseMessage\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseMessage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseMessage\\:\\:getUpdateDate\\(\\) should return DateTime but returns DateTime\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseMessage.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseMessage\\:\\:\\$userRelatedByAuteur \\(App\\\\Entity\\\\User\\) does not accept App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseMessage.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseMessage\\:\\:\\$userRelatedByDestinataire \\(App\\\\Entity\\\\User\\) does not accept App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseMessage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseMonnaie\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseMonnaie.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseNotification\\:\\:getDate\\(\\) should return DateTime but returns DateTime\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseNotification.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseNotification\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseNotification.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseNotification\\:\\:getUser\\(\\) should return App\\\\Entity\\\\User but returns App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseNotification.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseObjet\\:\\:getCreationDate\\(\\) should return DateTime but returns DateTime\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseObjet.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseObjet\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseObjet.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseObjet\\:\\:getInvestissement\\(\\) should return bool but returns bool\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseObjet.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseObjetCarac\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseObjetCarac.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseParticipant\\:\\:getSubscriptionDate\\(\\) should return DateTimeInterface but returns DateTimeInterface\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseParticipant.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseParticipant\\:\\:\\$gn \\(App\\\\Entity\\\\Gn\\) does not accept App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseParticipant.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseParticipantHasRestauration\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseParticipantHasRestauration.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseParticipantHasRestauration\\:\\:\\$participant \\(App\\\\Entity\\\\Participant\\) does not accept App\\\\Entity\\\\Participant\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseParticipantHasRestauration.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseParticipantHasRestauration\\:\\:\\$restauration \\(App\\\\Entity\\\\Restauration\\) does not accept App\\\\Entity\\\\Restauration\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseParticipantHasRestauration.php
+
+		-
+			message: "#^Argument of an invalid type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageApprentissage\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Cannot call method add\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageApprentissage\\>\\|null\\.$#"
+			count: 2
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Cannot call method add\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Cannot call method contains\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageApprentissage\\>\\|null\\.$#"
+			count: 2
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Cannot call method contains\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Cannot call method getDiffusion\\(\\) on App\\\\Entity\\\\Langue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Cannot call method getGroupeLangue\\(\\) on App\\\\Entity\\\\Langue\\|null\\.$#"
+			count: 4
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Cannot call method getLabel\\(\\) on App\\\\Entity\\\\Langue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Cannot call method removeElement\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageApprentissage\\>\\|null\\.$#"
+			count: 2
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Cannot call method removeElement\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnage\\:\\:getApprentissages\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageApprentissage\\> but returns Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageApprentissage\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnage\\:\\:getRenomme\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnage\\:\\:getXp\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnage\\:\\:getapprentissageEnseignants\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageApprentissage\\> but returns Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageApprentissage\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnage\\:\\:prochaineParticipation\\(\\) should return App\\\\Entity\\\\Participant but returns App\\\\Entity\\\\Participant\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnage\\:\\:\\$age \\(App\\\\Entity\\\\Age\\) does not accept App\\\\Entity\\\\Age\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnage\\:\\:\\$classe \\(App\\\\Entity\\\\Classe\\) does not accept App\\\\Entity\\\\Classe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnage\\:\\:\\$genre \\(App\\\\Entity\\\\Genre\\) does not accept App\\\\Entity\\\\Genre\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnage\\:\\:\\$territoire \\(App\\\\Entity\\\\Territoire\\) does not accept App\\\\Entity\\\\Territoire\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageBackground\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageBackground.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageBackground\\:\\:getUpdateDate\\(\\) should return DateTime but returns DateTime\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageBackground.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageBackground\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageBackground.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageChronologie\\:\\:getAnnee\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageChronologie.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageChronologie\\:\\:getEvenement\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageChronologie.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageChronologie\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageChronologie.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageChronologie\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageChronologie.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageHasQuestion\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageHasQuestion.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageHasQuestion\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageHasQuestion.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageHasQuestion\\:\\:\\$question \\(App\\\\Entity\\\\Question\\) does not accept App\\\\Entity\\\\Question\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageHasQuestion.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageHasToken\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageHasToken.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageHasToken\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageHasToken.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageHasToken\\:\\:\\$token \\(App\\\\Entity\\\\Token\\) does not accept App\\\\Entity\\\\Token\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageHasToken.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageIngredient\\:\\:\\$ingredient \\(App\\\\Entity\\\\Ingredient\\) does not accept App\\\\Entity\\\\Ingredient\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageIngredient.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageIngredient\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageIngredient.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageLangues\\:\\:\\$langue \\(App\\\\Entity\\\\Langue\\) does not accept App\\\\Entity\\\\Langue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageLangues.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageLangues\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageLangues.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageLignee\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageLignee.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageLignee\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageLignee.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageRessource\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageRessource.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageSecondaire\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageSecondaire.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageSecondaire\\:\\:\\$classe \\(App\\\\Entity\\\\Classe\\) does not accept App\\\\Entity\\\\Classe\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageSecondaire.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageSecondaireCompetence\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageSecondaireCompetence.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageSecondaireCompetence\\:\\:\\$competence \\(App\\\\Entity\\\\Competence\\) does not accept App\\\\Entity\\\\Competence\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageSecondaireCompetence.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageSecondaireCompetence\\:\\:\\$personnageSecondaire \\(App\\\\Entity\\\\PersonnageSecondaire\\) does not accept App\\\\Entity\\\\PersonnageSecondaire\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageSecondaireCompetence.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageSecondairesCompetences\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageSecondairesCompetences.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageSecondairesCompetences\\:\\:\\$competence \\(App\\\\Entity\\\\Competence\\) does not accept App\\\\Entity\\\\Competence\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageSecondairesCompetences.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageSecondairesCompetences\\:\\:\\$personnageSecondaire \\(App\\\\Entity\\\\PersonnageSecondaire\\) does not accept App\\\\Entity\\\\PersonnageSecondaire\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageSecondairesCompetences.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageSecondairesSkills\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageSecondairesSkills.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageSecondairesSkills\\:\\:\\$competence \\(App\\\\Entity\\\\Competence\\) does not accept App\\\\Entity\\\\Competence\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageSecondairesSkills.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageSecondairesSkills\\:\\:\\$personnageSecondaire \\(App\\\\Entity\\\\PersonnageSecondaire\\) does not accept App\\\\Entity\\\\PersonnageSecondaire\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageSecondairesSkills.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnageTrigger\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageTrigger.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\TriggerType\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageTrigger.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnageTrigger\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnageTrigger.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePersonnagesReligions\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnagesReligions.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnagesReligions\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnagesReligions.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnagesReligions\\:\\:\\$religion \\(App\\\\Entity\\\\Religion\\) does not accept App\\\\Entity\\\\Religion\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnagesReligions.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnagesReligions\\:\\:\\$religionLevel \\(App\\\\Entity\\\\ReligionLevel\\) does not accept App\\\\Entity\\\\ReligionLevel\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePersonnagesReligions.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePhoto\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePhoto.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePostulant\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePostulant.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePostulant\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePostulant.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePostulant\\:\\:\\$secondaryGroup \\(App\\\\Entity\\\\SecondaryGroup\\) does not accept App\\\\Entity\\\\SecondaryGroup\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePostulant.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePotion\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePotion.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePotion\\:\\:getSecret\\(\\) should return bool but returns bool\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePotion.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePriere\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePriere.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePriere\\:\\:\\$sphere \\(App\\\\Entity\\\\Sphere\\) does not accept App\\\\Entity\\\\Sphere\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePriere.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseProprietaire\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseProprietaire.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BasePugilatHistory\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePugilatHistory.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePugilatHistory\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BasePugilatHistory.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseQualite\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseQualite.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseQualiteValeur\\:\\:\\$monnaie \\(App\\\\Entity\\\\Monnaie\\) does not accept App\\\\Entity\\\\Monnaie\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseQualiteValeur.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseQualiteValeur\\:\\:\\$qualite \\(App\\\\Entity\\\\Qualite\\) does not accept App\\\\Entity\\\\Qualite\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseQualiteValeur.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseQuality\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseQuality.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseQualityValeur\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseQualityValeur.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseQualityValeur\\:\\:\\$monnaie \\(App\\\\Entity\\\\Monnaie\\) does not accept App\\\\Entity\\\\Monnaie\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseQualityValeur.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseQualityValeur\\:\\:\\$quality \\(App\\\\Entity\\\\Quality\\) does not accept App\\\\Entity\\\\Quality\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseQualityValeur.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseQuestion\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseQuestion.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseQuestion\\:\\:getUser\\(\\) should return App\\\\Entity\\\\User but returns App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseQuestion.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseRangement\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRangement.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseRangement\\:\\:\\$localisation \\(App\\\\Entity\\\\Localisation\\) does not accept App\\\\Entity\\\\Localisation\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRangement.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseRarete\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRarete.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseRelecture\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRelecture.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseRelecture\\:\\:\\$intrigue \\(App\\\\Entity\\\\Intrigue\\) does not accept App\\\\Entity\\\\Intrigue\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRelecture.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseReligion\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseReligion.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseReligionDescription\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseReligionDescription.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseReligionDescription\\:\\:\\$religion \\(App\\\\Entity\\\\Religion\\) does not accept App\\\\Entity\\\\Religion\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseReligionDescription.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseReligionDescription\\:\\:\\$religionLevel \\(App\\\\Entity\\\\ReligionLevel\\) does not accept App\\\\Entity\\\\ReligionLevel\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseReligionDescription.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseReligionLevel\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseReligionLevel.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseRenommeHistory\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRenommeHistory.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseRenommeHistory\\:\\:\\$personnage \\(App\\\\Entity\\\\Personnage\\) does not accept App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRenommeHistory.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseReponse\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseReponse.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseReponse\\:\\:\\$participant \\(App\\\\Entity\\\\Participant\\) does not accept App\\\\Entity\\\\Participant\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseReponse.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseReponse\\:\\:\\$question \\(App\\\\Entity\\\\Question\\) does not accept App\\\\Entity\\\\Question\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseReponse.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseRessource\\:\\:\\$rarete \\(App\\\\Entity\\\\Rarete\\) does not accept App\\\\Entity\\\\Rarete\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRessource.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseRestauration\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRestauration.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseRestriction\\:\\:\\$userRelatedByAuteurId \\(App\\\\Entity\\\\User\\) does not accept App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRestriction.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseRumeur\\:\\:getCreationDate\\(\\) should return DateTime but returns DateTime\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRumeur.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseRumeur\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRumeur.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseRumeur\\:\\:getUpdateDate\\(\\) should return DateTime but returns DateTime\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRumeur.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseRumeur\\:\\:getUser\\(\\) should return App\\\\Entity\\\\User but returns App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRumeur.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseRumeur\\:\\:\\$gn \\(App\\\\Entity\\\\Gn\\) does not accept App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRumeur.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseRumeur\\:\\:\\$territoire \\(App\\\\Entity\\\\Territoire\\) does not accept App\\\\Entity\\\\Territoire\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseRumeur.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseSecondaryGroup\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseSecondaryGroup.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseSecondaryGroup\\:\\:\\$secondaryGroupType \\(App\\\\Entity\\\\SecondaryGroupType\\) does not accept App\\\\Entity\\\\SecondaryGroupType\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseSecondaryGroup.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseSecondaryGroupType\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseSecondaryGroupType.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseSort\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseSort.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseSort\\:\\:\\$domaine \\(App\\\\Entity\\\\Domaine\\) does not accept App\\\\Entity\\\\Domaine\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseSort.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseSorts\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseSorts.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseSorts\\:\\:\\$domaine \\(App\\\\Entity\\\\Domaine\\) does not accept App\\\\Entity\\\\Domaine\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseSorts.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseSphere\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseSphere.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseStatut\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseStatut.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseTag\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTag.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseTechnologie\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTechnologie.php
+
+		-
+			message: "#^Cannot call method add\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\OrigineBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoire.php
+
+		-
+			message: "#^Cannot call method contains\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\OrigineBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoire.php
+
+		-
+			message: "#^Cannot call method removeElement\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Groupe\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoire.php
+
+		-
+			message: "#^Cannot call method removeElement\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\OrigineBonus\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoire.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseTerritoire\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoire.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseTerritoire\\:\\:\\$appelation \\(App\\\\Entity\\\\Appelation\\) does not accept App\\\\Entity\\\\Appelation\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoire.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseTerritoire\\:\\:\\$groupes \\(Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Groupe\\>\\|null\\) does not accept array\\{App\\\\Entity\\\\Groupe\\}\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Groupe\\>\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoire.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseTerritoireGuerre\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoireGuerre.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseTerritoireGuerre\\:\\:getProtection\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoireGuerre.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseTerritoireGuerre\\:\\:getPuissance\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoireGuerre.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseTerritoireGuerre\\:\\:getPuissanceMax\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoireGuerre.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseTerritoireGuerre\\:\\:\\$territoire \\(App\\\\Entity\\\\Territoire\\) does not accept App\\\\Entity\\\\Territoire\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTerritoireGuerre.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseTitre\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTitre.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseTitreTerritoire\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTitreTerritoire.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseTitreTerritoire\\:\\:\\$territoire \\(App\\\\Entity\\\\Territoire\\) does not accept App\\\\Entity\\\\Territoire\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTitreTerritoire.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseTitreTerritoire\\:\\:\\$titre \\(App\\\\Entity\\\\Titre\\) does not accept App\\\\Entity\\\\Titre\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTitreTerritoire.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseToken\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseToken.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseTrigger\\:\\:getId\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseTrigger.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseUser\\:\\:getCoeur\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseUser.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseUser\\:\\:getConfirmationToken\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseUser.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseUser\\:\\:getCreationDate\\(\\) should return DateTime but returns DateTime\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseUser.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseUser\\:\\:getIsEnabled\\(\\) should return bool but returns bool\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseUser.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseUser\\:\\:getLastConnectionDate\\(\\) should return DateTime but returns DateTime\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseUser.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseUser\\:\\:getPassword\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseUser.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseUser\\:\\:getTimePasswordResetRequested\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseUser.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\BaseUser\\:\\:getTrombineUrl\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseUser.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BaseUser\\:\\:\\$rights \\(string\\) does not accept string\\|null\\.$#"
+			count: 1
+			path: src/Entity/BaseUser.php
+
+		-
+			message: "#^Cannot access property \\$value on App\\\\Enum\\\\BonusType\\|null\\.$#"
+			count: 14
+			path: src/Entity/Bonus.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$day\\.$#"
+			count: 1
+			path: src/Entity/Chronologie.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$description\\.$#"
+			count: 1
+			path: src/Entity/Chronologie.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$month\\.$#"
+			count: 1
+			path: src/Entity/Chronologie.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$visibilite\\.$#"
+			count: 1
+			path: src/Entity/Chronologie.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$year\\.$#"
+			count: 1
+			path: src/Entity/Chronologie.php
+
+		-
+			message: "#^Cannot access property \\$value on App\\\\Enum\\\\CompetenceFamilyType\\|null\\.$#"
+			count: 1
+			path: src/Entity/Competence.php
+
+		-
+			message: "#^Cannot call method getCompetences\\(\\) on App\\\\Entity\\\\CompetenceFamily\\|null\\.$#"
+			count: 1
+			path: src/Entity/Competence.php
+
+		-
+			message: "#^Cannot call method getIndex\\(\\) on App\\\\Entity\\\\Level\\|null\\.$#"
+			count: 1
+			path: src/Entity/Competence.php
+
+		-
+			message: "#^Parameter \\#1 \\$attributeType of method App\\\\Entity\\\\BaseCompetenceAttribute\\:\\:setAttributeType\\(\\) expects App\\\\Entity\\\\AttributeType\\|null, object\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Competence.php
+
+		-
+			message: "#^Parameter \\#1 \\$competence_id of method App\\\\Entity\\\\BaseCompetenceAttribute\\:\\:setCompetenceId\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Competence.php
+
+		-
+			message: "#^Parameter \\#1 \\$file of method App\\\\Service\\\\FileUploader\\:\\:upload\\(\\) expects Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile, Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Competence.php
+
+		-
+			message: "#^Cannot call method getIndex\\(\\) on App\\\\Entity\\\\Level\\|null\\.$#"
+			count: 6
+			path: src/Entity/CompetenceFamily.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\CompetenceFamily\\:\\:getFirstCompetence\\(\\) should return App\\\\Entity\\\\Competence but returns App\\\\Entity\\\\Competence\\|null\\.$#"
+			count: 1
+			path: src/Entity/CompetenceFamily.php
+
+		-
+			message: "#^Parameter \\#1 \\$label of static method App\\\\Enum\\\\CompetenceFamilyType\\:\\:getFromLabel\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/CompetenceFamily.php
+
+		-
+			message: "#^Parameter \\#1 \\$documentUrl of method App\\\\Entity\\\\BaseDocument\\:\\:setDocumentUrl\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Connaissance.php
+
+		-
+			message: "#^Parameter \\#1 \\$file of method App\\\\Service\\\\FileUploader\\:\\:upload\\(\\) expects Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile, Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Connaissance.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\Document\\:\\:getDocumentUrl\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Entity/Document.php
+
+		-
+			message: "#^Parameter \\#1 \\$file of method App\\\\Service\\\\FileUploader\\:\\:upload\\(\\) expects Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile, Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Document.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of method Symfony\\\\Component\\\\String\\\\Slugger\\\\AsciiSlugger\\:\\:slug\\(\\) expects string, int\\<1, max\\>\\|string given\\.$#"
+			count: 1
+			path: src/Entity/Document.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strtoupper expects string, string\\|null given\\.$#"
+			count: 2
+			path: src/Entity/Espece.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\EspeceType\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Espece.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:getGroupe\\(\\)\\.$#"
+			count: 4
+			path: src/Entity/Groupe.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:getRequestedGroupe\\(\\)\\.$#"
+			count: 4
+			path: src/Entity/Groupe.php
+
+		-
+			message: "#^Cannot call method getPersonnages\\(\\) on App\\\\Entity\\\\GroupeGn\\|null\\.$#"
+			count: 1
+			path: src/Entity/Groupe.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\Groupe\\:\\:getRichesseTotale\\(\\) should return float\\|int but returns float\\|int\\|null\\.$#"
+			count: 1
+			path: src/Entity/Groupe.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\Groupe\\:\\:getScenariste\\(\\) should return App\\\\Entity\\\\User but returns App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/Groupe.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\Status\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/GroupeBonus.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 4
+			path: src/Entity/GroupeGn.php
+
+		-
+			message: "#^Parameter \\#1 \\$file of method App\\\\Service\\\\FileUploader\\:\\:upload\\(\\) expects Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile, Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Langue.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\LogActionType\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/LogAction.php
+
+		-
+			message: "#^Parameter \\#1 \\$file of method App\\\\Service\\\\FileUploader\\:\\:upload\\(\\) expects Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile, Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Loi.php
+
+		-
+			message: "#^Parameter \\$repositoryClass of attribute class Doctrine\\\\ORM\\\\Mapping\\\\Entity constructor expects class\\-string\\<Doctrine\\\\ORM\\\\EntityRepository\\<T of object\\>\\>\\|null, 'Doctrine\\\\\\\\Persistence\\\\\\\\ObjectRepository' given\\.$#"
+			count: 1
+			path: src/Entity/Objectif.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\Objet\\:\\:getResponsable\\(\\) should return App\\\\Entity\\\\User but returns App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/Objet.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\Status\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/OrigineBonus.php
+
+		-
+			message: "#^Argument of an invalid type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Potion\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Entity/Participant.php
+
+		-
+			message: "#^Cannot call method getDateNaissance\\(\\) on App\\\\Entity\\\\EtatCivil\\|null\\.$#"
+			count: 1
+			path: src/Entity/Participant.php
+
+		-
+			message: "#^Cannot call method getEtatCivil\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/Participant.php
+
+		-
+			message: "#^Cannot call method getFullName\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/Participant.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\Participant\\:\\:getPotionsDepartByLevel\\(\\) should return array\\<int, App\\\\Entity\\\\Potion\\> but returns array\\<int, App\\\\Entity\\\\Potion\\|null\\>\\.$#"
+			count: 1
+			path: src/Entity/Participant.php
+
+		-
+			message: "#^Parameter \\#1 \\$baseObject of function date_diff expects DateTimeInterface, DateTime\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Participant.php
+
+		-
+			message: "#^Parameter \\#2 \\$targetObject of function date_diff expects DateTimeInterface, DateTime\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Participant.php
+
+		-
+			message: "#^Cannot access property \\$value on App\\\\Enum\\\\TriggerType\\|string\\.$#"
+			count: 2
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Cannot access property \\$value on App\\\\Enum\\\\TriggerType\\|string\\|null\\.$#"
+			count: 2
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Cannot call method getGroupe\\(\\) on App\\\\Entity\\\\GroupeGn\\|null\\.$#"
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Religion\\|null\\.$#"
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Cannot call method getIndex\\(\\) on App\\\\Entity\\\\Level\\|null\\.$#"
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Cannot call method getIndex\\(\\) on App\\\\Entity\\\\ReligionLevel\\|null\\.$#"
+			count: 5
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Cannot call method getLabel\\(\\) on App\\\\Entity\\\\CompetenceFamily\\|null\\.$#"
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\Personnage\\:\\:getCompetenceLevel\\(\\) should return App\\\\Entity\\\\Level but returns App\\\\Entity\\\\Level\\|null\\.$#"
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\Personnage\\:\\:getFirstParticipant\\(\\) should return App\\\\Entity\\\\Participant\\|null but returns App\\\\Entity\\\\Participant\\|false\\.$#"
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\Personnage\\:\\:getLastParticipant\\(\\) should return App\\\\Entity\\\\Participant\\|null but returns App\\\\Entity\\\\Participant\\|false\\.$#"
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Parameter \\#1 \\$documentUrl of method App\\\\Entity\\\\BaseDocument\\:\\:setDocumentUrl\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Parameter \\#1 \\$pugilat of method App\\\\Entity\\\\BasePersonnage\\:\\:setPugilat\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Parameter \\#1 \\$pugilat of method App\\\\Entity\\\\BasePugilatHistory\\:\\:setPugilat\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Parameter \\#2 \\$pugilat of closure expects int, float\\|int given\\.$#"
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\BasePersonnage\\:\\:\\$pugilat \\(int\\) does not accept float\\|int\\.$#"
+			count: 4
+			path: src/Entity/Personnage.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 2
+			path: src/Entity/PersonnageApprentissage.php
+
+		-
+			message: "#^Property App\\\\Entity\\\\PersonnageApprentissage\\:\\:\\$competence \\(App\\\\Entity\\\\Competence\\) does not accept App\\\\Entity\\\\Competence\\|null\\.$#"
+			count: 1
+			path: src/Entity/PersonnageApprentissage.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\PersonnageBackground\\:\\:getLabel\\(\\) should return string but returns App\\\\Entity\\\\Gn\\|null\\.$#"
+			count: 1
+			path: src/Entity/PersonnageBackground.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strtolower expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/PersonnageBackground.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\Status\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Entity/PersonnageBonus.php
+
+		-
+			message: "#^Cannot access property \\$value on App\\\\Enum\\\\TriggerType\\|string\\.$#"
+			count: 1
+			path: src/Entity/PersonnageTrigger.php
+
+		-
+			message: "#^Parameter \\#1 \\$file of method App\\\\Service\\\\FileUploader\\:\\:upload\\(\\) expects Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile, Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Potion.php
+
+		-
+			message: "#^Parameter \\#1 \\$file of method App\\\\Service\\\\FileUploader\\:\\:upload\\(\\) expects Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile, Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Priere.php
+
+		-
+			message: "#^Argument of an invalid type array\\<int, string\\>\\|false supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Entity/Question.php
+
+		-
+			message: "#^Cannot call method getRestrictions\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 3
+			path: src/Entity/Restauration.php
+
+		-
+			message: "#^Parameter \\#1 \\$key of method Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<int,array\\<string, mixed\\>\\>\\:\\:containsKey\\(\\) expects int, int\\|null given\\.$#"
+			count: 2
+			path: src/Entity/Restauration.php
+
+		-
+			message: "#^Parameter \\#1 \\$key of method Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<int,array\\<string, mixed\\>\\>\\:\\:get\\(\\) expects int, int\\|null given\\.$#"
+			count: 2
+			path: src/Entity/Restauration.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|null given\\.$#"
+			count: 5
+			path: src/Entity/Restauration.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\Rule\\:\\:getPrintLabel\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Entity/Rule.php
+
+		-
+			message: "#^Parameter \\#1 \\$file of method App\\\\Service\\\\FileUploader\\:\\:upload\\(\\) expects Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile, Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Rule.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strtolower expects string, int\\<1, max\\>\\|string given\\.$#"
+			count: 1
+			path: src/Entity/Rule.php
+
+		-
+			message: "#^Cannot call method getDisplayName\\(\\) on App\\\\Entity\\\\User\\|null\\.$#"
+			count: 1
+			path: src/Entity/Rumeur.php
+
+		-
+			message: "#^Parameter \\#1 \\$file of method App\\\\Service\\\\FileUploader\\:\\:upload\\(\\) expects Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile, Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Sort.php
+
+		-
+			message: "#^Parameter \\#1 \\$file of method App\\\\Service\\\\FileUploader\\:\\:upload\\(\\) expects Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile, Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\UploadedFile\\|null given\\.$#"
+			count: 1
+			path: src/Entity/Technologie.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$armes_predilection\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$capitale\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$description\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$dirigeant\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$frontieres\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$inspiration\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$nom\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$noms_feminin\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$noms_masculin\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$politique\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$population\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$symbole\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$tech_level\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$type_racial\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$vetements\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Argument of an invalid type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\OrigineBonus\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Cannot call method toArray\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Groupe\\>\\|null\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\Territoire\\:\\:getNbrNoble\\(\\) should return array\\<int, int\\> but returns array\\<int, int\\|null\\>\\.$#"
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: "#^Cannot call method getFullName\\(\\) on App\\\\Entity\\\\EtatCivil\\|null\\.$#"
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: "#^Method App\\\\Entity\\\\User\\:\\:getLastParticipant\\(\\) should return App\\\\Entity\\\\Participant\\|null but returns App\\\\Entity\\\\Participant\\|false\\.$#"
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: "#^Cannot call method loadGrantedAccess\\(\\) on class\\-string\\|object\\.$#"
+			count: 1
+			path: src/EventListener/AccessEventListener.php
+
+		-
+			message: "#^Cannot call method getClientIp\\(\\) on Symfony\\\\Component\\\\HttpFoundation\\\\Request\\|null\\.$#"
+			count: 1
+			path: src/EventListener/JWTCreatedListener.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 1
+			path: src/Form/GroupeGn/GroupeGnForm.php
+
+		-
+			message: "#^Method App\\\\Helper\\\\StringHelper\\:\\:highlightWord\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Helper/StringHelper.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on DateTime\\|null\\.$#"
+			count: 1
+			path: src/Manager/FedegnManager.php
+
+		-
+			message: "#^Method App\\\\Manager\\\\FedegnManager\\:\\:remove_accents\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/Manager/FedegnManager.php
+
+		-
+			message: "#^Method App\\\\Manager\\\\FedegnManager\\:\\:test\\(\\) should return string\\|false but returns string\\|null\\.$#"
+			count: 1
+			path: src/Manager/FedegnManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$prenom of method App\\\\Manager\\\\FedegnManager\\:\\:cleanname\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Manager/FedegnManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$string1 of function strcmp expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Manager/FedegnManager.php
+
+		-
+			message: "#^Parameter \\#2 \\$nom of method App\\\\Manager\\\\FedegnManager\\:\\:cleanname\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Manager/FedegnManager.php
+
+		-
+			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|null given\\.$#"
+			count: 2
+			path: src/Manager/FedegnManager.php
+
+		-
+			message: "#^Cannot access offset 0 on App\\\\Entity\\\\Personnage\\.$#"
+			count: 2
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: "#^Cannot access offset 1 on App\\\\Entity\\\\Personnage\\.$#"
+			count: 3
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$callback of function call_user_func expects callable\\(\\)\\: mixed, literal\\-string&non\\-falsy\\-string given\\.$#"
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\AgeRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/AgeRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\AttributeTypeRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/AttributeTypeRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\BackgroundRepository\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/BackgroundRepository.php
+
+		-
+			message: "#^Binary operation \"\\.\" between non\\-falsy\\-string and array\\<string, mixed\\>\\|string\\|null results in an error\\.$#"
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Query\\|Doctrine\\\\ORM\\\\QueryBuilder\\:\\:addOrderBy\\(\\)\\.$#"
+			count: 2
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Query\\|Doctrine\\\\ORM\\\\QueryBuilder\\:\\:addSelect\\(\\)\\.$#"
+			count: 2
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Query\\|Doctrine\\\\ORM\\\\QueryBuilder\\:\\:orderBy\\(\\)\\.$#"
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$aliased of method App\\\\Repository\\\\BaseRepository\\:\\:getAttributeAsName\\(\\) expects string, array\\<string, mixed\\>\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$aliased of method App\\\\Repository\\\\BaseRepository\\:\\:getAttributeWhereName\\(\\) expects string, array\\<string, mixed\\>\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$aliased of method App\\\\Repository\\\\BaseRepository\\:\\:isAllowedAttribute\\(\\) expects string, array\\<string, mixed\\>\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$attribute of method App\\\\Repository\\\\BaseRepository\\:\\:isAs\\(\\) expects string, array\\<string, mixed\\>\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$className of method Doctrine\\\\Persistence\\\\Mapping\\\\AbstractClassMetadataFactory\\<Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\>\\:\\:isTransient\\(\\) expects class\\-string, string\\|false given\\.$#"
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$haystack of function str_contains expects string, array\\<string, mixed\\>\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$query of method App\\\\Repository\\\\BaseRepository\\:\\:addOrderBy\\(\\) expects Doctrine\\\\ORM\\\\Query\\|Doctrine\\\\ORM\\\\QueryBuilder\\|null, Doctrine\\\\ORM\\\\AbstractQuery\\|Doctrine\\\\ORM\\\\QueryBuilder given\\.$#"
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strtolower expects string, int\\|string given\\.$#"
+			count: 2
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Parameter \\#2 \\$entityClass of method Doctrine\\\\Bundle\\\\DoctrineBundle\\\\Repository\\\\LazyServiceEntityRepository\\<object\\>\\:\\:__construct\\(\\) expects class\\-string\\<object\\>, string given\\.$#"
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\ClasseRepository\\:\\:findAll\\(\\) should return array\\<int, App\\\\Entity\\\\Classe\\> but returns array\\<int, object\\>\\.$#"
+			count: 1
+			path: src/Repository/ClasseRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\CompetenceRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/CompetenceRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\ConnaissanceRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/ConnaissanceRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\DebriefingRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/DebriefingRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\DocumentRepository\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/DocumentRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\DocumentRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/DocumentRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\GnRepository\\:\\:findAll\\(\\) should return array\\<int, App\\\\Entity\\\\Gn\\> but returns array\\<int, object\\>\\.$#"
+			count: 1
+			path: src/Repository/GnRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\GroupeGnRepository\\:\\:getTitres\\(\\) should return string but returns float\\|int\\<min, \\-1\\>\\|int\\<1, max\\>\\|string\\|true\\.$#"
+			count: 1
+			path: src/Repository/GroupeGnRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\GroupeRepository\\:\\:findAll\\(\\) should return array\\<int, App\\\\Entity\\\\Groupe\\> but returns array\\<int, object\\>\\.$#"
+			count: 1
+			path: src/Repository/GroupeRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\GroupeRepository\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/GroupeRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\GroupeRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/GroupeRepository.php
+
+		-
+			message: "#^Offset 'by' does not exist on array\\<string, string\\>\\|null\\.$#"
+			count: 1
+			path: src/Repository/GroupeRepository.php
+
+		-
+			message: "#^Offset 'dir' does not exist on array\\<string, string\\>\\|null\\.$#"
+			count: 1
+			path: src/Repository/GroupeRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\IntrigueRepository\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/IntrigueRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\IntrigueRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/IntrigueRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\ItemRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/ItemRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\LevelRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/LevelRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\LigneeRepository\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/LigneeRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\ObjetRepository\\:\\:findAll\\(\\) should return array\\<int, App\\\\Entity\\\\Objet\\> but returns array\\<int, object\\>\\.$#"
+			count: 1
+			path: src/Repository/ObjetRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\ParticipantRepository\\:\\:findAll\\(\\) should return array\\<int, App\\\\Entity\\\\Participant\\> but returns array\\<int, object\\>\\.$#"
+			count: 1
+			path: src/Repository/ParticipantRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\ParticipantRepository\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/ParticipantRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\ParticipantRepository\\:\\:searchAttributes\\(\\) should return array\\<int, string\\|null\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/ParticipantRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\ParticipantRepository\\:\\:searchPaginatedByGn\\(\\) should return Doctrine\\\\ORM\\\\Tools\\\\Pagination\\\\Paginator\\<App\\\\Entity\\\\Participant\\> but returns Doctrine\\\\ORM\\\\Tools\\\\Pagination\\\\Paginator\\<object\\>\\.$#"
+			count: 1
+			path: src/Repository/ParticipantRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\ParticipantRepository\\:\\:translateAttributes\\(\\) should return array\\<string, string\\> but returns array\\<int\\|string, string\\>\\.$#"
+			count: 1
+			path: src/Repository/ParticipantRepository.php
+
+		-
+			message: "#^Parameter \\#2 \\$user of method App\\\\Repository\\\\PersonnageRepository\\:\\:user\\(\\) expects App\\\\Entity\\\\User, App\\\\Entity\\\\User\\|null given\\.$#"
+			count: 1
+			path: src/Repository/ParticipantRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\PersonnageRepository\\:\\:findAll\\(\\) should return array\\<int, App\\\\Entity\\\\Personnage\\> but returns array\\<int, object\\>\\.$#"
+			count: 1
+			path: src/Repository/PersonnageRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\PersonnageRepository\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/PersonnageRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\PersonnageRepository\\:\\:translateAttributes\\(\\) should return array\\<string, string\\> but returns array\\<int\\|string, string\\>\\.$#"
+			count: 1
+			path: src/Repository/PersonnageRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\PotionRepository\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/PotionRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\PotionRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/PotionRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\PriereRepository\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/PriereRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\PriereRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/PriereRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\QrCodeScanLogRepository\\:\\:findAll\\(\\) should return array\\<int, App\\\\Entity\\\\QrCodeScanLog\\> but returns array\\<int, object\\>\\.$#"
+			count: 1
+			path: src/Repository/QrCodeScanLogRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\RestrictionRepository\\:\\:findAllOrderedByLabel\\(\\) should return array\\<int, App\\\\Entity\\\\Restriction\\> but returns array\\<int, object\\>\\.$#"
+			count: 1
+			path: src/Repository/RestrictionRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\SecondaryGroupRepository\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/SecondaryGroupRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\SortRepository\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/SortRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\SortRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/SortRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\StrategieRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/StrategieRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\TerritoireRepository\\:\\:findFiefsCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/TerritoireRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\TerritoireRepository\\:\\:searchAttributes\\(\\) should return array\\<int, string\\|null\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/TerritoireRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\TokenRepository\\:\\:findAllOrderedByLabel\\(\\) should return array\\<int, App\\\\Entity\\\\Token\\> but returns array\\<int, object\\>\\.$#"
+			count: 1
+			path: src/Repository/TokenRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\TokenRepository\\:\\:searchAttributes\\(\\) should return array\\<string, array\\<string, mixed\\>\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\|string\\|null\\>\\.$#"
+			count: 1
+			path: src/Repository/TokenRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\UserRepository\\:\\:translateAttributes\\(\\) should return array\\<string, string\\> but returns array\\<int\\|string, string\\>\\.$#"
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: "#^Method App\\\\Repository\\\\UserRepositoryOld\\:\\:findCount\\(\\) should return int but returns bool\\|float\\|int\\|string\\|null\\.$#"
+			count: 1
+			path: src/Repository/UserRepositoryOld.php
+
+		-
+			message: "#^Parameter \\#1 \\$password of class Symfony\\\\Component\\\\Security\\\\Http\\\\Authenticator\\\\Passport\\\\Credentials\\\\PasswordCredentials constructor expects string, bool\\|float\\|int\\|string given\\.$#"
+			count: 1
+			path: src/Security/AppAuthenticator.php
+
+		-
+			message: "#^Parameter \\#1 \\$userIdentifier of class Symfony\\\\Component\\\\Security\\\\Http\\\\Authenticator\\\\Passport\\\\Badge\\\\UserBadge constructor expects string, bool\\|float\\|int\\|string given\\.$#"
+			count: 1
+			path: src/Security/AppAuthenticator.php
+
+		-
+			message: "#^Parameter \\#2 \\$csrfToken of class Symfony\\\\Component\\\\Security\\\\Http\\\\Authenticator\\\\Passport\\\\Badge\\\\CsrfTokenBadge constructor expects string\\|null, bool\\|float\\|int\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Security/AppAuthenticator.php
+
+		-
+			message: "#^Argument of an invalid type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\OrigineBonus\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 2
+			path: src/Service/CompetenceService.php
+
+		-
+			message: "#^Cannot access property \\$value on App\\\\Enum\\\\CompetenceFamilyType\\|null\\.$#"
+			count: 1
+			path: src/Service/CompetenceService.php
+
+		-
+			message: "#^Cannot call method getCompetence\\(\\) on App\\\\Entity\\\\Bonus\\|null\\.$#"
+			count: 3
+			path: src/Service/CompetenceService.php
+
+		-
+			message: "#^Cannot call method getValeur\\(\\) on App\\\\Entity\\\\Bonus\\|null\\.$#"
+			count: 1
+			path: src/Service/CompetenceService.php
+
+		-
+			message: "#^Cannot call method isCompetence\\(\\) on App\\\\Entity\\\\Bonus\\|null\\.$#"
+			count: 1
+			path: src/Service/CompetenceService.php
+
+		-
+			message: "#^Cannot call method isXp\\(\\) on App\\\\Entity\\\\Bonus\\|null\\.$#"
+			count: 1
+			path: src/Service/CompetenceService.php
+
+		-
+			message: "#^Method App\\\\Service\\\\CompetenceService\\:\\:getService\\(\\) should return App\\\\Service\\\\CompetenceService but returns object\\.$#"
+			count: 1
+			path: src/Service/CompetenceService.php
+
+		-
+			message: "#^Parameter \\#1 \\$entity of method App\\\\Service\\\\CompetenceService\\:\\:isValidConditions\\(\\) expects App\\\\Entity\\\\CompetenceFamily\\|App\\\\Entity\\\\Personnage, App\\\\Entity\\\\CompetenceFamily\\|App\\\\Entity\\\\Personnage\\|null given\\.$#"
+			count: 1
+			path: src/Service/CompetenceService.php
+
+		-
+			message: "#^Property App\\\\Service\\\\CompetenceService\\:\\:\\$errors \\(array\\<string, string\\>\\) does not accept array\\<int\\|string, string\\>\\.$#"
+			count: 2
+			path: src/Service/CompetenceService.php
+
+		-
+			message: "#^Static property App\\\\Service\\\\CompetenceService\\:\\:\\$classesCompetencesFamilies \\(array\\<int, mixed\\>\\) does not accept array\\<int\\|string, mixed\\>\\.$#"
+			count: 1
+			path: src/Service/CompetenceService.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strtoupper expects string, string\\|null given\\.$#"
+			count: 3
+			path: src/Service/ConditionsService.php
+
+		-
+			message: "#^Property App\\\\Service\\\\FileUploader\\:\\:\\$extension \\(string\\) does not accept string\\|null\\.$#"
+			count: 1
+			path: src/Service/FileUploader.php
+
+		-
+			message: "#^Argument of an invalid type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Service/GroupeService.php
+
+		-
+			message: "#^Argument of an invalid type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Personnage\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Service/GroupeService.php
+
+		-
+			message: "#^Cannot access property \\$value on App\\\\Enum\\\\BonusPeriode\\|null\\.$#"
+			count: 1
+			path: src/Service/GroupeService.php
+
+		-
+			message: "#^Method App\\\\Service\\\\GroupeService\\:\\:getLastDoneSessionGn\\(\\) should return App\\\\Entity\\\\Gn\\|null but returns App\\\\Entity\\\\Gn\\|false\\.$#"
+			count: 1
+			path: src/Service/GroupeService.php
+
+		-
+			message: "#^Parameter \\#1 \\$key of method Doctrine\\\\Common\\\\Collections\\\\ReadableCollection\\<int,App\\\\Entity\\\\Bonus\\>\\:\\:containsKey\\(\\) expects int, int\\|null given\\.$#"
+			count: 2
+			path: src/Service/GroupeService.php
+
+		-
+			message: "#^Parameter \\#1 \\$label of method App\\\\Entity\\\\BaseRessource\\:\\:setLabel\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/GroupeService.php
+
+		-
+			message: "#^Parameter \\#1 \\$quantite of method App\\\\Entity\\\\BaseGroupeHasIngredient\\:\\:setQuantite\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: src/Service/GroupeService.php
+
+		-
+			message: "#^Parameter \\#1 \\$quantite of method App\\\\Entity\\\\BaseGroupeHasRessource\\:\\:setQuantite\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: src/Service/GroupeService.php
+
+		-
+			message: "#^Cannot use array destructuring on array\\<int\\|string, int\\|string\\>\\|false\\.$#"
+			count: 1
+			path: src/Service/ImageOptimizer.php
+
+		-
+			message: "#^Parameter \\#1 \\$width of class Imagine\\\\Image\\\\Box constructor expects int, float\\|int given\\.$#"
+			count: 1
+			path: src/Service/ImageOptimizer.php
+
+		-
+			message: "#^Parameter \\#2 \\$height of class Imagine\\\\Image\\\\Box constructor expects int, float\\|int given\\.$#"
+			count: 1
+			path: src/Service/ImageOptimizer.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of method App\\\\Service\\\\OrderBy\\:\\:isAllowed\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/OrderBy.php
+
+		-
+			message: "#^Property App\\\\Service\\\\OrderBy\\:\\:\\$orders \\(array\\<string, string\\>\\) does not accept array\\<string, string\\|null\\>\\.$#"
+			count: 1
+			path: src/Service/OrderBy.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:getType\\(\\)\\.$#"
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:getTypeChoices\\(\\)\\.$#"
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:getValue\\(\\)\\.$#"
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:setType\\(\\)\\.$#"
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:setValue\\(\\)\\.$#"
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: "#^Method App\\\\Service\\\\PagerService\\:\\:isInOrder\\(\\) should return bool but returns string\\|false\\.$#"
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: "#^Parameter \\#1 \\$aliased of method App\\\\Repository\\\\BaseRepository\\:\\:getAttributeWhereName\\(\\) expects string, array\\<string, mixed\\>\\|int\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: "#^Parameter \\#1 \\$attribute of method App\\\\Repository\\\\BaseRepository\\:\\:translateAttribute\\(\\) expects string, array\\<string, mixed\\>\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: "#^Possibly invalid array key type array\\<string, mixed\\>\\|string\\|null\\.$#"
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: "#^Property App\\\\Service\\\\PagerService\\:\\:\\$request \\(Symfony\\\\Component\\\\HttpFoundation\\\\Request\\) does not accept Symfony\\\\Component\\\\HttpFoundation\\\\Request\\|null\\.$#"
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: "#^Argument of an invalid type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Langue\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Argument of an invalid type Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\PersonnageBonus\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Personnage\\|null\\.$#"
+			count: 3
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Cannot call method getPotionsDepartByLevel\\(\\) on App\\\\Entity\\\\Participant\\|null\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Cannot call method getRootAliases\\(\\) on Doctrine\\\\ORM\\\\QueryBuilder\\|null\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Method App\\\\Service\\\\PersonnageService\\:\\:getAllPugilat\\(\\) should return int but returns float\\|int\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Method App\\\\Service\\\\PersonnageService\\:\\:getHumanEspece\\(\\) should return App\\\\Entity\\\\Espece but returns App\\\\Entity\\\\Espece\\|null\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$annee of method App\\\\Entity\\\\BasePersonnageChronologie\\:\\:setAnnee\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$description of method App\\\\Entity\\\\BaseCompetence\\:\\:setDescription\\(\\) expects string, string\\|null given\\.$#"
+			count: 2
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$description of method App\\\\Entity\\\\BaseLangue\\:\\:setDescription\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$explication of method App\\\\Entity\\\\BaseHeroismeHistory\\:\\:setExplication\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$explication of method App\\\\Entity\\\\BasePugilatHistory\\:\\:setExplication\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$explication of method App\\\\Entity\\\\BaseRenommeHistory\\:\\:setExplication\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$key of method Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<int,App\\\\Entity\\\\Bonus\\>\\:\\:containsKey\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$key of method Doctrine\\\\Common\\\\Collections\\\\ReadableCollection\\<int,App\\\\Entity\\\\Bonus\\>\\:\\:containsKey\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$label of method App\\\\Entity\\\\BaseLangue\\:\\:setLabel\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$label of method App\\\\Entity\\\\BaseRessource\\:\\:setLabel\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$nombre of method App\\\\Entity\\\\BasePersonnageIngredient\\:\\:setNombre\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#1 \\$personnage of method App\\\\Service\\\\PersonnageService\\:\\:addPersonnageTrigger\\(\\) expects App\\\\Entity\\\\Personnage, App\\\\Entity\\\\Personnage\\|null given\\.$#"
+			count: 2
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Parameter \\#2 \\$level of method App\\\\Service\\\\PersonnageService\\:\\:getPotionsDepart\\(\\) expects App\\\\Enum\\\\LevelType, App\\\\Enum\\\\LevelType\\|null given\\.$#"
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: "#^Method App\\\\Twig\\\\HighlightTwigExtension\\:\\:highlightFilter\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Twig/HighlightTwigExtension.php
+
+		-
+			message: "#^Method App\\\\Twig\\\\HighlightTwigExtension\\:\\:highlightFilter\\(\\) has parameter \\$words with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Twig/HighlightTwigExtension.php
+
+
+
+
+
+
+
+
+
+
+
+

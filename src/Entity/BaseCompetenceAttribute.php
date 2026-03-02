@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -35,8 +37,6 @@ class BaseCompetenceAttribute
 
     /**
      * Set the value of competence_id.
-     *
-     * @return CompetenceAttribute
      */
     public function setCompetenceId(int $competence_id): static
     {
@@ -55,8 +55,6 @@ class BaseCompetenceAttribute
 
     /**
      * Set the value of attribute_type_id.
-     *
-     * @return CompetenceAttribute
      */
     public function setAttributeTypeId(int $attribute_type_id): static
     {
@@ -75,8 +73,6 @@ class BaseCompetenceAttribute
 
     /**
      * Set the value of value.
-     *
-     * @return CompetenceAttribute
      */
     public function setValue(int $value): static
     {
@@ -95,8 +91,6 @@ class BaseCompetenceAttribute
 
     /**
      * Set Competence entity (many to one).
-     *
-     * @return CompetenceAttribute
      */
     public function setCompetence(?Competence $competence = null): static
     {
@@ -115,8 +109,6 @@ class BaseCompetenceAttribute
 
     /**
      * Set AttributeType entity (many to one).
-     *
-     * @return CompetenceAttribute
      */
     public function setAttributeType(?AttributeType $attributeType = null): static
     {
@@ -134,7 +126,7 @@ class BaseCompetenceAttribute
     }
 
     /* public function __sleep()
-    {
-        return ['competence_id', 'attribute_type_id', 'value'];
-    } */
+     * {
+     * return ['competence_id', 'attribute_type_id', 'value'];
+     * } */
 }

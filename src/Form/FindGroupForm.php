@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -20,14 +22,13 @@ class FindGroupForm extends AbstractType
     {
         $builder->add('search', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
-        ])
-            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                    'numero' => 'Numéro',
-                    'group_name' => 'Nom du groupe',
-                ],
-            ]);
+        ])->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                'numero' => 'Numéro',
+                'group_name' => 'Nom du groupe',
+            ],
+        ]);
     }
 
     /**

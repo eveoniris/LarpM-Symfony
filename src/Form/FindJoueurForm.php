@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -20,15 +22,14 @@ class FindJoueurForm extends AbstractType
     {
         $builder->add('search', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
-        ])
-            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                    'lastName' => 'Nom du joueur',
-                    'firstName' => 'Prénom du joueur',
-                    'numero' => 'Numéro',
-                ],
-            ]);
+        ])->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                'lastName' => 'Nom du joueur',
+                'firstName' => 'Prénom du joueur',
+                'numero' => 'Numéro',
+            ],
+        ]);
     }
 
     /**

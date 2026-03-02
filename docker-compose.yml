@@ -2,6 +2,7 @@ services:
     frankenphp:
         build:
             context: .
+            target: dev
             dockerfile: Dockerfile.frankenphp
         restart: unless-stopped
         ports:
@@ -12,6 +13,7 @@ services:
             - ./:/app
             - ./docker/caddy/Caddyfile:/etc/frankenphp/Caddyfile
         environment:
+            - APP_ENV=dev
             - SERVER_NAME=larpmanager.test
             - PHP_EXTENSIONS=pdo,pdo_mysql,intl,ctype,iconv
         depends_on:

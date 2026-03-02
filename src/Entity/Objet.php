@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\DocumentType;
@@ -40,24 +42,28 @@ class Objet extends BaseObjet
     /**
      * Fourni un tableau pour exporter l'objet dans un fichier CSV.
      */
+    /** @return array<string, mixed> */
     public function getExportValue(): array
     {
         return [
             'id' => $this->getId(),
             'numero' => $this->getNumero(),
-            'nom' => ('' !== $this->getNom() && '0' !== $this->getNom()) ? $this->getNom() : '',
-            'code' => ($this->getcode()) ? $this->getCode() : '',
-            'description' => ('' !== $this->getDescription() && '0' !== $this->getDescription()) ? html_entity_decode(strip_tags((string)$this->getDescription())) : '',
-            'photo' => ($this->getPhoto()) ? $this->getPhoto()?->getRealName() : '',
+            'nom' => '' !== $this->getNom() && '0' !== $this->getNom() ? $this->getNom() : '',
+            'code' => $this->getcode() ? $this->getCode() : '',
+            'description' =>
+                '' !== $this->getDescription() && '0' !== $this->getDescription()
+                    ? html_entity_decode(strip_tags((string) $this->getDescription()))
+                    : '',
+            'photo' => $this->getPhoto() ? $this->getPhoto()->getRealName() : '',
             'tag' => implode(', ', $this->getTags()->toArray()),
             'rangement' => $this->getRangement()?->getLabel() ?? '',
             'localisation' => $this->getRangement()?->getLocalisation()->getLabel() ?? '',
-            'etat' => ($this->getEtat()) ? $this->getEtat()->getLabel() : '',
-            'proprietaire' => ($this->getProprietaire()) ? $this->getProprietaire()->getNom() : '',
-            'responsable' => ($this->getResponsable()) ? $this->getResponsable()->getUserName() : '',
+            'etat' => $this->getEtat() ? $this->getEtat()->getLabel() : '',
+            'proprietaire' => $this->getProprietaire() ? $this->getProprietaire()->getNom() : '',
+            'responsable' => $this->getResponsable()->getUserName(),
             'nombre' => $this->getNombre(),
             'objet de jeu' => $this->getItemsNumeroLabels(),
-            'creation_date' => ($this->getCreationDate()) ? $this->getCreationDate()->format('Y-m-d H:i:s') : '',
+            'creation_date' => $this->getCreationDate()->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -96,7 +102,7 @@ class Objet extends BaseObjet
 
     public function getPhotoFilePath(string $projectDir): string
     {
-        return $projectDir . $this->getPhotosFolderType()->value . $this->getPhotosDocumentType()->value . DIRECTORY_SEPARATOR;
+        return $projectDir . $this->getPhotosFolderType()->value . $this->getPhotosDocumentType()->value . \DIRECTORY_SEPARATOR;
     }
 
     public function getPhotosFolderType(): FolderType
@@ -111,12 +117,8 @@ class Objet extends BaseObjet
 
     /**
      * Set Users entity related by `responsable_id` (many to one).
-     *
-     * @param Users $User
-     *
-     * @return Objet
      */
-    public function setResponsable(?User $User = null)
+    public function setResponsable(?User $User = null): static
     {
         return $this->setUser($User);
     }

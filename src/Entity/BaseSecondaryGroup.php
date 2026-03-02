@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,6 +14,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use SensitiveParameter;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
@@ -27,11 +30,11 @@ abstract class BaseSecondaryGroup
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank]
     protected ?string $label = '';
 
     #[Column(type: Types::TEXT, nullable: true)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank]
     protected ?string $description = null;
 
     #[Column(type: Types::TEXT, nullable: true)]
@@ -43,15 +46,18 @@ abstract class BaseSecondaryGroup
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $materiel = null;
 
+    /** @var Collection<int, IntrigueHasGroupeSecondaire> */
     #[OneToMany(mappedBy: 'secondaryGroup', targetEntity: IntrigueHasGroupeSecondaire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: false)]
     protected Collection $intrigueHasGroupeSecondaires;
 
+    /** @var Collection<int, Membre> */
     #[OneToMany(mappedBy: 'secondaryGroup', targetEntity: Membre::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: false)]
     #[ORM\OrderBy(['id' => 'ASC'])]
     protected Collection $membres;
 
+    /** @var Collection<int, Postulant> */
     #[OneToMany(mappedBy: 'secondaryGroup', targetEntity: Postulant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_id', nullable: false)]
     protected Collection $postulants;
@@ -74,7 +80,7 @@ abstract class BaseSecondaryGroup
     #[JoinColumn(name: 'scenariste_id', referencedColumnName: 'id', options: ['unsigned' => true])]
     private ?User $scenariste = null;
 
-    #[ORM\Column(nullable: true)]
+    #[Column(nullable: true)]
     private ?bool $show_discord = null;
 
     public function __construct()
@@ -182,6 +188,8 @@ abstract class BaseSecondaryGroup
 
     /**
      * Get IntrigueHasGroupeSecondaire entity collection (one to many).
+     *
+     * @return Collection<int, IntrigueHasGroupeSecondaire>
      */
     public function getIntrigueHasGroupeSecondaires(): Collection
     {
@@ -226,6 +234,8 @@ abstract class BaseSecondaryGroup
 
     /**
      * Get Membre entity collection (one to many).
+     *
+     * @return Collection<int, Membre>
      */
     public function getMembres(): Collection
     {
@@ -252,6 +262,8 @@ abstract class BaseSecondaryGroup
 
     /**
      * Get Postulant entity collection (one to many).
+     *
+     * @return Collection<int, Postulant>
      */
     public function getPostulants(): Collection
     {
@@ -299,7 +311,7 @@ abstract class BaseSecondaryGroup
     /**
      * Set the value of secret.
      */
-    public function setSecret(bool $secret): static
+    public function setSecret(#[SensitiveParameter] bool $secret): static
     {
         $this->secret = $secret;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Personnage;
 
 use App\Entity\Lignee;
@@ -26,26 +28,24 @@ class PersonnageLigneeForm extends AbstractType
             'class' => Personnage::class,
             'choice_label' => static fn (Personnage $personnage) => $personnage->getLigneeIdentity(),
             'query_builder' => static fn (PersonnageRepository $pr) => $pr->getFindGenderQueryBuilder(1, 3), // Men or ambigous
-        ])
-            ->add('parent2', EntityType::class, [
-                'label' => 'Choisissez le Parent Femelle ou Ambigüe du personnage',
-                'expanded' => false,
-                'required' => false,
-                'autocomplete' => true,
-                'empty_data' => null,
-                'class' => Personnage::class,
-                'choice_label' => static fn (Personnage $personnage) => $personnage->getLigneeIdentity(),
-                'query_builder' => static fn (PersonnageRepository $pr) => $pr->getFindGenderQueryBuilder(2, 3), // women or ambigous
-            ])
-            ->add('lignee', EntityType::class, [
-                'label' => 'Choisissez la lignée de votre personnage ',
-                'expanded' => false,
-                'required' => false,
-                'autocomplete' => true,
-                'empty_data' => null,
-                'class' => Lignee::class,
-                'query_builder' => static fn (LigneeRepository $pr) => $pr->createQueryBuilder('p')->orderBy('p.nom', 'ASC'),
-            ]);
+        ])->add('parent2', EntityType::class, [
+            'label' => 'Choisissez le Parent Femelle ou Ambigüe du personnage',
+            'expanded' => false,
+            'required' => false,
+            'autocomplete' => true,
+            'empty_data' => null,
+            'class' => Personnage::class,
+            'choice_label' => static fn (Personnage $personnage) => $personnage->getLigneeIdentity(),
+            'query_builder' => static fn (PersonnageRepository $pr) => $pr->getFindGenderQueryBuilder(2, 3), // women or ambigous
+        ])->add('lignee', EntityType::class, [
+            'label' => 'Choisissez la lignée de votre personnage ',
+            'expanded' => false,
+            'required' => false,
+            'autocomplete' => true,
+            'empty_data' => null,
+            'class' => Lignee::class,
+            'query_builder' => static fn (LigneeRepository $pr) => $pr->createQueryBuilder('p')->orderBy('p.nom', 'ASC'),
+        ]);
     }
 
     /**

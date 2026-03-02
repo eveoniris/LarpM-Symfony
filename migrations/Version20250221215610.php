@@ -24,7 +24,6 @@ final class Version20250221215610 extends AbstractMigration
         $this->addSql('ALTER TABLE origine_bonus DROP FOREIGN KEY FK_BE69354769545666');
         $this->addSql('ALTER TABLE origine_bonus ADD CONSTRAINT FK_BE69354723BFF59E FOREIGN KEY (bonus_id) REFERENCES bonus (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE origine_bonus RENAME INDEX idx_be69354769545666 TO IDX_BE69354723BFF59E');
-
     }
 
     public function getDescription(): string
@@ -43,7 +42,5 @@ final class Version20250221215610 extends AbstractMigration
         $this->addSql('ALTER TABLE origine_bonus DROP FOREIGN KEY FK_BE69354723BFF59E');
         $this->addSql('ALTER TABLE origine_bonus ADD CONSTRAINT FK_BE69354769545666 FOREIGN KEY (bonus_id) REFERENCES bonus (id)');
         $this->addSql('ALTER TABLE origine_bonus RENAME INDEX idx_be69354723bff59e TO IDX_BE69354769545666');
-
-
     }
 }

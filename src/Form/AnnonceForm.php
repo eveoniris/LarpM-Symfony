@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -23,27 +24,25 @@ class AnnonceForm extends AbstractType
         $builder->add('title', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Titre',
             'required' => true,
-        ])
-            ->add('archive', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
-                'required' => true,
-                'choices' => ['Publique' => false, 'Dans les archive' => true],
-                'label' => 'Choisissez la visibilité de votre annonce',
-            ])
-            ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'label' => 'Choisissez le jeu auquel cette annonce fait référence',
-                'required' => true,
-                'multiple' => false,
-                'class' => \App\Entity\Gn::class,
-                'choice_label' => 'label',
-                'empty_data' => null,
-                'placeholder' => 'Aucun',
-            ])
-            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'required' => true,
-                'attr' => [
-                    'rows' => 9,
-                    'class' => 'tinymce'],
-            ]);
+        ])->add('archive', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            'required' => true,
+            'choices' => ['Publique' => false, 'Dans les archive' => true],
+            'label' => 'Choisissez la visibilité de votre annonce',
+        ])->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            'label' => 'Choisissez le jeu auquel cette annonce fait référence',
+            'required' => true,
+            'multiple' => false,
+            'class' => \App\Entity\Gn::class,
+            'choice_label' => 'label',
+            'empty_data' => null,
+            'placeholder' => 'Aucun',
+        ])->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'required' => true,
+            'attr' => [
+                'rows' => 9,
+                'class' => 'tinymce',
+            ],
+        ]);
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Tag;
@@ -30,8 +32,7 @@ class StockTagController extends AbstractController
     {
         $tag = new Tag();
 
-        $form = $this->createForm(TagType::class, $tag)
-            ->add('save', SubmitType::class);
+        $form = $this->createForm(TagType::class, $tag)->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -49,22 +50,24 @@ class StockTagController extends AbstractController
     }
 
     #[Route('/stock/tag/{tag}', name: 'stockTag.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Tag $tag): RedirectResponse|Response
-    {
-        $form = $this->createForm(TagType::class, $tag)
-            ->add('update', SubmitType::class)
-            ->add('delete', SubmitType::class);
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        Tag $tag,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(TagType::class, $tag)->add('update', SubmitType::class)->add('delete', SubmitType::class);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $tag = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 $entityManager->persist($tag);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le tag a été modifié.');
-            } elseif ($form->get('delete')->isClicked()) {
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 $entityManager->remove($tag);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le tag a été supprimé.');
@@ -75,6 +78,7 @@ class StockTagController extends AbstractController
 
         return $this->render('stock/tag/update.twig', [
             'tag' => $tag,
-            'form' => $form->createView()]);
+            'form' => $form->createView(),
+        ]);
     }
 }

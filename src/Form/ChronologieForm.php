@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -20,40 +21,35 @@ class ChronologieForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('territoire', EntityType::class, [
-                'required' => true,
-                'label' => 'Territoire',
-                'class' => Territoire::class,
-                'choice_label' => 'nom',
-                'query_builder' => static function (TerritoireRepository $t) use ($options) {
-                    $qb = $t->createQueryBuilder('t');
-                    if ($options['territoireId'])
-                    {
-                        $qb->where('t.id = :territoireId');
-                        $qb->setParameter('territoireId', $options['territoireId']);
-                    }
-                    $qb->orderBy('t.nom', 'ASC');
-                    return $qb;
-                },
-            ])
-            ->add('description', TextareaType::class, [
-                'required' => true,
-                'label' => 'Description',
-                'attr' => ['rows' => 9],
-            ])
-            ->add('year', IntegerType::class, [
-                'required' => true,
-                'label' => 'Année',
-            ])
-            ->add('month', IntegerType::class, [
-                'required' => false,
-                'label' => 'Mois (falcultatif)',
-            ])
-            ->add('day', IntegerType::class, [
-                'required' => false,
-                'label' => 'Jour (falcultatif)',
-            ]);
+        $builder->add('territoire', EntityType::class, [
+            'required' => true,
+            'label' => 'Territoire',
+            'class' => Territoire::class,
+            'choice_label' => 'nom',
+            'query_builder' => static function (TerritoireRepository $t) use ($options) {
+                $qb = $t->createQueryBuilder('t');
+                if ($options['territoireId']) {
+                    $qb->where('t.id = :territoireId');
+                    $qb->setParameter('territoireId', $options['territoireId']);
+                }
+                $qb->orderBy('t.nom', 'ASC');
+
+                return $qb;
+            },
+        ])->add('description', TextareaType::class, [
+            'required' => true,
+            'label' => 'Description',
+            'attr' => ['rows' => 9],
+        ])->add('year', IntegerType::class, [
+            'required' => true,
+            'label' => 'Année',
+        ])->add('month', IntegerType::class, [
+            'required' => false,
+            'label' => 'Mois (falcultatif)',
+        ])->add('day', IntegerType::class, [
+            'required' => false,
+            'label' => 'Jour (falcultatif)',
+        ]);
     }
 
     /**

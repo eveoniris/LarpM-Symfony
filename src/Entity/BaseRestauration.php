@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseRestauration', 'extended' => 'Restauration'])]
 abstract class BaseRestauration
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
@@ -27,6 +29,7 @@ abstract class BaseRestauration
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
     protected ?string $description = null;
 
+    /** @var Collection<int, ParticipantHasRestauration> */
     #[OneToMany(mappedBy: 'restauration', targetEntity: ParticipantHasRestauration::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'restauration_id', nullable: false)]
     protected Collection $participantHasRestaurations;
@@ -112,6 +115,8 @@ abstract class BaseRestauration
 
     /**
      * Get ParticipantHasRestauration entity collection (one to many).
+     *
+     * @return Collection<int, ParticipantHasRestauration>
      */
     public function getParticipantHasRestaurations(): Collection
     {
@@ -119,7 +124,7 @@ abstract class BaseRestauration
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description'];
-    } */
+     * {
+     * return ['id', 'label', 'description'];
+     * } */
 }

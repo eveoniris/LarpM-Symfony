@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Personnage;
@@ -12,38 +14,33 @@ class TechnologieRepository extends BaseRepository
 {
     /**
      * Find all public technologies ordered by label.
-     *
-     * @return ArrayCollection $technologies
      */
-    public function findPublicOrderedByLabel()
+    /** @return list<Technologie> */
+    public function findPublicOrderedByLabel(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT r FROM App\Entity\Technologie r WHERE r.secret = 0 ORDER BY r.label ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT r FROM App\Entity\Technologie r WHERE r.secret = 0 ORDER BY r.label ASC')->getResult();
     }
 
     /**
      * Find all technologies ordered by label.
-     *
-     * @return ArrayCollection $technologies
      */
-    public function findAllOrderedByLabel()
+    /** @return list<Technologie> */
+    public function findAllOrderedByLabel(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT r FROM App\Entity\Technologie r ORDER BY r.label ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT r FROM App\Entity\Technologie r ORDER BY r.label ASC')->getResult();
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias.'.competenceFamily', 'competenceFamily');
+        $query->join($alias . '.competenceFamily', 'competenceFamily');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
@@ -55,31 +52,33 @@ class TechnologieRepository extends BaseRepository
         return $query->setParameter('value', $competenceFamilyType->value);
     }
 
-    public function searchAttributes(): array
+    /** @return array<int, string> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             self::SEARCH_ALL,
-            $alias.'.label', // => 'Libellé',
-            $alias.'.description', // => 'Description',
+            $alias . '.label', // => 'Libellé',
+            $alias . '.description', // => 'Description',
             'competenceFamily.label as competenceFamily',
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::sortAttributes($alias),
-            $alias.'.label' => [
-                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+            $alias . '.label' => [
+                OrderBy::ASC => [$alias . '.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.label' => OrderBy::DESC],
             ],
-            $alias.'.description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            $alias . '.description' => [
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
             'competenceFamily' => [
                 OrderBy::ASC => ['competenceFamily.label' => OrderBy::ASC],
@@ -98,6 +97,7 @@ class TechnologieRepository extends BaseRepository
         return parent::translateAttribute($attribute);
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [
@@ -113,9 +113,6 @@ class TechnologieRepository extends BaseRepository
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
-        return $personnageRepository->createQueryBuilder('perso')
-            ->innerJoin('perso.technologies', 't')
-            ->where('t.id = :tid')
-            ->setParameter('tid', $technologie->getId());
+        return $personnageRepository->createQueryBuilder('perso')->innerJoin('perso.technologies', 't')->where('t.id = :tid')->setParameter('tid', $technologie->getId());
     }
 }

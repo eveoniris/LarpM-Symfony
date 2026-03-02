@@ -1,17 +1,16 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Personnage;
 
 use App\Entity\Personnage;
-use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-#[Deprecated]
 class PersonnageEditForm extends AbstractType
 {
     /**
@@ -22,23 +21,20 @@ class PersonnageEditForm extends AbstractType
         $builder->add('surnom', TextType::class, [
             'required' => false,
             'label' => '',
-        ])
-            ->add('intrigue', ChoiceType::class, [
-                'required' => true,
-                'choices' => ['Oui' => true, 'Non' => false],
-                'label' => 'Participer aux intrigues',
-            ])
-            ->add('sensible', ChoiceType::class, [
-                'required' => true,
-                'choices' => ['Non' => false, 'Oui' => true],
-                'label' => 'Personnage sensible',
-            ])
-            ->add('bracelet', ChoiceType::class, [
-                'required' => true,
-                'choices' => ['Non' => false, 'Oui' => true],
-                'label' => 'Possédez-vous votre bracelet de langue',
-                'help' => 'Si vous cochez Oui. Vous ne recevrez pas de bracelet de langue dans votre enveloppe personnage ',
-            ]);
+        ])->add('intrigue', ChoiceType::class, [
+            'required' => true,
+            'choices' => ['Oui' => true, 'Non' => false],
+            'label' => 'Participer aux intrigues',
+        ])->add('sensible', ChoiceType::class, [
+            'required' => true,
+            'choices' => ['Non' => false, 'Oui' => true],
+            'label' => 'Personnage sensible',
+        ])->add('bracelet', ChoiceType::class, [
+            'required' => true,
+            'choices' => ['Non' => false, 'Oui' => true],
+            'label' => 'Possédez-vous votre bracelet de langue',
+            'help' => 'Si vous cochez Oui. Vous ne recevrez pas de bracelet de langue dans votre enveloppe personnage ',
+        ]);
     }
 
     /**

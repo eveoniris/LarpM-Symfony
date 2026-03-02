@@ -1,12 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Rangement;
 use App\Entity\Tag;
-use App\Service\OrderBy;
 use Doctrine\ORM\QueryBuilder;
-use JetBrains\PhpStorm\Deprecated;
 
 class ObjetRepository extends BaseRepository
 {
@@ -29,25 +29,26 @@ class ObjetRepository extends BaseRepository
             }
         }
 
-        if (\is_numeric($criter)) {
+        if (is_numeric($criter)) {
             $criter = (int) $criter;
             if (-1 === $criter) {
-                $qb->leftjoin($alias.'.rangement', 'r');
+                $qb->leftjoin($alias . '.rangement', 'r');
                 $qb->andWhere('r.id is null');
             } else {
-                $qb->andWhere($alias.'.rangement = :rangement');
+                $qb->andWhere($alias . '.rangement = :rangement');
                 $qb->setParameter('rangement', $criter);
             }
 
             return $qb;
         }
-        $qb->join($alias.'.rangement', 'r');
+        $qb->join($alias . '.rangement', 'r');
         $qb->andWhere('r.label LIKE :rangement');
         $qb->setParameter('rangement', $criter);
 
         return $qb;
     }
 
+    /** @return array<int, \App\Entity\Objet> */
     public function findAll(): array
     {
         return $this->findBy([], ['nom' => 'ASC']);
@@ -55,8 +56,9 @@ class ObjetRepository extends BaseRepository
 
     /**
      * Trouve le nombre d'objets correspondant aux critères de recherche.
+     *
+     * @param array<string, mixed> $criteria
      */
-    #[Deprecated]
     public function findCount(array $criteria): float|bool|int|string|null
     {
         $qb = $this->getQueryBuilder($criteria);
@@ -65,7 +67,7 @@ class ObjetRepository extends BaseRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    #[Deprecated]
+    /** @param array<string, mixed> $criteria */
     protected function getQueryBuilder(array $criteria): QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
@@ -76,10 +78,12 @@ class ObjetRepository extends BaseRepository
 
         $allowed = ['nom', 'description', 'numero'];
         foreach ($allowed as $field) {
-            if ($criteria[$field] ?? false) {
-                $qb->andWhere('o.'.$field.' LIKE :field ');
-                $qb->setParameter('field', '%'.$criteria[$field].'%');
+            if (!($criteria[$field] ?? false)) {
+                continue;
             }
+
+            $qb->andWhere('o.' . $field . ' LIKE :field ');
+            $qb->setParameter('field', '%' . $criteria[$field] . '%');
         }
 
         $this->addTagCriteriaToQueryBuilder($criteria['tag'] ?? null, $qb);
@@ -109,14 +113,14 @@ class ObjetRepository extends BaseRepository
             }
         }
 
-        if (\is_numeric($criter)) {
+        if (is_numeric($criter)) {
             $criter = (int) $criter;
 
             if (-1 === $criter) {
-                $qb->leftjoin($alias.'.tags', 't');
+                $qb->leftjoin($alias . '.tags', 't');
                 $qb->andWhere('t.id is null');
             } else {
-                $qb->join($alias.'.tags', 't');
+                $qb->join($alias . '.tags', 't');
                 $qb->andWhere('t.id = :tag');
                 $qb->setParameter('tag', $criter);
             }
@@ -124,7 +128,7 @@ class ObjetRepository extends BaseRepository
             return $qb;
         }
 
-        $qb->join($alias.'.tags', 't');
+        $qb->join($alias . '.tags', 't');
         $qb->andWhere('t.nom LIKE :tag');
         $qb->setParameter('tag', $criter);
 
@@ -134,13 +138,18 @@ class ObjetRepository extends BaseRepository
     /**
      * Trouve les objets correspondant aux critères de recherche.
      */
-    #[Deprecated]
-    public function findList(array $criteria, array $order = [], int $limit = 50, int $offset = 0)
+    /**
+     * @param array<string, mixed>  $criteria
+     * @param array<string, string> $order
+     *
+     * @return array<int, \App\Entity\Objet>
+     */
+    public function findList(array $criteria, array $order = [], int $limit = 50, int $offset = 0): array
     {
         $qb = $this->getQueryBuilder($criteria);
         $qb->setFirstResult($offset);
         $qb->setMaxResults($limit);
-        $qb->orderBy('o.'.$order['by'], $order['dir']);
+        $qb->orderBy('o.' . $order['by'], $order['dir']);
 
         return $qb->getQuery()->getResult();
     }

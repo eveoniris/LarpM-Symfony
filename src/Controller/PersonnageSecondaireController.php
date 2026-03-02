@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\PersonnageSecondaire;
@@ -24,10 +26,7 @@ class PersonnageSecondaireController extends AbstractController
     #[Route('/personnageSecondaire', name: 'personnageSecondaire.list')]
     public function indexAction(): Response
     {
-        return $this->render(
-            'personnageSecondaire/index.twig',
-            ['personnageSecondaires' => $this->entityManager->getRepository(PersonnageSecondaire::class)->findAll()]
-        );
+        return $this->render('personnageSecondaire/index.twig', ['personnageSecondaires' => $this->entityManager->getRepository(PersonnageSecondaire::class)->findAll()]);
     }
 
     /**
@@ -52,8 +51,7 @@ class PersonnageSecondaireController extends AbstractController
     #[Route('/personnageSecondaire/add', name: 'personnageSecondaire.add')]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        $form = $this->createForm(PersonnageSecondaireForm::class, new PersonnageSecondaire())
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(PersonnageSecondaireForm::class, new PersonnageSecondaire())->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -86,7 +84,8 @@ class PersonnageSecondaireController extends AbstractController
     #[Route('/personnageSecondaire/update/{personnageSecondaire}', name: 'personnageSecondaire.update')]
     public function updateAction(
         Request $request,
-        #[MapEntity] PersonnageSecondaire $personnageSecondaire
+        #[MapEntity]
+        PersonnageSecondaire $personnageSecondaire,
     ): RedirectResponse|Response {
         /**
          *  Crée un tableau contenant les objets personnageSecondaireCompetences courants de la base de données.
@@ -96,14 +95,12 @@ class PersonnageSecondaireController extends AbstractController
             $originalPersonnageSecondaireComptences->add($personnageSecondaireCompetence);
         }
 
-        $form = $this->createForm(PersonnageSecondaireForm::class, $personnageSecondaire)
-            ->add('save', SubmitType::class, [
-                'label' => 'Sauvegarder',
-                'attr' => [
-                    'class' => 'btn btn-secondary',
-                ],
-            ]
-            );
+        $form = $this->createForm(PersonnageSecondaireForm::class, $personnageSecondaire)->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+            'attr' => [
+                'class' => 'btn btn-secondary',
+            ],
+        ]);
 
         $form->handleRequest($request);
 
@@ -121,11 +118,11 @@ class PersonnageSecondaireController extends AbstractController
              *  supprime la relation entre le groupeClasse et le groupe
              */
             foreach ($originalPersonnageSecondaireComptences as $personnageSecondaireCompetence) {
-                if (false === $personnageSecondaire->getPersonnageSecondaireCompetences()->contains(
-                    $personnageSecondaireCompetence
-                )) {
-                    $this->entityManager->remove($personnageSecondaireCompetence);
+                if (false !== $personnageSecondaire->getPersonnageSecondaireCompetences()->contains($personnageSecondaireCompetence)) {
+                    continue;
                 }
+
+                $this->entityManager->remove($personnageSecondaireCompetence);
             }
 
             $this->entityManager->persist($personnageSecondaire);
@@ -148,10 +145,10 @@ class PersonnageSecondaireController extends AbstractController
     public function deleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] PersonnageSecondaire $personnageSecondaire
+        #[MapEntity]
+        PersonnageSecondaire $personnageSecondaire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(PersonnageSecondaireDeleteForm::class, $personnageSecondaire)
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(PersonnageSecondaireDeleteForm::class, $personnageSecondaire)->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

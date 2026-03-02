@@ -1,0 +1,29 @@
+editor-url = "phpstorm://open?file=%file%&line=%line%&column=%column%"
+php-version = "8.4"
+
+[source]
+paths        = ["src", "tests"]
+excludes     = ["vendor", "var", "public/index.php"]
+
+# ── Linter ────────────────────────────────────────────────────────────────
+[linter]
+baseline     = "linter-baseline.toml"
+integrations = ["symfony", "phpunit", "doctrine", "carbon"]
+
+# ── Analyzer ──────────────────────────────────────────────────────────────
+[analyzer]
+baseline     = "analysis-baseline.toml"
+plugins = ["stdlib", "psl", "psr-container"]
+
+# ── Formatter ─────────────────────────────────────────────────────────────
+[formatter]
+preset       = "psr-12"
+print-width  = 200
+tab-width    = 4
+end-of-line  = "lf"
+trailing-comma = true
+space-within-grouping-parenthesis = false
+space-around-assignment-in-declare = false
+preserve-breaking-conditional-expression = true
+space-before-arrow-function-parameter-list-parenthesis = true
+parentheses-in-exit-and-die = false

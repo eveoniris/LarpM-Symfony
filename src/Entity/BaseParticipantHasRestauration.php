@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -19,11 +22,11 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseParticipantHasRestauration', 'extended' => 'ParticipantHasRestauration'])]
 abstract class BaseParticipantHasRestauration
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected \DateTime $date;
+    protected DateTime $date;
 
     #[ManyToOne(targetEntity: Participant::class, inversedBy: 'participantHasRestaurations', cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: false)]
@@ -35,7 +38,7 @@ abstract class BaseParticipantHasRestauration
 
     public function __construct()
     {
-        $this->setDate(new \DateTime('NOW'));
+        $this->setDate(new DateTime('NOW'));
     }
 
     /**
@@ -59,7 +62,7 @@ abstract class BaseParticipantHasRestauration
     /**
      * Set the value of date.
      */
-    public function setDate(\DateTime $date): static
+    public function setDate(DateTime $date): static
     {
         $this->date = $date;
 
@@ -69,7 +72,7 @@ abstract class BaseParticipantHasRestauration
     /**
      * Get the value of date.
      */
-    public function getDate(): \DateTime
+    public function getDate(): DateTime
     {
         return $this->date;
     }
@@ -111,7 +114,7 @@ abstract class BaseParticipantHasRestauration
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'participant_id', 'restauration_id', 'date'];
-    } */
+     * {
+     * return ['id', 'participant_id', 'restauration_id', 'date'];
+     * } */
 }

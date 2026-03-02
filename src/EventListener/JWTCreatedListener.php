@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\EventListener;
 
+use App\Entity\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -20,7 +23,8 @@ class JWTCreatedListener
 
         $payload = $event->getData();
         $payload['ip'] = $request->getClientIp();
-        $payload['username'] = $event->getUser()->getEmail();
+        $user = $event->getUser();
+        $payload['username'] = $user instanceof User ? $user->getEmail() : $user->getUserIdentifier();
         $payload['aud'] = ''; // TODO add UUID on USER
 
         $event->setData($payload);

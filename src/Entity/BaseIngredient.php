@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseIngredient', 'extended' => 'Ingredient'])]
 abstract class BaseIngredient
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
@@ -36,14 +38,17 @@ abstract class BaseIngredient
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $dose = '';
 
+    /** @var Collection<int, GroupeHasIngredient>|null */
     #[OneToMany(mappedBy: 'ingredient', targetEntity: GroupeHasIngredient::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'ingredient_id', nullable: false)]
     protected ?Collection $groupeHasIngredients;
 
+    /** @var Collection<int, PersonnageIngredient>|null */
     #[OneToMany(mappedBy: 'ingredient', targetEntity: PersonnageIngredient::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'ingredient_id', nullable: false)]
     protected ?Collection $personnageIngredients;
 
+    /** @var Collection<int, Territoire> */
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'ingredients')]
     protected Collection $territoires;
 
@@ -57,7 +62,7 @@ abstract class BaseIngredient
     /**
      * Set the value of id.
      */
-    public function setId(int $id): string
+    public function setId(int $id): static
     {
         $this->id = $id;
 
@@ -166,6 +171,8 @@ abstract class BaseIngredient
 
     /**
      * Get GroupeHasIngredient entity collection (one to many).
+     *
+     * @return Collection<int, GroupeHasIngredient>
      */
     public function getGroupeHasIngredients(): Collection
     {
@@ -194,6 +201,8 @@ abstract class BaseIngredient
 
     /**
      * Get PersonnageIngredient entity collection (one to many).
+     *
+     * @return Collection<int, PersonnageIngredient>
      */
     public function getPersonnageIngredients(): Collection
     {
@@ -222,6 +231,8 @@ abstract class BaseIngredient
 
     /**
      * Get Territoire entity collection.
+     *
+     * @return Collection<int, Territoire>
      */
     public function getTerritoires(): Collection
     {
@@ -229,7 +240,7 @@ abstract class BaseIngredient
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description', 'niveau', 'dose'];
-    } */
+     * {
+     * return ['id', 'label', 'description', 'niveau', 'dose'];
+     * } */
 }

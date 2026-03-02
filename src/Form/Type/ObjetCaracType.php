@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Type;
 
@@ -14,9 +15,9 @@ class ObjetCaracType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('taille', IntegerType::class, ['required' => false])
-            ->add('poid', TextType::class, ['required' => false])
-            ->add('couleur', TextType::class, ['required' => false]);
+        $builder->add('taille', IntegerType::class, ['required' => false])->add('poid', TextType::class, [
+            'required' => false,
+        ])->add('couleur', TextType::class, ['required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Type;
 
+use App\Entity\Groupe;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -10,7 +13,8 @@ class GroupeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', 'text')
+        $builder
+            ->add('nom', 'text')
             ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
                 'required' => false,
             ])
@@ -25,16 +29,18 @@ class GroupeType extends AbstractType
             ])
             ->add('jeu_strategique', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => false,
-                'choices' => ['false' => 'Ne participe pas', 'true' => 'Participe']])
+                'choices' => ['false' => 'Ne participe pas', 'true' => 'Participe'],
+            ])
             ->add('jeu_maritime', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'required' => false,
-                'choices' => ['false' => 'Ne participe pas', 'true' => 'Participe']]);
+                'choices' => ['false' => 'Ne participe pas', 'true' => 'Participe'],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Groupe::class,
+            'data_class' => Groupe::class,
         ]);
     }
 

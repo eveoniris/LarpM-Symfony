@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Type;
 
 use App\Entity\Localisation;
@@ -15,9 +17,12 @@ class RangementType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', TextType::class, ['attr' => ['help' => 'Les trois premières lettres (avec le numéro de l\'objet) servirons à créer le code identifiant un objet']])
-            ->add('localisation', EntityType::class, ['class' => Localisation::class, 'choice_label' => 'label'])
-            ->add('precision', TextareaType::class, ['required' => false, 'attr' => ['help' => '']]);
+        $builder->add('label', TextType::class, ['attr' => [
+            'help' => 'Les trois premières lettres (avec le numéro de l\'objet) servirons à créer le code identifiant un objet',
+        ]])->add('localisation', EntityType::class, [
+            'class' => Localisation::class,
+            'choice_label' => 'label',
+        ])->add('precision', TextareaType::class, ['required' => false, 'attr' => ['help' => '']]);
     }
 
     public function setDefaultOptions(OptionsResolver $resolver): void

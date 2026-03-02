@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Personnage;
 
@@ -24,12 +25,11 @@ class PersonnageUpdatePugilatForm extends AbstractType
             'label' => 'Combien de points de Pugilat voulez-vous ajouter ? (indiquez une valeur négative pour retirer des points)',
             'mapped' => false,
             'attr' => ['max' => 6],
-        ])
-            ->add('explication', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'required' => true,
-                'mapped' => false,
-                'label' => 'Donnez une explication',
-            ]);
+        ])->add('explication', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'required' => true,
+            'mapped' => false,
+            'label' => 'Donnez une explication',
+        ]);
     }
 
     /**

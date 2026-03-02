@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\Gn;
@@ -18,21 +20,19 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand(
-    name: 'app:gn-lock-give-literature',
-    description: 'Donne les bonus de litérature',
-)]
+#[AsCommand(name: 'app:gn-lock-give-literature', description: 'Donne les bonus de litérature')]
 class GnLockGiveLiterature extends Command
 {
-    public function __construct(protected readonly PersonnageService $personnageService, protected readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        protected readonly PersonnageService $personnageService,
+        protected readonly EntityManagerInterface $entityManager,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
-        $this
-            ->addArgument('gn', InputArgument::OPTIONAL, 'GN id if not the next session', default: null);
+        $this->addArgument('gn', InputArgument::OPTIONAL, 'GN id if not the next session', default: null);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -62,7 +62,8 @@ class GnLockGiveLiterature extends Command
             $progressBar->advance();
         }
         $progressBar->finish();
-        $io->success(sprintf('Terminé pour %d personnage(s)', $total));
+        $io->success(\sprintf('Terminé pour %d personnage(s)', $total));
+
         return Command::SUCCESS;
     }
 }

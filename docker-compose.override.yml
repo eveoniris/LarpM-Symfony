@@ -1,4 +1,7 @@
 services:
+  frankenphp:
+    volumes:
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/zzz-app.ini
 ###> doctrine/doctrine-bundle ###
   database:
     ports:

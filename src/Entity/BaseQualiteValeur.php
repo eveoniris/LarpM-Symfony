@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseQualiteValeur', 'extended' => 'QualiteValeur'])]
 abstract class BaseQualiteValeur
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
@@ -59,7 +61,7 @@ abstract class BaseQualiteValeur
     /**
      * Set the value of monnaie_id.
      */
-    public function setMonnaieId(int $monnaie_id): QualiteValeur
+    public function setMonnaieId(int $monnaie_id): static
     {
         $this->monnaie_id = $monnaie_id;
 
@@ -129,7 +131,7 @@ abstract class BaseQualiteValeur
     }
 
     /* public function __sleep()
-    {
-        return ['qualite_id', 'monnaie_id', 'nombre'];
-    } */
+     * {
+     * return ['qualite_id', 'monnaie_id', 'nombre'];
+     * } */
 }

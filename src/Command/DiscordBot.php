@@ -1,28 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use Discord\Discord;
 use Doctrine\ORM\EntityManagerInterface;
+use SensitiveParameter;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand(
-    name: 'discord:on',
-    description: 'Lance le bot',
-)]
+#[AsCommand(name: 'discord:on', description: 'Lance le bot')]
 class DiscordBot extends Command
 {
     public static ?Discord $discord = null;
 
-    private function getDiscord()
+    private function getDiscord(): Discord
     {
         self::$discord ??= new Discord([
             'token' => $this->botToken,
-           // 'loadAllMembers' => true,
+            // 'loadAllMembers' => true,
         ]);
 
         return self::$discord;
@@ -31,9 +31,12 @@ class DiscordBot extends Command
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
         protected readonly string $botId,
+        #[SensitiveParameter]
         protected readonly string $botToken,
+        #[SensitiveParameter]
         protected readonly string $apiKey,
         protected readonly string $oauthId,
+        #[SensitiveParameter]
         protected readonly string $oauthSecret,
     ) {
         parent::__construct();
@@ -44,12 +47,12 @@ class DiscordBot extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title('Bot Discord');
 
-        $this->getDiscord()?->on('ready', function ($discord) {
-            echo 'Bot is ready!', PHP_EOL;
+        $this->getDiscord()->on('ready', static function ($discord): void {
+            echo 'Bot is ready!', \PHP_EOL;
 
             // Listen for messages
-            $discord->on('message', function ($message) {
-                echo "Received a message from {$message->author->username}: {$message->content}", PHP_EOL;
+            $discord->on('message', static function ($message): void {
+                echo "Received a message from {$message->author->username}: {$message->content}", \PHP_EOL;
 
                 // Respond to a specific command
                 if ('!hello' === $message->content) {
@@ -58,7 +61,7 @@ class DiscordBot extends Command
             });
         });
 
-        $this->getDiscord()?->run();
+        $this->getDiscord()->run();
 
         $io->success('Terminé');
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,25 +23,30 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageSecondaire', 'extended' => 'PersonnageSecondaire'])]
 abstract class BasePersonnageSecondaire
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
+    /** @var Collection<int, Participant> */
     #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $participants;
 
+    /** @var Collection<int, PersonnageSecondaireCompetence> */
     #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: PersonnageSecondaireCompetence::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $personnageSecondaireCompetences;
 
+    /** @var Collection<int, PersonnageSecondairesCompetences> */
     #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: PersonnageSecondairesCompetences::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $personnageSecondairesCompetences;
 
+    /** @var Collection<int, PersonnageSecondairesSkills> */
     #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: PersonnageSecondairesSkills::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $personnageSecondairesSkills;
 
+    /** @var Collection<int, User> */
     #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: User::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $users;
@@ -70,8 +77,8 @@ abstract class BasePersonnageSecondaire
     /**
      * Add PersonnageSecondaireCompetence entity to collection (one to many).
      */
-    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence,
-    ): static {
+    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
+    {
         $this->personnageSecondaireCompetences[] = $personnageSecondaireCompetence;
 
         return $this;
@@ -125,6 +132,8 @@ abstract class BasePersonnageSecondaire
 
     /**
      * Get Participant entity collection (one to many).
+     *
+     * @return Collection<int, Participant>
      */
     public function getParticipants(): Collection
     {
@@ -133,6 +142,8 @@ abstract class BasePersonnageSecondaire
 
     /**
      * Get PersonnageSecondaireCompetence entity collection (one to many).
+     *
+     * @return Collection<int, PersonnageSecondaireCompetence>
      */
     public function getPersonnageSecondaireCompetences(): Collection
     {
@@ -141,6 +152,8 @@ abstract class BasePersonnageSecondaire
 
     /**
      * Get User entity collection (one to many).
+     *
+     * @return Collection<int, User>
      */
     public function getUsers(): Collection
     {
@@ -160,8 +173,8 @@ abstract class BasePersonnageSecondaire
     /**
      * Remove PersonnageSecondaireCompetence entity from collection (one to many).
      */
-    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence,
-    ): static {
+    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
+    {
         $this->personnageSecondaireCompetences->removeElement($personnageSecondaireCompetence);
 
         return $this;
@@ -178,7 +191,7 @@ abstract class BasePersonnageSecondaire
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'classe_id'];
-    } */
+     * {
+     * return ['id', 'classe_id'];
+     * } */
 }

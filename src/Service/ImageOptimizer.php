@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use Imagine\Gd\Imagine;
@@ -19,7 +21,7 @@ class ImageOptimizer
         $this->projectDirectory = $projectDirectory;
     }
 
-    public function getImagine(string $projectDirectory)
+    public function getImagine(string $projectDirectory): Imagine
     {
         return $this->imagine;
     }
@@ -30,7 +32,7 @@ class ImageOptimizer
         $ratio = $iwidth / $iheight;
         $width = self::MAX_WIDTH;
         $height = self::MAX_HEIGHT;
-        if ($width / $height > $ratio) {
+        if (($width / $height) > $ratio) {
             $width = $height * $ratio;
         } else {
             $height = $width / $ratio;

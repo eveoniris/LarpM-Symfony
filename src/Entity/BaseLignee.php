@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Created by Kevin F.
  */
@@ -23,20 +25,21 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseLignee', 'extended' => 'Lignee'])]
 abstract class BaseLignee
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING)]
     protected string $nom;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
-    protected $description;
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    protected ?string $description = null;
 
     /**
      * @OneToMany(targetEntity="PersonnageLignee", mappedBy="lignee")
      *
      * @JoinColumn(name="id", referencedColumnName="lignee_id", nullable=false)
      */
+    /** @var Collection<int, PersonnageLignee> */
     #[OneToMany(mappedBy: 'lignee', targetEntity: PersonnageLignee::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'lignee_id', nullable: false)]
     protected Collection $personnageLignees;
@@ -95,11 +98,15 @@ abstract class BaseLignee
         return $this->description ?? '';
     }
 
+    /** @return Collection<int, PersonnageLignee> */
     public function getPersonnageLignees(): Collection
     {
         return $this->personnageLignees;
     }
 
+    /**
+     * @param ArrayCollection<int, PersonnageLignee> $personnageLignees
+     */
     public function setPersonnageLignees(ArrayCollection $personnageLignees): static
     {
         $this->personnageLignees = $personnageLignees;
@@ -108,7 +115,7 @@ abstract class BaseLignee
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'nom', 'description'];
-    } */
+     * {
+     * return ['id', 'nom', 'description'];
+     * } */
 }

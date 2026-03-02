@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\DocumentType;
@@ -8,9 +10,7 @@ use App\Repository\ConnaissanceRepository;
 use App\Service\FileUploader;
 use App\Trait\EntityFileUploadTrait;
 use Doctrine\ORM\Mapping\Entity;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\AsciiSlugger;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity(repositoryClass: ConnaissanceRepository::class)]
 class Connaissance extends BaseConnaissance
@@ -28,8 +28,7 @@ class Connaissance extends BaseConnaissance
 
     public function initFile(): static
     {
-        $this->setDocumentType(DocumentType::Doc)
-            ->setFolderType(FolderType::Private);
+        $this->setDocumentType(DocumentType::Doc)->setFolderType(FolderType::Private);
 
         return $this;
     }
@@ -41,7 +40,7 @@ class Connaissance extends BaseConnaissance
 
     public function getPrintLabel(): ?string
     {
-        return (new AsciiSlugger())->slug($this->getLabel());
+        return new AsciiSlugger()->slug($this->getLabel());
     }
 
     protected function afterUpload(FileUploader $fileUploader): FileUploader
@@ -53,6 +52,6 @@ class Connaissance extends BaseConnaissance
 
     public function getDocument(string $projectDir): string
     {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+        return $this->getDocumentFilePath($projectDir) . $this->getDocumentUrl();
     }
 }

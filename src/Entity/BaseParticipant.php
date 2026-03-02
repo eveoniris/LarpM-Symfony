@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use DateTime;
@@ -22,7 +24,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseParticipant', 'extended' => 'Participant'])]
 class BaseParticipant
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected int $id;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
@@ -33,12 +35,15 @@ class BaseParticipant
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?DateTimeInterface $valide_ci_le = null;
+    /** @var Collection<int, GroupeGn> */
     #[OneToMany(mappedBy: 'participant', targetEntity: GroupeGn::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: false)]
     protected Collection $groupeGns;
+    /** @var Collection<int, ParticipantHasRestauration> */
     #[OneToMany(mappedBy: 'participant', targetEntity: ParticipantHasRestauration::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: false)]
     protected Collection $participantHasRestaurations;
+    /** @var Collection<int, Reponse> */
     #[OneToMany(mappedBy: 'participant', targetEntity: Reponse::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: false)]
     protected Collection $reponses;
@@ -60,17 +65,19 @@ class BaseParticipant
     #[ManyToOne(targetEntity: GroupeGn::class, inversedBy: 'participants')]
     #[JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id')]
     protected ?GroupeGn $groupeGn;
+    /** @var Collection<int, Potion> */
     #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'participants')]
     #[ORM\JoinTable(name: 'participant_potions_depart')]
     #[JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $potions_depart;
-    #[ORM\Column(length: 32, nullable: true)]
+    #[Column(length: 32, nullable: true)]
     private ?string $couchage = null;
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     private ?string $special = null;
-    #[ORM\OneToMany(mappedBy: 'participant', targetEntity: QrCodeScanLog::class)]
+    /** @var Collection<int, QrCodeScanLog> */
+    #[OneToMany(mappedBy: 'participant', targetEntity: QrCodeScanLog::class)]
     private Collection $qrCodeScanLogs;
 
     public function __construct()
@@ -180,6 +187,8 @@ class BaseParticipant
 
     /**
      * Get GroupeGn entity collection (one to many).
+     *
+     * @return Collection<int, GroupeGn>
      */
     public function getGroupeGns(): Collection
     {
@@ -208,6 +217,8 @@ class BaseParticipant
 
     /**
      * Get ParticipantHasRestauration entity collection (one to many).
+     *
+     * @return Collection<int, ParticipantHasRestauration>
      */
     public function getParticipantHasRestaurations(): Collection
     {
@@ -236,6 +247,8 @@ class BaseParticipant
 
     /**
      * Get Reponse entity collection (one to many).
+     *
+     * @return Collection<int, Reponse>
      */
     public function getReponses(): Collection
     {
@@ -372,12 +385,13 @@ class BaseParticipant
 
     /**
      * Get Potion entity collection.
+     *
+     * @return Collection<int, Potion>
      */
     public function getPotionsDepart(): Collection
     {
         return $this->potions_depart;
     }
-
 
     public function getCouchage(): ?string
     {
@@ -415,6 +429,7 @@ class BaseParticipant
     {
         if (!$this->qrCodeScanLogs->contains($qrCodeScanLog)) {
             $this->qrCodeScanLogs->add($qrCodeScanLog);
+            /* @phpstan-ignore argument.type */
             $qrCodeScanLog->setParticipant($this);
         }
 

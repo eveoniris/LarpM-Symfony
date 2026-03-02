@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\CompetenceFamily;
@@ -22,8 +24,11 @@ class CompetenceFamilyController extends AbstractController
      */
     #[Route('/competenceFamily', name: 'competenceFamily.index')]
     #[IsGranted('ROLE_REGLE')]
-    public function indexAction(Request $request, PagerService $pagerService, CompetenceFamilyRepository $competenceFamilyRepository): Response
-    {
+    public function indexAction(
+        Request $request,
+        PagerService $pagerService,
+        CompetenceFamilyRepository $competenceFamilyRepository,
+    ): Response {
         $pagerService->setRequest($request)->setRepository($competenceFamilyRepository)->setLimit(25);
 
         return $this->render('competenceFamily/index.twig', [
@@ -41,9 +46,9 @@ class CompetenceFamilyController extends AbstractController
     {
         $competenceFamily = new CompetenceFamily();
 
-        $form = $this->createForm(CompetenceFamilyForm::class, $competenceFamily)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+        $form = $this->createForm(CompetenceFamilyForm::class, $competenceFamily)->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -55,10 +60,10 @@ class CompetenceFamilyController extends AbstractController
 
             $this->addFlash('success', 'La famille de compétence a été ajoutée.');
 
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('competenceFamily.index', [], 303);
             }
-            if ($form->get('save_continue')->isClicked()) {
+            if ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('competenceFamily.add', [], 303);
             }
         }
@@ -73,22 +78,26 @@ class CompetenceFamilyController extends AbstractController
      */
     #[Route('/competence/family/{competenceFamily}/update', name: 'competenceFamily.update')]
     #[IsGranted('ROLE_REGLE')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] ?CompetenceFamily $competenceFamily): RedirectResponse|Response
-    {
-        $form = $this->createForm(CompetenceFamilyForm::class, $competenceFamily)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        ?CompetenceFamily $competenceFamily,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(CompetenceFamilyForm::class, $competenceFamily)->add('update', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $competenceFamily = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 $entityManager->persist($competenceFamily);
                 $entityManager->flush();
                 $this->addFlash('success', 'La famille de compétence a été mis à jour.');
-            } elseif ($form->get('delete')->isClicked()) {
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 $entityManager->remove($competenceFamily);
                 $entityManager->flush();
                 $this->addFlash('success', 'La famille de compétence a été supprimé.');

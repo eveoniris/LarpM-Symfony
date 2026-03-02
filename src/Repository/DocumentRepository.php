@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Document;
 use App\Form\DocumentForm;
 use App\Service\OrderBy;
 use Doctrine\ORM\QueryBuilder;
+use InvalidArgumentException;
 
 /**
  * LarpManager\Repository\DocumentRepository.
@@ -14,17 +17,16 @@ use Doctrine\ORM\QueryBuilder;
  */
 class DocumentRepository extends BaseRepository
 {
-    public function findAllOrderedByCode()
+    /** @return list<Document> */
+    public function findAllOrderedByCode(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT d FROM App\Entity\Document d ORDER BY d.code ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT d FROM App\Entity\Document d ORDER BY d.code ASC')->getResult();
     }
 
     /**
      * Trouve le nombre de documents correspondant aux critères de recherche.
      */
-    public function findCount(?string $type, $value)
+    public function findCount(?string $type, mixed $value): int
     {
         $qb = $this->getQueryBuilder($type, $value);
         $qb->select($qb->expr()->count('d'));
@@ -34,23 +36,30 @@ class DocumentRepository extends BaseRepository
 
     /**
      * Trouve les documents correspondant aux critères de recherche.
+     *
+     * @param array<string, string> $order
      */
-    public function findList($type, $value, array $order = ['by' => 'titre', 'dir' => 'ASC'], int $limit = 50, int $offset = 0)
-    {
+    public function findList(
+        string $type,
+        mixed $value,
+        array $order = ['by' => 'titre', 'dir' => 'ASC'],
+        int $limit = 50,
+        int $offset = 0,
+    ): \Doctrine\ORM\Query {
         $qb = $this->getQueryBuilder($type, $value);
         $qb->setFirstResult($offset);
         $qb->setMaxResults($limit);
-        $qb->orderBy('d.'.$order['by'], $order['dir']);
+        $qb->orderBy('d.' . $order['by'], $order['dir']);
 
         return $qb->getQuery();
     }
 
-    protected function getQueryBuilder(?string $type, $value): QueryBuilder
+    protected function getQueryBuilder(?string $type, mixed $value): QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('d');
-        $qb->from(\App\Entity\Document::class, 'd');
+        $qb->from(Document::class, 'd');
 
         // retire les caractères non imprimable d'une chaine UTF-8
         $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', htmlspecialchars((string) $value));
@@ -59,44 +68,45 @@ class DocumentRepository extends BaseRepository
             switch ($type) {
                 case 'titre':
                     $qb->andWhere('d.titre LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'description':
                     $qb->andWhere('d.description LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'code':
                     $qb->andWhere('d.code LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'auteur':
                     $qb->andWhere('d.auteur LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'id':
                     $qb->andWhere('d.id = :value');
                     $qb->setParameter('value', (int) $value);
                     break;
                 default:
-                    throw new \InvalidArgumentException(sprintf('Type "%s" inconnu', $type));
+                    throw new InvalidArgumentException(\sprintf('Type "%s" inconnu', $type));
             }
         }
 
         return $qb;
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
 
-        $query->leftJoin($alias.'.groupes', 'groupes');
-        $query->leftJoin($alias.'.user', 'user');
+        $query->leftJoin($alias . '.groupes', 'groupes');
+        $query->leftJoin($alias . '.user', 'user');
         // $query->join($alias.'.langues', 'langue');
         // TOO heavy (use lazy load ?) $query->join($alias.'lieus', 'lieus');
         // TOO heavy (use lazy load ?) $query->join($alias.'personnages', 'personnages');
@@ -104,56 +114,64 @@ class DocumentRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    public function searchAttributes(): array
+    /** @return array<string, array<string, mixed>> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::searchAttributes(),
-            $alias.'.titre', // => 'Libellé',
-            $alias.'.code',
-            $alias.'.description', // => 'Description',
-            $alias.'.impression',
-            $alias.'.cryptage',
+            $alias . '.titre', // => 'Libellé',
+            $alias . '.code',
+            $alias . '.description', // => 'Description',
+            $alias . '.impression',
+            $alias . '.cryptage',
             'user.username as user',
-            $alias.'.auteur',
+            $alias . '.auteur',
             // TODO add groupe, lieu personnage ?
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::sortAttributes($alias),
-            $alias.'.titre' => [
-                OrderBy::ASC => [$alias.'.titre' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.titre' => OrderBy::DESC],
+            $alias . '.titre' => [
+                OrderBy::ASC => [$alias . '.titre' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.titre' => OrderBy::DESC],
             ],
-            $alias.'.description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            $alias . '.description' => [
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
-            $alias.'.code' => [
-                OrderBy::ASC => [$alias.'.code' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.code' => OrderBy::DESC],
+            $alias . '.code' => [
+                OrderBy::ASC => [$alias . '.code' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.code' => OrderBy::DESC],
             ],
-            $alias.'.impression' => [
-                OrderBy::ASC => [$alias.'.impression' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.impression' => OrderBy::DESC],
+            $alias . '.impression' => [
+                OrderBy::ASC => [$alias . '.impression' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.impression' => OrderBy::DESC],
             ],
-            $alias.'.cryptage' => [
-                OrderBy::ASC => [$alias.'.cryptage' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.cryptage' => OrderBy::DESC],
+            $alias . '.cryptage' => [
+                OrderBy::ASC => [$alias . '.cryptage' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.cryptage' => OrderBy::DESC],
             ],
-            $alias.'.auteur' => [
-                OrderBy::ASC => [$alias.'.auteur' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.auteur' => OrderBy::DESC],
+            $alias . '.auteur' => [
+                OrderBy::ASC => [$alias . '.auteur' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.auteur' => OrderBy::DESC],
             ],
             // using alias like "scriptwriter" require another template loop due to the added $query->select() entity
-            'user.username' => [OrderBy::ASC => ['user.username' => OrderBy::ASC], OrderBy::DESC => ['user.username' => OrderBy::DESC]],
-            'groupes.nom' => [OrderBy::ASC => ['groupes.nom' => OrderBy::ASC], OrderBy::DESC => ['groupes.nom' => OrderBy::DESC]],
+            'user.username' => [
+                OrderBy::ASC => ['user.username' => OrderBy::ASC],
+                OrderBy::DESC => ['user.username' => OrderBy::DESC],
+            ],
+            'groupes.nom' => [
+                OrderBy::ASC => ['groupes.nom' => OrderBy::ASC],
+                OrderBy::DESC => ['groupes.nom' => OrderBy::DESC],
+            ],
         ];
     }
 
@@ -167,6 +185,7 @@ class DocumentRepository extends BaseRepository
         return parent::translateAttribute($attribute);
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [
@@ -186,9 +205,6 @@ class DocumentRepository extends BaseRepository
         /** @var static $documentRepository */
         $documentRepository = $this->entityManager->getRepository(DocumentForm::class);
 
-        return $documentRepository->createQueryBuilder('perso')
-            ->innerJoin('perso.documents', 'd')
-            ->where('d.id = :did')
-            ->setParameter('did', $document->getId());
+        return $documentRepository->createQueryBuilder('perso')->innerJoin('perso.documents', 'd')->where('d.id = :did')->setParameter('did', $document->getId());
     }
 }

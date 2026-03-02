@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Quality;
 
@@ -27,19 +28,17 @@ class QualityForm extends AbstractType
         $builder->add('label', TextType::class, [
             'label' => 'Label',
             'required' => true,
-        ])
-            ->add('numero', IntegerType::class, [
-                'required' => true,
-                'label' => 'Numéro',
-            ])
-            ->add('qualityValeurs', CollectionType::class, [
-                'label' => 'Valeur',
-                'required' => true,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'entry_type' => QualityValeurType::class,
-            ]);
+        ])->add('numero', IntegerType::class, [
+            'required' => true,
+            'label' => 'Numéro',
+        ])->add('qualityValeurs', CollectionType::class, [
+            'label' => 'Valeur',
+            'required' => true,
+            'allow_add' => true,
+            'allow_delete' => true,
+            'by_reference' => false,
+            'entry_type' => QualityValeurType::class,
+        ]);
     }
 
     /**

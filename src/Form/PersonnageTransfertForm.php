@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -26,11 +27,11 @@ class PersonnageTransfertForm extends AbstractType
             'choice_label' => 'identity',
             'mapped' => false,
             /*					'query_builder' => function(\LarpManager\Repository\TerritoireRepository $er) {
-                                    $qb = $er->createQueryBuilder('t');
-                                    $qb->andWhere('t.territoire IS NULL');
-                                    $qb->orderBy('t.nom', 'ASC');
-                                    return $qb;
-                                }*/
+             * $qb = $er->createQueryBuilder('t');
+             * $qb->andWhere('t.territoire IS NULL');
+             * $qb->orderBy('t.nom', 'ASC');
+             * return $qb;
+             * }*/
         ]);
     }
 

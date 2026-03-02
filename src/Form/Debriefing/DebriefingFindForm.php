@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Debriefing;
 
 use App\Form\ListFindForm;
-use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-#[deprecated]
 class DebriefingFindForm extends ListFindForm
 {
     /**
@@ -18,14 +18,14 @@ class DebriefingFindForm extends ListFindForm
         parent::buildForm($builder, $options);
 
         $builder->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                    'Groupe' => 'Groupe',
-                    'Auteur' => 'Auteur',
-                    'Scénariste' => 'Scenariste',
-                ],
-                'label' => 'Type',
-            ]);
+            'required' => true,
+            'choices' => [
+                'Groupe' => 'Groupe',
+                'Auteur' => 'Auteur',
+                'Scénariste' => 'Scenariste',
+            ],
+            'label' => 'Type',
+        ]);
     }
 
     /**

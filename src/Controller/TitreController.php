@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -15,15 +16,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
 class TitreController extends AbstractController
 {
     /**
      * Liste des titres.
      */
     #[Route('/titre', name: 'titre.list')]
-    public function adminListAction(Request $request, PagerService $pagerService, TitreRepository $titreRepository): Response
-    {
+    public function adminListAction(
+        Request $request,
+        PagerService $pagerService,
+        TitreRepository $titreRepository,
+    ): Response {
         $pagerService->setRequest($request)->setRepository($titreRepository)->setLimit(50);
 
         return $this->render('titre/list.twig', [
@@ -36,7 +40,7 @@ class TitreController extends AbstractController
      * Detail d'un titre.
      */
     #[Route('/titre/{titre}/detail', name: 'titre.detail')]
-    public function adminDetailAction(Request $request,  EntityManagerInterface $entityManager, Titre $titre): Response
+    public function adminDetailAction(Request $request, EntityManagerInterface $entityManager, Titre $titre): Response
     {
         return $this->render('titre/detail.twig', [
             'titre' => $titre,
@@ -47,12 +51,11 @@ class TitreController extends AbstractController
      * Ajoute un titre.
      */
     #[Route('/titre/add', name: 'titre.add')]
-    public function adminAddAction(Request $request,  EntityManagerInterface $entityManager): Response|RedirectResponse
+    public function adminAddAction(Request $request, EntityManagerInterface $entityManager): Response|RedirectResponse
     {
         $titre = new Titre();
 
-        $form = $this->createForm(TitreForm::class, $titre)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(TitreForm::class, $titre)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -62,7 +65,7 @@ class TitreController extends AbstractController
             $entityManager->persist($titre);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le titre a été ajouté');
+            $this->addFlash('success', 'Le titre a été ajouté');
 
             return $this->redirectToRoute('titre.detail', ['titre' => $titre->getId()], 303);
         }
@@ -77,10 +80,12 @@ class TitreController extends AbstractController
      * Met à jour un titre.
      */
     #[Route('/titre/{titre}/update', name: 'titre.update')]
-    public function adminUpdateAction(Request $request,  EntityManagerInterface $entityManager, Titre $titre): Response|RedirectResponse
-    {
-        $form = $this->createForm(TitreForm::class, $titre)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+    public function adminUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Titre $titre,
+    ): Response|RedirectResponse {
+        $form = $this->createForm(TitreForm::class, $titre)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -90,7 +95,7 @@ class TitreController extends AbstractController
             $entityManager->persist($titre);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le titre a été sauvegardé');
+            $this->addFlash('success', 'Le titre a été sauvegardé');
 
             return $this->redirectToRoute('titre.detail', ['titre' => $titre->getId()], 303);
         }
@@ -105,10 +110,12 @@ class TitreController extends AbstractController
      * Supprime un titre.
      */
     #[Route('/titre/{titre}/delete', name: 'titre.delete')]
-    public function adminDeleteAction(Request $request,  EntityManagerInterface $entityManager, Titre $titre): Response|RedirectResponse
-    {
-        $form = $this->createForm(TitreDeleteForm::class, $titre)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+    public function adminDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Titre $titre,
+    ): Response|RedirectResponse {
+        $form = $this->createForm(TitreDeleteForm::class, $titre)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -118,7 +125,7 @@ class TitreController extends AbstractController
             $entityManager->remove($titre);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le titre a été suprimé');
+            $this->addFlash('success', 'Le titre a été suprimé');
 
             return $this->redirectToRoute('titre.list', [], 303);
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Debriefing;
@@ -12,7 +14,7 @@ use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,10 +22,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-
 class DebriefingController extends AbstractController
 {
-    final public const DOC_PATH = __DIR__.'/../../private/doc/';
+    final public const DOC_PATH = __DIR__ . '/../../private/doc/';
 
     /**
      * Ajout d'un debriefing.
@@ -44,19 +45,19 @@ class DebriefingController extends AbstractController
             }
         }
 
-        $form = $this->createForm(DebriefingForm::class, $debriefing, ['groupeId' => $groupeId])
-            ->add('visibility', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Visibilité',
-                'choices' => [
-                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
-                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
-                    'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
-                    'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
-                    'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-                ],
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(DebriefingForm::class, $debriefing, [
+            'groupeId' => $groupeId,
+        ])->add('visibility', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Visibilité',
+            'choices' => [
+                'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
+                'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
+                'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
+                'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
+                'Seul l\'auteur peut voir ceci' => 'AUTHOR',
+            ],
+        ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -85,7 +86,7 @@ class DebriefingController extends AbstractController
     private function handleDocument(
         Request $request,
         EntityManagerInterface $entityManager,
-        Form $form,
+        FormInterface $form,
         Debriefing $debriefing,
     ): bool {
         $files = $request->files->get($form->getName());
@@ -93,18 +94,15 @@ class DebriefingController extends AbstractController
         // Si un document est fourni, l'enregistrer
         if (null !== $documentFile) {
             $filename = $documentFile->getClientOriginalName();
-            $extension = pathinfo((string) $filename, PATHINFO_EXTENSION);
+            $extension = pathinfo((string) $filename, \PATHINFO_EXTENSION);
 
             if ('pdf' !== $extension) {
-                $this->addFlash(
-                    'error',
-                    'Désolé, votre document n\'est pas valide. Vérifiez le format de votre document ('.$extension.'), seuls les .pdf sont acceptés.',
-                );
+                $this->addFlash('error', 'Désolé, votre document n\'est pas valide. Vérifiez le format de votre document (' . $extension . '), seuls les .pdf sont acceptés.');
 
                 return false;
             }
 
-            $documentFilename = hash('md5', $debriefing->getTitre().$filename.time()).'.'.$extension;
+            $documentFilename = hash('md5', $debriefing->getTitre() . $filename . time()) . '.' . $extension;
 
             $documentFile->move(self::DOC_PATH, $documentFilename);
 
@@ -124,7 +122,7 @@ class DebriefingController extends AbstractController
     {
         try {
             if (!empty($debriefing->getDocumentUrl())) {
-                $docFilePath = self::DOC_PATH.$debriefing->getDocumentUrl();
+                $docFilePath = self::DOC_PATH . $debriefing->getDocumentUrl();
                 unlink($docFilePath);
             }
         } catch (FileException) {
@@ -142,8 +140,9 @@ class DebriefingController extends AbstractController
         EntityManagerInterface $entityManager,
         Debriefing $debriefing,
     ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
-        $form = $this->createForm(DebriefingDeleteForm::class, $debriefing)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(DebriefingDeleteForm::class, $debriefing)->add('save', SubmitType::class, [
+            'label' => 'Supprimer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -167,14 +166,11 @@ class DebriefingController extends AbstractController
      * Détail d'un debriefing.
      */
     #[Route('/debriefing/{debriefing}', name: 'debriefing.detail')]
-    public function detailAction(
-        Debriefing $debriefing,
-    ): Response {
-        $this->checkHasAccess([Role::SCENARISTE],
-            function () use ($debriefing) {
-                return $this->groupeService->isUserIsGroupeResponsable($debriefing->getGroupe())
-                    || $this->groupeService->isUserIsGroupeMember($debriefing->getGroupe());
-            },
+    public function detailAction(Debriefing $debriefing): Response
+    {
+        $this->checkHasAccess(
+            [Role::SCENARISTE],
+            fn () => $this->groupeService->isUserIsGroupeResponsable($debriefing->getGroupe()) || $this->groupeService->isUserIsGroupeMember($debriefing->getGroupe()),
         );
 
         return $this->render('debriefing/detail.twig', [
@@ -182,6 +178,7 @@ class DebriefingController extends AbstractController
         ]);
     }
 
+    /** @param array<int, Role> $roles */
     protected function checkHasAccess(array $roles, ?callable $callable): void
     {
         parent::checkHasAccess($roles, $callable);
@@ -193,20 +190,18 @@ class DebriefingController extends AbstractController
     #[Route('/debriefing/{debriefing}/document', name: 'debriefing.document')]
     public function documentAction(Debriefing $debriefing): BinaryFileResponse
     {
-        $this->checkHasAccess([Role::SCENARISTE],
-            function () use ($debriefing) {
-                return $this->groupeService->isUserIsGroupeResponsable($debriefing->getGroupe())
-                    || $this->groupeService->isUserIsGroupeMember($debriefing->getGroupe());
-            },
+        $this->checkHasAccess(
+            [Role::SCENARISTE],
+            fn () => $this->groupeService->isUserIsGroupeResponsable($debriefing->getGroupe()) || $this->groupeService->isUserIsGroupeMember($debriefing->getGroupe()),
         );
 
         $document = $debriefing->getDocumentUrl();
-        $file = self::DOC_PATH.$document;
+        $file = self::DOC_PATH . $document;
 
         $response = new BinaryFileResponse($file);
         $response->headers->set('Content-Type', 'text/pdf');
-        $response->headers->set('Content-length', filesize($file));
-        $response->headers->set('Content-Disposition', 'attachment; filename="'.$debriefing->getPrintTitre().'.pdf"');
+        $response->headers->set('Content-length', (string) filesize($file));
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $debriefing->getPrintTitre() . '.pdf"');
 
         return $response;
     }
@@ -239,19 +234,17 @@ class DebriefingController extends AbstractController
         EntityManagerInterface $entityManager,
         Debriefing $debriefing,
     ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
-        $form = $this->createForm(DebriefingForm::class, $debriefing)
-            ->add('visibility', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Visibilité',
-                'choices' => [
-                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
-                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
-                    'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
-                    'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
-                    'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-                ],
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(DebriefingForm::class, $debriefing)->add('visibility', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Visibilité',
+            'choices' => [
+                'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
+                'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
+                'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
+                'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
+                'Seul l\'auteur peut voir ceci' => 'AUTHOR',
+            ],
+        ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 

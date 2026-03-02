@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
-use App\Entity\Bonus;
 use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
@@ -14,6 +15,7 @@ use App\Entity\Merveille;
 use App\Entity\Personnage;
 use App\Entity\PersonnageTrigger;
 use App\Entity\RenommeHistory;
+use App\Entity\User;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\LogActionType;
 use App\Service\Competence\AlchimieService;
@@ -22,9 +24,10 @@ use App\Service\Competence\LitteratureService;
 use App\Service\Competence\MagieService;
 use App\Service\Competence\NoblesseService;
 use App\Service\Competence\PretriseService;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
+use RuntimeException;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -35,37 +38,38 @@ class CompetenceService
 
     public const COUT_GRATUIT = 0;
     public const COUT_DEFAUT = -1;
+
+    /** @var array<int, mixed> */
     private static array $classesCompetencesFamilies = [];
     protected ?Competence $competence;
     protected ?CompetenceFamily $competenceFamily;
     protected ?Level $competenceLevel;
     protected ?Personnage $personnage;
     protected ?Classe $classe;
+    /** @var array<string, string> */
     protected array $errors;
     protected bool $hasBonus = false;
 
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
-        protected readonly UrlGeneratorInterface  $urlGenerator,
-        protected readonly Security               $security,
-        protected readonly ConditionsService      $conditionService,
-    )
-    {
+        protected readonly UrlGeneratorInterface $urlGenerator,
+        protected readonly Security $security,
+        protected readonly ConditionsService $conditionService,
+    ) {
         $this->init();
     }
 
     public function init(?Personnage $personnage = null, ?Competence $competence = null): self
     {
-        $this->reset()
-            ->setPersonnage($personnage)
-            ->setCompetence($competence);
+        $this->reset()->setPersonnage($personnage)->setCompetence($competence);
 
         return $this;
     }
 
     public function reset(): self
     {
-        return $this->resetErrors()
+        return $this
+            ->resetErrors()
             ->setCompetence(null)
             ->setPersonnage(null)
             ->setClasse(null)
@@ -97,9 +101,10 @@ class CompetenceService
         $this->giveBonus();
 
         $log = new LogAction();
-        $log->setDate(new \DateTime());
+        $log->setDate(new DateTime());
         $log->setType(LogActionType::ADD_COMPETENCE);
-        $log->setUser($this->security->getUser());
+        $currentUser = $this->security->getUser();
+        $log->setUser($currentUser instanceof User ? $currentUser : null);
         $log->setData([
             'competence_id' => $this->getCompetence()->getId(),
             'personnage_id' => $this->getPersonnage()->getId(),
@@ -127,11 +132,8 @@ class CompetenceService
         }
 
         // Si un personnage à un XP négatif. Il ne peut apprendre que des gratuites
-        if ($cout > 0 && $this->getPersonnage()->getXp() - $cout < 0) {
-            $this->addError(
-                "Vous n'avez pas suffisamment de points d'expérience pour acquérir cette compétence.",
-                self::ERR_CODE_XP,
-            );
+        if ($cout > 0 && ($this->getPersonnage()->getXp() - $cout) < 0) {
+            $this->addError("Vous n'avez pas suffisamment de points d'expérience pour acquérir cette compétence.", self::ERR_CODE_XP);
         }
 
         $this->validateApprendre();
@@ -149,9 +151,7 @@ class CompetenceService
             $bonusCout = $this->getBonusCout();
         }
 
-        if (Level::NIVEAU_1 === $this->getCompetenceLevel()->getIndex()
-            && $this->getClasse()->getCompetenceFamilyCreations()->contains($this->getCompetenceFamily())
-        ) {
+        if (Level::NIVEAU_1 === $this->getCompetenceLevel()->getIndex() && $this->getClasse()->getCompetenceFamilyCreations()->contains($this->getCompetenceFamily())) {
             return 0;
         }
 
@@ -168,9 +168,7 @@ class CompetenceService
 
     public function getBonusCout(): int
     {
-        return $this->getOrigineBonusCout()
-            + $this->getMerveilleBonusCout()
-            + $this->getApprentissageBonusCout();
+        return $this->getOrigineBonusCout() + $this->getMerveilleBonusCout() + $this->getApprentissageBonusCout();
     }
 
     public function getOrigineBonusCout(): int
@@ -184,10 +182,8 @@ class CompetenceService
             // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
             if (
                 $bonus->isXp()
-                && (
-                    // null === $bonus->getCompetence() || TODO : at this time we do not allow to give xp to ALL competences
-                    $this->getCompetence()->getId() === $bonus->getCompetence()?->getId()
-                )
+                // null === $bonus->getCompetence() || TODO : at this time we do not allow to give xp to ALL competences
+                && $this->getCompetence()->getId() === $bonus->getCompetence()?->getId()
             ) {
                 $count += $bonus->getValeur();
             }
@@ -199,7 +195,7 @@ class CompetenceService
     public function getPersonnage(): Personnage
     {
         if (!isset($this->personnage)) {
-            throw new \RuntimeException('Personnage is not set');
+            throw new RuntimeException('Personnage is not set');
         }
 
         return $this->personnage;
@@ -219,7 +215,7 @@ class CompetenceService
     public function getCompetence(): Competence
     {
         if (!isset($this->competence)) {
-            throw new \RuntimeException('Competence is not set');
+            throw new RuntimeException('Competence is not set');
         }
 
         return $this->competence;
@@ -239,8 +235,9 @@ class CompetenceService
     public function getMerveilleBonusCout(): int
     {
         $count = 0;
-        $territoires = $this->getPersonnage()
-            ?->getLastParticipant()
+        $territoires = $this
+            ->getPersonnage()
+            ->getLastParticipant()
             ?->getGroupe()
             ?->getTerritoires() ?? new ArrayCollection();
 
@@ -265,31 +262,21 @@ class CompetenceService
 
                 // Dans ce service, nous ne traitons que les bonus de type XP
                 // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
-                if (
-                    $bonus->isXp()
-                    && (
-                        null === $bonus->getCompetence()
-                        || $this->getCompetence()->getId() === $bonus->getCompetence()->getId()
-                    )
-                ) {
+                if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId() === $bonus->getCompetence()->getId())) {
                     // Valeur minimum ?
                     if ($bonus->getJsonData()['min'] ?? null) {
                         // If parameters is not "true" is a loop
-                        if (
-                            $this->getCompetenceCout(baseOnly: true) - $bonus->getValeur() > $bonus->getJsonData()['min']) {
+                        if (($this->getCompetenceCout(baseOnly: true) - $bonus->getValeur()) > $bonus->getJsonData()['min']) {
                             $count += $bonus->getValeur();
                         }
                     } elseif ($bonus->getJsonData()['COMPETENCE_FAMILLE'] ?? null) {
                         $bonusJsonData = $bonus->getJsonData()['COMPETENCE_FAMILLE'];
                         $family = $this->getCompetenceFamily();
                         $canApply = false;
-                        if (($bonusJsonData['id'] ?? null) === $family?->getId()) {
+                        if (($bonusJsonData['id'] ?? null) === $family->getId()) {
                             $canApply = true;
                         }
-                        if (
-                            strtoupper($bonusJsonData['type'] ?? null)
-                            === strtoupper($family?->getCompetenceFamilyType()->value)
-                        ) {
+                        if (strtoupper($bonusJsonData['type'] ?? null) === strtoupper($family->getCompetenceFamilyType()->value)) {
                             $canApply = true;
                         }
 
@@ -297,22 +284,12 @@ class CompetenceService
                         // On retire donc 1xp de cout en normal, 2 en méconnue
                         if ($canApply && 'FAVORITE' === $bonusJsonData['value']) {
                             // CAS NORMAL
-                            if ($this->isNormale(
-                                $this->getPersonnage()->getClasse(),
-                                $this->getCompetenceFamily(),
-                            )) {
-                                $count += abs(
-                                    $this->getCompetenceLevel()->getCoutFavori() - $this->getCompetenceLevel()->getCout(),
-                                );
+                            if ($this->isNormale($this->getPersonnage()->getClasse(), $this->getCompetenceFamily())) {
+                                $count += abs($this->getCompetenceLevel()->getCoutFavori() - $this->getCompetenceLevel()->getCout());
                             }
                             // CAS MECONNUE
-                            if ($this->isMeconnue(
-                                $this->getPersonnage()->getClasse(),
-                                $this->getCompetenceFamily(),
-                            )) {
-                                $count += abs(
-                                    $this->getCompetenceLevel()->getCoutMeconu() - $this->getCompetenceLevel()->getCoutFavori(),
-                                );
+                            if ($this->isMeconnue($this->getPersonnage()->getClasse(), $this->getCompetenceFamily())) {
+                                $count += abs($this->getCompetenceLevel()->getCoutMeconu() - $this->getCompetenceLevel()->getCoutFavori());
                             }
                         }
                     } else {
@@ -328,7 +305,7 @@ class CompetenceService
     public function getCompetenceFamily(): CompetenceFamily
     {
         if (!isset($this->competenceFamily)) {
-            throw new \RuntimeException('Competence family is not set');
+            throw new RuntimeException('Competence family is not set');
         }
 
         return $this->competenceFamily;
@@ -341,13 +318,10 @@ class CompetenceService
         return $this;
     }
 
+    /** @param array<string, mixed> $conditions */
     protected function isValidConditions(Personnage|CompetenceFamily $entity, array $conditions): bool
     {
-        return $this->conditionService->isValidConditions(
-            $entity,
-            $conditions,
-            $this,
-        );
+        return $this->conditionService->isValidConditions($entity, $conditions, $this);
     }
 
     public function isNormale(Classe $classe, CompetenceFamily $competenceFamily): bool
@@ -363,13 +337,16 @@ class CompetenceService
                 'meconnue' => ['*'], // not in others
                 'creation' => $classe->getCompetenceFamilyCreations(),
                 'favorite' => $classe->getCompetenceFamilyFavorites(),
+                default => [],
             };
         }
 
         if ('meconnue' === $type) {
-            return !$this->isCompetenceFamilyTypeOf('normale', $classe, $competenceFamily)
+            return (
+                !$this->isCompetenceFamilyTypeOf('normale', $classe, $competenceFamily)
                 && !$this->isCompetenceFamilyTypeOf('favorite', $classe, $competenceFamily)
-                && !$this->isCompetenceFamilyTypeOf('creation', $classe, $competenceFamily);
+                && !$this->isCompetenceFamilyTypeOf('creation', $classe, $competenceFamily)
+            );
         }
 
         /** @var CompetenceFamily $competenceFamilyType */
@@ -385,7 +362,7 @@ class CompetenceService
     public function getClasse(): Classe
     {
         if (!isset($this->classe)) {
-            throw new \RuntimeException('Classe is not set');
+            throw new RuntimeException('Classe is not set');
         }
 
         return $this->classe;
@@ -401,7 +378,7 @@ class CompetenceService
     public function getCompetenceLevel(): Level
     {
         if (!isset($this->competenceLevel)) {
-            throw new \RuntimeException('Competence level is not set');
+            throw new RuntimeException('Competence level is not set');
         }
 
         return $this->competenceLevel;
@@ -421,12 +398,12 @@ class CompetenceService
 
     public function getApprentissageBonusCout(): int
     {
-        return count($this->getPersonnage()->getApprentissage($this->getCompetence()));
+        return \count($this->getPersonnage()->getApprentissage($this->getCompetence()));
     }
 
-    final public function addError($error, ?int $code = null): void
+    final public function addError(string $error, ?int $code = null): void
     {
-        $code ? $this->errors[$code] = $error : $this->errors[] = $error;
+        $code ? ($this->errors[$code] = $error) : ($this->errors[] = $error);
     }
 
     /**
@@ -450,7 +427,7 @@ class CompetenceService
         $this->getPersonnage()->setXp($this->getPersonnage()->getXp() - $cout);
 
         $historique = new ExperienceUsage();
-        $historique->setOperationDate(new \DateTime('NOW'));
+        $historique->setOperationDate(new DateTime('NOW'));
         $historique->setXpUse($cout);
         $historique->setCompetence($this->getCompetence());
         $historique->setPersonnage($this->getPersonnage());
@@ -460,16 +437,14 @@ class CompetenceService
         $cost = $this->getCompetenceCout(true) - $this->getBonusCout(); // can be < 0 if the bonus is too high
         $apprentissagesAvailable = $this->getPersonnage()->getApprentissage($this->getCompetence());
 
-        if ($apprentissagesAvailable) {
-            while ($cost >= 0) {
-                --$cost;
-                if (!$apprentissage = $apprentissagesAvailable->current()) {
-                    break;
-                }
-                $apprentissage->setDateUsage(new \DateTime('NOW'));
-                $this->entityManager->persist($apprentissage);
-                $apprentissagesAvailable->next();
+        while ($cost >= 0) {
+            --$cost;
+            if (!($apprentissage = $apprentissagesAvailable->current())) {
+                break;
             }
+            $apprentissage->setDateUsage(new DateTime('NOW'));
+            $this->entityManager->persist($apprentissage);
+            $apprentissagesAvailable->next();
         }
 
         return $this;
@@ -505,7 +480,7 @@ class CompetenceService
 
     protected function give(): void
     {
-        throw new \RuntimeException('Method "give" is not implemented for competence:' . static::class);
+        throw new RuntimeException('Method "give" is not implemented for competence:' . static::class);
     }
 
     public function addRenomme(int $value, string $explication): self
@@ -537,14 +512,10 @@ class CompetenceService
 
     public function getService(string $class): self
     {
-        return new $class(
-            $this->entityManager,
-            $this->urlGenerator,
-            $this->security,
-            $this->conditionService,
-        );
+        return new $class($this->entityManager, $this->urlGenerator, $this->security, $this->conditionService);
     }
 
+    /** @return array<string, string> */
     final public function getErrors(): array
     {
         return $this->errors;
@@ -552,18 +523,18 @@ class CompetenceService
 
     final public function getErrorsAsString(): string
     {
-        return implode(', ' . PHP_EOL, $this->errors);
+        return implode(', ' . \PHP_EOL, $this->errors);
     }
 
     /**
-     * @return Collection<int, Competence>
+     * @return ArrayCollection<int, Competence>
      */
     public function getOrigineBonusCompetences(?Personnage $personnage = null): ArrayCollection
     {
         $competences = new ArrayCollection();
         foreach (($personnage ?? $this->getPersonnage())->getOrigine()?->getValideOrigineBonus() as $origineBonus) {
             $bonus = $origineBonus->getBonus();
-            if ($bonus->isCompetence() && (null !== $bonus->getCompetence())) {
+            if ($bonus->isCompetence() && null !== $bonus->getCompetence()) {
                 $competences->add($bonus->getCompetence());
             }
         }
@@ -606,7 +577,7 @@ class CompetenceService
         $this->getPersonnage()->setXp($this->getPersonnage()->getXp() + $cout);
 
         $historique = new ExperienceGain();
-        $historique->setOperationDate(new \DateTime('NOW'));
+        $historique->setOperationDate(new DateTime('NOW'));
         $historique->setXpGain($cout);
         $historique->setExplanation($explanation);
         $historique->setPersonnage($this->getPersonnage());
@@ -626,14 +597,14 @@ class CompetenceService
 
     protected function remove(): void
     {
-        throw new \RuntimeException('Method "remove" is not implemented for competence:' . static::class);
+        throw new RuntimeException('Method "remove" is not implemented for competence:' . static::class);
     }
 
     public function removeRenomme(int $value, string $explication): self
     {
         $this->getPersonnage()->removeRenomme($value);
         $renommeHistory = new RenommeHistory();
-        $renommeHistory->setDate(new \DateTime('NOW'));
+        $renommeHistory->setDate(new DateTime('NOW'));
         $renommeHistory->setRenomme($value);
         $renommeHistory->setExplication($explication);
         $renommeHistory->setPersonnage($this->getPersonnage());
@@ -642,6 +613,7 @@ class CompetenceService
         return $this;
     }
 
+    /** @param array<int, array<string, int>> $rules */
     protected function applyRules(array $rules): void
     {
         $rule = $rules[$this->getCompetence()->getLevel()?->getIndex()] ?? [];
@@ -659,24 +631,12 @@ class CompetenceService
         }
     }
 
+    /** @param array<int, array<string, int>> $rules */
     protected function removeRules(array $rules): void
     {
         $rule = $rules[$this->getCompetence()->getLevel()?->getIndex()] ?? [];
         if (empty($rule)) {
             return;
-        }
-
-        foreach ($rule as $tagName => $nb) {
-            while ($nb-- > 0) {
-                // TODO FIND & REMOVE TRIGGER
-                /*
-                $trigger = new PersonnageTrigger();
-                $trigger->setPersonnage($this->getPersonnage());
-                $trigger->setTag($tagName);
-                $trigger->setDone(false);
-                $this->entityManager->persist($trigger);
-                */
-            }
         }
     }
 }

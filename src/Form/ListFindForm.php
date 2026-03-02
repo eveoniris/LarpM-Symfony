@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,8 +13,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ListFindForm extends AbstractType
 {
-    public function __construct(protected readonly ?EntityManagerInterface $entityManager = null)
-    {
+    public function __construct(
+        protected readonly ?EntityManagerInterface $entityManager = null,
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

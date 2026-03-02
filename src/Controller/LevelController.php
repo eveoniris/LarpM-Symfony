@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Level;
@@ -22,7 +24,7 @@ class LevelController extends AbstractController
     public function indexAction(
         Request $request,
         PagerService $pagerService,
-        LevelRepository $levelRepository
+        LevelRepository $levelRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($levelRepository);
 
@@ -40,15 +42,18 @@ class LevelController extends AbstractController
         return $this->handleCreateOrUpdate($request, $level, LevelForm::class);
     }
 
-    #[Route('/{level}/update', name: 'update', requirements: ['level' => Requirement::DIGITS], methods: [
-        'DELETE',
-        'GET',
-        'POST',
-    ])]
-    public function updateAction(
-        Request $request,
-        #[MapEntity] Level $level
-    ): RedirectResponse|Response {
+    #[Route(
+        '/{level}/update',
+        name: 'update',
+        requirements: ['level' => Requirement::DIGITS],
+        methods: [
+            'DELETE',
+            'GET',
+            'POST',
+        ],
+    )]
+    public function updateAction(Request $request, #[MapEntity] Level $level): RedirectResponse|Response
+    {
         return $this->handleCreateOrUpdate($request, $level, LevelForm::class);
     }
 
@@ -58,34 +63,34 @@ class LevelController extends AbstractController
         return $this->render('level/detail.twig', ['level' => $level]);
     }
 
-    #[Route('/{level}/delete', name: 'delete', requirements: ['level' => Requirement::DIGITS], methods: [
-        'DELETE',
-        'GET',
-        'POST',
-    ])]
+    #[Route(
+        '/{level}/delete',
+        name: 'delete',
+        requirements: ['level' => Requirement::DIGITS],
+        methods: [
+            'DELETE',
+            'GET',
+            'POST',
+        ],
+    )]
     public function deleteAction(#[MapEntity] Level $level): RedirectResponse|Response
     {
-        return $this->genericDelete(
-            $level,
-            title: 'Supprimer un niveau',
-            successMsg: 'Le niveau a été supprimée',
-            redirect: 'level.list',
-            breadcrumb: [
-                ['route' => $this->generateUrl('level.list'), 'name' => 'Liste des niveaux'],
-                ['route' => $this->generateUrl('level.detail', ['level' => $level->getIndexLabel()])],
-                ['name' => 'Supprimer un niveau'],
-            ]
-        );
+        return $this->genericDelete($level, title: 'Supprimer un niveau', successMsg: 'Le niveau a été supprimée', redirect: 'level.list', breadcrumb: [
+            ['route' => $this->generateUrl('level.list'), 'name' => 'Liste des niveaux'],
+            ['route' => $this->generateUrl('level.detail', ['level' => $level->getIndexLabel()])],
+            ['name' => 'Supprimer un niveau'],
+        ]);
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
         Request $request,
-        $entity,
+        object $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         return parent::handleCreateOrUpdate(
             request: $request,
@@ -103,7 +108,7 @@ class LevelController extends AbstractController
                 'title_add' => $this->translator->trans('Ajouter un niveau'),
                 'title_update' => $this->translator->trans('Modifier un niveau'),
             ],
-            entityCallback: $entityCallback
+            entityCallback: $entityCallback,
         );
     }
 }

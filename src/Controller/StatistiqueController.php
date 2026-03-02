@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Classe;
@@ -35,18 +37,23 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted(new MultiRolesExpression(Role::ADMIN, Role::SCENARISTE, Role::WARGAME, Role::ORGA))]
 class StatistiqueController extends AbstractController
 {
-    #[Route('/stats/alchimieHerboriste/{gn}/csv', name: 'stats.alchimieHerboriste.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/alchimieHerboriste/{gn}/csv', name: 'stats.alchimieHerboriste.gn.csv', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function alchimieHerboristeCsvStatsGnAction(#[MapEntity] Gn $gn): StreamedResponse
     {
-        return $this->sendCsv(
-            title: 'eveoniris_alchimieHerboriste_gn_' . $gn->getId() . '_' . date('Ymd'),
-            query: $this->statsService->getAlchimieHerboristeGn($gn),
-            header: ['personnageId', 'nom', 'competence', 'niveauMax'],
-        );
+        return $this->sendCsv(title: 'eveoniris_alchimieHerboriste_gn_' . $gn->getId() . '_' . date('Ymd'), query: $this->statsService->getAlchimieHerboristeGn($gn), header: [
+            'personnageId',
+            'nom',
+            'competence',
+            'niveauMax',
+        ]);
     }
 
-    #[Route('/stats/alchimieHerboriste/{gn}', name: 'stats.alchimieHerboriste.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/alchimieHerboriste/{gn}', name: 'stats.alchimieHerboriste.gn', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function alchimieHerboristeStatsGnAction(#[MapEntity] Gn $gn): Response
     {
@@ -56,8 +63,12 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route('/api/alchimieHerboriste/{gn}', name: 'api.alchimieHerboriste.gn', requirements: ['gn' => Requirement::DIGITS])]
-    #[Route('/stats/alchimieHerboriste/{gn}/json', name: 'stats.alchimieHerboriste.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/api/alchimieHerboriste/{gn}', name: 'api.alchimieHerboriste.gn', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
+    #[Route('/stats/alchimieHerboriste/{gn}/json', name: 'stats.alchimieHerboriste.gn.json', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function alchimieHerboristeStatsGnApiAction(#[MapEntity] Gn $gn): JsonResponse
     {
@@ -70,42 +81,35 @@ class StatistiqueController extends AbstractController
     #[Route('/stats/whoswho/{gn}/json', name: 'stats.whoswho.gn.json', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/whoswho/{gn}/print', name: 'stats.whoswho.gn.print', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
-    public function whoswhoAction(#[MapEntity] Gn $gn, string $_route, Request $request): Response|JsonResponse|StreamedResponse
-    {
+    public function whoswhoAction(
+        #[MapEntity]
+        Gn $gn,
+        string $_route,
+        Request $request,
+    ): Response|JsonResponse|StreamedResponse {
         $dataQuery = $this->statsService->getWhosWho($gn, $request->get('renomme', 20));
 
         return match ($_route) {
             'api.whoswho.gn', 'stats.whoswho.gn.json' => new JsonResponse($dataQuery->getResult()),
-            'stats.whoswho.gn.csv' => $this->sendCsv(
-                title: 'eveoniris_whoswho_gn_' . $gn->getId() . '_' . date('Ymd'),
-                query: $dataQuery,
-                header: [
-                    'renomme',
-                    'personnage_id',
-                    'personnage_nom',
-                    'groupe_id',
-                    'groupe_nom',
-                    'user_id',
-                    'user_prenom',
-                ],
-            ),
-            'stats.whoswho.gn.print' => $this->render(
-                'statistique/whoswho_print.twig',
-                [
-                    'all' => $dataQuery->getResult(),
-                    'gn' => $gn,
-                ],
-            ),
-            default => $this->render(
-                'statistique/whoswho.twig',
-                [
-                    'all' => $dataQuery->getResult(),
-                    'gn' => $gn,
-                ],
-            ),
+            'stats.whoswho.gn.csv' => $this->sendCsv(title: 'eveoniris_whoswho_gn_' . $gn->getId() . '_' . date('Ymd'), query: $dataQuery, header: [
+                'renomme',
+                'personnage_id',
+                'personnage_nom',
+                'groupe_id',
+                'groupe_nom',
+                'user_id',
+                'user_prenom',
+            ]),
+            'stats.whoswho.gn.print' => $this->render('statistique/whoswho_print.twig', [
+                'all' => $dataQuery->getResult(),
+                'gn' => $gn,
+            ]),
+            default => $this->render('statistique/whoswho.twig', [
+                'all' => $dataQuery->getResult(),
+                'gn' => $gn,
+            ]),
         };
     }
-
 
     #[Route('/api/bateaux/{gn}', name: 'api.bateaux.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/bateaux/{gn}', name: 'stats.bateaux.gn', requirements: ['gn' => Requirement::DIGITS])]
@@ -118,32 +122,29 @@ class StatistiqueController extends AbstractController
 
         return match ($_route) {
             'api.bateaux.gn', 'stats.bateaux.gn.json' => new JsonResponse($dataQuery->getResult()),
-            'stats.bateaux.gn.csv' => $this->sendCsv(
-                title: 'eveoniris_bateaux_gn_' . $gn->getId() . '_' . date('Ymd'),
-                query: $dataQuery,
-                header: [
-                    'groupe_id',
-                    'groupe_numero',
-                    'groupe_gn_id',
-                    'groupe_nom',
-                    'bateaux',
-                    'emplacement',
-                ],
-            ),
-            default => $this->render(
-                'statistique/bateaux.twig',
-                [
-                    'bateaux' => $dataQuery->getResult(),
-                    'gn' => $gn,
-                ],
-            ),
+            'stats.bateaux.gn.csv' => $this->sendCsv(title: 'eveoniris_bateaux_gn_' . $gn->getId() . '_' . date('Ymd'), query: $dataQuery, header: [
+                'groupe_id',
+                'groupe_numero',
+                'groupe_gn_id',
+                'groupe_nom',
+                'bateaux',
+                'emplacement',
+            ]),
+            default => $this->render('statistique/bateaux.twig', [
+                'bateaux' => $dataQuery->getResult(),
+                'gn' => $gn,
+            ]),
         };
     }
 
     #[Route('/api/bateaux-ordre/{gn}', name: 'api.bateaux-ordre.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/bateaux-ordre/{gn}', name: 'stats.bateaux-ordre.gn', requirements: ['gn' => Requirement::DIGITS])]
-    #[Route('/stats/bateaux-ordre/{gn}/csv', name: 'stats.bateaux-ordre.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
-    #[Route('/stats/bateaux-ordre/{gn}/json', name: 'stats.bateaux-ordre.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/bateaux-ordre/{gn}/csv', name: 'stats.bateaux-ordre.gn.csv', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
+    #[Route('/stats/bateaux-ordre/{gn}/json', name: 'stats.bateaux-ordre.gn.json', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function bateauxOrdreGnAction(#[MapEntity] Gn $gn, string $_route): Response|JsonResponse|StreamedResponse
     {
@@ -153,20 +154,20 @@ class StatistiqueController extends AbstractController
         foreach ($all as $row) {
             $i = 0;
             $zoneBuffer = [];
-            $nbZone = [];
+            $nbZone = 0;
             while (++$i <= $row['bateaux']) {
-                $n++;
+                ++$n;
                 $row['numero'] = $n;
                 // Handle multi boat area handly set
                 if ($row['bateaux'] > 1) {
                     // Ensure emplacement format
-                    $replace = ';' . PHP_EOL;
+                    $replace = ';' . \PHP_EOL;
                     $row['emplacement'] = str_replace([' - ', ', ', "\r\n", '<br>', '<br />', '<br/>'], [$replace, $replace, $replace, $replace, $replace, $replace, $replace], $row['emplacement']);
 
                     // Keep from first one
-                    if ($i === 1) {
+                    if (1 === $i) {
                         $zoneBuffer = explode($replace, $row['emplacement']);
-                        $nbZone = count($zoneBuffer);
+                        $nbZone = \count($zoneBuffer);
                     }
 
                     if (!empty($zoneBuffer)) {
@@ -177,7 +178,7 @@ class StatistiqueController extends AbstractController
                         }
                         if ($nbZone > $row['bateaux'] && $i === $row['bateaux']) {
                             $row['emplacement'] = '';
-                            for ($x = $i; $x < $nbZone; $x++) {
+                            for ($x = $i; $x < $nbZone; ++$x) {
                                 $row['emplacement'] .= $zoneBuffer[$x] . $replace;
                             }
                         }
@@ -185,9 +186,8 @@ class StatistiqueController extends AbstractController
                 }
                 $sub[] = $row;
 
-
                 // Specific case for a group for lh7
-                if ($row['groupe_numero'] == 21 && $gn->getId() === 7 && $i == $row['bateaux']) {
+                if (21 == $row['groupe_numero'] && 7 === $gn->getId() && $i == $row['bateaux']) {
                     $sub[] = [
                         'numero' => ++$n,
                         'initiative' => 0,
@@ -198,10 +198,8 @@ class StatistiqueController extends AbstractController
                         'navigateur' => 'Dandolo Locusta',
                     ];
                 }
-
             }
         }
-
 
         return match ($_route) {
             'api.bateaux-ordre.gn', 'stats.bateaux-ordre.gn.json' => new JsonResponse($sub),
@@ -219,13 +217,10 @@ class StatistiqueController extends AbstractController
                 ],
                 dataProvider: $sub,
             ),
-            default => $this->render(
-                'statistique/bateauxOrdre.twig',
-                [
-                    'bateaux' => $sub,
-                    'gn' => $gn,
-                ],
-            ),
+            default => $this->render('statistique/bateauxOrdre.twig', [
+                'bateaux' => $sub,
+                'gn' => $gn,
+            ]),
         };
     }
 
@@ -235,16 +230,12 @@ class StatistiqueController extends AbstractController
     #[Route('/stats/qrCodeScanList/json', name: 'stats.qrCodeScanList.json')]
     #[IsGranted(new MultiRolesExpression(Role::ADMIN))]
     public function qrCodeScanList(
-        string                  $_route,
-        Request                 $request,
+        string $_route,
+        Request $request,
         QrCodeScanLogRepository $repository,
-        PagerService            $pagerService
-    ): Response|JsonResponse|StreamedResponse
-    {
-        $pagerService->setRequest($request)
-            ->setRepository($repository)
-            ->setLimit(50)
-            ->setDefaultOrdersBy([$repository::getEntityAlias() . '.date' => OrderBy::DESC]);
+        PagerService $pagerService,
+    ): Response|JsonResponse|StreamedResponse {
+        $pagerService->setRequest($request)->setRepository($repository)->setLimit(50)->setDefaultOrdersBy([$repository::getEntityAlias() . '.date' => OrderBy::DESC]);
 
         // todo add and where > last GN start date ;
         return match ($_route) {
@@ -261,16 +252,12 @@ class StatistiqueController extends AbstractController
                 ],
                 dataProvider: $repository->findAll(),
             ),
-            default => $this->render(
-                'statistique/qrCodeScanList.twig',
-                [
-                    'paginator' => $repository->searchPaginated($pagerService),
-                    'pagerService' => $pagerService,
-                ],
-            ),
+            default => $this->render('statistique/qrCodeScanList.twig', [
+                'paginator' => $repository->searchPaginated($pagerService),
+                'pagerService' => $pagerService,
+            ]),
         };
     }
-
 
     #[Route('/api/fiefsState', name: 'api.fiefsState')]
     #[Route('/stats/fiefsState', name: 'stats.fiefsState')]
@@ -283,45 +270,38 @@ class StatistiqueController extends AbstractController
 
         return match ($_route) {
             'api.fiefsState', 'stats.fiefsState.json' => new JsonResponse($dataQuery->getResult()),
-            'stats.fiefsState.csv' => $this->sendCsv(
-                title: 'eveoniris_fiefsState_' . date('Ymd'),
-                query: $dataQuery,
-                header: [
-                    'id',
-                    'fief',
-                    'groupe_id',
-                    'groupe',
-                    'religion',
-                    'defense',
-                    'stable',
-                    'instable',
-                    'revenus',
-                    'murailles',
-                    'bastion',
-                    'forteresse',
-                    'temple',
-                    'sanctuaire',
-                    'comptoir',
-                    'merveille',
-                    'palais',
-                    'route',
-                    'port',
-                    'total_defense',
-                    'total_revenus',
-                    'suzerain',
-                    'renommee',
-                    'technologies',
-                    'exportations',
-                    'ingredients',
-                    '@export',
-                ],
-            ),
-            default => $this->render(
-                'statistique/fiefsState.twig',
-                [
-                    'fiefsStates' => $dataQuery->getResult(),
-                ],
-            ),
+            'stats.fiefsState.csv' => $this->sendCsv(title: 'eveoniris_fiefsState_' . date('Ymd'), query: $dataQuery, header: [
+                'id',
+                'fief',
+                'groupe_id',
+                'groupe',
+                'religion',
+                'defense',
+                'stable',
+                'instable',
+                'revenus',
+                'murailles',
+                'bastion',
+                'forteresse',
+                'temple',
+                'sanctuaire',
+                'comptoir',
+                'merveille',
+                'palais',
+                'route',
+                'port',
+                'total_defense',
+                'total_revenus',
+                'suzerain',
+                'renommee',
+                'technologies',
+                'exportations',
+                'ingredients',
+                '@export',
+            ]),
+            default => $this->render('statistique/fiefsState.twig', [
+                'fiefsStates' => $dataQuery->getResult(),
+            ]),
         };
     }
 
@@ -337,19 +317,19 @@ class StatistiqueController extends AbstractController
         foreach ($all as $id => $groupe) {
             $ingredients = '';
             foreach ($groupe['ingredient'] as $ingredient) {
-                $ingredients .= $ingredient['nb'] . ' ' . $ingredient['label'] . '.' . PHP_EOL;
+                $ingredients .= $ingredient['nb'] . ' ' . $ingredient['label'] . '.' . \PHP_EOL;
             }
             $all[$id]['ingredient'] = $ingredients;
 
             $langues = '';
             foreach ($groupe['langues'] as $langue) {
-                $langues .= $langue['nb'] . ' ' . $langue['label'] . '.' . PHP_EOL;
+                $langues .= $langue['nb'] . ' ' . $langue['label'] . '.' . \PHP_EOL;
             }
             $all[$id]['langues'] = $langues;
 
             $ressources = '';
             foreach ($groupe['ressources'] as $ressource) {
-                $ressources .= $ressource['nb'] . ' ' . $ressource['label'] . '.' . PHP_EOL;
+                $ressources .= $ressource['nb'] . ' ' . $ressource['label'] . '.' . \PHP_EOL;
             }
             $all[$id]['ressources'] = $ressources;
         }
@@ -369,13 +349,10 @@ class StatistiqueController extends AbstractController
                 ],
                 dataProvider: $all,
             ),
-            default => $this->render(
-                'statistique/sumAll.twig',
-                [
-                    'all' => $all,
-                    'gn' => $gn,
-                ],
-            ),
+            default => $this->render('statistique/sumAll.twig', [
+                'all' => $all,
+                'gn' => $gn,
+            ]),
         };
     }
 
@@ -390,24 +367,17 @@ class StatistiqueController extends AbstractController
 
         return match ($_route) {
             'api.list.arrivee.gn', 'stats.list.arrivee.gn.json' => new JsonResponse($all->getResult()),
-            'stats.list.arrivee.gn.csv' => $this->sendCsv(
-                title: 'eveoniris_liste_arrivee_' . date('Ymd'),
-                query: $all,
-                header: [
-                    'nom',
-                    'prenom',
-                    'groupe',
-                    'couchage',
-                    'special',
-                ],
-            ),
-            default => $this->render(
-                'statistique/listArrivee.twig',
-                [
-                    'all' => $all->getResult(),
-                    'gn' => $gn,
-                ],
-            ),
+            'stats.list.arrivee.gn.csv' => $this->sendCsv(title: 'eveoniris_liste_arrivee_' . date('Ymd'), query: $all, header: [
+                'nom',
+                'prenom',
+                'groupe',
+                'couchage',
+                'special',
+            ]),
+            default => $this->render('statistique/listArrivee.twig', [
+                'all' => $all->getResult(),
+                'gn' => $gn,
+            ]),
         };
     }
 
@@ -415,11 +385,7 @@ class StatistiqueController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function classesCsvStatsGnAction(#[MapEntity] Gn $gn): StreamedResponse
     {
-        return $this->sendCsv(
-            title: 'eveoniris_classes_gn_' . $gn->getId() . '_' . date('Ymd'),
-            query: $this->statsService->getClassesGn($gn),
-            header: ['total', 'label', 'id'],
-        );
+        return $this->sendCsv(title: 'eveoniris_classes_gn_' . $gn->getId() . '_' . date('Ymd'), query: $this->statsService->getClassesGn($gn), header: ['total', 'label', 'id']);
     }
 
     #[Route('/stats/classes/{gn}', name: 'stats.classes.gn', requirements: ['gn' => Requirement::DIGITS])]
@@ -440,17 +406,14 @@ class StatistiqueController extends AbstractController
         return new JsonResponse($this->statsService->getClassesGn($gn)->getResult());
     }
 
-    #[Route(
-        '/stats/competenceFamily/{competenceFamily}/gn/{gn}/csv',
-        name: 'stats.competenceFamily.gn.csv',
-        requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS]
-    )]
+    #[Route('/stats/competenceFamily/{competenceFamily}/gn/{gn}/csv', name: 'stats.competenceFamily.gn.csv', requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function competenceFamilyCsvStatsGnAction(
-        #[MapEntity] CompetenceFamily $competenceFamily,
-        #[MapEntity] Gn               $gn,
-    ): StreamedResponse
-    {
+        #[MapEntity]
+        CompetenceFamily $competenceFamily,
+        #[MapEntity]
+        Gn $gn,
+    ): StreamedResponse {
         return $this->sendCsv(
             title: 'eveoniris_competenceFamily_gn_' . $gn->getId() . '_' . date('Ymd'),
             query: $this->statsService->getCompetenceFamilyGn($competenceFamily, $gn),
@@ -458,17 +421,17 @@ class StatistiqueController extends AbstractController
         );
     }
 
-    #[Route(
-        '/stats/competenceFamily/{competenceFamily}/gn/{gn}',
-        name: 'stats.competenceFamily.gn',
-        requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS]
-    )]
+    #[Route('/stats/competenceFamily/{competenceFamily}/gn/{gn}', name: 'stats.competenceFamily.gn', requirements: [
+        'competenceFamily' => Requirement::DIGITS,
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role: Role::ORGA))]
     public function competenceFamilyStatsGnAction(
-        #[MapEntity] CompetenceFamily $competenceFamily,
-        #[MapEntity] Gn               $gn,
-    ): Response
-    {
+        #[MapEntity]
+        CompetenceFamily $competenceFamily,
+        #[MapEntity]
+        Gn $gn,
+    ): Response {
         return $this->render('statistique/competenceFamily.twig', [
             'competences' => $this->statsService->getCompetenceFamilyGn($competenceFamily, $gn)->getResult(),
             'competenceFamily' => $competenceFamily,
@@ -476,40 +439,33 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route(
-        '/api/competenceFamily/{competenceFamily}/gn/{gn}',
-        name: 'api.competenceFamily.gn',
-        requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS]
-    )]
-    #[Route('/stats/competenceFamily/{competenceFamily}/gn/{gn}/json',
-        name: 'stats.competenceFamily.gn.json',
-        requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS]
-    )]
+    #[Route('/api/competenceFamily/{competenceFamily}/gn/{gn}', name: 'api.competenceFamily.gn', requirements: [
+        'competenceFamily' => Requirement::DIGITS,
+        'gn' => Requirement::DIGITS,
+    ])]
+    #[Route('/stats/competenceFamily/{competenceFamily}/gn/{gn}/json', name: 'stats.competenceFamily.gn.json', requirements: ['competenceFamily' => Requirement::DIGITS, 'gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role: Role::ORGA))]
     public function competenceFamilyStatsGnApiAction(
-        #[MapEntity] CompetenceFamily $competenceFamily,
-        #[MapEntity] Gn               $gn,
-    ): JsonResponse
-    {
+        #[MapEntity]
+        CompetenceFamily $competenceFamily,
+        #[MapEntity]
+        Gn $gn,
+    ): JsonResponse {
         return new JsonResponse($this->statsService->getCompetenceFamilyGn($competenceFamily, $gn)->getResult());
     }
 
-    #[Route('/stats/competences/{gn}/csv', name: 'stats.competences.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/competences/{gn}/csv', name: 'stats.competences.gn.csv', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role: Role::ORGA))]
     public function competencesCsvStatsGnAction(#[MapEntity] Gn $gn): StreamedResponse
     {
-        return $this->sendCsv(
-            title: 'eveoniris_competences_gn_' . $gn->getId() . '_' . date('Ymd'),
-            query: $this->statsService->getCompetenceGn($gn),
-            header: ['total', 'competence', 'niveau'],
-        );
+        return $this->sendCsv(title: 'eveoniris_competences_gn_' . $gn->getId() . '_' . date('Ymd'), query: $this->statsService->getCompetenceGn($gn), header: ['total', 'competence', 'niveau']);
     }
 
     #[Route('/stats/competences/{gn}', name: 'stats.competences.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
-    public function competencesStatsGnAction(
-        #[MapEntity] Gn $gn,
-    ): Response
+    public function competencesStatsGnAction(#[MapEntity] Gn $gn): Response
     {
         return $this->render('statistique/competencesGn.twig', [
             'competences' => $this->statsService->getCompetenceGn($gn)->getResult(),
@@ -518,7 +474,9 @@ class StatistiqueController extends AbstractController
     }
 
     #[Route('/api/competences/{gn}', name: 'api.competences.gn', requirements: ['gn' => Requirement::DIGITS])]
-    #[Route('/stats/competences/{gn}/json', name: 'stats.competences.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/competences/{gn}/json', name: 'stats.competences.gn.json', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function competencesStatsGnApiAction(#[MapEntity] Gn $gn): JsonResponse
     {
@@ -537,11 +495,7 @@ class StatistiqueController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::WARGAME))]
     public function constructionsCsvStatsAction(): StreamedResponse
     {
-        return $this->sendCsv(
-            title: 'eveoniris_construction_' . date('Ymd'),
-            query: $this->statsService->getConstructions(),
-            header: ['fief', 'batiment', 'description', 'defense'],
-        );
+        return $this->sendCsv(title: 'eveoniris_construction_' . date('Ymd'), query: $this->statsService->getConstructions(), header: ['fief', 'batiment', 'description', 'defense']);
     }
 
     #[Route('/api/constructions/fiefs', name: 'api.constructions.fiefs')]
@@ -556,11 +510,7 @@ class StatistiqueController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::WARGAME))]
     public function constructionsFiefsCsvStatsAction(): StreamedResponse
     {
-        return $this->sendCsv(
-            title: 'eveoniris_construction_fiefs_' . date('Ymd'),
-            query: $this->statsService->getConstructionsFiefs(),
-            header: ['fief', 'batiment', 'description', 'defense'],
-        );
+        return $this->sendCsv(title: 'eveoniris_construction_fiefs_' . date('Ymd'), query: $this->statsService->getConstructionsFiefs(), header: ['fief', 'batiment', 'description', 'defense']);
     }
 
     #[Route('/stats/constructions/fiefs', name: 'stats.constructions.fiefs')]
@@ -589,15 +539,22 @@ class StatistiqueController extends AbstractController
         return new JsonResponse($this->statsService->getGameItemWithoutPersonnage()->getResult());
     }
 
-    #[Route('/stats/gameItemWithoutPersonnage/csv', name: 'stats.gameItemWithoutPersonnage.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/gameItemWithoutPersonnage/csv', name: 'stats.gameItemWithoutPersonnage.csv', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function gameItemWithoutPersonnageCsvStatsAction(): StreamedResponse
     {
-        return $this->sendCsv(
-            title: 'eveoniris_getGameItemWithoutPersonnage_' . date('Ymd'),
-            query: $this->statsService->getGameItemWithoutPersonnage(),
-            header: ['id', 'label', 'quality_id', 'numero', 'identification', 'couleur', 'quantite', 'objet_id'],
-        );
+        return $this->sendCsv(title: 'eveoniris_getGameItemWithoutPersonnage_' . date('Ymd'), query: $this->statsService->getGameItemWithoutPersonnage(), header: [
+            'id',
+            'label',
+            'quality_id',
+            'numero',
+            'identification',
+            'couleur',
+            'quantite',
+            'objet_id',
+        ]);
     }
 
     #[Route('/stats/gameItemWitoutPersonnage', name: 'stats.gameItemWithoutPersonnage')]
@@ -732,15 +689,15 @@ class StatistiqueController extends AbstractController
         }
 
         return $this->render('statistique/index.twig', [
-            'langues' => json_encode($stats, JSON_THROW_ON_ERROR),
-            'classes' => json_encode($statClasses, JSON_THROW_ON_ERROR),
-            'genres' => json_encode($statGenres, JSON_THROW_ON_ERROR),
-            'competences' => json_encode($statCompetences, JSON_THROW_ON_ERROR),
-            'competencesFamily' => json_encode($statCompetencesFamily, JSON_THROW_ON_ERROR),
+            'langues' => json_encode($stats, \JSON_THROW_ON_ERROR),
+            'classes' => json_encode($statClasses, \JSON_THROW_ON_ERROR),
+            'genres' => json_encode($statGenres, \JSON_THROW_ON_ERROR),
+            'competences' => json_encode($statCompetences, \JSON_THROW_ON_ERROR),
+            'competencesFamily' => json_encode($statCompetencesFamily, \JSON_THROW_ON_ERROR),
             'constructions' => [], // TODO json_encode($statConstructions, JSON_THROW_ON_ERROR),
-            'personnageCount' => count($personnages),
-            'userCount' => max(count($users), 1),
-            'participantCount' => count($participants),
+            'personnageCount' => \count($personnages),
+            'userCount' => max(\count($users), 1),
+            'participantCount' => \count($participants),
             'places' => $places,
         ]);
     }
@@ -748,43 +705,33 @@ class StatistiqueController extends AbstractController
     #[Route('/api/mineurs/{gn}', name: 'api.mineurs.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/mineurs/{gn}/json', name: 'stats.mineurs.gn.json', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
-    public function mineursApiGnAction(
-        #[MapEntity] Gn $gn,
-    ): JsonResponse
+    public function mineursApiGnAction(#[MapEntity] Gn $gn): JsonResponse
     {
         return new JsonResponse($this->statsService->getMineurs($gn)->getResult());
     }
 
     #[Route('/stats/mineurs/{gn}/csv', name: 'stats.mineurs.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
-    public function mineursCsvStatsGnAction(
-        #[MapEntity] Gn $gn,
-    ): StreamedResponse
+    public function mineursCsvStatsGnAction(#[MapEntity] Gn $gn): StreamedResponse
     {
-        return $this->sendCsv(
-            title: 'eveoniris_mineurs_gn_' . $gn->getId() . '_' . date('Ymd'),
-            query: $this->statsService->getMineurs($gn),
-            header: [
-                'nom',
-                'prenom_usage',
-                'prenom',
-                'userId',
-                'email',
-                'email_contact',
-                'groupeId',
-                'groupe',
-                'personnageId',
-                'personnage',
-                'sensible',
-            ],
-        );
+        return $this->sendCsv(title: 'eveoniris_mineurs_gn_' . $gn->getId() . '_' . date('Ymd'), query: $this->statsService->getMineurs($gn), header: [
+            'nom',
+            'prenom_usage',
+            'prenom',
+            'userId',
+            'email',
+            'email_contact',
+            'groupeId',
+            'groupe',
+            'personnageId',
+            'personnage',
+            'sensible',
+        ]);
     }
 
     #[Route('/stats/mineurs/{gn}', name: 'stats.mineurs.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
-    public function mineursStatsGnAction(
-        #[MapEntity] Gn $gn,
-    ): Response
+    public function mineursStatsGnAction(#[MapEntity] Gn $gn): Response
     {
         return $this->render('statistique/mineursGn.twig', [
             'mineurs' => $this->statsService->getMineurs($gn)->getResult(),
@@ -810,59 +757,51 @@ class StatistiqueController extends AbstractController
     ])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function nbClasseGroupeGnAction(
-        #[MapEntity] Gn     $gn,
-        #[MapEntity] Classe $classe,
-        string              $_route,
-    ): Response|JsonResponse|StreamedResponse
-    {
+        #[MapEntity]
+        Gn $gn,
+        #[MapEntity]
+        Classe $classe,
+        string $_route,
+    ): Response|JsonResponse|StreamedResponse {
         $dataQuery = $this->statsService->nbClasseGroupeGn($gn, $classe);
 
         return match ($_route) {
             'api.nbClasseGroupe.gn', 'stats.nbClasseGroupe.gn.json' => new JsonResponse($dataQuery->getResult()),
-            'stats.nbClasseGroupe.gn.csv' => $this->sendCsv(
-                title: 'nbClasseGroupe' . $gn->getId() . '_' . date('Ymd'),
-                query: $dataQuery,
-                header: [
-                    'total',
-                    'id',
-                    'label',
-                    'level',
-                ],
-            ),
-            default => $this->render(
-                'statistique/nbClasseGroupe.twig',
-                [
-                    'nbClasseGroupes' => $dataQuery->getResult(),
-                    'gn' => $gn,
-                    'classe' => $classe,
-                ],
-            ),
+            'stats.nbClasseGroupe.gn.csv' => $this->sendCsv(title: 'nbClasseGroupe' . $gn->getId() . '_' . date('Ymd'), query: $dataQuery, header: [
+                'total',
+                'id',
+                'label',
+                'level',
+            ]),
+            default => $this->render('statistique/nbClasseGroupe.twig', [
+                'nbClasseGroupes' => $dataQuery->getResult(),
+                'gn' => $gn,
+                'classe' => $classe,
+            ]),
         };
     }
 
     #[Route('/api/potionsDepart/{gn}', name: 'api.potionsDepart.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/potionsDepart/{gn}', name: 'stats.potionsDepart.gn', requirements: ['gn' => Requirement::DIGITS])]
-    #[Route('/stats/potionsDepart/{gn}/csv', name: 'stats.potionsDepart.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
-    #[Route('/stats/potionsDepart/{gn}/json', name: 'stats.potionsDepart.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/potionsDepart/{gn}/csv', name: 'stats.potionsDepart.gn.csv', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
+    #[Route('/stats/potionsDepart/{gn}/json', name: 'stats.potionsDepart.gn.json', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function potionsDepartGnAction(#[MapEntity] Gn $gn, string $_route): Response|JsonResponse|StreamedResponse
     {
         return match ($_route) {
-            'api.potionsDepart.gn', 'stats.potionsDepart.gn.json' => new JsonResponse(
-                $this->statsService->getPotionsDepartGn($gn)->getResult(),
-            ),
-            'stats.potionsDepart.gn.csv' => $this->sendCsv(
-                title: 'eveoniris_potionsDepartGn_gn_' . $gn->getId() . '_' . date('Ymd'),
-                query: $this->statsService->getPotionsDepartGn($gn),
-                header: [
-                    'potion_id',
-                    'personnage_id',
-                    'personnage',
-                    'label',
-                    'numero',
-                    'niveau',
-                ],
-            ),
+            'api.potionsDepart.gn', 'stats.potionsDepart.gn.json' => new JsonResponse($this->statsService->getPotionsDepartGn($gn)->getResult()),
+            'stats.potionsDepart.gn.csv' => $this->sendCsv(title: 'eveoniris_potionsDepartGn_gn_' . $gn->getId() . '_' . date('Ymd'), query: $this->statsService->getPotionsDepartGn($gn), header: [
+                'potion_id',
+                'personnage_id',
+                'personnage',
+                'label',
+                'numero',
+                'niveau',
+            ]),
             default => $this->render('statistique/potionsDepart.twig', [
                 'potionsDeparts' => $this->statsService->getPotionsDepartGn($gn)->getResult(),
                 'gn' => $gn,
@@ -876,16 +815,22 @@ class StatistiqueController extends AbstractController
     ])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function religionPersonnageCsvStatsGnAction(
-        #[MapEntity] Gn       $gn,
-        #[MapEntity] Religion $religion,
-        ReligionRepository    $religionRepository,
-    ): StreamedResponse
-    {
-        return $this->sendCsv(
-            title: 'eveoniris_religion_personnage_gn_' . $gn->getId() . '_' . date('Ymd'),
-            query: $religionRepository->getPersonnagesByReligions($gn, $religion),
-            header: ['religionId', 'label', 'level', 'personnage', 'personnageId', 'vivant', 'pnj', 'email'],
-        );
+        #[MapEntity]
+        Gn $gn,
+        #[MapEntity]
+        Religion $religion,
+        ReligionRepository $religionRepository,
+    ): StreamedResponse {
+        return $this->sendCsv(title: 'eveoniris_religion_personnage_gn_' . $gn->getId() . '_' . date('Ymd'), query: $religionRepository->getPersonnagesByReligions($gn, $religion), header: [
+            'religionId',
+            'label',
+            'level',
+            'personnage',
+            'personnageId',
+            'vivant',
+            'pnj',
+            'email',
+        ]);
     }
 
     #[Route('/stats/religion/{religion}/gn/{gn}/personnage', name: 'stats.religionPersonnage.gn', requirements: [
@@ -894,11 +839,12 @@ class StatistiqueController extends AbstractController
     ])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function religionPersonnageStatsGnAction(
-        #[MapEntity] Gn       $gn,
-        #[MapEntity] Religion $religion,
-        ReligionRepository    $religionRepository,
-    ): Response
-    {
+        #[MapEntity]
+        Gn $gn,
+        #[MapEntity]
+        Religion $religion,
+        ReligionRepository $religionRepository,
+    ): Response {
         return $this->render('statistique/religionPersonnages.twig', [
             'religionPersonnages' => $religionRepository->getPersonnagesByReligions($gn, $religion)->getResult(),
             'gn' => $gn,
@@ -916,11 +862,12 @@ class StatistiqueController extends AbstractController
     ])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function religionPersonnageStatsGnApiAction(
-        #[MapEntity] Gn       $gn,
-        #[MapEntity] Religion $religion,
-        ReligionRepository    $religionRepository,
-    ): JsonResponse
-    {
+        #[MapEntity]
+        Gn $gn,
+        #[MapEntity]
+        Religion $religion,
+        ReligionRepository $religionRepository,
+    ): JsonResponse {
         return new JsonResponse($religionRepository->getPersonnagesByReligions($gn, $religion)->getResult());
     }
 
@@ -943,32 +890,25 @@ class StatistiqueController extends AbstractController
 
         return match ($_route) {
             'api.religions.gn', 'stats.religions.gn.json' => new JsonResponse($dataQuery->getResult()),
-            'stats.religions.gn.csv' => $this->sendCsv(
-                title: 'eveoniris_religions_gn_' . $gn->getId() . '_' . date('Ymd'),
-                query: $dataQuery,
-                header: [
-                    'total',
-                    'id',
-                    'label',
-                    'level',
-                ],
-            ),
-            default => $this->render(
-                'statistique/religions.twig',
-                [
-                    'religions' => $dataQuery->getResult(),
-                    'gn' => $gn,
-                    'chartData' => $chartData,
-                ],
-            ),
+            'stats.religions.gn.csv' => $this->sendCsv(title: 'eveoniris_religions_gn_' . $gn->getId() . '_' . date('Ymd'), query: $dataQuery, header: [
+                'total',
+                'id',
+                'label',
+                'level',
+            ]),
+            default => $this->render('statistique/religions.twig', [
+                'religions' => $dataQuery->getResult(),
+                'gn' => $gn,
+                'chartData' => $chartData,
+            ]),
         };
     }
 
-    #[Route('/api/religions/pratiquants/{gn}', name: 'api.religions.pratiquants', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/api/religions/pratiquants/{gn}', name: 'api.religions.pratiquants', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
-    public function religionsPratiquantsAction(
-        #[MapEntity] Gn $gn,
-    ): JsonResponse
+    public function religionsPratiquantsAction(#[MapEntity] Gn $gn): JsonResponse
     {
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('pratiquants', 'pratiquants', 'integer');
@@ -976,20 +916,17 @@ class StatistiqueController extends AbstractController
         $rsm->addScalarResult('niveau', 'niveau', 'string');
 
         /** @noinspection SqlNoDataSourceInspection */
-        $query = $this->entityManager->createNativeQuery(
-            <<<SQL
-                SELECT r.label as religion, count(perso.id) as pratiquants, rl.label as niveau
-                FROM participant p
-                         INNER JOIN personnages_religions pr ON p.personnage_id = pr.personnage_id
-                         INNER JOIN religion r ON pr.religion_id = r.id
-                         INNER JOIN personnage perso ON pr.personnage_id = perso.id
-                         INNER JOIN religion_level rl ON pr.religion_level_id = rl.id
-                WHERE perso.vivant = 1 and p.gn_id = :gnid
-                GROUP BY pr.religion_id, rl.label
-                ORDER BY pratiquants DESC;
-                SQL,
-            $rsm,
-        )->setParameter('gnid', $gn->getId());
+        $query = $this->entityManager->createNativeQuery(<<<SQL
+            SELECT r.label as religion, count(perso.id) as pratiquants, rl.label as niveau
+            FROM participant p
+                     INNER JOIN personnages_religions pr ON p.personnage_id = pr.personnage_id
+                     INNER JOIN religion r ON pr.religion_id = r.id
+                     INNER JOIN personnage perso ON pr.personnage_id = perso.id
+                     INNER JOIN religion_level rl ON pr.religion_level_id = rl.id
+            WHERE perso.vivant = 1 and p.gn_id = :gnid
+            GROUP BY pr.religion_id, rl.label
+            ORDER BY pratiquants DESC;
+            SQL, $rsm)->setParameter('gnid', $gn->getId());
 
         return new JsonResponse($query->getResult());
     }
@@ -998,17 +935,17 @@ class StatistiqueController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function renommeCsvStatsGnAction(#[MapEntity] Gn $gn): StreamedResponse
     {
-        return $this->sendCsv(
-            title: 'eveoniris_renomme_gn_' . $gn->getId() . '_' . date('Ymd'),
-            query: $this->statsService->getRenommeGn($gn),
-            header: ['total', 'grp_renome'],
-        );
+        return $this->sendCsv(title: 'eveoniris_renomme_gn_' . $gn->getId() . '_' . date('Ymd'), query: $this->statsService->getRenommeGn($gn), header: ['total', 'grp_renome']);
     }
 
     #[Route('/api/renommeGroupe/{gn}', name: 'api.renommeGroupe.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/renommeGroupe/{gn}', name: 'stats.renommeGroupe.gn', requirements: ['gn' => Requirement::DIGITS])]
-    #[Route('/stats/renommeGroupe/{gn}/csv', name: 'stats.renommeGroupe.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
-    #[Route('/stats/renommeGroupe/{gn}/json', name: 'stats.renommeGroupe.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/renommeGroupe/{gn}/csv', name: 'stats.renommeGroupe.gn.csv', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
+    #[Route('/stats/renommeGroupe/{gn}/json', name: 'stats.renommeGroupe.gn.json', requirements: [
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function renommeGroupeGnAction(#[MapEntity] Gn $gn, string $_route): Response|JsonResponse|StreamedResponse
     {
@@ -1016,23 +953,16 @@ class StatistiqueController extends AbstractController
 
         return match ($_route) {
             'api.renommeGroupe.gn', 'stats.renommeGroupe.gn.json' => new JsonResponse($dataQuery->getResult()),
-            'stats.renommeGroupe.gn.csv' => $this->sendCsv(
-                title: 'eveoniris_renommeGroupe_gn_' . $gn->getId() . '_' . date('Ymd'),
-                query: $dataQuery,
-                header: [
-                    'total',
-                    'id',
-                    'label',
-                    'level',
-                ],
-            ),
-            default => $this->render(
-                'statistique/renommeGroupe.twig',
-                [
-                    'renommeGroupes' => $dataQuery->getResult(),
-                    'gn' => $gn,
-                ],
-            ),
+            'stats.renommeGroupe.gn.csv' => $this->sendCsv(title: 'eveoniris_renommeGroupe_gn_' . $gn->getId() . '_' . date('Ymd'), query: $dataQuery, header: [
+                'total',
+                'id',
+                'label',
+                'level',
+            ]),
+            default => $this->render('statistique/renommeGroupe.twig', [
+                'renommeGroupes' => $dataQuery->getResult(),
+                'gn' => $gn,
+            ]),
         };
     }
 
@@ -1065,30 +995,23 @@ class StatistiqueController extends AbstractController
 
         return match ($_route) {
             'api.sensible.gn', 'stats.sensible.gn.json' => new JsonResponse($dataQuery->getResult()),
-            'stats.sensible.gn.csv' => $this->sendCsv(
-                title: 'sensible' . $gn->getId() . '_' . date('Ymd'),
-                query: $dataQuery,
-                header: [
-                    'nom',
-                    'prenom_usage',
-                    'prenom',
-                    'userId',
-                    'email',
-                    'email_contact',
-                    'groupeId',
-                    'groupe',
-                    'personnageId',
-                    'personnage',
-                    'sensible',
-                ],
-            ),
-            default => $this->render(
-                'statistique/sensible.twig',
-                [
-                    'sensibles' => $dataQuery->getResult(),
-                    'gn' => $gn,
-                ],
-            ),
+            'stats.sensible.gn.csv' => $this->sendCsv(title: 'sensible' . $gn->getId() . '_' . date('Ymd'), query: $dataQuery, header: [
+                'nom',
+                'prenom_usage',
+                'prenom',
+                'userId',
+                'email',
+                'email_contact',
+                'groupeId',
+                'groupe',
+                'personnageId',
+                'personnage',
+                'sensible',
+            ]),
+            default => $this->render('statistique/sensible.twig', [
+                'sensibles' => $dataQuery->getResult(),
+                'gn' => $gn,
+            ]),
         };
     }
 
@@ -1123,35 +1046,28 @@ class StatistiqueController extends AbstractController
     #[Route('/stats/xpGap/{gn}/{gap}/json', name: 'stats.xpGap.gn.json', requirements: ['gn' => Requirement::DIGITS], defaults: ['gap' => 50])]
     #[IsGranted(new MultiRolesExpression(Role::ADMIN))]
     public function xpGapGnAction(
-        #[MapEntity] Gn $gn,
-        string          $_route,
-        int             $gap = 50,
-    ): Response|JsonResponse|StreamedResponse
-    {
+        #[MapEntity]
+        Gn $gn,
+        string $_route,
+        int $gap = 50,
+    ): Response|JsonResponse|StreamedResponse {
         $dataQuery = $this->statsService->getXpGap($gn, $gap);
 
         return match ($_route) {
             'api.xpGap.gn', 'stats.xpGap.gn.json' => new JsonResponse($dataQuery->getResult()),
-            'stats.xpGap.gn.csv' => $this->sendCsv(
-                title: 'xpGap_' . $gn->getId() . '_' . date('Ymd'),
-                query: $dataQuery,
-                header: [
-                    'perso_id',
-                    'perso_nom',
-                    'xp_restant',
-                    'total',
-                    'gourpe_id',
-                    'groupe_nom',
-                ],
-            ),
-            default => $this->render(
-                'statistique/xpGap.twig',
-                [
-                    'xpGaps' => $dataQuery->getResult(),
-                    'gn' => $gn,
-                    'gap' => $gap,
-                ],
-            ),
+            'stats.xpGap.gn.csv' => $this->sendCsv(title: 'xpGap_' . $gn->getId() . '_' . date('Ymd'), query: $dataQuery, header: [
+                'perso_id',
+                'perso_nom',
+                'xp_restant',
+                'total',
+                'gourpe_id',
+                'groupe_nom',
+            ]),
+            default => $this->render('statistique/xpGap.twig', [
+                'xpGaps' => $dataQuery->getResult(),
+                'gn' => $gn,
+                'gap' => $gap,
+            ]),
         };
     }
 }

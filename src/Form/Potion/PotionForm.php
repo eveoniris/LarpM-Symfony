@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Potion;
 
@@ -19,10 +20,11 @@ class PotionForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', TextType::class, [
-            'required' => true,
-            'label' => 'Label',
-        ])
+        $builder
+            ->add('label', TextType::class, [
+                'required' => true,
+                'label' => 'Label',
+            ])
             ->add('numero', TextType::class, [
                 'required' => true,
                 'label' => 'Numéro',
@@ -41,6 +43,7 @@ class PotionForm extends AbstractType
                 'choice_label' => static fn ($value) => match ($value) {
                     false => 'Visible',
                     true => 'Secret',
+                    default => (string) $value,
                 },
                 'label' => 'Secret',
             ])
@@ -53,7 +56,8 @@ class PotionForm extends AbstractType
                 'label' => 'Description',
                 'attr' => [
                     'class' => 'tinymce',
-                    'rows' => 9],
+                    'rows' => 9,
+                ],
             ]);
     }
 

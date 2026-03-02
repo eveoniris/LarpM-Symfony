@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\IngredientRepository;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
 #[Entity(repositoryClass: IngredientRepository::class)]
-class Ingredient extends BaseIngredient implements \Stringable
+class Ingredient extends BaseIngredient implements Stringable
 {
     public function __toString(): string
     {
@@ -15,7 +18,7 @@ class Ingredient extends BaseIngredient implements \Stringable
 
     public function fullLabel(): string
     {
-        return $this->getLabel().' - '.$this->getColor().' (Niveau '.$this->getNiveau().') : '.$this->getDose();
+        return $this->getLabel() . ' - ' . $this->getColor() . ' (Niveau ' . $this->getNiveau() . ') : ' . $this->getDose();
     }
 
     public function getColor(): string

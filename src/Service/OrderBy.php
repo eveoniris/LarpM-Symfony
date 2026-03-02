@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use Doctrine\ORM\QueryBuilder;
@@ -12,22 +14,22 @@ final class OrderBy
     public const DESC = 'DESC'; // or minus
 
     // default sorting
-    protected ?string $sort = null;
+    private ?string $sort = null;
     /** @deprecated */
-    protected ?string $orderBy = null;
-    protected ?string $alias = null;
+    private ?string $orderBy = null;
+    private ?string $alias = null;
 
+    /** @var array<string, string> */
     private array $orders = [];
 
-    public function __construct(protected RequestStack $requestStack)
-    {
+    public function __construct(
+        private RequestStack $requestStack,
+    ) {
         $this->getFromRequest();
     }
 
-    public function getFromRequest(
-        ?Request $request = null,
-        ?string $alias = null,
-    ): self {
+    public function getFromRequest(?Request $request = null, ?string $alias = null): self
+    {
         $request ??= $this->requestStack->getCurrentRequest();
 
         if (!$request) {
@@ -42,7 +44,7 @@ final class OrderBy
         return $this;
     }
 
-    protected function getRequestOrderDir(?Request $request = null): string
+    private function getRequestOrderDir(?Request $request = null): string
     {
         $request ??= $this->requestStack->getCurrentRequest();
         if (!$request) {
@@ -58,22 +60,19 @@ final class OrderBy
         return $this->sort ?? self::ASC;
     }
 
-    protected function isAllowed($value): bool
+    private function isAllowed(string $value): bool
     {
         return \in_array($value, [self::ASC, self::DESC], true);
     }
 
-    protected function getRequestOrderBy(
-        ?Request $request = null,
-        ?string $alias = null,
-    ): ?string {
+    private function getRequestOrderBy(?Request $request = null, ?string $alias = null): ?string
+    {
         $request ??= $this->requestStack->getCurrentRequest();
         if (!$request) {
             return null;
         }
 
-        $this->orderBy = $request->query->getString('order_by')
-            ?: $request->get('order_by') ?: null;
+        $this->orderBy = $request->query->getString('order_by') ?: $request->get('order_by') ?: null;
 
         if (!$this->orderBy) {
             return null;
@@ -81,20 +80,15 @@ final class OrderBy
 
         $alias ??= $this->alias;
         $multiOrder = explode(',', $this->orderBy);
-        if (!empty($multiOrder)) {
-            // reset default
-            $this->orders = [];
+        // reset default
+        $this->orders = [];
 
-            foreach ($multiOrder as $order) {
-                $this->addOrderBy(
-                    ($alias ? $alias.'.' : '').trim($order, '-'),
-                    str_starts_with($order, '-') ? self::DESC : $this->sort,
-                );
-            }
+        foreach ($multiOrder as $order) {
+            $this->addOrderBy(($alias ? $alias . '.' : '') . trim($order, '-'), str_starts_with($order, '-') ? self::DESC : $this->sort);
         }
 
         if ($alias) {
-            $this->orderBy = $alias.'.'.$this->orderBy;
+            $this->orderBy = $alias . '.' . $this->orderBy;
         }
 
         return $this->orderBy;
@@ -153,11 +147,13 @@ final class OrderBy
         return $this->orderBy;
     }
 
+    /** @return array<string, string> */
     public function getOrders(): array
     {
         return $this->orders;
     }
 
+    /** @param array<string, string> $ordersBy */
     public function setOrders(array $ordersBy): self
     {
         $this->orders = $ordersBy;
@@ -181,7 +177,7 @@ final class OrderBy
         return self::ASC === $this->invertDir($value) ? '' : '-';
     }
 
-    public function invertDir($value): string
+    public function invertDir(string $value): string
     {
         if (empty($value) || self::DESC === $value || '-' === $value) {
             return self::ASC;

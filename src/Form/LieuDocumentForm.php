@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Entity\Lieu;
 use App\Repository\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -27,19 +29,17 @@ class LieuDocumentForm extends AbstractType
             'required' => false,
             'class' => \App\Entity\Document::class,
             'choice_label' => 'identity',
-            'query_builder' => static function (DocumentRepository $er) {
-                return $er->createQueryBuilder('d')->orderBy('d.code', 'ASC');
-            },
+            'query_builder' => static fn (DocumentRepository $er) => $er->createQueryBuilder('d')->orderBy('d.code', 'ASC'),
         ]);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Lieu::class,
+            'data_class' => Lieu::class,
         ]);
     }
 

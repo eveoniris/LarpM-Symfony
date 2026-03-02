@@ -1,15 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Rumeur;
-use App\Form\Rumeur\RumeurDeleteForm;
 use App\Form\Rumeur\RumeurForm;
 use App\Repository\RumeurRepository;
 use App\Service\PagerService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +27,7 @@ class RumeurController extends AbstractController
     public function listAction(
         Request $request,
         PagerService $pagerService,
-        RumeurRepository $rumeurRepository
+        RumeurRepository $rumeurRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($rumeurRepository);
 
@@ -42,7 +41,7 @@ class RumeurController extends AbstractController
      * Lire une rumeur.
      */
     #[Route('/{rumeur}/detail', name: 'detail', requirements: ['rumeur' => Requirement::DIGITS])]
-    public function detailAction(#[MapEntity] Rumeur $rumeur)
+    public function detailAction(#[MapEntity] Rumeur $rumeur): Response
     {
         return $this->render('rumeur/detail.twig', ['rumeur' => $rumeur]);
     }
@@ -53,11 +52,7 @@ class RumeurController extends AbstractController
     #[Route('/add', name: 'add')]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            new Rumeur(),
-            RumeurForm::class
-        );
+        return $this->handleCreateOrUpdate($request, new Rumeur(), RumeurForm::class);
     }
 
     /**
@@ -66,11 +61,7 @@ class RumeurController extends AbstractController
     #[Route('/{rumeur}/update', name: 'update', requirements: ['rumeur' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Rumeur $rumeur): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $rumeur,
-            RumeurForm::class
-        );
+        return $this->handleCreateOrUpdate($request, $rumeur, RumeurForm::class);
     }
 
     /**
@@ -79,20 +70,14 @@ class RumeurController extends AbstractController
     #[Route('/{rumeur}/delete', name: 'delete', requirements: ['technologie' => Requirement::DIGITS])]
     public function deleteAction(#[MapEntity] Rumeur $rumeur): RedirectResponse|Response
     {
-        return $this->genericDelete(
-            $rumeur,
-            'Supprimer une rumeur',
-            'La rumeur a été supprimée',
-            'rumeur.list',
+        return $this->genericDelete($rumeur, 'Supprimer une rumeur', 'La rumeur a été supprimée', 'rumeur.list', [
+            ['route' => $this->generateUrl('rumeur.list'), 'name' => 'Liste des rumeurs'],
             [
-                ['route' => $this->generateUrl('rumeur.list'), 'name' => 'Liste des rumeurs'],
-                [
-                    'route' => $this->generateUrl('rumeur.detail', ['rumeur' => $rumeur->getId()]),
-                    'rumeur' => $rumeur->getId(),
-                    'name' => $rumeur->getLabel(),
-                ],
-                ['name' => 'Supprimer une rumeur'],
-            ]
-        );
+                'route' => $this->generateUrl('rumeur.detail', ['rumeur' => $rumeur->getId()]),
+                'rumeur' => $rumeur->getId(),
+                'name' => $rumeur->getLabel(),
+            ],
+            ['name' => 'Supprimer une rumeur'],
+        ]);
     }
 }

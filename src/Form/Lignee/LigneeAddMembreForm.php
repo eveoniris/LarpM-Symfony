@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Lignee;
 
 use App\Entity\Personnage;
@@ -31,58 +33,55 @@ class LigneeAddMembreForm extends AbstractType
                 $dqlString = $sqb->getQuery()->getDQL();
                 /* trouve les personnages n'ayant pas de lignée */
                 $qb = $er->createQueryBuilder('p');
-                $qb->where('p.id NOT IN ('.$dqlString.')');
+                $qb->where('p.id NOT IN (' . $dqlString . ')');
                 $qb->orderBy('p.nom', 'ASC');
 
                 return $qb;
             },
             'attr' => [
-                //'class' => 'selectpicker',
+                // 'class' => 'selectpicker',
                 'data-live-search' => 'true',
                 'placeholder' => 'Nouveau membre',
             ],
             'choice_label' => 'idName',
             'mapped' => false,
-        ])
-            ->add('parent1', EntityType::class, [
-                'required' => true,
-                'label' => 'Choisissez le parent du membre',
-                'autocomplete' => true,
-                'class' => Personnage::class,
-                'query_builder' => static function (EntityRepository $er) {
-                    $qb = $er->createQueryBuilder('p');
-                    $qb->orderBy('p.nom', 'ASC');
+        ])->add('parent1', EntityType::class, [
+            'required' => true,
+            'label' => 'Choisissez le parent du membre',
+            'autocomplete' => true,
+            'class' => Personnage::class,
+            'query_builder' => static function (EntityRepository $er) {
+                $qb = $er->createQueryBuilder('p');
+                $qb->orderBy('p.nom', 'ASC');
 
-                    return $qb;
-                },
-                'attr' => [
-                    //'class' => 'selectpicker',
-                    'data-live-search' => 'true',
-                    'placeholder' => 'Parent (obligatoire)',
-                ],
-                'choice_label' => 'idName',
-                'mapped' => false,
-            ])
-            ->add('parent2', EntityType::class, [
-                'required' => false,
-                'label' => 'Choisissez le second parent',
-                'class' => Personnage::class,
-                'autocomplete' => true,
-                'query_builder' => static function (EntityRepository $er) {
-                    $qb = $er->createQueryBuilder('p');
-                    $qb->orderBy('p.nom', 'ASC');
+                return $qb;
+            },
+            'attr' => [
+                // 'class' => 'selectpicker',
+                'data-live-search' => 'true',
+                'placeholder' => 'Parent (obligatoire)',
+            ],
+            'choice_label' => 'idName',
+            'mapped' => false,
+        ])->add('parent2', EntityType::class, [
+            'required' => false,
+            'label' => 'Choisissez le second parent',
+            'class' => Personnage::class,
+            'autocomplete' => true,
+            'query_builder' => static function (EntityRepository $er) {
+                $qb = $er->createQueryBuilder('p');
+                $qb->orderBy('p.nom', 'ASC');
 
-                    return $qb;
-                },
-                'attr' => [
-                    //'class' => 'selectpicker',
-                    'data-live-search' => 'true',
-                    'placeholder' => 'Second parent (facultatif)',
-                ],
-                'choice_label' => 'idName',
-                'mapped' => false,
-            ])
-            ->add('submit', SubmitType::class, ['label' => 'Ajouter']);
+                return $qb;
+            },
+            'attr' => [
+                // 'class' => 'selectpicker',
+                'data-live-search' => 'true',
+                'placeholder' => 'Second parent (facultatif)',
+            ],
+            'choice_label' => 'idName',
+            'mapped' => false,
+        ])->add('submit', SubmitType::class, ['label' => 'Ajouter']);
     }
 
     /**

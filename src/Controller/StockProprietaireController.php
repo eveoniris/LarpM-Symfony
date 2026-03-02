@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Proprietaire;
@@ -30,8 +32,7 @@ class StockProprietaireController extends AbstractController
     {
         $proprietaire = new Proprietaire();
 
-        $form = $this->createForm(ProprietaireType::class, $proprietaire)
-            ->add('save', SubmitType::class);
+        $form = $this->createForm(ProprietaireType::class, $proprietaire)->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -49,11 +50,13 @@ class StockProprietaireController extends AbstractController
     }
 
     #[Route('/stock/proprietaire/{proprietaire}/update', name: 'stockProprietaire.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Proprietaire $proprietaire): RedirectResponse|Response
-    {
-        $form = $this->createForm(ProprietaireType::class, $proprietaire)
-            ->add('update', SubmitType::class)
-            ->add('delete', SubmitType::class);
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        Proprietaire $proprietaire,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(ProprietaireType::class, $proprietaire)->add('update', SubmitType::class)->add('delete', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -61,11 +64,11 @@ class StockProprietaireController extends AbstractController
             // on récupére les data de l'utilisateur
             $proprietaire = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 $entityManager->persist($proprietaire);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le propriétaire a été mis à jour');
-            } elseif ($form->get('delete')->isClicked()) {
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 $entityManager->remove($proprietaire);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le proprietaire a été supprimé');
@@ -74,6 +77,9 @@ class StockProprietaireController extends AbstractController
             return $this->redirectToRoute('stockProprietaire.index');
         }
 
-        return $this->render('stock/proprietaire/update.twig', ['proprietaire' => $proprietaire, 'form' => $form->createView()]);
+        return $this->render('stock/proprietaire/update.twig', [
+            'proprietaire' => $proprietaire,
+            'form' => $form->createView(),
+        ]);
     }
 }

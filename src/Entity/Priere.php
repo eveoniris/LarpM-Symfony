@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\DocumentType;
@@ -22,7 +24,8 @@ class Priere extends BasePriere
 
     public function initFile(): static
     {
-        return $this->setDocumentType(DocumentType::Doc)
+        return $this
+            ->setDocumentType(DocumentType::Doc)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4);
@@ -35,7 +38,7 @@ class Priere extends BasePriere
 
     public function getFullLabel(): string
     {
-        return $this->getSphere()?->getLabel().' - '.$this->getNiveau().' - '.$this->getLabel();
+        return $this->getSphere()?->getLabel() . ' - ' . $this->getNiveau() . ' - ' . $this->getLabel();
     }
 
     protected function afterUpload(FileUploader $fileUploader): FileUploader
@@ -47,6 +50,6 @@ class Priere extends BasePriere
 
     public function getDocument(string $projectDir): string
     {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+        return $this->getDocumentFilePath($projectDir) . $this->getDocumentUrl();
     }
 }

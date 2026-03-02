@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -9,7 +10,6 @@ use App\Entity\Religion;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
 use App\Enum\TerritoireStatut;
-use JetBrains\PhpStorm\Deprecated;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -18,7 +18,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-#[Deprecated]
 /** @see \App\Form\Territoire\TerritoireForm */
 class TerritoireForm extends AbstractType
 {
@@ -27,10 +26,11 @@ class TerritoireForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', TextType::class, [
-            'label' => 'Nom',
-            'required' => true,
-        ])
+        $builder
+            ->add('nom', TextType::class, [
+                'label' => 'Nom',
+                'required' => true,
+            ])
             ->add('appelation', EntityType::class, [
                 'label' => "Choisissez l'appelation de ce territoire",
                 'required' => true,

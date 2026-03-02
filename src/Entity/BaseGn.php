@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -22,7 +25,7 @@ use Symfony\Contracts\Service\Attribute\Required;
 #[ORM\DiscriminatorMap(['base' => 'BaseGn', 'extended' => 'Gn'])]
 class BaseGn
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -43,16 +46,16 @@ class BaseGn
     protected ?string $description = '';
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $date_debut = null;
+    protected ?DateTime $date_debut = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $date_fin = null;
+    protected ?DateTime $date_fin = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $date_installation_joueur = null;
+    protected ?DateTime $date_installation_joueur = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $date_fin_orga = null;
+    protected ?DateTime $date_fin_orga = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $adresse = null;
@@ -66,34 +69,42 @@ class BaseGn
     #[Column(type: Types::STRING, nullable: true)]
     protected ?string $conditions_inscription = null;
 
+    /** @var Collection<int, Annonce> */
     #[OneToMany(mappedBy: 'gn', targetEntity: Annonce::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $annonces;
 
+    /** @var Collection<int, Background> */
     #[OneToMany(mappedBy: 'gn', targetEntity: Background::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $backgrounds;
 
+    /** @var Collection<int, Billet> */
     #[OneToMany(mappedBy: 'gn', targetEntity: Billet::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $billets;
 
+    /** @var Collection<int, Debriefing> */
     #[OneToMany(mappedBy: 'gn', targetEntity: Debriefing::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $debriefings;
 
+    /** @var Collection<int, GroupeGn> */
     #[OneToMany(mappedBy: 'gn', targetEntity: GroupeGn::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $groupeGns;
 
+    /** @var Collection<int, Participant> */
     #[OneToMany(mappedBy: 'gn', targetEntity: Participant::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $participants;
 
+    /** @var Collection<int, PersonnageBackground> */
     #[OneToMany(mappedBy: 'gn', targetEntity: PersonnageBackground::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $personnageBackgrounds;
 
+    /** @var Collection<int, Rumeur> */
     #[OneToMany(mappedBy: 'gn', targetEntity: Rumeur::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $rumeurs;
@@ -170,50 +181,50 @@ class BaseGn
         return $this->description ?? '';
     }
 
-    public function setDateDebut(?\DateTime $date_debut): static
+    public function setDateDebut(?DateTime $date_debut): static
     {
         $this->date_debut = $date_debut;
 
         return $this;
     }
 
-    public function getDateDebut(): ?\DateTime
+    public function getDateDebut(): ?DateTime
     {
         return $this->date_debut;
     }
 
-    public function setDateFin(?\DateTime $date_fin): static
+    public function setDateFin(?DateTime $date_fin): static
     {
         $this->date_fin = $date_fin;
 
         return $this;
     }
 
-    public function getDateFin(): ?\DateTime
+    public function getDateFin(): ?DateTime
     {
         return $this->date_fin;
     }
 
-    public function setDateInstallationJoueur(?\DateTime $date_installation_joueur): static
+    public function setDateInstallationJoueur(?DateTime $date_installation_joueur): static
     {
         $this->date_installation_joueur = $date_installation_joueur;
 
         return $this;
     }
 
-    public function getDateInstallationJoueur(): ?\DateTime
+    public function getDateInstallationJoueur(): ?DateTime
     {
         return $this->date_installation_joueur;
     }
 
-    public function setDateFinOrga(?\DateTime $date_fin_orga): static
+    public function setDateFinOrga(?DateTime $date_fin_orga): static
     {
         $this->date_fin_orga = $date_fin_orga;
 
         return $this;
     }
 
-    public function getDateFinOrga(): ?\DateTime
+    public function getDateFinOrga(): ?DateTime
     {
         return $this->date_fin_orga;
     }
@@ -280,6 +291,7 @@ class BaseGn
         return $this;
     }
 
+    /** @return Collection<int, Annonce> */
     public function getAnnonces(): Collection
     {
         return $this->annonces;
@@ -299,6 +311,7 @@ class BaseGn
         return $this;
     }
 
+    /** @return Collection<int, Background> */
     public function getBackgrounds(): Collection
     {
         return $this->backgrounds;
@@ -318,6 +331,7 @@ class BaseGn
         return $this;
     }
 
+    /** @return Collection<int, Billet> */
     public function getBillets(): Collection
     {
         return $this->billets;
@@ -337,6 +351,7 @@ class BaseGn
         return $this;
     }
 
+    /** @return Collection<int, Debriefing> */
     public function getDebriefings(): Collection
     {
         return $this->debriefings;
@@ -356,6 +371,7 @@ class BaseGn
         return $this;
     }
 
+    /** @return Collection<int, GroupeGn> */
     public function getGroupeGns(): Collection
     {
         return $this->groupeGns;
@@ -375,6 +391,7 @@ class BaseGn
         return $this;
     }
 
+    /** @return Collection<int, Participant> */
     public function getParticipants(): Collection
     {
         return $this->participants;
@@ -394,6 +411,7 @@ class BaseGn
         return $this;
     }
 
+    /** @return Collection<int, PersonnageBackground> */
     public function getPersonnageBackgrounds(): Collection
     {
         return $this->personnageBackgrounds;
@@ -413,6 +431,7 @@ class BaseGn
         return $this;
     }
 
+    /** @return Collection<int, Rumeur> */
     public function getRumeurs(): Collection
     {
         return $this->rumeurs;

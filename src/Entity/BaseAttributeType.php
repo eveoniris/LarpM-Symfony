@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,18 +20,18 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseAttributeType', 'extended' => 'AttributeType'])]
 class BaseAttributeType
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $label = '';
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\CompetenceAttribute>|\App\Entity\CompetenceAttribute[]
+     * @var Collection<int, CompetenceAttribute>|CompetenceAttribute[]
      */
     #[OneToMany(mappedBy: 'attributeType', targetEntity: CompetenceAttribute::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'attribute_type_id', nullable: false)]
-    protected \Doctrine\Common\Collections\ArrayCollection|\Doctrine\Common\Collections\Collection $competenceAttributes;
+    protected \Doctrine\Common\Collections\ArrayCollection|Collection $competenceAttributes;
 
     public function __construct()
     {
@@ -74,13 +76,14 @@ class BaseAttributeType
         return $this;
     }
 
+    /** @return Collection<int, CompetenceAttribute> */
     public function getCompetenceAttributes(): Collection
     {
         return $this->competenceAttributes;
     }
 
     /* public function __sleep()
-    {
-        return ['label', 'id'];
-    } */
+     * {
+     * return ['label', 'id'];
+     * } */
 }

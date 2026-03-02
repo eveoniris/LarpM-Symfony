@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Monnaie;
 
@@ -23,16 +24,15 @@ class MonnaieForm extends AbstractType
         $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Label',
             'required' => true,
-        ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'required' => true,
-                'label' => 'Description',
-                'attr' => [
-                    'rows' => 9,
-                    'class' => 'tinymce',
-                    'help' => 'Quelques mots pour décrire cette monnaie',
-                ],
-            ]);
+        ])->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'required' => true,
+            'label' => 'Description',
+            'attr' => [
+                'rows' => 9,
+                'class' => 'tinymce',
+                'help' => 'Quelques mots pour décrire cette monnaie',
+            ],
+        ]);
     }
 
     /**

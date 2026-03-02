@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -21,10 +22,11 @@ class SortForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', TextType::class, [
-            'required' => true,
-            'label' => 'Label',
-        ])
+        $builder
+            ->add('label', TextType::class, [
+                'required' => true,
+                'label' => 'Label',
+            ])
             ->add('niveau', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['1' => 1, '2' => 2, '3' => 3, '4' => 4],
@@ -57,6 +59,7 @@ class SortForm extends AbstractType
                 'choice_label' => static fn ($value) => match ($value) {
                     false => 'Visible',
                     true => 'Secret',
+                    default => (string) $value,
                 },
                 'label' => 'Secret',
             ]);

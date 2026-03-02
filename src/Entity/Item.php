@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\ItemRepository;
@@ -19,6 +21,8 @@ class Item extends BaseItem
 
     /**
      * Fourni un tableau pour exporter l'objet dans un fichier CSV.
+     *
+     * @return array<string, mixed>
      */
     public function getExportValue(): array
     {
@@ -31,18 +35,18 @@ class Item extends BaseItem
             'qualident' => $this->getQualident(),
             'couleur' => $this->getCouleur(),
             'label' => $this->getLabel(),
-            'description' => html_entity_decode(strip_tags((string)$this->getDescription())),
-            'special' => html_entity_decode(strip_tags((string)$this->getSpecial())),
+            'description' => html_entity_decode(strip_tags((string) $this->getDescription())),
+            'special' => html_entity_decode(strip_tags((string) $this->getSpecial())),
             'groupe' => $this->getGroupesAsString(),
             'personnage' => $this->getPersonnageAsString(),
-            'rangement' => $objet?->getRangement()?->getAdresse(),
-            'proprietaire' => $objet?->getProprietaire()?->getNom(),
+            'rangement' => $objet->getRangement()?->getAdresse(),
+            'proprietaire' => $objet->getProprietaire()?->getNom(),
         ];
     }
 
-    public function getQualident(): int
+    public function getQualident(): string
     {
-        return sprintf('%s%s', $this->getQuality()->getNumero(), $this->getIdentification());
+        return \sprintf('%s%s', $this->getQuality()->getNumero(), $this->getIdentification());
     }
 
     public function getGroupesAsString(): string

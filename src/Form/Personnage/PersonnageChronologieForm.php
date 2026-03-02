@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Personnage;
 
@@ -23,13 +24,12 @@ class PersonnageChronologieForm extends AbstractType
             'required' => true,
             'label' => 'Année de l\'évènement.',
             'mapped' => false,
-        ])
-            ->add('evenement', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
-                'required' => true,
-                'trim' => true,
-                'mapped' => false,
-                'label' => 'Décrivez l\'évènement',
-            ]);
+        ])->add('evenement', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            'required' => true,
+            'trim' => true,
+            'mapped' => false,
+            'label' => 'Décrivez l\'évènement',
+        ]);
     }
 
     /**

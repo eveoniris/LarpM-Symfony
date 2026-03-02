@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Construction;
@@ -16,56 +18,53 @@ class ConstructionRepository extends BaseRepository
 {
     /**
      * Find all constructions ordered by label.
-     *
-     * @return ArrayCollection $constructions
      */
+    /** @return list<Construction> */
     public function findAllOrderedByLabel(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT r FROM App\Entity\Construction r ORDER BY r.label ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT r FROM App\Entity\Construction r ORDER BY r.label ASC')->getResult();
     }
 
     /**
      * Find all constructions ordered by label.
-     *
-     * @return ArrayCollection $constructions
      */
+    /** @return list<Construction> */
     public function findAll(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT r FROM App\Entity\Construction r ORDER BY r.label ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT r FROM App\Entity\Construction r ORDER BY r.label ASC')->getResult();
     }
 
-    public function searchAttributes(): array
+    /** @return array<int, string> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             self::SEARCH_ALL,
-            $alias.'.label', // => 'Libellé',
-            $alias.'.description', // => 'Description',
-            $alias.'.defense',
+            $alias . '.label', // => 'Libellé',
+            $alias . '.description', // => 'Description',
+            $alias . '.defense',
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             'label' => [
-                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.label' => OrderBy::DESC],
             ],
             'defense' => [
-                OrderBy::ASC => [$alias.'.defense' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.defense' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.defense' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.defense' => OrderBy::DESC],
             ],
         ];
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         $attributes = parent::translateAttributes();
@@ -83,9 +82,6 @@ class ConstructionRepository extends BaseRepository
         /** @var TerritoireRepository $territoireRepository */
         $territoireRepository = $this->entityManager->getRepository(Territoire::class);
 
-        return $territoireRepository->createQueryBuilder('t')
-            ->innerJoin(Construction::class, 'c')
-            ->where('c.id = :cid')
-            ->setParameter('cid', $construction->getId());
+        return $territoireRepository->createQueryBuilder('t')->innerJoin(Construction::class, 'c')->where('c.id = :cid')->setParameter('cid', $construction->getId());
     }
 }

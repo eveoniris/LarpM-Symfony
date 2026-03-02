@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\User;
 
 use App\Entity\Personnage;
@@ -26,11 +28,12 @@ class UserPersonnageSecondaireForm extends AbstractType
             'choice_label' => 'identity',
             'placeholder' => 'Aucun',
             'empty_data' => null,
-            'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('p')
-                    ->join('p.user', 'u')
-                    ->where('u.id = :userId AND p.id not in (:principalIds)')
-                    ->setParameter('userId', $options['user_id'])
-                    ->setParameter('principalIds', implode(',', $options['principal_ids'] ?? [0])),
+            'query_builder' => static fn (EntityRepository $er) => $er
+                ->createQueryBuilder('p')
+                ->join('p.user', 'u')
+                ->where('u.id = :userId AND p.id not in (:principalIds)')
+                ->setParameter('userId', $options['user_id'])
+                ->setParameter('principalIds', implode(',', $options['principal_ids'] ?? [0])),
         ]);
     }
 

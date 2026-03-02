@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping\Entity;
 use App\Repository\ChronologieRepository;
+use Doctrine\ORM\Mapping\Entity;
+use JsonSerializable;
 
 #[Entity(repositoryClass: ChronologieRepository::class)]
-class Chronologie extends BaseChronologie implements \JsonSerializable
+class Chronologie extends BaseChronologie implements JsonSerializable
 {
+    /** @return array<string, mixed> */
     public function jsonSerialize(): array
     {
         return [
@@ -16,11 +20,11 @@ class Chronologie extends BaseChronologie implements \JsonSerializable
             'day' => $this->getDay(),
             'description' => $this->getDescription(),
             'visibilite' => $this->getVisibilite(),
-            'territoire_id' => ($this->getTerritoire()) ? $this->getTerritoire()->getId() : '',
+            'territoire_id' => $this->getTerritoire()->getId(),
         ];
     }
 
-    public function jsonUnserialize($payload): void
+    public function jsonUnserialize(object $payload): void
     {
         $this->setYear($payload->year);
         $this->setMonth($payload->month);

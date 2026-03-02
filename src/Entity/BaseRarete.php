@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseRarete', 'extended' => 'Rarete'])]
 abstract class BaseRarete
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
@@ -27,6 +29,7 @@ abstract class BaseRarete
     #[Column(name: 'value', type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $value = 0;
 
+    /** @var Collection<int, Ressource> */
     #[OneToMany(mappedBy: 'rarete', targetEntity: Ressource::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'rarete_id', nullable: false)]
     protected Collection $ressources;
@@ -112,6 +115,8 @@ abstract class BaseRarete
 
     /**
      * Get Ressource entity collection (one to many).
+     *
+     * @return Collection<int, Ressource>
      */
     public function getRessources(): Collection
     {
@@ -119,7 +124,7 @@ abstract class BaseRarete
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'value'];
-    } */
+     * {
+     * return ['id', 'label', 'value'];
+     * } */
 }

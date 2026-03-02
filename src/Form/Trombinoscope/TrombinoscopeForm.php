@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Trombinoscope;
 
@@ -19,10 +20,11 @@ class TrombinoscopeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('renomme', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
-            'label' => 'Renommé >=',
-            'required' => false,
-        ])
+        $builder
+            ->add('renomme', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+                'label' => 'Renommé >=',
+                'required' => false,
+            ])
             ->add('territoire', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
                 'required' => false,
                 'class' => \App\Entity\Territoire::class,
@@ -37,7 +39,7 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    //'class' => 'selectpicker',
+                    // 'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Territoire',
                 ],
@@ -55,7 +57,7 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    //'class' => 'selectpicker',
+                    // 'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Classe',
                 ],
@@ -73,7 +75,7 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    //'class' => 'selectpicker',
+                    // 'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Competence',
                 ],
@@ -91,7 +93,7 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    //'class' => 'selectpicker',
+                    // 'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Religion',
                 ],
@@ -109,7 +111,7 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    //'class' => 'selectpicker',
+                    // 'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Langue',
                 ],
@@ -127,13 +129,12 @@ class TrombinoscopeForm extends AbstractType
                     return $qb;
                 },
                 'attr' => [
-                    //'class' => 'selectpicker',
+                    // 'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Groupe',
                 ],
-            ])
-            //->add('find', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Filtrer'])
-            ;
+            ])// ->add('find', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Filtrer'])
+        ;
     }
 
     /**

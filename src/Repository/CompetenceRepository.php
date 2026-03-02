@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Competence;
@@ -10,15 +12,17 @@ use App\Entity\Personnage;
 use App\Entity\User;
 use App\Enum\LevelType;
 use App\Service\OrderBy;
+use ArrayIterator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
+use SensitiveParameter;
 
 class CompetenceRepository extends BaseRepository
 {
     public function competenceFamily(QueryBuilder $query, CompetenceFamily $competenceFamily): QueryBuilder
     {
-        $query->andWhere($this->alias.'.competenceFamily = :value');
+        $query->andWhere($this->alias . '.competenceFamily = :value');
 
         return $query->setParameter('value', $competenceFamily);
     }
@@ -26,19 +30,15 @@ class CompetenceRepository extends BaseRepository
     /**
      * Find all competences ordered by label.
      *
-     * @return ArrayCollection $competences
+     * @return ArrayCollection<int, Competence>
      */
     public function findAllOrderedByLabel()
     {
-        return $this->getEntityManager()
-            ->createQuery(
-                'SELECT c FROM App\Entity\Competence c
+        return $this->getEntityManager()->createQuery('SELECT c FROM App\Entity\Competence c
                 JOIN c.competenceFamily cf
                 JOIN c.level l
                 WHERE (c.secret = 0 OR c.secret IS NULL)
-                ORDER BY cf.label ASC, l.index ASC',
-            )
-            ->getResult();
+                ORDER BY cf.label ASC, l.index ASC')->getResult();
     }
 
     public function getPersonnages(Competence $competence, ?Gn $gn = null): QueryBuilder
@@ -46,15 +46,10 @@ class CompetenceRepository extends BaseRepository
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
-        $q = $personnageRepository->createQueryBuilder('p')
-            ->innerJoin('p.competences', 'c')
-            ->where('c.id = :cid')
-            ->setParameter('cid', $competence->getId());
+        $q = $personnageRepository->createQueryBuilder('p')->innerJoin('p.competences', 'c')->where('c.id = :cid')->setParameter('cid', $competence->getId());
 
         if ($gn) {
-            $q->innerJoin('p.participants', 'pt')
-                ->andWhere('pt.gn = :gnid')
-                ->setParameter('gnid', $gn->getId());
+            $q->innerJoin('p.participants', 'pt')->andWhere('pt.gn = :gnid')->setParameter('gnid', $gn->getId());
         }
 
         return $q;
@@ -65,7 +60,8 @@ class CompetenceRepository extends BaseRepository
      */
     public function getQueryBuilderFindAllOrderedByLabel(): QueryBuilder
     {
-        return $this->getEntityManager()
+        return $this
+            ->getEntityManager()
             ->createQueryBuilder()
             ->select('c')
             ->from(Competence::class, 'c')
@@ -78,6 +74,8 @@ class CompetenceRepository extends BaseRepository
 
     /**
      * Fourni la liste des compétences de premier niveau.
+     *
+     * @return ArrayCollection<int, Competence>
      */
     public function getRootCompetences(): ArrayCollection
     {
@@ -88,12 +86,11 @@ class CompetenceRepository extends BaseRepository
 
         foreach ($competenceFamilies as $competenceFamily) {
             $competence = $competenceFamily->getFirstCompetence();
-            if ($competence) {
-                $rootCompetences->add($competence);
-            }
+            $rootCompetences->add($competence);
         }
 
         // trie des competences disponibles
+        /** @var ArrayIterator<int, mixed> $iterator */
         $iterator = $rootCompetences->getIterator();
         $iterator->uasort(static fn ($a, $b) => $a->getLabel() <=> $b->getLabel());
 
@@ -102,7 +99,7 @@ class CompetenceRepository extends BaseRepository
 
     public function level(QueryBuilder $query, LevelType|Level $level): QueryBuilder
     {
-        $query->andWhere($this->alias.'.level = :level');
+        $query->andWhere($this->alias . '.level = :level');
 
         $value = $level;
         if ($level instanceof LevelType) {
@@ -112,6 +109,7 @@ class CompetenceRepository extends BaseRepository
         return $query->setParameter('level', $value);
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -121,26 +119,29 @@ class CompetenceRepository extends BaseRepository
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias.'.competenceFamily', 'competenceFamily');
-        $query->join($alias.'.level', 'level');
+        $query->join($alias . '.competenceFamily', 'competenceFamily');
+        $query->join($alias . '.level', 'level');
+        $query->addSelect('competenceFamily', 'level');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    public function searchAttributes(): array
+    /** @return array<string, array<string, mixed>> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::searchAttributes(),
             'level.label as level',
-            $alias.'.description', // => 'Description',
-            $alias.'.materiel',
-            $alias.'.secret',
+            $alias . '.description', // => 'Description',
+            $alias . '.materiel',
+            $alias . '.secret',
             'competenceFamily.label as competenceFamily',
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
@@ -156,16 +157,16 @@ class CompetenceRepository extends BaseRepository
             ],
             ...parent::sortAttributes($alias),
             'description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
             'materiel' => [
-                OrderBy::ASC => [$alias.'.materiel' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.materiel' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.materiel' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.materiel' => OrderBy::DESC],
             ],
             'secret' => [
-                OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.secret' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.secret' => OrderBy::DESC],
             ],
         ];
     }
@@ -181,6 +182,7 @@ class CompetenceRepository extends BaseRepository
         return parent::translateAttribute($attribute);
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [
@@ -193,12 +195,12 @@ class CompetenceRepository extends BaseRepository
         ];
     }
 
-    public function secret(QueryBuilder $query, bool $secret): QueryBuilder
+    public function secret(QueryBuilder $query, #[SensitiveParameter] bool $secret): QueryBuilder
     {
         if (!$secret) {
-            $query->andWhere($this->alias.'.secret = :value OR '.$this->alias.'.secret IS NULL');
+            $query->andWhere($this->alias . '.secret = :value OR ' . $this->alias . '.secret IS NULL');
         } else {
-            $query->andWhere($this->alias.'.secret = :value');
+            $query->andWhere($this->alias . '.secret = :value');
         }
 
         return $query->setParameter('value', $secret);
@@ -210,18 +212,16 @@ class CompetenceRepository extends BaseRepository
         $rsm->addScalarResult('exist', 'exist', 'boolean');
 
         /** @noinspection SqlNoDataSourceInspection */
-        $query = $this->getEntityManager()
-            ->createNativeQuery(
-                <<<SQL
+        $query = $this
+            ->getEntityManager()
+            ->createNativeQuery(<<<SQL
                 SELECT 1 as exist
                 FROM `user` u
                 INNER JOIN personnage pe ON pe.user_id = u.id
                 INNER JOIN personnages_competences pc ON pe.id = pc.personnage_id
                 WHERE pc.competence_id = :cid and u.id = :uid
                 LIMIT 1;
-                SQL,
-                $rsm,
-            )
+                SQL, $rsm)
             ->setParameter('uid', $user->getId())
             ->setParameter('cid', $competence->getId());
 

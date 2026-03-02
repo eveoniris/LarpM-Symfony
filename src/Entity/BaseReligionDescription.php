@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\BaseUserRepository;
@@ -18,10 +20,10 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseReligionDescription', 'extended' => 'ReligionDescription'])]
 abstract class BaseReligionDescription
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
     protected ?string $description = null;
 
     #[ORM\ManyToOne(targetEntity: Religion::class, inversedBy: 'religionDescriptions')]
@@ -105,7 +107,7 @@ abstract class BaseReligionDescription
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'description', 'religion_id', 'religion_level_id'];
-    } */
+     * {
+     * return ['id', 'description', 'religion_id', 'religion_level_id'];
+     * } */
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Connaissance;
@@ -21,39 +23,36 @@ class ConnaissanceForm extends AbstractType
         $builder->add('label', TextType::class, [
             'required' => true,
             'label' => 'Label',
-        ])
-            ->add('file', FileType::class, [
-                'label' => 'Téléversez un document',
-                'required' => true, // on create only?
-            ])
-            ->add('description', TextareaType::class, [
-                'required' => false,
-                'label' => 'Description',
-                'attr' => [
-                    'class' => 'tinymce',
-                    'rows' => 5,
-                ],
-            ])
-            ->add('contraintes', TextareaType::class, [
-                'required' => false,
-                'label' => 'Prérequis',
-                'attr' => [
-                    'class' => 'tinymce',
-                    'rows' => 5,
-                ],
-            ])
-            ->add('secret', ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                    false,
-                    true,
-                ],
-                'choice_label' => static fn ($value) => match ($value) {
-                    false => 'Visible',
-                    true => 'Secret',
-                },
-                'label' => 'Secret',
-            ]);
+        ])->add('file', FileType::class, [
+            'label' => 'Téléversez un document',
+            'required' => true, // on create only?
+        ])->add('description', TextareaType::class, [
+            'required' => false,
+            'label' => 'Description',
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 5,
+            ],
+        ])->add('contraintes', TextareaType::class, [
+            'required' => false,
+            'label' => 'Prérequis',
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 5,
+            ],
+        ])->add('secret', ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                false,
+                true,
+            ],
+            'choice_label' => static fn ($value) => match ($value) {
+                false => 'Visible',
+                true => 'Secret',
+                default => (string) $value,
+            },
+            'label' => 'Secret',
+        ]);
     }
 
     /**

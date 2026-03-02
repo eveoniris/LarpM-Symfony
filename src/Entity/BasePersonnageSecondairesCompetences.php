@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -15,10 +17,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\Index(columns: ['competence_id'], name: 'fk_personnage_secondaires_competences_competence1_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
-#[ORM\DiscriminatorMap(['base' => 'BasePersonnageSecondairesCompetences', 'extended' => 'PersonnageSecondairesCompetences'])]
+#[ORM\DiscriminatorMap([
+    'base' => 'BasePersonnageSecondairesCompetences',
+    'extended' => 'PersonnageSecondairesCompetences',
+])]
 abstract class BasePersonnageSecondairesCompetences
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: PersonnageSecondaire::class, inversedBy: 'personnageSecondairesCompetences')]
@@ -84,7 +89,7 @@ abstract class BasePersonnageSecondairesCompetences
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'personnage_secondaire_id', 'competence_id'];
-    } */
+     * {
+     * return ['id', 'personnage_secondaire_id', 'competence_id'];
+     * } */
 }

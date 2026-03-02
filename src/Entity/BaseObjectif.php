@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -19,21 +22,22 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseObjectif', 'extended' => 'Objectif'])]
 class BaseObjectif
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 450)]
     protected string $text = '';
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected \DateTime $date_creation;
+    protected DateTime $date_creation;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected \DateTime $date_update;
+    protected DateTime $date_update;
 
     /**
      * @var Collection<int, IntrigueHasObjectif>|IntrigueHasObjectif[]
      */
+    /** @var Collection<int, IntrigueHasObjectif> */
     #[OneToMany(mappedBy: 'objectif', targetEntity: IntrigueHasObjectif::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'objectif_id', nullable: false)]
     protected Collection $intrigueHasObjectifs;
@@ -67,26 +71,26 @@ class BaseObjectif
         return $this->text;
     }
 
-    public function setDateCreation(\DateTime $date_creation): self
+    public function setDateCreation(DateTime $date_creation): self
     {
         $this->date_creation = $date_creation;
 
         return $this;
     }
 
-    public function getDateCreation(): \DateTime
+    public function getDateCreation(): DateTime
     {
         return $this->date_creation;
     }
 
-    public function setDateUpdate(\DateTime $date_update): self
+    public function setDateUpdate(DateTime $date_update): self
     {
         $this->date_update = $date_update;
 
         return $this;
     }
 
-    public function getDateUpdate(): \DateTime
+    public function getDateUpdate(): DateTime
     {
         return $this->date_update;
     }
@@ -105,13 +109,14 @@ class BaseObjectif
         return $this;
     }
 
+    /** @return Collection<int, IntrigueHasObjectif> */
     public function getIntrigueHasObjectifs(): Collection
     {
         return $this->intrigueHasObjectifs;
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'text', 'date_creation', 'date_update'];
-    } */
+     * {
+     * return ['id', 'text', 'date_creation', 'date_update'];
+     * } */
 }

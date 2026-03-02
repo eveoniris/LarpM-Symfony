@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Merveille;
@@ -22,16 +24,13 @@ class MerveilleController extends AbstractController
     #[Route('/add', name: 'add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            new Merveille(),
-            MerveilleForm::class,
-        );
+        return $this->handleCreateOrUpdate($request, new Merveille(), MerveilleForm::class);
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
         Request $request,
-        $entity,
+        object $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
@@ -59,24 +58,17 @@ class MerveilleController extends AbstractController
     }
 
     #[Route('/{merveille}/delete', name: 'delete', requirements: ['merveille' => Requirement::DIGITS])]
-    public function deleteAction(
-        #[MapEntity] Merveille $merveille,
-    ): RedirectResponse|Response {
-        return $this->genericDelete(
-            $merveille,
-            'Supprimer une merveille',
-            'La merveille a été supprimée',
-            'merveille.list',
+    public function deleteAction(#[MapEntity] Merveille $merveille): RedirectResponse|Response
+    {
+        return $this->genericDelete($merveille, 'Supprimer une merveille', 'La merveille a été supprimée', 'merveille.list', [
+            ['route' => $this->generateUrl('merveille.list'), 'name' => 'Liste des merveilles'],
             [
-                ['route' => $this->generateUrl('merveille.list'), 'name' => 'Liste des merveilles'],
-                [
-                    'route' => $this->generateUrl('merveille.detail', ['merveille' => $merveille->getId()]),
-                    'merveille' => $merveille->getId(),
-                    'name' => $merveille->getLabel(),
-                ],
-                ['name' => 'Supprimer une merveille'],
+                'route' => $this->generateUrl('merveille.detail', ['merveille' => $merveille->getId()]),
+                'merveille' => $merveille->getId(),
+                'name' => $merveille->getLabel(),
             ],
-        );
+            ['name' => 'Supprimer une merveille'],
+        ]);
     }
 
     #[Route('/{merveille}/detail', name: 'detail', requirements: ['merveille' => Requirement::DIGITS])]
@@ -113,10 +105,6 @@ class MerveilleController extends AbstractController
     #[Route('/{merveille}/udpate', name: 'update', requirements: ['merveille' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Merveille $merveille): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $merveille,
-            MerveilleForm::class,
-        );
+        return $this->handleCreateOrUpdate($request, $merveille, MerveilleForm::class);
     }
 }

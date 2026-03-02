@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -20,18 +22,19 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseCulture', 'extended' => 'Culture'])]
 abstract class BaseCulture
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 45)]
+    #[Column(type: Types::STRING, length: 45)]
     protected string $label;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[Column(type: Types::TEXT)]
     protected string $description;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description_complete = null;
 
+    /** @var Collection<int, Territoire> */
     #[OneToMany(mappedBy: 'culture', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'culture_id', nullable: false)]
     protected Collection $territoires;
@@ -103,6 +106,7 @@ abstract class BaseCulture
         return $this;
     }
 
+    /** @return Collection<int, Territoire> */
     public function getTerritoires(): Collection
     {
         return $this->territoires;

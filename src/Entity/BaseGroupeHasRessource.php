@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -18,10 +20,10 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupeHasRessource', 'extended' => 'GroupeHasRessource'])]
 abstract class BaseGroupeHasRessource
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[Column(type: Types::INTEGER)]
     protected int $quantite;
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, cascade: ['persist', 'remove'], inversedBy: 'groupeHasRessources')]
@@ -105,7 +107,7 @@ abstract class BaseGroupeHasRessource
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'quantite', 'groupe_id', 'ressource_id'];
-    } */
+     * {
+     * return ['id', 'quantite', 'groupe_id', 'ressource_id'];
+     * } */
 }

@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -16,9 +17,9 @@ class InstallUserAdminForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('name', TextType::class, ['required' => true])
-            ->add('email', EmailType::class, ['required' => true])
-            ->add('password', PasswordType::class, ['required' => true]);
+        $builder->add('name', TextType::class, ['required' => true])->add('email', EmailType::class, [
+            'required' => true,
+        ])->add('password', PasswordType::class, ['required' => true]);
     }
 
     /**

@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Manager;
 
 use App\Entity\Gn;
 use App\Entity\Groupe;
+use App\Entity\Ressource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class GroupeManager
@@ -12,8 +16,17 @@ final class GroupeManager
     /**
      * Génére une quête commerciale pour un groupe donné.
      */
-    public static function generateQuete(Groupe $groupe, $ressourceCommunes, $ressourceRares)
-    {
+    /**
+     * @param Collection<int, Ressource> $ressourceCommunes
+     * @param Collection<int, Ressource> $ressourceRares
+     *
+     * @return array<string, mixed>
+     */
+    public static function generateQuete(
+        Groupe $groupe,
+        Collection $ressourceCommunes,
+        Collection $ressourceRares,
+    ): array {
         $tab_recompenses = [
             "1 pièce d'or (10 pièces d'argent)",
             '1 point de renommée',
@@ -40,7 +53,7 @@ final class GroupeManager
         if ($groupe->getTerritoire()) {
             $tabCible = $groupe->getTerritoire()->getTerritoireCibles()->toArray();
             shuffle($tabCible);
-            if (count($tabCible) > 0) {
+            if (\count($tabCible) > 0) {
                 $cible = $tabCible[0];
             }
         }
@@ -67,33 +80,24 @@ final class GroupeManager
 
         // calcul du nombre d'importation necessaire
         /*if ( $importations->count() > 3 ) $importations_needed = 3;
-        else if ( $importations->count() > 0 ) $importation_needed = rand(1,$importations->count());*/
+         * else if ( $importations->count() > 0 ) $importation_needed = rand(1,$importations->count());*/
 
         // calcul du nombre de ressources communes
         $common_ressources_needed = 3;
-        if ($common_ressources_needed < 0) {
-            $common_ressources_needed = 0;
-        }
 
         // calcul du nombre de ressources rares
         $uncommon_ressources_needed = 4;
-        if ($uncommon_ressources_needed < 0) {
-            $uncommon_ressources_needed = 0;
-        }
 
         // allocation des importations
-        if ($importation_needed > 0) {
-            $resArray = $importations->toArray();
-            shuffle($resArray);
-            $needs = new ArrayCollection(array_merge($needs->toArray(), array_slice($resArray, 0, $importation_needed)));
-        }
+        // ($importation_needed is always 0 because the calculation above is commented out)
+        unset($importation_needed, $importations);
 
         // allocation des ressources simples
         $ressourceCommunes = new ArrayCollection(array_diff($ressourceCommunes->toArray(), $needs->toArray()));
         if ($ressourceCommunes->count() > 0) {
             $resArray = $ressourceCommunes->toArray();
             shuffle($resArray);
-            $needs = new ArrayCollection(array_merge($needs->toArray(), array_slice($resArray, 0, $common_ressources_needed)));
+            $needs = new ArrayCollection(array_merge($needs->toArray(), \array_slice($resArray, 0, $common_ressources_needed)));
         }
 
         // allocation des ressources rares
@@ -101,7 +105,7 @@ final class GroupeManager
         if ($ressourceRares->count() > 0) {
             $resArray = $ressourceRares->toArray();
             shuffle($resArray);
-            $needs = new ArrayCollection(array_merge($needs->toArray(), array_slice($resArray, 0, $uncommon_ressources_needed)));
+            $needs = new ArrayCollection(array_merge($needs->toArray(), \array_slice($resArray, 0, $uncommon_ressources_needed)));
         }
 
         // calcul de la valeur de ce qui est demandé
@@ -109,16 +113,18 @@ final class GroupeManager
         foreach ($needs as $ressource) {
             $rarete = $ressource->getRarete();
             switch ($rarete->getValue()) {
-                case 1: $valeur += 3;
+                case 1:
+                    $valeur += 3;
                     break;
-                case 2: $valeur += 6;
+                case 2:
+                    $valeur += 6;
                     break;
             }
         }
 
         // choix de la récompense
         shuffle($tab_recompenses);
-        $recompenses = array_slice($tab_recompenses, 0, 4);
+        $recompenses = \array_slice($tab_recompenses, 0, 4);
         $recompenses[] = "1 point d'expérience";
 
         return [
@@ -132,7 +138,7 @@ final class GroupeManager
     /**
      * Fourni le gn actif.
      */
-    public static function getGnActif(EntityManagerInterface $entityManager)
+    public static function getGnActif(EntityManagerInterface $entityManager): ?Gn
     {
         $repo = $entityManager->getRepository(Gn::class);
 

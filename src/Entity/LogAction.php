@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\LogActionType;
-use App\Helper\DataFormatter;
 use App\Repository\LogActionRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
@@ -21,20 +23,23 @@ class LogAction
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
     private ?User $user = null;
 
+    /** @var array<string, mixed>|null */
     #[ORM\Column(nullable: true)]
     private ?array $data = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
+    private ?DateTimeInterface $date = null;
 
     #[ORM\Column(length: 255)]
     private ?string $type = null;
 
+    /** @return array<string, mixed>|null */
     public function getData(): ?array
     {
         return $this->data;
     }
 
+    /** @param array<string, mixed>|null $data */
     public function setData(?array $data): static
     {
         $this->data = $data;
@@ -44,15 +49,15 @@ class LogAction
 
     public function getDataAsJson(): ?string
     {
-        return json_encode($this->data, JSON_THROW_ON_ERROR);
+        return json_encode($this->data, \JSON_THROW_ON_ERROR);
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDate(): ?DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): static
+    public function setDate(DateTimeInterface $date): static
     {
         $this->date = $date;
 

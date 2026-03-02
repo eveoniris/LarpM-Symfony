@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Groupe;
 
@@ -21,10 +22,9 @@ class GroupeSecondaireTypeForm extends AbstractType
     {
         $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
-        ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'required' => false,
-            ]);
+        ])->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'required' => false,
+        ]);
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Question;
@@ -8,6 +10,7 @@ use App\Form\Question\QuestionDeleteForm;
 use App\Form\Question\QuestionForm;
 use App\Repository\QuestionRepository;
 use App\Security\MultiRolesExpression;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -32,7 +35,7 @@ class QuestionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $question = $form->getData();
             $question->setUser($this->getUser());
-            $question->setDate(new \DateTime('NOW'));
+            $question->setDate(new DateTime('NOW'));
 
             $entityManager->persist($question);
             $entityManager->flush();
@@ -57,8 +60,9 @@ class QuestionController extends AbstractController
         EntityManagerInterface $entityManager,
         Question $question,
     ): RedirectResponse|Response {
-        $form = $this->createForm(QuestionDeleteForm::class, $question)
-            ->add('submit', SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(QuestionDeleteForm::class, $question)->add('submit', SubmitType::class, [
+            'label' => 'Supprimer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -90,7 +94,8 @@ class QuestionController extends AbstractController
     public function detailAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Question $question,
+        #[MapEntity]
+        Question $question,
     ): Response {
         return $this->render('question\detail.twig', [
             'question' => $question,
@@ -105,10 +110,7 @@ class QuestionController extends AbstractController
     {
         $questions = $repository->findAll();
 
-        return $this->render(
-            'question\index.twig',
-            ['questions' => $questions],
-        );
+        return $this->render('question\index.twig', ['questions' => $questions]);
     }
 
     /**
@@ -119,7 +121,8 @@ class QuestionController extends AbstractController
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Question $question,
+        #[MapEntity]
+        Question $question,
     ): RedirectResponse|Response {
         $form = $this->createForm(QuestionForm::class, $question);
 

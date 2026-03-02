@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Construction;
 use App\Entity\Territoire;
 use App\Service\OrderBy;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -15,26 +16,23 @@ class TerritoireRepository extends BaseRepository
 {
     /**
      * Find all territoire ordered by nom.
-     *
-     * @return ArrayCollection $territoires
      */
-    public function findAllOrderedByNom()
+    /**
+     * @return array<int, Territoire>
+     */
+    public function findAllOrderedByNom(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT t FROM App\Entity\Territoire t ORDER BY t.nom ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT t FROM App\Entity\Territoire t ORDER BY t.nom ASC')->getResult();
     }
 
     /**
      * Fourni la liste des territoires n'étant pas dépendant d'un autre territoire.
      *
-     * @return Collection
+     * @return array<int, Territoire>
      */
     public function findRoot()
     {
-        $query = $this->getEntityManager()->createQuery(
-            'SELECT t FROM App\Entity\Territoire t WHERE t.territoire IS NULL ORDER BY t.nom ASC'
-        );
+        $query = $this->getEntityManager()->createQuery('SELECT t FROM App\Entity\Territoire t WHERE t.territoire IS NULL ORDER BY t.nom ASC');
 
         return $query->getResult();
     }
@@ -42,20 +40,20 @@ class TerritoireRepository extends BaseRepository
     /**
      * Fourni la liste des territoires étant dépendant d'un autre territoire et possédant des territoires.
      *
-     * @return mixed[]
+     * @return array<int, Territoire>
      */
     public function findRegions(): array
     {
-        $query = $this->getEntityManager()->createQuery(
-            'SELECT t FROM App\Entity\Territoire t  WHERE t.territoire IS NOT NULL ORDER BY t.nom ASC'
-        );
+        $query = $this->getEntityManager()->createQuery('SELECT t FROM App\Entity\Territoire t  WHERE t.territoire IS NOT NULL ORDER BY t.nom ASC');
         $territoires = $query->getResult();
 
         $result = [];
         foreach ($territoires as $territoire) {
-            if ($territoire->getTerritoires()->count() > 0) {
-                $result[] = $territoire;
+            if ($territoire->getTerritoires()->count() <= 0) {
+                continue;
             }
+
+            $result[] = $territoire;
         }
 
         return $result;
@@ -64,20 +62,20 @@ class TerritoireRepository extends BaseRepository
     /**
      * Fourni la liste des territoires étant dépendant d'un autre territoire et ne possédant pas de territoires.
      *
-     * @return mixed[]
+     * @return array<int, Territoire>
      */
     public function findFiefs(): array
     {
-        $query = $this->getEntityManager()->createQuery(
-            'SELECT t FROM App\Entity\Territoire t  WHERE t.territoire IS NOT NULL ORDER BY t.nom ASC'
-        );
+        $query = $this->getEntityManager()->createQuery('SELECT t FROM App\Entity\Territoire t  WHERE t.territoire IS NOT NULL ORDER BY t.nom ASC');
         $territoires = $query->getResult();
 
         $result = [];
         foreach ($territoires as $territoire) {
-            if (0 == $territoire->getTerritoires()->count()) {
-                $result[] = $territoire;
+            if (0 != $territoire->getTerritoires()->count()) {
+                continue;
             }
+
+            $result[] = $territoire;
         }
 
         return $result;
@@ -85,15 +83,15 @@ class TerritoireRepository extends BaseRepository
 
     /**
      * Trouve les fiefs correspondant aux critères de recherche.
+     *
+     * @param array<string, mixed>  $criteria
+     * @param array<string, string> $order
      */
     public function findFiefsList(int $limit, int $offset, array $criteria = [], array $order = []): Query
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('distinct t')
-            ->addSelect('tgr')
-            ->addSelect('tpr')
-            ->addSelect('tp');
+        $qb->select('distinct t')->addSelect('tgr')->addSelect('tpr')->addSelect('tp');
         $qb->from(Territoire::class, 't');
 
         $qb->leftJoin('t.groupe', 'tgr');
@@ -102,10 +100,11 @@ class TerritoireRepository extends BaseRepository
 
         $count = 0;
 
-        if (isset($criteria['t.id']) && isset($criteria['t.nom'])) {
-            $qb->andWhere('LOWER(t.nom) LIKE ?1 OR t.id LIKE ?2')
-                ->setParameter(1, '%'.preg_replace('/[\'"<>=*;]/', '', strtolower((string) $criteria['t.nom'])).'%')
-                ->setParameter(2, '%'.$criteria['t.id'].'%');
+        if (isset($criteria['t.id'], $criteria['t.nom'])) {
+            $qb
+                ->andWhere('LOWER(t.nom) LIKE ?1 OR t.id LIKE ?2')
+                ->setParameter(1, '%' . preg_replace('/[\'"<>=*;]/', '', strtolower((string) $criteria['t.nom'])) . '%')
+                ->setParameter(2, '%' . $criteria['t.id'] . '%');
 
             unset($criteria['t.id'], $criteria['t.nom']);
             $count = 2;
@@ -113,11 +112,9 @@ class TerritoireRepository extends BaseRepository
 
         foreach ($criteria as $key => $value) {
             if ('t.nom' === $key) {
-                $qb->andWhere(sprintf('LOWER(%s) LIKE ?', $key).$count)
-                    ->setParameter($count, '%'.preg_replace('/[\'"<>=*;]/', '', strtolower((string) $value)).'%');
+                $qb->andWhere(\sprintf('LOWER(%s) LIKE ?', $key) . $count)->setParameter($count, '%' . preg_replace('/[\'"<>=*;]/', '', strtolower((string) $value)) . '%');
             } else {
-                $qb->andWhere($key.' = ?'.$count)
-                    ->setParameter($count, $value);
+                $qb->andWhere($key . ' = ?' . $count)->setParameter($count, $value);
             }
 
             ++$count;
@@ -127,21 +124,23 @@ class TerritoireRepository extends BaseRepository
         $qb->setMaxResults($limit);
 
         $defaultEntityAlias = str_contains((string) $order['by'], '.') ? '' : 't.';
-        $qb->orderBy($defaultEntityAlias.$order['by'], $order['dir']);
+        $qb->orderBy($defaultEntityAlias . $order['by'], $order['dir']);
 
         return $qb->getQuery();
     }
 
     /**
      * Trouve le nombre de fiefs correspondant aux critères de recherche.
+     *
+     * @param array<string, mixed> $criteria
      */
-    public function findFiefsCount(array $criteria = [])
+    public function findFiefsCount(array $criteria = []): int
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select($qb->expr()->count('distinct t'));
         $qb->from(Territoire::class, 't');
-        if (array_key_exists('groupe', $criteria)) {
+        if (\array_key_exists('groupe', $criteria)) {
             $qb->join('t.groupe', 'tgr');
         }
 
@@ -153,11 +152,9 @@ class TerritoireRepository extends BaseRepository
         $count = 0;
         foreach ($criteria as $key => $value) {
             if ('t.nom' == $key) {
-                $qb->andWhere($key.sprintf(' LIKE %%?%d%%', $count))
-                    ->setParameter(''.$count, $value);
+                $qb->andWhere($key . \sprintf(' LIKE %%?%d%%', $count))->setParameter('' . $count, $value);
             } else {
-                $qb->andWhere($key.(' = ?'.$count))
-                    ->setParameter(''.$count, $value);
+                $qb->andWhere($key . (' = ?' . $count))->setParameter('' . $count, $value);
             }
 
             ++$count;
@@ -166,7 +163,10 @@ class TerritoireRepository extends BaseRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function findProvinces()
+    /**
+     * @return array<int, Territoire>
+     */
+    public function findProvinces(): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -181,6 +181,7 @@ class TerritoireRepository extends BaseRepository
         return $qb->getQuery()->getResult();
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -191,46 +192,49 @@ class TerritoireRepository extends BaseRepository
         $alias ??= static::getEntityAlias();
 
         $query ??= $this->createQueryBuilder($alias);
-        $query->leftJoin($alias.'.appelation', 'appelation');
+        $query->leftJoin($alias . '.appelation', 'appelation');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
     public function construction(QueryBuilder $queryBuilder, Construction $construction): QueryBuilder
     {
-        $queryBuilder
-            ->innerJoin('territoire.constructions', 'c')
-            ->andWhere('c.id = :cid')
-            ->setParameter('cid', $construction->getId());
+        $queryBuilder->innerJoin('territoire.constructions', 'c')->andWhere('c.id = :cid')->setParameter('cid', $construction->getId());
 
         return $queryBuilder;
     }
 
-    public function searchAttributes(): array
+    /**
+     * @return array<int, string|null>
+     */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::searchAttributes($alias, false),
-            $alias.'.nom', // => 'Libellé',
-            $alias.'.description', // => 'Description',
+            $alias . '.nom', // => 'Libellé',
+            $alias . '.description', // => 'Description',
             'appelation.label as appelation',
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::sortAttributes($alias),
-            $alias.'.nom' => [
-                OrderBy::ASC => [$alias.'.nom' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.nom' => OrderBy::DESC],
+            $alias . '.nom' => [
+                OrderBy::ASC => [$alias . '.nom' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.nom' => OrderBy::DESC],
             ],
-            $alias.'.description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            $alias . '.description' => [
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
             'appelation' => [
                 OrderBy::ASC => ['appelation.label' => OrderBy::ASC],
@@ -252,14 +256,17 @@ class TerritoireRepository extends BaseRepository
     public function root(QueryBuilder $query, bool $root): QueryBuilder
     {
         if ($root) {
-            $query->andWhere($this->alias.'.territoire = :value OR '.$this->alias.'.territoire IS NULL');
+            $query->andWhere($this->alias . '.territoire = :value OR ' . $this->alias . '.territoire IS NULL');
         } else {
-            $query->andWhere($this->alias.'.territoire = :value');
+            $query->andWhere($this->alias . '.territoire = :value');
         }
 
         return $query->setParameter('value', $root);
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function translateAttributes(): array
     {
         return [
@@ -270,8 +277,11 @@ class TerritoireRepository extends BaseRepository
         ];
     }
 
-    public function getTerritoiresWithSiblings(?string $search = null, ?int $paysId = null, ?int $provinceId = null): NativeQuery
-    {
+    public function getTerritoiresWithSiblings(
+        ?string $search = null,
+        ?int $paysId = null,
+        ?int $provinceId = null,
+    ): NativeQuery {
         // TODO filter by groupe, province, region, pays ?
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('id', 'territoire_id', 'integer');
@@ -283,29 +293,26 @@ class TerritoireRepository extends BaseRepository
         $rsm->addScalarResult('depth', 'depth', 'integer');
 
         /* @noinspection SqlNoDataSourceInspection */
-        return $this->entityManager->createNativeQuery(
-            <<<SQL
-                 SELECT
-                    t.id  AS id,
-                    t.nom AS nom,
+        return $this->entityManager->createNativeQuery(<<<SQL
+             SELECT
+                t.id  AS id,
+                t.nom AS nom,
 
-                    COALESCE(t2.id, t.id)  AS t2_id,
-                    COALESCE(t2.nom, t.nom) AS t2_nom,
+                COALESCE(t2.id, t.id)  AS t2_id,
+                COALESCE(t2.nom, t.nom) AS t2_nom,
 
-                    COALESCE(t3.id, t2.id, t.id)  AS t3_id,
-                    COALESCE(t3.nom, t2.nom, t.nom) AS t3_nom,
+                COALESCE(t3.id, t2.id, t.id)  AS t3_id,
+                COALESCE(t3.nom, t2.nom, t.nom) AS t3_nom,
 
-                    CASE
-                        WHEN t3.id IS NOT NULL THEN 3
-                        WHEN t2.id IS NOT NULL THEN 2
-                        ELSE 1
-                    END AS depth
-                FROM territoire t
-                LEFT JOIN territoire t2 ON t2.id = t.territoire_id
-                LEFT JOIN territoire t3 ON t3.id = t2.territoire_id
-                ORDER BY t.id;
-                SQL,
-            $rsm,
-        );
+                CASE
+                    WHEN t3.id IS NOT NULL THEN 3
+                    WHEN t2.id IS NOT NULL THEN 2
+                    ELSE 1
+                END AS depth
+            FROM territoire t
+            LEFT JOIN territoire t2 ON t2.id = t.territoire_id
+            LEFT JOIN territoire t3 ON t3.id = t2.territoire_id
+            ORDER BY t.id;
+            SQL, $rsm);
     }
 }

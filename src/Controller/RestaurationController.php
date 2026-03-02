@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Restauration;
@@ -9,7 +11,6 @@ use App\Form\RestaurationForm;
 use App\Repository\RestaurationRepository;
 use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
-use JetBrains\PhpStorm\NoReturn;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -27,9 +28,9 @@ class RestaurationController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $form = $this->createForm(RestaurationForm::class, new Restauration())
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+        $form = $this->createForm(RestaurationForm::class, new Restauration())->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -41,10 +42,10 @@ class RestaurationController extends AbstractController
 
             $this->addFlash('success', 'La restauration a été ajouté.');
 
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('restauration.list', [], 303);
             }
-            if ($form->get('save_continue')->isClicked()) {
+            if ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('restauration.add', [], 303);
             }
         }
@@ -61,11 +62,13 @@ class RestaurationController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
     public function deleteAction(
         Request $request,
-        #[MapEntity] Restauration $restauration,
+        #[MapEntity]
+        Restauration $restauration,
         EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
-        $form = $this->createForm(RestaurationDeleteForm::class, $restauration)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(RestaurationDeleteForm::class, $restauration)->add('save', SubmitType::class, [
+            'label' => 'Supprimer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -98,7 +101,6 @@ class RestaurationController extends AbstractController
     /**
      * Télécharger la liste des restaurations alimentaires.
      */
-    #[NoReturn]
     #[Route('/restauration/download', name: 'restauration.download')]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
     public function downloadAction(Request $request, RestaurationRepository $repository): void
@@ -106,11 +108,11 @@ class RestaurationController extends AbstractController
         $restaurations = $repository->findAllOrderedByLabel();
 
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_restaurations_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_restaurations_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
-        $output = fopen('php://output', 'wb');
+        $output = fopen('php://output', 'w');
 
         // header
         fputcsv(
@@ -124,8 +126,8 @@ class RestaurationController extends AbstractController
 
         foreach ($restaurations as $restauration) {
             $line = [];
-            $line[] = mb_convert_encoding((string)$restauration->getLabel(), 'ISO-8859-1');
-            $line[] = mb_convert_encoding((string)$restauration->getUsers()->count(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $restauration->getLabel(), 'ISO-8859-1');
+            $line[] = mb_convert_encoding((string) $restauration->getParticipantHasRestaurations()->count(), 'ISO-8859-1');
             fputcsv($output, $line, ';');
         }
 
@@ -141,23 +143,11 @@ class RestaurationController extends AbstractController
     {
         $alias = 'r';
 
-        $orderBy = $this->getRequestOrder(
-            defOrderBy: 'label',
-            alias: $alias,
-            allowedFields: $repository->getFieldNames(),
-        );
+        $orderBy = $this->getRequestOrder(defOrderBy: 'label', alias: $alias, allowedFields: $repository->getFieldNames());
 
-        $paginator = $repository->getPaginator(
-            limit: $this->getRequestLimit(25),
-            page: $this->getRequestPage(),
-            orderBy: $orderBy,
-            alias: $alias,
-        );
+        $paginator = $repository->getPaginator(limit: $this->getRequestLimit(25), page: $this->getRequestPage(), orderBy: $orderBy, alias: $alias);
 
-        return $this->render(
-            'restauration/list.twig',
-            ['paginator' => $paginator],
-        );
+        return $this->render('restauration/list.twig', ['paginator' => $paginator]);
     }
 
     /**
@@ -179,16 +169,14 @@ class RestaurationController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function restrictionsAction(
         Request $request,
-        #[MapEntity] Restauration $restauration,
+        #[MapEntity]
+        Restauration $restauration,
         RestaurationRepository $repository,
     ): Response {
-        return $this->render(
-            'restauration/restrictions.twig',
-            [
-                'restauration' => $restauration,
-                'restrictions' => $repository->gerRestrictionByGn($restauration),
-            ],
-        );
+        return $this->render('restauration/restrictions.twig', [
+            'restauration' => $restauration,
+            'restrictions' => $repository->gerRestrictionByGn($restauration),
+        ]);
     }
 
     /**
@@ -198,11 +186,13 @@ class RestaurationController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
     public function updateAction(
         Request $request,
-        #[MapEntity] Restauration $restauration,
+        #[MapEntity]
+        Restauration $restauration,
         EntityManagerInterface $entityManager,
     ): Response {
-        $form = $this->createForm(RestaurationForm::class, $restauration)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(RestaurationForm::class, $restauration)->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ]);
 
         $form->handleRequest($request);
 
@@ -216,13 +206,10 @@ class RestaurationController extends AbstractController
             return $this->redirectToRoute('restauration.list', [], 303);
         }
 
-        return $this->render(
-            'restauration/update.twig',
-            [
-                'restauration' => $restauration,
-                'form' => $form->createView(),
-            ],
-        );
+        return $this->render('restauration/update.twig', [
+            'restauration' => $restauration,
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
@@ -233,16 +220,14 @@ class RestaurationController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function usersAction(
         Request $request,
-        #[MapEntity] Restauration $restauration,
+        #[MapEntity]
+        Restauration $restauration,
         RestaurationRepository $repository,
     ): Response {
-        return $this->render(
-            'restauration/users.twig',
-            [
-                'restauration' => $restauration,
-                'restaurations' => $repository->getUsersByGn($restauration),
-            ],
-        );
+        return $this->render('restauration/users.twig', [
+            'restauration' => $restauration,
+            'restaurations' => $repository->getUsersByGn($restauration),
+        ]);
     }
 
     /**
@@ -250,20 +235,15 @@ class RestaurationController extends AbstractController
      * TODO optimize.
      */
     #[Route('/restauration/{id}/users-export', name: 'restauration.users.export')]
-    #[NoReturn]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function usersExportAction(Request $request, #[MapEntity] Restauration $restauration): void
     {
         header('Content-Type: text/csv');
-        header(
-            'Content-Disposition: attachment; filename=eveoniris_restaurations_'.$restauration->getId().'_'.date(
-                'Ymd',
-            ).'.csv',
-        );
+        header('Content-Disposition: attachment; filename=eveoniris_restaurations_' . $restauration->getId() . '_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
-        $output = fopen('php://output', 'wb');
+        $output = fopen('php://output', 'w');
 
         // header
         fputcsv(
@@ -280,12 +260,12 @@ class RestaurationController extends AbstractController
             foreach ($UserByGn['users'] as $User) {
                 $restriction = '';
                 foreach ($User->getRestrictions() as $r) {
-                    $restriction .= $r->getLabel().' - ';
+                    $restriction .= $r->getLabel() . ' - ';
                 }
 
                 $line = [];
-                $line[] = mb_convert_encoding((string)$User->getEtatCivil()->getNom(), 'ISO-8859-1');
-                $line[] = mb_convert_encoding((string)$User->getEtatCivil()->getPrenom(), 'ISO-8859-1');
+                $line[] = mb_convert_encoding((string) $User->getEtatCivil()->getNom(), 'ISO-8859-1');
+                $line[] = mb_convert_encoding((string) $User->getEtatCivil()->getPrenom(), 'ISO-8859-1');
                 $line[] = mb_convert_encoding($restriction, 'ISO-8859-1');
                 fputcsv($output, $line, ';');
             }

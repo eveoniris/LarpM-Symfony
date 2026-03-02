@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Genre;
@@ -35,9 +37,9 @@ class GenreController extends AbstractController
     {
         $genre = new Genre();
 
-        $form = $this->createForm(GenreForm::class, $genre)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+        $form = $this->createForm(GenreForm::class, $genre)->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -49,11 +51,11 @@ class GenreController extends AbstractController
 
             $this->addFlash('success', 'Le genre a été ajouté.');
 
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('genre', [], 303);
             }
 
-            if ($form->get('save_continue')->isClicked()) {
+            if ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('genre.add', [], 303);
             }
         }
@@ -67,14 +69,18 @@ class GenreController extends AbstractController
      * Detail d'un genre.
      */
     #[Route('/genre/{genre}', name: 'genre.detail')]
-    public function detailAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] ?Genre $genre): RedirectResponse|Response
-    {
+    public function detailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        ?Genre $genre,
+    ): RedirectResponse|Response {
         if (null !== $genre) {
             return $this->render('genre/detail.twig', ['genre' => $genre]);
         }
 
         $this->addFlash('error', 'Le genre n\'a pas été trouvé.');
-            $this->createNotFoundException(); // Todo render 404 ?
+        $this->createNotFoundException(); // Todo render 404 ?
 
         return $this->redirectToRoute('genre');
     }
@@ -83,22 +89,26 @@ class GenreController extends AbstractController
      * Met à jour un genre.
      */
     #[Route('/genre/{genre}/update', name: 'genre.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] ?Genre $genre): RedirectResponse|Response
-    {
-        $form = $this->createForm(GenreForm::class, $genre)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        ?Genre $genre,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(GenreForm::class, $genre)->add('update', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $genre = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 $entityManager->persist($genre);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le genre a été mis à jour.');
-            } elseif ($form->get('delete')->isClicked()) {
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 $entityManager->remove($genre);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le genre a été supprimé.');

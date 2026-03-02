@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -23,11 +24,10 @@ class TitreForm extends AbstractType
         $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'label' => 'Label',
-        ])
-            ->add('renomme', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
-                'required' => true,
-                'label' => 'Renommé necessaire',
-            ]);
+        ])->add('renomme', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            'required' => true,
+            'label' => 'Renommé necessaire',
+        ]);
     }
 
     /**

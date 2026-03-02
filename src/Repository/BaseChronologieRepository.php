@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\BaseChronologie;
@@ -7,11 +9,12 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method BaseChronologie|null find($id, $lockMode = null, $lockVersion = null)
- * @method BaseChronologie|null findOneBy(array $criteria, array $orderBy = null)
- * @method BaseChronologie[]    findAll()
- * @method BaseChronologie[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method BaseChronologie|null  find($id, $lockMode = null, $lockVersion = null)
+ * @method BaseChronologie|null  findOneBy(array $criteria, array $orderBy = null)
+ * @method list<BaseChronologie> findAll()
+ * @method list<BaseChronologie> findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
+/** @phpstan-ignore missingType.generics */
 class BaseChronologieRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Security;
 
+use SensitiveParameter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,8 +25,9 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator,
+    ) {
     }
 
     public function authenticate(Request $request): Passport
@@ -32,17 +36,14 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $username);
 
-        $passport = new Passport(
-            new UserBadge($username),
-            new PasswordCredentials($request->request->get('password', '')),
-            [
-                new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
-                (new RememberMeBadge())->enable(),
-            ],
-        );
+        $passport = new Passport(new UserBadge($username), new PasswordCredentials($request->request->get('password', '')), [
+            new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
+            new RememberMeBadge()->enable(),
+        ]);
 
         // Add _remember_me from JSON body to attributes
         $cookie_found = $request->cookies->get('REMEMBERME');
+        $data = json_decode($request->getContent());
         $flag = $data->_remember_me ?? '';
         $request->attributes->set('_remember_me', $flag || $cookie_found);
 
@@ -54,8 +55,12 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
-    {
+    public function onAuthenticationSuccess(
+        Request $request,
+        #[SensitiveParameter]
+        TokenInterface $token,
+        string $firewallName,
+    ): ?Response {
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }

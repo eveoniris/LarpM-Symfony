@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\Competence;
 use App\Entity\Level;
 use App\Entity\Personnage;
 use App\Entity\PersonnageApprentissage;
-use App\Service\CompetenceService;
 use App\Service\PersonnageService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -16,21 +18,19 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand(
-    name: 'app:gn-give-learning',
-    description: 'Attribue les apprentissages retour de jeu',
-)]
+#[AsCommand(name: 'app:gn-give-learning', description: 'Attribue les apprentissages retour de jeu')]
 class GnGiveLearning extends Command
 {
-    public function __construct(protected readonly EntityManagerInterface $entityManager, private readonly PersonnageService $personnageService, private readonly CompetenceService $competenceService)
-    {
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager,
+        private readonly PersonnageService $personnageService,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
-        $this
-            ->addArgument('gn', InputArgument::OPTIONAL, 'GN id if not the next session', default: null);
+        $this->addArgument('gn', InputArgument::OPTIONAL, 'GN id if not the next session', default: null);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -136,7 +136,7 @@ class GnGiveLearning extends Command
             ['personnage' => 5049, 'enseignant' => 5048, 'competence' => 73],
             ['personnage' => 2831, 'enseignant' => 1981, 'competence' => 38],
             ['personnage' => 5186, 'enseignant' => 5603, 'competence' => 38],
-            //['personnage' => 4964, 'enseignant' => 4964, 'competence' => 38],
+            // ['personnage' => 4964, 'enseignant' => 4964, 'competence' => 38],
             ['personnage' => 4641, 'enseignant' => 3343, 'competence' => 38],
             ['personnage' => 5187, 'enseignant' => 1981, 'competence' => 38],
             ['personnage' => 4419, 'enseignant' => 3343, 'competence' => 38],
@@ -300,7 +300,7 @@ class GnGiveLearning extends Command
             ['personnage' => 112, 'enseignant' => 2648, 'competence' => 152],
             ['personnage' => 3918, 'enseignant' => 4432, 'competence' => 152],
             ['personnage' => 4001, 'enseignant' => 5443, 'competence' => 152],
-             ['personnage' => 5071, 'enseignant' => 3370, 'competence' => 152],
+            ['personnage' => 5071, 'enseignant' => 3370, 'competence' => 152],
             ['personnage' => 4001, 'enseignant' => 5443, 'competence' => 152],
             ['personnage' => 5118, 'enseignant' => 2609, 'competence' => 152],
             ['personnage' => 3227, 'enseignant' => 3370, 'competence' => 152],
@@ -317,32 +317,27 @@ class GnGiveLearning extends Command
         ];
 
         foreach ($datas as $i => $data) {
-            $io->info('Traitement de la ligne '.($i + 1).' : '.($data['personnage'] ?? '-'));
+            $io->info('Traitement de la ligne ' . ($i + 1) . ' : ' . $data['personnage']);
             $personnage = $this->entityManager->find(Personnage::class, $data['personnage']);
             if (!$personnage) {
-                $io->error('Personnage '.$data['personnage'].' introuvable à la ligne '.$i + 1);
+                $io->error('Personnage ' . $data['personnage'] . ' introuvable à la ligne ' . ($i + 1));
                 continue;
             }
 
             $competence = $this->entityManager->find(Competence::class, $data['competence']);
             if (!$competence) {
-                $io->error('Competence '.$data['competence'].' introuvable pour le PJ '.$personnage->getId().'  à la ligne '.$i + 1);
+                $io->error('Competence ' . $data['competence'] . ' introuvable pour le PJ ' . $personnage->getId() . '  à la ligne ' . ($i + 1));
                 continue;
             }
 
             $enseignant = $this->entityManager->find(Personnage::class, $data['enseignant']);
             if (!$enseignant) {
-                $io->error('Enseignant '.$data['enseignant'].' introuvable à la ligne '.$i + 1);
+                $io->error('Enseignant ' . $data['enseignant'] . ' introuvable à la ligne ' . ($i + 1));
                 continue;
             }
 
-            if ($this->entityManager->getRepository(PersonnageApprentissage::class)->hasApprentissage(
-                $personnage,
-                1326
-            )) {
-                $io->error(
-                    'Le personnage '.$data['personnage'].' a déjà fait un apprentissage à cette date.',
-                );
+            if ($this->entityManager->getRepository(PersonnageApprentissage::class)->hasApprentissage($personnage, 1326)) {
+                $io->error('Le personnage ' . $data['personnage'] . ' a déjà fait un apprentissage à cette date.');
 
                 continue;
             }
@@ -358,28 +353,20 @@ class GnGiveLearning extends Command
                 if ($availableCompetences->contains($competenceAvailable)) {
                     break;
                 }
-                 $competenceAvailable = $competenceAvailable->getNext();
+                $competenceAvailable = $competenceAvailable->getNext();
             } while ($competenceAvailable?->getLevel()?->getIndex() < Level::NIVEAU_4);
 
             if (!$competenceAvailable) {
-                $io->error(
-                    sprintf(
-                        'La compétence %s ne fait pas partie des compétences actuellement accessibles pour le personnage %s',
-                        $competence->getLabel(),
-                        $personnage->getIdName(),
-                    ),
-                );
+                $io->error(\sprintf('La compétence %s ne fait pas partie des compétences actuellement accessibles pour le personnage %s', $competence->getLabel(), $personnage->getIdName()));
                 continue;
             }
 
             if (!$this->personnageService->canTeachCompetence($enseignant, $competenceAvailable)) {
-                $io->error(
-                    sprintf(
-                        "L'enseignant: %s. Ne peut pas enseigner %s. Il doit pour cela connaitre la compétence au moins au niveau expert.",
-                        $enseignant->getIdName(),
-                        $competenceAvailable->getLabel(),
-                    ),
-                );
+                $io->error(\sprintf(
+                    "L'enseignant: %s. Ne peut pas enseigner %s. Il doit pour cela connaitre la compétence au moins au niveau expert.",
+                    $enseignant->getIdName(),
+                    $competenceAvailable->getLabel(),
+                ));
                 continue;
             }
 
@@ -387,7 +374,7 @@ class GnGiveLearning extends Command
             $personnageApprentissage->setPersonnage($personnage);
             $personnageApprentissage->setEnseignant($enseignant);
             $personnageApprentissage->setCompetence($competenceAvailable);
-            $personnageApprentissage->setCreatedAt(new \DateTime());
+            $personnageApprentissage->setCreatedAt(new DateTime());
             $personnageApprentissage->setDateEnseignement(1326);
             $this->entityManager->persist($personnageApprentissage);
             $this->entityManager->flush();

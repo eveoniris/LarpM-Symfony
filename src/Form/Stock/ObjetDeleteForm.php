@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Stock;
 
@@ -16,7 +17,9 @@ class ObjetDeleteForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+        $builder->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+            'label' => 'Supprimer',
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Espece;
@@ -24,11 +26,8 @@ class EspeceController extends AbstractController
     #[Route(name: 'index')]
     #[Route(name: 'list')]
     #[IsGranted(new MultiRolesExpression(Role::REGLE), message: 'You are not allowed to access to this.')]
-    public function indexAction(
-        Request $request,
-        PagerService $pagerService,
-        EspeceRepository $repository,
-    ): Response {
+    public function indexAction(Request $request, PagerService $pagerService, EspeceRepository $repository): Response
+    {
         $pagerService->setRequest($request)->setRepository($repository);
 
         return $this->render('espece/list.twig', [
@@ -41,30 +40,24 @@ class EspeceController extends AbstractController
     #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            new Espece(),
-            EspeceForm::class
-        );
+        return $this->handleCreateOrUpdate($request, new Espece(), EspeceForm::class);
     }
 
     #[Route('/{espece}/detail', name: 'detail', requirements: ['espece' => Requirement::DIGITS])]
     #[IsGranted('ROLE_USER')]
     public function detailAction(#[MapEntity] Espece $espece, PersonnageService $personnageService): Response
     {
-        $this->checkHasAccess(
-            [Role::ORGA, Role::REGLE, Role::SCENARISTE],
-            function () use ($espece, $personnageService) {
-                /** @var User $user */
-                $user = $this->getUser();
-                foreach ($user->getPersonnages() as $personnage) {
-                    if ($personnageService->hasEspece($personnage, $espece)) {
-                        return true;
-                    }
+        $this->checkHasAccess([Role::ORGA, Role::REGLE, Role::SCENARISTE], function () use ($espece, $personnageService) {
+            /** @var User $user */
+            $user = $this->getUser();
+            foreach ($user->getPersonnages() as $personnage) {
+                if ($personnageService->hasEspece($personnage, $espece)) {
+                    return true;
                 }
+            }
 
-                return false;
-            });
+            return false;
+        });
 
         return $this->render('espece\detail.twig', [
             'espece' => $espece,
@@ -75,40 +68,30 @@ class EspeceController extends AbstractController
     #[IsGranted('ROLE_REGLE')]
     public function updateAction(Request $request, #[MapEntity] Espece $espece): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $espece,
-            EspeceForm::class
-        );
+        return $this->handleCreateOrUpdate($request, $espece, EspeceForm::class);
     }
 
     #[Route('/{espece}/delete', name: 'delete', requirements: ['espece' => Requirement::DIGITS])]
     #[IsGranted('ROLE_REGLE')]
-    public function deleteAction(
-        #[MapEntity] Espece $espece,
-    ): RedirectResponse|Response {
-        return $this->genericDelete(
-            $espece,
-            'Supprimer une espece',
-            "L'espèce a été supprimée",
-            'espece.list',
+    public function deleteAction(#[MapEntity] Espece $espece): RedirectResponse|Response
+    {
+        return $this->genericDelete($espece, 'Supprimer une espece', "L'espèce a été supprimée", 'espece.list', [
+            ['route' => $this->generateUrl('espece.list'), 'name' => 'Liste des espèces'],
             [
-                ['route' => $this->generateUrl('espece.list'), 'name' => 'Liste des espèces'],
-                [
-                    'route' => $this->generateUrl('espece.detail', ['espece' => $espece->getId()]),
-                    'espece' => $espece->getId(),
-                    'name' => $espece->getLabel(),
-                ],
-                ['name' => 'Supprimer une espèce'],
-            ]
-        );
+                'route' => $this->generateUrl('espece.detail', ['espece' => $espece->getId()]),
+                'espece' => $espece->getId(),
+                'name' => $espece->getLabel(),
+            ],
+            ['name' => 'Supprimer une espèce'],
+        ]);
     }
 
     #[Route('/{espece}/personnages', name: 'personnages', requirements: ['espece' => Requirement::DIGITS])]
     #[IsGranted('ROLE_REGLE')]
     public function personnagesAction(
         Request $request,
-        #[MapEntity] Espece $espece,
+        #[MapEntity]
+        Espece $espece,
         PersonnageService $personnageService,
         EspeceRepository $especeRepository,
     ): Response {
@@ -135,25 +118,15 @@ class EspeceController extends AbstractController
             ],
         ];
 
-        $viewParams = $personnageService->getSearchViewParameters(
-            $request,
-            $routeName,
-            $routeParams,
-            $columnKeys,
-            $additionalViewParams,
-            $personnages,
-            $especeRepository->getPersonnages($espece)
-        );
+        $viewParams = $personnageService->getSearchViewParameters($request, $routeName, $routeParams, $columnKeys, $additionalViewParams, $personnages, $especeRepository->getPersonnages($espece));
 
-        return $this->render(
-            $twigFilePath,
-            $viewParams
-        );
+        return $this->render($twigFilePath, $viewParams);
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
         Request $request,
-        $entity,
+        object $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
@@ -176,7 +149,7 @@ class EspeceController extends AbstractController
                 'title_update' => $this->translator->trans('Modifier une espèce'),
                 ...$msg,
             ],
-            entityCallback: $entityCallback
+            entityCallback: $entityCallback,
         );
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -13,21 +14,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
 class LieuController extends AbstractController
 {
     /**
      * Liste des lieux.
      */
     #[Route('/lieu', name: 'lieu.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Lieu::class);
-        $lieux = $repo->findPaginated(
-            $this->getRequestPage(),
-            $this->getRequestLimit(),
-            'nom',
-        );
+        $repo = $entityManager->getRepository('\\' . Lieu::class);
+        $lieux = $repo->findPaginated($this->getRequestPage(), $this->getRequestLimit(), 'nom');
 
         return $this->render('lieu/index.twig', ['paginator' => $lieux]);
     }
@@ -36,9 +33,9 @@ class LieuController extends AbstractController
      * Imprimer la liste des documents.
      */
     #[Route('/lieu/print', name: 'lieu.print')]
-    public function printAction(Request $request,  EntityManagerInterface $entityManager)
+    public function printAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $lieux = $entityManager->getRepository('\\'.\App\Entity\Lieu::class)->findAllOrderedByNom();
+        $lieux = $entityManager->getRepository('\\' . Lieu::class)->findAllOrderedByNom();
 
         return $this->render('lieu/print.twig', ['lieux' => $lieux]);
     }
@@ -47,23 +44,27 @@ class LieuController extends AbstractController
      * Télécharger la liste des lieux.
      */
     #[Route('/lieu/download', name: 'lieu.download')]
-    public function downloadAction(Request $request,  EntityManagerInterface $entityManager): void
+    public function downloadAction(Request $request, EntityManagerInterface $entityManager): void
     {
-        $lieux = $entityManager->getRepository('\\'.\App\Entity\Lieu::class)->findAllOrderedByNom();
+        $lieux = $entityManager->getRepository('\\' . Lieu::class)->findAllOrderedByNom();
 
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_lieux_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_lieux_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
         $output = fopen('php://output', 'w');
 
         // header
-        fputcsv($output,
+        fputcsv(
+            $output,
             [
                 'nom',
                 'description',
-                'documents'], ';');
+                'documents',
+            ],
+            ';',
+        );
 
         foreach ($lieux as $lieu) {
             $line = [];
@@ -72,7 +73,7 @@ class LieuController extends AbstractController
 
             $documents = '';
             foreach ($lieu->getDocuments() as $document) {
-                $documents .= mb_convert_encoding((string) $document->getIdentity(), 'ISO-8859-1').', ';
+                $documents .= mb_convert_encoding((string) $document->getIdentity(), 'ISO-8859-1') . ', ';
             }
 
             $line[] = $documents;
@@ -88,11 +89,13 @@ class LieuController extends AbstractController
      * Ajouter un lieu.
      */
     #[Route('/lieu/add', name: 'lieu.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(LieuForm::class, new Lieu())
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+        $form = $this->createForm(LieuForm::class, new Lieu())->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+            'label' => 'Sauvegarder & continuer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -102,11 +105,11 @@ class LieuController extends AbstractController
             $entityManager->persist($lieu);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le lieu a été ajouté.');
+            $this->addFlash('success', 'Le lieu a été ajouté.');
 
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('lieu.index', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
+            } elseif ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('lieu.add', [], 303);
             }
         }
@@ -120,7 +123,7 @@ class LieuController extends AbstractController
      * Détail d'un lieu.
      */
     #[Route('/lieu/{lieu}', name: 'lieu.detail')]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, Lieu $lieu)
+    public function detailAction(Request $request, EntityManagerInterface $entityManager, Lieu $lieu): Response
     {
         return $this->render('lieu/detail.twig', ['lieu' => $lieu]);
     }
@@ -129,10 +132,9 @@ class LieuController extends AbstractController
      * Mise à jour d'un lieu.
      */
     #[Route('/lieu/{lieu}/update', name: 'lieu.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Lieu $lieu)
+    public function updateAction(Request $request, EntityManagerInterface $entityManager, Lieu $lieu): Response
     {
-        $form = $this->createForm(LieuForm::class, $lieu)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(LieuForm::class, $lieu)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -141,7 +143,7 @@ class LieuController extends AbstractController
             $entityManager->persist($lieu);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le lieu a été modifié.');
+            $this->addFlash('success', 'Le lieu a été modifié.');
 
             return $this->redirectToRoute('lieu.index', [], 303);
         }
@@ -156,10 +158,9 @@ class LieuController extends AbstractController
      * Suppression d'un lieu.
      */
     #[Route('/lieu/{lieu}/delete', name: 'lieu.delete')]
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, Lieu $lieu)
+    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Lieu $lieu): Response
     {
-        $form = $this->createForm(LieuDeleteForm::class, $lieu)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(LieuDeleteForm::class, $lieu)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -169,7 +170,7 @@ class LieuController extends AbstractController
             $entityManager->remove($lieu);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le lieu a été supprimé.');
+            $this->addFlash('success', 'Le lieu a été supprimé.');
 
             return $this->redirectToRoute('lieu.index', [], 303);
         }
@@ -184,10 +185,9 @@ class LieuController extends AbstractController
      * Gestion de la liste des documents lié à un lieu.
      */
     #[Route('/lieu/{lieu}/document', name: 'lieu.documents')]
-    public function documentAction(Request $request,  EntityManagerInterface $entityManager, Lieu $lieu)
+    public function documentAction(Request $request, EntityManagerInterface $entityManager, Lieu $lieu): Response
     {
-        $form = $this->createForm(LieuDocumentForm::class, $lieu)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(LieuDocumentForm::class, $lieu)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -196,7 +196,7 @@ class LieuController extends AbstractController
             $entityManager->persist($lieu);
             $entityManager->flush();
 
-           $this->addFlash('success', 'Le document a été ajouté au lieu.');
+            $this->addFlash('success', 'Le document a été ajouté au lieu.');
 
             return $this->redirectToRoute('lieu.detail', ['lieu' => $lieu->getId()]);
         }

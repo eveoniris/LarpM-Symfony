@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -15,7 +17,7 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseRule', 'extended' => 'Rule'])]
 abstract class BaseRule
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -103,7 +105,7 @@ abstract class BaseRule
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'url', 'description'];
-    } */
+     * {
+     * return ['id', 'label', 'url', 'description'];
+     * } */
 }

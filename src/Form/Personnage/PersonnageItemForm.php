@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Personnage;
 
@@ -25,14 +26,12 @@ class PersonnageItemForm extends AbstractType
             'required' => false,
             'class' => Item::class,
             'choice_label' => 'identitereverse',
-            'query_builder' => static function (ItemRepository $er) {
-                return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC');
-            },
+            'query_builder' => static fn (ItemRepository $er) => $er->createQueryBuilder('i')->orderBy('i.label', 'ASC'),
         ]);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {

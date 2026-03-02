@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\BaseUserRepository;
@@ -20,7 +22,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseProprietaire', 'extended' => 'Proprietaire'])]
 abstract class BaseProprietaire
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
@@ -35,6 +37,7 @@ abstract class BaseProprietaire
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
     protected ?string $tel = null;
 
+    /** @var Collection<int, Objet> */
     #[OneToMany(mappedBy: 'proprietaire', targetEntity: Objet::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'proprietaire_id', nullable: false)]
     protected Collection $objets;
@@ -156,6 +159,8 @@ abstract class BaseProprietaire
 
     /**
      * Get Objet entity collection (one to many).
+     *
+     * @return Collection<int, Objet>
      */
     public function getObjets(): Collection
     {
@@ -163,7 +168,7 @@ abstract class BaseProprietaire
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'nom', 'adresse', 'mail', 'tel'];
-    } */
+     * {
+     * return ['id', 'nom', 'adresse', 'mail', 'tel'];
+     * } */
 }

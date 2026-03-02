@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Gn;
@@ -8,7 +10,6 @@ use App\Entity\Personnage;
 use App\Entity\User;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class GroupeGnRepository extends BaseRepository
 {
@@ -19,24 +20,24 @@ class GroupeGnRepository extends BaseRepository
 
         $pid = $personnage->getId();
         $sql = <<<SQL
-                SELECT 
-                    SUM(
-                        IF(suzerin_id = $pid, 1, 0) + 
-                        IF(connetable_id = $pid, 1, 0) + 
-                        IF(intendant_id = $pid, 1, 0) + 
-                        IF(navigateur_id = $pid, 1, 0) + 
-                        IF(camarilla_id = $pid, 1, 0) + 
-                        IF(diplomate_id = $pid, 1, 0) 
-                        ) AS total
-                FROM groupe_gn as ggn  
-                INNER JOIN groupe as g ON g.id = ggn.groupe_id
-                WHERE (suzerin_id = :pid 
-                    OR connetable_id = :pid 
-                    OR intendant_id = :pid 
-                    OR navigateur_id = :pid 
-                    OR camarilla_id = :pid
-                    OR diplomate_id = :pid)
-                SQL;
+            SELECT 
+                SUM(
+                    IF(suzerin_id = {$pid}, 1, 0) + 
+                    IF(connetable_id = {$pid}, 1, 0) + 
+                    IF(intendant_id = {$pid}, 1, 0) + 
+                    IF(navigateur_id = {$pid}, 1, 0) + 
+                    IF(camarilla_id = {$pid}, 1, 0) + 
+                    IF(diplomate_id = {$pid}, 1, 0) 
+                    ) AS total
+            FROM groupe_gn as ggn  
+            INNER JOIN groupe as g ON g.id = ggn.groupe_id
+            WHERE (suzerin_id = :pid 
+                OR connetable_id = :pid 
+                OR intendant_id = :pid 
+                OR navigateur_id = :pid 
+                OR camarilla_id = :pid
+                OR diplomate_id = :pid)
+            SQL;
 
         if ($gn) {
             $sql .= ' AND ggn.gn_id = :gnid';
@@ -56,17 +57,17 @@ class GroupeGnRepository extends BaseRepository
         }
 
         try {
-            return (int) $query
-                ->setParameter('pid', $personnage->getId())
-                ->getSingleScalarResult() ?: 0;
+            return (int) $query->setParameter('pid', $personnage->getId())->getSingleScalarResult() ?: 0;
         } catch (NoResultException $e) {
             return 0;
         }
     }
 
-    public function findByGn($gnId)
+    /** @return list<GroupeGn> */
+    public function findByGn(int $gnId): array
     {
-        return $this->getEntityManager()
+        return $this
+            ->getEntityManager()
             ->createQuery('SELECT g FROM App\Entity\GroupeGn g JOIN g.gn gn WHERE gn.id = :gnId')
             ->setParameter('gnId', $gnId)
             ->getResult();
@@ -76,12 +77,11 @@ class GroupeGnRepository extends BaseRepository
      * Trouve un groupe en fonction de son code.
      *
      * @param string $code
-     *
-     * @return App\Entity\GroupeGn $groupeGn
      */
-    public function findOneByCode($code)
+    public function findOneByCode($code): mixed
     {
-        $groupeGns = $this->getEntityManager()
+        $groupeGns = $this
+            ->getEntityManager()
             ->createQuery('SELECT g FROM App\Entity\GroupeGn g WHERE g.code = :code')
             ->setParameter('code', $code)
             ->getResult();
@@ -97,30 +97,30 @@ class GroupeGnRepository extends BaseRepository
         $pid = $personnage->getId();
         // Attention le concat ne prendra qu'un titre car un pj ne peut en avoir qu'un
         $sql = <<<SQL
-                SELECT 
-                    CONCAT(
-                       case 
-                           when suzerin_id = $pid then 'Suzerain'
-                           when connetable_id = $pid then 'Chef de guerre'
-                           when intendant_id = $pid then 'Intendant'
-                           when navigateur_id = $pid then 'Navigateur'
-                           when camarilla_id  = $pid then 'Eminence grise'
-                           when diplomate_id  = $pid then 'Diplomate'
-                       end,
-                       ' - ',
-                       g.numero,
-                       ' - ',
-                       g.nom
-                       ) as titre
-                FROM groupe_gn as ggn  
-                INNER JOIN groupe as g ON g.id = ggn.groupe_id
-                WHERE (suzerin_id = :pid 
-                    OR connetable_id = :pid 
-                    OR intendant_id = :pid 
-                    OR navigateur_id = :pid 
-                    OR camarilla_id = :pid
-                    OR diplomate_id = :pid)
-                SQL;
+            SELECT 
+                CONCAT(
+                   case 
+                       when suzerin_id = {$pid} then 'Suzerain'
+                       when connetable_id = {$pid} then 'Chef de guerre'
+                       when intendant_id = {$pid} then 'Intendant'
+                       when navigateur_id = {$pid} then 'Navigateur'
+                       when camarilla_id  = {$pid} then 'Eminence grise'
+                       when diplomate_id  = {$pid} then 'Diplomate'
+                   end,
+                   ' - ',
+                   g.numero,
+                   ' - ',
+                   g.nom
+                   ) as titre
+            FROM groupe_gn as ggn  
+            INNER JOIN groupe as g ON g.id = ggn.groupe_id
+            WHERE (suzerin_id = :pid 
+                OR connetable_id = :pid 
+                OR intendant_id = :pid 
+                OR navigateur_id = :pid 
+                OR camarilla_id = :pid
+                OR diplomate_id = :pid)
+            SQL;
 
         if ($gn) {
             $sql .= ' AND ggn.gn_id = :gnid';
@@ -140,30 +140,22 @@ class GroupeGnRepository extends BaseRepository
         }
 
         try {
-            return $query
-                ->setParameter('pid', $personnage->getId())
-                ->getSingleScalarResult() ?: '';
+            return $query->setParameter('pid', $personnage->getId())->getSingleScalarResult() ?: '';
         } catch (NoResultException $e) {
             return '';
         }
     }
 
-    public function userIsMemberOfGroupe(UserInterface|User $user, GroupeGn $groupeGn): bool
+    public function userIsMemberOfGroupe(User $user, GroupeGn $groupeGn): bool
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                SELECT MAX(grp.id) as exists
-                FROM App\Entity\User u 
-                INNER JOIN u.participants as part
-                INNER JOIN part.groupeGn as grp
-                WHERE u.id = :uid AND grp.id = :gid
-                DQL,
-            );
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+            SELECT MAX(grp.id) as exists
+            FROM App\Entity\User u 
+            INNER JOIN u.participants as part
+            INNER JOIN part.groupeGn as grp
+            WHERE u.id = :uid AND grp.id = :gid
+            DQL);
 
-        return (bool) $query
-            ->setParameter('uid', $user->getId())
-            ->setParameter('gid', $groupeGn->getId())
-            ->getSingleScalarResult();
+        return (bool) $query->setParameter('uid', $user->getId())->setParameter('gid', $groupeGn->getId())->getSingleScalarResult();
     }
 }

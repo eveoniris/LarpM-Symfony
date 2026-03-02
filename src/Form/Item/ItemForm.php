@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Item;
 
 use App\Entity\Item;
@@ -21,10 +23,11 @@ class ItemForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', TextType::class, [
-            'label' => 'Label',
-            'required' => true,
-        ])
+        $builder
+            ->add('label', TextType::class, [
+                'label' => 'Label',
+                'required' => true,
+            ])
             ->add('description', TextareaType::class, [
                 // TinyMce may bug here if let 'required' => true,
                 'label' => 'Description',
@@ -113,7 +116,7 @@ class ItemForm extends AbstractType
                     '56',
                     '57',
                 ],
-                'choice_label' => static fn($value) => match ($value) {
+                'choice_label' => static fn ($value) => match ($value) {
                     '81' => 'Rien de spécial',
                     '01' => 'Objet spécial mais non enchanté',
                     '11' => 'Objet enchanté par la compétence Magie',
@@ -154,6 +157,7 @@ class ItemForm extends AbstractType
                     '55' => 'Objet sanctifié par la compétence Prêtrise - Xotli/Ong',
                     '56' => 'Objet sanctifié par la compétence Prêtrise - Affras',
                     '57' => 'Lié aux chaudrons (mais aucun en particulier)',
+                    default => (string) $value,
                 },
                 'attr' => [
                     'help' => "Information sur l'objet",

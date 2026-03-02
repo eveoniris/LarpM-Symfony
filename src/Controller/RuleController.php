@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Rule;
@@ -8,7 +10,6 @@ use App\Form\Rule\RuleForm;
 use App\Repository\RuleRepository;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,49 +28,51 @@ class RuleController extends AbstractController
     public function addAction(Request $request): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate($request, new Rule(), RuleForm::class);
+
         /* OLD
-        $form = $this->createForm(RuleForm::class, [])
-            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $files = $request->files->get($form->getName());
-
-            $path = __DIR__.'/../../private/rules/';
-            $filename = $files['rule']->getClientOriginalName();
-            $extension = $files['rule']->guessExtension();
-
-            if (!$extension || 'pdf' !== $extension) {
-                $this->addFlash('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
-
-                return $this->redirectToRoute('rules', [], 303);
-            }
-
-            $ruleFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
-
-            $files['rule']->move($path, $filename);
-
-            $rule = new Rule();
-            $rule->setLabel($data['label']);
-            $rule->setDescription($data['description']);
-            $rule->setUrl($filename);
-
-            $this->entityManager->persist($rule);
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Votre fichier a été enregistrée');
-        }
-
-        return $this->render('rule/add.twig', [
-            'form' => $form->createView(),
-        ]);*/
+         * $form = $this->createForm(RuleForm::class, [])
+         * ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
+         *
+         * $form->handleRequest($request);
+         *
+         * if ($form->isSubmitted() && $form->isValid()) {
+         * $data = $form->getData();
+         * $files = $request->files->get($form->getName());
+         *
+         * $path = __DIR__.'/../../private/rules/';
+         * $filename = $files['rule']->getClientOriginalName();
+         * $extension = $files['rule']->guessExtension();
+         *
+         * if (!$extension || 'pdf' !== $extension) {
+         * $this->addFlash('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
+         *
+         * return $this->redirectToRoute('rules', [], 303);
+         * }
+         *
+         * $ruleFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
+         *
+         * $files['rule']->move($path, $filename);
+         *
+         * $rule = new Rule();
+         * $rule->setLabel($data['label']);
+         * $rule->setDescription($data['description']);
+         * $rule->setUrl($filename);
+         *
+         * $this->entityManager->persist($rule);
+         * $this->entityManager->flush();
+         *
+         * $this->addFlash('success', 'Votre fichier a été enregistrée');
+         * }
+         *
+         * return $this->render('rule/add.twig', [
+         * 'form' => $form->createView(),
+         * ]);*/
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
         Request $request,
-        $entity,
+        object $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
@@ -77,20 +80,17 @@ class RuleController extends AbstractController
         ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         if (!$entityCallback) {
-            /** @var Rule $rule */
             $entityCallback = fn (mixed $rule, FormInterface $form): ?Rule => $rule->handleUpload($this->fileUploader);
         }
 
-        if (null === $breadcrumb) {
-            $breadcrumb = [['route' => $this->generateUrl('rule.list'), 'name' => 'Liste des règles']];
+        $breadcrumb = [['route' => $this->generateUrl('rule.list'), 'name' => 'Liste des règles']];
 
-            if ($entity->getId()) {
-                $breadcrumb[] = [
-                    'route' => $this->generateUrl('rule.detail', ['rule' => $entity->getId()]),
-                    'name' => $entity->getLabel(),
-                ];
-                $breadcrumb[] = ['name' => 'Modifier une règle'];
-            }
+        if ($entity->getId()) {
+            $breadcrumb[] = [
+                'route' => $this->generateUrl('rule.detail', ['rule' => $entity->getId()]),
+                'name' => $entity->getLabel(),
+            ];
+            $breadcrumb[] = ['name' => 'Modifier une règle'];
         }
 
         return parent::handleCreateOrUpdate(
@@ -135,13 +135,13 @@ class RuleController extends AbstractController
                 ['name' => 'Supprimer une règle'],
             ],
             $rule->getDescription(),
-            callbackOnValid: function () use ($rule) {
-                $filename = $rule->getDocument($this->getParameter('kernel.project_dir').'/');
+            callbackOnValid: function () use ($rule): void {
+                $filename = $rule->getDocument($this->getParameter('kernel.project_dir') . '/');
                 if (file_exists($filename)) {
                     unlink($filename);
-                    $this->addFlash('success', 'suppresion du fichier '.$filename);
+                    $this->addFlash('success', 'suppresion du fichier ' . $filename);
                 } else {
-                    $this->addFlash('error', 'impossible de supprimer le fichier '.$filename);
+                    $this->addFlash('error', 'impossible de supprimer le fichier ' . $filename);
                 }
             },
         );
@@ -174,14 +174,11 @@ class RuleController extends AbstractController
     {
         $pagerService->setRequest($request)->setRepository($ruleRepository)->setLimit(25);
 
-        return $this->render(
-            'rule\list.twig',
-            [
-                'pagerService' => $pagerService,
-                'paginator' => $ruleRepository->searchPaginated($pagerService),
-                'isAdmin' => $this->isGranted(Role::REGLE->value),
-            ],
-        );
+        return $this->render('rule\list.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $ruleRepository->searchPaginated($pagerService),
+            'isAdmin' => $this->isGranted(Role::REGLE->value),
+        ]);
     }
 
     /**
@@ -191,29 +188,25 @@ class RuleController extends AbstractController
     #[Route('/rule/{rule}/update', name: 'rule.update', requirements: ['rule' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Rule $rule): Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $rule,
-            RuleForm::class,
-        );
+        return $this->handleCreateOrUpdate($request, $rule, RuleForm::class);
 
         /* Old
-        $form = $this->createForm(RuleUpdateForm::class, $rule)
-            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $rule = $form->getData();
-            $this->entityManager->persist($rule);
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Vos modifications été enregistrées');
-        }
-
-        return $this->render('rule/update.twig', [
-            'form' => $form->createView(),
-            'rule' => $rule,
-        ]);*/
+         * $form = $this->createForm(RuleUpdateForm::class, $rule)
+         * ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
+         *
+         * $form->handleRequest($request);
+         *
+         * if ($form->isSubmitted() && $form->isValid()) {
+         * $rule = $form->getData();
+         * $this->entityManager->persist($rule);
+         * $this->entityManager->flush();
+         *
+         * $this->addFlash('success', 'Vos modifications été enregistrées');
+         * }
+         *
+         * return $this->render('rule/update.twig', [
+         * 'form' => $form->createView(),
+         * 'rule' => $rule,
+         * ]);*/
     }
 }

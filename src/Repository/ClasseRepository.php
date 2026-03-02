@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Classe;
@@ -10,11 +12,13 @@ use Doctrine\ORM\QueryBuilder;
 
 class ClasseRepository extends BaseRepository
 {
+    /** @return list<Classe> */
     public function findAll(): array
     {
         return $this->findBy([], ['label_masculin' => 'ASC']);
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -26,13 +30,9 @@ class ClasseRepository extends BaseRepository
         $orderBy ??= $this->orderBy;
 
         if ('creation' === $attributes) {
-            $query = $this->createQueryBuilder($alias)
-                ->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
+            $query = $this->createQueryBuilder($alias)->orderBy($orderBy->getSort(), $orderBy->getOrderBy());
 
-            return $this->creation(
-                $query,
-                filter_var($search, FILTER_VALIDATE_BOOLEAN),
-            );
+            return $this->creation($query, filter_var($search, \FILTER_VALIDATE_BOOLEAN));
         }
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
@@ -40,32 +40,33 @@ class ClasseRepository extends BaseRepository
 
     public function creation(QueryBuilder $query, bool $creation): QueryBuilder
     {
-        $query->andWhere($this->alias.'.creation = :value');
+        $query->andWhere($this->alias . '.creation = :value');
 
         return $query->setParameter('value', $creation);
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::sortAttributes($alias),
-            $alias.'.label_masculin' => [
-                OrderBy::ASC => [$alias.'.label_masculin' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.label_masculin' => OrderBy::DESC],
+            $alias . '.label_masculin' => [
+                OrderBy::ASC => [$alias . '.label_masculin' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.label_masculin' => OrderBy::DESC],
             ],
-            $alias.'.label_feminin' => [
-                OrderBy::ASC => [$alias.'.label_feminin' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.label_feminin' => OrderBy::DESC],
+            $alias . '.label_feminin' => [
+                OrderBy::ASC => [$alias . '.label_feminin' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.label_feminin' => OrderBy::DESC],
             ],
-            $alias.'.description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            $alias . '.description' => [
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
             'creation' => [
-                OrderBy::ASC => [$alias.'.creation' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.creation' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.creation' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.creation' => OrderBy::DESC],
             ],
         ];
     }
@@ -73,23 +74,20 @@ class ClasseRepository extends BaseRepository
     /**
      * Trouve toutes les classes disponibles à la création d'un personnage.
      */
-    public function findAllCreation()
+    /** @return list<Classe> */
+    public function findAllCreation(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT DISTINCT c FROM App\Entity\Classe c WHERE c.creation = true ORDER BY c.label_masculin ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT DISTINCT c FROM App\Entity\Classe c WHERE c.creation = true ORDER BY c.label_masculin ASC')->getResult();
     }
 
     /**
      * Find all classes ordered by label.
      *
-     * @return ArrayCollection $classes
+     * @return ArrayCollection<int, Classe>
      */
     public function findAllOrderedByLabel()
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT c FROM App\Entity\Classe c ORDER BY c.label_masculin ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT c FROM App\Entity\Classe c ORDER BY c.label_masculin ASC')->getResult();
     }
 
     public function getPersonnages(Classe $classe): QueryBuilder
@@ -97,10 +95,7 @@ class ClasseRepository extends BaseRepository
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
-        return $personnageRepository->createQueryBuilder('p')
-            ->innerJoin('p.classe', 'c')
-            ->where('c.id = :cid')
-            ->setParameter('cid', $classe->getId());
+        return $personnageRepository->createQueryBuilder('p')->innerJoin('p.classe', 'c')->where('c.id = :cid')->setParameter('cid', $classe->getId());
     }
 
     /**
@@ -108,7 +103,8 @@ class ClasseRepository extends BaseRepository
      */
     public function getQueryBuilderFindAllOrderedByLabel(): QueryBuilder
     {
-        return $this->getEntityManager()
+        return $this
+            ->getEntityManager()
             ->createQueryBuilder()
             ->select('c')
             ->from(Classe::class, 'c')

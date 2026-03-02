@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Controller;
 
+use ArrayIterator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,14 +12,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
 class EconomieController extends AbstractController
 {
     /**
      * Présentation des constructions.
      */
     #[Route('/economie', name: 'economie.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         /* calcul de la masse monétaire :
          * correspond à somme des revenus des groupes en jeu
@@ -29,23 +31,26 @@ class EconomieController extends AbstractController
          *
          **/
 
+        /** @var ArrayCollection<int, mixed> $territoires */
         $territoires = new ArrayCollection();
+        /** @var ArrayCollection<int, array{label: string, nombre: int, territoires: array<mixed>}> $ressources */
         $ressources = new ArrayCollection();
+        /** @var ArrayCollection<int, array{label: string, nombre: int, territoires: array<mixed>}> $ingredients */
         $ingredients = new ArrayCollection();
+        /** @var ArrayCollection<int, array{label: string, nombre: int, territoires: array<mixed>}> $constructions */
         $constructions = new ArrayCollection();
 
         // recherche le prochain GN
-        $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
+        $gnRepo = $entityManager->getRepository('\\' . \App\Entity\Gn::class);
         $gn = $gnRepo->findNext();
 
         // Liste les groupes participants au prochain GN
-        $groupeGnRepo = $entityManager->getRepository('\\'.\App\Entity\GroupeGn::class);
+        $groupeGnRepo = $entityManager->getRepository('\\' . \App\Entity\GroupeGn::class);
         $groupesGn = $groupeGnRepo->findByGn($gn->getId());
 
         $masseMonetaire = 0;
 
         foreach ($groupesGn as $groupeGn) {
-
             $groupe = $groupeGn->getGroupe();
 
             foreach ($groupe->getTerritoires() as $territoire) {
@@ -104,10 +109,9 @@ class EconomieController extends AbstractController
             }
 
             // classement des résultats par ordre décroissant
+            /** @var ArrayIterator<int, mixed> $iterator */
             $iterator = $ressources->getIterator();
-            $iterator->uasort(static function (array $first, array $second): int {
-                return (int) $first['nombre'] < (int) $second['nombre'] ? 1 : -1;
-            });
+            $iterator->uasort(static fn (array $first, array $second): int => (int) $first['nombre'] < (int) $second['nombre'] ? 1 : -1);
             $ressources = new ArrayCollection(iterator_to_array($iterator));
 
             // récupération des ingrédients
@@ -128,10 +132,9 @@ class EconomieController extends AbstractController
             }
 
             // classement des résultats par ordre décroissant
+            /** @var ArrayIterator<int, mixed> $iterator */
             $iterator = $ingredients->getIterator();
-            $iterator->uasort(static function (array $first, array $second): int {
-                return (int) $first['nombre'] < (int) $second['nombre'] ? 1 : -1;
-            });
+            $iterator->uasort(static fn (array $first, array $second): int => (int) $first['nombre'] < (int) $second['nombre'] ? 1 : -1);
             $ingredients = new ArrayCollection(iterator_to_array($iterator));
 
             // récupération des constructions
@@ -152,10 +155,9 @@ class EconomieController extends AbstractController
             }
 
             // classement des résultats par ordre décroissant
+            /** @var ArrayIterator<int, mixed> $iterator */
             $iterator = $constructions->getIterator();
-            $iterator->uasort(static function (array $first, array $second): int {
-                return (int) $first['nombre'] < (int) $second['nombre'] ? 1 : -1;
-            });
+            $iterator->uasort(static fn (array $first, array $second): int => (int) $first['nombre'] < (int) $second['nombre'] ? 1 : -1);
             $constructions = new ArrayCollection(iterator_to_array($iterator));
         }
 
@@ -172,24 +174,25 @@ class EconomieController extends AbstractController
      * Sortie du fichier pour le jeu économique.
      */
     #[Route('/economie/csv', name: 'economie.csv')]
-    public function csvAction(Request $request,  EntityManagerInterface $entityManager): void
+    public function csvAction(Request $request, EntityManagerInterface $entityManager): void
     {
         // recherche le prochain GN
-        $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
+        $gnRepo = $entityManager->getRepository('\\' . \App\Entity\Gn::class);
         $gn = $gnRepo->findNext();
 
         // Liste les groupes participants au prochain GN
-        $groupeGnRepo = $entityManager->getRepository('\\'.\App\Entity\GroupeGn::class);
+        $groupeGnRepo = $entityManager->getRepository('\\' . \App\Entity\GroupeGn::class);
         $groupesGn = $groupeGnRepo->findByGn($gn->getId());
 
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_economie_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_economie_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
         $output = fopen('php://output', 'w');
 
-        fputcsv($output,
+        fputcsv(
+            $output,
             [
                 mb_convert_encoding('fief', 'ISO-8859-1'),
                 mb_convert_encoding('groupe', 'ISO-8859-1'),
@@ -200,7 +203,9 @@ class EconomieController extends AbstractController
                 mb_convert_encoding('Ingrédients', 'ISO-8859-1'),
                 mb_convert_encoding('Or', 'ISO-8859-1'),
                 mb_convert_encoding('Distribution', 'ISO-8859-1'),
-            ], ';');
+            ],
+            ';',
+        );
 
         foreach ($groupesGn as $groupeGn) {
             $groupe = $groupeGn->getGroupe();
@@ -208,14 +213,16 @@ class EconomieController extends AbstractController
                 $line = [];
                 $line[] = mb_convert_encoding((string) $territoire->getNom(), 'ISO-8859-1');
                 $groupe = $territoire->getGroupe();
-                $line[] = $groupe ? mb_convert_encoding('#'.$groupe->getNumero().' '.$groupe->getNom(), 'ISO-8859-1') : mb_convert_encoding('Aucun', 'ISO-8859-1');
+                $line[] = $groupe
+                    ? mb_convert_encoding('#' . $groupe->getNumero() . ' ' . $groupe->getNom(), 'ISO-8859-1')
+                    : mb_convert_encoding('Aucun', 'ISO-8859-1');
 
                 $line[] = mb_convert_encoding((string) $territoire->getStatut(), 'ISO-8859-1');
                 $line[] = mb_convert_encoding(implode(' - ', $territoire->getConstructions()->toArray()), 'ISO-8859-1');
                 $line[] = '';
                 $line[] = mb_convert_encoding(implode(' - ', $territoire->getExportations()->toArray()), 'ISO-8859-1');
                 $line[] = mb_convert_encoding(implode(' - ', $territoire->getIngredients()->toArray()), 'ISO-8859-1');
-                $line[] = mb_convert_encoding($territoire->getRichesse().' ('.$territoire->getTresor().')', 'ISO-8859-1');
+                $line[] = mb_convert_encoding($territoire->getRichesse() . ' (' . $territoire->getTresor() . ')', 'ISO-8859-1');
                 $line[] = '';
 
                 fputcsv($output, $line, ';');

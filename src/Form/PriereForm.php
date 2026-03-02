@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -21,13 +22,14 @@ class PriereForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('sphere', EntityType::class, [
-            'required' => true,
-            'label' => 'Sphère',
-            'autocomplete' => true,
-            'class' => Sphere::class,
-            'choice_label' => 'label',
-        ])
+        $builder
+            ->add('sphere', EntityType::class, [
+                'required' => true,
+                'label' => 'Sphère',
+                'autocomplete' => true,
+                'class' => Sphere::class,
+                'choice_label' => 'label',
+            ])
             ->add('niveau', ChoiceType::class, [
                 'required' => true,
                 'choices' => ['1' => 1, '2' => 2, '3' => 3, '4' => 4], // TODO true Entity or Enum?
@@ -47,7 +49,8 @@ class PriereForm extends AbstractType
                 'empty_data' => '',
                 'attr' => [
                     'class' => 'tinymce',
-                    'rows' => 9],
+                    'rows' => 9,
+                ],
             ])
             ->add('annonce', TextareaType::class, [
                 'required' => false,
@@ -55,7 +58,8 @@ class PriereForm extends AbstractType
                 'empty_data' => '',
                 'attr' => [
                     'class' => 'tinymce',
-                    'rows' => 9],
+                    'rows' => 9,
+                ],
             ]);
     }
 

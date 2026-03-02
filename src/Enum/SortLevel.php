@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enum;
 
 enum SortLevel: string
@@ -30,7 +32,6 @@ enum SortLevel: string
             self::GRAND_MASTER->value => 5,
             self::INITIATED->value => 2,
             self::MASTER->value => 4,
-            default => -1,
         };
     }
 

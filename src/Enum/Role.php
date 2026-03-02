@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enum;
 
 enum Role: string
@@ -27,6 +29,7 @@ enum Role: string
         return self::getLabels()[$this->value] ?? $this->value;
     }
 
+    /** @return array<string, string> */
     public static function getLabels(): array
     {
         return [
@@ -46,5 +49,4 @@ enum Role: string
             self::TERRITOIRE->value => 'Gestion des territoires',
         ];
     }
-
 }

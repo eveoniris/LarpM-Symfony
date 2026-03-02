@@ -1,18 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\RestrictionRepository;
+use DateTime;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
 #[Entity(repositoryClass: RestrictionRepository::class)]
-class Restriction extends BaseRestriction implements \Stringable
+class Restriction extends BaseRestriction implements Stringable
 {
     public function __construct()
     {
         parent::__construct();
-        $this->setCreationDate(new \DateTime('NOW'));
-        $this->setUpdateDate(new \DateTime('NOW'));
+        $this->setCreationDate(new DateTime('NOW'));
+        $this->setUpdateDate(new DateTime('NOW'));
     }
 
     public function __toString(): string

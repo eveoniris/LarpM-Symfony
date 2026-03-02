@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,14 +23,14 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseQuestion', 'extended' => 'Question'])]
 abstract class BaseQuestion
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'text', type: \Doctrine\DBAL\Types\Types::STRING)]
     protected string $text;
 
     #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
-    protected \DateTime $date;
+    protected DateTime $date;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
     protected string $choix = '';
@@ -35,6 +38,7 @@ abstract class BaseQuestion
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $label = '';
 
+    /** @var Collection<int, Reponse> */
     #[OneToMany(mappedBy: 'question', targetEntity: Reponse::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'question_id', nullable: false)]
     protected Collection $reponses;
@@ -43,6 +47,7 @@ abstract class BaseQuestion
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
+    /** @var Collection<int, PersonnageHasQuestion> */
     #[OneToMany(mappedBy: 'question', targetEntity: PersonnageHasQuestion::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'question_id', nullable: false)]
     protected Collection $personnageHasQuestions;
@@ -91,7 +96,7 @@ abstract class BaseQuestion
     /**
      * Get the value of date.
      */
-    public function getDate(): \DateTime
+    public function getDate(): DateTime
     {
         return $this->date;
     }
@@ -99,7 +104,7 @@ abstract class BaseQuestion
     /**
      * Set the value of date.
      */
-    public function setDate(\DateTime $date): static
+    public function setDate(DateTime $date): static
     {
         $this->date = $date;
 
@@ -164,6 +169,8 @@ abstract class BaseQuestion
 
     /**
      * Get Reponse entity collection (one to many).
+     *
+     * @return Collection<int, Reponse>
      */
     public function getReponses(): Collection
     {
@@ -189,15 +196,19 @@ abstract class BaseQuestion
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'text', 'date', 'User_id', 'choix', 'label'];
-    } */
+     * {
+     * return ['id', 'text', 'date', 'User_id', 'choix', 'label'];
+     * } */
 
+    /** @return Collection<int, PersonnageHasQuestion> */
     public function getPersonnageHasQuestions(): Collection
     {
         return $this->personnageHasQuestions;
     }
 
+    /**
+     * @param Collection<int, PersonnageHasQuestion> $personnageHasQuestions
+     */
     public function setPersonnageHasQuestions(Collection $personnageHasQuestions): static
     {
         $this->personnageHasQuestions = $personnageHasQuestions;

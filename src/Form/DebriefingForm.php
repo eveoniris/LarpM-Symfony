@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Debriefing;
@@ -24,19 +26,18 @@ class DebriefingForm extends AbstractType
             'attr' => [
                 'help' => 'A quel GN correspond ce debriefing ?',
             ],
-        ])
-            ->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'required' => true,
-                'attr' => [
-                    'help' => 'A quel GN correspond ce debriefing ?',
-                ],
-            ])
-            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'required' => true,
-                'attr' => [
-                    'class' => 'tinymce',
-                    'rows' => 9],
-            ]);
+        ])->add('gn', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            'required' => true,
+            'attr' => [
+                'help' => 'A quel GN correspond ce debriefing ?',
+            ],
+        ])->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'required' => true,
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 9,
+            ],
+        ]);
     }
 
     /**

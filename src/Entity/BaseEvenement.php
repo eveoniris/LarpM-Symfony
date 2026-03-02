@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -19,7 +22,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseEvenement', 'extended' => 'Evenement'])]
 abstract class BaseEvenement
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'text', type: Types::STRING, length: 450)]
@@ -29,14 +32,15 @@ abstract class BaseEvenement
     protected string $date;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected \DateTime $date_creation;
+    protected DateTime $date_creation;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected \DateTime $date_update;
+    protected DateTime $date_update;
 
     /**
      * @var Collection<int, IntrigueHasEvenement>|IntrigueHasEvenement[]
      */
+    /** @var Collection<int, IntrigueHasEvenement> */
     #[OneToMany(mappedBy: 'evenement', targetEntity: IntrigueHasEvenement::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'evenement_id', nullable: false)]
     protected Collection $intrigueHasEvenements;
@@ -82,26 +86,26 @@ abstract class BaseEvenement
         return $this->date;
     }
 
-    public function setDateCreation(\DateTime $date_creation): static
+    public function setDateCreation(DateTime $date_creation): static
     {
         $this->date_creation = $date_creation;
 
         return $this;
     }
 
-    public function getDateCreation(): \DateTime
+    public function getDateCreation(): DateTime
     {
         return $this->date_creation;
     }
 
-    public function setDateUpdate(\DateTime $date_update): static
+    public function setDateUpdate(DateTime $date_update): static
     {
         $this->date_update = $date_update;
 
         return $this;
     }
 
-    public function getDateUpdate(): \DateTime
+    public function getDateUpdate(): DateTime
     {
         return $this->date_update;
     }
@@ -120,13 +124,14 @@ abstract class BaseEvenement
         return $this;
     }
 
+    /** @return Collection<int, IntrigueHasEvenement> */
     public function getIntrigueHasEvenements(): Collection
     {
         return $this->intrigueHasEvenements;
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'text', 'date', 'date_creation', 'date_update'];
-    } */
+     * {
+     * return ['id', 'text', 'date', 'date_creation', 'date_update'];
+     * } */
 }

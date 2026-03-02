@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,15 +21,16 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupeLangue', 'extended' => 'GroupeLangue'])]
 abstract class BaseGroupeLangue
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 180, unique: true)]
     protected string $label;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
-    protected $couleur;
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    protected string $couleur = '';
 
+    /** @var Collection<int, Langue> */
     #[OneToMany(mappedBy: 'groupeLangue', targetEntity: Langue::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_langue_id', nullable: false)]
     protected Collection $langues;
@@ -113,6 +116,8 @@ abstract class BaseGroupeLangue
 
     /**
      * Get Langue entity collection (one to many).
+     *
+     * @return Collection<int, Langue>
      */
     public function getLangues(): Collection
     {
@@ -120,7 +125,7 @@ abstract class BaseGroupeLangue
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'couleur'];
-    } */
+     * {
+     * return ['id', 'label', 'couleur'];
+     * } */
 }

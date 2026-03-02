@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,7 +14,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'level')]
@@ -22,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity('index')]
 abstract class BaseLevel
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: '`index', type: Types::INTEGER, unique: true)]
@@ -40,6 +41,7 @@ abstract class BaseLevel
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $cout_meconu = 0;
 
+    /** @var Collection<int, Competence> */
     #[OneToMany(mappedBy: 'level', targetEntity: Competence::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'level_id', nullable: false)]
     protected ?Collection $competences;
@@ -179,6 +181,8 @@ abstract class BaseLevel
 
     /**
      * Get Competence entity collection (one to many).
+     *
+     * @return Collection<int, Competence>
      */
     public function getCompetences(): Collection
     {
@@ -186,7 +190,7 @@ abstract class BaseLevel
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'index', 'label', 'cout', 'cout_favori', 'cout_meconu'];
-    } */
+     * {
+     * return ['id', 'index', 'label', 'cout', 'cout_favori', 'cout_meconu'];
+     * } */
 }

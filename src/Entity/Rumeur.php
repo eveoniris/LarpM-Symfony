@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\RumeurRepository;
+use DateTime;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity(repositoryClass: RumeurRepository::class)]
@@ -13,8 +16,8 @@ class Rumeur extends BaseRumeur
      */
     public function __construct()
     {
-        $this->setCreationDate(new \DateTime('NOW'));
-        $this->setUpdateDate(new \DateTime('NOW'));
+        $this->setCreationDate(new DateTime('NOW'));
+        $this->setUpdateDate(new DateTime('NOW'));
         parent::__construct();
     }
 
@@ -28,11 +31,11 @@ class Rumeur extends BaseRumeur
 
     public function getLabel(): string
     {
-        return 'Par '.$this->user->getDisplayName().' en '.$this->territoire->getNom();
+        return 'Par ' . $this->user->getDisplayName() . ' en ' . $this->territoire->getNom();
     }
 
     public function getDescription(): ?string
     {
-        return $this->getText() ?? '';
+        return (string) $this->getText();
     }
 }

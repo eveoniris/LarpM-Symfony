@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -20,14 +21,14 @@ class DomaineForm extends AbstractType
         $builder->add('label', TextType::class, [
             'required' => true,
             'label' => 'Label',
-        ])
-            ->add('description', TextareaType::class, [
-                'required' => false,
-                'label' => 'Description',
-                'attr' => [
-                    'class' => 'tinymce',
-                    'rows' => 9],
-            ]);
+        ])->add('description', TextareaType::class, [
+            'required' => false,
+            'label' => 'Description',
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 9,
+            ],
+        ]);
     }
 
     /**

@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
-use App\Repository\GroupeLangueRepository;
 use App\Repository\TokenRepository;
 use Doctrine\ORM\Mapping\Entity;
 
@@ -18,6 +19,7 @@ class Token extends BaseToken
     }
 
     // Todo check encoding
+    /** @return array<string, mixed> */
     public function getExportValue(): array
     {
         return [

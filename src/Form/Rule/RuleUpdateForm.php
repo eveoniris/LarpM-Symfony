@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Rule;
 
@@ -16,19 +17,17 @@ class RuleUpdateForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
-                'label' => 'Choisissez un titre',
-                'required' => true,
-            ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'label' => 'Ecrivez une petite description',
-                'required' => true,
-                'attr' => [
-                    'class' => 'tinymce',
-                    'rows' => 5,
-                ],
-            ]);
+        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            'label' => 'Choisissez un titre',
+            'required' => true,
+        ])->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'label' => 'Ecrivez une petite description',
+            'required' => true,
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 5,
+            ],
+        ]);
     }
 
     /**

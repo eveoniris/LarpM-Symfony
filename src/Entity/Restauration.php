@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\RestaurationRepository;
@@ -12,12 +14,16 @@ class Restauration extends BaseRestauration
 {
     /**
      * Fourni la liste des utilisateurs classé par GN.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     public function getUserByGn(): Collection
     {
+        /** @var ArrayCollection<int, array<string, mixed>> $result */
         $result = new ArrayCollection();
         foreach ($this->getParticipantHasRestaurations() as $participantHasRestauration) {
             if ($result->containsKey($participantHasRestauration->getParticipant()->getGn()->getId())) {
+                /** @var array{count: int, users: array<int, mixed>, gn: object} $gn */
                 $gn = $result->get($participantHasRestauration->getParticipant()->getGn()->getId());
                 ++$gn['count'];
                 $gn['users'][] = $participantHasRestauration->getParticipant()->getUser();
@@ -36,14 +42,18 @@ class Restauration extends BaseRestauration
 
     /**
      * Fourni la liste des restrictions classé par GN.
+     *
+     * @return Collection<int, array<string, mixed>>
      */
     public function getRestrictionByGn(): Collection
     {
+        /** @var ArrayCollection<int, array<string, mixed>> $result */
         $result = new ArrayCollection();
         foreach ($this->getParticipantHasRestaurations() as $participantHasRestauration) {
-            if ($participantHasRestauration->getParticipant()->getUser()->getRestrictions()->count() > 0) ;
+            if ($participantHasRestauration->getParticipant()->getUser()->getRestrictions()->count() > 0);
 
             if ($result->containsKey($participantHasRestauration->getParticipant()->getGn()->getId())) {
+                /** @var array{gn: object, restrictions: ArrayCollection<int, mixed>} $gn */
                 $gn = $result->get($participantHasRestauration->getParticipant()->getGn()->getId());
 
                 foreach ($participantHasRestauration->getParticipant()->getUser()->getRestrictions() as $restriction) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Billet;
@@ -21,38 +23,36 @@ class BilletForm extends AbstractType
         $builder->add('label', TextType::class, [
             'label' => 'Label',
             'required' => true,
-        ])
-            ->add('gn', EntityType::class, [
-                'label' => 'Concerne le GN',
-                'required' => true,
-                'multiple' => false,
-                'expanded' => false,
-                'class' => \App\Entity\Gn::class,
-                // 'choice_label' => 'label',
-            ])
-            ->add('fedegn', ChoiceType::class, [
-                'label' => 'A transmettre à la Fédégn',
-                'required' => true,
-                'choices' => [
-                    true,
-                    false,
-                ],
-                'choice_label' => static fn($value) => match ($value) {
-                    'Oui' => true,
-                    'Non' => false,
-                    true => 'Oui',
-                    false => 'Non',
-                },
-                'expanded' => true,
-            ])
-            ->add('description', TextareaType::class, [
-                'required' => true,
-                'label' => 'Description',
-                'attr' => [
-                    'rows' => 9,
-                    'class' => 'tinymce',
-                ],
-            ]);
+        ])->add('gn', EntityType::class, [
+            'label' => 'Concerne le GN',
+            'required' => true,
+            'multiple' => false,
+            'expanded' => false,
+            'class' => \App\Entity\Gn::class,
+            // 'choice_label' => 'label',
+        ])->add('fedegn', ChoiceType::class, [
+            'label' => 'A transmettre à la Fédégn',
+            'required' => true,
+            'choices' => [
+                true,
+                false,
+            ],
+            'choice_label' => static fn ($value) => match ($value) {
+                'Oui' => true,
+                'Non' => false,
+                true => 'Oui',
+                false => 'Non',
+                default => (string) $value,
+            },
+            'expanded' => true,
+        ])->add('description', TextareaType::class, [
+            'required' => true,
+            'label' => 'Description',
+            'attr' => [
+                'rows' => 9,
+                'class' => 'tinymce',
+            ],
+        ]);
     }
 
     /**

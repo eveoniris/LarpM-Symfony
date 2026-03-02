@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -30,7 +33,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BasePhoto', 'extended' => 'Photo'])]
 abstract class BasePhoto
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
@@ -43,14 +46,15 @@ abstract class BasePhoto
     protected string $real_name = '';
 
     #[Column(name: 'data', type: Types::BLOB, nullable: true)]
-    /* Stream Ressource */ protected $data;
+    /* Stream Ressource */ protected mixed $data = null;
 
     #[Column(name: 'creation_date', type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected \DateTime $creation_date;
+    protected DateTime $creation_date;
 
     #[Column(name: 'filename', type: Types::STRING, length: 100, nullable: true)]
     protected string $filename = '';
 
+    /** @var Collection<int, Objet> */
     #[OneToMany(mappedBy: 'photo', targetEntity: Objet::class, cascade: ['persist', 'remove', 'detach', 'all'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'photo_id', nullable: false, onDelete: 'CASCADE')]
     protected Collection $objets;
@@ -58,7 +62,7 @@ abstract class BasePhoto
     public function __construct()
     {
         $this->objets = new ArrayCollection();
-        $this->creation_date = new \DateTime();
+        $this->creation_date = new DateTime();
     }
 
     /**
@@ -136,7 +140,7 @@ abstract class BasePhoto
     /**
      * Set the value of data.
      */
-    public function setData(/* Stream Ressource */ $data): static
+    public function setData(/* Stream Ressource */ mixed $data): static
     {
         $this->data = $data;
 
@@ -146,7 +150,7 @@ abstract class BasePhoto
     /**
      * Get the value of data.
      */
-    public function getData() /* Stream Ressource */
+    public function getData(): mixed /* Stream Ressource */
     {
         return $this->data;
     }
@@ -154,7 +158,7 @@ abstract class BasePhoto
     /**
      * Set the value of creation_date.
      */
-    public function setCreationDate(\DateTime $creation_date): static
+    public function setCreationDate(DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -164,7 +168,7 @@ abstract class BasePhoto
     /**
      * Get the value of creation_date.
      */
-    public function getCreationDate(): \DateTime
+    public function getCreationDate(): DateTime
     {
         return $this->creation_date;
     }
@@ -209,6 +213,8 @@ abstract class BasePhoto
 
     /**
      * Get Objet entity collection (one to many).
+     *
+     * @return Collection<int, Objet>
      */
     public function getObjets(): Collection
     {
@@ -216,7 +222,7 @@ abstract class BasePhoto
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'name', 'extension', 'real_name', 'data', 'creation_date', 'filename'];
-    } */
+     * {
+     * return ['id', 'name', 'extension', 'real_name', 'data', 'creation_date', 'filename'];
+     * } */
 }

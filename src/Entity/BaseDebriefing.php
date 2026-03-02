@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\VisibilityType;
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -34,27 +37,27 @@ class BaseDebriefing
     protected ?string $visibility = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $creation_date = null;
+    protected ?DateTime $creation_date = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $update_date = null;
+    protected ?DateTime $update_date = null;
 
     #[ORM\Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
-    #[ORM\ManyToOne(targetEntity: 'Groupe', inversedBy: 'debriefings')]
+    #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'debriefings')]
     #[ORM\JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     protected Groupe $groupe;
 
-    #[ORM\ManyToOne(targetEntity: 'User', inversedBy: 'debriefings')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'debriefings')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected User $user;
 
-    #[ORM\ManyToOne(targetEntity: 'User', inversedBy: 'playerDebriefings')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'playerDebriefings')]
     #[ORM\JoinColumn(name: 'player_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $player;
 
-    #[ORM\ManyToOne(targetEntity: 'Gn', inversedBy: 'debriefings')]
+    #[ORM\ManyToOne(targetEntity: Gn::class, inversedBy: 'debriefings')]
     #[ORM\JoinColumn(name: 'gn_id', referencedColumnName: 'id')]
     protected ?Gn $gn;
 
@@ -65,17 +68,15 @@ class BaseDebriefing
     /**
      * Get the value of creation_date.
      */
-    public function getCreationDate(): ?\DateTime
+    public function getCreationDate(): ?DateTime
     {
         return $this->creation_date;
     }
 
     /**
      * Set the value of creation_date.
-     *
-     * @return Debriefing
      */
-    public function setCreationDate(?\DateTime $creation_date): static
+    public function setCreationDate(?DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -104,8 +105,6 @@ class BaseDebriefing
 
     /**
      * Set Gn entity (many to one).
-     *
-     * @return Debriefing
      */
     public function setGn(?Gn $gn = null): static
     {
@@ -124,8 +123,6 @@ class BaseDebriefing
 
     /**
      * Set Groupe entity (many to one).
-     *
-     * @return Debriefing
      */
     public function setGroupe(?Groupe $groupe = null): static
     {
@@ -144,8 +141,6 @@ class BaseDebriefing
 
     /**
      * Set the value of id.
-     *
-     * @return Debriefing
      */
     public function setId(?int $id): static
     {
@@ -164,8 +159,6 @@ class BaseDebriefing
 
     /**
      * Set player User entity (many to one).
-     *
-     * @return Debriefing
      */
     public function setPlayer(?User $player = null): static
     {
@@ -184,8 +177,6 @@ class BaseDebriefing
 
     /**
      * Set the value of text.
-     *
-     * @return Debriefing
      */
     public function setText(?string $text): static
     {
@@ -204,8 +195,6 @@ class BaseDebriefing
 
     /**
      * Set the value of titre.
-     *
-     * @return Debriefing
      */
     public function setTitre(?string $titre): static
     {
@@ -217,17 +206,15 @@ class BaseDebriefing
     /**
      * Get the value of update_date.
      */
-    public function getUpdateDate(): ?\DateTime
+    public function getUpdateDate(): ?DateTime
     {
         return $this->update_date;
     }
 
     /**
      * Set the value of update_date.
-     *
-     * @return Debriefing
      */
-    public function setUpdateDate(?\DateTime $update_date): static
+    public function setUpdateDate(?DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
@@ -244,8 +231,6 @@ class BaseDebriefing
 
     /**
      * Set User entity (many to one).
-     *
-     * @return Debriefing
      */
     public function setUser(?User $User = null): static
     {
@@ -264,10 +249,8 @@ class BaseDebriefing
 
     /**
      * Set the value of visibility.
-     *
-     * @return Debriefing
      */
-    public function setVisibility(string|VisibilityType|null $visibility): self
+    public function setVisibility(string|VisibilityType|null $visibility): static
     {
         if ($visibility instanceof VisibilityType) {
             $this->visibility = $visibility->value;
@@ -281,7 +264,7 @@ class BaseDebriefing
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'titre', 'text', 'visibility', 'creation_date', 'update_date', 'groupe_id', 'User_id', 'gn_id'];
-    } */
+     * {
+     * return ['id', 'titre', 'text', 'visibility', 'creation_date', 'update_date', 'groupe_id', 'User_id', 'gn_id'];
+     * } */
 }

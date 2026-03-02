@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -28,10 +31,10 @@ abstract class BaseAnnonce
     protected string $text = '';
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected ?\DateTime $creation_date = null;
+    protected ?DateTime $creation_date = null;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected ?\DateTime $update_date = null;
+    protected ?DateTime $update_date = null;
 
     #[Column(type: Types::BOOLEAN)]
     protected bool $archive = false;
@@ -76,26 +79,26 @@ abstract class BaseAnnonce
         return $this->text;
     }
 
-    public function setCreationDate(\DateTime $creation_date): self
+    public function setCreationDate(DateTime $creation_date): self
     {
         $this->creation_date = $creation_date;
 
         return $this;
     }
 
-    public function getCreationDate(): ?\DateTime
+    public function getCreationDate(): ?DateTime
     {
         return $this->creation_date;
     }
 
-    public function setUpdateDate(\DateTime $update_date): self
+    public function setUpdateDate(DateTime $update_date): self
     {
         $this->update_date = $update_date;
 
         return $this;
     }
 
-    public function getUpdateDate(): ?\DateTime
+    public function getUpdateDate(): ?DateTime
     {
         return $this->update_date;
     }
@@ -125,7 +128,7 @@ abstract class BaseAnnonce
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'title', 'text', 'creation_date', 'update_date', 'archive', 'gn_id'];
-    } */
+     * {
+     * return ['id', 'title', 'text', 'creation_date', 'update_date', 'archive', 'gn_id'];
+     * } */
 }

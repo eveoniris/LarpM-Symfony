@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\EtatCivil;
@@ -25,16 +27,11 @@ class EtatCivilController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$user || ($user->getEtatCivil()?->getId() !== $etatCivil->getId() && !$this->isGranted(
-                    Role::ORGA->value,
-                ))) {
+        if ($user->getEtatCivil()?->getId() !== $etatCivil->getId() && !$this->isGranted(Role::ORGA->value)) {
             throw new AccessDeniedException();
         }
 
-        return $this->render(
-            'etatCivil/detail.twig',
-            ['etatCivil' => $etatCivil],
-        );
+        return $this->render('etatCivil/detail.twig', ['etatCivil' => $etatCivil]);
     }
 
     #[Route('/etat-civil/{etatCivil}/update', name: 'etatCivil.update')]
@@ -44,17 +41,13 @@ class EtatCivilController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$user || ($user->getEtatCivil()?->getId() !== $etatCivil->getId() && !$this->isGranted(
-                    Role::ORGA->value,
-                ))) {
+        if ($user->getEtatCivil()?->getId() !== $etatCivil->getId() && !$this->isGranted(Role::ORGA->value)) {
             throw new AccessDeniedException();
         }
 
-        return $this->handleCreateOrUpdate(
-            $request,
-            $etatCivil,
-            EtatCivilForm::class,
-            routes: ['root' => 'etatCivil.', 'list' => false],
-        );
+        return $this->handleCreateOrUpdate($request, $etatCivil, EtatCivilForm::class, routes: [
+            'root' => 'etatCivil.',
+            'list' => false,
+        ]);
     }
 }

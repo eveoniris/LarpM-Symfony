@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Technologie;
@@ -32,16 +34,13 @@ class TechnologieController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            new Technologie(),
-            TechnologieForm::class,
-        );
+        return $this->handleCreateOrUpdate($request, new Technologie(), TechnologieForm::class);
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
         Request $request,
-        $entity,
+        object $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
@@ -49,10 +48,10 @@ class TechnologieController extends AbstractController
         ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         if (!$entityCallback) {
-            /** @var Technologie $technologie */
-            $entityCallback = fn(mixed $technologie, FormInterface $form): ?Technologie => $technologie->handleUpload(
-                $this->fileUploader,
-            );
+            $entityCallback = fn (
+                mixed $technologie,
+                FormInterface $form,
+            ): ?Technologie => $technologie->handleUpload($this->fileUploader);
         }
 
         return parent::handleCreateOrUpdate(
@@ -78,11 +77,14 @@ class TechnologieController extends AbstractController
     /**
      * Ajout d'une ressource à une technologie.
      */
-    #[Route('/{technologie}/ressource/add', name: 'ressource.add', requirements: ['technologie' => Requirement::DIGITS])]
+    #[Route('/{technologie}/ressource/add', name: 'ressource.add', requirements: [
+        'technologie' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function addRessourceAction(
         Request $request,
-        #[MapEntity] Technologie $technologie,
+        #[MapEntity]
+        Technologie $technologie,
     ): RedirectResponse|Response {
         return $this->handleCreateOrUpdate(
             $request,
@@ -109,7 +111,7 @@ class TechnologieController extends AbstractController
                 'title_update' => $this->translator->trans('Modifier une ressource'),
             ],
             /* @var TechnologiesRessources $entity */
-            entityCallback: static fn($entity) => $entity->setTechnologie($technologie),
+            entityCallback: static fn ($entity) => $entity->setTechnologie($technologie),
         );
     }
 
@@ -118,24 +120,17 @@ class TechnologieController extends AbstractController
      */
     #[Route('/{technologie}/delete', name: 'delete', requirements: ['technologie' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
-    public function deleteAction(
-        #[MapEntity] Technologie $technologie,
-    ): RedirectResponse|Response {
-        return $this->genericDelete(
-            $technologie,
-            'Supprimer une technologie',
-            'La technologie a été supprimée',
-            'technologie.list',
+    public function deleteAction(#[MapEntity] Technologie $technologie): RedirectResponse|Response
+    {
+        return $this->genericDelete($technologie, 'Supprimer une technologie', 'La technologie a été supprimée', 'technologie.list', [
+            ['route' => $this->generateUrl('technologie.list'), 'name' => 'Liste des technologies'],
             [
-                ['route' => $this->generateUrl('technologie.list'), 'name' => 'Liste des technologies'],
-                [
-                    'route' => $this->generateUrl('technologie.detail', ['technologie' => $technologie->getId()]),
-                    'technologie' => $technologie->getId(),
-                    'name' => $technologie->getLabel(),
-                ],
-                ['name' => 'Supprimer une technologie'],
+                'route' => $this->generateUrl('technologie.detail', ['technologie' => $technologie->getId()]),
+                'technologie' => $technologie->getId(),
+                'name' => $technologie->getLabel(),
             ],
-        );
+            ['name' => 'Supprimer une technologie'],
+        ]);
     }
 
     /**
@@ -144,21 +139,18 @@ class TechnologieController extends AbstractController
     #[Route('/{technologie}/detail', name: 'detail', requirements: ['technologie' => Requirement::DIGITS])]
     public function detailAction(#[MapEntity] Technologie $technologie): Response
     {
-        $this->checkHasAccess(
-            [Role::ORGA, Role::REGLE, Role::SCENARISTE],
-            function () use ($technologie) {
-                $personnage = $this->getPersonnage();
-                $this->checkHasPersonnage($personnage);
+        $this->checkHasAccess([Role::ORGA, Role::REGLE, Role::SCENARISTE], function () use ($technologie) {
+            $personnage = $this->getPersonnage();
+            $this->checkHasPersonnage($personnage);
 
-                if ($personnage && !$personnage->isKnownTechnologie($technologie)) {
-                    $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
+            if ($personnage && !$personnage->isKnownTechnologie($technologie)) {
+                $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
 
-                    return $this->redirectToRoute('homepage');
-                }
+                return $this->redirectToRoute('homepage');
+            }
 
-                return false;
-            },
-        );
+            return false;
+        });
 
         return $this->render('technologie\detail.twig', [
             'technologie' => $technologie,
@@ -171,21 +163,18 @@ class TechnologieController extends AbstractController
     #[Route('/{technologie}/document', name: 'document', requirements: ['technologie' => Requirement::DIGITS])]
     public function getTechnologieDocumentAction(#[MapEntity] Technologie $technologie): BinaryFileResponse
     {
-        $this->checkHasAccess(
-            [Role::ORGA, Role::REGLE, Role::SCENARISTE],
-            function () use ($technologie) {
-                $personnage = $this->getPersonnage();
-                $this->checkHasPersonnage($personnage);
+        $this->checkHasAccess([Role::ORGA, Role::REGLE, Role::SCENARISTE], function () use ($technologie) {
+            $personnage = $this->getPersonnage();
+            $this->checkHasPersonnage($personnage);
 
-                if ($personnage && !$personnage->isKnownTechnologie($technologie)) {
-                    $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
+            if ($personnage && !$personnage->isKnownTechnologie($technologie)) {
+                $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
 
-                    return $this->redirectToRoute('homepage');
-                }
+                return $this->redirectToRoute('homepage');
+            }
 
-                return false;
-            },
-        );
+            return false;
+        });
 
         return $this->sendDocument($technologie);
     }
@@ -196,12 +185,9 @@ class TechnologieController extends AbstractController
     #[Route(name: 'index')]
     #[Route(name: 'list')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
-    public function indexAction(
-        PagerService $pagerService,
-        TechnologieRepository $technologieRepository,
-    ): Response {
-        $pagerService->setDefaultOrdersBy([$technologieRepository::getEntityAlias().'.label' => OrderBy::ASC],
-        ); // test default overwrite from request
+    public function indexAction(PagerService $pagerService, TechnologieRepository $technologieRepository): Response
+    {
+        $pagerService->setDefaultOrdersBy([$technologieRepository::getEntityAlias() . '.label' => OrderBy::ASC]); // test default overwrite from request
 
         return $this->render('technologie/list.twig', [
             'pagerService' => $pagerService,
@@ -211,14 +197,13 @@ class TechnologieController extends AbstractController
 
     /**
      * Liste des personnages ayant cette technologie.
-     *
-     * @param Technologie
      */
     #[Route('/{technologie}/personnages', name: 'personnages', requirements: ['technologie' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function personnagesAction(
         Request $request,
-        #[MapEntity] Technologie $technologie,
+        #[MapEntity]
+        Technologie $technologie,
         PersonnageService $personnageService,
         TechnologieRepository $technologieRepository,
     ): Response {
@@ -241,23 +226,22 @@ class TechnologieController extends AbstractController
             $technologieRepository->getPersonnages($technologie),
         );
 
-        return $this->render(
-            $twigFilePath,
-            $viewParams,
-        );
+        return $this->render($twigFilePath, $viewParams);
     }
 
     /**
      * Retrait d'une ressource à une technologie.
      */
-    #[Route('/{technologie}/ressource/{technologiesRessources}/delete',
-        name: 'ressource.delete',
-        requirements: ['technologie' => Requirement::DIGITS, 'technologiesRessources' => Requirement::DIGITS]
-    )]
+    #[Route('/{technologie}/ressource/{technologiesRessources}/delete', name: 'ressource.delete', requirements: [
+        'technologie' => Requirement::DIGITS,
+        'technologiesRessources' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function removeRessourceAction(
-        #[MapEntity] Technologie $technologie,
-        #[MapEntity] TechnologiesRessources $technologiesRessources,
+        #[MapEntity]
+        Technologie $technologie,
+        #[MapEntity]
+        TechnologiesRessources $technologiesRessources,
     ): RedirectResponse|Response {
         return $this->genericDelete(
             $technologiesRessources,
@@ -284,21 +268,20 @@ class TechnologieController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function updateAction(Request $request, #[MapEntity] Technologie $technologie): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $technologie,
-            TechnologieForm::class,
-        );
+        return $this->handleCreateOrUpdate($request, $technologie, TechnologieForm::class);
     }
 
-    #[Route('/{technologie}/ressource/{technologiesRessources}/update',
-        name: 'ressource.update',
-        requirements: ['technologie' => Requirement::DIGITS, 'technologiesRessources' => Requirement::DIGITS])]
+    #[Route('/{technologie}/ressource/{technologiesRessources}/update', name: 'ressource.update', requirements: [
+        'technologie' => Requirement::DIGITS,
+        'technologiesRessources' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function updateRessourceAction(
         Request $request,
-        #[MapEntity] Technologie $technologie,
-        #[MapEntity] TechnologiesRessources $technologiesRessources,
+        #[MapEntity]
+        Technologie $technologie,
+        #[MapEntity]
+        TechnologiesRessources $technologiesRessources,
     ): RedirectResponse|Response {
         return $this->handleCreateOrUpdate(
             $request,
@@ -325,7 +308,7 @@ class TechnologieController extends AbstractController
                 'title_update' => $this->translator->trans('Modifier une ressource'),
             ],
             /* @var TechnologiesRessources $entity */
-            entityCallback: static fn($entity) => $entity->setTechnologie($technologie),
+            entityCallback: static fn ($entity) => $entity->setTechnologie($technologie),
         );
     }
 }

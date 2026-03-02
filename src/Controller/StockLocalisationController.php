@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Localisation;
@@ -30,8 +32,7 @@ class StockLocalisationController extends AbstractController
     {
         $localisation = new Localisation();
 
-        $form = $this->createForm(LocalisationType::class, $localisation)
-            ->add('save', SubmitType::class);
+        $form = $this->createForm(LocalisationType::class, $localisation)->add('save', SubmitType::class);
 
         // on passe la requête de l'utilisateur au formulaire
         $form->handleRequest($request);
@@ -52,22 +53,24 @@ class StockLocalisationController extends AbstractController
     }
 
     #[Route('/stock/localisation/{localisation}/update', name: 'stockLocalisation.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Localisation $localisation): RedirectResponse|Response
-    {
-        $form = $this->createForm(LocalisationType::class, $localisation)
-            ->add('update', SubmitType::class)
-            ->add('delete', SubmitType::class);
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        Localisation $localisation,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(LocalisationType::class, $localisation)->add('update', SubmitType::class)->add('delete', SubmitType::class);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $localisation = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 $entityManager->persist($localisation);
                 $entityManager->flush();
                 $this->addFlash('success', 'La localisation a été mise à jour');
-            } elseif ($form->get('delete')->isClicked()) {
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 $entityManager->remove($localisation);
                 $entityManager->flush();
                 $this->addFlash('success', 'La localisation a été suprimée');
@@ -78,6 +81,7 @@ class StockLocalisationController extends AbstractController
 
         return $this->render('stock/localisation/update.twig', [
             'localisation' => $localisation,
-            'form' => $form->createView()]);
+            'form' => $form->createView(),
+        ]);
     }
 }

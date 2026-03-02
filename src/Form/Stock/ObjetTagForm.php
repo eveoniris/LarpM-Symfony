@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Stock;
 
@@ -24,16 +25,14 @@ class ObjetTagForm extends AbstractType
             'choice_label' => 'nom',
             'expanded' => true,
             'class' => \App\Entity\Tag::class,
-        ])
-            ->add('news', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
-                'label' => 'Ou créez-en de nouveaux',
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'entry_type' => TagType::class,
-                'mapped' => false,
-            ])
-            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'valider']);
+        ])->add('news', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+            'label' => 'Ou créez-en de nouveaux',
+            'allow_add' => true,
+            'allow_delete' => true,
+            'by_reference' => false,
+            'entry_type' => TagType::class,
+            'mapped' => false,
+        ])->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'valider']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

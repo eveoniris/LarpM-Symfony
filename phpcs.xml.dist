@@ -1,19 +1,52 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
+<ruleset name="Project">
 
-<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
+    <description>Symfony > PSR12 > PHPUnit — PHP 8.4</description>
 
-    <arg name="basepath" value="."/>
-    <arg name="cache" value=".phpcs-cache"/>
+    <!-- Dossiers analysés -->
+    <file>src</file>
+    <file>tests</file>
+
+    <!-- Version PHP cible -->
+    <config name="php_version" value="80400"/>
+
+    <!-- ── Priorité 1 : Symfony ─────────────────────────────────────── -->
+    <!-- Nécessite : composer require --dev escapestudios/symfony2-coding-standard -->
+    <rule ref="Symfony">
+        <!-- Désactive les règles Symfony qui contredisent PSR-12 -->
+        <!-- (en pratique très peu, Symfony est un sur-ensemble) -->
+    </rule>
+
+    <!-- ── Priorité 2 : PSR-12 (comble les trous de Symfony) ───────── -->
+    <rule ref="PSR12">
+        <!-- On exclut ce que Symfony gère déjà pour éviter les conflits -->
+        <exclude name="PSR12.Files.FileHeader"/>
+        <exclude name="Generic.Files.LineLength"/> <!-- géré par Symfony -->
+    </rule>
+
+    <!-- ── Priorité 3 : PHPUnit ─────────────────────────────────────── -->
+    <!-- Nécessite : composer require --dev phpcsstandards/phpcsutils
+                     et          : composer require --dev phpunitstandards/phpunit-coding-standard -->
+    <rule ref="PHPUnit">
+        <include-pattern>*/tests/*</include-pattern>
+        <include-pattern>*/Test.php</include-pattern>
+    </rule>
+
+    <!-- ── Règles globales ──────────────────────────────────────────── -->
+    <rule ref="Generic.PHP.RequireStrictTypes"/>
+
+    <!-- Longueur de ligne : 120 (Symfony recommande 120) -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="120"/>
+            <property name="absoluteLineLimit" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- Encodage -->
+    <arg name="encoding" value="UTF-8"/>
+    <!-- Affichage : couleurs + progression + source de la règle -->
     <arg name="colors"/>
-    <arg name="extensions" value="php"/>
-
-    <rule ref="PSR12"/>
-
-    <file>bin/</file>
-    <file>config/</file>
-    <file>public/</file>
-    <file>src/</file>
-    <file>tests/</file>
+    <arg value="sp"/>
 
 </ruleset>

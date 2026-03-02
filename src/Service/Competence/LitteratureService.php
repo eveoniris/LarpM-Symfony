@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service\Competence;
 
 use App\Entity\Level;
-use App\Entity\PersonnageTrigger;
 use App\Enum\TriggerType;
 use App\Service\CompetenceService;
 
@@ -17,6 +18,7 @@ class LitteratureService extends CompetenceService
         $this->applyRules($this->getRules());
     }
 
+    /** @return array<int, array<string, int>> */
     public function getRules(): array
     {
         return [

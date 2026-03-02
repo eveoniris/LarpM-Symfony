@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Token;
@@ -7,7 +9,7 @@ use App\Form\TokenForm;
 use App\Repository\TokenRepository;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
-use JetBrains\PhpStorm\NoReturn;
+use SensitiveParameter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,14 +47,10 @@ class TokenController extends AbstractController
         return $this->render('token/print.twig', ['tokens' => $tokens]);
     }
 
-    #[NoReturn]
     #[Route('/download', name: 'download')]
     public function downloadAction(TokenRepository $tokenRepository): StreamedResponse
     {
-        return $this->sendCsv(
-            title: 'eveoniris_tokens_'.date('Ymd'),
-            repository: $tokenRepository
-        );
+        return $this->sendCsv(title: 'eveoniris_tokens_' . date('Ymd'), repository: $tokenRepository);
     }
 
     #[Route('/add', name: 'add')]
@@ -65,28 +63,32 @@ class TokenController extends AbstractController
 
     #[Route('/{token}', name: 'view', requirements: ['token' => Requirement::DIGITS])]
     #[Route('/{token}', name: 'detail', requirements: ['token' => Requirement::DIGITS])]
-    public function detailAction(#[MapEntity] Token $token): RedirectResponse|Response
+    public function detailAction(#[SensitiveParameter]
+        #[MapEntity] Token $token): RedirectResponse|Response
     {
         return $this->render('token/detail.twig', ['token' => $token]);
     }
 
     #[Route('/{token}/update', name: 'update', requirements: ['token' => Requirement::DIGITS])]
-    public function updateAction(Request $request, #[MapEntity] Token $token): RedirectResponse|Response
+    public function updateAction(Request $request, #[SensitiveParameter]
+        #[MapEntity] Token $token): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $token,
-            TokenForm::class
-        );
+        return $this->handleCreateOrUpdate($request, $token, TokenForm::class);
     }
 
     // Todo translate all delete message
-    #[Route('/{token}/delete', name: 'delete', requirements: ['token' => Requirement::DIGITS], methods: [
-        'DELETE',
-        'GET',
-        'POST',
-    ])]
-    public function deleteAction(#[MapEntity] Token $token): RedirectResponse|Response
+    #[Route(
+        '/{token}/delete',
+        name: 'delete',
+        requirements: ['token' => Requirement::DIGITS],
+        methods: [
+            'DELETE',
+            'GET',
+            'POST',
+        ],
+    )]
+    public function deleteAction(#[SensitiveParameter]
+        #[MapEntity] Token $token): RedirectResponse|Response
     {
         return $this->genericDelete(
             $token,
@@ -100,13 +102,14 @@ class TokenController extends AbstractController
                     'name' => $token->getLabel(),
                 ],
                 ['name' => $this->translator->trans('Supprimer un jeton')],
-            ]
+            ],
         );
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
         Request $request,
-        $entity,
+        object $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
@@ -129,7 +132,7 @@ class TokenController extends AbstractController
                 'title_add' => $this->translator->trans('Ajouter un jeton'),
                 'title_update' => $this->translator->trans('Modifier un jeton'),
             ],
-            entityCallback: $entityCallback
+            entityCallback: $entityCallback,
         );
     }
 }

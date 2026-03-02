@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,15 +20,16 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseEtat', 'extended' => 'Etat'])]
 abstract class BaseEtat
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $label;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection<int, \App\Entity\Objet>|\App\Entity\Objet[]
+     * @var ArrayCollection<int, Objet>|Objet[]
      */
+    /** @var Collection<int, Objet> */
     #[OneToMany(mappedBy: 'etat', targetEntity: Objet::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'etat_id', nullable: false)]
     protected Collection $objets;
@@ -74,13 +77,14 @@ abstract class BaseEtat
         return $this;
     }
 
+    /** @return Collection<int, Objet> */
     public function getObjets(): Collection
     {
         return $this->objets;
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label'];
-    } */
+     * {
+     * return ['id', 'label'];
+     * } */
 }

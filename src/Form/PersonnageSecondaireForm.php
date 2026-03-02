@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Classe;
@@ -15,22 +17,19 @@ class PersonnageSecondaireForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add(
-            'classe', EntityType::class, [
-                'required' => true,
-                'label' => 'Choisissez la classe',
-                'class' => Classe::class,
-                'choice_label' => 'label',
-            ])
-            ->add(
-                'personnageSecondaireCompetences', CollectionType::class, [
-                    'label' => 'Competences',
-                    'required' => false,
-                    'allow_add' => true,
-                    'allow_delete' => true,
-                    'by_reference' => false,
-                    'entry_type' => PersonnageSecondairesCompetencesType::class,
-                ]);
+        $builder->add('classe', EntityType::class, [
+            'required' => true,
+            'label' => 'Choisissez la classe',
+            'class' => Classe::class,
+            'choice_label' => 'label',
+        ])->add('personnageSecondaireCompetences', CollectionType::class, [
+            'label' => 'Competences',
+            'required' => false,
+            'allow_add' => true,
+            'allow_delete' => true,
+            'by_reference' => false,
+            'entry_type' => PersonnageSecondairesCompetencesType::class,
+        ]);
     }
 
     /**

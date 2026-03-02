@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\RenommeHistoryRepository;
@@ -8,8 +10,9 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity(repositoryClass: RenommeHistoryRepository::class)]
 class RenommeHistory extends BaseRenommeHistory
 {
-    const SILK_USAGE = 'Utilisation soie';
+    public const SILK_USAGE = 'Utilisation soie';
 
+    /** @return array<string, mixed> */
     public function toLog(): array
     {
         return [

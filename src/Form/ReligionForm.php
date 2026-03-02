@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Entity\Religion;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -22,19 +24,17 @@ class ReligionForm extends AbstractType
         $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Label',
             'required' => true,
-        ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'label' => 'Description',
-                'required' => false,
-                'attr' => ['rows' => 10],
-            ])
-            ->add('spheres', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'label' => 'Sphères',
-                'multiple' => true,
-                'expanded' => true,
-                'class' => \App\Entity\Sphere::class,
-                'choice_label' => 'label',
-            ]);
+        ])->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'label' => 'Description',
+            'required' => false,
+            'attr' => ['rows' => 10],
+        ])->add('spheres', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            'label' => 'Sphères',
+            'multiple' => true,
+            'expanded' => true,
+            'class' => \App\Entity\Sphere::class,
+            'choice_label' => 'label',
+        ]);
     }
 
     /**
@@ -43,7 +43,7 @@ class ReligionForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Religion::class,
+            'data_class' => Religion::class,
         ]);
     }
 

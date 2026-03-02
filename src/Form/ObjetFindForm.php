@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Objet;
@@ -17,8 +19,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class ObjetFindForm extends AbstractType
 {
     protected EntityManagerInterface $entityManager;
+    /** @var EntityRepository<Tag> */
     protected EntityRepository $tagRepository;
+    /** @var EntityRepository<Rangement> */
     protected EntityRepository $rangementRepository;
+    /** @var EntityRepository<Objet> */
     protected EntityRepository $objetRepository;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -35,61 +40,48 @@ class ObjetFindForm extends AbstractType
      * If option "All" is selected then $form->getData() is equal to null
      * If option "None" is selected then $form->getData() is equal to 0
      * If option "Rangement A" is selected then $form->getData() is an instance of Rangement
+     *
+     * @param array<string, mixed> $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('value', TextType::class, [
             'required' => false,
             'label' => 'Recherche',
-        ])
-            ->add('type', ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                    '*',
-                    'id',
-                    'nom',
-                    'description',
-                    'numero',
-                    'i.label', // JOIN item
-                ],
-                'choice_label' => static fn ($value) => match ($value) {
-                    '*' => 'Tout critère',
-                    'nom' => 'Nom',
-                    'description' => 'Description',
-                    'numero' => 'Numero de stock',
-                    'i.label' => 'Numero de jeu', // JOIN item
-                    'id' => 'ID',
-                },
-            ])
-            ->add('tag', ChoiceType::class, [
-                'required' => false,
-                'placeholder' => 'Tous les tags',
-                'choices' => array_merge(
-                    [(new Tag())->setNom(
-                        sprintf(
-                            'Objets sans tag (%d)',
-                            $this->objetRepository->findCount(['tag' => ObjetRepository::CRIT_WITHOUT])
-                        )
-                    )],
-                    $this->tagRepository->findAll()
-                ),
-                'choice_label' => 'nom',
-            ])
-            ->add('rangement', ChoiceType::class, [
-                'required' => false,
-                'placeholder' => 'Tous les rangements',
-                'choices' => array_merge(
-                    [(new Rangement())->setLabel(
-                        sprintf(
-                            'Objets sans rangement (%d)',
-                            $this->objetRepository->findCount(['rangement' => ObjetRepository::CRIT_WITHOUT])
-                        )
-                    )],
-                    $this->rangementRepository->findAll()
-                ),
-                'choice_label' => 'label',
-            ])
-        ;
+        ])->add('type', ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                '*',
+                'id',
+                'nom',
+                'description',
+                'numero',
+                'i.label', // JOIN item
+            ],
+            'choice_label' => static fn ($value) => match ($value) {
+                '*' => 'Tout critère',
+                'nom' => 'Nom',
+                'description' => 'Description',
+                'numero' => 'Numero de stock',
+                'i.label' => 'Numero de jeu', // JOIN item
+                'id' => 'ID',
+                default => (string) $value,
+            },
+        ])->add('tag', ChoiceType::class, [
+            'required' => false,
+            'placeholder' => 'Tous les tags',
+            'choices' => array_merge([new Tag()->setNom(\sprintf('Objets sans tag (%d)', $this->objetRepository->findCount([
+                'tag' => ObjetRepository::CRIT_WITHOUT,
+            ])))], $this->tagRepository->findAll()),
+            'choice_label' => 'nom',
+        ])->add('rangement', ChoiceType::class, [
+            'required' => false,
+            'placeholder' => 'Tous les rangements',
+            'choices' => array_merge([new Rangement()->setLabel(\sprintf('Objets sans rangement (%d)', $this->objetRepository->findCount([
+                'rangement' => ObjetRepository::CRIT_WITHOUT,
+            ])))], $this->rangementRepository->findAll()),
+            'choice_label' => 'label',
+        ]);
     }
 
     /**

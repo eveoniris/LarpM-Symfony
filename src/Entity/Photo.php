@@ -1,23 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Service\FileUploader;
+use DateTime;
 use Doctrine\ORM\Mapping\Entity;
 use Imagine\Gd\Imagine;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity]
 class Photo extends BasePhoto
 {
-    #[Assert\File(['maxSize' => 6000000])]
-    #[Assert\Image(
-        minWidth: 200,
-        minHeight: 200,
-    )]
+    #[Assert\File(['maxSize' => 6_000_000])]
+    #[Assert\Image(minWidth: 200, minHeight: 200)]
     protected ?UploadedFile $file;
 
     public function handleUpload(
@@ -34,14 +35,14 @@ class Photo extends BasePhoto
 
         // Try Rezise
         try {
-            $image = (new Imagine())->open($fileUploader->getStoredFileWithPath());
+            $image = new Imagine()->open($fileUploader->getStoredFileWithPath());
             $image->resize($image->getSize()->widen(480));
             $image->save($fileUploader->getStoredFileWithPath());
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             dump($e);
         }
 
-        $this->setCreationDate(new \DateTime('NOW'));
+        $this->setCreationDate(new DateTime('NOW'));
         $this->setName($fileUploader->getFileName());
         $this->setRealName($fileUploader->getFileName());
         $this->setFilename($fileUploader->getStoredFileName());
@@ -61,10 +62,10 @@ class Photo extends BasePhoto
         }
 
         try {
-            $image = (new Imagine())->read($this->getData());
+            $image = new Imagine()->read($this->getData());
             $image->resize($image->getSize()->widen(480));
-            $image->save($path.$this->getFilename());
-        } catch (\RuntimeException $e) {
+            $image->save($path . $this->getFilename());
+        } catch (RuntimeException $e) {
             dump($e);
         }
     }

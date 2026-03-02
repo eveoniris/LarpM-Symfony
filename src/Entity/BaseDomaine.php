@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -20,20 +22,22 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BaseDomaine', 'extended' => 'Domaine'])]
 abstract class BaseDomaine
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $description;
 
+    /** @var Collection<int, Sort> */
     #[OneToMany(mappedBy: 'domaine', targetEntity: Sort::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'domaine_id', nullable: false)]
     #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $sorts;
 
+    /** @var Collection<int, Personnage> */
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'domaines')]
     protected Collection $personnages;
 
@@ -93,6 +97,7 @@ abstract class BaseDomaine
         return $this;
     }
 
+    /** @return Collection<int, Sort> */
     public function getSorts(): Collection
     {
         return $this->sorts;
@@ -112,13 +117,14 @@ abstract class BaseDomaine
         return $this;
     }
 
+    /** @return Collection<int, Personnage> */
     public function getPersonnages(): Collection
     {
         return $this->personnages;
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description'];
-    } */
+     * {
+     * return ['id', 'label', 'description'];
+     * } */
 }

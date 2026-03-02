@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Service\OrderBy;
@@ -12,9 +14,7 @@ class ItemRepository extends BaseRepository
     public function findNextNumero(): int
     {
         try {
-            $numeroMax = (int) $this->getEntityManager()
-                ->createQuery('SELECT MAX(i.numero) FROM App\Entity\Item i')
-                ->getSingleScalarResult();
+            $numeroMax = (int) $this->getEntityManager()->createQuery('SELECT MAX(i.numero) FROM App\Entity\Item i')->getSingleScalarResult();
         } catch (NonUniqueResultException|NoResultException $e) {
             // LOG ?
             $numeroMax = 0;
@@ -23,6 +23,7 @@ class ItemRepository extends BaseRepository
         return $numeroMax++;
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -40,30 +41,32 @@ class ItemRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    public function searchAttributes(): array
+    /** @return array<string, array<string, mixed>> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::searchAttributes(),
-            $alias.'.numero',
-            $alias.'.identification',
+            $alias . '.numero',
+            $alias . '.identification',
             'quality.numero as quality',
             // HIDDEN keyword force Doctrine to do NOT map/hydrate this select in the result,
             // because Paginator do not allow Scalar hydratation
             // Will got a result with [[Item(), 0 => qualident]] insead of [[Item()]] with a dynamic qualident fields
             'CONCAT(quality.numero, item.identification) AS HIDDEN qualident',
-            $alias.'.label',
-            $alias.'.description',
-            $alias.'.special',
+            $alias . '.label',
+            $alias . '.description',
+            $alias . '.special',
         ];
     }
 
     public function createQueryBuilder($alias, $indexBy = null): QueryBuilder
     {
-        return parent::createQueryBuilder($alias, $indexBy)->join($alias.'.quality', 'quality');
+        return parent::createQueryBuilder($alias, $indexBy)->join($alias . '.quality', 'quality');
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
@@ -71,32 +74,32 @@ class ItemRepository extends BaseRepository
         return [
             ...parent::sortAttributes($alias),
             'numero' => [
-                OrderBy::ASC => [$alias.'.numero' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.numero' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.numero' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.numero' => OrderBy::DESC],
             ],
             'identification' => [
-                OrderBy::ASC => [$alias.'.identification' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.identification' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.identification' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.identification' => OrderBy::DESC],
             ],
             'quality' => [
                 OrderBy::ASC => ['quality.numero' => OrderBy::ASC],
                 OrderBy::DESC => ['quality.numero' => OrderBy::DESC],
             ],
             'label' => [
-                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.label' => OrderBy::DESC],
             ],
             'couleur' => [
-                OrderBy::ASC => [$alias.'.couleur' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.couleur' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.couleur' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.couleur' => OrderBy::DESC],
             ],
             'description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
             'special' => [
-                OrderBy::ASC => [$alias.'.special' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.special' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.special' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.special' => OrderBy::DESC],
             ],
             'qualident' => [
                 OrderBy::ASC => ['qualident' => OrderBy::ASC],
@@ -116,6 +119,7 @@ class ItemRepository extends BaseRepository
         return parent::translateAttribute($attribute);
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [

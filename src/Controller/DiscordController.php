@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use Discord\Discord;
@@ -12,7 +14,7 @@ class DiscordController extends AbstractController
 {
     public static ?Discord $discord = null;
 
-    private function getDiscord()
+    private function getDiscord(): Discord
     {
         self::$discord ??= new Discord([
             'token' => $this->getParameter('discord.bot.token'),
@@ -23,14 +25,14 @@ class DiscordController extends AbstractController
     }
 
     #[Route('/discord/bot', name: 'discord.bot')]
-    public function botAction(Request $request)
+    public function botAction(Request $request): Response
     {
-        $this->getDiscord()?->on('ready', function ($discord) {
-            echo 'Bot is ready!', PHP_EOL;
+        $this->getDiscord()->on('ready', static function ($discord): void {
+            echo 'Bot is ready!', \PHP_EOL;
 
             // Listen for messages
-            $discord->on('message', function ($message) {
-                echo "Received a message from {$message->author->username}: {$message->content}", PHP_EOL;
+            $discord->on('message', static function ($message): void {
+                echo "Received a message from {$message->author->username}: {$message->content}", \PHP_EOL;
 
                 // Respond to a specific command
                 if ('!hello' === $message->content) {
@@ -39,13 +41,15 @@ class DiscordController extends AbstractController
             });
         });
 
-        $this->getDiscord()?->run();
+        $this->getDiscord()->run();
+
+        return new Response();
     }
 
     #[Route('/discord/result', name: 'discord.result')]
     public function resultAction(Request $request): Response
     {
-        $this->logger->info('Discord result: '.var_export($request->request->all(), true));
+        $this->logger->info('Discord result: ' . var_export($request->request->all(), true));
 
         return new JsonResponse(['ok' => true]);
     }
@@ -53,25 +57,25 @@ class DiscordController extends AbstractController
     #[Route('/discord/interactions', name: 'discord.interactions')]
     public function interactionsAction(Request $request): Response
     {
-        $this->logger->info('Discord interactions request: '.var_export($request->getContent(), true));
-        $this->logger->info('Discord interactions TYPE: '. $request->request->get('type'));
-        $this->logger->info('Discord interactions KEY: '. $this->getParameter('discord.api.key'));
+        $this->logger->info('Discord interactions request: ' . var_export($request->getContent(), true));
+        $this->logger->info('Discord interactions TYPE: ' . $request->request->get('type'));
+        $this->logger->info('Discord interactions KEY: ' . $this->getParameter('discord.api.key'));
 
         /* TODO
-        $sign = $request->headers->get('x-signature-ed25519');
-        $time = $request->headers->get('x-signature-timestamp');
-        if (null === $sign || null === $time || '' !== trim($sign, '0..9A..Fa..f')) {
-            return new JsonResponse([], 401);
-        }
-
-        $message = $time . $request->getContent();
-        $binarySign = sodium_hex2bin($sign);
-        $binaryKey = sodium_hex2bin($this->getParameter('discord.api.key')); // ERROR  Argument #1 ($string) must be a valid hexadecimal string
-
-        if (!sodium_crypto_sign_verify_detached($binarySign, $message, $binaryKey)) {
-            return new JsonResponse([], 401);
-        }
-        */
+         * $sign = $request->headers->get('x-signature-ed25519');
+         * $time = $request->headers->get('x-signature-timestamp');
+         * if (null === $sign || null === $time || '' !== trim($sign, '0..9A..Fa..f')) {
+         * return new JsonResponse([], 401);
+         * }
+         *
+         * $message = $time . $request->getContent();
+         * $binarySign = sodium_hex2bin($sign);
+         * $binaryKey = sodium_hex2bin($this->getParameter('discord.api.key')); // ERROR  Argument #1 ($string) must be a valid hexadecimal string
+         *
+         * if (!sodium_crypto_sign_verify_detached($binarySign, $message, $binaryKey)) {
+         * return new JsonResponse([], 401);
+         * }
+         */
 
         return match ($request->request->get('type')) {
             1 => new JsonResponse(['type' => 1]),

@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Personnage;
 
@@ -25,17 +26,16 @@ class PersonnageRichesseForm extends AbstractType
             'attr' => [
                 'help' => "Indiquez combien de pièces d'argent votre personnage doit recevoir",
             ],
-        ])
-            ->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
+        ])->add('valider', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Valider']);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Personnage::class,
+            'data_class' => '\\' . \App\Entity\Personnage::class,
         ]);
     }
 

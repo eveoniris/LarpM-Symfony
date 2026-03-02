@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Repository;
+declare(strict_types=1);
 
-use App\Entity\GroupeBonus;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+namespace App\Repository;
 
 class OrigineBonusRepository extends BaseRepository
 {

@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Form\JoueurForm;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,8 +23,7 @@ class JoueurController extends AbstractController
     {
         $joueur = new \App\Entity\Joueur();
 
-        $form = $this->createForm(JoueurForm::class, $joueur)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(JoueurForm::class, $joueur)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -78,8 +81,7 @@ class JoueurController extends AbstractController
 
         $joueur = $entityManager->find('\App\Entity\Joueur', $id);
 
-        $form = $this->createForm(JoueurForm::class, $joueur)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(JoueurForm::class, $joueur)->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -123,7 +125,7 @@ class JoueurController extends AbstractController
                     // historique
                     $historique = new \App\Entity\ExperienceGain();
                     $historique->setExplanation($explanation);
-                    $historique->setOperationDate(new \DateTime('NOW'));
+                    $historique->setOperationDate(new DateTime('NOW'));
                     $historique->setPersonnage($personnage);
                     $historique->setXpGain($gain);
                     $entityManager->persist($historique);

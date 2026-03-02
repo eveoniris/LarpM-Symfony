@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,6 +13,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use SensitiveParameter;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'sort')]
@@ -20,7 +23,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseSort', 'extended' => 'Sort'])]
 abstract class BaseSort
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -42,6 +45,7 @@ abstract class BaseSort
     #[Column(type: Types::BOOLEAN, nullable: false, options: ['default' => 0])]
     protected bool $secret = false;
 
+    /** @var Collection<int, Personnage> */
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'sorts')]
     protected Collection $personnages;
 
@@ -182,6 +186,8 @@ abstract class BaseSort
 
     /**
      * Get Personnage entity collection.
+     *
+     * @return Collection<int, Personnage>
      */
     public function getPersonnages(): Collection
     {
@@ -191,7 +197,7 @@ abstract class BaseSort
     /**
      * Set the value of secret.
      */
-    public function setSecret(bool $secret): static
+    public function setSecret(#[SensitiveParameter] bool $secret): static
     {
         $this->secret = $secret;
 
@@ -207,7 +213,7 @@ abstract class BaseSort
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description', 'domaine_id', 'documentUrl', 'niveau'];
-    } */
+     * {
+     * return ['id', 'label', 'description', 'domaine_id', 'documentUrl', 'niveau'];
+     * } */
 }

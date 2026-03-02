@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -22,7 +24,8 @@ class PersonnageSecondaireChoiceForm extends AbstractType
             'label' => 'Archétype',
             'required' => true,
             'class' => \App\Entity\PersonnageSecondaire::class,
-            'choice_label' => 'label']);
+            'choice_label' => 'label',
+        ]);
     }
 
     /**

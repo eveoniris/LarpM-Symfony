@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -7,7 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\JoinColumn;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'territoire_guerre')]
@@ -16,7 +17,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 #[ORM\DiscriminatorMap(['base' => 'BaseTerritoireGuerre', 'extended' => 'TerritoireGuerre'])]
 abstract class BaseTerritoireGuerre
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::INTEGER, nullable: true)]
@@ -123,6 +124,7 @@ abstract class BaseTerritoireGuerre
      */
     public function setTerritoire(?Territoire $territoire = null): static
     {
+        /* @phpstan-ignore argument.type */
         $territoire?->setTerritoireGuerre($this);
         $this->territoire = $territoire;
 
@@ -130,7 +132,7 @@ abstract class BaseTerritoireGuerre
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'puissance', 'puissance_max', 'protection'];
-    } */
+     * {
+     * return ['id', 'puissance', 'puissance_max', 'protection'];
+     * } */
 }

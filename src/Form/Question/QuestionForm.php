@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Question;
 
@@ -18,27 +19,24 @@ class QuestionForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', TextType::class)
-            ->add('text', TextareaType::class, [
-                'required' => false,
-                'label' => 'Description succinte',
-                'attr' => [
-                    'class' => 'tinymce',
-                    'row' => 9,
-                ],
-            ])
-            ->add('choix', TextareaType::class, [
-                'required' => false,
-                'label' => 'les réponses possibles, séparée par un point-virgule',
-                'attr' => [
-                    'row' => 9,
-                ],
-            ])
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+        $builder->add('label', TextType::class)->add('text', TextareaType::class, [
+            'required' => false,
+            'label' => 'Description succinte',
+            'attr' => [
+                'class' => 'tinymce',
+                'row' => 9,
+            ],
+        ])->add('choix', TextareaType::class, [
+            'required' => false,
+            'label' => 'les réponses possibles, séparée par un point-virgule',
+            'attr' => [
+                'row' => 9,
+            ],
+        ])->add('submit', SubmitType::class, ['label' => 'Valider']);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function setDefaultOptions(OptionsResolver $resolver): void
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,6 +12,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use SensitiveParameter;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity]
@@ -19,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BaseConnaissance', 'extended' => 'Connaissance'])]
 abstract class BaseConnaissance
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -36,12 +39,13 @@ abstract class BaseConnaissance
     #[Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl;
 
-    #[Column(type: Types::INTEGER, )]
+    #[Column(type: Types::INTEGER)]
     protected int $niveau;
 
     #[Column(type: Types::BOOLEAN, nullable: false, options: ['default' => 0])]
     protected bool $secret = false;
 
+    /** @var Collection<int, Personnage> */
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'connaissances')]
     protected Collection $personnages;
 
@@ -124,6 +128,7 @@ abstract class BaseConnaissance
         return $this;
     }
 
+    /** @return Collection<int, Personnage> */
     public function getPersonnages(): Collection
     {
         return $this->personnages;
@@ -141,7 +146,7 @@ abstract class BaseConnaissance
         return $this->niveau;
     }
 
-    public function setSecret(bool $secret): static
+    public function setSecret(#[SensitiveParameter] bool $secret): static
     {
         $this->secret = $secret;
 
@@ -154,7 +159,7 @@ abstract class BaseConnaissance
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description', 'documentUrl', 'niveau', 'secret'];
-    } */
+     * {
+     * return ['id', 'label', 'description', 'documentUrl', 'niveau', 'secret'];
+     * } */
 }

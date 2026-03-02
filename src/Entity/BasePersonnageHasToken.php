@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -8,6 +10,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use SensitiveParameter;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'personnage_has_token')]
@@ -17,7 +20,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageHasToken', 'extended' => 'PersonnageHasToken'])]
 abstract class BasePersonnageHasToken
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageHasTokens')]
@@ -67,7 +70,7 @@ abstract class BasePersonnageHasToken
     /**
      * Set Token entity (many to one).
      */
-    public function setToken(?Token $token = null): static
+    public function setToken(#[SensitiveParameter] ?Token $token = null): static
     {
         $this->token = $token;
 
@@ -83,7 +86,7 @@ abstract class BasePersonnageHasToken
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'personnage_id', 'token_id'];
-    } */
+     * {
+     * return ['id', 'personnage_id', 'token_id'];
+     * } */
 }

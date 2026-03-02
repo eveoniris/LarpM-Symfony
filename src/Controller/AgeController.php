@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Age;
@@ -20,11 +22,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AgeController extends AbstractController
 {
     #[Route('/', name: 'list')]
-    public function indexAction(
-        Request $request,
-        PagerService $pagerService,
-        AgeRepository $ageRepository,
-    ): Response {
+    public function indexAction(Request $request, PagerService $pagerService, AgeRepository $ageRepository): Response
+    {
         $pagerService->setRequest($request)->setRepository($ageRepository);
 
         return $this->render('age/list.twig', [
@@ -35,7 +34,8 @@ class AgeController extends AbstractController
 
     #[Route('/{age}/perso', name: 'perso', requirements: ['age' => Requirement::DIGITS], methods: ['GET'])]
     public function persoAction(
-        #[MapEntity] Age $age,
+        #[MapEntity]
+        Age $age,
         Request $request,
         PagerService $pagerService,
         PersonnageRepository $personnageRepository,
@@ -63,21 +63,25 @@ class AgeController extends AbstractController
         return $this->handleCreateOrUpdate($request, $age, AgeForm::class);
     }
 
-    #[Route('/{age}/update', name: 'update', requirements: ['age' => Requirement::DIGITS], methods: [
-        'DELETE',
-        'GET',
-        'POST',
-    ])]
-    public function updateAction(
-        Request $request,
-        #[MapEntity] Age $age,
-    ): RedirectResponse|Response {
+    #[Route(
+        '/{age}/update',
+        name: 'update',
+        requirements: ['age' => Requirement::DIGITS],
+        methods: [
+            'DELETE',
+            'GET',
+            'POST',
+        ],
+    )]
+    public function updateAction(Request $request, #[MapEntity] Age $age): RedirectResponse|Response
+    {
         return $this->handleCreateOrUpdate($request, $age, AgeForm::class);
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
         Request $request,
-        $entity,
+        object $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
@@ -100,27 +104,26 @@ class AgeController extends AbstractController
                 'title_add' => $this->translator->trans('Ajouter un age'),
                 'title_update' => $this->translator->trans('Modifier un age'),
             ],
-            entityCallback: $entityCallback
+            entityCallback: $entityCallback,
         );
     }
 
-    #[Route('/{age}/delete', name: 'delete', requirements: ['age' => Requirement::DIGITS], methods: [
-        'DELETE',
-        'GET',
-        'POST',
-    ])]
+    #[Route(
+        '/{age}/delete',
+        name: 'delete',
+        requirements: ['age' => Requirement::DIGITS],
+        methods: [
+            'DELETE',
+            'GET',
+            'POST',
+        ],
+    )]
     public function deleteAction(#[MapEntity] Age $age): RedirectResponse|Response
     {
-        return $this->genericDelete(
-            $age,
-            'Supprimer un age',
-            'L\'age a été supprimée',
-            'age.list',
-            [
-                ['route' => $this->generateUrl('age.list'), 'name' => 'Liste des ages'],
-                ['route' => $this->generateUrl('age.detail', ['age' => $age->getId()]), 'name' => $age->getLabel()],
-                ['name' => 'Supprimer un age'],
-            ]
-        );
+        return $this->genericDelete($age, 'Supprimer un age', 'L\'age a été supprimée', 'age.list', [
+            ['route' => $this->generateUrl('age.list'), 'name' => 'Liste des ages'],
+            ['route' => $this->generateUrl('age.detail', ['age' => $age->getId()]), 'name' => $age->getLabel()],
+            ['name' => 'Supprimer un age'],
+        ]);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\User;
@@ -23,11 +25,10 @@ class UserForm extends AbstractType
         $builder->add('email', EmailType::class, [
             'label' => 'Adresse email',
             'required' => true,
-        ])
-            ->add('username', TextType::class, [
-                'label' => 'Nom ou pseudo',
-                'required' => true,
-            ]);
+        ])->add('username', TextType::class, [
+            'label' => 'Nom ou pseudo',
+            'required' => true,
+        ]);
     }
 
     public function getName(): string

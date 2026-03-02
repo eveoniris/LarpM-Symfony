@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -13,16 +14,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_CARTOGRAPHE')]
+#[IsGranted('ROLE_CARTOGRAPHE')]
 class CultureController extends AbstractController
 {
     /**
      * Liste des culture.
      */
     #[Route('/culture', name: 'culture.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $cultures = $entityManager->getRepository(\App\Entity\Culture::class)->findAll();
+        $cultures = $entityManager->getRepository(Culture::class)->findAll();
 
         return $this->render('culture\index.twig', [
             'cultures' => $cultures,
@@ -33,7 +34,7 @@ class CultureController extends AbstractController
      * Ajout d'une culture.
      */
     #[Route('/culture/add', name: 'culture.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager)
+    public function addAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(CultureForm::class, new Culture());
         $form->handleRequest($request);
@@ -43,7 +44,7 @@ class CultureController extends AbstractController
             $entityManager->persist($culture);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La culture a été ajoutée.');
+            $this->addFlash('success', 'La culture a été ajoutée.');
 
             return $this->redirectToRoute('culture.index', [], 303);
         }
@@ -57,8 +58,12 @@ class CultureController extends AbstractController
      * Détail d'une culture.
      */
     #[Route('/culture/{culture}/detail', name: 'culture.detail')]
-    public function detailAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Culture $culture)
-    {
+    public function detailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        Culture $culture,
+    ): Response {
         return $this->render('culture\detail.twig', [
             'culture' => $culture,
         ]);
@@ -68,8 +73,12 @@ class CultureController extends AbstractController
      * Mise à jour d'une culture.
      */
     #[Route('/culture/{culture}/update', name: 'culture.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Culture $culture)
-    {
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        Culture $culture,
+    ): Response {
         $form = $this->createForm(CultureForm::class, $culture);
 
         $form->handleRequest($request);
@@ -79,7 +88,7 @@ class CultureController extends AbstractController
             $entityManager->persist($culture);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La culture a été mise à jour.');
+            $this->addFlash('success', 'La culture a été mise à jour.');
 
             return $this->redirectToRoute('culture.index', [], 303);
         }
@@ -94,10 +103,13 @@ class CultureController extends AbstractController
      * Suppression d'une culture.
      */
     #[Route('/culture/{culture}/delete', name: 'culture.delete')]
-    public function deleteAction(Request $request,  EntityManagerInterface $entityManager, #[MapEntity] Culture $culture)
-    {
-        $form = $this->createForm(CultureDeleteForm::class, $culture)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        Culture $culture,
+    ): Response {
+        $form = $this->createForm(CultureDeleteForm::class, $culture)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -106,7 +118,7 @@ class CultureController extends AbstractController
             $entityManager->remove($culture);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La culture a été supprimée.');
+            $this->addFlash('success', 'La culture a été supprimée.');
 
             return $this->redirectToRoute('culture.index', [], 303);
         }

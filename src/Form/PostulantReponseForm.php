@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -24,12 +25,13 @@ class PostulantReponseForm extends AbstractType
             'required' => true,
             'attr' => [
                 'rows' => 9,
-                'help' => "un petit mot de bienvenue, ou d'explication de votre refus"],
+                'help' => "un petit mot de bienvenue, ou d'explication de votre refus",
+            ],
         ]);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {

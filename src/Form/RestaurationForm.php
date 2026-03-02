@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Restauration;
@@ -8,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
 class RestaurationForm extends AbstractType
 {
     /**
@@ -18,15 +21,14 @@ class RestaurationForm extends AbstractType
         $builder->add('label', TextType::class, [
             'required' => true,
             'label' => 'Label',
-        ])
-            ->add('description', TextareaType::class, [
-                'required' => false,
-                'label' => 'Description',
-                'attr' => [
-                    'class' => 'tinymce',
-                    'row' => 9,
-                ],
-            ]);
+        ])->add('description', TextareaType::class, [
+            'required' => false,
+            'label' => 'Description',
+            'attr' => [
+                'class' => 'tinymce',
+                'row' => 9,
+            ],
+        ]);
     }
 
     /**

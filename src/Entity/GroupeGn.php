@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\GroupeGnRepository;
@@ -36,14 +38,17 @@ class GroupeGn extends BaseGroupeGn
     /**
      * Fourni la liste des personnages de cette session de jeu.
      */
+    /** @return Collection<int, Personnage> */
     public function getPersonnages(): Collection
     {
         $personnages = new ArrayCollection();
 
         foreach ($this->getParticipants() as $participant) {
-            if ($participant->getPersonnage()) {
-                $personnages[] = $participant->getPersonnage();
+            if (!$participant->getPersonnage()) {
+                continue;
             }
+
+            $personnages->add($participant->getPersonnage());
         }
 
         return $personnages;
@@ -96,10 +101,10 @@ class GroupeGn extends BaseGroupeGn
     public function isResponsable(Personnage|Participant $personnage): bool
     {
         if ($personnage instanceof Participant) {
-            return $this->getParticipant(false)?->getId() === $personnage->getId();
+            return $this->getParticipant()?->getId() === $personnage->getId();
         }
 
-        return $this->getParticipant(false)?->getPersonnage()?->getId() === $personnage->getId();
+        return $this->getParticipant()?->getPersonnage()?->getId() === $personnage->getId();
     }
 
     public function isSuzerain(Personnage|Participant $personnage): bool
@@ -114,7 +119,7 @@ class GroupeGn extends BaseGroupeGn
             return false;
         }
 
-        return $suzerain?->getId() === $personnage?->getId();
+        return $suzerain->getId() === $personnage?->getId();
     }
 
     /**

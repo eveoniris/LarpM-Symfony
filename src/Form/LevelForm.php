@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -21,22 +22,18 @@ class LevelForm extends AbstractType
     {
         $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
-        ])
-            ->add('index', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
-                'required' => true,
-            ])
-            ->add('cout_favori', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
-                'label' => 'Coût favori',
-                'required' => true,
-            ])
-            ->add('cout', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
-                'label' => 'Coût normal',
-                'required' => true,
-            ])
-            ->add('cout_meconu', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
-                'label' => 'Coût méconnu',
-                'required' => true,
-            ]);
+        ])->add('index', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            'required' => true,
+        ])->add('cout_favori', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            'label' => 'Coût favori',
+            'required' => true,
+        ])->add('cout', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            'label' => 'Coût normal',
+            'required' => true,
+        ])->add('cout_meconu', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            'label' => 'Coût méconnu',
+            'required' => true,
+        ]);
     }
 
     /**

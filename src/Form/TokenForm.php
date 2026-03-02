@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Token;
@@ -18,18 +20,17 @@ class TokenForm extends AbstractType
     {
         $builder->add('label', TextType::class, [
             'required' => true,
-        ])
-            ->add('tag', TextType::class, [
-                'required' => true,
+        ])->add('tag', TextType::class, [
+            'required' => true,
 
-                    'help' => "Le tag est un marqueur permettant d'utiliser ce jeton dans LarpManager",
-            ])
-            ->add('description', TextareaType::class, [
-                'required' => true,
-                'attr' => [
-                    'class' => 'tinymce',
-                    'rows' => 9],
-            ]);
+            'help' => "Le tag est un marqueur permettant d'utiliser ce jeton dans LarpManager",
+        ])->add('description', TextareaType::class, [
+            'required' => true,
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 9,
+            ],
+        ]);
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\BonusPeriode;
@@ -22,6 +24,11 @@ class Bonus extends BaseBonus
         parent::__construct();
     }
 
+    /**
+     * @param array<string, mixed>|null $row
+     *
+     * @return array<int, mixed>
+     */
     public function getConditions(?array $row = null): array
     {
         if (empty($row)) {
@@ -37,6 +44,7 @@ class Bonus extends BaseBonus
         return [];
     }
 
+    /** @return array<int, array<string, mixed>> */
     public function getDataAsList(?string $key = null, string $requiredParam = 'id'): array
     {
         $data = $this->getData($key);
@@ -51,7 +59,7 @@ class Bonus extends BaseBonus
             return [[$requiredParam => $data]];
         }
 
-        if (!is_array($data)) {
+        if (!\is_array($data)) {
             // rien de valide
             return [];
         }
@@ -71,7 +79,7 @@ class Bonus extends BaseBonus
             }
         }
 
-        return is_array($row) ? $row : [$row];
+        return \is_array($row) ? $row : [$row];
     }
 
     /**
@@ -88,7 +96,7 @@ class Bonus extends BaseBonus
 
         if ($key) {
             // Handle plural
-            foreach ([$key, $key.'s', rtrim($key, 's')] as $multiKey) {
+            foreach ([$key, $key . 's', rtrim($key, 's')] as $multiKey) {
                 // Handle case-insensitive
                 foreach ([$multiKey, strtoupper($multiKey), strtolower($multiKey)] as $k) {
                     if ($data[$k] ?? false) {
@@ -105,7 +113,7 @@ class Bonus extends BaseBonus
 
     public function getDataAsString(): string
     {
-        return json_encode($this->getJsonData(), JSON_THROW_ON_ERROR) ?? '';
+        return (string) json_encode($this->getJsonData(), \JSON_THROW_ON_ERROR);
     }
 
     /** Alias Interface purpose */
@@ -202,10 +210,14 @@ class Bonus extends BaseBonus
         return BonusType::RICHESSE->value === $this->getType()->value;
     }
 
+    /**
+     * @param array<int, BonusType>|BonusType|null       $types
+     * @param array<int, BonusPeriode>|BonusPeriode|null $periodes
+     */
     public function isTypeAndPeriode(array|BonusType|null $types, array|BonusPeriode|null $periodes = null): bool
     {
         if ($types) {
-            if (!is_array($types)) {
+            if (!\is_array($types)) {
                 $types = [$types];
             }
 
@@ -223,7 +235,7 @@ class Bonus extends BaseBonus
         }
 
         if ($periodes) {
-            if (!is_array($periodes)) {
+            if (!\is_array($periodes)) {
                 $periodes = [$periodes];
             }
 

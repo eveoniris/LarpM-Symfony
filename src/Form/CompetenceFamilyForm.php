@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\CompetenceFamily;
@@ -26,16 +28,15 @@ class CompetenceFamilyForm extends AbstractType
             'required' => true,
             'attr' => ['maxlength' => 45],
             'constraints' => [new Length(['max' => 45])],
-        ])
-            ->add('description', TextareaType::class, [
-                'required' => false,
-                'constraints' => [new Length(['max' => 450])],
-                'attr' => [
-                    'class' => 'tinymce',
-                    'row' => 9,
-                    'maxlength' => 450,
-                ],
-            ]);
+        ])->add('description', TextareaType::class, [
+            'required' => false,
+            'constraints' => [new Length(['max' => 450])],
+            'attr' => [
+                'class' => 'tinymce',
+                'row' => 9,
+                'maxlength' => 450,
+            ],
+        ]);
     }
 
     /**

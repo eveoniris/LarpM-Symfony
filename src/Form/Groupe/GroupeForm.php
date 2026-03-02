@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Groupe;
 
 use App\Entity\Groupe;
@@ -22,10 +24,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class GroupeForm extends AbstractType
 {
     public function __construct(
-        private readonly Security            $security,
+        private readonly Security $security,
         private readonly TranslatorInterface $translator,
-    )
-    {
+    ) {
     }
 
     /**
@@ -34,47 +35,41 @@ class GroupeForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if ($this->security->isGranted(Role::SCENARISTE->value) || $this->security->isGranted(Role::ORGA->value)) {
-            $builder->add('nom', TextType::class)
-                ->add('numero', IntegerType::class, [
-                    'required' => true,
-                ])
-                ->add('pj', ChoiceType::class, [
-                    'label' => 'Type de groupe',
-                    'required' => true,
-                    'choices' => [
-                        'Groupe composé de PJs' => true,
-                        'Groupe composé PNJs' => false,
-                    ],
-                    'expanded' => true,
-                ])
-                ->add('description', TextareaType::class, [
-                    'required' => false,
-                    'label' => 'Description publique',
-                    'attr' => [
-                        'class' => 'tinymce',
-                        'row' => 9,
-                    ],
-                ])
-                ->add('scenariste', EntityType::class, [
-                    'label' => 'Scénariste',
-                    'required' => false,
-                    'class' => User::class,
-                    'choice_label' => static fn(User $user) => sprintf('%s - %s', $user->getName(), $user->getEtatCivil()?->getFullName() ?? ''),
-                    'autocomplete' => true,
-                    'query_builder' => static function (EntityRepository $er) {
-                        $qb = $er->createQueryBuilder('u');
-                        $qb->where(
-                            $qb->expr()->orX(
-                                $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
-                                $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
-                                $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')),
-                                $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%'))
-                            )
-                        );
+            $builder->add('nom', TextType::class)->add('numero', IntegerType::class, [
+                'required' => true,
+            ])->add('pj', ChoiceType::class, [
+                'label' => 'Type de groupe',
+                'required' => true,
+                'choices' => [
+                    'Groupe composé de PJs' => true,
+                    'Groupe composé PNJs' => false,
+                ],
+                'expanded' => true,
+            ])->add('description', TextareaType::class, [
+                'required' => false,
+                'label' => 'Description publique',
+                'attr' => [
+                    'class' => 'tinymce',
+                    'row' => 9,
+                ],
+            ])->add('scenariste', EntityType::class, [
+                'label' => 'Scénariste',
+                'required' => false,
+                'class' => User::class,
+                'choice_label' => static fn (User $user) => \sprintf('%s - %s', $user->getName(), $user->getEtatCivil()?->getFullName() ?? ''),
+                'autocomplete' => true,
+                'query_builder' => static function (EntityRepository $er) {
+                    $qb = $er->createQueryBuilder('u');
+                    $qb->where($qb->expr()->orX(
+                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
+                        $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')),
+                        $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                    ));
 
-                        return $qb;
-                    },
-                ]);
+                    return $qb;
+                },
+            ]);
         }
 
         $builder->add('description_membres', TextareaType::class, [
@@ -89,30 +84,21 @@ class GroupeForm extends AbstractType
             'label' => 'Lien discord',
             'help' => 'https://discord.gg/xxxx',
             'constraints' => [
-                new Assert\Callback([
-                    'callback' => function (?string $data, ExecutionContextInterface $context) {
-                        if (!$data) {
-                            return;
-                        }
+                new Assert\Callback(function (?string $data, ExecutionContextInterface $context): void {
+                    if (!$data) {
+                        return;
+                    }
 
-                        if (empty($data)) {
-                            return;
-                        }
-
-                        if (!str_starts_with($data, 'https://discord.gg/')) {
-                            $context
-                                ->buildViolation($this->translator->trans('groupe.discord.link'))
-                                ->atPath('[discord]')
-                                ->addViolation();
-                        }
-                    },
-                ]),
+                    if (!str_starts_with($data, 'https://discord.gg/')) {
+                        $context->buildViolation($this->translator->trans('groupe.discord.link'))->atPath('[discord]')->addViolation();
+                    }
+                }),
             ],
         ]);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
@@ -127,12 +113,7 @@ class GroupeForm extends AbstractType
             // for a whole secutiry access : 'security' => ['ROLE_ADMIN', 'ROLE_SCENARISTE', 'ROLE_ORGA'],
             'query_builder' => static function (EntityRepository $er) {
                 $qb = $er->createQueryBuilder('u');
-                $qb->where(
-                    $qb->expr()->orX(
-                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
-                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%'))
-                    )
-                );
+                $qb->where($qb->expr()->orX($qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')), $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%'))));
 
                 return $qb;
             },

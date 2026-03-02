@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -22,8 +23,9 @@ class SearchObjetForm extends AbstractType
             'required' => true,
             'choices' => [
                 'nom' => 'Nom',
-                'numero' => 'Numero']])
-            ->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, ['required' => true]);
+                'numero' => 'Numero',
+            ],
+        ])->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, ['required' => true]);
     }
 
     /**

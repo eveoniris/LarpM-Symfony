@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Document;
@@ -27,7 +29,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use ErrorException;
 use Exception;
-use JetBrains\PhpStorm\Deprecated;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use RuntimeException;
@@ -49,7 +50,6 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
-use function in_array;
 
 abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
@@ -61,6 +61,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     public const CAN_READ_SECRET = 'canReadSecret';
     public const CAN_MANAGE = 'canManage';
 
+    /** @var array<string, bool> */
     protected array $can = [
         self::CAN_WRITE => false,
         self::CAN_READ => false,
@@ -72,29 +73,33 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     ];
 
     public function __construct(
-        protected EntityManagerInterface       $entityManager,
-        protected RequestStack                 $requestStack,
-        protected FileUploader                 $fileUploader,
+        protected EntityManagerInterface $entityManager,
+        protected RequestStack $requestStack,
+        protected FileUploader $fileUploader,
         protected readonly TranslatorInterface $translator,
-        protected readonly SluggerInterface    $slugger,
-        protected PagerService                 $pageRequest,
-        protected MailService                  $mailer,
-        protected LoggerInterface              $logger,
-        protected PersonnageService            $personnageService,
-        protected GroupeService                $groupeService,
-        protected Environment                  $twig,
-        protected StatsService                 $statsService,
-        protected Security                     $security,
+        protected readonly SluggerInterface $slugger,
+        protected PagerService $pageRequest,
+        protected MailService $mailer,
+        protected LoggerInterface $logger,
+        protected PersonnageService $personnageService,
+        protected GroupeService $groupeService,
+        protected Environment $twig,
+        protected StatsService $statsService,
+        protected Security $security,
         // protected Cache $cache, // TODO : later
-    )
-    {
+    ) {
     }
 
-    public function can($key): bool
+    public function can(string $key): bool
     {
         return $this->getCan()[$key] ?? false;
     }
 
+    /**
+     * @param array<string, bool> $values
+     *
+     * @return array<string, bool>
+     */
     protected function getCan(array $values = []): array
     {
         $can = [...$this->can, ...$values];
@@ -124,7 +129,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $can;
     }
 
-    public function setCan(string $who, bool $permission): AbstractController
+    public function setCan(string $who, bool $permission): self
     {
         $this->can[$who] = $permission;
 
@@ -143,13 +148,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $this->pageRequest->getForm();
     }
 
+    /**
+     * @param array<string, mixed>|null $routeParams
+     */
     protected function checkGroupeLocked(
         ?Groupe $groupe,
         ?string $route = null,
-        ?array  $routeParams = null,
+        ?array $routeParams = null,
         ?string $msg = null,
-    ): ?RedirectResponse
-    {
+    ): ?RedirectResponse {
         if (!$groupe) {
             return null;
         }
@@ -169,7 +176,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $renderMsg[] = $msg;
         }
         $renderMsg[] = <<<HTML
-            Le <a href="$href">groupe est verrouillé</a> et il n'est plus possible de le modifier.<br />
+            Le <a href="{$href}">groupe est verrouillé</a> et il n'est plus possible de le modifier.<br />
             Contactez votre scénariste si vous pensez que cela est une erreur
             HTML;
 
@@ -183,12 +190,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $this->redirectToRoute($route, $routeParams, 303);
     }
 
+    /**
+     * @param array<int|string, mixed> $roles
+     */
     protected function checkHasAccess(array $roles, ?callable $callable): void
     {
         /** @var User $loggedUser */
         $loggedUser = $this->getUser();
         // Doit être connecté
-        if (!$loggedUser || !$this->isGranted(Role::USER->value)) {
+        if (!$this->isGranted(Role::USER->value)) {
             throw new AccessDeniedException();
         }
 
@@ -197,7 +207,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             return;
         }
 
-        if (is_callable($callable) && $callable()) {
+        if (\is_callable($callable) && $callable()) {
             return;
         }
 
@@ -207,12 +217,14 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     /** Allow code completion to User entity instead of Interface (less methods) */
     protected function getUser(): ?User
     {
-        /** @var User $user */
         $user = parent::getUser();
 
-        return $user;
+        return $user instanceof User ? $user : null;
     }
 
+    /**
+     * @param array<int|string, mixed>|null $roles
+     */
     protected function hasRoles(?array $roles): bool
     {
         if (empty($roles)) {
@@ -246,14 +258,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         if ($request = $this->requestStack->getCurrentRequest()) {
-            if ($request->get('personnage') && $personnage = $this->entityManager
-                    ->getRepository(Personnage::class)
-                    ->findOneBy(['id' => $request->get('personnage')])) {
+            if ($request->get('personnage') && ($personnage = $this->entityManager->getRepository(Personnage::class)->findOneBy(['id' => $request->get('personnage')]))) {
                 return $personnage;
             }
-            if ($request->get('participant') && $participant = $this->entityManager
-                    ->getRepository(Participant::class)
-                    ->findOneBy(['id' => $request->get('participant')])) {
+            if ($request->get('participant') && ($participant = $this->entityManager->getRepository(Participant::class)->findOneBy(['id' => $request->get('participant')]))) {
                 return $participant->getPersonnage();
             }
 
@@ -264,7 +272,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             /** @var GnRepository $gnRepository */
             $gnRepository = $this->entityManager->getRepository(Gn::class);
             $gnActif = $gnRepository->findNext();
-            if ($gnActif && $personnage = $this->getUser()?->getParticipant($gnActif)?->getPersonnage()) {
+            if ($gnActif && ($personnage = $this->getUser()?->getParticipant($gnActif)?->getPersonnage())) {
                 return $personnage;
             }
         }
@@ -274,16 +282,19 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
     // TODO change to orderBy service
 
+    /**
+     * @param string|array<string, string>           $redirect
+     * @param array<int, array<string, string|null>> $breadcrumb
+     */
     protected function genericDelete(
-        $entity,
+        object $entity,
         string $title,
         string $successMsg,
         string|array $redirect,
         array $breadcrumb,
         string $content = '',
         ?callable $callbackOnValid = null,
-    ): RedirectResponse|Response
-    {
+    ): RedirectResponse|Response {
         $request = $this->requestStack->getCurrentRequest();
         $form = $this->createForm(DeleteForm::class, $entity, ['class' => $entity::class]);
         $form->handleRequest($request);
@@ -296,13 +307,14 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $entityToDelete = $form->getData();
         }
 
-        if (is_callable($callbackOnValid)) {
+        if (\is_callable($callbackOnValid)) {
             $callbackOnValid();
         }
 
         if ($entityToDelete) {
             // Soft or hard delete ?
-            if (method_exists($entityToDelete, 'getDeletedAt')) {
+            if (\is_object($entityToDelete) && method_exists($entityToDelete, 'getDeletedAt')) {
+                /* @phpstan-ignore method.notFound */
                 $entityToDelete->setDeletedAt(new DateTime('NOW'));
                 $this->entityManager->persist($entityToDelete);
             } else {
@@ -314,14 +326,14 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
             try {
                 $redirectParams = [];
-                if (is_array($redirect)) {
+                if (\is_array($redirect)) {
                     $redirectParams = $redirect['params'];
                     $redirect = $redirect['route'];
                 }
 
                 return $this->redirectToRoute($redirect, $redirectParams, 303);
             } catch (Exception $e) {
-                return $this->redirect($redirect, '303');
+                return $this->redirect($redirect, 303);
             }
         }
 
@@ -334,20 +346,20 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ]);
     }
 
+    /**
+     * @param array<string, mixed> $parameters
+     */
     protected function render(string $view, array $parameters = [], ?Response $response = null): Response
     {
         // TODO enhance
-        $request = $this->requestStack?->getCurrentRequest();
+        $request = $this->requestStack->getCurrentRequest();
         if ($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/' . $view)) {
             $currentParameters = $request?->attributes->get('_route_params');
             $currentParameters['playerView'] = !$request?->get('playerView');
 
-            $parameters['playerViewToggleUrl'] = $this->generateUrl(
-                $request?->attributes->get('_route'),
-                $currentParameters,
-            );
+            $parameters['playerViewToggleUrl'] = $this->generateUrl($request?->attributes->get('_route'), $currentParameters);
 
-            if (false !== (bool)$request?->get('playerView')) {
+            if (false !== (bool) $request?->get('playerView')) {
                 return parent::render('admin/' . $view, $parameters, $response);
             }
         }
@@ -370,15 +382,18 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $this->pageRequest->getLimit($defLimit);
     }
 
-    #[Deprecated]
+    /**
+     * @param array<int, string>|null $allowedFields
+     *
+     * @return array<string, string>
+     */
     protected function getRequestOrder(
-        string  $defOrderBy = 'id',
-        string  $defOrderDir = 'ASC',
+        string $defOrderBy = 'id',
+        string $defOrderDir = 'ASC',
         ?string $alias = null,
-        ?array  $allowedFields = null, // TODO: check SF security Form on Self Entity's attributes
-    ): array
-    {
-        $request = $this->requestStack?->getCurrentRequest();
+        ?array $allowedFields = null, // TODO: check SF security Form on Self Entity's attributes
+    ): array { // @phpstan-return array<string, string>
+        $request = $this->requestStack->getCurrentRequest();
         if (!$request) {
             return [];
         }
@@ -386,7 +401,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $orderBy = $request->query->getString('order_by', $defOrderBy);
         $orderDir = $this->getRequestOrderDir($defOrderDir);
 
-        if (!empty($allowedFields) && !in_array($orderBy, $allowedFields, true)) {
+        if (!empty($allowedFields) && !\in_array($orderBy, $allowedFields, true)) {
             $orderBy = $defOrderBy;
         }
 
@@ -399,7 +414,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
     protected function getRequestOrderDir(string $defOrderDir = 'ASC'): string
     {
-        return $this->pageRequest->getOrderBy()->setDefaultOrderDir($defOrderDir)->getSort();
+        return $this->pageRequest
+            ->getOrderBy()
+            ->setDefaultOrderDir($defOrderDir)
+            ->getSort();
     }
 
     protected function getRequestPage(int $defPage = 1): int
@@ -407,16 +425,20 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         return $this->pageRequest->getPage($defPage);
     }
 
+    /**
+     * @param array<int, array<string, string|null>> $breadcrumb
+     * @param array<string, string>                  $routes
+     * @param array<string, string>                  $msg
+     */
     protected function handleCreateOrUpdate(
-        Request   $request,
-                  $entity,
-        string    $formClass,
-        array     $breadcrumb = [],
-        array     $routes = [],
-        array     $msg = [],
+        Request $request,
+        object $entity,
+        string $formClass,
+        array $breadcrumb = [],
+        array $routes = [],
+        array $msg = [],
         ?callable $entityCallback = null,
-    ): RedirectResponse|Response
-    {
+    ): RedirectResponse|Response {
         $repository = $this->entityManager->getRepository($entity::class);
         if (!$repository instanceof BaseRepository || !$repository->isEntity($entity)) {
             throw new RuntimeException('Entity must be a doctrine entity and have a repository');
@@ -426,28 +448,23 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $isNew = !$this->entityManager->getUnitOfWork()->isInIdentityMap($entity);
 
         try {
-            $root = $routes['root']
-                ?? (new ReflectionClass(static::class))
-                ?->getAttributes(Route::class)[0]
-                ?->getArguments()['name'] ?? '';
+            $root = $routes['root'] ?? new ReflectionClass(static::class)->getAttributes(Route::class)[0]->getArguments()['name'] ?? '';
             $routes['root'] = $root; // ensure if from other
         } catch (ErrorException $e) {
             $this->logger->error($e);
-            throw new RuntimeException(
-                <<<'EOF'
+            throw new RuntimeException(<<<'EOF'
                 Unable to get the root route.
                 If you do not define a main route as class attributes (ie: #[Route('/groupe', name: 'groupe.')]),
                 You may need to provide the argument $routes['root'] from the calling methods.
                 Sample: ['root' => 'groupe.'] from GroupeController::handleCreateOrUpdate()
-                EOF,
-            );
+                EOF);
         }
 
         $routes['add'] ??= $root . 'add';
-        $routes['list'] ??= ($routes['index'] ?? $root . 'list');
+        $routes['list'] ??= $routes['index'] ?? $root . 'list';
         $routes['delete'] ??= $root . 'delete';
         $routes['update'] ??= $root . 'update';
-        $routes['detail'] ??= ($routes['view'] ?? $root . 'detail');
+        $routes['detail'] ??= $routes['view'] ?? $root . 'detail';
         $routes['entityAlias'] ??= $root ? trim($root, ".\n\r\t\v\0") : $repository::getEntityAlias();
 
         $msg['entity'] ??= $this->translator->trans('donnée', domain: 'controller');
@@ -476,46 +493,40 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $breadcrumb[] = ['name' => $msg['title']];
         }
         if ($isNew) {
-            $form->add(
-                'save',
-                SubmitType::class,
-                [
-                    'label' => $msg['save'],
-                    'attr' => [
-                        'class' => 'btn btn-secondary',
-                    ],
+            $form->add('save', SubmitType::class, [
+                'label' => $msg['save'],
+                'attr' => [
+                    'class' => 'btn btn-secondary',
                 ],
-            )
-                ->add('save_continue', SubmitType::class, [
-                    'label' => $msg['save_continue'],
-                    'attr' => [
-                        'class' => 'btn btn-secondary',
-                    ],
-                ]);
+            ])->add('save_continue', SubmitType::class, [
+                'label' => $msg['save_continue'],
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                ],
+            ]);
         } else {
             $form->add('update', SubmitType::class, [
                 'label' => $msg['save'],
                 'attr' => [
                     'class' => 'btn btn-secondary',
                 ],
-            ])
-                ->add('delete', SubmitType::class, [
-                    'label' => $msg['delete'],
-                    'attr' => [
-                        'class' => 'btn btn-secondary',
-                    ],
-                ]);
+            ])->add('delete', SubmitType::class, [
+                'label' => $msg['delete'],
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                ],
+            ]);
         }
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entity = $form->getData();
-            if (is_callable($entityCallback)) {
+            if (\is_callable($entityCallback)) {
                 $entity = $entityCallback($entity, $form);
             }
 
-            if ($form->has('save_continue') && $form->get('save_continue')->isClicked()) {
+            if ($form->has('save_continue') && ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked())) {
                 $this->addFlash('success', $msg['entity_added']);
                 $this->entityManager->persist($entity);
                 $this->entityManager->flush();
@@ -525,19 +536,19 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
             $logType = LogActionType::ENTITY;
 
-            if ($form->has('delete') && $form->get('delete')->isClicked()) {
+            if ($form->has('delete') && ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked())) {
                 $logType = LogActionType::ENTITY_DELETE;
                 $this->entityManager->remove($entity);
                 $this->addFlash('success', $msg['entity_deleted']);
             } else {
                 $this->entityManager->persist($entity);
 
-                if ($form->has('update') && $form->get('update')->isClicked()) {
+                if ($form->has('update') && ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked())) {
                     $logType = LogActionType::ENTITY_UPDATE;
                     $this->addFlash('success', $msg['entity_updated']);
                 }
 
-                if ($form->has('save') && $form->get('save')->isClicked()) {
+                if ($form->has('save') && ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked())) {
                     $logType = LogActionType::ENTITY_ADD;
                     $this->addFlash('success', $msg['entity_added']);
                 }
@@ -548,8 +559,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             $this->entityManager->flush();
 
             return $form->has('update')
-                ? $this->redirectToRoute($routes['list'] ?: $routes['detail'], [trim($routes['root'], '.') => $entity->getId()])
-                : $this->redirectToRoute($routes['detail'], [trim($routes['root'], '.') => $entity->getId()]);
+                ? $this->redirectToRoute($routes['list'] ?: $routes['detail'], [
+                    trim($routes['root'], '.') => $entity->getId(),
+                ]) : $this->redirectToRoute($routes['detail'], [trim($routes['root'], '.') => $entity->getId()]);
         }
 
         return $this->render('_partials/addOrUpdateForm.twig', [
@@ -586,13 +598,13 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $logAction->setUser($this->getUser());
         $logAction->setType($type);
 
-        if (!is_array($entity) && method_exists($entity, 'toLog')) {
+        if (!\is_array($entity) && method_exists($entity, 'toLog')) {
             $entityValue = $entity->toLog();
         } else {
-            $entityValue = (array)$entity;
+            $entityValue = (array) $entity;
             // Clean a bit
             foreach ($entityValue as $key => $value) {
-                $cleanKey = str_replace([is_array($entity) ? null : $entity::class, ' ', '*'], ['', '', ''], $key);
+                $cleanKey = str_replace([\is_array($entity) ? null : $entity::class, ' ', '*'], ['', '', ''], $key);
                 if ($cleanKey !== $key) {
                     $entityValue[$cleanKey] = $value;
                     unset($entityValue[$key]);
@@ -602,8 +614,8 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
         $entityData = ['data' => $entityValue];
 
-        if (!is_array($entity)) {
-            $entityData['class'] = is_array($entity);
+        if (!\is_array($entity) && \is_object($entity)) {
+            $entityData['class'] = $entity::class;
         }
 
         $logAction->setData($entityData);
@@ -625,17 +637,19 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     /**
      * If entity have a getExportValue() export will use it, your headers can too.
      *
+     * @param array<int, string> $header
+     * @param array<int, mixed>  $dataProvider
+     *
      * @throws ErrorException if not valid implementation
      */
     protected function sendCsv(
-        string                          $title,
-        ?BaseRepository                 $repository = null,
+        string $title,
+        ?BaseRepository $repository = null,
         QueryBuilder|AbstractQuery|null $query = null,
-        array                           $header = [],
-        ?callable                       $content = null,
-        array                           $dataProvider = [],
-    ): StreamedResponse
-    {
+        array $header = [],
+        ?callable $content = null,
+        array $dataProvider = [],
+    ): StreamedResponse {
         if (!$repository && !$content && !$query && !$dataProvider) {
             throw new ErrorException('Method needs a repository, queryBuilder or a callable content');
         }
@@ -653,10 +667,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $response->headers->set('Expires', '0');
 
         if (null === $content) {
-            $content = static function () use ($repository, $header, $query, $dataProvider) {
-                $output = fopen('php://output', 'wb');
+            $content = static function () use ($repository, $header, $query, $dataProvider): void {
+                $output = fopen('php://output', 'w');
                 // fwrite($output, chr(255).chr(254)); // Excel BOM do a chinese chars
-                fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+                fprintf($output, \chr(0xEF) . \chr(0xBB) . \chr(0xBF));
 
                 $iterateMode = BaseRepository::ITERATE_EXPORT_HEADER;
                 if ($header) {
@@ -690,16 +704,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
      * le Manager ou Controller ou Service appellant.
      */
     protected function sendDocument(
-        mixed     $entity,
+        mixed $entity,
         ?Document $document = null,
-        bool      $hasAttachement = true,
-    ): BinaryFileResponse
-    {
+        bool $hasAttachement = true,
+    ): BinaryFileResponse {
         if (null === $entity && $document instanceof Document) {
             $entity = $document;
         }
 
-        if (!is_object($entity)) {
+        if (!\is_object($entity)) {
             throw new RuntimeException('Entity must be an object');
         }
 
@@ -728,11 +741,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             ? $this->getParameter('kernel.project_dir') . '/'
             : $this->fileUploader->getProjectDirectory();
 
+        \assert(\is_object($entity));
+        /* @phpstan-ignore method.notFound */
         $entity->setProjectDir($projectDir);
         $filename = $entity->getDocument();
         $documentUrl = $entity->getDocumentUrl();
         $documentLabel = $entity->getPrintLabel() ?: $documentUrl ?: time();
+        /** @phpstan-ignore method.notFound */
         $documentExtention = $entity->getDocumentExtension() ?: '.pdf';
+        /** @phpstan-ignore method.notFound */
         $documentMimeType = $entity->getDocumentMimeType() ?: 'application/pdf';
 
         // TRY FROM 1 on first failed
@@ -741,46 +758,28 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         if (!$documentUrl || !file_exists($filename)) {
-            throw new NotFoundHttpException(
-                "Le document n'existe pas " . $filename . ' - ' . $documentUrl . ' - ' . $documentLabel,
-            );
+            throw new NotFoundHttpException("Le document n'existe pas " . $filename . ' - ' . $documentUrl . ' - ' . $documentLabel);
         }
 
-        $response = (new BinaryFileResponse($filename, Response::HTTP_OK));
+        $response = new BinaryFileResponse($filename, Response::HTTP_OK);
 
         if ($hasAttachement) {
-            $response->setContentDisposition(
-                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                $documentLabel . $documentExtention,
-                $documentLabel . $documentExtention,
-            );
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $documentLabel . $documentExtention, $documentLabel . $documentExtention);
         } else {
-            $response->headers->set(
-                'Content-Disposition',
-                'inline; filename=' . $this->slugger->slug($filename) . $documentExtention,
-            );
-            $response
-                ->setContentDisposition(
-                    ResponseHeaderBag::DISPOSITION_INLINE,
-                    $documentLabel . $documentExtention,
-                    $documentLabel . $documentExtention,
-                );
+            $response->headers->set('Content-Disposition', 'inline; filename=' . $this->slugger->slug($filename) . $documentExtention);
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $documentLabel . $documentExtention, $documentLabel . $documentExtention);
         }
 
         $response->headers->set('Content-Control', 'private');
         $response->headers->set('Content-Type', $documentMimeType);
-        $response->headers->set('Content-length', filesize($filename));
+        $response->headers->set('Content-length', (string) filesize($filename));
 
         return $response;
     }
 
-    protected function sendNoImageAvailable($path = 'no'): BinaryFileResponse
+    protected function sendNoImageAvailable(string $path = 'no'): BinaryFileResponse
     {
-        $response = new BinaryFileResponse(
-            $this->fileUploader->getDirectory(
-                FolderType::Private,
-            ) . 'No_Image_Available.jpg',
-        );
+        $response = new BinaryFileResponse($this->fileUploader->getDirectory(FolderType::Private) . 'No_Image_Available.jpg');
         $response->headers->set('Content-Type', 'image/jpeg');
         $response->headers->set('Content-Control', 'private');
         if ($this->isGranted('ROLE_ADMIN')) {

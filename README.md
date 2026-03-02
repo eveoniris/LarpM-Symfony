@@ -246,4 +246,13 @@ Si manquant
 - `docker compose run --rm composer require symfony/stimulus-bundle`
 - `docker compose run --rm composer require symfony/ux-autocomplete`
 
+# phpCsFixer
 
+`PHP_CS_FIXER_IGNORE_ENV=1 ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --verbose --path-mode=intersection *`
+`docker compose exec frankenphp ./vendor/bin/php-cs-fixer fix --config .php-cs-fixer.dist.php`
+# Mago
+
+@see https://mago.carthage.software/tools/overview
+
+- `mago lint`
+- `mago fmt`

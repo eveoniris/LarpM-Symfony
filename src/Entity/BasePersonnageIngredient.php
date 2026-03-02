@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageIngredient', 'extended' => 'PersonnageIngredient'])]
 abstract class BasePersonnageIngredient
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::INTEGER, nullable: true)]
@@ -105,7 +107,7 @@ abstract class BasePersonnageIngredient
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'personnage_id', 'ingredient_id', 'nombre'];
-    } */
+     * {
+     * return ['id', 'personnage_id', 'ingredient_id', 'nombre'];
+     * } */
 }

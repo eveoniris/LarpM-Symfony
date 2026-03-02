@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Type;
 
@@ -21,29 +22,27 @@ class GroupeHasIngredientType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('quantite', IntegerType::class, [
-                'label' => 'quantite',
-                'required' => true,
-            ])
-            ->add('ingredient', EntityType::class, [
-                'label' => "Choisissez l'ingredient",
-                'required' => true,
-                'class' => Ingredient::class,
-                'choice_label' => 'fullLabel',
-                'query_builder' => static function (IngredientRepository $er) {
-                    $qb = $er->createQueryBuilder('c');
-                    $qb->orderBy('c.label', 'ASC')->addOrderBy('c.niveau', 'ASC');
+        $builder->add('quantite', IntegerType::class, [
+            'label' => 'quantite',
+            'required' => true,
+        ])->add('ingredient', EntityType::class, [
+            'label' => "Choisissez l'ingredient",
+            'required' => true,
+            'class' => Ingredient::class,
+            'choice_label' => 'fullLabel',
+            'query_builder' => static function (IngredientRepository $er) {
+                $qb = $er->createQueryBuilder('c');
+                $qb->orderBy('c.label', 'ASC')->addOrderBy('c.niveau', 'ASC');
 
-                    return $qb;
-                },
-            ]);
+                return $qb;
+            },
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            'data_class' => '\\'.GroupeHasIngredient::class,
+        $resolver->setDefaults(defaults: [
+            'data_class' => GroupeHasIngredient::class,
         ]);
     }
 

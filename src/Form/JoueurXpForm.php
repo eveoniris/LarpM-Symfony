@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -22,11 +23,10 @@ class JoueurXpForm extends AbstractType
         $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Nom civil',
             'required' => true,
-        ])
-            ->add('prenom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
-                'label' => 'Prénom civil',
-                'required' => true,
-            ]);
+        ])->add('prenom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            'label' => 'Prénom civil',
+            'required' => true,
+        ]);
     }
 
     /**

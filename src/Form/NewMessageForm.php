@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Message;
@@ -25,27 +27,25 @@ class NewMessageForm extends AbstractType
             'attr' => [
                 'placeholder' => 'Nouveau message',
             ],
-        ])
-            ->add('UserRelatedByDestinataire', EntityType::class, [
-                'required' => true,
-                'label' => 'Destinataire',
-                'class' => User::class,
-                'choice_label' => 'UserName',
-                'attr' => [
-                    //'class' => 'selectpicker',
-                    'data-live-search' => 'true',
-                    'placeholder' => 'Destinataire',
-                ],
-                'query_builder' => static fn (UserRepository $er) => $er->createQueryBuilder('u')->orderBy('u.username', 'ASC'),
-            ])
-            ->add('text', TextareaType::class, [
-                'required' => true,
-                'label' => 'Message',
-                'attr' => [
-                    'rows' => 9,
-                    'class' => 'tinymce',
-                ],
-            ]);
+        ])->add('UserRelatedByDestinataire', EntityType::class, [
+            'required' => true,
+            'label' => 'Destinataire',
+            'class' => User::class,
+            'choice_label' => 'UserName',
+            'attr' => [
+                // 'class' => 'selectpicker',
+                'data-live-search' => 'true',
+                'placeholder' => 'Destinataire',
+            ],
+            'query_builder' => static fn (UserRepository $er) => $er->createQueryBuilder('u')->orderBy('u.username', 'ASC'),
+        ])->add('text', TextareaType::class, [
+            'required' => true,
+            'label' => 'Message',
+            'attr' => [
+                'rows' => 9,
+                'class' => 'tinymce',
+            ],
+        ]);
     }
 
     /**

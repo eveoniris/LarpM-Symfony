@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\BonusApplication;
@@ -37,35 +39,28 @@ abstract class BaseBonus
     private ?string $periode = null;
     #[ORM\Column(length: 32, nullable: true)]
     private ?string $application = null;
+    /** @var array<string, mixed>|null */
     #[ORM\Column(nullable: true)]
     private ?array $json_data = null;
-    /**
-     * @var Collection<int, Territoire>
-     */
+    /** @var Collection<int, OrigineBonus> */
     #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: OrigineBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'origine_bonus')]
     #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
     private Collection $originesBonus;
 
-    /**
-     * @var Collection<int, Personnage>|null
-     */
+    /** @var Collection<int, PersonnageBonus> */
     #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: PersonnageBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'personnage_bonus')]
     #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
-    private ?Collection $personnageBonus;
+    private Collection $personnageBonus;
 
-    /**
-     * @var Collection<int, GroupeBonus>|null
-     */
+    /** @var Collection<int, GroupeBonus>|null */
     #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: GroupeBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'groupe_bonus')]
     #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
     private ?Collection $groupeBonus;
 
-    /**
-     * @var Collection<int, Merveille>
-     */
+    /** @var Collection<int, Merveille> */
     #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: Merveille::class)]
     private Collection $merveilles;
 
@@ -81,6 +76,7 @@ abstract class BaseBonus
     {
         if (!$this->groupeBonus->contains($groupeBonus)) {
             $this->groupeBonus->add($groupeBonus);
+            /* @phpstan-ignore argument.type */
             $groupeBonus->setBonus($this);
         }
 
@@ -91,29 +87,27 @@ abstract class BaseBonus
     {
         if (!$this->merveilles->contains($merveille)) {
             $this->merveilles->add($merveille);
+            /* @phpstan-ignore argument.type */
             $merveille->setBonus($this);
         }
 
         return $this;
     }
 
-
     public function addOrigineBonus(OrigineBonus $origine): static
     {
-        if (!$this->originesBonus->contains($origine)) {
-            $this->originesBonus->add($origine);
-            $origine->setBonus($this);
-        }
+        $this->originesBonus->add($origine);
+        /* @phpstan-ignore argument.type */
+        $origine->setBonus($this);
 
         return $this;
     }
 
     public function addPersonnageBonus(PersonnageBonus $personnageBonus): static
     {
-        if (!$this->personnageBonus->contains($personnageBonus)) {
-            $this->personnageBonus->add($personnageBonus);
-            $personnageBonus->setBonus($this);
-        }
+        $this->personnageBonus->add($personnageBonus);
+        /* @phpstan-ignore argument.type */
+        $personnageBonus->setBonus($this);
 
         return $this;
     }
@@ -180,11 +174,13 @@ abstract class BaseBonus
         return $this;
     }
 
+    /** @return array<string, mixed>|null */
     public function getJsonData(): ?array
     {
         return $this->json_data;
     }
 
+    /** @param array<string, mixed>|null $json_data */
     public function setJsonData(?array $json_data): static
     {
         $this->json_data = $json_data;
@@ -201,7 +197,7 @@ abstract class BaseBonus
     }
 
     /**
-     * @return Collection<int, Territoire>
+     * @return Collection<int, OrigineBonus>
      */
     public function getOrigineBonus(): Collection
     {
@@ -278,23 +274,16 @@ abstract class BaseBonus
 
     public function removeGroupeBonus(GroupeBonus $groupeBonus): static
     {
-        if ($this->groupeBonus->removeElement($groupeBonus)) {
-            // set the owning side to null (unless already changed)
-            if ($groupeBonus->getGroupe() === $this) {
-                $groupeBonus->setBonus(null);
-            }
-        }
+        $this->groupeBonus->removeElement($groupeBonus);
 
         return $this;
     }
 
     public function removeMerveille(Merveille $merveille): static
     {
-        if ($this->merveilles->removeElement($merveille)) {
+        if ($this->merveilles->removeElement($merveille) && $merveille->getBonus() === $this) {
             // set the owning side to null (unless already changed)
-            if ($merveille->getBonus() === $this) {
-                $merveille->setBonus(null);
-            }
+            $merveille->setBonus(null);
         }
 
         return $this;
@@ -313,9 +302,7 @@ abstract class BaseBonus
     public function removePersonnageBonus(PersonnageBonus $personnageBonus): static
     {
         // set the owning side to null (unless already changed)
-        if ($this->groupeBonus->removeElement($personnageBonus) && $personnageBonus->getPersonnage() === $this) {
-            $personnageBonus->setBonus(null);
-        }
+        $this->groupeBonus->removeElement($personnageBonus);
 
         return $this;
     }

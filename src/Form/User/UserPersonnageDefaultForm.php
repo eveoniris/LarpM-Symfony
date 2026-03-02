@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\User;
 
 use App\Entity\Personnage;
@@ -26,7 +28,8 @@ class UserPersonnageDefaultForm extends AbstractType
             'choice_label' => 'identity',
             'placeholder' => 'Aucun',
             'empty_data' => null,
-            'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('p')
+            'query_builder' => static fn (EntityRepository $er) => $er
+                ->createQueryBuilder('p')
                 ->join('p.user', 'u')
                 ->where('u.id = :userId and p.id <> :secondaireId')
                 ->setParameter('userId', $options['user_id'])

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Ingredient;
@@ -11,6 +13,7 @@ use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -21,12 +24,11 @@ class IngredientController extends AbstractController
      * Ajoute un ingredient.
      */
     #[Route('/ingredient/add', name: 'ingredient.add')]
-    public function adminAddAction(Request $request, EntityManagerInterface $entityManager)
+    public function adminAddAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $ingredient = new Ingredient();
 
-        $form = $this->createForm(IngredientForm::class, $ingredient)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(IngredientForm::class, $ingredient)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -51,10 +53,12 @@ class IngredientController extends AbstractController
      * Supprime un ingredient.
      */
     #[Route('/ingredient/{ingredient}/delete', name: 'ingredient.delete')]
-    public function adminDeleteAction(Request $request, EntityManagerInterface $entityManager, Ingredient $ingredient)
-    {
-        $form = $this->createForm(IngredientDeleteForm::class, $ingredient)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+    public function adminDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Ingredient $ingredient,
+    ): Response {
+        $form = $this->createForm(IngredientDeleteForm::class, $ingredient)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -79,7 +83,7 @@ class IngredientController extends AbstractController
      * Detail d'un ingredient.
      */
     #[Route('/ingredient/{ingredient}/detail', name: 'ingredient.detail')]
-    public function adminDetailAction(Request $request, Ingredient $ingredient)
+    public function adminDetailAction(Request $request, Ingredient $ingredient): Response
     {
         return $this->render('ingredient/detail.twig', [
             'ingredient' => $ingredient,
@@ -94,7 +98,7 @@ class IngredientController extends AbstractController
         Request $request,
         PagerService $pagerService,
         IngredientRepository $ingredientRepository,
-    ) {
+    ): Response {
         $pagerService->setRequest($request)->setRepository($ingredientRepository)->setLimit(50);
 
         return $this->render('ingredient/list.twig', [
@@ -107,10 +111,12 @@ class IngredientController extends AbstractController
      * Met à jour un ingredient.
      */
     #[Route('/ingredient/{ingredient}/update', name: 'ingredient.update')]
-    public function adminUpdateAction(Request $request, EntityManagerInterface $entityManager, Ingredient $ingredient)
-    {
-        $form = $this->createForm(IngredientForm::class, $ingredient)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+    public function adminUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Ingredient $ingredient,
+    ): Response {
+        $form = $this->createForm(IngredientForm::class, $ingredient)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 

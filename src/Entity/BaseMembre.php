@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -9,6 +11,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use SensitiveParameter;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'membre')]
@@ -19,7 +22,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseMembre', 'extended' => 'Membre'])]
 abstract class BaseMembre
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::BOOLEAN, nullable: true)]
@@ -33,7 +36,7 @@ abstract class BaseMembre
     #[JoinColumn(name: 'secondary_group_id', referencedColumnName: 'id', nullable: false)]
     protected SecondaryGroup $secondaryGroup;
 
-    #[ORM\Column(nullable: true)]
+    #[Column(nullable: true)]
     private ?bool $private = null;
 
     /**
@@ -101,7 +104,7 @@ abstract class BaseMembre
     /**
      * Set the value of secret.
      */
-    public function setSecret(bool $secret): static
+    public function setSecret(#[SensitiveParameter] bool $secret): static
     {
         $this->secret = $secret;
 

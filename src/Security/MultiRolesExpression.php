@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Security;
 
 use App\Enum\Role;
@@ -21,6 +24,6 @@ class MultiRolesExpression extends Expression
     {
         $roles = array_map(static fn ($role) => $role->value, $roles);
 
-        return implode(' or ', array_map(static fn ($role) => "is_granted(\"$role\")", $roles));
+        return implode(' or ', array_map(static fn ($role) => "is_granted(\"{$role}\")", $roles));
     }
 }

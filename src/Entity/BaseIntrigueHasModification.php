@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -19,17 +22,17 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseIntrigueHasModification', 'extended' => 'IntrigueHasModification'])]
 abstract class BaseIntrigueHasModification
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     /**
      * @Column(name="`date`", type="datetime")
      */
-    #[ORM\Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
-    protected \DateTime $date;
+    #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
+    protected DateTime $date;
 
-    #[ORM\ManyToOne(targetEntity: Intrigue::class, cascade: ['persist', 'remove'], inversedBy: 'intrigueHasModifications')]
-    #[ORM\JoinColumn(name: 'intrigue_id', referencedColumnName: 'id', nullable: false)]
+    #[ManyToOne(targetEntity: Intrigue::class, cascade: ['persist', 'remove'], inversedBy: 'intrigueHasModifications')]
+    #[JoinColumn(name: 'intrigue_id', referencedColumnName: 'id', nullable: false)]
     protected Intrigue $intrigue;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'intrigueHasModifications')]
@@ -61,7 +64,7 @@ abstract class BaseIntrigueHasModification
     /**
      * Set the value of date.
      */
-    public function setDate(\DateTime $date): static
+    public function setDate(DateTime $date): static
     {
         $this->date = $date;
 
@@ -71,7 +74,7 @@ abstract class BaseIntrigueHasModification
     /**
      * Get the value of date.
      */
-    public function getDate(): \DateTime
+    public function getDate(): DateTime
     {
         return $this->date;
     }
@@ -113,7 +116,7 @@ abstract class BaseIntrigueHasModification
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'date', 'intrigue_id', 'User_id'];
-    } */
+     * {
+     * return ['id', 'date', 'intrigue_id', 'User_id'];
+     * } */
 }

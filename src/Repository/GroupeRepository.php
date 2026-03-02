@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Groupe;
@@ -12,6 +14,7 @@ class GroupeRepository extends BaseRepository
     /**
      * Trouve tous les groupes classé par ordre alphabétique.
      */
+    /** @return list<Groupe> */
     public function findAll(): array
     {
         return $this->findBy([], ['nom' => 'ASC']);
@@ -20,23 +23,23 @@ class GroupeRepository extends BaseRepository
     /**
      * Trouve tous les groupes de PJ classé par numéro.
      */
-    public function findAllPj()
+    /** @return list<Groupe> */
+    public function findAllPj(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT g FROM App\Entity\Groupe g WHERE g.pj = true ORDER BY g.numero ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT g FROM App\Entity\Groupe g WHERE g.pj = true ORDER BY g.numero ASC')->getResult();
     }
 
     /**
      * Recherche d'une liste de groupe.
-     *
-     * @param unknown $type
-     * @param unknown $value
-     * @param unknown $limit
-     * @param unknown $offset
      */
-    public function findList($type, $value, $limit, $offset, array $order = [])
-    {
+    /** @param array<string, string> $order */
+    public function findList(
+        ?string $type,
+        mixed $value,
+        int $limit,
+        int $offset,
+        array $order = [],
+    ): \Doctrine\ORM\Query {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('g');
@@ -50,14 +53,14 @@ class GroupeRepository extends BaseRepository
                     break;
                 case 'nom':
                     $qb->andWhere('g.nom LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
             }
         }
 
-        $qb->setFirstResult($offset);
-        $qb->setMaxResults($limit);
-        $qb->orderBy('g.'.$order['by'], $order['dir']);
+        $qb->setFirstResult((int) $offset);
+        $qb->setMaxResults((int) $limit);
+        $qb->orderBy('g.' . $order['by'], $order['dir']);
 
         return $qb->getQuery();
     }
@@ -65,7 +68,7 @@ class GroupeRepository extends BaseRepository
     /**
      * Trouve les annonces correspondant aux critères de recherche.
      */
-    public function findCount($type, ?string $value)
+    public function findCount(string $type, ?string $value): int
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -80,7 +83,7 @@ class GroupeRepository extends BaseRepository
                     break;
                 case 'nom':
                     $qb->andWhere('g.nom LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
             }
         }
@@ -90,26 +93,22 @@ class GroupeRepository extends BaseRepository
 
     /**
      * Fourni la liste de tous les groupes classé par numéro.
-     *
-     * @return Collection App\Entity\Groupe $groupes
      */
-    public function findAllOrderByNumero()
+    /** @return list<Groupe> */
+    public function findAllOrderByNumero(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT g FROM App\Entity\Groupe g ORDER BY g.numero ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT g FROM App\Entity\Groupe g ORDER BY g.numero ASC')->getResult();
     }
 
     /**
      * Trouve un groupe en fonction de son code.
      *
      * @param string $code
-     *
-     * @return App\Entity\Groupe $groupe
      */
-    public function findOneByCode($code)
+    public function findOneByCode($code): mixed
     {
-        $groupes = $this->getEntityManager()
+        $groupes = $this
+            ->getEntityManager()
             ->createQuery('SELECT g FROM App\Entity\Groupe g WHERE g.code = :code')
             ->setParameter('code', $code)
             ->getResult();
@@ -117,10 +116,12 @@ class GroupeRepository extends BaseRepository
         return reset($groupes);
     }
 
-    public function findByGn(int $gn, ?string $type = '', ?string $value = '', ?array $order = [])
+    /** @param array<string, string>|null $order */
+    public function findByGn(int $gn, ?string $type = '', ?string $value = '', ?array $order = []): \Doctrine\ORM\Query
     {
         // Liste des groupes du GN en paramètre
-        $qbGroupes = $this->getEntityManager()
+        $qbGroupes = $this
+            ->getEntityManager()
             ->createQuery('SELECT IDENTITY(g.groupe) FROM App\Entity\GroupeGn g WHERE g.gn = :code')
             ->setParameter('code', $gn)
             ->getResult();
@@ -130,42 +131,45 @@ class GroupeRepository extends BaseRepository
         $qb->select('t');
         $qb->from(Territoire::class, 't');
         $qb->andWhere($qb->expr()->in('t.groupe', $listeGroupes));
-        $qb->orderBy('t.'.$order['by'], $order['dir']);
+        $qb->orderBy('t.' . $order['by'], $order['dir']);
 
         return $qb->getQuery();
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
         ?OrderBy $orderBy = null,
         ?string $alias = null,
-        ?QueryBuilder $query = null
+        ?QueryBuilder $query = null,
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias.'.userRelatedByScenaristeId', 'scenariste');
+        $query->join($alias . '.userRelatedByScenaristeId', 'scenariste');
         $query->join('scenariste.etatCivil', 'etatCivil');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    public function searchAttributes(): array
+    /** @return array<string, array<string, mixed>> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::searchAttributes(),
-            $alias.'.numero',
-            $alias.'.nom', // => 'Libellé',
+            $alias . '.numero',
+            $alias . '.nom', // => 'Libellé',
             'scenariste.username as scenariste_username',
             'etatCivil.nom as scenariste_nom',
             'etatCivil.prenom as scenariste_prenom',
             'scenariste.email as scenariste_email',
-            $alias.'.description', // => 'Description',
+            $alias . '.description', // => 'Description',
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
@@ -173,16 +177,16 @@ class GroupeRepository extends BaseRepository
         return [
             ...parent::sortAttributes($alias),
             'nom' => [
-                OrderBy::ASC => [$alias.'.nom' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.nom' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.nom' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.nom' => OrderBy::DESC],
             ],
             'description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
             'numero' => [
-                OrderBy::ASC => [$alias.'.numero' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.numero' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.numero' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.numero' => OrderBy::DESC],
             ],
             'scenariste' => [
                 OrderBy::ASC => ['scenariste.username' => OrderBy::ASC],
@@ -214,6 +218,7 @@ class GroupeRepository extends BaseRepository
         return parent::translateAttribute($attribute);
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [

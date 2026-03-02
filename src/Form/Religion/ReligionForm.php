@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Religion;
 
@@ -20,44 +21,50 @@ class ReligionForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', TextType::class, [
-            'label' => 'Label',
-            'required' => true,
-        ])
+        $builder
+            ->add('label', TextType::class, [
+                'label' => 'Label',
+                'required' => true,
+            ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description rapide',
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
-                    'rows' => 10],
+                    'rows' => 10,
+                ],
             ])
             ->add('description_orga', TextareaType::class, [
                 'label' => 'Description pour les ORGAS',
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
-                    'rows' => 10],
+                    'rows' => 10,
+                ],
             ])
             ->add('description_pratiquant', TextareaType::class, [
                 'label' => 'Description pour les PRATIQUANTS',
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
-                    'rows' => 10],
+                    'rows' => 10,
+                ],
             ])
             ->add('description_fervent', TextareaType::class, [
                 'label' => 'Description pour les FERVENTS',
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
-                    'rows' => 10],
+                    'rows' => 10,
+                ],
             ])
             ->add('description_fanatique', TextareaType::class, [
                 'label' => 'Description pour les FANATIQUES',
                 'required' => false,
                 'attr' => [
                     'class' => 'tinymce',
-                    'rows' => 10],
+                    'rows' => 10,
+                ],
             ])
             ->add('spheres', EntityType::class, [
                 'label' => 'Sphères',

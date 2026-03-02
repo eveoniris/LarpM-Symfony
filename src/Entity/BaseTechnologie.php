@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use SensitiveParameter;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
@@ -16,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 abstract class BaseTechnologie
 {
     #[ORM\Id]
-    #[ORM\Column(type: Types::INTEGER, )]
+    #[ORM\Column(type: Types::INTEGER)]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
@@ -37,18 +40,20 @@ abstract class BaseTechnologie
     /**
      * @var Collection<BaseTechnologiesRessources>
      */
-    #[ORM\OneToMany(mappedBy: 'technologie', targetEntity: 'BaseTechnologiesRessources', cascade: ['persist'])]
+    /** @var Collection<int, BaseTechnologiesRessources> */
+    #[ORM\OneToMany(mappedBy: 'technologie', targetEntity: BaseTechnologiesRessources::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'technology_id', nullable: false)]
     protected Collection $technologieRessource;
 
-    #[ORM\ManyToOne(targetEntity: 'CompetenceFamily', cascade: ['persist'], inversedBy: 'technologies')]
+    #[ORM\ManyToOne(targetEntity: CompetenceFamily::class, cascade: ['persist'], inversedBy: 'technologies')]
     #[ORM\JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: true)]
     protected CompetenceFamily $competenceFamily;
 
     /**
      * @var Collection<Personnage>
      */
-    #[ORM\ManyToMany(targetEntity: 'Personnage', mappedBy: 'technologies')]
+    /** @var Collection<int, Personnage> */
+    #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'technologies')]
     protected Collection $personnages;
 
     public function __construct()
@@ -59,8 +64,6 @@ abstract class BaseTechnologie
 
     /**
      * Set the value of id.
-     *
-     * @return Technologie
      */
     public function setId(?int $id): static
     {
@@ -79,8 +82,6 @@ abstract class BaseTechnologie
 
     /**
      * Set the value of label.
-     *
-     * @return Technologie
      */
     public function setLabel(?string $label): static
     {
@@ -91,8 +92,6 @@ abstract class BaseTechnologie
 
     /**
      * Get the value of label.
-     *
-     * @return string|null
      */
     public function getLabel(): string
     {
@@ -101,8 +100,6 @@ abstract class BaseTechnologie
 
     /**
      * Set the value of description.
-     *
-     * @return Technologie
      */
     public function setDescription(?string $description): static
     {
@@ -113,8 +110,6 @@ abstract class BaseTechnologie
 
     /**
      * Get the value of description.
-     *
-     * @return string|null
      */
     public function getDescription(): string
     {
@@ -150,17 +145,13 @@ abstract class BaseTechnologie
     /**
      * Set the value of secret.
      */
-    public function setSecret(bool $secret): void
+    public function setSecret(#[SensitiveParameter] bool $secret): void
     {
         $this->secret = $secret;
     }
 
     /**
      * Add BaseTechnologiesRessources entity to collection (one to many).
-     *
-     * @param BaseTechnologiesRessources $ressource
-     *
-     * @return Technologie
      */
     public function addRessources(TechnologiesRessources $ressource): static
     {
@@ -171,10 +162,6 @@ abstract class BaseTechnologie
 
     /**
      * Remove BaseTechnologiesRessources entity from collection (one to many).
-     *
-     * @param BaseTechnologiesRessources $ressource
-     *
-     * @return Technologie
      */
     public function removeTechnologie(TechnologiesRessources $ressource): static
     {
@@ -185,6 +172,8 @@ abstract class BaseTechnologie
 
     /**
      * Get BaseTechnologiesRessources entity collection (one to many).
+     *
+     * @return Collection<int, BaseTechnologiesRessources>
      */
     public function getRessources(): Collection
     {
@@ -193,10 +182,6 @@ abstract class BaseTechnologie
 
     /**
      * Set CompetenceFamily entity (many to one).
-     *
-     * @param CompetenceFamily|null $competenceFamily
-     *
-     * @return BaseTechnologie
      */
     public function setCompetenceFamily(CompetenceFamily $competenceFamily): static
     {
@@ -215,10 +200,8 @@ abstract class BaseTechnologie
 
     /**
      * Add Personnage entity to collection.
-     *
-     * @return Technologie
      */
-    public function addPersonnage(Personnage $personnage)
+    public function addPersonnage(Personnage $personnage): static
     {
         $this->personnages[] = $personnage;
 
@@ -227,8 +210,6 @@ abstract class BaseTechnologie
 
     /**
      * Remove Personnage entity from collection.
-     *
-     * @return Technologie
      */
     public function removePersonnage(Personnage $personnage): static
     {
@@ -239,6 +220,8 @@ abstract class BaseTechnologie
 
     /**
      * Get Personnage entity collection.
+     *
+     * @return Collection<int, Personnage>
      */
     public function getPersonnages(): Collection
     {
@@ -246,7 +229,7 @@ abstract class BaseTechnologie
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description'];
-    } */
+     * {
+     * return ['id', 'label', 'description'];
+     * } */
 }

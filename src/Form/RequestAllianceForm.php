@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -24,21 +25,17 @@ class RequestAllianceForm extends AbstractType
             'required' => true,
             'label' => 'Groupe avec lequel vous voulez vous allier',
             'class' => \App\Entity\Groupe::class,
-            'query_builder' => static function (\LarpManager\Repository\GroupeRepository $er) {
-                return $er->createQueryBuilder('g')
-                    ->where('g.pj = true')
-                    ->orderBy('g.nom', 'ASC');
-            },
+            'query_builder' => static fn (\App\Repository\GroupeRepository $er) => $er->createQueryBuilder('g')->where('g.pj = true')->orderBy('g.nom', 'ASC'),
             'choice_label' => 'nom',
-        ])
-            ->add('message', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'label' => 'Un petit mot pour expliquer votre démarche',
-                'required' => true,
-                'attr' => [
-                    'class' => 'tinymce',
-                    'rows' => 9,
-                    'help' => 'Ce texte sera transmis au chef de groupe concerné.'],
-            ]);
+        ])->add('message', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'label' => 'Un petit mot pour expliquer votre démarche',
+            'required' => true,
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 9,
+                'help' => 'Ce texte sera transmis au chef de groupe concerné.',
+            ],
+        ]);
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use DateTime;
@@ -21,14 +23,14 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseRelecture', 'extended' => 'Relecture'])]
 class BaseRelecture
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     /**
      * @Column(name="`date`", type="datetime")
      */
     #[Column(name: 'date', type: Types::DATETIME_MUTABLE)]
-    protected \DateTime $date;
+    protected DateTime $date;
 
     /**
      * @Column(type="string", length=45)
@@ -39,7 +41,7 @@ class BaseRelecture
     /**
      * @Column(type="text", nullable=true)
      */
-    #[Column(type: Types::TEXT, nullable: 45)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected string $remarque = '';
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'relectures')]
@@ -57,7 +59,7 @@ class BaseRelecture
     /**
      * Get the value of date.
      */
-    public function getDate(): \DateTime
+    public function getDate(): DateTime
     {
         return $this->date;
     }
@@ -65,7 +67,7 @@ class BaseRelecture
     /**
      * Set the value of date.
      */
-    public function setDate(\DateTime $date): static
+    public function setDate(DateTime $date): static
     {
         $this->date = $date;
 
@@ -163,7 +165,7 @@ class BaseRelecture
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'date', 'statut', 'remarque', 'User_id', 'intrigue_id'];
-    } */
+     * {
+     * return ['id', 'date', 'statut', 'remarque', 'User_id', 'intrigue_id'];
+     * } */
 }

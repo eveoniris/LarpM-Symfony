@@ -1,36 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Service\OrderBy;
 
 class LevelRepository extends BaseRepository
 {
-    public function searchAttributes(?string $alias = null): array
+    /** @return array<string, array<string, mixed>> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::searchAttributes(),
-            $alias.'.label',
-            $alias.'.cout',
-            $alias.'.cout_favori',
-            $alias.'.cout_meconu',
-            $alias.'.index',
+            $alias . '.label',
+            $alias . '.cout',
+            $alias . '.cout_favori',
+            $alias . '.cout_meconu',
+            $alias . '.index',
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::sortAttributes($alias),
-            'index' => [OrderBy::ASC => [$alias.'.index' => OrderBy::ASC], OrderBy::DESC => [$alias.'.index' => OrderBy::DESC]],
-            'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
+            'index' => [
+                OrderBy::ASC => [$alias . '.index' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.index' => OrderBy::DESC],
+            ],
+            'label' => [
+                OrderBy::ASC => [$alias . '.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.label' => OrderBy::DESC],
+            ],
         ];
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [

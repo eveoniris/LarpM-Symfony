@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\DocumentType;
@@ -23,8 +25,7 @@ class Loi extends BaseLoi
 
     public function initFile(): static
     {
-        $this->setDocumentType(DocumentType::Doc)
-            ->setFolderType(FolderType::Private);
+        $this->setDocumentType(DocumentType::Doc)->setFolderType(FolderType::Private);
 
         return $this;
     }
@@ -36,7 +37,7 @@ class Loi extends BaseLoi
 
     public function getPrintLabel(): ?string
     {
-        return (new AsciiSlugger())->slug($this->getLabel());
+        return new AsciiSlugger()->slug($this->getLabel());
     }
 
     protected function afterUpload(FileUploader $fileUploader): FileUploader
@@ -48,6 +49,6 @@ class Loi extends BaseLoi
 
     public function getDocument(string $projectDir): string
     {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+        return $this->getDocumentFilePath($projectDir) . $this->getDocumentUrl();
     }
 }
