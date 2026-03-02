@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\VisibilityType;
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -22,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BaseBackground', 'extended' => 'Background'])]
 class BaseBackground
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'titre', type: Types::STRING, length: 45)]
@@ -36,10 +39,10 @@ class BaseBackground
     protected ?string $visibility = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $creation_date;
+    protected ?DateTime $creation_date;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $update_date;
+    protected ?DateTime $update_date;
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'backgrounds')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
@@ -58,12 +61,12 @@ class BaseBackground
     {
     }
 
-    public function getCreationDate(): ?\DateTime
+    public function getCreationDate(): ?DateTime
     {
         return $this->creation_date;
     }
 
-    public function setCreationDate(?\DateTime $creation_date): self
+    public function setCreationDate(?DateTime $creation_date): self
     {
         $this->creation_date = $creation_date;
 
@@ -130,12 +133,12 @@ class BaseBackground
         return $this;
     }
 
-    public function getUpdateDate(): ?\DateTime
+    public function getUpdateDate(): ?DateTime
     {
         return $this->update_date;
     }
 
-    public function setUpdateDate(?\DateTime $update_date): self
+    public function setUpdateDate(?DateTime $update_date): self
     {
         $this->update_date = $update_date;
 
@@ -147,7 +150,7 @@ class BaseBackground
         return $this->user;
     }
 
-    public function setUser(?User $User = null)
+    public function setUser(?User $User = null): static
     {
         $this->user = $User;
 
@@ -173,7 +176,7 @@ class BaseBackground
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'titre', 'text', 'visibility', 'creation_date', 'update_date', 'groupe_id', 'User_id', 'gn_id'];
-    } */
+     * {
+     * return ['id', 'titre', 'text', 'visibility', 'creation_date', 'update_date', 'groupe_id', 'User_id', 'gn_id'];
+     * } */
 }

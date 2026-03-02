@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Gn;
 
 use App\Entity\Gn;
@@ -19,9 +21,10 @@ class GnForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', TextType::class, [
-            'required' => true,
-        ])
+        $builder
+            ->add('label', TextType::class, [
+                'required' => true,
+            ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description du GN',
                 'required' => false,

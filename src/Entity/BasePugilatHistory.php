@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -17,11 +20,11 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePugilatHistory', 'extended' => 'PugilatHistory'])]
 abstract class BasePugilatHistory
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
-    protected \DateTime $date;
+    protected DateTime $date;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $pugilat;
@@ -36,7 +39,7 @@ abstract class BasePugilatHistory
     public function __construct()
     {
     }
-    
+
     /**
      * Set the value of id.
      */
@@ -58,7 +61,7 @@ abstract class BasePugilatHistory
     /**
      * Set the value of date.
      */
-    public function setDate(\DateTime $date): static
+    public function setDate(DateTime $date): static
     {
         $this->date = $date;
 
@@ -68,7 +71,7 @@ abstract class BasePugilatHistory
     /**
      * Get the value of date.
      */
-    public function getDate(): \DateTime
+    public function getDate(): DateTime
     {
         return $this->date;
     }
@@ -128,7 +131,7 @@ abstract class BasePugilatHistory
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'date', 'pugilat', 'explication', 'personnage_id'];
-    } */
+     * {
+     * return ['id', 'date', 'pugilat', 'explication', 'personnage_id'];
+     * } */
 }

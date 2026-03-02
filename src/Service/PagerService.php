@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Form\Entity\ListSearch;
@@ -14,20 +16,21 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class PagerService
 {
-    protected int $limit;
-    protected int $page;
-    protected FormInterface $form;
-    protected mixed $searchValue;
-    protected string|array|null $searchType;
-    protected Request $request;
-    protected ?BaseRepository $repository = null;
+    private int $limit;
+    private int $page;
+    private FormInterface $form;
+    private mixed $searchValue;
+    /** @var string|array<string, mixed>|null */
+    private string|array|null $searchType;
+    private Request $request;
+    private ?BaseRepository $repository = null;
 
     public function __construct(
-        protected readonly RequestStack $requestStack,
-        protected readonly OrderBy $orderBy,
-        protected readonly FormFactoryInterface $formFactory,
-        protected readonly EntityManagerInterface $entityManager,
-        protected readonly UrlGeneratorInterface $urlGenerator,
+        private readonly RequestStack $requestStack,
+        private readonly OrderBy $orderBy,
+        private readonly FormFactoryInterface $formFactory,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -59,7 +62,7 @@ final class PagerService
         return $this->limit;
     }
 
-    public function setLimit(int $limit): PagerService
+    public function setLimit(int $limit): self
     {
         $this->limit = $limit;
 
@@ -77,7 +80,7 @@ final class PagerService
         return $this->request;
     }
 
-    public function setRequest(Request $request): PagerService
+    public function setRequest(Request $request): self
     {
         $this->request = $request;
         $this->orderBy->getFromRequest($request); // reload
@@ -120,6 +123,8 @@ final class PagerService
      * First link will order by ASC
      * Second will order by DESC
      * Third will not order by.
+     *
+     * @param array<string, mixed>|null $params
      */
     public function getSearchOrderPathLinkForField(string $field, ?string $route = null, ?array $params = null): string
     {
@@ -141,8 +146,8 @@ final class PagerService
 
         $s = '';
         foreach ($orders as $by => $sort) {
-            $s .= (OrderBy::ASC === $sort || '' === $sort) ? '' : '-';
-            $s .= $by.',';
+            $s .= OrderBy::ASC === $sort || '' === $sort ? '' : '-';
+            $s .= $by . ',';
         }
 
         $params['order_by'] = trim($s, ',');
@@ -162,7 +167,7 @@ final class PagerService
         return $this->searchValue;
     }
 
-    protected function loadForm(): void
+    private function loadForm(): void
     {
         $form = $this->getForm();
 
@@ -171,18 +176,17 @@ final class PagerService
         }
 
         // handle Get search
-        $this->searchValue = $this->getRequest()?->get('search')
-            ?? $this->getRequest()?->get('q');
-        $this->searchType = $this->getRequest()?->get('searchType')
-            ?? $this->getRequest()?->get('t');
+        $this->searchValue = $this->getRequest()?->get('search') ?? $this->getRequest()?->get('q');
+        $this->searchType = $this->getRequest()?->get('searchType') ?? $this->getRequest()?->get('t');
 
-        /** @var $data ListSearch */
-        if ($form->isSubmitted() && $form->isValid() && $data = $form->getData()) {
+        if ($form->isSubmitted() && $form->isValid() && ($data = $form->getData())) {
+            /* @var ListSearch $data */
             $this->searchType = $data->getType();
             $this->searchValue = $data->getValue();
         }
     }
 
+    /** @param array<string, mixed> $options */
     public function getForm(?string $type = null, ?ListSearch $data = null, array $options = []): FormInterface
     {
         if (isset($this->form)) {
@@ -211,13 +215,12 @@ final class PagerService
                 foreach ($this->getRepository()->searchAttributes() as $searchKey => $searchAttribute) {
                     $attribute = $searchKey;
                     $label = $searchAttribute;
-                    if (is_int($searchKey)) {
+                    if (\is_int($searchKey)) {
                         $label = $this->getRepository()->translateAttribute($searchAttribute);
                         $attribute = $searchAttribute;
                     }
 
-                    $typeChoicesOverride['type_choices']['choices'][$label] = $this->getRepository(
-                    )->getAttributeWhereName($attribute);
+                    $typeChoicesOverride['type_choices']['choices'][$label] = $this->getRepository()->getAttributeWhereName($attribute);
                 }
             }
 
@@ -225,25 +228,17 @@ final class PagerService
         }
 
         // may from GET
-        if (empty($data->getValue()) && $search = $this->getRequest()?->get('search') ?? $this->getRequest()?->get(
-                'q',
-            )) {
+        if (empty($data->getValue()) && ($search = $this->getRequest()?->get('search') ?? $this->getRequest()?->get('q'))) {
             $data->setValue($search);
             $this->searchValue = $search;
         }
 
-        if (empty($data->getType()) && $type = $this->getRequest()?->get('searchType') ?? $this->getRequest()?->get(
-                't',
-            )) {
+        if (empty($data->getType()) && ($type = $this->getRequest()?->get('searchType') ?? $this->getRequest()?->get('t'))) {
             $data->setType($type);
             $this->searchType = $type;
         }
 
-        $this->form = $this->formFactory->create(
-            type: $type ?? ListFindForm::class,
-            data: $data,
-            options: $options,
-        );
+        $this->form = $this->formFactory->create(type: $type ?? ListFindForm::class, data: $data, options: $options);
 
         if ($request = $this->getRequest()) {
             $this->form->handleRequest($request);
@@ -257,13 +252,14 @@ final class PagerService
         return $this->repository;
     }
 
-    public function setRepository(BaseRepository $repository): PagerService
+    public function setRepository(BaseRepository $repository): self
     {
         $this->repository = $repository;
 
         return $this;
     }
 
+    /** @return string|array<string, mixed>|null */
     public function getSearchType(): string|array|null
     {
         if (isset($this->searchType)) {
@@ -293,14 +289,15 @@ final class PagerService
         return $this->orderBy->getOrders()[$field] ?? false;
     }
 
-    public function setDefaultOrderBy(string $orderBy): PagerService
+    public function setDefaultOrderBy(string $orderBy): self
     {
         $this->orderBy->setDefaultOrderDir($orderBy);
 
         return $this;
     }
 
-    public function setDefaultOrdersBy(array $orders): PagerService
+    /** @param array<string, string> $orders */
+    public function setDefaultOrdersBy(array $orders): self
     {
         if (!empty($this->orderBy->getOrders())) {
             return $this;
@@ -311,7 +308,8 @@ final class PagerService
         return $this;
     }
 
-    public function setOrdersBy(array $orders): PagerService
+    /** @param array<string, string> $orders */
+    public function setOrdersBy(array $orders): self
     {
         $this->orderBy->setOrders($orders);
 

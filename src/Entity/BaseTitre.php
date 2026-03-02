@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseTitre', 'extended' => 'Titre'])]
 abstract class BaseTitre
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
@@ -27,6 +29,7 @@ abstract class BaseTitre
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected int $renomme;
 
+    /** @var Collection<int, TitreTerritoire> */
     #[OneToMany(mappedBy: 'titre', targetEntity: TitreTerritoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'titre_id', nullable: false)]
     protected Collection $titreTerritoires;
@@ -112,6 +115,8 @@ abstract class BaseTitre
 
     /**
      * Get TitreTerritoire entity collection (one to many).
+     *
+     * @return Collection<int, TitreTerritoire>
      */
     public function getTitreTerritoires(): Collection
     {
@@ -119,7 +124,7 @@ abstract class BaseTitre
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'renomme'];
-    } */
+     * {
+     * return ['id', 'label', 'renomme'];
+     * } */
 }

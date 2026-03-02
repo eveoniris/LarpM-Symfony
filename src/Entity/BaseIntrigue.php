@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -22,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BaseIntrigue', 'extended' => 'Intrigue'])]
 abstract class BaseIntrigue
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Assert\NotNull]
@@ -44,10 +47,10 @@ abstract class BaseIntrigue
     protected ?string $resolution = null;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected \DateTime $date_creation;
+    protected DateTime $date_creation;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: false)]
-    protected \DateTime $date_update;
+    protected DateTime $date_update;
 
     /**
      * @Column(name="`state`", type="string", length=45, nullable=true)
@@ -55,34 +58,42 @@ abstract class BaseIntrigue
     #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $state = null;
 
+    /** @var Collection<int, IntrigueHasEvenement> */
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasEvenement::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasEvenements;
 
+    /** @var Collection<int, IntrigueHasGroupe> */
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasGroupe::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasGroupes;
 
+    /** @var Collection<int, IntrigueHasGroupeSecondaire> */
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasGroupeSecondaire::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasGroupeSecondaires;
 
+    /** @var Collection<int, IntrigueHasLieu> */
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasLieu::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasLieus;
 
+    /** @var Collection<int, IntrigueHasDocument> */
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasDocument::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasDocuments;
 
+    /** @var Collection<int, IntrigueHasModification> */
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasModification::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasModifications;
 
+    /** @var Collection<int, IntrigueHasObjectif> */
     #[OneToMany(mappedBy: 'intrigue', targetEntity: IntrigueHasObjectif::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $intrigueHasObjectifs;
 
+    /** @var Collection<int, Relecture> */
     #[OneToMany(mappedBy: 'intrigue', targetEntity: Relecture::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'intrigue_id', nullable: false)]
     protected Collection $relectures;
@@ -101,8 +112,8 @@ abstract class BaseIntrigue
         $this->intrigueHasModifications = new ArrayCollection();
         $this->intrigueHasObjectifs = new ArrayCollection();
         $this->relectures = new ArrayCollection();
-        $this->date_creation = new \DateTime();
-        $this->date_update = new \DateTime();
+        $this->date_creation = new DateTime();
+        $this->date_update = new DateTime();
     }
 
     /**
@@ -198,7 +209,7 @@ abstract class BaseIntrigue
     /**
      * Set the value of date_creation.
      */
-    public function setDateCreation(\DateTime $date_creation): static
+    public function setDateCreation(DateTime $date_creation): static
     {
         $this->date_creation = $date_creation;
 
@@ -208,7 +219,7 @@ abstract class BaseIntrigue
     /**
      * Get the value of date_creation.
      */
-    public function getDateCreation(): \DateTime
+    public function getDateCreation(): DateTime
     {
         return $this->date_creation;
     }
@@ -216,7 +227,7 @@ abstract class BaseIntrigue
     /**
      * Set the value of date_update.
      */
-    public function setDateUpdate(\DateTime $date_update): static
+    public function setDateUpdate(DateTime $date_update): static
     {
         $this->date_update = $date_update;
 
@@ -226,7 +237,7 @@ abstract class BaseIntrigue
     /**
      * Get the value of date_update.
      */
-    public function getDateUpdate(): \DateTime
+    public function getDateUpdate(): DateTime
     {
         return $this->date_update;
     }
@@ -272,6 +283,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasEvenement entity collection (one to many).
      */
+    /** @return Collection<int, IntrigueHasEvenement> */
     public function getIntrigueHasEvenements(): Collection
     {
         return $this->intrigueHasEvenements;
@@ -300,6 +312,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasGroupe entity collection (one to many).
      */
+    /** @return Collection<int, IntrigueHasGroupe> */
     public function getIntrigueHasGroupes(): Collection
     {
         return $this->intrigueHasGroupes;
@@ -328,6 +341,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasGroupeSecondaire entity collection (one to many).
      */
+    /** @return Collection<int, IntrigueHasGroupeSecondaire> */
     public function getIntrigueHasGroupeSecondaires(): Collection
     {
         return $this->intrigueHasGroupeSecondaires;
@@ -356,6 +370,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasLieu entity collection (one to many).
      */
+    /** @return Collection<int, IntrigueHasLieu> */
     public function getIntrigueHasLieus(): Collection
     {
         return $this->intrigueHasLieus;
@@ -384,6 +399,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasDocument entity collection (one to many).
      */
+    /** @return Collection<int, IntrigueHasDocument> */
     public function getIntrigueHasDocuments(): Collection
     {
         return $this->intrigueHasDocuments;
@@ -412,6 +428,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasModification entity collection (one to many).
      */
+    /** @return Collection<int, IntrigueHasModification> */
     public function getIntrigueHasModifications(): Collection
     {
         return $this->intrigueHasModifications;
@@ -440,6 +457,7 @@ abstract class BaseIntrigue
     /**
      * Get IntrigueHasObjectif entity collection (one to many).
      */
+    /** @return Collection<int, IntrigueHasObjectif> */
     public function getIntrigueHasObjectifs(): Collection
     {
         return $this->intrigueHasObjectifs;
@@ -468,6 +486,7 @@ abstract class BaseIntrigue
     /**
      * Get Relecture entity collection (one to many).
      */
+    /** @return Collection<int, Relecture> */
     public function getRelectures(): Collection
     {
         return $this->relectures;
@@ -492,7 +511,7 @@ abstract class BaseIntrigue
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'description', 'titre', 'text', 'resolution', 'date_creation', 'date_update', 'User_id', 'state'];
-    } */
+     * {
+     * return ['id', 'description', 'titre', 'text', 'resolution', 'date_creation', 'date_update', 'User_id', 'state'];
+     * } */
 }

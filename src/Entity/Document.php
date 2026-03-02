@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\DocumentType;
@@ -7,17 +9,19 @@ use App\Enum\FolderType;
 use App\Repository\DocumentRepository;
 use App\Service\FileUploader;
 use App\Trait\EntityFileUploadTrait;
+use DateTime;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 #[Entity(repositoryClass: DocumentRepository::class)]
-class Document extends BaseDocument implements \Stringable
+class Document extends BaseDocument implements Stringable
 {
     use EntityFileUploadTrait;
 
-    private ?string $label = null;
-    private ?string $extension = null;
-    private ?string $mimetype = null;
+    protected ?string $label = null;
+    protected ?string $extension = null;
+    protected ?string $mimetype = null;
 
     public function __construct()
     {
@@ -27,12 +31,13 @@ class Document extends BaseDocument implements \Stringable
 
     public function initFile(): static
     {
-        $this->setDocumentType(DocumentType::Document)
+        $this
+            ->setDocumentType(DocumentType::Document)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4)
-            ->setCreationDate(new \DateTime('now'))
-            ->setUpdateDate(new \DateTime('now'))
+            ->setCreationDate(new DateTime('now'))
+            ->setUpdateDate(new DateTime('now'))
             ->setImpression(false);
 
         return $this;
@@ -48,7 +53,7 @@ class Document extends BaseDocument implements \Stringable
      */
     public function getIdentity(): string
     {
-        return $this->getCode().' '.$this->getTitre();
+        return $this->getCode() . ' ' . $this->getTitre();
     }
 
     /**
@@ -68,7 +73,7 @@ class Document extends BaseDocument implements \Stringable
 
     public function getDocument(?string $projectDir = null): string
     {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+        return $this->getDocumentFilePath($projectDir) . $this->getDocumentUrl();
     }
 
     public function getDocumentUrl(): string
@@ -78,8 +83,9 @@ class Document extends BaseDocument implements \Stringable
 
     public function getPrintLabel(): ?string
     {
-        return (new AsciiSlugger())->slug($this->getLabel() ?: $this->getFilename() ?: $this->getCode() ?: time());
-        //return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->filename ?: $this->getCode()));
+        return new AsciiSlugger()->slug($this->getLabel() ?: $this->getFilename() ?: $this->getCode() ?: time());
+
+        // return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->filename ?: $this->getCode()));
     }
 
     public function getLabel(): string
@@ -87,7 +93,7 @@ class Document extends BaseDocument implements \Stringable
         return $this->label ?: $this->getIdentity() ?: '';
     }
 
-    public function setLabel(?string $label): Document
+    public function setLabel(?string $label): self
     {
         $this->label = $label;
 
@@ -96,6 +102,6 @@ class Document extends BaseDocument implements \Stringable
 
     public function getOldV1Document(?string $projectDir = null): string
     {
-        return $this->getDocumentFilePath($projectDir, true).$this->getDocumentUrl();
+        return $this->getDocumentFilePath($projectDir, true) . $this->getDocumentUrl();
     }
 }

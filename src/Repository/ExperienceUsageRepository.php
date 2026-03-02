@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Service\OrderBy;
@@ -7,6 +9,7 @@ use Doctrine\ORM\QueryBuilder;
 
 class ExperienceUsageRepository extends BaseRepository
 {
+    /** @param string|array<string, mixed>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -16,7 +19,6 @@ class ExperienceUsageRepository extends BaseRepository
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }

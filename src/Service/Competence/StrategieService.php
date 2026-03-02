@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service\Competence;
 
 use App\Enum\LevelType;
@@ -14,14 +16,7 @@ class StrategieService extends CompetenceService
         $level = $this->getCompetence()->getLevel();
 
         if ($level && $level->getId() === LevelType::GRAND_MASTER->getId()) {
-            $this->addRenomme(
-                5,
-                sprintf(
-                    'Compétence %s niveau %s',
-                    $this->getCompetence()->getCompetenceFamily()?->getLabel(),
-                    $level->getLabel()
-                )
-            );
+            $this->addRenomme(5, \sprintf('Compétence %s niveau %s', $this->getCompetence()->getCompetenceFamily()?->getLabel(), $level->getLabel()));
         }
     }
 
@@ -30,14 +25,7 @@ class StrategieService extends CompetenceService
         $level = $this->getCompetence()->getLevel();
 
         if ($level && $level->getId() === LevelType::GRAND_MASTER->getId()) {
-            $this->removeRenomme(
-                5,
-                sprintf(
-                    '[Retrait] %s niveau %s',
-                    $this->getCompetence()->getCompetenceFamily()?->getLabel(),
-                    $level->getLabel()
-                )
-            );
+            $this->removeRenomme(5, \sprintf('[Retrait] %s niveau %s', $this->getCompetence()->getCompetenceFamily()?->getLabel(), $level->getLabel()));
         }
     }
 }

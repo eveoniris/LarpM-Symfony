@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\BaseUserRepository;
@@ -13,6 +15,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
+use SensitiveParameter;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -51,6 +54,7 @@ abstract class BaseUser
     // #[Assert\Required]
     protected ?string $username = null;
 
+    /** @var array<int, string>|null */
     #[Column(type: 'json')]
     protected ?array $roles = [];
 
@@ -69,7 +73,7 @@ abstract class BaseUser
     #[Column(name: 'confirmationToken', type: Types::STRING, length: 100, nullable: true)]
     protected ?string $confirmationToken = null;
 
-    #[Column(name: 'timePasswordResetRequested', type: Types::INTEGER, nullable: true,)]
+    #[Column(name: 'timePasswordResetRequested', type: Types::INTEGER, nullable: true)]
     protected ?int $timePasswordResetRequested = null;
 
     protected ?string $trombineUrl = null;
@@ -80,84 +84,104 @@ abstract class BaseUser
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $coeur = 0;
 
+    /** @var Collection<int, Background> */
     #[OneToMany(mappedBy: 'user', targetEntity: Background::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $backgrounds;
 
+    /** @var Collection<int, Billet> */
     #[OneToMany(mappedBy: 'user', targetEntity: Billet::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'createur_id', nullable: false)]
     protected Collection $billets;
 
+    /** @var Collection<int, Debriefing> */
     #[OneToMany(mappedBy: 'user', targetEntity: Debriefing::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $debriefings;
 
+    /** @var Collection<int, Debriefing> */
     #[OneToMany(mappedBy: 'player', targetEntity: Debriefing::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'player_id', nullable: false)]
     protected Collection $playerDebriefings;
 
+    /** @var Collection<int, Document> */
     #[OneToMany(mappedBy: 'user', targetEntity: Document::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $documents;
 
+    /** @var Collection<int, Groupe> */
     #[OneToMany(mappedBy: 'userRelatedByScenaristeId', targetEntity: Groupe::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'scenariste_id', nullable: false)]
     protected Collection $groupeRelatedByScenaristeIds;
 
+    /** @var Collection<int, Groupe> */
     #[OneToMany(mappedBy: 'userRelatedByResponsableId', targetEntity: Groupe::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: false)]
     protected Collection $groupeRelatedByResponsableIds;
 
+    /** @var Collection<int, Intrigue> */
     #[OneToMany(mappedBy: 'user', targetEntity: Intrigue::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $intrigues;
 
+    /** @var Collection<int, IntrigueHasModification> */
     #[OneToMany(mappedBy: 'user', targetEntity: IntrigueHasModification::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $intrigueHasModifications;
 
+    /** @var Collection<int, Message> */
     #[OneToMany(mappedBy: 'userRelatedByAuteur', targetEntity: Message::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'auteur', nullable: false)]
     protected Collection $messageRelatedByAuteurs;
 
+    /** @var Collection<int, Message> */
     #[OneToMany(mappedBy: 'userRelatedByDestinataire', targetEntity: Message::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'destinataire', nullable: false)]
     #[OrderBy(['update_date' => 'DESC'])]
     protected Collection $messageRelatedByDestinataires;
 
+    /** @var Collection<int, Notification> */
     #[OneToMany(mappedBy: 'user', targetEntity: Notification::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $notifications;
 
+    /** @var Collection<int, Objet> */
     #[OneToMany(mappedBy: 'user', targetEntity: Objet::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'responsable_id', nullable: false)]
     protected Collection $objets;
 
+    /** @var Collection<int, Participant> */
     #[OneToMany(mappedBy: 'user', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     #[OrderBy(['id' => 'ASC'])]
     protected Collection $participants;
 
+    /** @var Collection<int, Personnage> */
     #[OneToMany(mappedBy: 'user', targetEntity: Personnage::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $personnages;
 
+    /** @var Collection<int, PersonnageBackground> */
     #[OneToMany(mappedBy: 'user', targetEntity: PersonnageBackground::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $personnageBackgrounds;
 
+    /** @var Collection<int, Question> */
     #[OneToMany(mappedBy: 'user', targetEntity: Question::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $questions;
 
+    /** @var Collection<int, Relecture> */
     #[OneToMany(mappedBy: 'user', targetEntity: Relecture::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $relectures;
 
+    /** @var Collection<int, Restriction> */
     #[OneToMany(mappedBy: 'userRelatedByAuteurId', targetEntity: Restriction::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'auteur_id', nullable: false)]
     protected Collection $restrictionRelatedByAuteurIds;
 
+    /** @var Collection<int, Rumeur> */
     #[OneToMany(mappedBy: 'user', targetEntity: Rumeur::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: false)]
     protected Collection $rumeurs;
@@ -174,6 +198,7 @@ abstract class BaseUser
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
     protected ?Personnage $personnage = null;
 
+    /** @var Collection<int, Restriction> */
     #[ORM\ManyToMany(targetEntity: Restriction::class, inversedBy: 'users')]
     #[ORM\JoinTable(name: 'user_has_restriction')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
@@ -187,11 +212,13 @@ abstract class BaseUser
     #[JoinColumn(name: 'id', referencedColumnName: 'scenariste_id', nullable: false)]
     private Collection $secondaryGroups;
 
+    /** @var Collection<int, LogAction> */
     #[OneToMany(mappedBy: 'user', targetEntity: LogAction::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'user_id', nullable: true)]
     private Collection $logActions;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: QrCodeScanLog::class)]
+    /** @var Collection<int, QrCodeScanLog> */
+    #[OneToMany(mappedBy: 'user', targetEntity: QrCodeScanLog::class)]
     private Collection $qrCodeScanLogs;
 
     #[Column(length: 255, nullable: true)]
@@ -335,6 +362,7 @@ abstract class BaseUser
     {
         if (!$this->logActions->contains($logAction)) {
             $this->logActions->add($logAction);
+            /* @phpstan-ignore argument.type */
             $logAction->setUser($this);
         }
 
@@ -433,6 +461,7 @@ abstract class BaseUser
 
     public function addRestriction(Restriction $restriction): static
     {
+        /* @phpstan-ignore argument.type */
         $restriction->addUser($this);
         $this->restrictions->add($restriction);
 
@@ -459,11 +488,11 @@ abstract class BaseUser
         return $this;
     }
 
-    public function addSecondaryGroups(BaseSecondaryGroup $secondaryGroups,
-    ): static
+    public function addSecondaryGroups(BaseSecondaryGroup $secondaryGroups): static
     {
         if (!$this->secondaryGroups->contains($secondaryGroups)) {
             $this->secondaryGroups->add($secondaryGroups);
+            /* @phpstan-ignore argument.type */
             $secondaryGroups->setScenariste($this);
         }
 
@@ -482,7 +511,7 @@ abstract class BaseUser
     /**
      * Get Background entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Background>
      */
     public function getBackgrounds()
     {
@@ -492,7 +521,7 @@ abstract class BaseUser
     /**
      * Get Billet entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Billet>
      */
     public function getBillets()
     {
@@ -509,7 +538,7 @@ abstract class BaseUser
         return $this->coeur;
     }
 
-    public function setCoeur($coeur): static
+    public function setCoeur(?int $coeur): static
     {
         $this->coeur = $coeur;
 
@@ -528,10 +557,8 @@ abstract class BaseUser
 
     /**
      * Set the value of confirmationToken.
-     *
-     * @param string $confirmationToken
      */
-    public function setConfirmationToken($confirmationToken): static
+    public function setConfirmationToken(#[SensitiveParameter] ?string $confirmationToken): static
     {
         $this->confirmationToken = $confirmationToken;
 
@@ -563,7 +590,7 @@ abstract class BaseUser
     /**
      * Get Debriefing entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Debriefing>
      */
     public function getDebriefings()
     {
@@ -573,7 +600,7 @@ abstract class BaseUser
     /**
      * Get Document entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Document>
      */
     public function getDocuments()
     {
@@ -619,7 +646,7 @@ abstract class BaseUser
     /**
      * Get Groupe entity related by `responsable_id` collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Groupe>
      */
     public function getGroupeRelatedByResponsableIds()
     {
@@ -629,7 +656,7 @@ abstract class BaseUser
     /**
      * Get Groupe entity related by `scenariste_id` collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Groupe>
      */
     public function getGroupeRelatedByScenaristeIds()
     {
@@ -651,7 +678,7 @@ abstract class BaseUser
     /**
      * Get IntrigueHasModification entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, IntrigueHasModification>
      */
     public function getIntrigueHasModifications()
     {
@@ -661,7 +688,7 @@ abstract class BaseUser
     /**
      * Get Intrigue entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Intrigue>
      */
     public function getIntrigues()
     {
@@ -718,7 +745,7 @@ abstract class BaseUser
     /**
      * Get Message entity related by `auteur` collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Message>
      */
     public function getMessageRelatedByAuteurs()
     {
@@ -728,7 +755,7 @@ abstract class BaseUser
     /**
      * Get Message entity related by `destinataire` collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Message>
      */
     public function getMessageRelatedByDestinataires()
     {
@@ -738,7 +765,7 @@ abstract class BaseUser
     /**
      * Get Notification entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Notification>
      */
     public function getNotifications()
     {
@@ -748,7 +775,7 @@ abstract class BaseUser
     /**
      * Get Objet entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Objet>
      */
     public function getObjets()
     {
@@ -758,7 +785,7 @@ abstract class BaseUser
     /**
      * Get Participant entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Participant>
      */
     public function getParticipants()
     {
@@ -773,7 +800,7 @@ abstract class BaseUser
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(#[SensitiveParameter] string $password): static
     {
         $this->password = $password;
 
@@ -795,7 +822,7 @@ abstract class BaseUser
     /**
      * Get PersonnageBackground entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, PersonnageBackground>
      */
     public function getPersonnageBackgrounds()
     {
@@ -823,7 +850,7 @@ abstract class BaseUser
     /**
      * Get Personnage entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Personnage>
      */
     public function getPersonnages()
     {
@@ -838,7 +865,7 @@ abstract class BaseUser
         return $this->pwd;
     }
 
-    public function setPwd(string $password): static
+    public function setPwd(#[SensitiveParameter] string $password): static
     {
         $this->pwd = $password;
 
@@ -848,7 +875,7 @@ abstract class BaseUser
     /**
      * Get Question entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Question>
      */
     public function getQuestions()
     {
@@ -858,7 +885,7 @@ abstract class BaseUser
     /**
      * Get Relecture entity collection (one to many).
      *
-     * @return Collection
+     * @return Collection<int, Relecture>
      */
     public function getRelectures()
     {
@@ -868,11 +895,13 @@ abstract class BaseUser
     /**
      * Get Restriction entity related by `auteur_id` collection (one to many).
      */
+    /** @return Collection<int, Restriction> */
     public function getRestrictionRelatedByAuteurIds(): Collection
     {
         return $this->restrictionRelatedByAuteurIds;
     }
 
+    /** @return Collection<int, Restriction> */
     public function getRestrictions(): Collection
     {
         return $this->restrictions;
@@ -888,7 +917,7 @@ abstract class BaseUser
         return $this->rights;
     }
 
-    public function setRights($rights): static
+    public function setRights(?string $rights): static
     {
         $this->rights = $rights;
 
@@ -897,6 +926,8 @@ abstract class BaseUser
 
     /**
      * @see UserInterface
+     *
+     * @return array<int, string>
      */
     public function getRoles(): array
     {
@@ -908,6 +939,9 @@ abstract class BaseUser
         return array_unique($roles);
     }
 
+    /**
+     * @param array<int, string> $roles
+     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -915,6 +949,7 @@ abstract class BaseUser
         return $this;
     }
 
+    /** @return Collection<int, Rumeur> */
     public function getRumeurs(): Collection
     {
         return $this->rumeurs;
@@ -923,7 +958,7 @@ abstract class BaseUser
     /**
      * @deprecated
      */
-    public function getSalt()
+    public function getSalt(): ?string
     {
         return null;
     }
@@ -931,7 +966,7 @@ abstract class BaseUser
     /**
      * @deprecated
      */
-    public function setSalt($salt): static
+    public function setSalt(?string $salt): static
     {
         $this->salt = $salt;
 
@@ -997,7 +1032,7 @@ abstract class BaseUser
      */
     public function getUserIdentifier(): string
     {
-        return (string)$this->username;
+        return (string) $this->username;
     }
 
     public function removeBackground(Background $background): static
@@ -1179,6 +1214,7 @@ abstract class BaseUser
 
     public function removeRestriction(Restriction $restriction): static
     {
+        /* @phpstan-ignore argument.type */
         $restriction->removeUser($this);
         $this->restrictions->removeElement($restriction);
 
@@ -1202,8 +1238,7 @@ abstract class BaseUser
         return $this;
     }
 
-    public function removeSecondaryGroups(BaseSecondaryGroup $secondaryGroups,
-    ): static
+    public function removeSecondaryGroups(BaseSecondaryGroup $secondaryGroups): static
     {
         if ($this->secondaryGroups->removeElement($secondaryGroups)) {
             // set the owning side to null (unless already changed)
@@ -1215,11 +1250,11 @@ abstract class BaseUser
         return $this;
     }
 
-
     public function addQrCodeScanLog(QrCodeScanLog $qrCodeScanLog): static
     {
         if (!$this->qrCodeScanLogs->contains($qrCodeScanLog)) {
             $this->qrCodeScanLogs->add($qrCodeScanLog);
+            /* @phpstan-ignore argument.type */
             $qrCodeScanLog->setUser($this);
         }
 

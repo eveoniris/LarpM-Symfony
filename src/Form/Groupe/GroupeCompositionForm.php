@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Groupe;
 
+use App\Entity\Groupe;
 use App\Form\Type\ClasseType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -31,12 +33,12 @@ class GroupeCompositionForm extends AbstractType
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Groupe::class,
+            'data_class' => Groupe::class,
         ]);
     }
 

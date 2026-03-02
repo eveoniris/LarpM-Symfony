@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -26,7 +27,8 @@ class AcceptAllianceForm extends AbstractType
             'attr' => [
                 'class' => 'tinymce',
                 'rows' => 9,
-                'help' => 'Ce texte sera transmis au chef de groupe concerné.'],
+                'help' => 'Ce texte sera transmis au chef de groupe concerné.',
+            ],
         ]);
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,6 +13,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
+use SensitiveParameter;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'token')]
@@ -19,7 +22,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseToken', 'extended' => 'Token'])]
 abstract class BaseToken
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -31,6 +34,7 @@ abstract class BaseToken
     #[Column(type: Types::STRING, length: 45)]
     protected string $tag = '';
 
+    /** @var Collection<int, PersonnageHasToken> */
     #[OneToMany(mappedBy: 'token', targetEntity: PersonnageHasToken::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'token_id', nullable: false)]
     protected Collection $personnageHasTokens;
@@ -115,7 +119,7 @@ abstract class BaseToken
     /**
      * Add PersonnageHasToken entity to collection (one to many).
      */
-    public function addPersonnageHasToken(PersonnageHasToken $personnageHasToken): static
+    public function addPersonnageHasToken(#[SensitiveParameter] PersonnageHasToken $personnageHasToken): static
     {
         $this->personnageHasTokens[] = $personnageHasToken;
 
@@ -125,7 +129,7 @@ abstract class BaseToken
     /**
      * Remove PersonnageHasToken entity from collection (one to many).
      */
-    public function removePersonnageHasToken(PersonnageHasToken $personnageHasToken): static
+    public function removePersonnageHasToken(#[SensitiveParameter] PersonnageHasToken $personnageHasToken): static
     {
         $this->personnageHasTokens->removeElement($personnageHasToken);
 
@@ -134,6 +138,8 @@ abstract class BaseToken
 
     /**
      * Get PersonnageHasToken entity collection (one to many).
+     *
+     * @return Collection<int, PersonnageHasToken>
      */
     public function getPersonnageHasTokens(): Collection
     {
@@ -141,7 +147,7 @@ abstract class BaseToken
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description', 'tag'];
-    } */
+     * {
+     * return ['id', 'label', 'description', 'tag'];
+     * } */
 }

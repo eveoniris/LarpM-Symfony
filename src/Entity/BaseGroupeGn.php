@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,7 +23,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupeGn', 'extended' => 'GroupeGn'])]
 abstract class BaseGroupeGn
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::BOOLEAN)]
@@ -51,11 +53,13 @@ abstract class BaseGroupeGn
     #[Column(type: Types::INTEGER)]
     protected int $initiative = 0;
 
+    /** @var Collection<int, Participant> */
     #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: false)]
     #[ORM\OrderBy(['subscription_date' => 'ASC'])]
     protected Collection $participants;
 
+    /** @var Collection<int, GroupeGnOrdre> */
     #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: GroupeGnOrdre::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: false)]
     #[ORM\OrderBy(['ordre' => 'ASC'])]
@@ -95,9 +99,9 @@ abstract class BaseGroupeGn
     private ?Personnage $diplomate = null;
 
     /*
-    #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
-    #[JoinColumn(name: 'suzerain_id', referencedColumnName: 'id', nullable: false)]
-    protected ?Personnage $suzerain;*/
+     #[ORM\ManyToOne(targetEntity: Personnage::class, inversedBy: 'groupeGns')]
+     #[JoinColumn(name: 'suzerain_id', referencedColumnName: 'id', nullable: false)]
+     protected ?Personnage $suzerain;*/
 
     public function __construct()
     {
@@ -110,6 +114,7 @@ abstract class BaseGroupeGn
      */
     public function addGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre): static
     {
+        /* @phpstan-ignore argument.type */
         $groupeGnOrdre->addGroupeGn($this);
         $this->groupeGnOrdres[] = $groupeGnOrdre;
 
@@ -310,6 +315,8 @@ abstract class BaseGroupeGn
 
     /**
      * Get GroupeGnOrdre entity collection.
+     *
+     * @return Collection<int, GroupeGnOrdre>
      */
     public function getGroupeGnOrdres(): Collection
     {
@@ -361,19 +368,19 @@ abstract class BaseGroupeGn
      * Set Personnage entity (many to one).
      */
     /*public function setSuzerain(Personnage $suzerain = null): GroupeGn
-    {
-        $this->suzerain = $suzerain;
-
-        return $this;
-    }*/
+     * {
+     * $this->suzerain = $suzerain;
+     *
+     * return $this;
+     * }*/
 
     /**
      * Get Personnage entity (many to one).
      */
     /*public function getSuzerain(): ?Personnage
-    {
-        return $this->suzerain;
-    }*/
+     * {
+     * return $this->suzerain;
+     * }*/
 
     public function setIntendant(?Personnage $intendant): static
     {
@@ -432,6 +439,8 @@ abstract class BaseGroupeGn
 
     /**
      * Get Participant entity collection (one to many).
+     *
+     * @return Collection<int, Participant>
      */
     public function getParticipants(): Collection
     {
@@ -449,7 +458,7 @@ abstract class BaseGroupeGn
     /**
      * Set the value of place_available.
      */
-    public function setPlaceAvailable(?int $place_available): GroupeGn
+    public function setPlaceAvailable(?int $place_available): static
     {
         $this->place_available = $place_available ?? 0;
 
@@ -497,6 +506,7 @@ abstract class BaseGroupeGn
      */
     public function removeGroupeGnOrdre(GroupeGnOrdre $groupeGnOrdre): static
     {
+        /* @phpstan-ignore argument.type */
         $groupeGnOrdre->removeGroupeGn($this);
         $this->groupeGnOrdres->removeElement($groupeGnOrdre);
 

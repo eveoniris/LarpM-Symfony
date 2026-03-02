@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Participant;
 
@@ -25,7 +26,8 @@ class ParticipantGroupeForm extends AbstractType
             'required' => true,
             'class' => GroupeGn::class,
             'choice_label' => 'groupe.nom',
-            'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('gg')
+            'query_builder' => static fn (EntityRepository $er) => $er
+                ->createQueryBuilder('gg')
                 ->join('gg.groupe', 'g')
                 ->join('gg.gn', 'gn')
                 ->orderBy('g.nom', 'ASC')

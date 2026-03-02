@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Message;
 use App\Entity\User;
 use App\Form\NewMessageForm;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -104,15 +107,19 @@ class MessageController extends AbstractController
      * Répondre à un message.
      */
     #[Route('/messagerie/{message}/response', name: 'message.response')]
-    public function messageResponseAction(EntityManagerInterface $entityManager, Request $request, #[MapEntity] Message $message): RedirectResponse|Response
-    {
+    public function messageResponseAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        #[MapEntity]
+        Message $message,
+    ): RedirectResponse|Response {
         $reponse = new Message();
 
         $reponse->setUserRelatedByAuteur($this->getUser());
         $reponse->setUserRelatedByDestinataire($message->getUserRelatedByAuteur());
-        $reponse->setTitle('Réponse à "'.$message->getTitle().'"');
-        $reponse->setCreationDate(new \DateTime('NOW'));
-        $reponse->setUpdateDate(new \DateTime('NOW'));
+        $reponse->setTitle('Réponse à "' . $message->getTitle() . '"');
+        $reponse->setCreationDate(new DateTime('NOW'));
+        $reponse->setUpdateDate(new DateTime('NOW'));
 
         $form = $this->handleForm($reponse, $request, $entityManager);
 
@@ -130,21 +137,18 @@ class MessageController extends AbstractController
     private function addPersonnageToText(Message $message): void
     {
         if ($personnage = $this->getUser()?->getPersonnage()) {
-            $message->setText(
-                sprintf(
-                    '%s <strong>Envoyé par</strong><br />%s %s',
-                    $message->getText(),
-                    $personnage->getNom(),
-                    $personnage->getSurnom()
-                )
-            );
+            $message->setText(\sprintf('%s <strong>Envoyé par</strong><br />%s %s', $message->getText(), $personnage->getNom(), $personnage->getSurnom()));
         }
     }
 
-    private function handleForm(Message $message, $request, EntityManagerInterface $entityManager): RedirectResponse|FormInterface
-    {
-        $form = $this->createForm(NewMessageForm::class, $message)
-            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre message']);
+    private function handleForm(
+        Message $message,
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse|FormInterface {
+        $form = $this->createForm(NewMessageForm::class, $message)->add('envoyer', SubmitType::class, [
+            'label' => 'Envoyer votre message',
+        ]);
 
         $form->handleRequest($request);
 

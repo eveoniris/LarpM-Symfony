@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Competence;
@@ -63,16 +65,13 @@ class CompetenceController extends AbstractController
             }
         }
 
-        return $this->handleCreateOrUpdate(
-            $request,
-            $competence,
-            CompetenceForm::class,
-        );
+        return $this->handleCreateOrUpdate($request, $competence, CompetenceForm::class);
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
         Request $request,
-        $entity,
+        object $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
@@ -80,10 +79,10 @@ class CompetenceController extends AbstractController
         ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         if (!$entityCallback) {
-            /** @var Competence $competence */
-            $entityCallback = fn (mixed $competence, FormInterface $form): ?Competence => $competence->handleUpload(
-                $this->fileUploader,
-            );
+            $entityCallback = fn (
+                mixed $competence,
+                FormInterface $form,
+            ): ?Competence => $competence->handleUpload($this->fileUploader);
         }
 
         return parent::handleCreateOrUpdate(
@@ -106,30 +105,28 @@ class CompetenceController extends AbstractController
         );
     }
 
-    #[Route('/{competence}/delete', name: 'delete', requirements: ['competence' => Requirement::DIGITS], methods: [
-        'DELETE',
-        'GET',
-        'POST',
-    ])]
+    #[Route(
+        '/{competence}/delete',
+        name: 'delete',
+        requirements: ['competence' => Requirement::DIGITS],
+        methods: [
+            'DELETE',
+            'GET',
+            'POST',
+        ],
+    )]
     #[IsGranted('ROLE_REGLE')]
-    public function deleteAction(
-        #[MapEntity] Competence $competence,
-    ): RedirectResponse|Response {
-        return $this->genericDelete(
-            $competence,
-            'Supprimer une competence',
-            'La competence a été supprimée',
-            'competence.list',
+    public function deleteAction(#[MapEntity] Competence $competence): RedirectResponse|Response
+    {
+        return $this->genericDelete($competence, 'Supprimer une competence', 'La competence a été supprimée', 'competence.list', [
+            ['route' => $this->generateUrl('competence.list'), 'name' => 'Liste des compétences'],
             [
-                ['route' => $this->generateUrl('competence.list'), 'name' => 'Liste des compétences'],
-                [
-                    'route' => $this->generateUrl('competence.detail', ['competence' => $competence->getId()]),
-                    'competence' => $competence->getId(),
-                    'name' => $competence->getLabel(),
-                ],
-                ['name' => 'Supprimer une competence'],
+                'route' => $this->generateUrl('competence.detail', ['competence' => $competence->getId()]),
+                'competence' => $competence->getId(),
+                'name' => $competence->getLabel(),
             ],
-        );
+            ['name' => 'Supprimer une competence'],
+        ]);
     }
 
     /**
@@ -140,7 +137,7 @@ class CompetenceController extends AbstractController
     public function detailAction(#[MapEntity] Competence $competence): Response
     {
         $this->checkHasAccess([Role::REGLE], function () use ($competence): bool {
-            if (!$personnage = $this->getPersonnage()) {
+            if (!($personnage = $this->getPersonnage())) {
                 return false;
             }
             if ($personnage->isKnownCompetence($competence)) {
@@ -149,7 +146,7 @@ class CompetenceController extends AbstractController
                 return true;
             }
             $availableCompetences = $this->personnageService->getAvailableCompetences($personnage);
-            if ($availableCompetences?->contains($competence)) {
+            if ($availableCompetences->contains($competence)) {
                 $this->setCan(static::CAN_READ, true);
 
                 return true;
@@ -168,17 +165,15 @@ class CompetenceController extends AbstractController
     // TODO a voter strategies ?
     public function getDocumentAction(
         CompetenceRepository $competenceRepository,
-        #[MapEntity] Competence $competence,
+        #[MapEntity]
+        Competence $competence,
     ): BinaryFileResponse|Response {
         // on ne peut télécharger que les documents des compétences que l'on connait
         if (!$this->getUser()) {
             return $this->render('security/denied.html.twig');
         }
 
-        $hasCompetence = $competenceRepository->userHasCompetence(
-            $this->getUser(),
-            $competence,
-        ); // $this->getUser()->getPersonnages()->getCompetences()->contains($competence)
+        $hasCompetence = $competenceRepository->userHasCompetence($this->getUser(), $competence); // $this->getUser()->getPersonnages()->getCompetences()->contains($competence)
 
         if (!$hasCompetence && !$this->isGranted(Role::REGLE->value)) {
             return $this->render('security/denied.html.twig');
@@ -199,9 +194,7 @@ class CompetenceController extends AbstractController
         $pagerService->setRequest($request)->setRepository($competenceRepository)->setLimit(100);
 
         $alias = $competenceRepository->getAlias();
-        $queryBuilder = $competenceRepository->createQueryBuilder($alias)
-            ->orderBy('competenceFamily.label', 'ASC')
-            ->addOrderBy('level.index', 'ASC');
+        $queryBuilder = $competenceRepository->createQueryBuilder($alias)->orderBy('competenceFamily.label', 'ASC')->addOrderBy('level.index', 'ASC');
 
         if (!$this->isGranted('ROLE_REGLE')) {
             $queryBuilder = $competenceRepository->level($queryBuilder, LevelType::APPRENTICE);
@@ -218,24 +211,17 @@ class CompetenceController extends AbstractController
      * Liste du matériel necessaire par compétence.
      */
     #[Route('/competence/materiel', name: 'materiel')]
-    #[IsGranted(new MultiRolesExpression(
-        Role::SCENARISTE, Role::REGLE, Role::ORGA,
-    ), message: 'You are not allowed to access to this.')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function materielAction(CompetenceRepository $competenceRepository): Response
     {
-        return $this->render(
-            'competence/materiel.twig',
-            ['competences' => $competenceRepository->findAllOrderedByLabel()],
-        );
+        return $this->render('competence/materiel.twig', ['competences' => $competenceRepository->findAllOrderedByLabel()]);
     }
 
     /**
      * Liste des perso ayant cette compétence.
      */
     #[Route('/perso', name: 'perso')]
-    #[IsGranted(new MultiRolesExpression(
-        Role::SCENARISTE, Role::REGLE, Role::ORGA,
-    ), message: 'You are not allowed to access to this.')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function persoAction(Request $request): Response
     {
         $competence = $request->get('competence');
@@ -244,14 +230,19 @@ class CompetenceController extends AbstractController
     }
 
     #[Route('/{competence}/personnages', name: 'personnages', requirements: ['competence' => Requirement::DIGITS])]
-    #[Route('/{competence}/personnages/gn/{gn}', name: 'personnages.gn', requirements: ['competence' => Requirement::DIGITS, 'gn' => Requirement::DIGITS])]
+    #[Route('/{competence}/personnages/gn/{gn}', name: 'personnages.gn', requirements: [
+        'competence' => Requirement::DIGITS,
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted('ROLE_REGLE')]
     public function personnagesAction(
         Request $request,
-        #[MapEntity] Competence $competence,
+        #[MapEntity]
+        Competence $competence,
         PersonnageService $personnageService,
         CompetenceRepository $competenceRepository,
-        #[MapEntity] ?Gn $gn = null,
+        #[MapEntity]
+        ?Gn $gn = null,
     ): Response {
         $routeName = 'competence.personnages';
         $routeParams = ['competence' => $competence->getId()];
@@ -268,7 +259,7 @@ class CompetenceController extends AbstractController
             'competence' => $competence,
             'title' => 'Competence',
             'extraData' => $competenceFamily?->getCompetenceFamilyType()?->value,
-            'extraDataTitle' => 'Niveau de '.$competenceFamily?->getLabel(),
+            'extraDataTitle' => 'Niveau de ' . $competenceFamily?->getLabel(),
             'breadcrumb' => [
                 [
                     'name' => 'Liste des compétences',
@@ -295,10 +286,7 @@ class CompetenceController extends AbstractController
             $competenceRepository->getPersonnages($competence, $gn),
         );
 
-        return $this->render(
-            $twigFilePath,
-            $viewParams,
-        );
+        return $this->render($twigFilePath, $viewParams);
     }
 
     /**
@@ -324,14 +312,8 @@ class CompetenceController extends AbstractController
      */
     #[Route('/{competence}/update', name: 'update')]
     #[IsGranted('ROLE_REGLE')]
-    public function updateAction(
-        Request $request,
-        #[MapEntity] Competence $competence,
-    ): RedirectResponse|Response {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $competence,
-            CompetenceForm::class,
-        );
+    public function updateAction(Request $request, #[MapEntity] Competence $competence): RedirectResponse|Response
+    {
+        return $this->handleCreateOrUpdate($request, $competence, CompetenceForm::class);
     }
 }

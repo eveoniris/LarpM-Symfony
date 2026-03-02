@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Item;
 
@@ -28,30 +29,27 @@ class ItemLinkForm extends AbstractType
             'attr' => [
                 'help' => 'Personnage qui possède cet objet',
             ],
-        ])
-            ->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'required' => false,
-                'mapped' => false,
-                'label' => 'Groupe',
-                'class' => \App\Entity\Groupe::class,
-                'choice_label' => 'nom',
-                'attr' => [
-                    'help' => 'Groupe qui possède cet objet',
-                ],
-            ])
-            ->add('lieu', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'required' => false,
-                'mapped' => false,
-                'label' => 'Lieu',
-                'class' => \App\Entity\Lieu::class,
-                'choice_label' => 'label',
-                'attr' => [
-                    'help' => 'Lieu ou est entreposé cet objet',
-                ],
-            ])
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
-                'label' => 'Valider',
-            ]);
+        ])->add('groupe', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            'required' => false,
+            'mapped' => false,
+            'label' => 'Groupe',
+            'class' => \App\Entity\Groupe::class,
+            'choice_label' => 'nom',
+            'attr' => [
+                'help' => 'Groupe qui possède cet objet',
+            ],
+        ])->add('lieu', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            'required' => false,
+            'mapped' => false,
+            'label' => 'Lieu',
+            'class' => \App\Entity\Lieu::class,
+            'choice_label' => 'label',
+            'attr' => [
+                'help' => 'Lieu ou est entreposé cet objet',
+            ],
+        ])->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+            'label' => 'Valider',
+        ]);
     }
 
     /**

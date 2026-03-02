@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -17,7 +19,7 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseLoi', 'extended' => 'Loi'])]
 abstract class BaseLoi
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
@@ -29,6 +31,7 @@ abstract class BaseLoi
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
+    /** @var Collection<int, Territoire> */
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'lois')]
     protected Collection $territoires;
 
@@ -131,6 +134,8 @@ abstract class BaseLoi
 
     /**
      * Get Territoire entity collection.
+     *
+     * @return Collection<int, Territoire>
      */
     public function getTerritoires(): Collection
     {
@@ -138,7 +143,7 @@ abstract class BaseLoi
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'documentUrl', 'description'];
-    } */
+     * {
+     * return ['id', 'label', 'documentUrl', 'description'];
+     * } */
 }

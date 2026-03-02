@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Age;
@@ -10,6 +12,7 @@ use App\Entity\Rarete;
 use App\Entity\User;
 use App\Form\InstallDatabaseForm;
 use App\Form\InstallUserAdminForm;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,23 +24,25 @@ use Symfony\Component\Yaml\Dumper;
 
 class InstallController extends AbstractController
 {
-    private function loadUserTables($connection, string $dir): void
+    private function loadUserTables(\Doctrine\DBAL\Connection $connection, string $dir): void
     {
-        $sql = file_get_contents($dir.'mysql.sql');
+        $sql = file_get_contents($dir . 'mysql.sql');
         $statement = $connection->prepare($sql);
         $statement->execute();
     }
 
-    private function loadLarpManagerTables($connection, string $dir): void
+    private function loadLarpManagerTables(\Doctrine\DBAL\Connection $connection, string $dir): void
     {
-        $sql = file_get_contents($dir.'create_or_update.sql');
+        $sql = file_get_contents($dir . 'create_or_update.sql');
         $statement = $connection->prepare($sql);
         $statement->execute();
     }
 
     #[Route('/install/create', name: 'install.create')]
-    public function createOrUpdateAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
+    public function createOrUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse|Response {
         // $app['security.access_rules'] dans le bootstrap definit deja ce comportement, ce check n'est la que
         // comme double securite
         if (!$this->isGranted('ROLE_ADMIN')) {
@@ -72,8 +77,7 @@ class InstallController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
     ): RedirectResponse|Response {
         // preparation du formulaire
-        $form = $this->createForm(InstallUserAdminForm::class)
-            ->add('create', SubmitType::class);
+        $form = $this->createForm(InstallUserAdminForm::class)->add('create', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -90,15 +94,15 @@ class InstallController extends AbstractController
             $user->setPassword($passwordHasher->hashPassword($user, $password));
             $user->setUsername($name);
             $user->setRoles(['ROLE_ADMIN']);
-            $user->setCreationDate(new \DateTime('NOW'));
+            $user->setCreationDate(new DateTime('NOW'));
             $user->setIsEnabled(true);
 
             $entityManager->persist($user);
             $entityManager->flush();
 
             // supprimer le fichier de cache pour lancer larpmanager en mode normal
-            if (file_exists(__DIR__.'/../../../cache/maintenance.tag')) {
-                unlink(__DIR__.'/../../../cache/maintenance.tag');
+            if (file_exists(__DIR__ . '/../../../cache/maintenance.tag')) {
+                unlink(__DIR__ . '/../../../cache/maintenance.tag');
             }
 
             $this->addFlash('success', 'L\'installation c\'est déroulée avec succès.');
@@ -122,8 +126,7 @@ class InstallController extends AbstractController
         ];
 
         // preparation du formulaire
-        $form = $this->createForm(InstallDatabaseForm::class, $default)
-            ->add('create', SubmitType::class);
+        $form = $this->createForm(InstallDatabaseForm::class, $default)->add('create', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -141,7 +144,7 @@ class InstallController extends AbstractController
             // write the new config
             $dumper = new Dumper();
             $yaml = $dumper->dump($newConfig);
-            file_put_contents(__DIR__.'/../../../config/settings.yml', $yaml);
+            file_put_contents(__DIR__ . '/../../../config/settings.yml', $yaml);
 
             return $this->render('install/installdone.twig');
         }
@@ -163,8 +166,7 @@ class InstallController extends AbstractController
         ];
 
         // preparation du formulaire
-        $form = $this->createForm(InstallDatabaseForm::class, $default)
-            ->add('create', SubmitType::class);
+        $form = $this->createForm(InstallDatabaseForm::class, $default)->add('create', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -182,7 +184,7 @@ class InstallController extends AbstractController
             // write the new config
             $dumper = new Dumper();
             $yaml = $dumper->dump($newConfig);
-            file_put_contents(__DIR__.'/../../../config/settings.yml', $yaml);
+            file_put_contents(__DIR__ . '/../../../config/settings.yml', $yaml);
 
             // on ajoute des éléments de base
             $etat = new Etat();
@@ -207,37 +209,37 @@ class InstallController extends AbstractController
             // Création des niveaux de compétence
             $niveau = new Level();
             $niveau->setLabel('Apprenti');
-            $niveau->setIndex('1');
+            $niveau->setIndex(1);
             $entityManager->persist($niveau);
 
             $niveau = new Level();
             $niveau->setLabel('Initié');
-            $niveau->setIndex('2');
+            $niveau->setIndex(2);
             $entityManager->persist($niveau);
 
             $niveau = new Level();
             $niveau->setLabel('Expert');
-            $niveau->setIndex('3');
+            $niveau->setIndex(3);
             $entityManager->persist($niveau);
 
             $niveau = new Level();
             $niveau->setLabel('Maître');
-            $niveau->setIndex('4');
+            $niveau->setIndex(4);
             $entityManager->persist($niveau);
 
             $niveau = new Level();
             $niveau->setLabel('Secret');
-            $niveau->setIndex('5');
+            $niveau->setIndex(5);
             $entityManager->persist($niveau);
 
             $rarete = new Rarete();
             $rarete->setLabel('Commun');
-            $rarete->setValue('1');
+            $rarete->setValue(1);
             $entityManager->persist($rarete);
 
             $rarete = new Rarete();
             $rarete->setLabel('Rare');
-            $rarete->setValue('2');
+            $rarete->setValue(2);
             $entityManager->persist($rarete);
 
             $genre = new Genre();

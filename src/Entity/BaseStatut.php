@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseStatut', 'extended' => 'Statut'])]
 abstract class BaseStatut
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     /**
@@ -33,6 +35,7 @@ abstract class BaseStatut
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
+    /** @var Collection<int, Item> */
     #[OneToMany(mappedBy: 'statut', targetEntity: Item::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'statut_id', nullable: false)]
     protected Collection $items;
@@ -118,6 +121,8 @@ abstract class BaseStatut
 
     /**
      * Get Item entity collection (one to many).
+     *
+     * @return Collection<int, Item>
      */
     public function getItems(): Collection
     {
@@ -125,7 +130,7 @@ abstract class BaseStatut
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description'];
-    } */
+     * {
+     * return ['id', 'label', 'description'];
+     * } */
 }

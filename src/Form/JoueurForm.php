@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\EtatCivil;
@@ -16,10 +18,11 @@ class JoueurForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', TextType::class, [
-            'label' => 'Nom civil',
-            'required' => true,
-        ])
+        $builder
+            ->add('nom', TextType::class, [
+                'label' => 'Nom civil',
+                'required' => true,
+            ])
             ->add('prenom', TextType::class, [
                 'label' => 'Prénom civil',
                 'required' => true,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\GroupeEnemyRepository;
@@ -18,12 +20,12 @@ class GroupeEnemy extends BaseGroupeEnemy
         return $this->getGroupeRelatedByGroupeId();
     }
 
-    public function setRequestedGroupe(Groupe $groupe)
+    public function setRequestedGroupe(Groupe $groupe): static
     {
         return $this->setGroupeRelatedByGroupeEnemyId($groupe);
     }
 
-    public function getRequestedGroupe()
+    public function getRequestedGroupe(): Groupe
     {
         return $this->getGroupeRelatedByGroupeEnemyId();
     }

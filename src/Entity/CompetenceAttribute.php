@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping\Entity;
 use App\Repository\CompetenceAttributeRepository;
+use ArrayAccess;
+use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
+/** @phpstan-ignore missingType.generics */
 #[Entity(repositoryClass: CompetenceAttributeRepository::class)]
-class CompetenceAttribute extends BaseCompetenceAttribute implements \ArrayAccess, \Stringable
+class CompetenceAttribute extends BaseCompetenceAttribute implements ArrayAccess, Stringable
 {
     /**
      * Pour utilisation en tant que string.

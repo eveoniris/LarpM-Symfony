@@ -1,36 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Trait;
 
 use App\Entity\Document;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Service\FileUploader;
-use JetBrains\PhpStorm\NoReturn;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 // may be better as Service to handle multiple file field in an entity and get some Project DI
 trait EntityFileUploadTrait
 {
-    #[Assert\File(
-        [
-            'maxSize' => 6000000,
-            'extensions' => [
-                'pdf' => ['application/pdf', 'application/x-pdf'],
-            ],
-            'mimeTypes' => ['application/pdf', 'application/x-pdf'],
-            'groups' => ['pdf', 'file'],
-        ]
-    )]
+    #[Assert\File([
+        'maxSize' => 6_000_000,
+        'extensions' => [
+            'pdf' => ['application/pdf', 'application/x-pdf'],
+        ],
+        'mimeTypes' => ['application/pdf', 'application/x-pdf'],
+        'groups' => ['pdf', 'file'],
+    ])]
     protected ?UploadedFile $file;
     protected ?int $filenameMaxLength;
     protected bool $useUniqueId = true;
     protected ?string $filename = null;
-    protected DocumentType $documentType;
-    protected FolderType $folderType;
+    protected ?DocumentType $documentType = null;
+    protected ?FolderType $folderType = null;
 
     protected ?string $projectDir = null;
+    protected ?string $extension = null;
+    protected ?string $mimetype = null;
+
+    abstract public function getDocumentUrl(): ?string;
+
+    abstract public function getLabel(): ?string;
 
     public function getDocument(?string $projectDir = null): string
     {
@@ -54,10 +59,9 @@ trait EntityFileUploadTrait
 
     public function getDocumentFilePath(
         ?string $projectDir = null,
-        bool    $oldV1Prod = false,
-        bool    $inDocInsteadOfDocuments = false,
-    ): string
-    {
+        bool $oldV1Prod = false,
+        bool $inDocInsteadOfDocuments = false,
+    ): string {
         $projectDir ??= $this->projectDir ?? '';
 
         if ($oldV1Prod) {
@@ -69,12 +73,12 @@ trait EntityFileUploadTrait
             $type = DocumentType::Doc->value;
         }
 
-        return $projectDir . $this->getFolderType()->value . $type . DIRECTORY_SEPARATOR;
+        return $projectDir . $this->getFolderType()->value . $type . \DIRECTORY_SEPARATOR;
     }
 
     public function getDocumentType(): DocumentType
     {
-        return $this->documentType ?? $this->initFile()?->documentType ?? DocumentType::Doc;
+        return $this->documentType ?? $this->initFile()->documentType ?? DocumentType::Doc;
     }
 
     public function setDocumentType(DocumentType $documentType): static
@@ -178,7 +182,6 @@ trait EntityFileUploadTrait
         return $this->mimetype ?? 'application/pdf';
     }
 
-    #[NoReturn]
     public function getOldV1Document(?string $projectDir = null): string
     {
         $filename = $this->getDocumentFilePath($projectDir, true) . $this->getDocumentUrl();
@@ -202,14 +205,7 @@ trait EntityFileUploadTrait
         // Ensure path folder type and document type.
         $this->initFile();
 
-        $fileUploader->upload(
-            $this->getFile(),
-            $this->getFolderType(),
-            $this->getDocumentType(),
-            $this->getFilename(),
-            $this->getFilenameMaxLength(),
-            $this->isUseUniqueId(),
-        );
+        $fileUploader->upload($this->getFile(), $this->getFolderType(), $this->getDocumentType(), $this->getFilename(), $this->getFilenameMaxLength(), $this->isUseUniqueId());
 
         $this->afterUpload($fileUploader);
 

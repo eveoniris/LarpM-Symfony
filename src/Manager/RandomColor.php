@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * RandomColor 1.0.3.
  *
@@ -67,13 +70,13 @@ final class RandomColor
             case 'hslCss':
                 $hsl = self::hsv2hsl($hsv);
 
-                return 'hsl('.$hsl['h'].','.$hsl['s'].'%,'.$hsl['l'].'%)';
+                return 'hsl(' . $hsl['h'] . ',' . $hsl['s'] . '%,' . $hsl['l'] . '%)';
 
             case 'rgb':
                 return self::hsv2rgb($hsv);
 
             case 'rgbCss':
-                return 'rgb('.implode(',', self::hsv2rgb($hsv)).')';
+                return 'rgb(' . implode(',', self::hsv2rgb($hsv)) . ')';
 
             case 'hex':
             default:
@@ -158,7 +161,7 @@ final class RandomColor
         $ranges = [];
 
         if (isset($options['hue'])) {
-            if (!is_array($options['hue'])) {
+            if (!\is_array($options['hue'])) {
                 $options['hue'] = [$options['hue']];
             }
 
@@ -177,13 +180,13 @@ final class RandomColor
             }
         }
 
-        if (($l = count($ranges)) === 0) {
+        if (($l = \count($ranges)) === 0) {
             return [0, 360];
         } elseif (1 === $l) {
             return $ranges[0];
-        } else {
-            return $ranges[self::_rand([0, $l - 1], $options)];
         }
+
+        return $ranges[self::_rand([0, $l - 1], $options)];
     }
 
     private static function _getMinimumBrightness($h, $s)
@@ -191,7 +194,7 @@ final class RandomColor
         $colorInfo = self::_getColorInfo($h);
         $bounds = $colorInfo['bounds'];
 
-        for ($i = 0, $l = count($bounds); $i < $l - 1; ++$i) {
+        for ($i = 0, $l = \count($bounds); $i < ($l - 1); ++$i) {
             $s1 = $bounds[$i][0];
             $v1 = $bounds[$i][1];
             $s2 = $bounds[$i + 1][0];
@@ -199,9 +202,9 @@ final class RandomColor
 
             if ($s >= $s1 && $s <= $s2) {
                 $m = ($v2 - $v1) / ($s2 - $s1);
-                $b = $v1 - $m * $s1;
+                $b = $v1 - ($m * $s1);
 
-                return $m * $s + $b;
+                return ($m * $s) + $b;
             }
         }
 
@@ -237,15 +240,17 @@ final class RandomColor
         $hex = '#';
 
         foreach ($rgb as $c) {
-            $hex .= str_pad(dechex($c), 2, '0', STR_PAD_LEFT);
+            $hex .= str_pad(dechex($c), 2, '0', \STR_PAD_LEFT);
         }
 
         return $hex;
     }
 
-    public static function hsv2hsl($hsv): array
+    public static function hsv2hsl(array $hsv): array
     {
-        extract($hsv);
+        $h = (float) ($hsv['h'] ?? 0);
+        $s = (float) ($hsv['s'] ?? 0);
+        $v = (float) ($hsv['v'] ?? 0);
 
         $s /= 100;
         $v /= 100;
@@ -253,25 +258,27 @@ final class RandomColor
 
         return [
             'h' => $h,
-            's' => round($s * $v / ($k < 1 ? $k : 2 - $k), 4) * 100,
-            'l' => $k / 2 * 100,
+            's' => round(($s * $v) / ($k < 1 ? $k : 2 - $k), 4) * 100,
+            'l' => ($k / 2) * 100,
         ];
     }
 
-    public static function hsv2rgb($hsv): array
+    public static function hsv2rgb(array $hsv): array
     {
-        extract($hsv);
+        $h = (float) ($hsv['h'] ?? 0);
+        $s = (float) ($hsv['s'] ?? 0);
+        $v = (float) ($hsv['v'] ?? 0);
 
         $h /= 360;
         $s /= 100;
         $v /= 100;
 
         $i = floor($h * 6);
-        $f = $h * 6 - $i;
+        $f = ($h * 6) - $i;
 
         $m = $v * (1 - $s);
-        $n = $v * (1 - $s * $f);
-        $k = $v * (1 - $s * (1 - $f));
+        $n = $v * (1 - ($s * $f));
+        $k = $v * (1 - ($s * (1 - $f)));
 
         $r = 1;
         $g = 1;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\User;
@@ -16,10 +18,11 @@ class UserRegisterForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('email', EmailType::class, [
-            'label' => 'Adresse email',
-            'required' => true,
-        ])
+        $builder
+            ->add('email', EmailType::class, [
+                'label' => 'Adresse email',
+                'required' => true,
+            ])
             ->add('email_contact', EmailType::class, [
                 'label' => 'Adresse email de contact',
                 'required' => false,
@@ -28,7 +31,8 @@ class UserRegisterForm extends AbstractType
             ->add('username', TextType::class, [
                 'label' => 'Nom ou pseudo',
                 'required' => true,
-            ])->add('pwd', PasswordType::class, [
+            ])
+            ->add('pwd', PasswordType::class, [
                 'label' => 'Mot de passe',
                 'required' => true,
             ])
@@ -36,16 +40,13 @@ class UserRegisterForm extends AbstractType
                 'label' => 'Confirmer le mot de passe',
                 'required' => true,
                 'mapped' => false,
-            ])->add(
-                'save',
-                SubmitType::class,
-                [
-                    'label' => "S'enregistrer",
-                    'attr' => [
-                        'class' => 'btn btn-secondary',
-                    ],
-                ]
-            );
+            ])
+            ->add('save', SubmitType::class, [
+                'label' => "S'enregistrer",
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

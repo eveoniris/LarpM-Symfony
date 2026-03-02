@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -19,17 +20,16 @@ class SortFindForm extends AbstractType
         $builder->add('value', TextType::class, [
             'required' => true,
             'label' => 'Recherche',
-        ])
-            ->add('type', ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                    'label' => 'Nom',
-                    'description' => 'Description',
-                    'domaine' => 'Domaine',
-                    'id' => 'ID',
-                ],
-                'label' => 'Type',
-            ]);
+        ])->add('type', ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                'label' => 'Nom',
+                'description' => 'Description',
+                'domaine' => 'Domaine',
+                'id' => 'ID',
+            ],
+            'label' => 'Type',
+        ]);
     }
 
     /**

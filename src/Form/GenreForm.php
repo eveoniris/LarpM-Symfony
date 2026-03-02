@@ -1,17 +1,16 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Entity\Genre;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * LarpManager\Form\GenreForm.
- *
- * @author kevin
- */
 class GenreForm extends AbstractType
 {
     /**
@@ -19,16 +18,15 @@ class GenreForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('label', TextType::class, [
             'required' => true,
-        ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'required' => false,
-                'attr' => [
-                    'class' => 'tinymce',
-                    'row' => 9,
-                ],
-            ]);
+        ])->add('description', TextareaType::class, [
+            'required' => false,
+            'attr' => [
+                'class' => 'tinymce',
+                'row' => 9,
+            ],
+        ]);
     }
 
     /**

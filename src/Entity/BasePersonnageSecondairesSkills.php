@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageSecondairesSkills', 'extended' => 'PersonnageSecondairesSkills'])]
 abstract class BasePersonnageSecondairesSkills
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: PersonnageSecondaire::class, inversedBy: 'personnageSecondairesSkills')]
@@ -84,7 +86,7 @@ abstract class BasePersonnageSecondairesSkills
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'personnage_secondaire_id', 'competence_id'];
-    } */
+     * {
+     * return ['id', 'personnage_secondaire_id', 'competence_id'];
+     * } */
 }

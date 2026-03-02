@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Chronologie;
@@ -7,10 +9,11 @@ use App\Entity\Territoire;
 use App\Form\ChronologieForm;
 use App\Form\ChronologieRemoveForm;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -22,11 +25,14 @@ class ChronologieController extends AbstractController
      * POST /api/chronologies/{event}.
      */
     #[Route('/api/chronologies/{event}', name: 'api.chronologie.update')]
-    public function apiUpdateAction(Request $request, EntityManagerInterface $entityManager, Chronologie $event): JsonResponse
-    {
+    public function apiUpdateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Chronologie $event,
+    ): JsonResponse {
         $event = $request->get('event');
 
-        $payload = json_decode($request->getContent(), false, 512, JSON_THROW_ON_ERROR);
+        $payload = json_decode($request->getContent(), false, 512, \JSON_THROW_ON_ERROR);
 
         $territoire = $entityManager->find(Territoire::class, $payload->territoire_id);
 
@@ -44,8 +50,11 @@ class ChronologieController extends AbstractController
      * DELETE /api/chronologies/{event}.
      */
     #[Route('/api/chronologies/{event}', name: 'api.chronologie.delete')]
-    public function apiDeleteAction(Request $request, EntityManagerInterface $entityManager, Chronologie $event): JsonResponse
-    {
+    public function apiDeleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Chronologie $event,
+    ): JsonResponse {
         $event = $request->get('event');
         $entityManager->remove($event);
         $entityManager->flush();
@@ -76,19 +85,16 @@ class ChronologieController extends AbstractController
     }
 
     #[Route('/chronologie', name: 'chronologie.index')]
-    public function indexAction(Request $request, EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $repo = $entityManager->getRepository(Chronologie::class);
-        $chronologies = $repo->findPaginated(
-            $this->getRequestPage(),
-            $this->getRequestLimit(),
-        );
+        $chronologies = $repo->findPaginated($this->getRequestPage(), $this->getRequestLimit());
 
         return $this->render('chronologie/index.twig', ['paginator' => $chronologies]);
     }
 
     #[Route('/chronologie/add', name: 'chronologie.add')]
-    public function addAction(Request $request, EntityManagerInterface $entityManager)
+    public function addAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $chronologie = new Chronologie();
 
@@ -101,17 +107,17 @@ class ChronologieController extends AbstractController
             }
         }
 
-        $form = $this->createForm(ChronologieForm::class, $chronologie, ['territoireId' => $territoireId])
-            ->add('visibilite', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Visibilité',
-                'choices' => array(
-                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
-                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
-                    'Seuls les membres d\'un groupe lié à ce territoire peuvent voir ceci' => 'GROUPE_MEMBER',
-                ),
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(ChronologieForm::class, $chronologie, [
+            'territoireId' => $territoireId,
+        ])->add('visibilite', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Visibilité',
+            'choices' => [
+                'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
+                'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
+                'Seuls les membres d\'un groupe lié à ce territoire peuvent voir ceci' => 'GROUPE_MEMBER',
+            ],
+        ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -131,23 +137,20 @@ class ChronologieController extends AbstractController
     }
 
     #[Route('/chronologie/{chronologie}/update', name: 'chronologie.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, Chronologie $chronologie)
-    {
-        if (!$chronologie) {
-            return $this->redirectToRoute('chronologie.index');
-        }
-
-        $form = $this->createForm(ChronologieForm::class, $chronologie)
-            ->add('visibilite', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Visibilité',
-                'choices' => array(
-                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
-                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
-                    'Seuls les membres d\'un groupe lié à ce territoire peuvent voir ceci' => 'GROUPE_MEMBER',
-                ),
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Chronologie $chronologie,
+    ): Response {
+        $form = $this->createForm(ChronologieForm::class, $chronologie)->add('visibilite', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Visibilité',
+            'choices' => [
+                'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
+                'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
+                'Seuls les membres d\'un groupe lié à ce territoire peuvent voir ceci' => 'GROUPE_MEMBER',
+            ],
+        ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -169,14 +172,14 @@ class ChronologieController extends AbstractController
     }
 
     #[Route('/chronologie/{chronologie}/remove', name: 'chronologie.remove')]
-    public function removeAction(Request $request, EntityManagerInterface $entityManager, Chronologie $chronologie)
-    {
-        if (!$chronologie) {
-            return $this->redirectToRoute('chronologie.index');
-        }
-
-        $form = $this->createForm(ChronologieRemoveForm::class, $chronologie)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
+    public function removeAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Chronologie $chronologie,
+    ): Response {
+        $form = $this->createForm(ChronologieRemoveForm::class, $chronologie)->add('save', SubmitType::class, [
+            'label' => 'Supprimer',
+        ]);
 
         $form->handleRequest($request);
 

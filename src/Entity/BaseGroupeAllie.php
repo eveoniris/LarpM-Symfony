@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupeAllie', 'extended' => 'GroupeAllie'])]
 abstract class BaseGroupeAllie
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
@@ -79,10 +81,8 @@ abstract class BaseGroupeAllie
 
     /**
      * Set the value of groupe_allie_accepted.
-     *
-     * @param bool $groupe_allie_accepted
      */
-    public function setGroupeAllieAccepted(GroupeAllie $groupe_allie_accepted): static
+    public function setGroupeAllieAccepted(bool $groupe_allie_accepted): static
     {
         $this->groupe_allie_accepted = $groupe_allie_accepted;
 
@@ -99,10 +99,8 @@ abstract class BaseGroupeAllie
 
     /**
      * Set the value of message.
-     *
-     * @param string $message
      */
-    public function setMessage(GroupeAllie $message): static
+    public function setMessage(?string $message): static
     {
         $this->message = $message;
 
@@ -172,7 +170,7 @@ abstract class BaseGroupeAllie
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'groupe_id', 'groupe_allie_id', 'groupe_accepted', 'groupe_allie_accepted', 'message', 'message_allie'];
-    } */
+     * {
+     * return ['id', 'groupe_id', 'groupe_allie_id', 'groupe_accepted', 'groupe_allie_accepted', 'message', 'message_allie'];
+     * } */
 }

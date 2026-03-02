@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Security;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -26,11 +28,7 @@ class AccessDeniedListener implements EventSubscriberInterface
         $exception = $event->getThrowable();
 
         if ($exception instanceof AccessDeniedException) {
-            $event->setResponse(
-                new RedirectResponse(
-                    (new Route('access_denied'))->getPath()
-                )
-            );
+            $event->setResponse(new RedirectResponse(new Route('access_denied')->getPath()));
 
             $event->stopPropagation();
 

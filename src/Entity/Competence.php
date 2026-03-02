@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\CompetenceFamilyType;
@@ -13,8 +15,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 use Stringable;
-use function count;
-use function in_array;
 
 #[Entity(repositoryClass: CompetenceRepository::class)]
 class Competence extends BaseCompetence implements Stringable
@@ -29,7 +29,8 @@ class Competence extends BaseCompetence implements Stringable
 
     public function initFile(): static
     {
-        $this->setDocumentType(DocumentType::Doc)
+        $this
+            ->setDocumentType(DocumentType::Doc)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4);
@@ -47,7 +48,7 @@ class Competence extends BaseCompetence implements Stringable
         return $this->getCompetenceFamily()?->getLabel() . ' - ' . $this->getLevel()?->getLabel();
     }
 
-    public function getAttributeValue($key)
+    public function getAttributeValue(string $key): mixed
     {
         foreach ($this->getCompetenceAttributes() as $attr) {
             if ($attr->getAttributeType()->getLabel() === $key) {
@@ -90,29 +91,33 @@ class Competence extends BaseCompetence implements Stringable
     /**
      * Fourni la compétence de niveau immédiatement supérieur appartenant à la même famille de compétence.
      */
-    public function getNext(): ?Competence
+    public function getNext(): ?self
     {
         $competenceFamily = $this->getCompetenceFamily();
         $levelIndex = $this->getLevel()?->getIndex();
 
         $competences = $competenceFamily->getCompetences();
+        /** @var ArrayCollection<int, self> $nextCompetences */
         $nextCompetences = new ArrayCollection();
 
         foreach ($competences as $competence) {
-            if ($competence->getLevel()?->getIndex() > $levelIndex) {
-                $nextCompetences->add($competence);
+            if ($competence->getLevel()?->getIndex() <= $levelIndex) {
+                continue;
             }
+
+            $nextCompetences->add($competence);
         }
 
         $minimumIndex = null;
         $competenceFirst = null;
         foreach ($nextCompetences as $competence) {
+            $levelIndex = $competence->getLevel()?->getIndex();
             if (null === $minimumIndex) {
                 $competenceFirst = $competence;
-                $minimumIndex = $competence->getLevel()->getIndex();
-            } elseif ($competence->getLevel()->getIndex() < $minimumIndex) {
+                $minimumIndex = $levelIndex;
+            } elseif (null !== $levelIndex && $levelIndex < $minimumIndex) {
                 $competenceFirst = $competence;
-                $minimumIndex = $competence->getLevel()->getIndex();
+                $minimumIndex = $levelIndex;
             }
         }
 
@@ -121,14 +126,15 @@ class Competence extends BaseCompetence implements Stringable
 
     // TODO : use __toString call ?
 
+    /** @return Collection<int, Personnage> */
     public function getPersonnagesGn(int $gnId): Collection
     {
         $liste = new ArrayCollection();
         foreach ($this->getPersonnages() as $personnage) {
             foreach ($personnage->getParticipants() as $participant) {
                 $gn = $participant->getGn();
-                if ($gn && $gn->getId() === $gnId) {
-                    $liste[] = $participant;
+                if ($gn->getId() === $gnId) {
+                    $liste->add($participant);
                 }
             }
         }
@@ -136,6 +142,7 @@ class Competence extends BaseCompetence implements Stringable
         return $liste;
     }
 
+    /** @return array<int, string>|string|null */
     public function getPrintLabel(): array|string|null
     {
         return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getLabel()));
@@ -146,20 +153,23 @@ class Competence extends BaseCompetence implements Stringable
         return $this->competenceFamily->getCompetenceFamilyType()->value === CompetenceFamilyType::ALCHEMY->value;
     }
 
-    public function setCompetenceAttributesAsString(?int $value, $ormEm, $attributeRepos): static
-    {
+    public function setCompetenceAttributesAsString(
+        ?int $value,
+        \Doctrine\ORM\EntityManagerInterface $ormEm,
+        \App\Repository\AttributeTypeRepository $attributeRepos,
+    ): static {
         $keepTypeIds = [];
         if (null !== $value) {
-            $entries = explode(';', $value, 30);
+            $entries = explode(';', (string) $value, 30);
 
             foreach ($entries as $entry) {
                 $arrayIdValue = explode(':', $entry, 2);
-                if (2 !== count($arrayIdValue)) {
+                if (2 !== \count($arrayIdValue)) {
                     continue;
                 }
 
-                $typeId = (int)$arrayIdValue[0];
-                $value = (int)$arrayIdValue[1];
+                $typeId = (int) $arrayIdValue[0];
+                $value = (int) $arrayIdValue[1];
 
                 $keepTypeIds[] = $typeId;
                 $attr = $this->findAttributeByTypeId($typeId);
@@ -179,7 +189,7 @@ class Competence extends BaseCompetence implements Stringable
         // Si $value est null => $keepTypeIds est vide, on va donc tout supprimer.
 
         foreach ($this->getCompetenceAttributes() as $attr) {
-            if (in_array($attr->getAttributeTypeId(), $keepTypeIds, true)) {
+            if (\in_array($attr->getAttributeTypeId(), $keepTypeIds, true)) {
                 continue;
             }
 
@@ -192,7 +202,7 @@ class Competence extends BaseCompetence implements Stringable
         return $this;
     }
 
-    public function findAttributeByTypeId($typeId)
+    public function findAttributeByTypeId(int $typeId): ?CompetenceAttribute
     {
         foreach ($this->getCompetenceAttributes() as $attr) {
             if ($attr->getAttributeTypeId() === $typeId) {

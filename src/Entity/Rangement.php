@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping\Entity;
@@ -10,9 +12,7 @@ class Rangement extends BaseRangement
     public function getAdresse(): string
     {
         $adresse = $this->getLabel();
-        if ($this->getlocalisation()) {
-            $adresse .= ' ('.$this->getLocalisation()->getLabel().')';
-        }
+        $adresse .= ' (' . $this->getLocalisation()->getLabel() . ')';
 
         return $adresse;
     }

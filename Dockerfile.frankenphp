@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:latest
+FROM dunglas/frankenphp:latest-php8.4
 
 # Installe les dépendances nécessaires pour PDO_MYSQL et INTL
 RUN apt-get update && \

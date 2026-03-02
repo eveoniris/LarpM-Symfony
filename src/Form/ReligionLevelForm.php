@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Entity\ReligionLevel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -22,16 +24,14 @@ class ReligionLevelForm extends AbstractType
         $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Label',
             'required' => true,
-        ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'label' => 'Description',
-                'required' => false,
-                'attr' => ['rows' => 10],
-            ])
-            ->add('index', 'number', [
-                'label' => 'Index',
-                'required' => true,
-            ]);
+        ])->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'label' => 'Description',
+            'required' => false,
+            'attr' => ['rows' => 10],
+        ])->add('index', 'number', [
+            'label' => 'Index',
+            'required' => true,
+        ]);
     }
 
     /**
@@ -40,7 +40,7 @@ class ReligionLevelForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\ReligionLevel::class,
+            'data_class' => ReligionLevel::class,
         ]);
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,7 +21,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseSecondaryGroupType', 'extended' => 'SecondaryGroupType'])]
 abstract class BaseSecondaryGroupType
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -28,6 +30,7 @@ abstract class BaseSecondaryGroupType
     #[Column(type: Types::TEXT)]
     protected ?string $description = null;
 
+    /** @var Collection<int, SecondaryGroup> */
     #[OneToMany(mappedBy: 'secondaryGroupType', targetEntity: SecondaryGroup::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'secondary_group_type_id', nullable: false)]
     protected Collection $secondaryGroups;
@@ -103,6 +106,8 @@ abstract class BaseSecondaryGroupType
 
     /**
      * Get SecondaryGroup entity collection (one to many).
+     *
+     * @return Collection<int, SecondaryGroup>
      */
     public function getSecondaryGroups(): Collection
     {
@@ -120,7 +125,7 @@ abstract class BaseSecondaryGroupType
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description'];
-    } */
+     * {
+     * return ['id', 'label', 'description'];
+     * } */
 }

@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Territoire;
 
@@ -22,19 +23,17 @@ class TerritoireStrategieForm extends AbstractType
         $builder->add('tresor', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
             'label' => 'Richesse',
             'required' => true,
-        ])
-            ->add('resistance', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
-                'label' => 'Resistance',
-                'required' => true,
-            ])
-            ->add('ordreSocial', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
-                'label' => 'Ordre social',
-                'required' => false,
-                'attr' => [
-                    'min' => 1,
-                    'max' => 5,
-                ],
-            ]);
+        ])->add('resistance', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            'label' => 'Resistance',
+            'required' => true,
+        ])->add('ordreSocial', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
+            'label' => 'Ordre social',
+            'required' => false,
+            'attr' => [
+                'min' => 1,
+                'max' => 5,
+            ],
+        ]);
     }
 
     /**

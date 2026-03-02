@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Entity;
 
 class ListSearch
@@ -30,6 +32,7 @@ class ListSearch
     /*
      * If class is extended it's can be used to define type_choices
      */
+    /** @return array<string, mixed> */
     public function getTypeChoices(): array
     {
         return [];

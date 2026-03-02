@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Type;
 
@@ -20,17 +21,15 @@ class QualityValeurType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('monnaie', EntityType::class, [
+        $builder->add('monnaie', EntityType::class, [
             'label' => 'Choisissez la monnaie',
             'required' => true,
             'class' => Monnaie::class,
             'choice_label' => 'label',
-            ])
-            ->add('nombre', IntegerType::class, [
-                'label' => 'Quantité',
-                'required' => true,
-            ]);
+        ])->add('nombre', IntegerType::class, [
+            'label' => 'Quantité',
+            'required' => true,
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseMonnaie', 'extended' => 'Monnaie'])]
 abstract class BaseMonnaie
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
@@ -27,6 +29,7 @@ abstract class BaseMonnaie
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
     protected string $description;
 
+    /** @var Collection<int, QualityValeur> */
     #[OneToMany(mappedBy: 'monnaie', targetEntity: QualityValeur::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'monnaie_id', nullable: false)]
     protected Collection $qualityValeurs;
@@ -112,6 +115,8 @@ abstract class BaseMonnaie
 
     /**
      * Get QualityValeur entity collection (one to many).
+     *
+     * @return Collection<int, QualityValeur>
      */
     public function getQualityValeurs(): Collection
     {
@@ -119,7 +124,7 @@ abstract class BaseMonnaie
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description'];
-    } */
+     * {
+     * return ['id', 'label', 'description'];
+     * } */
 }

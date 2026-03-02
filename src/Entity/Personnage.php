@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\CompetenceFamilyType;
@@ -14,7 +16,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 use Exception;
-use Imagine\Gd\Imagine;
 use Stringable;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -28,13 +29,11 @@ class Personnage extends BasePersonnage implements Stringable
     public Personnage $personnageChoosen;
 
     // For some FormBuilder search
-    #[Assert\File(['maxSize' => 6000000])]
-    #[Assert\Image(
-        minWidth: 200,
-        minHeight: 200,
-    )]
+    #[Assert\File(['maxSize' => 6_000_000])]
+    #[Assert\Image(minWidth: 200, minHeight: 200)]
     protected ?UploadedFile $file;
     protected bool $isCreation = false;
+    private ?BaseGroupeGn $baseGroupeGn = null;
 
     /**
      * Constructeur.
@@ -49,10 +48,16 @@ class Personnage extends BasePersonnage implements Stringable
 
     public function initFile(): self
     {
-        return $this->setDocumentType(DocumentType::Photos)
+        return $this
+            ->setDocumentType(DocumentType::Photos)
             ->setFolderType(FolderType::Trombine)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4);
+    }
+
+    public function getDocumentUrl(): ?string
+    {
+        return $this->getTrombineUrl() ?: null;
     }
 
     /**
@@ -60,14 +65,14 @@ class Personnage extends BasePersonnage implements Stringable
      */
     public function __toString(): string
     {
-        return (string)$this->getPublicName();
+        return (string) $this->getPublicName();
     }
 
     /**
      * Fourni le surnom si celui-ci a été précisé
      * sinon fourni le nom.
      */
-    public function getPublicName()
+    public function getPublicName(): string
     {
         if ('' !== $this->getSurnom() && '0' !== $this->getSurnom()) {
             return $this->getSurnom();
@@ -78,8 +83,6 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Ajoute des points d'héroisme à un personnage.
-     *
-     * @param unknown $heroisme
      */
     public function addHeroisme(int $heroisme): static
     {
@@ -151,9 +154,11 @@ class Personnage extends BasePersonnage implements Stringable
         $competences = [];
         try {
             foreach ($this->getCompetences() as $competence) {
-                if ($competence->getCompetenceFamily()?->getId() === $type->getId()) {
-                    $competences[] = $competence;
+                if ($competence->getCompetenceFamily()?->getId() !== $type->getId()) {
+                    continue;
                 }
+
+                $competences[] = $competence;
             }
         } catch (Exception $e) {
             // LOG $e ?
@@ -162,14 +167,17 @@ class Personnage extends BasePersonnage implements Stringable
         return $competences;
     }
 
+    /** @return array<int, Competence> */
     public function getCompetencesByFamilyLabel(string $label): array
     {
         $competences = [];
         try {
             foreach ($this->getCompetences() as $competence) {
-                if ($competence->getLabel() === $label) {
-                    $competences[] = $competence;
+                if ($competence->getLabel() !== $label) {
+                    continue;
                 }
+
+                $competences[] = $competence;
             }
         } catch (Exception $e) {
             // LOG $e ?
@@ -195,12 +203,10 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Ajoute des points de pugilat à un personnage.
-     *
-     * @param unknown $pugilat
      */
     public function addPugilat(int $pugilat): static
     {
-        $this->setPugilat($this->getPugilat() + (int)$pugilat);
+        $this->setPugilat($this->getPugilat() + (int) $pugilat);
 
         return $this;
     }
@@ -214,7 +220,8 @@ class Personnage extends BasePersonnage implements Stringable
             return $this->pugilat;
         }
 
-        $this->pugilat = 1
+        $this->pugilat =
+            1
             + $this->getCompetencePugilat(CompetenceFamilyType::AGILITY)
             + $this->getCompetencePugilat(CompetenceFamilyType::RANGED_WEAPONS)
             + $this->getCompetencePugilat(CompetenceFamilyType::ONE_HANDED_WEAPON)
@@ -247,8 +254,6 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Fourni le niveau d'une compétence pour le score de pugilat.
-     *
-     * @param unknown $label
      */
     public function getCompetencePugilat(CompetenceFamilyType|string $label): int|float
     {
@@ -268,8 +273,6 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Ajoute des points de renomme à un personnage.
-     *
-     * @return Personnage
      */
     public function addRenomme(int $renomme): static
     {
@@ -307,19 +310,23 @@ class Personnage extends BasePersonnage implements Stringable
         return $this;
     }
 
+    /** @return ArrayCollection<int, PersonnageTrigger> */
     public function getActiveTriggers(): ArrayCollection
     {
         $all = new ArrayCollection();
         /** @var PersonnageTrigger $personnageTrigger */
         foreach ($this->personnageTriggers as $personnageTrigger) {
-            if (!$personnageTrigger->isDone()) {
-                $all->add($personnageTrigger);
+            if ($personnageTrigger->isDone()) {
+                continue;
             }
+
+            $all->add($personnageTrigger);
         }
 
         return $all;
     }
 
+    /** @return Collection<int, PersonnageApprentissage> */
     public function getApprentissage(Competence $competence): Collection
     {
         $apprentissages = new ArrayCollection();
@@ -327,9 +334,11 @@ class Personnage extends BasePersonnage implements Stringable
         /** @var PersonnageApprentissage $apprentissage */
         foreach ($this->getApprentissages() as $apprentissage) {
             // Get available one for a bonus and prefer to use FamilyType instead of if (null === $apprentissage->getDateUsage() && $apprentissage->getCompetence()?->getId() === $competence->getId()) {
-            if (null === $apprentissage->getDateUsage() && $apprentissage->getCompetence()?->getCompetenceFamily()?->getId() === $competence->getCompetenceFamily()?->getId()) {
-                $apprentissages->add($apprentissage);
+            if (!(null === $apprentissage->getDateUsage() && $apprentissage->getCompetence()?->getCompetenceFamily()?->getId() === $competence->getCompetenceFamily()?->getId())) {
+                continue;
             }
+
+            $apprentissages->add($apprentissage);
         }
 
         return $apprentissages;
@@ -338,18 +347,18 @@ class Personnage extends BasePersonnage implements Stringable
     /**
      * Fourni les backgrounds du personnage en fonction de la visibilitée.
      *
-     * @param unknown $visibility
+     * @return Collection<int, Background>
      */
-    public function getBackgrounds($visibility = null): Collection
+    public function getBackgrounds(?string $visibility = null): Collection
     {
         $backgrounds = new ArrayCollection();
         foreach ($this->getPersonnageBackgrounds() as $background) {
             if (null != $visibility) {
                 if ($background->getVisibility() == $visibility) {
-                    $backgrounds[] = $background;
+                    $backgrounds->add($background);
                 }
             } else {
-                $backgrounds[] = $background;
+                $backgrounds->add($background);
             }
         }
 
@@ -370,7 +379,7 @@ class Personnage extends BasePersonnage implements Stringable
     {
         $level = null;
 
-        if (!$famillyType = CompetenceFamilyType::getFromLabel($type)) {
+        if (!($famillyType = CompetenceFamilyType::getFromLabel($type))) {
             return $level;
         }
 
@@ -378,8 +387,8 @@ class Personnage extends BasePersonnage implements Stringable
         foreach ($this->getCompetencesFromFamilyType($famillyType) as $competence) {
             $index = $competence->getLevel()?->getIndex();
 
-            if (null === $level || $niveau < (int)$index) {
-                $niveau = (int)$index;
+            if (null === $level || $niveau < (int) $index) {
+                $niveau = (int) $index;
                 $level = $competence->getLevel();
             }
         }
@@ -413,9 +422,7 @@ class Personnage extends BasePersonnage implements Stringable
                 $heroismeHistory = new HeroismeHistory();
                 $heroismeHistory->setHeroisme($value);
                 // TODO ? get PersonnageComptence Learn Date (not saved yet) $heroismeHistory->setDate($competence->getDate());
-                $heroismeHistory->setExplication(
-                    sprintf('Compétence %s niveau %d', strtolower($family->getLabel()), $competenceLevel),
-                );
+                $heroismeHistory->setExplication(\sprintf('Compétence %s niveau %d', strtolower($family->getLabel()), $competenceLevel));
                 $heroismeHistories[] = $heroismeHistory;
             }
         }
@@ -440,6 +447,8 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Fourni le détail de pugilat à afficher.
+     *
+     * @return array<int, mixed>
      */
     public function getDisplayPugilat(): array
     {
@@ -466,7 +475,7 @@ class Personnage extends BasePersonnage implements Stringable
             [
                 CompetenceFamilyType::SAVAGERY,
                 LevelType::APPRENTICE->getIndex(),
-                static fn(int $niveau, int $pugilat) => $niveau >= 2 ? $pugilat + 5 : $pugilat,
+                static fn (int $niveau, int $pugilat) => $niveau >= 2 ? $pugilat + 5 : $pugilat,
             ],
         ];
 
@@ -479,14 +488,12 @@ class Personnage extends BasePersonnage implements Stringable
 
             if ($competenceLevel >= $level) {
                 $pugilatHistory = new PugilatHistory();
-                if (is_callable($value)) {
+                if (\is_callable($value)) {
                     $pugilatHistory->setPugilat($value($competenceLevel, $competencePugilat));
                 } else {
                     $pugilatHistory->setPugilat($value ?? $competencePugilat);
                 }
-                $pugilatHistory->setExplication(
-                    sprintf('Compétence %s niveau %d', strtolower($family->getLabel()), $competenceLevel),
-                );
+                $pugilatHistory->setExplication(\sprintf('Compétence %s niveau %d', strtolower($family->getLabel()), $competenceLevel));
                 $pugilatHistories[] = $pugilatHistory;
             }
         }
@@ -534,9 +541,8 @@ class Personnage extends BasePersonnage implements Stringable
     public function handleUpload(
         FileUploader $fileUploader,
         DocumentType $docType = DocumentType::Photos,
-        FolderType   $folderType = FolderType::Trombine,
-    ): void
-    {
+        FolderType $folderType = FolderType::Trombine,
+    ): void {
         // la propriété « file » peut être vide si le champ n'est pas requis
         if (empty($this->file)) {
             return;
@@ -546,13 +552,13 @@ class Personnage extends BasePersonnage implements Stringable
 
         // Try Rezise
         /*
-        try {
-            $image = (new Imagine())->open($fileUploader->getStoredFileWithPath());
-            $image->resize($image->getSize()->widen(480));
-            $image->save($fileUploader->getStoredFileWithPath());
-        } catch (\RuntimeException $e) {
-            dump($e);
-        }*/
+         * try {
+         * $image = (new Imagine())->open($fileUploader->getStoredFileWithPath());
+         * $image->resize($image->getSize()->widen(480));
+         * $image->save($fileUploader->getStoredFileWithPath());
+         * } catch (\RuntimeException $e) {
+         * dump($e);
+         * }*/
 
         $this->setTrombineUrl($fileUploader->getStoredFileName());
 
@@ -586,6 +592,8 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Fourni tous les gns auquel participe un personnage.
+     *
+     * @return Collection<int, Gn>
      */
     public function getGns(): Collection
     {
@@ -593,22 +601,22 @@ class Personnage extends BasePersonnage implements Stringable
 
         if ($this->getUser()) {
             foreach ($this->getUser()->getParticipants() as $participant) {
-                if ($participant->getBillet()) {
-                    $gns[] = $participant->getGn();
+                if (!$participant->getBillet()) {
+                    continue;
                 }
+
+                $gns->add($participant->getGn());
             }
         }
 
         return $gns;
     }
 
-    public function getGroupeByLabel($gnLabel)
+    public function getGroupeByLabel(string $gnLabel): ?Groupe
     {
         if ($this->getUser()) {
             foreach ($this->getUser()->getParticipants() as $participant) {
-                if ($participant->getBillet()
-                    && $participant->getGn()->getLabel() == $gnLabel
-                    && $participant->getPersonnage() == $this) {
+                if ($participant->getBillet() && $participant->getGn()->getLabel() == $gnLabel && $participant->getPersonnage() == $this) {
                     return $participant->getGroupeGn()->getGroupe();
                 }
             }
@@ -617,19 +625,19 @@ class Personnage extends BasePersonnage implements Stringable
         return null;
     }
 
-    public function getIdentityByLabel($gnLabel): string
+    public function getIdentityByLabel(string $gnLabel): string
     {
         $groupeLabel = null;
         $nomGn = $gnLabel;
         if ($this->getUser()) {
             foreach ($this->getUser()->getParticipants() as $participant) {
-                if ($participant->getBillet()
-                    && $participant->getGn()->getLabel() == $gnLabel
-                    && $participant->getPersonnage() == $this) {
-                    $groupeGn = $participant->getGroupeGn();
-                    if (null != $groupeGn) {
-                        $groupeLabel = $groupeGn->getGroupe()->getNom();
-                    }
+                if (!($participant->getBillet() && $participant->getGn()->getLabel() == $gnLabel && $participant->getPersonnage() == $this)) {
+                    continue;
+                }
+
+                $groupeGn = $participant->getGroupeGn();
+                if (null != $groupeGn) {
+                    $groupeLabel = $groupeGn->getGroupe()->getNom();
                 }
             }
         }
@@ -646,12 +654,14 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Fourni la liste des langues connues.
+     *
+     * @return Collection<int, Langue>
      */
     public function getLanguages(): Collection
     {
         $languages = new ArrayCollection();
         foreach ($this->getPersonnageLangues() as $personnageLangue) {
-            $languages[] = $personnageLangue->getLangue();
+            $languages->add($personnageLangue->getLangue());
         }
 
         return $languages;
@@ -679,8 +689,7 @@ class Personnage extends BasePersonnage implements Stringable
         if ($lastParticipant instanceof Participant) {
             $lastParticipantGn = $lastParticipant->getGn();
             $lastParticipantGroupeGn = $lastParticipant->getGroupeGn();
-            if (!empty($lastParticipantGroupeGn)
-                && $lastParticipantGn->getId() === $lastParticipantGroupeGn->getGn()->getId()) {
+            if (!empty($lastParticipantGroupeGn) && $lastParticipantGn->getId() === $lastParticipantGroupeGn->getGn()->getId()) {
                 return $lastParticipantGroupeGn->getGroupe();
             }
         }
@@ -710,14 +719,10 @@ class Personnage extends BasePersonnage implements Stringable
      */
     public function getIdentity(bool $withId = true, bool $full = false): string
     {
-        if ($full && $participant = $this->getParticipants()->last()) {
-            $groupeLabel = $participant?->getGroupeGn()?->getGroupe()?->getNom();
+        if ($full && ($participant = $this->getParticipants()->last())) {
+            $groupeLabel = $participant->getGroupeGn()?->getGroupe()?->getNom();
 
-            return sprintf(
-                '%s (%s)',
-                $withId ? $this->getIdName() : $this->getPublicName(),
-                $participant?->getGn()?->getLabel() . ($groupeLabel ? ' - ' : '') . $groupeLabel,
-            );
+            return \sprintf('%s (%s)', $withId ? $this->getIdName() : $this->getPublicName(), $participant->getGn()->getLabel() . ($groupeLabel ? ' - ' : '') . $groupeLabel);
         }
 
         return $withId ? $this->getIdName() : $this->getNameSurname();
@@ -726,7 +731,7 @@ class Personnage extends BasePersonnage implements Stringable
     /**
      * Fourni la religion principale du personnage.
      */
-    public function getMainReligion()
+    public function getMainReligion(): ?Religion
     {
         $religion = null;
         $index = 0;
@@ -747,7 +752,7 @@ class Personnage extends BasePersonnage implements Stringable
     /**
      * Fourni la description du membre correspondant au groupe passé en paramètre.
      */
-    public function getMembre(SecondaryGroup $groupe)
+    public function getMembre(SecondaryGroup $groupe): Membre|false
     {
         foreach ($this->getMembres() as $membre) {
             if ($membre->getSecondaryGroup() == $groupe) {
@@ -761,17 +766,15 @@ class Personnage extends BasePersonnage implements Stringable
     /**
      * Fourni l'origine du personnage.
      */
-    public function getOrigine()
+    public function getOrigine(): ?Territoire
     {
         return $this->getTerritoire();
     }
 
     /**
      * Fourni le language.
-     *
-     * @param unknown $langue
      */
-    public function getPersonnageLangue($langue)
+    public function getPersonnageLangue(Langue $langue): ?PersonnageLangues
     {
         foreach ($this->getPersonnageLangues() as $personnageLangue) {
             if ($personnageLangue->getLangue() == $langue) {
@@ -782,16 +785,16 @@ class Personnage extends BasePersonnage implements Stringable
         return null;
     }
 
-    /**
-     * @return bool
-     */
+    /** @return array<int, Potion> */
     public function getPotionsNiveau(int $niveau): array
     {
         $potions = [];
         foreach ($this->getPotions() as $potion) {
-            if ($potion->getNiveau() === $niveau) {
-                $potions[] = $potion;
+            if ($potion->getNiveau() !== $niveau) {
+                continue;
             }
+
+            $potions[] = $potion;
         }
 
         return $potions;
@@ -799,7 +802,7 @@ class Personnage extends BasePersonnage implements Stringable
 
     public function getPrintLabel(): ?string
     {
-        return (new AsciiSlugger())->slug($this->getLabel());
+        return new AsciiSlugger()->slug($this->getLabel());
     }
 
     /**
@@ -811,12 +814,14 @@ class Personnage extends BasePersonnage implements Stringable
         $nomGn = '???';
         if ($this->getUser()) {
             foreach ($this->getUser()->getParticipants() as $participant) {
-                if ($participant->getPersonnage() == $this) {
-                    $nomGn = $participant->getGn()->getLabel();
-                    $groupeGn = $participant->getGroupeGn();
-                    if (null != $groupeGn) {
-                        $groupeLabel = $groupeGn->getGroupe()->getNom();
-                    }
+                if ($participant->getPersonnage() != $this) {
+                    continue;
+                }
+
+                $nomGn = $participant->getGn()->getLabel();
+                $groupeGn = $participant->getGroupeGn();
+                if (null != $groupeGn) {
+                    $groupeLabel = $groupeGn->getGroupe()->getNom();
                 }
             }
         }
@@ -843,14 +848,16 @@ class Personnage extends BasePersonnage implements Stringable
         if ($this->getUser()) {
             $first = true;
             foreach ($this->getUser()->getParticipants() as $participant) {
-                if (null != $participant->getPersonnage() && $participant->getPersonnage()->getId() == $this->getId()) {
-                    if ($first) {
-                        $s .= ' [';
-                        $first = false;
-                    }
-
-                    $s = $s . ' ' . $participant->getGn()->getLabel();
+                if (!(null != $participant->getPersonnage() && $participant->getPersonnage()->getId() == $this->getId())) {
+                    continue;
                 }
+
+                if ($first) {
+                    $s .= ' [';
+                    $first = false;
+                }
+
+                $s = $s . ' ' . $participant->getGn()->getLabel();
             }
 
             if (!$first) {
@@ -874,7 +881,7 @@ class Personnage extends BasePersonnage implements Stringable
      *
      * @todo : Evoluer vers un modèle de données ou les libélés de ressource sont variable en fonction du genre
      */
-    public function getClasseName()
+    public function getClasseName(): string
     {
         $lGenreMasculin = true;
         if (null != $this->getGenre()) {
@@ -885,15 +892,17 @@ class Personnage extends BasePersonnage implements Stringable
             return '';
         } elseif ($lGenreMasculin) {
             return $this->getClasse()->getLabelMasculin();
-        } else {
-            return $this->getClasse()->getLabelFeminin();
         }
+
+        return $this->getClasse()->getLabelFeminin();
     }
 
     /**
      * Fourni la liste des groupes secondaires pour lesquel ce personnage est chef.
+     *
+     * @return Collection<int, SecondaryGroup>
      */
-    public function getSecondaryGroupsAsChief()
+    public function getSecondaryGroupsAsChief(): Collection
     {
         return $this->getSecondaryGroups();
     }
@@ -906,9 +915,7 @@ class Personnage extends BasePersonnage implements Stringable
      */
     public function getStatusCode(): int
     {
-        return $this->getVivant()
-            ? ($this->isPnj() ? 2 : 1)
-            : 0;
+        return $this->getVivant() ? ($this->isPnj() ? 2 : 1) : 0;
     }
 
     /**
@@ -978,14 +985,7 @@ class Personnage extends BasePersonnage implements Stringable
      */
     public function getStatusOnActiveGnCode(): int
     {
-        return $this->getVivant()
-            ? ($this->isPnj()
-                ? 2
-                : ($this->isLastParticipantOnActiveGn()
-                    ? 3
-                    : 1)
-            )
-            : 0;
+        return $this->getVivant() ? ($this->isPnj() ? 2 : ($this->isLastParticipantOnActiveGn() ? 3 : 1)) : 0;
     }
 
     /**
@@ -995,10 +995,7 @@ class Personnage extends BasePersonnage implements Stringable
     {
         $lastParticipant = $this->getLastParticipant();
 
-        return $lastParticipant
-            && $lastParticipant->getGn()
-            && $lastParticipant->getGn()->getActif()
-            && $lastParticipant->getBillet();
+        return $lastParticipant && $lastParticipant->getGn()->getActif() && $lastParticipant->getBillet();
     }
 
     /**
@@ -1008,13 +1005,13 @@ class Personnage extends BasePersonnage implements Stringable
     {
         /** @var PersonnageTrigger $personnageTrigger */
         foreach ($this->getPersonnageTriggers() as $personnageTrigger) {
-            if (is_string($tag)) {
-                if ($personnageTrigger?->getTag()?->value === $tag) {
+            if (\is_string($tag)) {
+                if ($personnageTrigger->getTag()?->value === $tag) {
                     return $personnageTrigger;
                 }
                 continue;
             }
-            if ($personnageTrigger?->getTag()?->value === $tag?->value) {
+            if ($personnageTrigger->getTag()->value === $tag->value) {
                 return $personnageTrigger;
             }
         }
@@ -1047,7 +1044,7 @@ class Personnage extends BasePersonnage implements Stringable
     {
         $total = 0;
         foreach ($this->getExperienceGains() as $gain) {
-            $pos = strpos((string)$gain->getExplanation(), 'Suppression de la compétence');
+            $pos = strpos((string) $gain->getExplanation(), 'Suppression de la compétence');
             if (false === $pos) {
                 $total += $gain->getXpGain();
             }
@@ -1061,17 +1058,11 @@ class Personnage extends BasePersonnage implements Stringable
      */
     public function hasAnomalie(): bool
     {
-        return
-            !empty($this->getLanguesAnomaliesMessage())
-            || !empty($this->getPotionAnomalieMessage())
-            || !empty($this->getSortAnomalieMessage())
-            || !empty($this->getPrieresAnomalieMessage());
+        return !empty($this->getLanguesAnomaliesMessage()) || !empty($this->getPotionAnomalieMessage()) || !empty($this->getSortAnomalieMessage()) || !empty($this->getPrieresAnomalieMessage());
     }
 
     /**
      * Retourne les anomalies entre le nombre de langues autorisées et le nombre de langues affectées.
-     *
-     * @return Collection|null
      */
     public function getLanguesAnomaliesMessage(): string
     {
@@ -1082,7 +1073,7 @@ class Personnage extends BasePersonnage implements Stringable
         $label = '';
         foreach ($this->getPersonnageLangues() as $personnageLangue) {
             $label = $label . ' ' . $personnageLangue->getLangue();
-            if (str_starts_with((string)$personnageLangue->getLangue(), 'Ancien')) {
+            if (str_starts_with((string) $personnageLangue->getLangue(), 'Ancien')) {
                 ++$compteLangueAncienne;
             } else {
                 ++$compteLangue;
@@ -1090,7 +1081,7 @@ class Personnage extends BasePersonnage implements Stringable
 
             $source = $personnageLangue->getSource();
             $baseSources = ['ORIGINE', 'GROUPE', 'ORIGINE et GROUPE'];
-            if (in_array($source, $baseSources)) {
+            if (\in_array($source, $baseSources)) {
                 ++$maxLangueConnue;
             }
         }
@@ -1132,8 +1123,6 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Contrôle si le personnage connait le bon nombre de potion.
-     *
-     * @return non vide ,si il y a une anomalie
      */
     public function getPotionAnomalieMessage(): string
     {
@@ -1152,8 +1141,7 @@ class Personnage extends BasePersonnage implements Stringable
                 }
             }
 
-            if ($competence->getCompetenceFamily()?->getLabel() === CompetenceFamily::$LITTERATURE
-                && 1 === $competence->getLevel()?->getIndex()) {
+            if ($competence->getCompetenceFamily()?->getLabel() === CompetenceFamily::$LITTERATURE && 1 === $competence->getLevel()?->getIndex()) {
                 $litteratureApprenti = $competence;
             }
         }
@@ -1190,8 +1178,7 @@ class Personnage extends BasePersonnage implements Stringable
                     $expectedByLevel[$i] += $v;
                 }
 
-                if ($competence->getCompetenceFamily()->getLabel() == CompetenceFamily::$LITTERATURE
-                    && 1 == $competence->getLevel()->getIndex()) {
+                if ($competence->getCompetenceFamily()->getLabel() == CompetenceFamily::$LITTERATURE && 1 == $competence->getLevel()->getIndex()) {
                     $litteratureApprenti = $competence;
                 }
             }
@@ -1212,8 +1199,6 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Contrôle si il y a une anomalie dans le nombre de prière.
-     *
-     * @return non vide ,si il y a une anomalie
      */
     public function getPrieresAnomalieMessage(): string
     {
@@ -1272,9 +1257,11 @@ class Personnage extends BasePersonnage implements Stringable
 
         /** @var PersonnageChronologie $personnageChronologie */
         foreach ($this->personnageChronologie as $personnageChronologie) {
-            if ($personnageChronologie->isFruitsEtLegumes()) {
-                $nb++;
+            if (!$personnageChronologie->isFruitsEtLegumes()) {
+                continue;
             }
+
+            ++$nb;
         }
 
         return $nb;
@@ -1306,7 +1293,7 @@ class Personnage extends BasePersonnage implements Stringable
 
         $index = $level->getIndex();
         foreach ($this->getCompetencesFromFamilyType($type) as $competence) {
-            if ($competence?->getLevel()?->getIndex() === $index) {
+            if ($competence->getLevel()?->getIndex() === $index) {
                 return true;
             }
         }
@@ -1350,14 +1337,16 @@ class Personnage extends BasePersonnage implements Stringable
     {
         /** @var PersonnagesReligions $religion */
         foreach ($this->getPersonnagesReligions() as $religion) {
-            if ($religion->getReligion()?->getId() === $religionId) {
-                if (null === $levelId) {
-                    return true;
-                }
+            if ($religion->getReligion()?->getId() !== $religionId) {
+                continue;
+            }
 
-                if ((int)$religion->getReligionLevel()?->getIndex() >= $levelId) {
-                    return true;
-                }
+            if (null === $levelId) {
+                return true;
+            }
+
+            if ((int) $religion->getReligionLevel()?->getIndex() >= $levelId) {
+                return true;
             }
         }
 
@@ -1372,13 +1361,13 @@ class Personnage extends BasePersonnage implements Stringable
         /** @var PersonnageTrigger $personnageTrigger */
         foreach ($this->getPersonnageTriggers() as $personnageTrigger) {
             if ($tag instanceof TriggerType) {
-                if ($personnageTrigger?->getTag()->value === $tag?->value) {
+                if ($personnageTrigger->getTag()->value === $tag->value) {
                     return true;
                 }
                 continue;
             }
 
-            if ($personnageTrigger?->getTag()?->value === $tag) {
+            if ($personnageTrigger->getTag()?->value === $tag) {
                 return true;
             }
         }
@@ -1554,7 +1543,7 @@ class Personnage extends BasePersonnage implements Stringable
     /**
      * Indique si le personnage est Croyant dans une religion.
      */
-    public function isKnownReligion($religion): bool
+    public function isKnownReligion(Religion $religion): bool
     {
         $personnagesReligions = $this->getPersonnagesReligions();
         foreach ($personnagesReligions as $personnageReligion) {
@@ -1649,8 +1638,7 @@ class Personnage extends BasePersonnage implements Stringable
     public function participeTo(Gn $gn): bool
     {
         if ($this->getUser() && ($participant = $this->getUser()->getParticipant($gn))) {
-            if ($participant->getBillet()
-                && $participant->getPersonnage() == $this) {
+            if ($participant->getBillet() && $participant->getPersonnage() == $this) {
                 return true;
             }
         }
@@ -1660,16 +1648,12 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Détermine si le personnage participe à un GN.
-     *
-     * @param unknown $gnLabel
      */
-    public function participeToByLabel($gnLabel): bool
+    public function participeToByLabel(string $gnLabel): bool
     {
         if ($this->getUser()) {
             foreach ($this->getUser()->getParticipants() as $participant) {
-                if ($participant->getBillet()
-                    && $participant->getGn()->getLabel() == $gnLabel
-                    && $participant->getPersonnage() == $this) {
+                if ($participant->getBillet() && $participant->getGn()->getLabel() == $gnLabel && $participant->getPersonnage() == $this) {
                     return true;
                 }
             }
@@ -1689,8 +1673,6 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Retire des points de renomme à un personnage.
-     *
-     * @return Personnage
      */
     public function removeRenomme(int $renomme): static
     {

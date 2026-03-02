@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseGenre', 'extended' => 'Genre'])]
 abstract class BaseGenre
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100)]
@@ -28,8 +30,9 @@ abstract class BaseGenre
     protected string $description;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Personnage>|\App\Entity\Personnage[]
+     * @var Collection<int, Personnage>|Personnage[]
      */
+    /** @var Collection<int, Personnage> */
     #[OneToMany(mappedBy: 'genre', targetEntity: Personnage::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'genre_id', nullable: false)]
     protected Collection $personnages;
@@ -89,6 +92,7 @@ abstract class BaseGenre
         return $this;
     }
 
+    /** @return Collection<int, Personnage> */
     public function getPersonnages(): Collection
     {
         return $this->personnages;

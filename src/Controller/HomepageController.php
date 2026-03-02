@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Annonce;
@@ -10,7 +12,7 @@ use App\Entity\User;
 use App\Repository\TerritoireRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
-use JetBrains\PhpStorm\Deprecated;
+use Exception;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -41,7 +43,7 @@ class HomepageController extends AbstractController
             'fiefs' => $repoTerritoire->findFiefs(),
             'countries' => $repoTerritoire->findRoot(),
             'regions' => $repoTerritoire->findRegions(),
-            default => throw new \Exception('Unknown territoire type : '.$type),
+            default => throw new Exception('Unknown territoire type : ' . $type),
         };
 
         $data = [];
@@ -52,7 +54,8 @@ class HomepageController extends AbstractController
         return new JsonResponse($data);
     }
 
-    private function addGeoData($data): array
+    /** @return array<string, mixed> */
+    private function addGeoData(Territoire $data): array
     {
         return [
             'id' => $data->getId(),
@@ -98,7 +101,8 @@ class HomepageController extends AbstractController
     public function gdataAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Gn $gn,
+        #[MapEntity]
+        Gn $gn,
     ): JsonResponse {
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('IdGroup', 'IdGroup', 'integer');
@@ -109,27 +113,23 @@ class HomepageController extends AbstractController
         $rsm->addScalarResult('ScenaristeEmail', 'ScenaristeEmail', 'string');
 
         /** @noinspection SqlNoDataSourceInspection */
-        $query = $entityManager->createNativeQuery(
-            <<<SQL
-                SELECT g.numero         as IdGroup,
-                       g.nom            as NomGroupe,
-                       pr.id            as IdPj,
-                       pr.nom           as Personnage,
-                       chef.email       as ChefEmail,
-                       scenariste.email as ScenaristeEmail
-                FROM groupe_gn grgn
-                         INNER JOIN participant p ON grgn.responsable_id = p.id
-                         INNER JOIN personnage pr ON p.personnage_id = pr.id
-                         INNER JOIN groupe g ON grgn.groupe_id = g.id
-                         INNER JOIN `user` chef ON p.user_id = chef.id
-                         INNER JOIN `user` scenariste ON g.scenariste_id = scenariste.id
+        $query = $entityManager->createNativeQuery(<<<SQL
+            SELECT g.numero         as IdGroup,
+                   g.nom            as NomGroupe,
+                   pr.id            as IdPj,
+                   pr.nom           as Personnage,
+                   chef.email       as ChefEmail,
+                   scenariste.email as ScenaristeEmail
+            FROM groupe_gn grgn
+                     INNER JOIN participant p ON grgn.responsable_id = p.id
+                     INNER JOIN personnage pr ON p.personnage_id = pr.id
+                     INNER JOIN groupe g ON grgn.groupe_id = g.id
+                     INNER JOIN `user` chef ON p.user_id = chef.id
+                     INNER JOIN `user` scenariste ON g.scenariste_id = scenariste.id
 
-                WHERE p.gn_id = :gnid
-                ORDER BY g.numero;
-                SQL,
-            $rsm,
-        )
-            ->setParameter('gnid', $gn->getId());
+            WHERE p.gn_id = :gnid
+            ORDER BY g.numero;
+            SQL, $rsm)->setParameter('gnid', $gn->getId());
 
         $results = $query->getResult();
 
@@ -161,11 +161,13 @@ class HomepageController extends AbstractController
                 $highlight = false;
                 if ($this->getUser()) {
                     foreach ($this->getUser()->getParticipants() as $participant) {
-                        if ($participant->getGn() == $gn && $participant->getGroupeGn()) {
-                            if ($participant->getGroupeGn()->getGroupe() == $groupe) {
-                                $highlight = true;
-                                break;
-                            }
+                        if (!($participant->getGn() == $gn && $participant->getGroupeGn())) {
+                            continue;
+                        }
+
+                        if ($participant->getGroupeGn()->getGroupe() == $groupe) {
+                            $highlight = true;
+                            break;
                         }
                     }
                 }
@@ -182,7 +184,6 @@ class HomepageController extends AbstractController
         return new JsonResponse($groupes);
     }
 
-    #[Deprecated]
     public function indexAction(): RedirectResponse|Response
     {
         if (!$this->getUser()) {

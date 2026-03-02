@@ -1,18 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Background;
 use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Repository\GroupeRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Doctrine\ORM\QueryBuilder;
 
 class BackgroundForm extends AbstractType
 {
@@ -24,39 +26,36 @@ class BackgroundForm extends AbstractType
         $builder->add('titre', TextType::class, [
             'required' => true,
             'label' => 'Titre',
-        ])
-            ->add('text', TextareaType::class, [
-                'required' => true,
-                'label' => 'Contenu',
-                'attr' => [
-                    'class' => 'tinymce',
-                    'rows' => 15,
-                ],
-            ])
-            ->add('groupe', EntityType::class, [
-                'required' => true,
-                'label' => 'Groupe',
-                'class' => Groupe::class,
-                'query_builder' => function (GroupeRepository $er) use ($options): QueryBuilder {
-                    $qb = $er->createQueryBuilder('g');
-                    if ($options['groupeId']) {
-                        $qb->where('g.id = :groupeId');
-                        $qb->setParameter('groupeId', $options['groupeId']);
-                    }
-                    $qb->orderBy('g.nom', 'ASC');
+        ])->add('text', TextareaType::class, [
+            'required' => true,
+            'label' => 'Contenu',
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 15,
+            ],
+        ])->add('groupe', EntityType::class, [
+            'required' => true,
+            'label' => 'Groupe',
+            'class' => Groupe::class,
+            'query_builder' => static function (GroupeRepository $er) use ($options): QueryBuilder {
+                $qb = $er->createQueryBuilder('g');
+                if ($options['groupeId']) {
+                    $qb->where('g.id = :groupeId');
+                    $qb->setParameter('groupeId', $options['groupeId']);
+                }
+                $qb->orderBy('g.nom', 'ASC');
 
-                    return $qb;
-                },
-                'choice_label' => 'nom',
-            ])
-            ->add('gn', EntityType::class, [
-                'required' => true,
-                'label' => 'GN',
-                'class' => Gn::class,
-                'choice_label' => 'label',
-                'placeholder' => 'Choisissez le GN auquel est lié ce background',
-                'empty_data' => null,
-            ]);
+                return $qb;
+            },
+            'choice_label' => 'nom',
+        ])->add('gn', EntityType::class, [
+            'required' => true,
+            'label' => 'GN',
+            'class' => Gn::class,
+            'choice_label' => 'label',
+            'placeholder' => 'Choisissez le GN auquel est lié ce background',
+            'empty_data' => null,
+        ]);
     }
 
     /**

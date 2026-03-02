@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
-use App\Entity\Document;
 use App\Entity\Domaine;
 use App\Entity\Potion;
 use App\Entity\Priere;
@@ -22,6 +23,7 @@ use App\Repository\SphereRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
+use Closure;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\FormInterface;
@@ -43,15 +45,10 @@ class MagieController extends AbstractController
     #[Route('/domaine/add', name: 'domaine.add')]
     public function domaineAddAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            new Domaine(),
-            DomaineForm::class,
-            routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'],
-            msg: $this->getDomaineMsg(),
-        );
+        return $this->handleCreateOrUpdate($request, new Domaine(), DomaineForm::class, routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'], msg: $this->getDomaineMsg());
     }
 
+    /** @return array<string, string> */
     protected function getDomaineMsg(): array
     {
         return [
@@ -122,17 +119,9 @@ class MagieController extends AbstractController
      * Met à jour un domaine de magie.
      */
     #[Route('/domaine/{domaine}/update', name: 'domaine.update', requirements: ['domaine' => Requirement::DIGITS])]
-    public function domaineUpdateAction(
-        Request $request,
-        #[MapEntity] Domaine $domaine,
-    ): RedirectResponse|Response {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $domaine,
-            DomaineForm::class,
-            routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'],
-            msg: $this->getDomaineMsg(),
-        );
+    public function domaineUpdateAction(Request $request, #[MapEntity] Domaine $domaine): RedirectResponse|Response
+    {
+        return $this->handleCreateOrUpdate($request, $domaine, DomaineForm::class, routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'], msg: $this->getDomaineMsg());
     }
 
     /**
@@ -142,24 +131,20 @@ class MagieController extends AbstractController
         'potion' => Requirement::DIGITS,
         // 'document' => Requirement::ASCII_SLUG, // todo may be a string
     ])]
-    public function getPotionDocumentAction(
-        #[MapEntity] Potion $potion,
-    ): Response {
-        $this->checkHasAccess(
-            [Role::ORGA, Role::REGLE, Role::SCENARISTE],
-            function () use ($potion) {
-                $personnage = $this->getPersonnage();
-                $this->checkHasPersonnage($personnage);
+    public function getPotionDocumentAction(#[MapEntity] Potion $potion): Response
+    {
+        $this->checkHasAccess([Role::ORGA, Role::REGLE, Role::SCENARISTE], function () use ($potion) {
+            $personnage = $this->getPersonnage();
+            $this->checkHasPersonnage($personnage);
 
-                if ($personnage && !$personnage->isKnownPotion($potion)) {
-                    $this->addFlash('error', 'Vous ne connaissez pas cette potion !');
+            if ($personnage && !$personnage->isKnownPotion($potion)) {
+                $this->addFlash('error', 'Vous ne connaissez pas cette potion !');
 
-                    return $this->redirectToRoute('homepage');
-                }
+                return $this->redirectToRoute('homepage');
+            }
 
-                return false;
-            },
-        );
+            return false;
+        });
 
         return $this->sendDocument($potion);
     }
@@ -170,21 +155,18 @@ class MagieController extends AbstractController
     #[Route('/priere/{priere}/document', name: 'priere.document', requirements: ['priere' => Requirement::DIGITS])]
     public function getPriereDocumentAction(#[MapEntity] Priere $priere): BinaryFileResponse|RedirectResponse
     {
-        $this->checkHasAccess(
-            [Role::ORGA, Role::REGLE, Role::SCENARISTE],
-            function () use ($priere) {
-                $personnage = $this->getPersonnage();
-                $this->checkHasPersonnage($personnage);
+        $this->checkHasAccess([Role::ORGA, Role::REGLE, Role::SCENARISTE], function () use ($priere) {
+            $personnage = $this->getPersonnage();
+            $this->checkHasPersonnage($personnage);
 
-                if ($personnage && !$personnage->isKnownPriere($priere)) {
-                    $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
+            if ($personnage && !$personnage->isKnownPriere($priere)) {
+                $this->addFlash('error', 'Vous ne connaissez pas cette prière !');
 
-                    return $this->redirectToRoute('homepage');
-                }
+                return $this->redirectToRoute('homepage');
+            }
 
-                return false;
-            },
-        );
+            return false;
+        });
 
         return $this->sendDocument($priere);
     }
@@ -192,21 +174,18 @@ class MagieController extends AbstractController
     #[Route('/sort/{sort}/document', name: 'sort.document', requirements: ['sort' => Requirement::DIGITS])]
     public function getSortDocumentAction(#[MapEntity] Sort $sort): BinaryFileResponse
     {
-        $this->checkHasAccess(
-            [Role::ORGA, Role::REGLE, Role::SCENARISTE],
-            function () use ($sort) {
-                $personnage = $this->getPersonnage();
-                $this->checkHasPersonnage($personnage);
+        $this->checkHasAccess([Role::ORGA, Role::REGLE, Role::SCENARISTE], function () use ($sort) {
+            $personnage = $this->getPersonnage();
+            $this->checkHasPersonnage($personnage);
 
-                if ($personnage && !$personnage->isKnownSort($sort)) {
-                    $this->addFlash('error', 'Vous ne connaissez pas ce sort !');
+            if ($personnage && !$personnage->isKnownSort($sort)) {
+                $this->addFlash('error', 'Vous ne connaissez pas ce sort !');
 
-                    return $this->redirectToRoute('homepage');
-                }
+                return $this->redirectToRoute('homepage');
+            }
 
-                return false;
-            },
-        );
+            return false;
+        });
 
         return $this->sendDocument($sort);
     }
@@ -227,6 +206,7 @@ class MagieController extends AbstractController
         );
     }
 
+    /** @return array<string, string> */
     protected function getPotionMsg(): array
     {
         return [
@@ -240,7 +220,7 @@ class MagieController extends AbstractController
         ];
     }
 
-    protected function getDocumentCallBack(): \Closure
+    protected function getDocumentCallBack(): Closure
     {
         return function (Priere|Sphere|Sort|Potion $entity, FormInterface $form): Priere|Sphere|Sort|Potion {
             $entity->handleUpload($this->fileUploader);
@@ -253,9 +233,8 @@ class MagieController extends AbstractController
      * Supprime une potion.
      */
     #[Route('/potion/{potion}/delete', name: 'potion.delete', requirements: ['potion' => Requirement::DIGITS])]
-    public function potionDeleteAction(
-        #[MapEntity] Potion $potion,
-    ): RedirectResponse|Response {
+    public function potionDeleteAction(#[MapEntity] Potion $potion): RedirectResponse|Response
+    {
         return $this->genericDelete(
             $potion,
             title: $this->translator->trans('Supprimer une potion'),
@@ -303,10 +282,13 @@ class MagieController extends AbstractController
         ]);
     }
 
-    #[Route('/potion/{potion}/personnages', name: 'potion.personnages', requirements: ['potion' => Requirement::DIGITS])]
+    #[Route('/potion/{potion}/personnages', name: 'potion.personnages', requirements: [
+        'potion' => Requirement::DIGITS,
+    ])]
     public function potionPersonnagesAction(
         Request $request,
-        #[MapEntity] Potion $potion,
+        #[MapEntity]
+        Potion $potion,
         PersonnageService $personnageService,
         PotionRepository $potionRepository,
     ): Response {
@@ -326,30 +308,17 @@ class MagieController extends AbstractController
             'potion' => $potion,
         ];
 
-        $viewParams = $personnageService->getSearchViewParameters(
-            $request,
-            $routeName,
-            $routeParams,
-            $columnKeys,
-            $additionalViewParams,
-            $personnages,
-            $potionRepository->getPersonnages($potion),
-        );
+        $viewParams = $personnageService->getSearchViewParameters($request, $routeName, $routeParams, $columnKeys, $additionalViewParams, $personnages, $potionRepository->getPersonnages($potion));
 
-        return $this->render(
-            $twigFilePath,
-            $viewParams,
-        );
+        return $this->render($twigFilePath, $viewParams);
     }
 
     /**
      * Met à jour une potion.
      */
     #[Route('/potion/{potion}/update', name: 'potion.update', requirements: ['potion' => Requirement::DIGITS])]
-    public function potionUpdateAction(
-        Request $request,
-        #[MapEntity] Potion $potion,
-    ): RedirectResponse|Response {
+    public function potionUpdateAction(Request $request, #[MapEntity] Potion $potion): RedirectResponse|Response
+    {
         return $this->handleCreateOrUpdate(
             $request,
             $potion,
@@ -376,6 +345,7 @@ class MagieController extends AbstractController
         );
     }
 
+    /** @return array<string, string> */
     protected function getPriereMsg(): array
     {
         return [
@@ -393,9 +363,8 @@ class MagieController extends AbstractController
      * Supprime une priere.
      */
     #[Route('/priere/{priere}/delete', name: 'priere.delete', requirements: ['priere' => Requirement::DIGITS])]
-    public function priereDeleteAction(
-        #[MapEntity] Priere $priere,
-    ): RedirectResponse|Response {
+    public function priereDeleteAction(#[MapEntity] Priere $priere): RedirectResponse|Response
+    {
         return $this->genericDelete(
             $priere,
             title: $this->translator->trans('Supprimer une prière'),
@@ -431,9 +400,7 @@ class MagieController extends AbstractController
         PriereRepository $priereRepository,
     ): Response {
         $alias = $priereRepository->getAlias();
-        $queryBuilder = $priereRepository->createQueryBuilder($alias)
-            ->orderBy('sphere.label', 'ASC')
-            ->addOrderBy('priere.niveau', 'ASC');
+        $queryBuilder = $priereRepository->createQueryBuilder($alias)->orderBy('sphere.label', 'ASC')->addOrderBy('priere.niveau', 'ASC');
 
         $pagerService->setRequest($request)->setRepository($priereRepository)->setLimit(25);
 
@@ -443,10 +410,13 @@ class MagieController extends AbstractController
         ]);
     }
 
-    #[Route('/priere/{priere}/personnages', name: 'priere.personnages', requirements: ['priere' => Requirement::DIGITS])]
+    #[Route('/priere/{priere}/personnages', name: 'priere.personnages', requirements: [
+        'priere' => Requirement::DIGITS,
+    ])]
     public function prierePersonnagesAction(
         Request $request,
-        #[MapEntity] Priere $priere,
+        #[MapEntity]
+        Priere $priere,
         PersonnageService $personnageService,
         PriereRepository $priereRepository,
     ): Response {
@@ -466,20 +436,9 @@ class MagieController extends AbstractController
             'priere' => $priere,
         ];
 
-        $viewParams = $personnageService->getSearchViewParameters(
-            $request,
-            $routeName,
-            $routeParams,
-            $columnKeys,
-            $additionalViewParams,
-            $personnages,
-            $priereRepository->getPersonnages($priere),
-        );
+        $viewParams = $personnageService->getSearchViewParameters($request, $routeName, $routeParams, $columnKeys, $additionalViewParams, $personnages, $priereRepository->getPersonnages($priere));
 
-        return $this->render(
-            $twigFilePath,
-            $viewParams,
-        );
+        return $this->render($twigFilePath, $viewParams);
     }
 
     /**
@@ -514,6 +473,7 @@ class MagieController extends AbstractController
         );
     }
 
+    /** @return array<string, string> */
     protected function getSortMsg(): array
     {
         return [
@@ -531,9 +491,8 @@ class MagieController extends AbstractController
      * Supprime un sortilège.
      */
     #[Route('/sort/{sort}/delete', name: 'sort.delete', requirements: ['sort' => Requirement::DIGITS])]
-    public function sortDeleteAction(
-        #[MapEntity] Sort $sort,
-    ): RedirectResponse|Response {
+    public function sortDeleteAction(#[MapEntity] Sort $sort): RedirectResponse|Response
+    {
         return $this->genericDelete(
             $sort,
             title: $this->translator->trans('Supprimer un sort'),
@@ -584,7 +543,8 @@ class MagieController extends AbstractController
     #[Route('/sort/{sort}/personnages', name: 'sort.personnages', requirements: ['sort' => Requirement::DIGITS])]
     public function sortPersonnagesAction(
         Request $request,
-        #[MapEntity] Sort $sort,
+        #[MapEntity]
+        Sort $sort,
         PersonnageService $personnageService,
         SortRepository $sortRepository,
     ): Response {
@@ -604,30 +564,17 @@ class MagieController extends AbstractController
             'sort' => $sort,
         ];
 
-        $viewParams = $personnageService->getSearchViewParameters(
-            $request,
-            $routeName,
-            $routeParams,
-            $columnKeys,
-            $additionalViewParams,
-            $personnages,
-            $sortRepository->getPersonnages($sort),
-        );
+        $viewParams = $personnageService->getSearchViewParameters($request, $routeName, $routeParams, $columnKeys, $additionalViewParams, $personnages, $sortRepository->getPersonnages($sort));
 
-        return $this->render(
-            $twigFilePath,
-            $viewParams,
-        );
+        return $this->render($twigFilePath, $viewParams);
     }
 
     /**
      * Met à jour un sort.
      */
     #[Route('/sort/{sort}/update', name: 'sort.update', requirements: ['sort' => Requirement::DIGITS])]
-    public function sortUpdateAction(
-        Request $request,
-        #[MapEntity] Sort $sort,
-    ): RedirectResponse|Response {
+    public function sortUpdateAction(Request $request, #[MapEntity] Sort $sort): RedirectResponse|Response
+    {
         return $this->handleCreateOrUpdate(
             $request,
             $sort,
@@ -644,15 +591,10 @@ class MagieController extends AbstractController
     #[Route('/sphere/add', name: 'sphere.add')]
     public function sphereAddAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            new Sphere(),
-            SphereForm::class,
-            routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'],
-            msg: $this->getSphereMsg(),
-        );
+        return $this->handleCreateOrUpdate($request, new Sphere(), SphereForm::class, routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'], msg: $this->getSphereMsg());
     }
 
+    /** @return array<string, string> */
     protected function getSphereMsg(): array
     {
         return [
@@ -667,9 +609,8 @@ class MagieController extends AbstractController
     }
 
     #[Route('/sphere/{sphere}/delete', name: 'sphere.delete', requirements: ['sphere' => Requirement::DIGITS])]
-    public function sphereDeleteAction(
-        #[MapEntity] Sphere $sphere,
-    ): RedirectResponse|Response {
+    public function sphereDeleteAction(#[MapEntity] Sphere $sphere): RedirectResponse|Response
+    {
         return $this->genericDelete(
             $sphere,
             title: $this->translator->trans('Supprimer une sphère'),
@@ -725,16 +666,8 @@ class MagieController extends AbstractController
      * Met à jour une sphere.
      */
     #[Route('/sphere/{sphere}/update', name: 'sphere.update', requirements: ['sphere' => Requirement::DIGITS])]
-    public function sphereUpdateAction(
-        Request $request,
-        #[MapEntity] Sphere $sphere,
-    ): RedirectResponse|Response {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $sphere,
-            SphereForm::class,
-            routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'],
-            msg: $this->getSphereMsg(),
-        );
+    public function sphereUpdateAction(Request $request, #[MapEntity] Sphere $sphere): RedirectResponse|Response
+    {
+        return $this->handleCreateOrUpdate($request, $sphere, SphereForm::class, routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'], msg: $this->getSphereMsg());
     }
 }

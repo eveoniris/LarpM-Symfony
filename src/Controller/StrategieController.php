@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -10,50 +11,46 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
 class StrategieController extends AbstractController
 {
     /**
      * Présentation des constructions.
      */
     #[Route('/strategie', name: 'strategie.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $territoires = new ArrayCollection();
 
         // Recherche le prochain GN
-        $gnRepo = $entityManager->getRepository('\\'.\App\Entity\Gn::class);
+        $gnRepo = $entityManager->getRepository('\\' . \App\Entity\Gn::class);
         $gn = $gnRepo->findNext();
 
         // Récupère les territoires associés aux groupes inscrits au GN
-        $groupeRepo = $entityManager->getRepository('\\'.\App\Entity\Groupe::class);
-        $territoires = $groupeRepo->findByGn($gn->getId(), "", "", ['by' => 'nom', 'dir' => 'ASC']);
+        $groupeRepo = $entityManager->getRepository('\\' . \App\Entity\Groupe::class);
+        $territoires = $groupeRepo->findByGn($gn->getId(), '', '', ['by' => 'nom', 'dir' => 'ASC']);
 
-        $paginator = $groupeRepo->findPaginatedQuery(
-            $territoires, 
-            25,
-            $this->getRequestPage()
-        );
+        $paginator = $groupeRepo->findPaginatedQuery($territoires, 25, $this->getRequestPage());
 
         /*$groupeRepo = $entityManager->getRepository('\\'.\App\Entity\Groupe::class);
-        $groupes = $groupeRepo->findAll();
-
-        foreach ($groupes as $groupe) {
-            //  les groupes doivent participer au prochain GN
-            if ($groupe->getGroupeGnById($gn->getId())) {
-                foreach ($groupe->getTerritoires() as $territoire) {
-                    $territoires[] = $territoire;
-                }
-            }
-        }
-
-        // classement des résultats
-        $iterator = $territoires->getIterator();
-        $iterator->uasort(static function ($first, $second): int {
-            return strcmp((string) $first->getNom(), (string) $second->getNom());
-        });
-        $territoires = new ArrayCollection(iterator_to_array($iterator));
-        dump($territoires);*/
+         * $groupes = $groupeRepo->findAll();
+         *
+         * foreach ($groupes as $groupe) {
+         * //  les groupes doivent participer au prochain GN
+         * if ($groupe->getGroupeGnById($gn->getId())) {
+         * foreach ($groupe->getTerritoires() as $territoire) {
+         * $territoires[] = $territoire;
+         * }
+         * }
+         * }
+         *
+         * // classement des résultats
+         * $iterator = $territoires->getIterator();
+         * $iterator->uasort(static function ($first, $second): int {
+         * return strcmp((string) $first->getNom(), (string) $second->getNom());
+         * });
+         * $territoires = new ArrayCollection(iterator_to_array($iterator));
+         * dump($territoires);*/
 
         return $this->render('strategie/index.twig', [
             'gn' => $gn,
@@ -75,18 +72,19 @@ class StrategieController extends AbstractController
      *  case vide (pour mettre les horaires d'attaque ou de défense)
      */
     #[Route('/strategie/csv', name: 'strategie.csv')]
-    public function csvAction(Request $request,  EntityManagerInterface $entityManager): void
+    public function csvAction(Request $request, EntityManagerInterface $entityManager): void
     {
-        $territoires = $entityManager->getRepository('\\'.\App\Entity\Territoire::class)->findFiefs();
+        $territoires = $entityManager->getRepository('\\' . \App\Entity\Territoire::class)->findFiefs();
 
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_strategie_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_strategie_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
         $output = fopen('php://output', 'w');
 
-        fputcsv($output,
+        fputcsv(
+            $output,
             [
                 mb_convert_encoding('fief', 'ISO-8859-1'),
                 mb_convert_encoding('groupe', 'ISO-8859-1'),
@@ -98,14 +96,18 @@ class StrategieController extends AbstractController
                 mb_convert_encoding('Défense actuelle', 'ISO-8859-1'),
                 mb_convert_encoding('Changements', 'ISO-8859-1'),
                 mb_convert_encoding('Horaires', 'ISO-8859-1'),
-            ], ';');
+            ],
+            ';',
+        );
 
         foreach ($territoires as $territoire) {
             $line = [];
 
             $line[] = mb_convert_encoding((string) $territoire->getNom(), 'ISO-8859-1');
             $groupe = $territoire->getGroupe();
-            $line[] = $groupe ? mb_convert_encoding('#'.$groupe->getNumero().' '.$groupe->getNom(), 'ISO-8859-1') : mb_convert_encoding('Aucun', 'ISO-8859-1');
+            $line[] = $groupe
+                ? mb_convert_encoding('#' . $groupe->getNumero() . ' ' . $groupe->getNom(), 'ISO-8859-1')
+                : mb_convert_encoding('Aucun', 'ISO-8859-1');
 
             $line[] = mb_convert_encoding((string) $territoire->getStatut(), 'ISO-8859-1');
             $line[] = mb_convert_encoding(implode(' - ', $territoire->getConstructions()->toArray()), 'ISO-8859-1');

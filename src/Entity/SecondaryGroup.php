@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\SecondaryGroupRepository;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
 #[Entity(repositoryClass: SecondaryGroupRepository::class)]
-class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
+class SecondaryGroup extends BaseSecondaryGroup implements Stringable
 {
     public function __toString(): string
     {
@@ -23,16 +26,24 @@ class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
         return $count_actifs;
     }
 
-    public function isMembreOrResponsable(Personnage $personnage): bool
+    public function isMembreOrResponsable(?Personnage $personnage): bool
     {
+        if (!$personnage) {
+            return false;
+        }
+
         return $this->isMembre($personnage) || $this->isResponsable($personnage);
     }
 
     /**
      * Vérifie si un personnage est membre du groupe.
      */
-    public function isMembre(Personnage $personnage): bool
+    public function isMembre(?Personnage $personnage): bool
     {
+        if (!$personnage) {
+            return false;
+        }
+
         foreach ($this->getMembres() as $membre) {
             if ($membre->getPersonnage()->getId() === $personnage->getId()) {
                 return true;
@@ -42,15 +53,19 @@ class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
         return false;
     }
 
-    public function isResponsable(Personnage $personnage): bool
+    public function isResponsable(?Personnage $personnage): bool
     {
+        if (!$personnage) {
+            return false;
+        }
+
         return $personnage->getId() === $this->getResponsable()?->getId();
     }
 
     /**
      * Fourni le personnage responsable du groupe.
      */
-    public function getResponsable()
+    public function getResponsable(): ?Personnage
     {
         return $this->getPersonnage();
     }
@@ -58,8 +73,12 @@ class SecondaryGroup extends BaseSecondaryGroup implements \Stringable
     /**
      * Vérifie si un personnage est postulant à ce groupe.
      */
-    public function isPostulant(Personnage $personnage): bool
+    public function isPostulant(?Personnage $personnage): bool
     {
+        if (!$personnage) {
+            return false;
+        }
+
         foreach ($this->getPostulants() as $postulant) {
             if ($postulant->getPersonnage()->getId() === $personnage->getId()) {
                 return true;

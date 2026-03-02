@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Bonus;
@@ -18,13 +20,15 @@ class BonusRepository extends BaseRepository
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
-        return $personnageRepository->createQueryBuilder('perso')
+        return $personnageRepository
+            ->createQueryBuilder('perso')
             ->innerJoin('perso.personnageBonus', 'pb')
             ->innerJoin('pb.bonus', 'bonus')
             ->where('bonus.id = :bonusid')
             ->setParameter('bonusid', $bonus->getId());
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -38,45 +42,47 @@ class BonusRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    public function searchAttributes(): array
+    /** @return array<int, string> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             self::SEARCH_ALL,
-            $alias.'.titre',
-            $alias.'.description',
-            $alias.'.type',
-            $alias.'.periode',
-            $alias.'.application',
+            $alias . '.titre',
+            $alias . '.description',
+            $alias . '.type',
+            $alias . '.periode',
+            $alias . '.application',
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::sortAttributes($alias),
-            $alias.'.titre' => [
-                OrderBy::ASC => [$alias.'.titre' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.titre' => OrderBy::DESC],
+            $alias . '.titre' => [
+                OrderBy::ASC => [$alias . '.titre' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.titre' => OrderBy::DESC],
             ],
-            $alias.'.description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            $alias . '.description' => [
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
-            $alias.'.type' => [
-                OrderBy::ASC => [$alias.'.type' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.type' => OrderBy::DESC],
+            $alias . '.type' => [
+                OrderBy::ASC => [$alias . '.type' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.type' => OrderBy::DESC],
             ],
-            $alias.'.periode' => [
-                OrderBy::ASC => [$alias.'.periode' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.periode' => OrderBy::DESC],
+            $alias . '.periode' => [
+                OrderBy::ASC => [$alias . '.periode' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.periode' => OrderBy::DESC],
             ],
-            $alias.'.application' => [
-                OrderBy::ASC => [$alias.'.application' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.application' => OrderBy::DESC],
+            $alias . '.application' => [
+                OrderBy::ASC => [$alias . '.application' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.application' => OrderBy::DESC],
             ],
         ];
     }
@@ -91,6 +97,7 @@ class BonusRepository extends BaseRepository
         return parent::translateAttribute($attribute);
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [

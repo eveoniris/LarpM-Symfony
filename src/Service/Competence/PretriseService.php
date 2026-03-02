@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service\Competence;
 
 use App\Entity\Level;
-use App\Entity\PersonnageTrigger;
 use App\Entity\Priere;
 use App\Enum\TriggerType;
 use App\Service\CompetenceService;
@@ -29,14 +30,12 @@ class PretriseService extends CompetenceService
             $competenceIndex = $this->getCompetence()->getLevel()?->getIndex();
             /** @var Priere $priere */
             foreach ($sphere->getPrieres() as $priere) {
-                if (
-                    !$this->getPersonnage()->hasPriere($priere)
-                    && $priere->getNiveau() === $competenceIndex
-                ) {
-                    // TODO test if priere is really added
-                    $priere->addPersonnage($this->getPersonnage());
-                    $this->getPersonnage()->addPriere($priere);
+                if (!(!$this->getPersonnage()->hasPriere($priere) && $priere->getNiveau() === $competenceIndex)) {
+                    continue;
                 }
+
+                $priere->addPersonnage($this->getPersonnage());
+                $this->getPersonnage()->addPriere($priere);
             }
         }
 
@@ -45,6 +44,7 @@ class PretriseService extends CompetenceService
         $this->applyRules($this->getRules());
     }
 
+    /** @return array<int, array<string, int>> */
     public function getRules(): array
     {
         return [
@@ -70,14 +70,11 @@ class PretriseService extends CompetenceService
     {
         // le personnage doit avoir une religion au niveau fervent ou fanatique
         if (
-            !$this->getPersonnage()->isCreation(
-            ) // Todo voir pour forcer le choix de religion et niveau si la classe offre Prêtrise
-            && !$this->getPersonnage()->isFervent() && !$this->getPersonnage()->isFanatique()
+            !$this->getPersonnage()->isCreation() // Todo voir pour forcer le choix de religion et niveau si la classe offre Prêtrise
+            && !$this->getPersonnage()->isFervent()
+            && !$this->getPersonnage()->isFanatique()
         ) {
-            $this->addError(
-                'Pour obtenir la compétence Prêtrise, vous devez être FERVENT ou FANATIQUE',
-                self::ERR_CODE_LEARN,
-            );
+            $this->addError('Pour obtenir la compétence Prêtrise, vous devez être FERVENT ou FANATIQUE', self::ERR_CODE_LEARN);
         }
     }
 }

@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\LieuRepository;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
 #[Entity(repositoryClass: LieuRepository::class)]
-class Lieu extends BaseLieu implements \Stringable
+class Lieu extends BaseLieu implements Stringable
 {
     public function __toString(): string
     {

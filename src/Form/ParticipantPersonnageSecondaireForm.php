@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -22,7 +23,8 @@ class ParticipantPersonnageSecondaireForm extends AbstractType
             'required' => true,
             'expanded' => true,
             'class' => PersonnageSecondaire::class,
-            'choice_label' => 'label']);
+            'choice_label' => 'label',
+        ]);
     }
 
     /**

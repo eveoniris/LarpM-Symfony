@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -16,7 +18,7 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseIntrigueHasDocument', 'extended' => 'IntrigueHasDocument'])]
 abstract class BaseIntrigueHasDocument
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Intrigue::class, cascade: ['persist', 'remove'], inversedBy: 'intrigueHasDocuments')]
@@ -30,7 +32,7 @@ abstract class BaseIntrigueHasDocument
     public function __construct()
     {
     }
-    
+
     /**
      * Set the value of id.
      */
@@ -86,7 +88,7 @@ abstract class BaseIntrigueHasDocument
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'intrigue_id', 'document_id'];
-    } */
+     * {
+     * return ['id', 'intrigue_id', 'document_id'];
+     * } */
 }

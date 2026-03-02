@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\MerveilleRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -30,10 +33,10 @@ class Merveille
     private ?string $statut = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_creation = null;
+    private ?DateTimeInterface $date_creation = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_destruction = null;
+    private ?DateTimeInterface $date_destruction = null;
 
     #[ORM\ManyToOne(inversedBy: 'merveilles')]
     private ?Territoire $territoire = null;
@@ -118,24 +121,24 @@ class Merveille
         return $this;
     }
 
-    public function getDateCreation(): ?\DateTimeInterface
+    public function getDateCreation(): ?DateTimeInterface
     {
         return $this->date_creation;
     }
 
-    public function setDateCreation(?\DateTimeInterface $date_creation): static
+    public function setDateCreation(?DateTimeInterface $date_creation): static
     {
         $this->date_creation = $date_creation;
 
         return $this;
     }
 
-    public function getDateDestruction(): ?\DateTimeInterface
+    public function getDateDestruction(): ?DateTimeInterface
     {
         return $this->date_destruction;
     }
 
-    public function setDateDestruction(?\DateTimeInterface $date_destruction): static
+    public function setDateDestruction(?DateTimeInterface $date_destruction): static
     {
         $this->date_destruction = $date_destruction;
 

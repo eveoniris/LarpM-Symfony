@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity]
@@ -9,13 +12,13 @@ class PersonnageBackground extends BasePersonnageBackground
 {
     public function __construct()
     {
-        $this->setCreationDate(new \DateTime('NOW'));
-        $this->setUpdateDate(new \DateTime('NOW'));
+        $this->setCreationDate(new DateTime('NOW'));
+        $this->setUpdateDate(new DateTime('NOW'));
     }
 
     public function getDescription(): string
     {
-        return $this->getText() ?? '';
+        return (string) $this->getText();
     }
 
     public function getLabel(): string
@@ -25,6 +28,6 @@ class PersonnageBackground extends BasePersonnageBackground
 
     public function isPrivate(): bool
     {
-        return strtolower($this->visibility) === 'private';
+        return 'private' === strtolower($this->visibility);
     }
 }

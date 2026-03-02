@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Intrigue;
 
@@ -24,13 +25,12 @@ class IntrigueFindForm extends AbstractType
             'attr' => [
                 'placeholder' => 'Votre recherche',
             ],
-        ])
-            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                    'Titre' => 'titre',
-                ],
-            ]);
+        ])->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                'Titre' => 'titre',
+            ],
+        ]);
     }
 
     /**

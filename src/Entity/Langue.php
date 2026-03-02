@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\DocumentType;
@@ -8,9 +10,10 @@ use App\Repository\LangueRepository;
 use App\Service\FileUploader;
 use App\Trait\EntityFileUploadTrait;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
 #[Entity(repositoryClass: LangueRepository::class)]
-class Langue extends BaseLangue implements \Stringable
+class Langue extends BaseLangue implements Stringable
 {
     use EntityFileUploadTrait;
 
@@ -30,7 +33,8 @@ class Langue extends BaseLangue implements \Stringable
 
     public function initFile(): static
     {
-        $this->setDocumentType(DocumentType::Doc)
+        $this
+            ->setDocumentType(DocumentType::Doc)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4);
@@ -48,7 +52,7 @@ class Langue extends BaseLangue implements \Stringable
      */
     public function getDiffusionLabel(): string
     {
-        return (null !== $this->getDiffusion() ? $this->getDiffusion().' - ' : '').$this->getCategorie();
+        return $this->getDiffusion() . ' - ' . $this->getCategorie();
     }
 
     /**
@@ -66,7 +70,7 @@ class Langue extends BaseLangue implements \Stringable
 
     public function getFullDescription(): string
     {
-        return $this->getLabel().' : '.$this->getDescription();
+        return $this->getLabel() . ' : ' . $this->getDescription();
     }
 
     public function getPrintLabel(): ?string
@@ -76,8 +80,10 @@ class Langue extends BaseLangue implements \Stringable
 
     /**
      * Fourni la liste des territoires ou la langue est la langue principale.
+     *
+     * @return \Doctrine\Common\Collections\Collection<int, Territoire>
      */
-    public function getTerritoirePrincipaux()
+    public function getTerritoirePrincipaux(): \Doctrine\Common\Collections\Collection
     {
         return $this->getTerritoires();
     }
@@ -91,6 +97,6 @@ class Langue extends BaseLangue implements \Stringable
 
     public function getDocument(string $projectDir): string
     {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+        return $this->getDocumentFilePath($projectDir) . $this->getDocumentUrl();
     }
 }

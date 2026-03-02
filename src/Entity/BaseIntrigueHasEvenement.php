@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -16,12 +18,12 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseIntrigueHasEvenement', 'extended' => 'IntrigueHasEvenement'])]
 abstract class BaseIntrigueHasEvenement
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Intrigue::class, cascade: ['persist', 'remove'], inversedBy: 'intrigueHasEvenements')]
     #[ORM\JoinColumn(name: 'intrigue_id', referencedColumnName: 'id')]
-    protected $intrigue;
+    protected ?Intrigue $intrigue = null;
 
     #[ORM\ManyToOne(targetEntity: Evenement::class, cascade: ['persist', 'remove'], inversedBy: 'intrigueHasEvenements')]
     #[ORM\JoinColumn(name: 'evenement_id', referencedColumnName: 'id')]
@@ -30,7 +32,7 @@ abstract class BaseIntrigueHasEvenement
     public function __construct()
     {
     }
-    
+
     /**
      * Set the value of id.
      */
@@ -80,7 +82,7 @@ abstract class BaseIntrigueHasEvenement
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'intrigue_id', 'evenement_id'];
-    } */
+     * {
+     * return ['id', 'intrigue_id', 'evenement_id'];
+     * } */
 }

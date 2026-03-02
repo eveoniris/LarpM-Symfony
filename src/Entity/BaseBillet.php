@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,7 +24,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseBillet', 'extended' => 'Billet'])]
 abstract class BaseBillet
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'label', type: \Doctrine\DBAL\Types\Types::STRING)]
@@ -31,10 +34,10 @@ abstract class BaseBillet
     protected ?string $description = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
-    protected \DateTime $creation_date;
+    protected DateTime $creation_date;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
-    protected \DateTime $update_date;
+    protected DateTime $update_date;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
     protected bool $fedegn = false;
@@ -43,7 +46,7 @@ abstract class BaseBillet
     protected ?int $gn_id = null;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Participant>|\App\Entity\Participant[]
+     * @var Collection<int, Participant>|Participant[]
      */
     #[OneToMany(mappedBy: 'billet', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'billet_id', nullable: false)]
@@ -74,7 +77,7 @@ abstract class BaseBillet
         return $this->id;
     }
 
-    public function setLabel(string $label): string
+    public function setLabel(string $label): static
     {
         $this->label = $label;
 
@@ -98,26 +101,26 @@ abstract class BaseBillet
         return $this->description ?? '';
     }
 
-    public function setCreationDate(\DateTime $creation_date): self
+    public function setCreationDate(DateTime $creation_date): self
     {
         $this->creation_date = $creation_date;
 
         return $this;
     }
 
-    public function getCreationDate(): ?\DateTime
+    public function getCreationDate(): ?DateTime
     {
         return $this->creation_date;
     }
 
-    public function setUpdateDate(\DateTime $update_date): self
+    public function setUpdateDate(DateTime $update_date): self
     {
         $this->update_date = $update_date;
 
         return $this;
     }
 
-    public function getUpdateDate(): ?\DateTime
+    public function getUpdateDate(): ?DateTime
     {
         return $this->update_date;
     }
@@ -148,6 +151,7 @@ abstract class BaseBillet
         return $this;
     }
 
+    /** @return Collection<int, Participant> */
     public function getParticipants(): Collection
     {
         return $this->participants;
@@ -179,7 +183,7 @@ abstract class BaseBillet
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description', 'creation_date', 'update_date', 'createur_id', 'gn_id', 'fedegn'];
-    } */
+     * {
+     * return ['id', 'label', 'description', 'creation_date', 'update_date', 'createur_id', 'gn_id', 'fedegn'];
+     * } */
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\DocumentType;
@@ -8,9 +10,10 @@ use App\Repository\RuleRepository;
 use App\Service\FileUploader;
 use App\Trait\EntityFileUploadTrait;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
 #[Entity(repositoryClass: RuleRepository::class)]
-class Rule extends BaseRule implements \Stringable
+class Rule extends BaseRule implements Stringable
 {
     use EntityFileUploadTrait;
 
@@ -21,7 +24,8 @@ class Rule extends BaseRule implements \Stringable
 
     public function initFile(): static
     {
-        $this->setDocumentType(DocumentType::Rule)
+        $this
+            ->setDocumentType(DocumentType::Rule)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4);
@@ -51,7 +55,7 @@ class Rule extends BaseRule implements \Stringable
 
     public function getDocument(string $projectDir): string
     {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+        return $this->getDocumentFilePath($projectDir) . $this->getDocumentUrl();
     }
 
     public function getDocumentUrl(): string

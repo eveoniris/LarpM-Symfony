@@ -1,12 +1,8 @@
 <?php
 
-namespace App\Repository;
+declare(strict_types=1);
 
-use App\Entity\Connaissance;
-use App\Entity\Personnage;
-use App\Service\OrderBy;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\QueryBuilder;
+namespace App\Repository;
 
 class LoiRepository extends BaseRepository
 {

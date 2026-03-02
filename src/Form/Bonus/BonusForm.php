@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Bonus;
 
 use App\Entity\Bonus;
@@ -26,10 +28,11 @@ class BonusForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('titre', TextType::class, [
-            'required' => true,
-            'label' => 'Nom',
-        ])
+        $builder
+            ->add('titre', TextType::class, [
+                'required' => true,
+                'label' => 'Nom',
+            ])
             ->add('description', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description succinte',
@@ -76,13 +79,9 @@ class BonusForm extends AbstractType
                 'required' => false,
                 'label' => 'Données fonctionnel (pour un dev)',
                 'help' => "C'est en JSON, via une liste de mot clé et ID. LANGUE, INGREDIENT, GROUPE. Et un mot clé 'condition' pour un tableau de valeur AND. Regarder les bonus existants",
-            ])->get('json_data')
-            ->addModelTransformer(
-                new CallbackTransformer(
-                    static fn ($data) => json_encode($data, JSON_THROW_ON_ERROR),
-                    static fn ($data) => json_decode($data, true, 512, JSON_THROW_ON_ERROR),
-                ),
-            );
+            ])
+            ->get('json_data')
+            ->addModelTransformer(new CallbackTransformer(static fn ($data) => json_encode($data, \JSON_THROW_ON_ERROR), static fn ($data) => json_decode($data, true, 512, \JSON_THROW_ON_ERROR)));
     }
 
     /**

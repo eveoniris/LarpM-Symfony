@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Groupe;
 
@@ -28,17 +29,15 @@ class GroupeScenaristeForm extends AbstractType
             'required' => false,
             'class' => User::class,
             'autocomplete' => true,
-            'choice_label' => static fn(User $user) => sprintf('%s - %s', $user->getName(), $user->getEtatCivil()?->getFullName() ?? ''),
+            'choice_label' => static fn (User $user) => \sprintf('%s - %s', $user->getName(), $user->getEtatCivil()?->getFullName() ?? ''),
             'query_builder' => static function (EntityRepository $er) {
                 $qb = $er->createQueryBuilder('u');
-                $qb->where(
-                    $qb->expr()->orX(
-                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
-                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
-                        $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')),
-                        $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%'))
-                    )
-                );
+                $qb->where($qb->expr()->orX(
+                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
+                    $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')),
+                    $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                ));
 
                 return $qb;
             },
@@ -54,12 +53,12 @@ class GroupeScenaristeForm extends AbstractType
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\' . Groupe::class,
+            'data_class' => Groupe::class,
         ]);
     }
 }

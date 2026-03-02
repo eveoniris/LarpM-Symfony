@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -22,15 +23,14 @@ class BackgroundFindForm extends AbstractType
         $builder->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
             'label' => 'Recherche',
-        ])
-            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                    'Auteur' => 'auteur',
-                    'Groupe' => 'groupe',
-                ],
-                'label' => 'Type',
-            ]);
+        ])->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                'Auteur' => 'auteur',
+                'Groupe' => 'groupe',
+            ],
+            'label' => 'Type',
+        ]);
     }
 
     /**

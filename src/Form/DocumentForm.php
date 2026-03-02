@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Document;
@@ -22,12 +24,13 @@ class DocumentForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('code', TextType::class, [
-            'required' => true,
-            'attr' => [
-                'help' => 'Le code d\'un document permet de l\'identifier rapidement. Il se construit de la manière suivante : L3_DJ_TE_005. L3 correspond à l\'opus de création. DJ correspond à Document en Jeu. TE correspond à TExte. 005 correspond à son numéro (suivez la numérotation des documents déjà créé)',
-            ],
-        ])
+        $builder
+            ->add('code', TextType::class, [
+                'required' => true,
+                'attr' => [
+                    'help' => 'Le code d\'un document permet de l\'identifier rapidement. Il se construit de la manière suivante : L3_DJ_TE_005. L3 correspond à l\'opus de création. DJ correspond à Document en Jeu. TE correspond à TExte. 005 correspond à son numéro (suivez la numérotation des documents déjà créé)',
+                ],
+            ])
             ->add('titre', TextType::class, [
                 'required' => true,
             ])
@@ -102,11 +105,14 @@ class DocumentForm extends AbstractType
             'security' => ['ROLE_ADMIN', 'ROLE_SCENARISTE', 'ROLE_ORGA', 'ROLE_REGLE'],
             'query_builder' => static function (EntityRepository $er) {
                 $qb = $er->createQueryBuilder('u');
-                $qb->where($qb->expr()->orX(
-                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
-                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
-                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ORGA%'))),
-                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_REGLE%')));
+                $qb->where(
+                    $qb->expr()->orX(
+                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
+                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ORGA%')),
+                    ),
+                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_REGLE%')),
+                );
 
                 return $qb;
             },

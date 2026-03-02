@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +22,11 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
-
 /**
- * LarpManager\Repository\CompetenceAttributeRepository
+ * LarpManager\Repository\CompetenceAttributeRepository.
  *
- * @author jsy  
+ * @author jsy
  */
 class CompetenceAttributeRepository extends BaseRepository
 {
-   
 }

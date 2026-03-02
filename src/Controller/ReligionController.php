@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\PersonnagesReligions;
@@ -36,9 +38,9 @@ class ReligionController extends AbstractController
     {
         $religion = new Religion();
 
-        $form = $this->createForm(ReligionForm::class, $religion)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+        $form = $this->createForm(ReligionForm::class, $religion)->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -52,32 +54,28 @@ class ReligionController extends AbstractController
 
             // l'utilisateur est redirigé soit vers la liste des religions, soit vers de nouveau
             // vers le formulaire d'ajout d'une religion
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('religion.list', [], 303);
             }
 
-            if ($form->get('save_continue')->isClicked()) {
+            if ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('religion.add', [], 303);
             }
         }
 
-        return $this->render(
-            'religion/add.twig',
-            [
-                'form' => $form->createView(),
-            ],
-        );
+        return $this->render('religion/add.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
      * Récupération de l'image du blason d'une religion.
      */
     #[Route('/religion/{religion}/blason', name: 'religion.blason', methods: ['GET'])]
-    public function blasonAction(
-        #[MapEntity] Religion $religion,
-    ): Response {
+    public function blasonAction(#[MapEntity] Religion $religion): Response
+    {
         $blason = $religion->getBlason();
-        $filename = __DIR__.'/../../assets/img/religions/'.$blason;
+        $filename = __DIR__ . '/../../assets/img/religions/' . $blason;
 
         $response = new Response(file_get_contents($filename));
         $response->headers->set('Content-Type', 'image/png');
@@ -95,8 +93,9 @@ class ReligionController extends AbstractController
         EntityManagerInterface $entityManager,
         Religion $religion,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ReligionDeleteForm::class, $religion)
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(ReligionDeleteForm::class, $religion)->add('delete', SubmitType::class, [
+            'label' => 'Supprimer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -136,12 +135,9 @@ class ReligionController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function detailAction(Religion $religion): Response
     {
-        return $this->render(
-            'religion/detail.twig',
-            [
-                'religion' => $religion,
-            ],
-        );
+        return $this->render('religion/detail.twig', [
+            'religion' => $religion,
+        ]);
     }
 
     /**
@@ -163,15 +159,12 @@ class ReligionController extends AbstractController
 
         $paginator = $religionRepository->findPaginated($page, $limit, $orderBy, $orderDir, $where);
 
-        return $this->render(
-            'religion\list.twig',
-            [
-                'paginator' => $paginator,
-                'limit' => $limit,
-                'page' => $page,
-                'isAdmin' => $this->isGranted(Role::SCENARISTE->value),
-            ],
-        );
+        return $this->render('religion\list.twig', [
+            'paginator' => $paginator,
+            'limit' => $limit,
+            'page' => $page,
+            'isAdmin' => $this->isGranted(Role::SCENARISTE->value),
+        ]);
     }
 
     /**
@@ -183,9 +176,9 @@ class ReligionController extends AbstractController
     {
         $religionLevel = new ReligionLevel();
 
-        $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+        $form = $this->createForm(ReligionLevelForm::class, $religionLevel)->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -200,10 +193,10 @@ class ReligionController extends AbstractController
 
             // l'utilisateur est redirigé soit vers la liste des niveaux de religions, soit vers de nouveau
             // vers le formulaire d'ajout d'un niveau de religion
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('religion.level', [], 303);
             }
-            if ($form->get('save_continue')->isClicked()) {
+            if ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('religion.level.add', [], 303);
             }
         }
@@ -218,9 +211,8 @@ class ReligionController extends AbstractController
      */
     #[Route('/religion/level/{religionLevel}/detail', name: 'religion.level.detail')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
-    public function levelDetailAction(
-        ReligionLevel $religionLevel,
-    ): Response {
+    public function levelDetailAction(ReligionLevel $religionLevel): Response
+    {
         return $this->render('religion/level/detail.twig', ['religionLevel' => $religionLevel]);
     }
 
@@ -231,10 +223,7 @@ class ReligionController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function levelIndexAction(ReligionLevelRepository $religionLevelRepository): Response
     {
-        return $this->render(
-            'religion/level/index.twig',
-            ['religionLevels' => $religionLevelRepository->findAllOrderedByIndex()],
-        );
+        return $this->render('religion/level/index.twig', ['religionLevels' => $religionLevelRepository->findAllOrderedByIndex()]);
     }
 
     /**
@@ -250,26 +239,22 @@ class ReligionController extends AbstractController
         EntityManagerInterface $entityManager,
         ReligionLevel $religionLevel,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ReligionLevelForm::class, $religionLevel)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(ReligionLevelForm::class, $religionLevel)->add('update', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $religionLevel = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 $entityManager->persist($religionLevel);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le niveau de religion a été mise à jour.');
 
-                return $this->redirectToRoute(
-                    'religion.level.detail',
-                    ['religionLevel' => $religionLevel->getId()],
-                    303,
-                );
-            } elseif ($form->get('delete')->isClicked()) {
+                return $this->redirectToRoute('religion.level.detail', ['religionLevel' => $religionLevel->getId()], 303);
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 $entityManager->remove($religionLevel);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le niveau de religion a été supprimée.');
@@ -291,12 +276,9 @@ class ReligionController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function mailAction(ReligionRepository $religionRepository): Response
     {
-        return $this->render(
-            'religion/mail.twig',
-            [
-                'religions' => $religionRepository->getUserEmailsByReligions(),
-            ],
-        );
+        return $this->render('religion/mail.twig', [
+            'religions' => $religionRepository->getUserEmailsByReligions(),
+        ]);
     }
 
     /**
@@ -306,62 +288,56 @@ class ReligionController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function persoAction(Religion $religion): Response
     {
-        return $this->render(
-            'religion/perso.twig',
-            [
-                'religion' => $religion,
-            ],
-        );
+        return $this->render('religion/perso.twig', [
+            'religion' => $religion,
+        ]);
     }
 
     #[Route('/religion/{religion}/perso/csv', name: 'religion.perso.csv')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function persoActionCsv(#[MapEntity] Religion $religion): Response
     {
-        return $this->sendCsv(
-            title: 'eveoniris_religion_personnage_'.(new AsciiSlugger())->slug($religion->getLabel()).'_'.date('Ymd'),
-            content: static function () use ($religion) {
-                $output = fopen('php://output', 'wb');
+        return $this->sendCsv(title: 'eveoniris_religion_personnage_' . new AsciiSlugger()->slug($religion->getLabel()) . '_' . date('Ymd'), content: static function () use ($religion): void {
+            $output = fopen('php://output', 'w');
+
+            fputcsv(
+                $output,
+                [
+                    'niveau',
+                    'personnageId',
+                    'nom',
+                    'surnom',
+                    'classe',
+                    'vivant',
+                    'pnj',
+                    'lastGn',
+                    'email',
+                ],
+                ';',
+            );
+
+            /** @var PersonnagesReligions $personnagesReligion */
+            foreach ($religion->getPersonnagesReligions() as $personnagesReligion) {
+                $personnage = $personnagesReligion->getPersonnage();
 
                 fputcsv(
                     $output,
                     [
-                        'niveau',
-                        'personnageId',
-                        'nom',
-                        'surnom',
-                        'classe',
-                        'vivant',
-                        'pnj',
-                        'lastGn',
-                        'email',
+                        $personnagesReligion->getReligionLevel()?->getLabel(),
+                        $personnage?->getId(),
+                        $personnage?->getNom(),
+                        $personnage?->getSurnom(),
+                        $personnage?->getClasseName(),
+                        $personnage?->getVivant(),
+                        $personnage?->isPnj(),
+                        $personnage?->getLastParticipant()?->getGn()?->getLabel(),
+                        $personnage?->getUser()?->getEmail(),
                     ],
                     ';',
                 );
-
-                /** @var PersonnagesReligions $personnagesReligion */
-                foreach ($religion->getPersonnagesReligions() as $personnagesReligion) {
-                    $personnage = $personnagesReligion->getPersonnage();
-
-                    fputcsv(
-                        $output,
-                        [
-                            $personnagesReligion->getReligionLevel()?->getLabel(),
-                            $personnage?->getId(),
-                            $personnage?->getNom(),
-                            $personnage?->getSurnom(),
-                            $personnage?->getClasseName(),
-                            $personnage?->getVivant(),
-                            $personnage?->isPnj(),
-                            $personnage?->getLastParticipant()?->getGn()?->getLabel(),
-                            $personnage?->getUser()?->getEmail(),
-                        ],
-                        ';',
-                    );
-                }
-                fclose($output);
-            },
-        );
+            }
+            fclose($output);
+        });
     }
 
     /**
@@ -377,9 +353,9 @@ class ReligionController extends AbstractController
         Request $request,
         Religion $religion,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ReligionForm::class, $religion)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(ReligionForm::class, $religion)->add('update', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $originalSpheres = new ArrayCollection();
         foreach ($religion->getSpheres() as $sphere) {
@@ -390,39 +366,41 @@ class ReligionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $religion = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 foreach ($religion->getSpheres() as $sphere) {
-                    if (false == $sphere->getReligions()->contains($religion)) {
-                        $sphere->addReligion($religion);
+                    if (false != $sphere->getReligions()->contains($religion)) {
+                        continue;
                     }
+
+                    $sphere->addReligion($religion);
                 }
                 foreach ($originalSpheres as $sphere) {
-                    if (false == $religion->getspheres()->contains($sphere)) {
-                        $sphere->removeReligion($religion);
+                    if (false != $religion->getspheres()->contains($sphere)) {
+                        continue;
                     }
+
+                    $sphere->removeReligion($religion);
                 }
                 $entityManager->persist($religion);
                 $entityManager->flush();
                 $this->addFlash('success', 'La religion a été mise à jour.');
 
                 return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
+
                 // return $this->redirectToRoute('religion.detail', [], 303);
-            } elseif ($form->get('delete')->isClicked()) {
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 /*$entityManager->remove($religion);
-                $entityManager->flush();
-                $this->addFlash('success', 'La religion a été supprimée.');*/
+                 $entityManager->flush();
+                 $this->addFlash('success', 'La religion a été supprimée.');*/
                 // return $this->redirectToRoute('religion.list', [], 303);
                 return $this->redirectToRoute('religion.delete', ['religion' => $religion->getId()], 303);
             }
         }
 
-        return $this->render(
-            'religion/update.twig',
-            [
-                'religion' => $religion,
-                'form' => $form->createView(),
-            ],
-        );
+        return $this->render('religion/update.twig', [
+            'religion' => $religion,
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
@@ -435,33 +413,31 @@ class ReligionController extends AbstractController
         EntityManagerInterface $entityManager,
         Religion $religion,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ReligionBlasonForm::class, $religion)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(ReligionBlasonForm::class, $religion)->add('update', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $files = $request->files->get($form->getName());
 
-            $path = __DIR__.'/../../assets/img/blasons/';
+            $path = __DIR__ . '/../../assets/img/blasons/';
             $filename = $files['blason']->getClientOriginalName();
             $extension = $files['blason']->guessExtension();
 
-            if (!$extension || !in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
-                $this->addFlash(
-                    'error',
-                    'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)',
-                );
+            if (!$extension || !\in_array($extension, ['png', 'jpg', 'jpeg', 'bmp'])) {
+                $this->addFlash('error', 'Désolé, votre image ne semble pas valide (vérifiez le format de votre image)');
 
                 return $this->redirectToRoute('religion.detail', ['religion' => $religion->getId()], 303);
             }
 
-            $blasonFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
+            $blasonFilename = hash('md5', $this->getUser()->getUsername() . $filename . time()) . '.' . $extension;
 
             $imagine = new Imagine();
             $image = $imagine->open($files['blason']->getPathname());
             $image->resize($image->getSize()->widen(160));
-            $image->save($path.$blasonFilename);
+            $image->save($path . $blasonFilename);
 
             $religion->setBlason($blasonFilename);
             $entityManager->persist($religion);

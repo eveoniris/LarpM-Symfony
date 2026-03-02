@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -20,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageBackground', 'extended' => 'PersonnageBackground'])]
 abstract class BasePersonnageBackground
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, nullable: true)]
@@ -31,10 +34,10 @@ abstract class BasePersonnageBackground
     protected ?string $visibility = null;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected \DateTime $creation_date;
+    protected DateTime $creation_date;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected $update_date;
+    protected ?DateTime $update_date = null;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageBackgrounds')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
@@ -52,7 +55,7 @@ abstract class BasePersonnageBackground
     /**
      * Get the value of creation_date.
      */
-    public function getCreationDate(): \DateTime
+    public function getCreationDate(): DateTime
     {
         return $this->creation_date;
     }
@@ -60,7 +63,7 @@ abstract class BasePersonnageBackground
     /**
      * Set the value of creation_date.
      */
-    public function setCreationDate(\DateTime $creation_date): static
+    public function setCreationDate(DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -142,7 +145,7 @@ abstract class BasePersonnageBackground
     /**
      * Get the value of update_date.
      */
-    public function getUpdateDate(): \DateTime
+    public function getUpdateDate(): DateTime
     {
         return $this->update_date;
     }
@@ -150,7 +153,7 @@ abstract class BasePersonnageBackground
     /**
      * Set the value of update_date.
      */
-    public function setUpdateDate(\DateTime $update_date): static
+    public function setUpdateDate(DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
@@ -194,7 +197,7 @@ abstract class BasePersonnageBackground
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'personnage_id', 'text', 'visibility', 'creation_date', 'update_date', 'User_id', 'gn_id'];
-    } */
+     * {
+     * return ['id', 'personnage_id', 'text', 'visibility', 'creation_date', 'update_date', 'User_id', 'gn_id'];
+     * } */
 }

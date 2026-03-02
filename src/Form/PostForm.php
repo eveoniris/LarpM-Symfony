@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -21,11 +22,10 @@ class PostForm extends AbstractType
     {
         $builder->add('title', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
-        ])
-            ->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'required' => true,
-                'attr' => ['rows' => 9],
-            ]);
+        ])->add('text', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'required' => true,
+            'attr' => ['rows' => 9],
+        ]);
     }
 
     /**

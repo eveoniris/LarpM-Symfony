@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Repository;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityRepository;
 
 /**
  * LarpManager\Repository\JoueurRepository.
@@ -22,10 +22,7 @@ class JoueurRepository extends BaseRepository
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('j')
-            ->from('App\Entity\Joueur', 'j')
-            ->where($qb->expr()->like('j.prenom', $qb->expr()->literal('%'.$firstName.'%')))
-            ->orderBy('j.prenom', 'ASC');
+        $qb->select('j')->from('App\Entity\Joueur', 'j')->where($qb->expr()->like('j.prenom', $qb->expr()->literal('%' . $firstName . '%')))->orderBy('j.prenom', 'ASC');
 
         $result = $qb->getQuery()->getResult();
 
@@ -41,11 +38,7 @@ class JoueurRepository extends BaseRepository
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('j')
-            ->from('App\Entity\Joueur', 'j')
-            ->where($qb->expr()->like('j.nom', $qb->expr()->literal('?1')))
-            ->setParameter(1, '%'.$lastName.'%')
-            ->orderBy('j.nom', 'ASC');
+        $qb->select('j')->from('App\Entity\Joueur', 'j')->where($qb->expr()->like('j.nom', $qb->expr()->literal('?1')))->setParameter(1, '%' . $lastName . '%')->orderBy('j.nom', 'ASC');
 
         $result = $qb->getQuery()->getResult();
 

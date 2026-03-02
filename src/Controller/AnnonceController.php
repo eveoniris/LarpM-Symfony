@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Annonce;
 use App\Form\AnnonceDeleteForm;
 use App\Form\AnnonceForm;
 use App\Repository\AnnonceRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -24,9 +27,9 @@ class AnnonceController extends AbstractController
     #[Route('/annonce/add', name: 'annonce.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponseAlias|Response
     {
-        $form = $this->createForm(AnnonceForm::class, new Annonce())
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+        $form = $this->createForm(AnnonceForm::class, new Annonce())->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -38,10 +41,10 @@ class AnnonceController extends AbstractController
 
             $this->addFlash('success', 'L\'annonce a été ajoutée.');
 
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('annonce.list', [], 303);
             }
-            if ($form->get('save_continue')->isClicked()) {
+            if ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('annonce.add', [], 303);
             }
         }
@@ -60,8 +63,9 @@ class AnnonceController extends AbstractController
         EntityManagerInterface $entityManager,
         Annonce $annonce,
     ): RedirectResponseAlias|Response {
-        $form = $this->createForm(AnnonceDeleteForm::class, $annonce)
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(AnnonceDeleteForm::class, $annonce)->add('delete', SubmitType::class, [
+            'label' => 'Supprimer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -97,19 +101,11 @@ class AnnonceController extends AbstractController
     #[Route('/annonce', name: 'annonce.list')]
     public function listAction(AnnonceRepository $repository): Response
     {
-        $orderBy = $this->getRequestOrder(
-            alias: 'a',
-            allowedFields: $repository->getFieldNames(),
-        );
+        $orderBy = $this->getRequestOrder(alias: 'a', allowedFields: $repository->getFieldNames());
 
-        $query = $repository->createQueryBuilder('a')
-            ->orderBy(key($orderBy), current($orderBy));
+        $query = $repository->createQueryBuilder('a')->orderBy(key($orderBy), current($orderBy));
 
-        $paginator = $repository->findPaginatedQuery(
-            $query->getQuery(),
-            $this->getRequestLimit(),
-            $this->getRequestPage(),
-        );
+        $paginator = $repository->findPaginatedQuery($query->getQuery(), $this->getRequestLimit(), $this->getRequestPage());
 
         return $this->render('annonce/list.twig', ['paginator' => $paginator]);
     }
@@ -120,18 +116,20 @@ class AnnonceController extends AbstractController
     #[Route('/annonce/{annonce}/update', name: 'annonce.update')]
     public function updateAction(
         Request $request,
-        #[MapEntity] Annonce $annonce,
+        #[MapEntity]
+        Annonce $annonce,
         EntityManagerInterface $entityManager,
     ): RedirectResponseAlias|Response {
-        $form = $this->createForm(AnnonceForm::class, $annonce)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(AnnonceForm::class, $annonce)->add('update', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $annonce = $form->getData();
 
-            $annonce->setUpdateDate(new \DateTime('NOW'));
+            $annonce->setUpdateDate(new DateTime('NOW'));
 
             $entityManager->persist($annonce);
             $entityManager->flush();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupeHasIngredient', 'extended' => 'GroupeHasIngredient'])]
 abstract class BaseGroupeHasIngredient
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::INTEGER)]
@@ -30,7 +32,7 @@ abstract class BaseGroupeHasIngredient
 
     #[ORM\ManyToOne(targetEntity: Ingredient::class, inversedBy: 'groupeHasIngredients')]
     #[ORM\JoinColumn(name: 'ingredient_id', referencedColumnName: 'id')]
-    protected ?Ingredient   $ingredient;
+    protected ?Ingredient $ingredient;
 
     /**
      * Set the value of id.
@@ -105,7 +107,7 @@ abstract class BaseGroupeHasIngredient
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'quantite', 'groupe_id', 'ingredient_id'];
-    } */
+     * {
+     * return ['id', 'quantite', 'groupe_id', 'ingredient_id'];
+     * } */
 }

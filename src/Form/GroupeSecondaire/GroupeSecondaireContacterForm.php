@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\GroupeSecondaire;
 
@@ -26,7 +27,7 @@ class GroupeSecondaireContacterForm extends AbstractType
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -16,14 +19,14 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseNotification', 'extended' => 'Notification'])]
 abstract class BaseNotification
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT)]
     protected string $text;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $date = null;
+    protected ?DateTime $date = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
     protected ?string $url = '';
@@ -71,7 +74,7 @@ abstract class BaseNotification
     /**
      * Set the value of date.
      */
-    public function setDate(\DateTime $date): static
+    public function setDate(DateTime $date): static
     {
         $this->date = $date;
 
@@ -81,7 +84,7 @@ abstract class BaseNotification
     /**
      * Get the value of date.
      */
-    public function getDate(): \DateTime
+    public function getDate(): DateTime
     {
         return $this->date;
     }
@@ -123,7 +126,7 @@ abstract class BaseNotification
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'text', 'date', 'User_id', 'url'];
-    } */
+     * {
+     * return ['id', 'text', 'date', 'User_id', 'url'];
+     * } */
 }

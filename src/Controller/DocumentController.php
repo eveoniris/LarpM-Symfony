@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Document;
@@ -27,16 +29,13 @@ class DocumentController extends AbstractController
     #[Route('/add', name: 'add')]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            new Document(),
-            DocumentForm::class,
-        );
+        return $this->handleCreateOrUpdate($request, new Document(), DocumentForm::class);
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
         Request $request,
-        $entity,
+        object $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
@@ -45,7 +44,7 @@ class DocumentController extends AbstractController
     ): RedirectResponse|Response {
         if (!$entityCallback) {
             // TODO debug why we do not store the docUrl
-            $entityCallback = function (Document $document, FormInterface $form): ?Document {
+            $entityCallback = function (Document $document, FormInterface $form): Document {
                 $document->setUser($this->getUser());
                 $document->handleUpload($this->fileUploader);
 
@@ -77,24 +76,17 @@ class DocumentController extends AbstractController
      * Suppression d'un document.
      */
     #[Route('/{document}/delete', name: 'delete', requirements: ['document' => Requirement::DIGITS])]
-    public function deleteAction(
-        #[MapEntity] Document $document,
-    ): RedirectResponse|Response {
-        return $this->genericDelete(
-            $document,
-            'Supprimer un document',
-            'Le document a été supprimé',
-            'document.list',
+    public function deleteAction(#[MapEntity] Document $document): RedirectResponse|Response
+    {
+        return $this->genericDelete($document, 'Supprimer un document', 'Le document a été supprimé', 'document.list', [
+            ['route' => $this->generateUrl('document.list'), 'name' => 'Liste des documents'],
             [
-                ['route' => $this->generateUrl('document.list'), 'name' => 'Liste des documents'],
-                [
-                    'route' => $this->generateUrl('document.detail', ['document' => $document->getId()]),
-                    'document' => $document->getId(),
-                    'name' => $document->getLabel(),
-                ],
-                ['name' => 'Supprimer un document'],
+                'route' => $this->generateUrl('document.detail', ['document' => $document->getId()]),
+                'document' => $document->getId(),
+                'name' => $document->getLabel(),
             ],
-        );
+            ['name' => 'Supprimer un document'],
+        ]);
     }
 
     /**
@@ -104,7 +96,8 @@ class DocumentController extends AbstractController
     public function detailAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Document $document,
+        #[MapEntity]
+        Document $document,
     ): Response {
         return $this->render('document/detail.twig', ['document' => $document]);
     }
@@ -119,11 +112,11 @@ class DocumentController extends AbstractController
         $documents = $documentRepositoryr->findAllOrderedByCode();
 
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_documents_'.date('Ymd').'.csv');
+        header('Content-Disposition: attachment; filename=eveoniris_documents_' . date('Ymd') . '.csv');
         header('Pragma: no-cache');
         header('Expires: 0');
 
-        $output = fopen('php://output', 'wb');
+        $output = fopen('php://output', 'w');
 
         // header
         fputcsv(
@@ -148,37 +141,36 @@ class DocumentController extends AbstractController
             $line = [];
             $line[] = mb_convert_encoding((string) $document->getCode(), 'ISO-8859-1');
             $line[] = mb_convert_encoding((string) $document->getTitre(), 'ISO-8859-1');
-            $line[] = $document->getImpression() ? mb_convert_encoding('Imprimé', 'ISO-8859-1') : mb_convert_encoding(
-                'Non imprimé',
-                'ISO-8859-1',
-            );
+            $line[] = $document->getImpression()
+                ? mb_convert_encoding('Imprimé', 'ISO-8859-1')
+                : mb_convert_encoding('Non imprimé', 'ISO-8859-1');
 
             $line[] = mb_convert_encoding((string) $document->getDescriptionRaw(), 'ISO-8859-1');
 
             $langues = '';
             foreach ($document->getLangues() as $langue) {
-                $langues .= mb_convert_encoding((string) $langue->getLabel(), 'ISO-8859-1').', ';
+                $langues .= mb_convert_encoding((string) $langue->getLabel(), 'ISO-8859-1') . ', ';
             }
 
             $line[] = $langues;
 
             $lieux = '';
             foreach ($document->getLieus() as $lieu) {
-                $lieux .= mb_convert_encoding((string) $lieu->getNom(), 'ISO-8859-1').', ';
+                $lieux .= mb_convert_encoding((string) $lieu->getNom(), 'ISO-8859-1') . ', ';
             }
 
             $line[] = $lieux;
 
             $groupes = '';
             foreach ($document->getGroupes() as $groupe) {
-                $groupes .= mb_convert_encoding((string) $groupe->getNom(), 'ISO-8859-1').', ';
+                $groupes .= mb_convert_encoding((string) $groupe->getNom(), 'ISO-8859-1') . ', ';
             }
 
             $line[] = $groupes;
 
             $personnages = '';
             foreach ($document->getPersonnages() as $personnage) {
-                $personnages .= mb_convert_encoding((string) $personnage->getNom(), 'ISO-8859-1').', ';
+                $personnages .= mb_convert_encoding((string) $personnage->getNom(), 'ISO-8859-1') . ', ';
             }
 
             $line[] = $personnages;
@@ -196,18 +188,11 @@ class DocumentController extends AbstractController
 
     /**
      * Téléchargement du fichier lié au document.
-     *
-     * @param unknown $document
      */
     #[Route('/get/{document}', name: 'get', requirements: ['document' => Requirement::DIGITS])]
     public function getAction(#[MapEntity] Document $document): BinaryFileResponse
     {
         return $this->sendDocument($document);
-        // TODO
-        $filename = __DIR__.'/../../private/documents/'.$document->getDocumentUrl();
-
-        // return $app->sendFile($filename);
-        return new BinaryFileResponse($filename);
     }
 
     /**
@@ -245,10 +230,6 @@ class DocumentController extends AbstractController
     #[Route('/{document}/update', name: 'update')]
     public function updateAction(Request $request, #[MapEntity] Document $document): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $document,
-            DocumentForm::class,
-        );
+        return $this->handleCreateOrUpdate($request, $document, DocumentForm::class);
     }
 }

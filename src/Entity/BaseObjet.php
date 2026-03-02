@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -51,8 +54,9 @@ abstract class BaseObjet
     protected ?bool $investissement = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $creation_date = null;
+    protected ?DateTime $creation_date = null;
 
+    /** @var Collection<int, Item> */
     #[OneToMany(mappedBy: 'objet', targetEntity: Item::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'objet_id', nullable: false)]
     protected Collection $items;
@@ -72,13 +76,17 @@ abstract class BaseObjet
     #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
-    #[ManyToOne(targetEntity: Photo::class, cascade: [
-        'persist',
-        'merge',
-        'remove',
-        'detach',
-        'all',
-    ], inversedBy: 'objets')]
+    #[ManyToOne(
+        targetEntity: Photo::class,
+        cascade: [
+            'persist',
+            'merge',
+            'remove',
+            'detach',
+            'all',
+        ],
+        inversedBy: 'objets',
+    )]
     #[JoinColumn(name: 'photo_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected ?Photo $photo = null;
 
@@ -87,6 +95,7 @@ abstract class BaseObjet
     #[Assert\NotNull]
     protected ?Rangement $rangement = null;
 
+    /** @var Collection<int, Tag> */
     #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'objets')]
     #[ORM\JoinTable(name: 'objet_tag')]
     #[JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
@@ -102,7 +111,7 @@ abstract class BaseObjet
     /**
      * Add Item entity to collection (one to many).
      */
-    public function addItem(Item $item): Collection
+    public function addItem(Item $item): static
     {
         $this->items[] = $item;
 
@@ -114,6 +123,7 @@ abstract class BaseObjet
      */
     public function addTag(Tag $tag): static
     {
+        /* @phpstan-ignore argument.type */
         $tag->addObjet($this);
         $this->tags[] = $tag;
 
@@ -159,7 +169,7 @@ abstract class BaseObjet
     /**
      * Get the value of creation_date.
      */
-    public function getCreationDate(): \DateTime
+    public function getCreationDate(): DateTime
     {
         return $this->creation_date;
     }
@@ -167,7 +177,7 @@ abstract class BaseObjet
     /**
      * Set the value of creation_date.
      */
-    public function setCreationDate(\DateTime $creation_date): static
+    public function setCreationDate(DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
@@ -248,6 +258,8 @@ abstract class BaseObjet
 
     /**
      * Get Item entity collection (one to many).
+     *
+     * @return Collection<int, Item>
      */
     public function getItems(): Collection
     {
@@ -319,6 +331,7 @@ abstract class BaseObjet
     public function setObjetCarac(?ObjetCarac $objetCarac = null): static
     {
         if (null !== $objetCarac) {
+            /* @phpstan-ignore argument.type */
             $objetCarac->setObjet($this);
         }
         $this->objetCarac = $objetCarac;
@@ -382,6 +395,8 @@ abstract class BaseObjet
 
     /**
      * Get Tag entity collection.
+     *
+     * @return Collection<int, Tag>
      */
     public function getTags(): Collection
     {
@@ -421,6 +436,7 @@ abstract class BaseObjet
      */
     public function removeTag(Tag $tag): static
     {
+        /* @phpstan-ignore argument.type */
         $tag->removeObjet($this);
         $this->tags->removeElement($tag);
 

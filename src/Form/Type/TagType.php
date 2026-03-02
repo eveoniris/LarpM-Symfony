@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Type;
 
@@ -18,13 +19,14 @@ class TagType extends AbstractType
     {
         $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'label' => 'Nom',
-            'required' => true]);
+            'required' => true,
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Tag::class,
+            'data_class' => '\\' . \App\Entity\Tag::class,
         ]);
     }
 

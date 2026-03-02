@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Espece;
@@ -9,40 +11,42 @@ use Doctrine\ORM\QueryBuilder;
 
 class EspeceRepository extends BaseRepository
 {
-
-    public function searchAttributes(): array
+    /** @return array<int, string> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             self::SEARCH_ALL,
-            $alias.'.nom', // => 'Libellé',
-            $alias.'.description', // => 'Description',
-            $alias.'.type',
+            $alias . '.nom', // => 'Libellé',
+            $alias . '.description', // => 'Description',
+            $alias . '.type',
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::sortAttributes($alias),
-            $alias.'.nom' => [
-                OrderBy::ASC => [$alias.'.nom' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.nom' => OrderBy::DESC],
+            $alias . '.nom' => [
+                OrderBy::ASC => [$alias . '.nom' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.nom' => OrderBy::DESC],
             ],
-            $alias.'.description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+            $alias . '.description' => [
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
             'type' => [
-                OrderBy::ASC => [$alias.'.type' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.type' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.type' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.type' => OrderBy::DESC],
             ],
         ];
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [
@@ -58,9 +62,6 @@ class EspeceRepository extends BaseRepository
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
-        return $personnageRepository->createQueryBuilder('perso')
-            ->innerJoin('perso.especes', 'esp')
-            ->where('esp.id = :espid')
-            ->setParameter('espid', $espece->getId());
+        return $personnageRepository->createQueryBuilder('perso')->innerJoin('perso.especes', 'esp')->where('esp.id = :espid')->setParameter('espid', $espece->getId());
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\ClasseRepository;
@@ -13,13 +15,11 @@ class Classe extends BaseClasse
         return $this->getLabel();
     }
 
+    /** @return array<int, string> */
     public function getCompetenceFamilyLabelsInCommons(): array
     {
         $competenceFamilyInCommons = [];
-        $competenceFamilyInCommonsIntersect = array_intersect(
-            $this->competenceFamilyFavorites->toArray(),
-            $this->competenceFamilyNormales->toArray()
-        );
+        $competenceFamilyInCommonsIntersect = array_intersect($this->competenceFamilyFavorites->toArray(), $this->competenceFamilyNormales->toArray());
 
         foreach ($competenceFamilyInCommonsIntersect as $competenceFamilyInCommon) {
             $competenceFamilyInCommons[] = $competenceFamilyInCommon->getLabel();
@@ -32,9 +32,8 @@ class Classe extends BaseClasse
     {
         foreach ($this->competenceFamilyFavorites as $competenceFamilyFavorite) {
             if (
-                (is_string($competenceFamily) && $competenceFamilyFavorite->getLabel() === $competenceFamily)
-                || ($competenceFamily instanceof CompetenceFamily
-                    && $competenceFamily->getId() === $competenceFamilyFavorite->getId())
+                \is_string($competenceFamily) && $competenceFamilyFavorite->getLabel() === $competenceFamily
+                || $competenceFamily instanceof CompetenceFamily && $competenceFamily->getId() === $competenceFamilyFavorite->getId()
             ) {
                 return true;
             }
@@ -47,9 +46,8 @@ class Classe extends BaseClasse
     {
         foreach ($this->competenceFamilyNormales as $competenceFamilyNormale) {
             if (
-                (is_string($competenceFamily) && $competenceFamilyNormale->getLabel() === $competenceFamily)
-                || ($competenceFamily instanceof CompetenceFamily
-                    && $competenceFamily->getId() === $competenceFamilyNormale->getId())
+                \is_string($competenceFamily) && $competenceFamilyNormale->getLabel() === $competenceFamily
+                || $competenceFamily instanceof CompetenceFamily && $competenceFamily->getId() === $competenceFamilyNormale->getId()
             ) {
                 return true;
             }
@@ -58,13 +56,11 @@ class Classe extends BaseClasse
         return false;
     }
 
+    /** @return array<int, string> */
     public function getCompetenceFamilyCreationLabelsInNotInFavorites(): array
     {
         $competenceFamiliesLabels = [];
-        $competenceFamiliesIntersect = array_diff(
-            $this->competenceFamilyCreations->toArray(),
-            $this->competenceFamilyFavorites->toArray()
-        );
+        $competenceFamiliesIntersect = array_diff($this->competenceFamilyCreations->toArray(), $this->competenceFamilyFavorites->toArray());
 
         foreach ($competenceFamiliesIntersect as $competenceFamilyIntersect) {
             $competenceFamiliesLabels[] = $competenceFamilyIntersect->getLabel();
@@ -75,6 +71,6 @@ class Classe extends BaseClasse
 
     public function getLabel(): string
     {
-        return $this->getLabelFeminin().' / '.$this->getLabelMasculin();
+        return $this->getLabelFeminin() . ' / ' . $this->getLabelMasculin();
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Rumeur;
@@ -11,8 +13,10 @@ class RumeurRepository extends BaseRepository
 {
     /**
      * Recherche d'une liste de rumeur.
+     *
+     * @param array<string, string> $order
      */
-    public function findList($type, $value, array $order = [], int $limit = 0, int $offset = 20): Query
+    public function findList(string $type, mixed $value, array $order = [], int $limit = 0, int $offset = 20): Query
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -20,17 +24,17 @@ class RumeurRepository extends BaseRepository
         $qb->from(Rumeur::class, 'i');
         if ($value && 'text' === $type) {
             $qb->andWhere('i.text LIKE :value');
-            $qb->setParameter('value', '%'.$value.'%');
+            $qb->setParameter('value', '%' . $value . '%');
         }
         if ($value && 'territoire' === $type) {
             $qb->join('i.territoire', 't');
             $qb->andWhere('t.nom LIKE :value');
-            $qb->setParameter('value', '%'.$value.'%');
+            $qb->setParameter('value', '%' . $value . '%');
         }
 
         $qb->setFirstResult($offset);
         $qb->setMaxResults($limit);
-        $qb->orderBy('i.'.$order['by'], $order['dir']);
+        $qb->orderBy('i.' . $order['by'], $order['dir']);
 
         return $qb->getQuery();
     }
@@ -38,7 +42,7 @@ class RumeurRepository extends BaseRepository
     /**
      * Trouve le nombre de rumeurs correspondant aux critères de recherche.
      */
-    public function findCount($type, ?string $value): float|bool|int|string|null
+    public function findCount(string $type, ?string $value): float|bool|int|string|null
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -47,12 +51,13 @@ class RumeurRepository extends BaseRepository
 
         if ($value && 'text' === $type) {
             $qb->andWhere('r.text LIKE :value');
-            $qb->setParameter('value', '%'.$value.'%');
+            $qb->setParameter('value', '%' . $value . '%');
         }
 
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -63,24 +68,26 @@ class RumeurRepository extends BaseRepository
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
 
-        $query->join($alias.'.user', 'user');
-        $query->join($alias.'.territoire', 'territoire');
+        $query->join($alias . '.user', 'user');
+        $query->join($alias . '.territoire', 'territoire');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    public function searchAttributes(): array
+    /** @return array<int, string> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             self::SEARCH_ALL,
-            $alias.'.text',
+            $alias . '.text',
             'user.username as user',
             'territoire.nom as territoire',
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
@@ -88,9 +95,9 @@ class RumeurRepository extends BaseRepository
         return [
             ...parent::sortAttributes($alias),
 
-            $alias.'.text' => [
-                OrderBy::ASC => [$alias.'.text' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.text' => OrderBy::DESC],
+            $alias . '.text' => [
+                OrderBy::ASC => [$alias . '.text' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.text' => OrderBy::DESC],
             ],
             'user.username' => [
                 OrderBy::ASC => ['user.username' => OrderBy::ASC],
@@ -114,6 +121,7 @@ class RumeurRepository extends BaseRepository
         return parent::translateAttribute($attribute);
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [

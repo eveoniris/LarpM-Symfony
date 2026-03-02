@@ -1,51 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Service\OrderBy;
-use Doctrine\ORM\EntityRepository;
-use JetBrains\PhpStorm\Deprecated;
 
 /**
- * LarpManager\Repository\AttributeTypeRepository
+ * LarpManager\Repository\AttributeTypeRepository.
  *
- * @author jsy  
+ * @author jsy
  */
 class AttributeTypeRepository extends BaseRepository
 {
     /**
-     * Find all classes ordered by label
-     * @return ArrayCollection $attributes
+     * Find all classes ordered by label.
      */
-    #[Deprecated]
-    public function findAllOrderedByLabel()
+    /** @return array<int, \App\Entity\AttributeType> */
+    public function findAllOrderedByLabel(): array
     {
-        return $this->getEntityManager()
-        ->createQuery('SELECT cf FROM App\Entity\AttributeType cf ORDER BY cf.label ASC')
-        ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT cf FROM App\Entity\AttributeType cf ORDER BY cf.label ASC')->getResult();
     }
 
-    public function searchAttributes(): array
+    /** @return array<string, array<string, mixed>> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::searchAttributes(),
-            $alias.'.id',
-            $alias.'.label',
+            $alias . '.id',
+            $alias . '.label',
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::sortAttributes($alias),
-            'label' => [OrderBy::ASC => [$alias.'.label' => OrderBy::ASC], OrderBy::DESC => [$alias.'.label' => OrderBy::DESC]],
+            'label' => [
+                OrderBy::ASC => [$alias . '.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.label' => OrderBy::DESC],
+            ],
         ];
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [

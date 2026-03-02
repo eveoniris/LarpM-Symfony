@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Membre;
@@ -32,10 +34,11 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/accept', name: 'groupeSecondaire.postulant.accept', requirements: ['postulant' => Requirement::DIGITS])]
     #[Route('/groupeTransverse/{groupeSecondaire}/postulant/{postulant}/accept', name: 'groupeTransverse.postulant.accept', requirements: ['postulant' => Requirement::DIGITS])]
     public function acceptPostulantAction(
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Postulant      $postulant,
-    ): Response
-    {
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+        #[MapEntity]
+        Postulant $postulant,
+    ): Response {
         $this->canManageGroup($groupeSecondaire);
 
         $personnage = $postulant->getPersonnage();
@@ -54,10 +57,7 @@ class GroupeSecondaireController extends AbstractController
 
             $this->mailer->newMessage(
                 $postulant->getPersonnage()->getUser(),
-                sprintf(
-                    'Votre candidature pour rejoindre le groupe %s a été acceptée',
-                    $groupeSecondaire->getLabel(),
-                ),
+                \sprintf('Votre candidature pour rejoindre le groupe %s a été acceptée', $groupeSecondaire->getLabel()),
                 'Acceptation de votre candidature',
                 $this->getUser(),
             );
@@ -73,26 +73,32 @@ class GroupeSecondaireController extends AbstractController
         $this->hasAccess($secondaryGroup, lowestCan: self::CAN_MANAGE);
     }
 
+    /**
+     * @param array<int, Role> $roles
+     */
     protected function hasAccess(
         ?SecondaryGroup $secondaryGroup = null,
-        array           $roles = [Role::ROLE_GROUPE_TRANSVERSE],
-        string          $lowestCan = self::CAN_READ,
-    ): void
-    {
+        array $roles = [Role::ROLE_GROUPE_TRANSVERSE],
+        string $lowestCan = self::CAN_READ,
+    ): void {
         $this->loadAccess($secondaryGroup, $roles);
-        $this->checkHasAccess($roles, fn() => $this->can($lowestCan));
+        $this->checkHasAccess($roles, fn () => $this->can($lowestCan));
     }
 
+    /**
+     * @param array<int, Role> $roles
+     */
     protected function loadAccess(
         ?SecondaryGroup $secondaryGroup = null,
-        array           $roles = [Role::ROLE_GROUPE_TRANSVERSE],
-    ): void
-    {
+        array $roles = [Role::ROLE_GROUPE_TRANSVERSE],
+    ): void {
         $isAdmin = false;
         foreach ($roles as $role) {
-            if ($this->isGranted($role->value)) {
-                $isAdmin = true;
+            if (!$this->isGranted($role->value)) {
+                continue;
             }
+
+            $isAdmin = true;
         }
 
         $isResponsable = false;
@@ -136,13 +142,9 @@ class GroupeSecondaireController extends AbstractController
     {
         $groupeSecondaire = new SecondaryGroup();
 
-        $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add(
-                'save_continue',
-                SubmitType::class,
-                ['label' => 'Sauvegarder & continuer'],
-            );
+        $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
         $form->handleRequest($request);
 
@@ -165,17 +167,15 @@ class GroupeSecondaireController extends AbstractController
                 $groupeSecondaire->addMembre($membre);
             }
 
-
-
             $this->entityManager->persist($groupeSecondaire);
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Le groupe transverse a été ajouté.');
 
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('groupeSecondaire.list', [], 303);
             }
-            if ($form->get('save_continue')->isClicked()) {
+            if ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('groupeSecondaire.add', [], 303);
             }
         }
@@ -194,33 +194,21 @@ class GroupeSecondaireController extends AbstractController
         if ($groupeSecondaire->isSecret() && !$this->can(self::IS_MEMBRE)) {
             $this->addFlash('error', 'Ce groupe ne peut pas être contacté.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         $responsable = $groupeSecondaire->getPersonnage();
         if (!$responsable) {
             $this->addFlash('error', 'Ce groupe ne peut pas être contacté.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         $personnage = $this->getPersonnage();
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir un personnage actif pour contacter le groupe.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         $message = new Message();
@@ -230,8 +218,9 @@ class GroupeSecondaireController extends AbstractController
         $message->setCreationDate(new DateTime('NOW'));
         $message->setUpdateDate(new DateTime('NOW'));
 
-        $form = $this->createForm(MessageForm::class, $message)
-            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre message']);
+        $form = $this->createForm(MessageForm::class, $message)->add('envoyer', SubmitType::class, [
+            'label' => 'Envoyer votre message',
+        ]);
 
         $form->handleRequest($request);
 
@@ -245,11 +234,7 @@ class GroupeSecondaireController extends AbstractController
 
             $this->addFlash('success', 'Votre message a été envoyé au joueur concerné.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         return $this->render('groupeSecondaire/contact.twig', [
@@ -262,32 +247,25 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/contact/membre/{membre}', name: 'groupeSecondaire.contact.membre', requirements: ['membre' => Requirement::DIGITS])]
     #[Route('/groupeTransverse/{groupeSecondaire}/contact/membre/{membre}', name: 'groupeTransverse.contact.membre', requirements: ['membre' => Requirement::DIGITS])]
     public function contactMembreAction(
-        Request                     $request,
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Membre         $membre,
-    ): Response
-    {
+        Request $request,
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+        #[MapEntity]
+        Membre $membre,
+    ): Response {
         $this->loadAccess($groupeSecondaire);
 
         $personnage = $this->getPersonnage();
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir un personnage actif pour contacter ce membre.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         if (!$groupeSecondaire->isMembre($personnage) && !$this->can(self::CAN_READ)) {
             $this->addFlash('error', 'Vous devez être membre pour contacter un autre membre.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         $message = new Message();
@@ -297,8 +275,9 @@ class GroupeSecondaireController extends AbstractController
         $message->setCreationDate(new DateTime('NOW'));
         $message->setUpdateDate(new DateTime('NOW'));
 
-        $form = $this->createForm(MessageForm::class, $message)
-            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre message']);
+        $form = $this->createForm(MessageForm::class, $message)->add('envoyer', SubmitType::class, [
+            'label' => 'Envoyer votre message',
+        ]);
 
         $form->handleRequest($request);
 
@@ -312,11 +291,7 @@ class GroupeSecondaireController extends AbstractController
 
             $this->addFlash('success', 'Votre message a été envoyé au membre concerné.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         return $this->render('groupeSecondaire/contact.twig', [
@@ -335,28 +310,20 @@ class GroupeSecondaireController extends AbstractController
         if ($groupeSecondaire->isSecret() && !$this->can(self::IS_MEMBRE)) {
             $this->addFlash('error', "Vous n'êtes pas membres");
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.list',
-                ['groupeSecondaire'],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.list', ['groupeSecondaire'], 303);
         }
 
-        return $this->render(
-            'groupeSecondaire/detail.twig',
-            $this->buildContextDetailTwig($groupeSecondaire),
-        );
+        return $this->render('groupeSecondaire/detail.twig', $this->buildContextDetailTwig($groupeSecondaire));
     }
 
     /**
      * Construit le contexte pour la page détail de groupe secondaire (pour les orgas).
      *
-     * @return array of
+     * @param array<string, mixed>|null $extraParameters
+     *
+     * @return array<string, mixed>
      */
-    public function buildContextDetailTwig(
-        SecondaryGroup $groupeSecondaire,
-        ?array         $extraParameters = null,
-    ): array
+    public function buildContextDetailTwig(SecondaryGroup $groupeSecondaire, ?array $extraParameters = null): array
     {
         $result = [
             'groupeSecondaire' => $groupeSecondaire,
@@ -373,30 +340,20 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/postuler', name: 'groupeSecondaire.postuler')]
     #[Route('/groupeTransverse/{groupeSecondaire}/postuler', name: 'groupeTransverse.postuler')]
     public function groupeSecondairePostulerAction(
-        Request                     $request,
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): RedirectResponse|Response
-    {
+        Request $request,
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+    ): RedirectResponse|Response {
         if ($groupeSecondaire->isSecret()) {
-            $this->addFlash(
-                'error',
-                'Par Crom! On ne postule pas ici ! On est uniquement convié par qui de droit !',
-            );
+            $this->addFlash('error', 'Par Crom! On ne postule pas ici ! On est uniquement convié par qui de droit !');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.list',
-                [],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.list', [], 303);
         }
 
         $personnage = $this->getPersonnage();
 
         if (!$personnage) {
-            $this->addFlash(
-                'error',
-                'Vous devez avoir créé un personnage et le choisir comme personnage actif avant de postuler à un groupe transverse!',
-            );
+            $this->addFlash('error', 'Vous devez avoir créé un personnage et le choisir comme personnage actif avant de postuler à un groupe transverse!');
 
             return $this->redirectToRoute('user.detail', ['user' => $this->getUser()?->getId()], 303);
         }
@@ -407,11 +364,7 @@ class GroupeSecondaireController extends AbstractController
         if ($groupeSecondaire->isPostulant($personnage)) {
             $this->addFlash('error', 'Vous avez déjà postulé dans ce groupe. Inutile d\'en refaire la demande.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.list',
-                [],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.list', [], 303);
         }
 
         /*
@@ -420,15 +373,12 @@ class GroupeSecondaireController extends AbstractController
         if ($groupeSecondaire->isMembre($personnage)) {
             $this->addFlash('error', 'Vous êtes déjà membre de ce groupe. Inutile d\'en refaire la demande.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
-        $form = $this->createForm(GroupeSecondairePostulerForm::class)
-            ->add('postuler', SubmitType::class, ['label' => 'Postuler']);
+        $form = $this->createForm(GroupeSecondairePostulerForm::class)->add('postuler', SubmitType::class, [
+            'label' => 'Postuler',
+        ]);
 
         $form->handleRequest($request);
 
@@ -465,11 +415,7 @@ class GroupeSecondaireController extends AbstractController
 
                 $this->addFlash('success', 'Votre candidature a été enregistrée, et transmise au recruteur.');
 
-                return $this->redirectToRoute(
-                    'groupeSecondaire.list',
-                    [],
-                    303,
-                );
+                return $this->redirectToRoute('groupeSecondaire.list', [], 303);
             }
         }
 
@@ -486,28 +432,22 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire', name: 'groupeSecondaire.list')]
     #[Route('/groupeTransverse', name: 'groupeTransverse.list')]
     public function listAction(
-        Request                  $request,
-        PagerService             $pagerService,
+        Request $request,
+        PagerService $pagerService,
         SecondaryGroupRepository $secondaryGroupRepository,
-    ): Response
-    {
+    ): Response {
         $this->loadAccess();
         $alias = $secondaryGroupRepository->getAlias();
         $queryBuilder = $secondaryGroupRepository->createQueryBuilder($alias);
-        $pagerService->setRequest($request)
-            ->setRepository($secondaryGroupRepository)
-            ->setLimit(25);
+        $pagerService->setRequest($request)->setRepository($secondaryGroupRepository)->setLimit(25);
 
         // If not admin, only groupe where user's personnage are.
         $isAdmin = $this->hasRoles([Role::ROLE_GROUPE_TRANSVERSE]);
 
         $fetchCollection = false;
-        if (!$isAdmin && $personnage = $this->getPersonnage()) {
-            $fetchCollection = true;  // may have issue with OrderBy but paginator will load result without member in (due to leftjoin(member))
-            $queryBuilder = $secondaryGroupRepository->visibleForPersonnage(
-                $queryBuilder,
-                $personnage->getId(),
-            );
+        if (!$isAdmin && ($personnage = $this->getPersonnage())) {
+            $fetchCollection = true; // may have issue with OrderBy but paginator will load result without member in (due to leftjoin(member))
+            $queryBuilder = $secondaryGroupRepository->visibleForPersonnage($queryBuilder, $personnage->getId());
         }
 
         return $this->render('groupeSecondaire/list.twig', [
@@ -522,9 +462,7 @@ class GroupeSecondaireController extends AbstractController
     #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     #[Route('/groupeSecondaire/{groupeSecondaire}/print', name: 'groupeSecondaire.materiel.print')]
     #[Route('/groupeTransverse/{groupeSecondaire}/print', name: 'groupeTransverse.materiel.print')]
-    public function materielPrintAction(
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): Response
+    public function materielPrintAction(#[MapEntity] SecondaryGroup $groupeSecondaire): Response
     {
         return $this->render('groupeSecondaire/print.twig', [
             'groupeSecondaire' => $groupeSecondaire,
@@ -553,10 +491,10 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/materielUpdate', name: 'groupeSecondaire.materiel.update')]
     #[Route('/groupeTransverse/{groupeSecondaire}/materielUpdate', name: 'groupeTransverse.materiel.update')]
     public function materielUpdateAction(
-        Request                     $request,
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): RedirectResponse|Response
-    {
+        Request $request,
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+    ): RedirectResponse|Response {
         $form = $this->createForm(GroupeSecondaireMaterielForm::class, $groupeSecondaire);
         $form->handleRequest($request);
 
@@ -566,11 +504,7 @@ class GroupeSecondaireController extends AbstractController
             $this->entityManager->flush();
             $this->addFlash('success', 'Le groupe transverse a été mis à jour.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         return $this->render('groupeSecondaire/materiel.twig', [
@@ -585,10 +519,10 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/addMember', name: 'groupeSecondaire.newMembre')]
     #[Route('/groupeTransverse/{groupeSecondaire}/addMember', name: 'groupeTransverse.newMembre')]
     public function newMembreAction(
-        Request                     $request,
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): RedirectResponse|Response
-    {
+        Request $request,
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+    ): RedirectResponse|Response {
         $this->canManageGroup($groupeSecondaire);
         $form = $this->createForm(GroupeSecondaireNewMembreForm::class);
 
@@ -600,11 +534,7 @@ class GroupeSecondaireController extends AbstractController
             if (!$personnage) {
                 $this->addFlash('warning', "Vous n'avez pas de personnage");
 
-                return $this->redirectToRoute(
-                    'groupeSecondaire.detail',
-                    ['groupeSecondaire' => $groupeSecondaire->getId()],
-                    303,
-                );
+                return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
             }
 
             $membre = new Membre();
@@ -612,11 +542,7 @@ class GroupeSecondaireController extends AbstractController
             if ($groupeSecondaire->isMembre($personnage)) {
                 $this->addFlash('warning', 'le personnage est déjà membre du groupe transverse.');
 
-                return $this->redirectToRoute(
-                    'groupeSecondaire.detail',
-                    ['groupeSecondaire' => $groupeSecondaire->getId()],
-                    303,
-                );
+                return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
             }
 
             $membre->setPersonnage($personnage);
@@ -628,37 +554,30 @@ class GroupeSecondaireController extends AbstractController
 
             $this->addFlash('success', 'le personnage a été ajouté au groupe transverse.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
-        return $this->render(
-            'groupeSecondaire/newMembre.twig',
-            $this->buildContextDetailTwig($groupeSecondaire, ['form' => $form->createView(), 'isAdmin' => true]),
-        );
+        return $this->render('groupeSecondaire/newMembre.twig', $this->buildContextDetailTwig($groupeSecondaire, [
+            'form' => $form->createView(),
+            'isAdmin' => true,
+        ]));
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/response', name: 'groupeSecondaire.postulant.response')]
     #[Route('/groupeTransverse/{groupeSecondaire}/postulant/{postulant}/response', name: 'groupeTransverse.postulant.response')]
     public function postulantResponseAction(
-        Request                     $request,
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Postulant      $postulant,
-    ): RedirectResponse|Response
-    {
+        Request $request,
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+        #[MapEntity]
+        Postulant $postulant,
+    ): RedirectResponse|Response {
         $this->canManageGroup($groupeSecondaire);
 
-        if (!$destinataire = $postulant->getPersonnage()->getUser()) {
+        if (!($destinataire = $postulant->getPersonnage()->getUser())) {
             $this->addFlash('error', "le personnage n'est pas lié à un utilisateur joignable.");
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         $message = new Message();
@@ -669,8 +588,9 @@ class GroupeSecondaireController extends AbstractController
         $message->setCreationDate(new DateTime('NOW'));
         $message->setUpdateDate(new DateTime('NOW'));
 
-        $form = $this->createForm(MessageForm::class, $message)
-            ->add('envoyer', SubmitType::class, ['label' => 'Envoyer votre réponse']);
+        $form = $this->createForm(MessageForm::class, $message)->add('envoyer', SubmitType::class, [
+            'label' => 'Envoyer votre réponse',
+        ]);
 
         $form->handleRequest($request);
 
@@ -686,11 +606,7 @@ class GroupeSecondaireController extends AbstractController
 
             $this->addFlash('success', 'Votre message a été envoyé au joueur concerné.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         return $this->render('groupeSecondaire/gestion_response.twig', [
@@ -703,15 +619,19 @@ class GroupeSecondaireController extends AbstractController
     #[Route('groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/wait', name: 'groupeSecondaire.postulant.wait')]
     #[Route('groupeTransverse/{groupeSecondaire}/postulant/{postulant}/wait', name: 'groupeTransverse.postulant.wait')]
     public function postulantWaitAction(
-        Request                     $request,
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Postulant      $postulant,
-    ): RedirectResponse|Response
-    {
+        Request $request,
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+        #[MapEntity]
+        Postulant $postulant,
+    ): RedirectResponse|Response {
         $this->canManageGroup($groupeSecondaire);
 
-        $form = $this->createFormBuilder($postulant)
-            ->add('envoyer', SubmitType::class, ['label' => 'Laisser en attente'])
+        $form = $this
+            ->createFormBuilder($postulant)
+            ->add('envoyer', SubmitType::class, [
+                'label' => 'Laisser en attente',
+            ])
             ->getForm();
 
         $form->handleRequest($request);
@@ -725,11 +645,7 @@ class GroupeSecondaireController extends AbstractController
 
             $this->addFlash('success', 'La candidature reste en attente. Un message a été envoyé au joueur concerné.');
 
-            return $this->redirectToRoute(
-                'groupeSecondaire.detail',
-                ['groupeSecondaire' => $groupeSecondaire->getId()],
-                303,
-            );
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
         return $this->render('groupeSecondaire/gestion_wait.twig', [
@@ -742,10 +658,11 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/membre/{membre}/remove', name: 'groupeSecondaire.member.remove')]
     #[Route('/groupeTransverse/{groupeSecondaire}/membre/{membre}/remove', name: 'groupeTransverse.member.remove')]
     public function removeMembreAction(
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Membre         $membre,
-    ): Response
-    {
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+        #[MapEntity]
+        Membre $membre,
+    ): Response {
         $this->canManageGroup($groupeSecondaire);
 
         return $this->genericDelete(
@@ -756,10 +673,7 @@ class GroupeSecondaireController extends AbstractController
             [
                 ['route' => $this->generateUrl('groupeSecondaire.list'), 'name' => 'Liste des groupes transverses'],
                 [
-                    'route' => $this->generateUrl(
-                        'groupeSecondaire.detail',
-                        ['groupeSecondaire' => $groupeSecondaire->getId()],
-                    ),
+                    'route' => $this->generateUrl('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()]),
                     'membre' => $membre->getId(),
                     'name' => $membre->getPersonnage()->getPublicName(),
                 ],
@@ -772,10 +686,11 @@ class GroupeSecondaireController extends AbstractController
     #[Route('/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/remove', name: 'groupeSecondaire.postulant.remove')]
     #[Route('/groupeTransverse/{groupeSecondaire}/postulant/{postulant}/remove', name: 'groupeTransverse.postulant.remove')]
     public function removePostulantAction(
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Postulant      $postulant,
-    ): Response
-    {
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+        #[MapEntity]
+        Postulant $postulant,
+    ): Response {
         $this->canManageGroup($groupeSecondaire);
 
         $this->entityManager->remove($postulant);
@@ -783,20 +698,17 @@ class GroupeSecondaireController extends AbstractController
 
         $this->addFlash('success', 'la candidature a été supprimée.');
 
-        return $this->redirectToRoute(
-            'groupeSecondaire.detail',
-            ['groupeSecondaire' => $groupeSecondaire->getId()],
-            303,
-        );
+        return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/secretOff/{membre}', name: 'groupeSecondaire.secret.off')]
     #[Route('/groupeTransverse/{groupeSecondaire}/secretOff/{membre}', name: 'groupeTransverse.secret.off')]
     public function secretOffAction(
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Membre         $membre,
-    ): Response
-    {
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+        #[MapEntity]
+        Membre $membre,
+    ): Response {
         $this->canManageGroup($groupeSecondaire);
 
         $membre->setSecret(false);
@@ -805,19 +717,12 @@ class GroupeSecondaireController extends AbstractController
 
         $this->addFlash('info', 'Le membre a été rétrogradé');
 
-        return $this->redirectToRoute(
-            'groupeSecondaire.detail',
-            ['groupeSecondaire' => $groupeSecondaire->getId()],
-            303,
-        );
+        return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/secretOn/{membre}', name: 'groupeSecondaire.secret.on')]
     #[Route('/groupeTransverse/{groupeSecondaire}/secretOn/{membre}', name: 'groupeTransverse.secret.on')]
-    public function secretOnAction(
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-        #[MapEntity] Membre         $membre,
-    ): Response
+    public function secretOnAction(#[MapEntity] SecondaryGroup $groupeSecondaire, #[MapEntity] Membre $membre): Response
     {
         $this->canManageGroup($groupeSecondaire);
 
@@ -827,33 +732,30 @@ class GroupeSecondaireController extends AbstractController
 
         $this->addFlash('info', 'Le membre a été promu');
 
-        return $this->redirectToRoute(
-            'groupeSecondaire.detail',
-            ['groupeSecondaire' => $groupeSecondaire->getId()],
-            303,
-        );
+        return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
     }
 
     #[Route('/groupeSecondaire/{groupeSecondaire}/update', name: 'groupeSecondaire.update')]
     #[Route('/groupeTransverse/{groupeSecondaire}/update', name: 'groupeTransverse.update')]
     public function updateAction(
-        Request                     $request,
-        EntityManagerInterface      $entityManager,
-        #[MapEntity] SecondaryGroup $groupeSecondaire,
-    ): RedirectResponse|Response
-    {
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+    ): RedirectResponse|Response {
         $this->canManageGroup($groupeSecondaire);
 
-        $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder', 'attr' => ['class' => 'btn btn-secondary']])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn btn-secondary']]);
+        $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)->add('update', SubmitType::class, [
+            'label' => 'Sauvegarder',
+            'attr' => ['class' => 'btn btn-secondary'],
+        ])->add('delete', SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $groupeSecondaire = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 /**
                  * Ajoute le responsable du groupe dans le groupe si il n'y est pas déjà.
                  */
@@ -873,14 +775,16 @@ class GroupeSecondaireController extends AbstractController
                  * Retire la candidature du responsable si elle existe
                  */
                 foreach ($groupeSecondaire->getPostulants() as $postulant) {
-                    if ($postulant->getPersonnage()?->getId() === $personnage->getId()) {
-                        $this->entityManager->remove($postulant);
+                    if ($postulant->getPersonnage()?->getId() !== $personnage->getId()) {
+                        continue;
                     }
+
+                    $this->entityManager->remove($postulant);
                 }
                 $entityManager->persist($groupeSecondaire);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le groupe transverse a été mis à jour.');
-            } elseif ($form->get('delete')->isClicked()) {
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 $entityManager->remove($groupeSecondaire);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le groupe transverse a été supprimé.');

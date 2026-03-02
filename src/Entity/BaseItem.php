@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use DateTime;
@@ -22,15 +24,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BaseItem', 'extended' => 'Item'])]
 abstract class BaseItem
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank]
     protected ?string $label = '';
 
     #[Column(type: Types::TEXT, nullable: true)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank]
     protected ?string $description = '';
 
     #[Column(type: Types::INTEGER)]
@@ -62,16 +64,19 @@ abstract class BaseItem
     #[ORM\ManyToOne(targetEntity: Objet::class, inversedBy: 'items')]
     #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
     protected Objet $objet;
+    /** @var Collection<int, Groupe> */
     #[ORM\ManyToMany(targetEntity: Groupe::class, mappedBy: 'items')]
     protected Collection $groupes;
+    /** @var Collection<int, Personnage> */
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'items')]
     protected Collection $personnages;
+    /** @var Collection<int, QrCodeScanLog> */
     #[ORM\OneToMany(mappedBy: 'item', targetEntity: QrCodeScanLog::class)]
     private Collection $qrCodeScanLogs;
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     private ?string $description_secrete = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     private ?string $description_scenariste = null;
 
     public function __construct()
@@ -182,7 +187,7 @@ abstract class BaseItem
     /**
      * Set the value of special.
      */
-    public function setSpecial(?string $special): Item
+    public function setSpecial(?string $special): static
     {
         $this->special = $special;
 
@@ -210,7 +215,7 @@ abstract class BaseItem
     /**
      * Get the value of date_creation.
      */
-    public function getDateCreation(): static
+    public function getDateCreation(): DateTime
     {
         return $this->date_creation;
     }
@@ -341,6 +346,8 @@ abstract class BaseItem
 
     /**
      * Get Groupe entity collection.
+     *
+     * @return Collection<int, Groupe>
      */
     public function getGroupes(): Collection
     {
@@ -369,6 +376,8 @@ abstract class BaseItem
 
     /**
      * Get Personnage entity collection.
+     *
+     * @return Collection<int, Personnage>
      */
     public function getPersonnages(): Collection
     {
@@ -376,9 +385,9 @@ abstract class BaseItem
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description', 'numero', 'identification', 'quality_id', 'special', 'couleur', 'date_creation', 'date_update', 'statut_id', 'objet_id', 'quantite'];
-    } */
+     * {
+     * return ['id', 'label', 'description', 'numero', 'identification', 'quality_id', 'special', 'couleur', 'date_creation', 'date_update', 'statut_id', 'objet_id', 'quantite'];
+     * } */
 
     public function getDescriptionSecrete(): ?string
     {
@@ -404,6 +413,7 @@ abstract class BaseItem
         return $this;
     }
 
+    /** @return Collection<int, QrCodeScanLog> */
     public function getQrCodeScanLogs(): Collection
     {
         return $this->qrCodeScanLogs;
@@ -413,6 +423,7 @@ abstract class BaseItem
     {
         if (!$this->qrCodeScanLogs->contains($qrCodeScanLog)) {
             $this->qrCodeScanLogs->add($qrCodeScanLog);
+            /* @phpstan-ignore argument.type */
             $qrCodeScanLog->setItem($this);
         }
 

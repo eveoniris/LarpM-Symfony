@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -12,11 +14,7 @@ class DeleteForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add(
-            'delete',
-            SubmitType::class,
-            ['label' => 'Supprimer', 'attr' => ['class' => 'btn btn-danger']]
-        );
+        $builder->add('delete', SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn btn-danger']]);
 
         if (!isset($options['class'])) {
             throw new InvalidConfigurationException('Missing entity class in options');

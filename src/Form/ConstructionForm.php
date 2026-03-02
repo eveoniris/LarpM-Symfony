@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -21,19 +22,17 @@ class ConstructionForm extends AbstractType
         $builder->add('label', TextType::class, [
             'label' => 'Le nom de la construction',
             'required' => true,
-        ])
-            ->add('description', TextareaType::class, [
-                'label' => 'La description de la construction',
-                'required' => true,
-                'attr' => [
-                    'class' => 'tinymce',
-                    'rows' => 9,
-                ],
-            ])
-            ->add('defense', IntegerType::class, [
-                'label' => 'La valeur de défense de la construction',
-                'required' => true,
-            ]);
+        ])->add('description', TextareaType::class, [
+            'label' => 'La description de la construction',
+            'required' => true,
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 9,
+            ],
+        ])->add('defense', IntegerType::class, [
+            'label' => 'La valeur de défense de la construction',
+            'required' => true,
+        ]);
     }
 
     /**

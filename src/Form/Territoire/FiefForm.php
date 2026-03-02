@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Territoire;
 
@@ -24,36 +25,32 @@ class FiefForm extends AbstractType
             'attr' => [
                 'placeholder' => 'Votre recherche',
             ],
-        ])
-            ->add('type', ChoiceType::class, [
-                'required' => false,
-                'choices' => [
-                    'Tous' => '',
-                    'Id du fief' => 'idFief',
-                    'Nom du fief' => 'nomFief',
-                ],
-            ])
-            ->add('province', EntityType::class, [
-                'required' => false,
-                'label' => 'Par province',
-                'class' => Territoire::class,
-                'choices' => $options['listeProvinces'],
-                'placeholder' => 'Filtrer par province',
-            ])
-            ->add('pays', EntityType::class, [
-                'required' => false,
-                'label' => 'Par pays',
-                'class' => Territoire::class,
-                'choices' => $options['listePays'],
-                'placeholder' => 'Filtrer par pays',
-            ])
-            ->add('groupe', EntityType::class, [
-                'required' => false,
-                'label' => 'Par groupe',
-                'class' => Groupe::class,
-                'choices' => $options['listeGroupes'],
-                'placeholder' => 'Filtrer par groupe',
-            ]);
+        ])->add('type', ChoiceType::class, [
+            'required' => false,
+            'choices' => [
+                'Tous' => '',
+                'Id du fief' => 'idFief',
+                'Nom du fief' => 'nomFief',
+            ],
+        ])->add('province', EntityType::class, [
+            'required' => false,
+            'label' => 'Par province',
+            'class' => Territoire::class,
+            'choices' => $options['listeProvinces'],
+            'placeholder' => 'Filtrer par province',
+        ])->add('pays', EntityType::class, [
+            'required' => false,
+            'label' => 'Par pays',
+            'class' => Territoire::class,
+            'choices' => $options['listePays'],
+            'placeholder' => 'Filtrer par pays',
+        ])->add('groupe', EntityType::class, [
+            'required' => false,
+            'label' => 'Par groupe',
+            'class' => Groupe::class,
+            'choices' => $options['listeGroupes'],
+            'placeholder' => 'Filtrer par groupe',
+        ]);
     }
 
     /**
@@ -61,13 +58,11 @@ class FiefForm extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(
-            [
-                'listeGroupes' => '',
-                'listePays' => '',
-                'listeProvinces' => '',
-            ],
-        );
+        $resolver->setDefaults([
+            'listeGroupes' => '',
+            'listePays' => '',
+            'listeProvinces' => '',
+        ]);
     }
 
     /**

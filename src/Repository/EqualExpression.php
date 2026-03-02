@@ -1,19 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 class EqualExpression
 {
-    protected $key;
+    protected string $key;
 
-    public function __construct(protected $column, protected $value)
-    {
-        $this->key = 'key'.preg_replace('/[^a-zA-Z]/', '_', (string) $column);
+    public function __construct(
+        protected string $column,
+        protected mixed $value,
+    ) {
+        $this->key = 'key' . preg_replace('/[^a-zA-Z]/', '_', (string) $column);
     }
 
-    public function apply($qb): void
+    public function apply(\Doctrine\ORM\QueryBuilder $qb): void
     {
-        $qb->andWhere(sprintf('%s = :%s', $this->column, $this->key));
+        $qb->andWhere(\sprintf('%s = :%s', $this->column, $this->key));
         $qb->setParameter($this->key, $this->value);
     }
 }

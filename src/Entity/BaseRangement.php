@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,7 +23,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseRangement', 'extended' => 'Rangement'])]
 abstract class BaseRangement
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
@@ -30,6 +32,7 @@ abstract class BaseRangement
     #[Column(name: '`precision`', type: Types::STRING, length: 450, nullable: true)]
     protected ?string $precision = null;
 
+    /** @var Collection<int, Objet> */
     #[OneToMany(mappedBy: 'rangement', targetEntity: Objet::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'rangement_id', nullable: false)]
     protected Collection $objets;
@@ -119,6 +122,8 @@ abstract class BaseRangement
 
     /**
      * Get Objet entity collection (one to many).
+     *
+     * @return Collection<int, Objet>
      */
     public function getObjets(): Collection
     {
@@ -144,7 +149,7 @@ abstract class BaseRangement
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'localisation_id', 'label', 'precision'];
-    } */
+     * {
+     * return ['id', 'localisation_id', 'label', 'precision'];
+     * } */
 }

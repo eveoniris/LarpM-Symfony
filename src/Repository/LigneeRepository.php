@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Lignee;
-use Doctrine\ORM\EntityRepository;
 
 class LigneeRepository extends BaseRepository
 {
     /**
      * Trouve toutes les lignées.
      */
+    /** @return list<Lignee> */
     public function findAll(): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
@@ -24,13 +26,15 @@ class LigneeRepository extends BaseRepository
     /**
      * Recherche d'une liste de lignees.
      *
-     * @param unknown $type
-     * @param unknown $value
-     * @param unknown $limit
-     * @param unknown $offset
+     * @param array<string, string> $order
      */
-    public function findList($type, $value, $limit, $offset, array $order = [])
-    {
+    public function findList(
+        ?string $type,
+        mixed $value,
+        int $limit,
+        int $offset,
+        array $order = [],
+    ): \Doctrine\ORM\Query {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('l');
@@ -43,14 +47,14 @@ class LigneeRepository extends BaseRepository
                     break;
                 case 'nom':
                     $qb->andWhere('l.nom LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
             }
         }
 
-        $qb->setFirstResult($offset);
-        $qb->setMaxResults($limit);
-        $qb->orderBy('l.'.$order['by'], $order['dir']);
+        $qb->setFirstResult((int) $offset);
+        $qb->setMaxResults((int) $limit);
+        $qb->orderBy('l.' . $order['by'], $order['dir']);
 
         return $qb->getQuery();
     }
@@ -58,7 +62,7 @@ class LigneeRepository extends BaseRepository
     /**
      * Retourne le nombre de résultats correspondant à un critère.
      */
-    public function findCount($type, ?string $value)
+    public function findCount(string $type, ?string $value): int
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -73,7 +77,7 @@ class LigneeRepository extends BaseRepository
                     break;
                 case 'nom':
                     $qb->andWhere('l.nom LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
             }
         }

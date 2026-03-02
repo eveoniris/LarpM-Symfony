@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Personnage;
@@ -7,20 +9,20 @@ use App\Entity\Sort;
 use App\Service\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
+use SensitiveParameter;
 
 class SortRepository extends BaseRepository
 {
     /**
      * Find all Apprenti sorts ordered by label.
      *
-     * @return ArrayCollection $sorts
+     * @return ArrayCollection<int, Sort>
      */
-    public function findByNiveau($niveau)
+    public function findByNiveau(int $niveau)
     {
-        return $this->getEntityManager()
-            ->createQuery(
-                'SELECT s FROM App\Entity\Sort s Where s.niveau = ?1 AND (s.secret = 0 OR s.secret IS NULL) ORDER BY s.label ASC',
-            )
+        return $this
+            ->getEntityManager()
+            ->createQuery('SELECT s FROM App\Entity\Sort s Where s.niveau = ?1 AND (s.secret = 0 OR s.secret IS NULL) ORDER BY s.label ASC')
             ->setParameter(1, $niveau)
             ->getResult();
     }
@@ -28,7 +30,7 @@ class SortRepository extends BaseRepository
     /**
      * Trouve le nombre de sorts correspondant aux critères de recherche.
      */
-    public function findCount(?string $type, $value)
+    public function findCount(?string $type, mixed $value): int
     {
         $qb = $this->getQueryBuilder($type, $value);
         $qb->select($qb->expr()->count('s'));
@@ -36,7 +38,7 @@ class SortRepository extends BaseRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    protected function getQueryBuilder(?string $type, $value): QueryBuilder
+    protected function getQueryBuilder(?string $type, mixed $value): QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -50,16 +52,16 @@ class SortRepository extends BaseRepository
             switch ($type) {
                 case 'label':
                     $qb->andWhere('s.label LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'domaine':
                     $qb->join('s.domaine', 'd');
                     $qb->andWhere('d.label LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'description':
                     $qb->andWhere('s.description LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'id':
                     $qb->andWhere('s.id = :value');
@@ -74,12 +76,17 @@ class SortRepository extends BaseRepository
     /**
      * Trouve les sorts correspondant aux critères de recherche.
      */
-    public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
+    /**
+     * @param array<string, string> $order
+     *
+     * @return array<int, Sort>
+     */
+    public function findList(?string $type, mixed $value, array $order = [], int $limit = 50, int $offset = 0): array
     {
         $qb = $this->getQueryBuilder($type, $value);
         $qb->setFirstResult($offset);
         $qb->setMaxResults($limit);
-        $qb->orderBy('s.'.$order['by'], $order['dir']);
+        $qb->orderBy('s.' . $order['by'], $order['dir']);
 
         return $qb->getQuery()->getResult();
     }
@@ -89,12 +96,10 @@ class SortRepository extends BaseRepository
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
-        return $personnageRepository->createQueryBuilder('p')
-            ->innerJoin('p.sorts', 's')
-            ->where('s.id = :sid')
-            ->setParameter('sid', $sort);
+        return $personnageRepository->createQueryBuilder('p')->innerJoin('p.sorts', 's')->where('s.id = :sid')->setParameter('sid', $sort);
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -109,34 +114,33 @@ class SortRepository extends BaseRepository
             $query = $this->createQueryBuilder($alias);
             $orderBy->addOrderToQuery($query);
 
-            return $this->secret(
-                $query,
-                filter_var($search, FILTER_VALIDATE_BOOLEAN),
-            );
+            return $this->secret($query, filter_var($search, \FILTER_VALIDATE_BOOLEAN));
         }
 
         return parent::search($search, $attributes, $orderBy, $alias);
     }
 
-    public function secret(QueryBuilder $query, bool $secret): QueryBuilder
+    public function secret(QueryBuilder $query, #[SensitiveParameter] bool $secret): QueryBuilder
     {
-        $query->andWhere($this->alias.'.secret = :value');
+        $query->andWhere($this->alias . '.secret = :value');
 
         return $query->setParameter('value', $secret);
     }
 
-    public function searchAttributes(): array
+    /** @return array<string, array<string, mixed>> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::searchAttributes(),
-            $alias.'.label', // => 'Libellé',
-            $alias.'.description', // => 'Description',
-            $alias.'.niveau',
+            $alias . '.label', // => 'Libellé',
+            $alias . '.description', // => 'Description',
+            $alias . '.niveau',
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
@@ -144,20 +148,20 @@ class SortRepository extends BaseRepository
         return [
             ...parent::sortAttributes($alias),
             'label' => [
-                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.label' => OrderBy::DESC],
             ],
             'description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
             'secret' => [
-                OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.secret' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.secret' => OrderBy::DESC],
             ],
             'niveau' => [
-                OrderBy::ASC => [$alias.'.niveau' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.niveau' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.niveau' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.niveau' => OrderBy::DESC],
             ],
         ];
     }

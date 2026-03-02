@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Type;
 
+use App\Entity\GroupeClasse;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,7 +29,7 @@ class ClasseType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\GroupeClasse::class,
+            'data_class' => GroupeClasse::class,
         ]);
     }
 

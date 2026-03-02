@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseLieu', 'extended' => 'Lieu'])]
 abstract class BaseLieu
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
@@ -27,13 +29,15 @@ abstract class BaseLieu
     #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $description = '';
 
+    /** @var Collection<int, IntrigueHasLieu> */
     #[OneToMany(mappedBy: 'lieu', targetEntity: IntrigueHasLieu::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'lieu_id', nullable: false)]
     protected Collection $intrigueHasLieus;
 
+    /** @var Collection<int, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'lieus')]
     #[ORM\JoinTable(name: 'lieu_has_document')]
-    #[ORM\JoinColumn(name: 'lieu_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'lieu_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $documents;
 
@@ -119,6 +123,8 @@ abstract class BaseLieu
 
     /**
      * Get IntrigueHasLieu entity collection (one to many).
+     *
+     * @return Collection<int, IntrigueHasLieu>
      */
     public function getIntrigueHasLieus(): Collection
     {
@@ -130,6 +136,7 @@ abstract class BaseLieu
      */
     public function addDocument(Document $document): static
     {
+        /* @phpstan-ignore argument.type */
         $document->addLieu($this);
         $this->documents[] = $document;
 
@@ -141,6 +148,7 @@ abstract class BaseLieu
      */
     public function removeDocument(Document $document): static
     {
+        /* @phpstan-ignore argument.type */
         $document->removeLieu($this);
         $this->documents->removeElement($document);
 
@@ -149,6 +157,8 @@ abstract class BaseLieu
 
     /**
      * Get Document entity collection.
+     *
+     * @return Collection<int, Document>
      */
     public function getDocuments(): Collection
     {
@@ -156,7 +166,7 @@ abstract class BaseLieu
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'nom', 'description'];
-    } */
+     * {
+     * return ['id', 'nom', 'description'];
+     * } */
 }

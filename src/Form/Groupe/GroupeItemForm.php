@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Groupe;
 
@@ -10,7 +11,6 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 
 class GroupeItemForm extends AbstractType
 {
@@ -26,19 +26,17 @@ class GroupeItemForm extends AbstractType
             'required' => false,
             'class' => Item::class,
             'choice_label' => 'identitereverse',
-            'query_builder' => static function (ItemRepository $er) {
-                return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC');
-            },
+            'query_builder' => static fn (ItemRepository $er) => $er->createQueryBuilder('i')->orderBy('i.label', 'ASC'),
         ]);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.Groupe::class,
+            'data_class' => Groupe::class,
         ]);
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,12 +18,13 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseTag', 'extended' => 'Tag'])]
 abstract class BaseTag
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 100, nullable: true)]
     protected string $nom;
 
+    /** @var Collection<int, Objet> */
     #[ORM\ManyToMany(targetEntity: Objet::class, mappedBy: 'tags')]
     protected Collection $objets;
 
@@ -88,6 +91,8 @@ abstract class BaseTag
 
     /**
      * Get Objet entity collection.
+     *
+     * @return Collection<int, Objet>
      */
     public function getObjets(): Collection
     {
@@ -95,7 +100,7 @@ abstract class BaseTag
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'nom'];
-    } */
+     * {
+     * return ['id', 'nom'];
+     * } */
 }

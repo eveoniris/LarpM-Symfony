@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Form\Entity\ListSearch;
@@ -8,7 +10,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UserFindForm extends AbstractType
 {
@@ -20,27 +21,27 @@ class UserFindForm extends AbstractType
         $builder->add('value', TextType::class, [
             'required' => true,
             'label' => 'Recherche',
-        ])
-            ->add('type', ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                   // TODO etatCivil.name? 'name' ,
-                    '*',
-                    'username',
-                    'roles',
-                    'email',
-                    'id',
-                ],
-                'choice_label' => static fn ($value) => match ($value) {
-                    '*' => 'Tout',
-                    'username' => 'Pseudo',
-                    'roles' => 'Roles',
-                    'name' => 'Nom',
-                    'email' => 'Email',
-                    'id' => 'ID',
-                },
-                'label' => 'Type',
-            ]);
+        ])->add('type', ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                // TODO etatCivil.name? 'name' ,
+                '*',
+                'username',
+                'roles',
+                'email',
+                'id',
+            ],
+            'choice_label' => static fn ($value) => match ($value) {
+                '*' => 'Tout',
+                'username' => 'Pseudo',
+                'roles' => 'Roles',
+                'name' => 'Nom',
+                'email' => 'Email',
+                'id' => 'ID',
+                default => (string) $value,
+            },
+            'label' => 'Type',
+        ]);
     }
 
     /**
@@ -60,7 +61,6 @@ class UserFindForm extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-
         $resolver->setDefaults([
             'data_class' => ListSearch::class,
         ]);

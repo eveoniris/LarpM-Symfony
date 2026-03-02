@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -23,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class BaseTechnologiesRessources
 {
     #[Id]
-    #[Column(type: Types::INTEGER, )]
+    #[Column(type: Types::INTEGER)]
     #[GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
@@ -33,11 +35,11 @@ class BaseTechnologiesRessources
     #[Assert\NotBlank]
     protected ?int $quantite = null;
 
-    #[ManyToOne(targetEntity: 'Technologie', cascade: ['persist'], inversedBy: 'technologieRessource')]
+    #[ManyToOne(targetEntity: Technologie::class, cascade: ['persist'], inversedBy: 'technologieRessource')]
     #[JoinColumn(name: 'technologie_id', referencedColumnName: 'id')]
     protected Technologie $technologie;
 
-    #[ManyToOne(targetEntity: 'Ressource', cascade: ['persist'], inversedBy: 'technologiesRessources')]
+    #[ManyToOne(targetEntity: Ressource::class, cascade: ['persist'], inversedBy: 'technologiesRessources')]
     #[JoinColumn(name: 'ressource_id', referencedColumnName: 'id')]
     protected Ressource $ressource;
 

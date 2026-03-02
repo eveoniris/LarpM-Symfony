@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enum;
 
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -19,6 +21,7 @@ enum VisibilityType: string
         return $this->getLabels()[$this->value] ?? '';
     }
 
+    /** @return array<string, string> */
     public function getLabels(): array
     {
         return [
@@ -28,7 +31,6 @@ enum VisibilityType: string
             self::GROUPE_OWNER->value => 'Seul le chef de groupe peut voir ceci',
             self::AUTHOR->value => 'Seul l\'auteur peut voir ceci',
         ];
-
     }
 
     public function isAuthor(): bool

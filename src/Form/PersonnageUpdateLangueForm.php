@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -29,9 +30,11 @@ class PersonnageUpdateLangueForm extends AbstractType
             'choice_label' => 'label',
             'label' => 'Choisissez les langues du personnage',
             'mapped' => false,
-            'query_builder' => static function (EntityRepository $repository) {
-                return $repository->createQueryBuilder('l')->addOrderBy('l.secret', 'ASC')->addOrderBy('l.diffusion', 'DESC')->addOrderBy('l.label', 'ASC');
-            },
+            'query_builder' => static fn (EntityRepository $repository) => $repository
+                ->createQueryBuilder('l')
+                ->addOrderBy('l.secret', 'ASC')
+                ->addOrderBy('l.diffusion', 'DESC')
+                ->addOrderBy('l.label', 'ASC'),
         ]);
     }
 

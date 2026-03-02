@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Background;
@@ -12,9 +14,9 @@ use App\Form\BackgroundForm;
 use App\Repository\BackgroundRepository;
 use App\Repository\GnRepository;
 use App\Repository\GroupeGnRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -31,28 +33,24 @@ class BackgroundController extends AbstractController
      */
     #[Route('/background/groupe/{groupe}/add', name: 'background.add')]
     #[IsGranted('ROLE_SCENARISTE')]
-    public function addAction(
-        Request $request,
-        #[MapEntity] Groupe $groupe,
-    ): RedirectResponse|Response {
+    public function addAction(Request $request, #[MapEntity] Groupe $groupe): RedirectResponse|Response
+    {
         $background = new Background();
         $background->setGroupe($groupe);
 
-        $form = $this->createForm(BackgroundForm::class, $background, ['groupeId' => $groupe->getId()])
-            ->add('visibility', EnumType::class, [
-                'required' => true,
-                'label' => 'Visibilité',
-                'choice_label' => 'label',
-                'class' => VisibilityType::class,
-                /*'choices' => [
-                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
-                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
-                    'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
-                    'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
-                    'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-                ],*/
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(BackgroundForm::class, $background, ['groupeId' => $groupe->getId()])->add('visibility', EnumType::class, [
+            'required' => true,
+            'label' => 'Visibilité',
+            'choice_label' => 'label',
+            'class' => VisibilityType::class,
+            /*'choices' => [
+             'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
+             'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
+             'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
+             'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
+             'Seul l\'auteur peut voir ceci' => 'AUTHOR',
+             ],*/
+        ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -78,10 +76,14 @@ class BackgroundController extends AbstractController
      */
     #[Route('/background/{background}/delete', name: 'background.delete')]
     #[IsGranted('ROLE_SCENARISTE')]
-    public function deleteAction(Request $request, EntityManagerInterface $entityManager, Background $background)
-    {
-        $form = $this->createForm(BackgroundDeleteForm::class, $background)
-            ->add('save', SubmitType::class, ['label' => 'Supprimer']);
+    public function deleteAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Background $background,
+    ): Response {
+        $form = $this->createForm(BackgroundDeleteForm::class, $background)->add('save', SubmitType::class, [
+            'label' => 'Supprimer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -127,7 +129,7 @@ class BackgroundController extends AbstractController
      */
     #[Route('/background', name: 'background.list')]
     #[IsGranted('ROLE_SCENARISTE')]
-    public function listAction(Request $request, EntityManagerInterface $entityManager)
+    public function listAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $order_by = $request->get('order_by') ?: 'id';
         $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
@@ -148,19 +150,9 @@ class BackgroundController extends AbstractController
         }
 
         $repo = $entityManager->getRepository(Background::class);
-        $backgrounds = $repo->findList(
-            $type,
-            $value,
-            ['by' => $order_by, 'dir' => $order_dir],
-            $limit,
-            $offset,
-        );
+        $backgrounds = $repo->findList((string) $type, $value, ['by' => $order_by, 'dir' => $order_dir], $limit, $offset);
 
-        $paginator = $repo->findPaginatedQuery(
-            $backgrounds,
-            $this->getRequestLimit(),
-            $this->getRequestPage(),
-        );
+        $paginator = $repo->findPaginatedQuery($backgrounds, $this->getRequestLimit(), $this->getRequestPage());
 
         return $this->render('background/list.twig', [
             'paginator' => $paginator,
@@ -173,14 +165,14 @@ class BackgroundController extends AbstractController
      */
     #[Route('/background/personnage/print', name: 'background.personnage.print')]
     #[IsGranted('ROLE_SCENARISTE')]
-    public function personnagePrintAction(GnRepository $gnRepository, GroupeGnRepository $groupeGnRepository)
+    public function personnagePrintAction(GnRepository $gnRepository, GroupeGnRepository $groupeGnRepository): Response
     {
         $gns = $gnRepository->findActive();
-        if (0 == count($gns)) {
+        if (0 == \count($gns)) {
             echo 'Erreur : Aucun GN actif trouvé. Veuillez activer le GN en préparation.';
             exit;
         }
-        if (count($gns) > 1) {
+        if (\count($gns) > 1) {
             echo "Erreur : Il ne peut pas y avoir plus d'un GN actif à la fois. Merci de désactiver le GN précédent.";
             exit;
         }
@@ -197,14 +189,14 @@ class BackgroundController extends AbstractController
      */
     #[Route('/background/print', name: 'background.print')]
     #[IsGranted('ROLE_SCENARISTE')]
-    public function printAction(GnRepository $gnRepository, BackgroundRepository $backgroundRepository)
+    public function printAction(GnRepository $gnRepository, BackgroundRepository $backgroundRepository): Response
     {
         $gns = $gnRepository->findActive();
-        if (0 == count($gns)) {
+        if (0 == \count($gns)) {
             echo 'Erreur : Aucun GN actif trouvé. Veuillez activer le GN en préparation.';
             exit;
         }
-        if (count($gns) > 1) {
+        if (\count($gns) > 1) {
             echo "Erreur : Il ne peut pas y avoir plus d'un GN actif à la fois. Merci de désactiver le GN précédent.";
             exit;
         }
@@ -221,29 +213,30 @@ class BackgroundController extends AbstractController
      */
     #[Route('/background/{background}/update', name: 'background.update')]
     #[IsGranted('ROLE_SCENARISTE')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, Background $background)
-    {
-        $form = $this->createForm(BackgroundForm::class, $background)
-            ->add('visibility', EnumType::class, [
-                'required' => true,
-                'label' => 'Visibilité',
-                'choice_label' => 'label',
-                'class' => VisibilityType::class,
-                /*'choices' => [
-                    'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
-                    'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
-                    'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
-                    'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
-                    'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-                ],*/
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Background $background,
+    ): Response {
+        $form = $this->createForm(BackgroundForm::class, $background)->add('visibility', EnumType::class, [
+            'required' => true,
+            'label' => 'Visibilité',
+            'choice_label' => 'label',
+            'class' => VisibilityType::class,
+            /*'choices' => [
+             'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
+             'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
+             'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
+             'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
+             'Seul l\'auteur peut voir ceci' => 'AUTHOR',
+             ],*/
+        ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $background = $form->getData();
-            $background->setUpdateDate(new \DateTime('NOW'));
+            $background->setUpdateDate(new DateTime('NOW'));
 
             $entityManager->persist($background);
             $entityManager->flush();

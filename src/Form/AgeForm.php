@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -21,23 +22,19 @@ class AgeForm extends AbstractType
     {
         $builder->add('label', TextType::class, [
             'required' => true,
-        ])
-            ->add('description', TextareaType::class, [
-                'required' => false,
-            ])
-            ->add('enableCreation', ChoiceType::class, [
-                'required' => true,
-                'choices' => ['Oui' => true, 'Non' => false],
-                'label' => 'Disponible lors de la création d\'un personnage',
-            ])
-            ->add('bonus', IntegerType::class, [
-                'label' => 'XP en bonus',
-                'required' => true,
-            ])
-            ->add('minimumValue', IntegerType::class, [
-                'label' => 'Age de départ',
-                'required' => true,
-            ]);
+        ])->add('description', TextareaType::class, [
+            'required' => false,
+        ])->add('enableCreation', ChoiceType::class, [
+            'required' => true,
+            'choices' => ['Oui' => true, 'Non' => false],
+            'label' => 'Disponible lors de la création d\'un personnage',
+        ])->add('bonus', IntegerType::class, [
+            'label' => 'XP en bonus',
+            'required' => true,
+        ])->add('minimumValue', IntegerType::class, [
+            'label' => 'Age de départ',
+            'required' => true,
+        ]);
     }
 
     /**

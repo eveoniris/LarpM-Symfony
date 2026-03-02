@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Entity\Personnage;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -36,7 +38,7 @@ class PersonnageUpdateDomaineForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\Personnage::class,
+            'data_class' => Personnage::class,
         ]);
     }
 

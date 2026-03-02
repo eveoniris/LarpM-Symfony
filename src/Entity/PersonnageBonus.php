@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
-use App\Enum\Status;
 use App\Repository\PersonnageBonusRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -28,7 +30,7 @@ class PersonnageBonus
     private ?Bonus $bonus = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $creation_date = null;
+    private ?DateTimeInterface $creation_date = null;
 
     #[ORM\Column(length: 36, nullable: true)]
     private ?string $status = null;
@@ -69,12 +71,12 @@ class PersonnageBonus
         return $this;
     }
 
-    public function getCreationDate(): ?\DateTimeInterface
+    public function getCreationDate(): ?DateTimeInterface
     {
         return $this->creation_date;
     }
 
-    public function setCreationDate(?\DateTimeInterface $creation_date): static
+    public function setCreationDate(?DateTimeInterface $creation_date): static
     {
         $this->creation_date = $creation_date;
 

@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping\Entity;
 use App\Repository\AgeRepository;
+use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
 #[Entity(repositoryClass: AgeRepository::class)]
-class Age extends BaseAge implements \Stringable
+class Age extends BaseAge implements Stringable
 {
     public function __toString(): string
     {
@@ -15,6 +18,6 @@ class Age extends BaseAge implements \Stringable
 
     public function getFullLabel(): string
     {
-        return $this->getLabel().' '.$this->getDescription();
+        return $this->getLabel() . ' ' . $this->getDescription();
     }
 }

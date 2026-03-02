@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Etat;
@@ -14,7 +16,7 @@ use App\Service\ImageOptimizer;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
-use JetBrains\PhpStorm\NoReturn;
+use RuntimeException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface as FormInterfaceAlias;
@@ -33,10 +35,8 @@ class StockObjetController extends AbstractController
      * Ajoute un objet.
      */
     #[Route('/stock/objet/add', name: 'stockObjet.add')]
-    public function addAction(
-        Request $request,
-        EntityManagerInterface $entityManager,
-    ): RedirectResponse|Response {
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    {
         $objet = new Objet();
 
         $objet->setNombre(1);
@@ -47,10 +47,11 @@ class StockObjetController extends AbstractController
             $objet->setEtat($etat);
         }
 
-        $form = $this->createForm(ObjetForm::class, $objet)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
-            ->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder et créer un nouveau'])
-            ->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
+        $form = $this->createForm(ObjetForm::class, $objet)->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder et fermer',
+        ])->add('save_continue', SubmitType::class, [
+            'label' => 'Sauvegarder et créer un nouveau',
+        ])->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
 
         $form->handleRequest($request);
 
@@ -58,13 +59,13 @@ class StockObjetController extends AbstractController
             /** @var Objet $objet */
             $objet = $this->handleObjetPost($form, $entityManager);
 
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('stockObjet.index', [], 303);
             }
-            if ($form->get('save_continue')->isClicked()) {
+            if ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('stockObjet.add', [], 303);
             }
-            if ($form->get('save_clone')->isClicked()) {
+            if ($form->get('save_clone') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_clone')->isClicked()) {
                 return $this->redirectToRoute('stockObjet.clone', ['objet' => $objet->getId()], 303);
             }
         }
@@ -84,11 +85,7 @@ class StockObjetController extends AbstractController
         }
 
         if ($objet->getPhoto()) {
-            $objet->getPhoto()->handleUpload(
-                $this->fileUploader,
-                $objet->getPhotosDocumentType(),
-                $objet->getPhotosFolderType(),
-            );
+            $objet->getPhoto()->handleUpload($this->fileUploader, $objet->getPhotosDocumentType(), $objet->getPhotosFolderType());
             $entityManager->persist($objet->getPhoto());
         }
 
@@ -107,27 +104,28 @@ class StockObjetController extends AbstractController
     public function cloneAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Objet $objet,
+        #[MapEntity]
+        Objet $objet,
     ): RedirectResponse|Response {
         $newObjet = clone $objet;
 
         $numero = $objet->getNumero();
         if ('' !== $numero && '0' !== $numero && is_numeric($numero)) {
-            $newObjet->setNumero(++$numero);
+            $newObjet->setNumero((string) ((int) $numero + 1));
         } else {
-            $newObjet->setNumero($numero.'_2');
+            $newObjet->setNumero($numero . '_2');
         }
 
-        $form = $this->createForm(ObjetForm::class, $newObjet)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
-            ->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
+        $form = $this->createForm(ObjetForm::class, $newObjet)->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder et fermer',
+        ])->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $newObjet = $this->handleObjetPost($form, $entityManager);
 
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('stockObjet.index', [], 303);
             }
 
@@ -144,7 +142,8 @@ class StockObjetController extends AbstractController
     public function deleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Objet $objet,
+        #[MapEntity]
+        Objet $objet,
     ): RedirectResponse|Response {
         $form = $this->createForm(ObjetDeleteForm::class, $objet);
         $form->handleRequest($request);
@@ -170,7 +169,8 @@ class StockObjetController extends AbstractController
     public function detailAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Objet $objet,
+        #[MapEntity]
+        Objet $objet,
     ): Response {
         return $this->render('stock/objet/detail.twig', ['objet' => $objet]);
     }
@@ -181,30 +181,22 @@ class StockObjetController extends AbstractController
     #[Route('/stock/objet/export', name: 'stockObjet.export')]
     public function exportAction(ObjetRepository $objetRepository): Response
     {
-        return $this->sendCsv(
-            'eveoniris_stock_'.date('Ymd'),
-            repository: $objetRepository,
-        );
+        return $this->sendCsv('eveoniris_stock_' . date('Ymd'), repository: $objetRepository);
     }
 
     /**
      * Affiche la liste des objets.
      */
     #[Route('/stock/objet', name: 'stockObjet.index')]
-    public function indexAction(
-        Request $request,
-        ObjetRepository $objetRepository,
-    ): Response {
+    public function indexAction(Request $request, ObjetRepository $objetRepository): Response
+    {
         $type = null;
         $value = null;
         $tag = null;
         $rangement = null;
 
         $objetSearch = new ObjetSearch();
-        $form = $this->createForm(
-            type: ObjetFindForm::class,
-            data: $objetSearch,
-        );
+        $form = $this->createForm(type: ObjetFindForm::class, data: $objetSearch);
 
         // TODO move photo from database to drive
 
@@ -228,44 +220,35 @@ class StockObjetController extends AbstractController
 
         $alias = ObjetRepository::getEntityAlias();
 
-        $orderBy = $this->getRequestOrder(
-            defOrderBy: 'nom',
-            alias: $alias,
-            allowedFields: $objetRepository->getFieldNames(),
-        );
+        $orderBy = $this->getRequestOrder(defOrderBy: 'nom', alias: $alias, allowedFields: $objetRepository->getFieldNames());
 
-        $query = $objetRepository->createQueryBuilder($alias)
-            ->orderBy(key($orderBy), current($orderBy));
+        $query = $objetRepository->createQueryBuilder($alias)->orderBy(key($orderBy), current($orderBy));
 
         $objetRepository->addTagCriteriaToQueryBuilder($tag, $query);
         $objetRepository->addRangementCriteriaToQueryBuilder($rangement, $query);
 
-        $query->leftJoin($alias.'.items', 'i');
-        $query->leftJoin($alias.'.photo', 'p');
+        $query->leftJoin($alias . '.items', 'i');
+        $query->leftJoin($alias . '.photo', 'p');
 
         if (!empty($value)) {
             if (empty($type) || '*' === $type) {
-                $query->orWhere($alias.'.id LIKE :value');
-                $query->orWhere($alias.'.numero LIKE :value');
+                $query->orWhere($alias . '.id LIKE :value');
+                $query->orWhere($alias . '.numero LIKE :value');
                 $query->orWhere('i.numero LIKE :value');
-                $query->orWhere($alias.'.nom LIKE :value');
-                $query->orWhere($alias.'.description LIKE :value');
+                $query->orWhere($alias . '.nom LIKE :value');
+                $query->orWhere($alias . '.description LIKE :value');
                 $query->orWhere('i.label LIKE :value');
-                $query->orWhere($alias.'.nom LIKE :value');
-                $query->orWhere($alias.'.description LIKE :value');
+                $query->orWhere($alias . '.nom LIKE :value');
+                $query->orWhere($alias . '.description LIKE :value');
                 $query->orWhere('i.label LIKE :value');
 
-                $query->setParameter('value', '%'.$value.'%');
+                $query->setParameter('value', '%' . $value . '%');
             } else {
-                $query->orWhere($query->expr()->like($alias.'.'.$type, "'%".$value."%'"));
+                $query->orWhere($query->expr()->like($alias . '.' . $type, "'%" . $value . "%'"));
             }
         }
 
-        $paginator = $objetRepository->findPaginatedQuery(
-            $query->getQuery(),
-            $this->getRequestLimit(25),
-            $this->getRequestPage(),
-        );
+        $paginator = $objetRepository->findPaginatedQuery($query->getQuery(), $this->getRequestLimit(25), $this->getRequestPage());
 
         return $this->render('stock/objet/list.twig', [
             'searchValue' => $value,
@@ -338,7 +321,8 @@ class StockObjetController extends AbstractController
     #[Route('/stock/objet/{objet}/photo', name: 'stockObjet.photo')]
     public function photoAction(
         Request $request,
-        #[MapEntity] Objet $objet,
+        #[MapEntity]
+        Objet $objet,
         ImageOptimizer $imageOptimizer,
     ): BinaryFileResponse|StreamedResponse {
         // PROD path https://larpmanager.eveoniris.com/stock/objet/1200/photo?miniature=1
@@ -353,7 +337,7 @@ class StockObjetController extends AbstractController
 
         $file = $photo->getFilename();
         $path = $objet->getPhotoFilePath($imageOptimizer->getProjectDirectory());
-        $filename = $path.$file;
+        $filename = $path . $file;
 
         if (!file_exists($filename)) {
             if (null === $photo->getData()) {
@@ -369,8 +353,8 @@ class StockObjetController extends AbstractController
 
         if ($miniature) {
             try {
-                $image = (new Imagine())->open($filename);
-            } catch (\RuntimeException $e) {
+                $image = new Imagine()->open($filename);
+            } catch (RuntimeException $e) {
                 return $this->sendNoImageAvailable();
             }
 
@@ -384,7 +368,7 @@ class StockObjetController extends AbstractController
         } else {
             $response = new BinaryFileResponse($filename);
             $response->headers->set('Content-Control', 'private');
-            $response->headers->set('Content-Type', 'image/'.$photo->getExtension());
+            $response->headers->set('Content-Type', 'image/' . $photo->getExtension());
         }
 
         return $response;
@@ -429,20 +413,21 @@ class StockObjetController extends AbstractController
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Objet $objet,
+        #[MapEntity]
+        Objet $objet,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ObjetForm::class, $objet)
-            ->add('update', SubmitType::class, ['label' => 'Sauvegarder et fermer'])
-            ->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(ObjetForm::class, $objet)->add('update', SubmitType::class, [
+            'label' => 'Sauvegarder et fermer',
+        ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $objet = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 $this->handleObjetPost($form, $entityManager, 'L\'objet a été mis à jour');
-            } elseif ($form->get('delete')->isClicked()) {
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 $entityManager->remove($objet);
                 $entityManager->flush();
                 $this->addFlash('success', 'L\'objet a été supprimé');

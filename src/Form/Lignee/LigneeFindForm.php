@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Lignee;
 
 use Symfony\Component\Form\AbstractType;
@@ -25,14 +27,13 @@ class LigneeFindForm extends AbstractType
             'attr' => [
                 'placeholder' => 'Votre recherche',
             ],
-        ])
-            ->add('type', ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                    'Nom de la lignée' => 'nom',
-                    'ID de la lignée' => 'id',
-                ],
-            ]);
+        ])->add('type', ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                'Nom de la lignée' => 'nom',
+                'ID de la lignée' => 'id',
+            ],
+        ]);
     }
 
     /**

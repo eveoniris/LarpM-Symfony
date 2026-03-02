@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Personnage;
-use App\Entity\PersonnageBonus;
-use App\Enum\BonusPeriode;
 use App\Repository\ExperienceGainRepository;
 use App\Repository\ExperienceUsageRepository;
 use App\Repository\LogActionRepository;
 use App\Repository\PersonnageRepository;
 use App\Repository\UserRepository;
+use App\Service\ConditionsService;
 use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
+use SplFileObject;
 use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseAlias;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,37 +28,7 @@ class AdminController extends AbstractController
     #[Route('/originebonus', name: 'originebonus')]
     public function bonusOrigineAction(PersonnageRepository $rep): void
     {
-        return; // will see if we set it from creation and register once
-        /** @var Personnage $personnage */
-        foreach ($rep->findBy(['vivant' => true]) as $personnage) {
-            if (!$territoire = $personnage->getTerritoire()) {
-                continue;
-            }
-            if (!$groupe = $personnage->getFirstParticipantGnGroupe()) {
-                continue;
-            }
-
-            if (!$origine = $groupe->getTerritoire()) {
-                continue;
-            }
-
-            if ($territoire->getId() !== $groupe->getTerritoire()?->getId()) {
-                continue;
-            }
-
-            foreach ($origine->getValideOrigineBonus() as $bonus) {
-                if (BonusPeriode::NATIVE === $bonus->getPeriode()) {
-                    $pBonus = new PersonnageBonus();
-                    $pBonus->setPersonnage($personnage);
-                    $pBonus->setBonus($bonus);
-                    $this->entityManager->persist($pBonus);
-                    $this->entityManager->flush($pBonus);
-                }
-            }
-        }
-
-        echo 'ok';
-        exit;
+        // will see if we set it from creation and register once
     }
 
     /**
@@ -65,7 +37,7 @@ class AdminController extends AbstractController
     #[Route('/admin/cache/empty', name: 'admin.cache.empty')]
     public function cacheEmptyAction(): RedirectResponseAlias
     {
-        shell_exec('php -d memory_limit=-1 '.__DIR__.'/../../bin/console cache:clear');
+        shell_exec('php -d memory_limit=-1 ' . __DIR__ . '/../../bin/console cache:clear');
 
         $this->addFlash('success', 'Le cache a été vidé.');
 
@@ -79,21 +51,21 @@ class AdminController extends AbstractController
     public function indexAction(): Response
     {
         $extensions = get_loaded_extensions();
-        $phpVersion = PHP_VERSION;
+        $phpVersion = \PHP_VERSION;
         $zendVersion = zend_version();
         $uploadMaxSize = $this->file_upload_max_size();
 
         // taille du cache
-        $cacheTotalSpace = $this->foldersize(__DIR__.'/../../var/cache');
+        $cacheTotalSpace = $this->foldersize(__DIR__ . '/../../var/cache');
         if ($cacheTotalSpace) {
             $cacheTotalSpace = $this->getSymbolByQuantity($cacheTotalSpace);
         }
 
         // taille du log
-        $logTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../var/log'));
+        $logTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__ . '/../../var/log'));
 
         // taille des documents
-        $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__.'/../../private/doc'));
+        $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__ . '/../../private/doc'));
 
         return $this->render('index.twig', [
             'phpVersion' => $phpVersion,
@@ -112,11 +84,11 @@ class AdminController extends AbstractController
 
         if ($max_size < 0) {
             // Start with post_max_size.
-            $max_size = $this->parse_size(ini_get('post_max_size'));
+            $max_size = $this->parse_size(\ini_get('post_max_size'));
 
             // If upload_max_size is less, then reduce. Except if upload_max_size is
             // zero, which indicates no limit.
-            $upload_max = $this->parse_size(ini_get('upload_max_filesize'));
+            $upload_max = $this->parse_size(\ini_get('upload_max_filesize'));
             if ($upload_max > 0 && $upload_max < $max_size) {
                 $max_size = $upload_max;
             }
@@ -127,42 +99,40 @@ class AdminController extends AbstractController
 
     /**
      * Met en forme une taille.
-     *
-     * @param unknown $size
      */
-    private function parse_size(string|bool $size): float
+    private function parse_size(string $size): float
     {
         $unit = preg_replace('/[^bkmgtpezy]/i', '', $size); // Remove the non-unit characters from the size.
-        $size = preg_replace('/[^0-9\.]/', '', $size); // Remove the non-numeric characters from the size.
+        $size = preg_replace('/[^0-9\.]/', '', $size) ?? ''; // Remove the non-numeric characters from the size.
         if ($unit) {
             // Find the position of the unit in the ordered string which is the power of magnitude to multiply a kilobyte by.
-            return round($size * (1024 ** stripos('bkmgtpezy', $unit[0])));
+            return round((float) $size * (1024 ** stripos('bkmgtpezy', $unit[0])));
         }
 
-        return round($size);
+        return round((float) $size);
     }
 
     /**
      * Calcul la taille d'un dossier.
-     *
-     * @param unknown $path
      */
     private function foldersize(string $path): int|float
     {
         $total_size = 0;
         $files = scandir($path);
-        $cleanPath = rtrim($path, '/').'/';
+        $cleanPath = rtrim($path, '/') . '/';
 
         foreach ($files as $t) {
-            if ('.' !== $t && '..' !== $t) {
-                $currentFile = $cleanPath.$t;
-                if (is_dir($currentFile)) {
-                    $size = $this->foldersize($currentFile);
-                    $total_size += $size;
-                } else {
-                    $size = filesize($currentFile);
-                    $total_size += $size;
-                }
+            if (!('.' !== $t && '..' !== $t)) {
+                continue;
+            }
+
+            $currentFile = $cleanPath . $t;
+            if (is_dir($currentFile)) {
+                $size = $this->foldersize($currentFile);
+                $total_size += $size;
+            } else {
+                $size = filesize($currentFile);
+                $total_size += $size;
             }
         }
 
@@ -172,12 +142,12 @@ class AdminController extends AbstractController
     /**
      * Simplifie une taille en bytes et fourni le symbole adequat.
      */
-    private function getSymbolByQuantity($bytes): string
+    private function getSymbolByQuantity(int $bytes): string
     {
         $symbols = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
         $exp = $bytes ? floor(log($bytes) / log(1024)) : 0;
 
-        return sprintf('%.2f '.$symbols[$exp], $bytes / pow(1024, floor($exp)));
+        return \sprintf('%.2f ' . $symbols[$exp], $bytes / (1024 ** floor($exp)));
     }
 
     /**
@@ -189,39 +159,35 @@ class AdminController extends AbstractController
         // TODO if ('prod' === $app['config']['env']['env']) {
         // $filename = __DIR__.'/../../../log/prod.log';
         // } else {
-        $filename = __DIR__.'/../../var/log/dev.log';
+        $filename = __DIR__ . '/../../var/log/dev.log';
         // }
 
-        $logfile = new \SplFileObject($filename);
+        $logfile = new SplFileObject($filename);
 
         $lines = [];
         $linesFatal = [];
 
         $handle = fopen($filename, 'r');
-        if ($logfile) {
-            $lineCount = 0;
-            while (!$logfile->eof()) {
-                $linetmp = $logfile->current();
-                if (str_contains($linetmp, 'CRITICAL')) {
-                    $linesFatal[] = $linetmp;
-                }
-
-                ++$lineCount;
-                $logfile->next();
+        $lineCount = 0;
+        while (!$logfile->eof()) {
+            $linetmp = $logfile->current();
+            if (str_contains($linetmp, 'CRITICAL')) {
+                $linesFatal[] = $linetmp;
             }
 
-            $start = $lineCount - 20;
-            if ($start < 0) {
-                $start = 0;
-            }
+            ++$lineCount;
+            $logfile->next();
+        }
 
-            $logfile->seek($start);
-            while (!$logfile->eof()) {
-                $lines[] = $logfile->current();
-                $logfile->next();
-            }
-        } else {
-            echo 'impossible d\'ouvrir '.$filename;
+        $start = $lineCount - 20;
+        if ($start < 0) {
+            $start = 0;
+        }
+
+        $logfile->seek($start);
+        while (!$logfile->eof()) {
+            $lines[] = $logfile->current();
+            $logfile->next();
         }
 
         $lines = array_reverse($lines);
@@ -239,8 +205,8 @@ class AdminController extends AbstractController
     #[Route('/admin/log/empty', name: 'admin.log.empty')]
     public function logEmptyAction(): RedirectResponseAlias
     {
-        file_put_contents(__DIR__.'/../../var/log/prod.log', '');
-        file_put_contents(__DIR__.'/../../var/log/dev.log', '');
+        file_put_contents(__DIR__ . '/../../var/log/prod.log', '');
+        file_put_contents(__DIR__ . '/../../var/log/dev.log', '');
 
         $this->addFlash('success', 'Les logs ont été vidés.');
 
@@ -250,19 +216,12 @@ class AdminController extends AbstractController
     #[Route('/admin/action/logs', name: 'admin.action.logs')]
     public function logsAction(Request $request, PagerService $pagerService, LogActionRepository $repository): Response
     {
-        $pagerService->setRequest($request)
-            ->setRepository($repository)
-            ->setLimit(50)
-            ->setDefaultOrdersBy(['id' => 'DESC']);
+        $pagerService->setRequest($request)->setRepository($repository)->setLimit(50)->setDefaultOrdersBy(['id' => 'DESC']);
 
-
-        return $this->render(
-            'admin/logAction.twig',
-            [
-                'paginator' => $repository->searchPaginated($pagerService),
-                'pagerService' => $pagerService,
-            ],
-        );
+        return $this->render('admin/logAction.twig', [
+            'paginator' => $repository->searchPaginated($pagerService),
+            'pagerService' => $pagerService,
+        ]);
     }
 
     /**
@@ -273,75 +232,63 @@ class AdminController extends AbstractController
     {
         $alias = 'u';
 
-        $orderBy = $this->getRequestOrder(
-            defOrderBy: 'email',
-            alias: $alias,
-            allowedFields: $repository->getFieldNames(),
-        );
+        $orderBy = $this->getRequestOrder(defOrderBy: 'email', alias: $alias, allowedFields: $repository->getFieldNames());
 
-        $paginator = $repository->getPaginator(
-            limit: $this->getRequestLimit(25),
-            page: $this->getRequestPage(),
-            orderBy: $orderBy,
-            alias: $alias,
-            criterias: [
-                Criteria::create()->where(
-                    Criteria::expr()?->isNull($alias.'.etatCivil'),
-                ),
-            ],
-        );
+        $paginator = $repository->getPaginator(limit: $this->getRequestLimit(25), page: $this->getRequestPage(), orderBy: $orderBy, alias: $alias, criterias: [
+            Criteria::create()->where(Criteria::expr()->isNull($alias . '.etatCivil')),
+        ]);
 
-        return $this->render(
-            'admin/rappels.twig',
-            ['paginator' => $paginator, 'orderDir' => $this->getRequestOrderDir()],
-        );
+        return $this->render('admin/rappels.twig', [
+            'paginator' => $paginator,
+            'orderDir' => $this->getRequestOrderDir(),
+        ]);
     }
 
     public function testConditions(
         PersonnageRepository $personnageRepository,
+        ConditionsService $conditionsService,
     ): Response {
-        $personnage = $personnageRepository->findBy(['id' => 4608]);
-        dump(
-            $this->conditionsService->isValidConditions(
-                $personnage,
+        /** @var Personnage|null $personnage */
+        $personnage = $personnageRepository->findOneBy(['id' => 4608]);
+        if (!$personnage) {
+            dd('NOT FOUND');
+        }
+
+        dump($conditionsService->isValidConditions(
+            $personnage,
+            [
+                'TYPE' => 'CLASSE',
+                'VALUE' => 21,
+            ],
+            $this,
+        ));
+
+        dump($conditionsService->isValidConditions(
+            $personnage,
+            [
                 [
                     'TYPE' => 'CLASSE',
                     'VALUE' => 21,
                 ],
-                $this,
-            ),
-        );
+            ],
+            $this,
+        ));
 
-        dump(
-            $this->conditionsService->isValidConditions(
-                $personnage,
+        dump($conditionsService->isValidConditions(
+            $personnage,
+            [
+                'AND',
                 [
-                    [
-                        'TYPE' => 'CLASSE',
-                        'VALUE' => 21,
-                    ],
+                    'TYPE' => 'CLASSE',
+                    'VALUE' => 21,
                 ],
-                $this,
-            ),
-        );
-
-        dump(
-            $this->conditionsService->isValidConditions(
-                $personnage,
                 [
-                    'AND',
-                    [
-                        'TYPE' => 'CLASSE',
-                        'VALUE' => 21,
-                    ],
-                    [
-                        'TYPE' => 'RELIGION',
-                        'VALUE' => 5,
-                    ],
+                    'TYPE' => 'RELIGION',
+                    'VALUE' => 5,
                 ],
-                $this,
-            ),
-        );
+            ],
+            $this,
+        ));
 
         dd('END');
     }
@@ -356,13 +303,10 @@ class AdminController extends AbstractController
         $pagerService->setRequest($request)->setRepository($experienceGainRepository)->setLimit(50);
         $pagerService->getOrderBy()->setDefaultOrderDir(OrderBy::DESC);
 
-        return $this->render(
-            'admin/xpGain.twig',
-            [
-                'pagerService' => $pagerService,
-                'paginator' => $experienceGainRepository->searchPaginated($pagerService),
-            ],
-        );
+        return $this->render('admin/xpGain.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $experienceGainRepository->searchPaginated($pagerService),
+        ]);
     }
 
     #[Route('/admin/xp/usage', name: 'xp.usage')]
@@ -372,18 +316,13 @@ class AdminController extends AbstractController
         PagerService $pagerService,
         ExperienceUsageRepository $experienceUsageRepository,
     ): Response {
-        $pagerService->setRequest($request)
-            ->setRepository($experienceUsageRepository)
-            ->setLimit(50);
+        $pagerService->setRequest($request)->setRepository($experienceUsageRepository)->setLimit(50);
 
         $pagerService->getOrderBy()->setDefaultOrderDir(OrderBy::DESC);
 
-        return $this->render(
-            'admin/xpUsage.twig',
-            [
-                'pagerService' => $pagerService,
-                'paginator' => $experienceUsageRepository->searchPaginated($pagerService),
-            ],
-        );
+        return $this->render('admin/xpUsage.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $experienceUsageRepository->searchPaginated($pagerService),
+        ]);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Item;
@@ -29,10 +31,7 @@ class ObjetController extends AbstractController
      */
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     #[Route('/{item}/delete', name: 'delete')]
-    public function deleteAction(
-        Request           $request,
-        #[MapEntity] Item $item,
-    ): RedirectResponseAlias|Response
+    public function deleteAction(Request $request, #[MapEntity] Item $item): RedirectResponseAlias|Response
     {
         $form = $this->createForm(ItemDeleteForm::class, $item);
 
@@ -60,9 +59,7 @@ class ObjetController extends AbstractController
     #[Route('/{item}/detail', name: 'detail', requirements: ['item' => Requirement::DIGITS])]
     #[Route('/objet/{item}/detail', name: 'objet.detail', requirements: ['item' => Requirement::DIGITS])] // Larp v1 route
     #[IsGranted(new MultiRolesExpression(Role::USER))]
-    public function detailAction(
-        #[MapEntity] Item $item,
-    ): Response
+    public function detailAction(#[MapEntity] Item $item): Response
     {
         // TODO RITUALISTE
         if (!$this->isGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))) {
@@ -98,10 +95,7 @@ class ObjetController extends AbstractController
      * Lier un objet de jeu à un groupe/personnage/lieu.
      */
     #[Route('/{item}/link', name: 'link')]
-    public function linkAction(
-        Request $request,
-        Item    $item,
-    ): RedirectResponseAlias|Response
+    public function linkAction(Request $request, Item $item): RedirectResponseAlias|Response
     {
         $form = $this->createForm(ItemLinkForm::class, $item);
 
@@ -134,10 +128,7 @@ class ObjetController extends AbstractController
      * Création d'un nouvel objet de jeu.
      */
     #[Route('/new/{objet}', name: 'new')]
-    public function newAction(
-        Request            $request,
-        #[MapEntity] Objet $objet,
-    ): RedirectResponseAlias|Response
+    public function newAction(Request $request, #[MapEntity] Objet $objet): RedirectResponseAlias|Response
     {
         $item = new Item();
         $item->setObjet($objet);
@@ -165,7 +156,7 @@ class ObjetController extends AbstractController
             $identification = $item->getIdentification();
             switch ($identification) {
                 case 1:
-                    $identification = sprintf('%02d', random_int(1, 10));
+                    $identification = \sprintf('%02d', random_int(1, 10));
                     $item->setIdentification($identification);
                     break;
                 case 11:
@@ -218,10 +209,7 @@ class ObjetController extends AbstractController
     #[Route('/print-csv', name: 'print-csv')]
     public function printCsvAction(ItemRepository $itemRepository): StreamedResponse
     {
-        return $this->sendCsv(
-            'eveoniris_game_item_' . date('Ymd'),
-            repository: $itemRepository,
-        );
+        return $this->sendCsv('eveoniris_game_item_' . date('Ymd'), repository: $itemRepository);
     }
 
     /**
@@ -239,10 +227,7 @@ class ObjetController extends AbstractController
      * Mise à jour d'un objet de jeu.
      */
     #[Route('/{item}/update', name: 'update')]
-    public function updateAction(
-        Request           $request,
-        #[MapEntity] Item $item,
-    ): RedirectResponseAlias|Response
+    public function updateAction(Request $request, #[MapEntity] Item $item): RedirectResponseAlias|Response
     {
         $form = $this->createForm(ItemForm::class, $item);
 
@@ -256,15 +241,15 @@ class ObjetController extends AbstractController
             $identification = $item->getIdentification();
             switch ($identification) {
                 case 1:
-                    $identification = sprintf('%02d', mt_rand(1, 10));
+                    $identification = \sprintf('%02d', random_int(1, 10));
                     $item->setIdentification($identification);
                     break;
                 case 11:
-                    $identification = mt_rand(11, 20);
+                    $identification = (string) random_int(11, 20);
                     $item->setIdentification($identification);
                     break;
                 case 81:
-                    $identification = mt_rand(81, 99);
+                    $identification = (string) random_int(81, 99);
                     $item->setIdentification($identification);
                     break;
             }

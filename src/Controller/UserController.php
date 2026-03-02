@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Annonce;
@@ -29,8 +31,11 @@ use App\Repository\UserRepository;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Carbon\Carbon;
+use DateTime;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
+use SensitiveParameter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -46,7 +51,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Requirement\Requirement;
-use Symfony\Component\Security\Core\Exception\DisabledException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 
@@ -55,26 +59,6 @@ class UserController extends AbstractController
     private bool $isEmailConfirmationRequired = true;
 
     private bool $isPasswordResetEnabled = true;
-
-    /**
-     * TODO
-     * Affiche le détail d'un billet d'un utilisateur.
-     */
-    public function UserHasBilletDetailAction(
-        EntityManagerInterface $entityManager,
-        Request $request,
-        UserHasBillet $UserHasBillet,
-    ): RedirectResponse|Response {
-        if ($UserHasBillet->getUser() != $this->getUser()) {
-            $this->addFlash('error', 'Vous ne pouvez pas acceder à cette information');
-
-            return $this->redirectToRoute('homepage', [], 303);
-        }
-
-        return $this->render('UserHasBillet/detail.twig', [
-            'UserHasBillet' => $UserHasBillet,
-        ]);
-    }
 
     /**
      * Liste des utilisateurs.
@@ -128,51 +112,31 @@ class UserController extends AbstractController
         if (!empty($value)) {
             if (empty($type) || '*' === $type) {
                 if (is_numeric($value)) {
-                    $criterias[] = Criteria::create()->where(
-                        Criteria::expr()?->contains($alias.'.id', $value),
-                    );
+                    $criterias[] = Criteria::create()->where(Criteria::expr()->contains($alias . '.id', $value));
                 } else {
-                    $criterias[] = Criteria::create()->where(
-                        Criteria::expr()?->contains($alias.'.username', $value),
-                    )->orWhere(
-                        Criteria::expr()?->contains($alias.'.email', $value),
-                    )->orWhere(
-                        Criteria::expr()?->contains($alias.'.roles', $value),
-                    )/*->orWhere(
-                        Criteria::expr()?->contains('ec'.'.nom', $value)
-                    )->orWhere(
-                        Criteria::expr()?->contains('ec'.'.prenom', $value)
-                    )*/
+                    $criterias[] = Criteria::create()
+                        ->where(Criteria::expr()->contains($alias . '.username', $value))
+                        ->orWhere(Criteria::expr()->contains($alias . '.email', $value))
+                        ->orWhere(Criteria::expr()->contains($alias . '.roles', $value))/*->orWhere(
+                     * Criteria::expr()?->contains('ec'.'.nom', $value)
+                     * )->orWhere(
+                     * Criteria::expr()?->contains('ec'.'.prenom', $value)
+                     * )*/
                     ;
                 }
             } else {
-                $criterias[] = Criteria::create()->andWhere(
-                    Criteria::expr()?->contains($alias.'.'.$type, $value),
-                );
+                $criterias[] = Criteria::create()->andWhere(Criteria::expr()->contains($alias . '.' . $type, $value));
             }
         }
 
-        $orderBy = $this->getRequestOrder(
-            defOrderBy: 'username',
-            alias: $alias,
-            allowedFields: $userRepository->getFieldNames(),
-        );
+        $orderBy = $this->getRequestOrder(defOrderBy: 'username', alias: $alias, allowedFields: $userRepository->getFieldNames());
 
-        $paginator = $userRepository->getPaginator(
-            limit: $this->getRequestLimit(),
-            page: $this->getRequestPage(),
-            orderBy: $orderBy,
-            alias: $alias,
-            criterias: $criterias,
-        );
+        $paginator = $userRepository->getPaginator(limit: $this->getRequestLimit(), page: $this->getRequestPage(), orderBy: $orderBy, alias: $alias, criterias: $criterias);
 
-        return $this->render(
-            'user/list.twig',
-            [
-                'paginator' => $paginator,
-                'form' => $form->createView(),
-            ],
-        );
+        return $this->render('user/list.twig', [
+            'paginator' => $paginator,
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
@@ -184,8 +148,9 @@ class UserController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
     ): RedirectResponse|Response {
-        $form = $this->createForm(UserNewForm::class, [])
-            ->add('save', SubmitType::class, ['label' => "Créer l'utilisateur"]);
+        $form = $this->createForm(UserNewForm::class, [])->add('save', SubmitType::class, [
+            'label' => "Créer l'utilisateur",
+        ]);
 
         $form->handleRequest($request);
 
@@ -225,12 +190,9 @@ class UserController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        return $this->render(
-            'user/new.twig',
-            [
-                'form' => $form->createView(),
-            ],
-        );
+        return $this->render('user/new.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
@@ -257,8 +219,10 @@ class UserController extends AbstractController
     #[Route('/user/{user}/confirm/{token}', name: 'user.confirm-email')]
     public function confirmEmailAction(
         EntityManagerInterface $entityManager,
-        $token,
-        #[MapEntity] User $user,
+        #[SensitiveParameter]
+        string $token,
+        #[MapEntity]
+        User $user,
         Security $security,
     ): RedirectResponse {
         if ($user->getConfirmationToken() !== $token) {
@@ -272,12 +236,7 @@ class UserController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-        $security->login(
-            $user,
-            'form_login',
-            'main',
-            [(new RememberMeBadge())->enable()],
-        );
+        $security->login($user, 'form_login', 'main', [new RememberMeBadge()->enable()]);
 
         $this->addFlash('alert', 'Merci ! Votre compte a été activé.');
 
@@ -293,7 +252,8 @@ class UserController extends AbstractController
     #[Route('/user/{user}/edit', name: 'user.edit')]
     public function editAction(
         Request $request,
-        #[MapEntity] ?User $user,
+        #[MapEntity]
+        ?User $user,
         UserPasswordHasherInterface $passwordHasher,
         UserRepository $repository,
     ): Response {
@@ -326,14 +286,11 @@ class UserController extends AbstractController
             }
 
             $roles = $request->request->all('roles');
-            if (
-                !empty($roles)
-                && $this->isGranted(User::ROLE_ADMIN)
-            ) {
+            if (!empty($roles) && $this->isGranted(User::ROLE_ADMIN)) {
                 $user->setRoles($roles);
 
                 $log = new LogAction();
-                $log->setDate(new \DateTime());
+                $log->setDate(new DateTime());
                 $log->setType(LogActionType::ENTITY_UPDATE);
                 $log->setUser($this->getUser());
                 $log->setData([
@@ -354,7 +311,7 @@ class UserController extends AbstractController
             if ([] === $errors) {
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
-                $msg = 'Saved account information.'.($request->request->get('password') ? ' Changed password.' : '');
+                $msg = 'Saved account information.' . ($request->request->get('password') ? ' Changed password.' : '');
                 $this->addFlash('alert', $msg);
             }
         }
@@ -364,16 +321,14 @@ class UserController extends AbstractController
             unset($availableLabels[Role::SUPER_ADMIN->value]);
         }
 
-        return $this->render(
-            'user/update.twig',
-            [
-                'error' => implode("\n", $errors),
-                'user' => $user,
-                'available_roles' => $availableLabels,
-            ],
-        );
+        return $this->render('user/update.twig', [
+            'error' => implode("\n", $errors),
+            'user' => $user,
+            'available_roles' => $availableLabels,
+        ]);
     }
 
+    /** @param array<int, Role> $roles */
     protected function hasAccess(User $user, array $roles = []): void
     {
         /** @var User $loggedUser */
@@ -394,8 +349,9 @@ class UserController extends AbstractController
             $etatCivil = new EtatCivil();
         }
 
-        $form = $this->createForm(EtatCivilForm::class, $etatCivil)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(EtatCivilForm::class, $etatCivil)->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ]);
 
         $form->handleRequest($request);
 
@@ -421,9 +377,8 @@ class UserController extends AbstractController
      * Affiche les informations de la fédéGN.
      */
     #[Route('/user/fedegn', name: 'user.fedegn')]
-    public function fedegnAction(
-        FedegnManager $fedegnManager,
-    ): Response {
+    public function fedegnAction(FedegnManager $fedegnManager): Response
+    {
         $etatCivil = $this->getUser()?->getEtatCivil();
 
         // $statutEtatCivil = $fedegnManager->test($etatCivil);
@@ -441,10 +396,7 @@ class UserController extends AbstractController
         ContainerBagInterface $params,
     ): RedirectResponse|Response {
         if (false !== $this->isGranted('ROLE_USER') && null !== $this->getUser()?->getId()) {
-            $this->addFlash(
-                'alert',
-                'Vous êtes déjà connecté',
-            );
+            $this->addFlash('alert', 'Vous êtes déjà connecté');
 
             return $this->redirectToRoute('user.view', ['user' => $this->getUser()?->getId()]);
         }
@@ -453,28 +405,17 @@ class UserController extends AbstractController
             throw new NotFoundHttpException('Password resetting is not enabled.');
         }
 
-        $form = $this->createForm(UserForgotPasswordForm::class, [])
-            ->add(
-                'save',
-                SubmitType::class,
-                [
-                    'label' => 'Envoyer une réinitialisation de votre mot de passe',
-                    'attr' => [
-                        'class' => 'btn btn-secondary',
-                    ],
-                ],
-            );
+        $form = $this->createForm(UserForgotPasswordForm::class, [])->add('save', SubmitType::class, [
+            'label' => 'Envoyer une réinitialisation de votre mot de passe',
+            'attr' => [
+                'class' => 'btn btn-secondary',
+            ],
+        ]);
 
         $form->handleRequest($request);
 
-        $email = $request->request->get(
-            'email',
-            $request->query->get(
-                'email',
-                $request->getSession()->get('_security.last_username'),
-            ),
-        );
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $email = $request->request->get('email', $request->query->get('email', $request->getSession()->get('_security.last_username')));
+        if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {
             $email = '';
         }
 
@@ -495,28 +436,18 @@ class UserController extends AbstractController
                 $entityManager->persist($user);
                 $entityManager->flush();
 
-                $url = $this->generateUrl(
-                    'user.reset-password',
-                    ['token' => $user->getConfirmationToken()],
-                    UrlGeneratorInterface::ABSOLUTE_URL,
-                );
+                $url = $this->generateUrl('user.reset-password', ['token' => $user->getConfirmationToken()], UrlGeneratorInterface::ABSOLUTE_URL);
 
-                $resetExpireAt = Carbon::createFromTimestamp($user->getTimePasswordResetRequested(), 'Europe/Paris')
-                    ->addSeconds($params->get('passwordTokenTTL'))
-                    ->format('Y-m-d H:i:s');
+                $resetExpireAt = Carbon::createFromTimestamp($user->getTimePasswordResetRequested(), 'Europe/Paris')->addSeconds($params->get('passwordTokenTTL'))->format('Y-m-d H:i:s');
                 $context = [
                     'resetUrl' => $url,
                     'resetExpireAt' => $resetExpireAt,
                 ];
-                $subject = $this->renderBlock(
-                    'user/email/forgotPassword.twig',
-                    'subject',
-                    $context,
-                ) ?: 'Mot de passe oublié';
+                $subject = $this->renderBlock('user/email/forgotPassword.twig', 'subject', $context);
                 $textBody = $this->renderBlock('user/email/forgotPassword.twig', 'body_text', $context);
                 $context['subject'] = $subject;
 
-                $email = (new TemplatedEmail())
+                $email = new TemplatedEmail()
                     ->to($user->getEmail())
                     ->subject($subject->getContent())
                     // TODo ->locale($user->getLocal())
@@ -525,10 +456,7 @@ class UserController extends AbstractController
                     ->context($context);
                 $mailer->send($email);
 
-                $this->addFlash(
-                    'alert',
-                    'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.',
-                );
+                $this->addFlash('alert', 'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.');
                 $request->getSession()->get('_security.last_username', $email);
 
                 return $this->redirectToRoute('app_login');
@@ -551,8 +479,7 @@ class UserController extends AbstractController
     #[Route('/user/{gn}/participe', name: 'user.gn.participe')]
     public function gnParticipeAction(Request $request, Gn $gn): RedirectResponse|Response
     {
-        $form = $this->createFormBuilder($gn)
-            ->getForm();
+        $form = $this->createFormBuilder($gn)->getForm();
 
         $form->handleRequest($request);
 
@@ -562,13 +489,13 @@ class UserController extends AbstractController
             $participant->setGn($gn);
 
             if ($gn->getBesoinValidationCi()) {
-                $participant->setValideCiLe(new \DateTime('NOW'));
+                $participant->setValideCiLe(new DateTime('NOW'));
             }
 
             $this->entityManager->persist($participant);
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Vous participez maintenant à '.$gn->getLabel().' !');
+            $this->addFlash('success', 'Vous participez maintenant à ' . $gn->getLabel() . ' !');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -591,12 +518,12 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid() && 'ok' === $request->request->get('acceptCi')) {
             $participant = $this->getUser()?->getParticipant($gn);
-            $participant->setValideCiLe(new \DateTime('NOW'));
+            $participant->setValideCiLe(new DateTime('NOW'));
 
             $this->entityManager->persist($participant);
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Vous avez validé les condition d\'inscription pour '.$gn->getLabel().' !');
+            $this->addFlash('success', 'Vous avez validé les condition d\'inscription pour ' . $gn->getLabel() . ' !');
 
             return $this->redirectToRoute('homepage', [], 303);
         }
@@ -611,10 +538,7 @@ class UserController extends AbstractController
     public function likeAction(User $user): RedirectResponse
     {
         if ($user === $this->getUser()) {
-            $this->addFlash(
-                'error',
-                'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !',
-            );
+            $this->addFlash('error', 'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !');
         } else {
             $user->addCoeur();
             $this->entityManager->persist($user);
@@ -623,31 +547,7 @@ class UserController extends AbstractController
             $this->addFlash('success', 'Votre coeur a été envoyé !');
         }
 
-        return $this->redirectToRoute('User.view', ['id' => $User->getId()]);
-    }
-
-    public function loginAction(EntityManagerInterface $entityManager, Request $request): Response
-    {
-        $authException = $app['User.last_auth_exception']($request);
-
-        if ($authException instanceof DisabledException) {
-            // This exception is thrown if (!$User->isEnabled())
-            // Warning: Be careful not to disclose any User information besides the email address at this point.
-            // The Security system throws this exception before actually checking if the password was valid.
-            $User = $app['User.manager']->refreshUser($authException->getUser());
-
-            return $this->render('user/login-confirmation-needed.twig', [
-                'email' => $User->getEmail(),
-                'fromAddress' => $app['User.mailer']->getFromAddress(),
-                'resendUrl' => $app['url_generator']->generate('User.resend-confirmation'),
-            ]);
-        }
-
-        return $this->render('user/login.twig', [
-            'error' => $authException ? $authException->getMessageKey() : null,
-            'last_Username' => $app['session']->get('_security.last_Username'),
-            'allowRememberMe' => isset($app['security.remember_me.response_listener']),
-        ]);
+        return $this->redirectToRoute('User.view', ['id' => $user->getId()]);
     }
 
     #[Route('/user/new/step1', name: 'user.new-step1')]
@@ -679,12 +579,10 @@ class UserController extends AbstractController
             $etatCivil = new EtatCivil();
         }
 
-        $form = $this->createForm(EtatCivilForm::class, $etatCivil)
-            ->add(
-                'valider',
-                SubmitType::class,
-                ['label' => 'Étape suivante', 'attr' => ['class' => 'btn btn-secondary']],
-            );
+        $form = $this->createForm(EtatCivilForm::class, $etatCivil)->add('valider', SubmitType::class, [
+            'label' => 'Étape suivante',
+            'attr' => ['class' => 'btn btn-secondary'],
+        ]);
 
         $form->handleRequest($request);
 
@@ -704,15 +602,12 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/new/step3', name: 'user.new-step3')]
-    public function newUserStep3Action(
-        Request $request,
-    ): RedirectResponse|Response {
-        $form = $this->createForm(UserRestrictionForm::class, $this->getUser())
-            ->add(
-                'valider',
-                SubmitType::class,
-                ['label' => 'Étape suivante', 'attr' => ['class' => 'btn btn-secondary']],
-            );
+    public function newUserStep3Action(Request $request): RedirectResponse|Response
+    {
+        $form = $this->createForm(UserRestrictionForm::class, $this->getUser())->add('valider', SubmitType::class, [
+            'label' => 'Étape suivante',
+            'attr' => ['class' => 'btn btn-secondary'],
+        ]);
 
         $form->handleRequest($request);
 
@@ -755,8 +650,10 @@ class UserController extends AbstractController
     public function personnageDefaultAction(Request $request, #[MapEntity] User $user): RedirectResponse|Response
     {
         $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
-        $form = $this->createForm(UserPersonnageDefaultForm::class, $user, ['user_id' => $user->getId(), 'secondaire_id' => (int) $user->getPersonnageSecondaire()?->getId()])
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(UserPersonnageDefaultForm::class, $user, [
+            'user_id' => $user->getId(),
+            'secondaire_id' => (int) $user->getPersonnageSecondaire()?->getId(),
+        ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -789,13 +686,17 @@ class UserController extends AbstractController
 
         $principalIds = null;
         foreach ($user->getParticipants() as $participant) {
-            if ($persoId = $participant->getPersonnage()?->getId()) {
-                $principalIds[] = $persoId;
+            if (!($persoId = $participant->getPersonnage()?->getId())) {
+                continue;
             }
+
+            $principalIds[] = $persoId;
         }
 
-        $form = $this->createForm(UserPersonnageSecondaireForm::class, $user, ['user_id' => $user->getId(), 'principal_ids' => $principalIds])
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(UserPersonnageSecondaireForm::class, $user, [
+            'user_id' => $user->getId(),
+            'principal_ids' => $principalIds,
+        ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -815,7 +716,8 @@ class UserController extends AbstractController
 
     #[Route('/user/{user}/personage/list', name: 'user.personnage.list')]
     public function personnagesListAction(
-        #[MapEntity] User $user,
+        #[MapEntity]
+        User $user,
         Request $request,
         PagerService $pagerService,
         PersonnageRepository $personnageRepository,
@@ -825,10 +727,7 @@ class UserController extends AbstractController
 
         $pagerService->setRequest($request)->setLimit(25)->setRepository($personnageRepository);
 
-        $queryBuilder = $personnageRepository->user(
-            $personnageRepository->createQueryBuilder($personnageRepository->getAlias()),
-            $user
-        );
+        $queryBuilder = $personnageRepository->user($personnageRepository->createQueryBuilder($personnageRepository->getAlias()), $user);
 
         return $this->render('user/personnages.twig', [
             'pagerService' => $pagerService,
@@ -841,7 +740,8 @@ class UserController extends AbstractController
     #[Route('/user/{user}/personnage/add', name: 'user.personnage.add')]
     public function personnagesAddAction(
         Request $request,
-        #[MapEntity] User $user,
+        #[MapEntity]
+        User $user,
         PersonnageService $personnageService,
         PersonnageRepository $personnageRepository,
     ): RedirectResponse|Response {
@@ -851,11 +751,7 @@ class UserController extends AbstractController
 
         // Check if user can create new personnage, admin always can
         if (!$this->can(self::IS_ADMIN) && PersonnageService::MAX_PER_USER <= $personnageRepository->countUser($user)) {
-            $form->addError(
-                new FormError(
-                    'Vous avez atteind le nombre maximum de personnage possible',
-                ),
-            );
+            $form->addError(new FormError('Vous avez atteind le nombre maximum de personnage possible'));
             $this->addFlash('error', 'Vous avez atteind le nombre maximum de personnage possible');
 
             return $this->redirectToRoute('user.self', [], 303);
@@ -867,14 +763,14 @@ class UserController extends AbstractController
             $personnage = $personnageService->createNewPersonnage($form, $user);
             if ($personnage->getId() > 0) {
                 return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-            } else {
-                $this->addFlash($form->getErrors());
             }
+            $this->addFlash('error', (string) $form->getErrors(true));
         }
 
         return $this->render('personnage/add.twig', [
             'form' => $form->createView(),
         ]);
+
         // $this->redirectToRoute('personnage.add');
     }
 
@@ -897,53 +793,38 @@ class UserController extends AbstractController
                 // Validate the password
                 $password = $user->getPassword();
                 if ($password !== $form->get('confirm_password')->getData()) {
-                    $form->get('confirm_password')
-                        ->addError(new FormError("Passwords don't match."));
+                    $form->get('confirm_password')->addError(new FormError("Passwords don't match."));
                 }
 
                 if ($error = $user->validatePasswordStrength($password)) {
-                    $form->get('pwd')
-                        ->addError(new FormError($error));
+                    $form->get('pwd')->addError(new FormError($error));
                 }
 
-                if ($form->isValid()) {
-                    $hashedPassword = $passwordHasher->hashPassword(
-                        $user,
-                        $password,
-                    );
-                    $user->setPassword($hashedPassword);
+                $hashedPassword = $passwordHasher->hashPassword($user, $password);
+                $user->setPassword($hashedPassword);
 
-                    if ($this->isEmailConfirmationRequired) {
-                        $user->setEnabled(false);
-                        $user->setConfirmationToken($user->generateToken());
-                    }
-
-                    $this->entityManager->persist($user);
-                    $this->entityManager->flush();
-
-                    if ($this->isEmailConfirmationRequired) {
-                        $this->mailer->sendConfirmEmail($user);
-
-                        // Render the "go check your email" page.
-                        return $this->render('user/register-confirmation-sent.twig', [
-                            'email' => $user->getEmail(),
-                        ]);
-                    }
-
-                    $security->login(
-                        $user,
-                        'form_login',
-                        'main',
-                        [(new RememberMeBadge())->enable()],
-                    );
-                    $this->addFlash(
-                        'success',
-                        'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage',
-                    );
-
-                    return $this->redirectToRoute('homepage');
+                if ($this->isEmailConfirmationRequired) {
+                    $user->setEnabled(false);
+                    $user->setConfirmationToken($user->generateToken());
                 }
-            } catch (\InvalidArgumentException $e) {
+
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+
+                if ($this->isEmailConfirmationRequired) {
+                    $this->mailer->sendConfirmEmail($user);
+
+                    // Render the "go check your email" page.
+                    return $this->render('user/register-confirmation-sent.twig', [
+                        'email' => $user->getEmail(),
+                    ]);
+                }
+
+                $security->login($user, 'form_login', 'main', [new RememberMeBadge()->enable()]);
+                $this->addFlash('success', 'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage');
+
+                return $this->redirectToRoute('homepage');
+            } catch (InvalidArgumentException $e) {
                 $error = $e->getMessage();
             }
         }
@@ -962,34 +843,11 @@ class UserController extends AbstractController
      *
      * @throws NotFoundHttpException
      */
-    public function resendConfirmationAction(EntityManagerInterface $entityManager, Request $request): Response
-    {
-        $email = $request->request->get('email');
-
-        $repo = $entityManager->getRepository(User::class);
-        $User = $repo->findOneByEmail($email);
-
-        if (!$User) {
-            throw new NotFoundHttpException('Aucun compte n\'a été trouvé avec cette adresse email.');
-        }
-
-        if (!$User->getConfirmationToken()) {
-            $User->setConfirmationToken($app['User.tokenGenerator']->generateToken());
-            $entityManager->persist($User);
-            $entityManager->flush();
-        }
-
-        $app['User.mailer']->sendConfirmationMessage($User);
-
-        return $this->render('user/register-confirmation-sent.twig', [
-            'email' => $User->getEmail(),
-        ]);
-    }
-
     #[Route('/user/reset-password/{token}', name: 'user.reset-password')]
     public function resetPasswordAction(
         UserRepository $userRepository,
         Request $request,
+        #[SensitiveParameter]
         string $token,
         ContainerBagInterface $params,
         UserPasswordHasherInterface $passwordHasher,
@@ -999,17 +857,12 @@ class UserController extends AbstractController
             throw new NotFoundHttpException('Password resetting is not enabled.');
         }
 
-        $form = $this->createForm(UserNewPasswordForm::class, [])
-            ->add(
-                'save',
-                SubmitType::class,
-                [
-                    'label' => 'Modifier',
-                    'attr' => [
-                        'class' => 'btn btn-secondary',
-                    ],
-                ],
-            );
+        $form = $this->createForm(UserNewPasswordForm::class, [])->add('save', SubmitType::class, [
+            'label' => 'Modifier',
+            'attr' => [
+                'class' => 'btn btn-secondary',
+            ],
+        ]);
 
         $form->handleRequest($request);
 
@@ -1033,19 +886,17 @@ class UserController extends AbstractController
                 $error = "Passwords don't match.";
             }
 
-            $error ??= $user->validatePasswordStrength($password);
+            $error = $error ?: $user->validatePasswordStrength($password);
 
             if (!$error) {
                 // Set the password and log in.
-                $hashedPassword = $passwordHasher->hashPassword(
-                    $user,
-                    $password,
-                );
+                $hashedPassword = $passwordHasher->hashPassword($user, $password);
 
                 // First set : importing from VA
                 $roles = $user->getRoles();
-                if (empty($user->getPwd()) && $rights = explode(',', $user->getRights())) {
+                if (empty($user->getPwd())) {
                     // Get role from V1
+                    $rights = explode(',', $user->getRights());
                     foreach ($rights as $right) {
                         if (empty($right)) {
                             continue;
@@ -1064,12 +915,7 @@ class UserController extends AbstractController
 
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
-                $security->login(
-                    $user,
-                    'form_login',
-                    'main',
-                    [(new RememberMeBadge())->enable()],
-                );
+                $security->login($user, 'form_login', 'main', [new RememberMeBadge()->enable()]);
                 $this->addFlash('alert', 'Your password has been reset and you are now signed in.');
 
                 return $this->redirectToRoute('user.view', ['user' => $user->getId()]);
@@ -1090,8 +936,9 @@ class UserController extends AbstractController
     #[Route('/user/restriction', name: 'user.restriction')]
     public function restrictionAction(Request $request): RedirectResponse|Response
     {
-        $form = $this->createForm(UserRestrictionForm::class, $this->getUser())
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(UserRestrictionForm::class, $this->getUser())->add('save', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ]);
 
         $form->handleRequest($request);
 
@@ -1124,12 +971,12 @@ class UserController extends AbstractController
      * TODO
      * Affiche la liste des billets de l'utilisateur.
      */
-    public function userHasBilletListAction(EntityManagerInterface $entityManager, Request $request): Response
+    public function userHasBilletListAction(): Response
     {
-        $UserHasBillets = $this->getUser()->getUserHasBillets();
+        $userHasBillets = $this->getUser()?->getUserHasBillets();
 
-        return $this->render('UserHasBillet/list.twig', [
-            'UserHasBillets' => $UserHasBillets,
+        return $this->render('userHasBillet/list.twig', [
+            'UserHasBillets' => $userHasBillets,
         ]);
     }
 
@@ -1158,15 +1005,8 @@ class UserController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        return $this->forward(
-            'App\Controller\UserController::viewAction',
-            [
-                'id' => $user->getId(),
-            ],
-        );
+        return $this->forward('App\Controller\UserController::viewAction', [
+            'id' => $user->getId(),
+        ]);
     }
 }

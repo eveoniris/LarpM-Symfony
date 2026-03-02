@@ -1,9 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Repository;
-
-use Doctrine\ORM\EntityRepository;
 
 /**
  * LarpManager\Repository\LangueRepository.
@@ -14,25 +13,19 @@ class LangueRepository extends BaseRepository
 {
     /**
      * Find all visible langues ordered by label.
-     *
-     * @return ArrayCollection $langues
      */
-    public function findAllVisibleOrderedByLabel()
+    /** @return array<int, \App\Entity\Langue> */
+    public function findAllVisibleOrderedByLabel(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT l FROM App\Entity\Langue l WHERE (l.secret = 0 or l.secret IS NULL) ORDER BY l.label ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT l FROM App\Entity\Langue l WHERE (l.secret = 0 or l.secret IS NULL) ORDER BY l.label ASC')->getResult();
     }
 
     /**
      * Find all langues ordered by label.
-     *
-     * @return ArrayCollection $langues
      */
-    public function findAllOrderedByLabel()
+    /** @return array<int, \App\Entity\Langue> */
+    public function findAllOrderedByLabel(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT l FROM App\Entity\Langue l ORDER BY l.secret ASC, l.label ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT l FROM App\Entity\Langue l ORDER BY l.secret ASC, l.label ASC')->getResult();
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -8,13 +9,12 @@ use App\Entity\Langue;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\File;
 
 /**
  * LarpManager\Form\LangueForm.
@@ -33,10 +33,11 @@ class LangueForm extends AbstractType
             $documentLabel = 'Téléversez un nouveau document PDF (abécédaire) pour remplacer le document existant';
         }
 
-        $builder->add('label', TextType::class, [
-            'label' => 'Label',
-            'required' => true,
-        ])
+        $builder
+            ->add('label', TextType::class, [
+                'label' => 'Label',
+                'required' => true,
+            ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
                 'required' => false,
@@ -59,9 +60,7 @@ class LangueForm extends AbstractType
                 'required' => true,
                 'class' => GroupeLangue::class,
                 'choice_label' => 'label',
-                'query_builder' => static function (EntityRepository $er) {
-                    return $er->createQueryBuilder('i')->orderBy('i.label', 'ASC');
-                },
+                'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('i')->orderBy('i.label', 'ASC'),
             ])
             ->add('secret', ChoiceType::class, [
                 'label' => 'Secret',
@@ -77,14 +76,14 @@ class LangueForm extends AbstractType
                 'mapped' => false,
                 'attr' => ['accept' => '.pdf'],
                 /* 'constraints' => [
-                    new File([
-                        'mimeTypes' => [
-                            'application/pdf',
-                            'application/x-pdf',
-                        ],
-                        'mimeTypesMessage' => 'Veuillez choisir un document PDF valide.',
-                    ])
-                ],*/
+                 * new File([
+                 * 'mimeTypes' => [
+                 * 'application/pdf',
+                 * 'application/x-pdf',
+                 * ],
+                 * 'mimeTypesMessage' => 'Veuillez choisir un document PDF valide.',
+                 * ])
+                 * ],*/
             ]);
     }
 

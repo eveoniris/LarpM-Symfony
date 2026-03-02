@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,6 +14,7 @@ class Localisation extends BaseLocalisation
     /**
      * Retourne la liste de tous les objets dans cette localisation.
      */
+    /** @return Collection<int, Objet> */
     public function objets(): Collection
     {
         $objets = [];

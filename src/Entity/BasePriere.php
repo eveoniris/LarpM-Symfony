@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BasePriere', 'extended' => 'Priere'])]
 abstract class BasePriere
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -40,6 +42,7 @@ abstract class BasePriere
     #[ORM\JoinColumn(name: 'sphere_id', referencedColumnName: 'id')]
     protected Sphere $sphere;
 
+    /** @var Collection<int, Personnage> */
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'prieres')]
     protected Collection $personnages;
 
@@ -53,6 +56,7 @@ abstract class BasePriere
      */
     public function addPersonnage(Personnage $personnage): static
     {
+        /* @phpstan-ignore argument.type */
         $personnage->addPriere($this);
         $this->personnages[] = $personnage;
 
@@ -171,6 +175,8 @@ abstract class BasePriere
 
     /**
      * Get Personnage entity collection.
+     *
+     * @return Collection<int, Personnage>
      */
     public function getPersonnages(): Collection
     {
@@ -200,6 +206,7 @@ abstract class BasePriere
      */
     public function removePersonnage(Personnage $personnage): static
     {
+        /* @phpstan-ignore argument.type */
         $personnage->removePriere($this);
         $this->personnages->removeElement($personnage);
 

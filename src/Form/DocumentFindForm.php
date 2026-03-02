@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,52 +27,47 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * LarpManager\Form\DocumentFindForm
+ * LarpManager\Form\DocumentFindForm.
  *
  * @author Gectou4
- *
  */
 class DocumentFindForm extends AbstractType
 {
-	/**
-	 * Construction du formulaire
-	 * 
-	 * @param FormBuilderInterface $builder
-	 * @param array $options
-	 */
-	public function buildForm(FormBuilderInterface $builder, array $options): void
-	{
-		$builder->add('value',\Symfony\Component\Form\Extension\Core\Type\TextType::class, array(
-					'required' => true,	
-					'label' => 'Recherche',
-				))
-				->add('type',\Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, array(
-					'required' => true,
-					'choices' => array(
-						'Titre' => 'titre',
-                        'Code' => 'code',
-                        'Créateur' => 'auteur',
-                        'Description' => 'description',
-						'ID' => 'id',
-					),
-					'label' => 'Type',
-				));
-	}
-	
-	/**
-	 * Définition de l'entité concernée
-	 * 
-	 * @param OptionsResolverInterface $resolver
-	 */
-	public function configureOptions(OptionsResolver $resolver): void
-	{
-	}
-	
-	/**
-	 * Nom du formulaire
-	 */
-	public function getName(): string
-	{
-		return 'documentFind';
-	}
+    /**
+     * Construction du formulaire.
+     *
+     * @param array<string, mixed> $options
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            'required' => true,
+            'label' => 'Recherche',
+        ])->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                'Titre' => 'titre',
+                'Code' => 'code',
+                'Créateur' => 'auteur',
+                'Description' => 'description',
+                'ID' => 'id',
+            ],
+            'label' => 'Type',
+        ]);
+    }
+
+    /**
+     * Définition de l'entité concernée.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+    public function getName(): string
+    {
+        return 'documentFind';
+    }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Type;
 
 use App\Entity\Proprietaire;
@@ -12,10 +14,9 @@ class ProprietaireType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', TextType::class)
-            ->add('adresse', TextType::class, ['required' => false])
-            ->add('mail', TextType::class, ['required' => false])
-            ->add('tel', TextType::class, ['required' => false]);
+        $builder->add('nom', TextType::class)->add('adresse', TextType::class, [
+            'required' => false,
+        ])->add('mail', TextType::class, ['required' => false])->add('tel', TextType::class, ['required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

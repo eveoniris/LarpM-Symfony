@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\DocumentType;
@@ -22,7 +24,8 @@ class Potion extends BasePotion
 
     public function initFile(): static
     {
-        return $this->setDocumentType(DocumentType::Doc)
+        return $this
+            ->setDocumentType(DocumentType::Doc)
             ->setFolderType(FolderType::Private)
             // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
             ->setFilenameMaxLength(45 - 24 - 4);
@@ -30,16 +33,13 @@ class Potion extends BasePotion
 
     public function getFullLabel(): string
     {
-        return $this->getNumero().' - '.$this->getLabel().' - Niveau '.$this->getNiveau();
+        return $this->getNumero() . ' - ' . $this->getLabel() . ' - Niveau ' . $this->getNiveau();
     }
 
+    /** @return string|array<int, string>|null */
     public function getPrintLabel(): string|array|null
     {
-        return preg_replace(
-            '/[^a-z0-9]+/',
-            '_',
-            strtolower($this->getNumero().'_'.$this->getLabel().'_'.$this->getNiveau()),
-        );
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->getNumero() . '_' . $this->getLabel() . '_' . $this->getNiveau()));
     }
 
     protected function afterUpload(FileUploader $fileUploader): FileUploader
@@ -51,6 +51,6 @@ class Potion extends BasePotion
 
     public function getDocument(string $projectDir): string
     {
-        return $this->getDocumentFilePath($projectDir).$this->getDocumentUrl();
+        return $this->getDocumentFilePath($projectDir) . $this->getDocumentUrl();
     }
 }

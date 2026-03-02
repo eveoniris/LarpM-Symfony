@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -30,7 +32,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseBillet', 'extended' => 'Qualite'])]
 abstract class BaseQualite
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
@@ -39,10 +41,12 @@ abstract class BaseQualite
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $numero = null;
 
+    /** @var Collection<int, Item> */
     #[OneToMany(mappedBy: 'qualite', targetEntity: Item::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'qualite_id', nullable: false)]
     protected Collection $items;
 
+    /** @var Collection<int, QualiteValeur> */
     #[OneToMany(mappedBy: 'qualite', targetEntity: QualiteValeur::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'qualite_id', nullable: false)]
     protected Collection $qualiteValeurs;
@@ -129,6 +133,8 @@ abstract class BaseQualite
 
     /**
      * Get Item entity collection (one to many).
+     *
+     * @return Collection<int, Item>
      */
     public function getItems(): Collection
     {
@@ -157,6 +163,8 @@ abstract class BaseQualite
 
     /**
      * Get QualiteValeur entity collection (one to many).
+     *
+     * @return Collection<int, QualiteValeur>
      */
     public function getQualiteValeurs(): Collection
     {
@@ -164,7 +172,7 @@ abstract class BaseQualite
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'numero'];
-    } */
+     * {
+     * return ['id', 'label', 'numero'];
+     * } */
 }

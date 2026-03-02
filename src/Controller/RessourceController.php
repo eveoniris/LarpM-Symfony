@@ -1,20 +1,21 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Controller;
 
-use Doctrine\ORM\Query;
 use App\Entity\Ressource;
 use App\Form\RessourceForm;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
 class RessourceController extends AbstractController
 {
     /**
@@ -22,11 +23,10 @@ class RessourceController extends AbstractController
      * GET /api/ressource.
      */
     #[Route('/api/ressource', name: 'api.ressource')]
-    public function apiListAction(Request $request,  EntityManagerInterface $entityManager): JsonResponse
+    public function apiListAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $qb = $entityManager->createQueryBuilder();
-        $qb->select('Ressource')
-            ->from('\\'.\App\Entity\Ressource::class, 'Ressource');
+        $qb->select('Ressource')->from('\\' . Ressource::class, 'Ressource');
 
         $query = $qb->getQuery();
 
@@ -39,9 +39,9 @@ class RessourceController extends AbstractController
      * Liste des ressources.
      */
     #[Route('/ressource', name: 'ressource.index')]
-    public function indexAction(Request $request,  EntityManagerInterface $entityManager): Response
+    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Ressource::class);
+        $repo = $entityManager->getRepository('\\' . Ressource::class);
         $ressources = $repo->findAll();
 
         return $this->render('ressource/index.twig', ['ressources' => $ressources]);
@@ -51,13 +51,15 @@ class RessourceController extends AbstractController
      * Ajout d'une ressource.
      */
     #[Route('/ressource/add', name: 'ressource.add')]
-    public function addAction(Request $request,  EntityManagerInterface $entityManager): Response|RedirectResponse
+    public function addAction(Request $request, EntityManagerInterface $entityManager): Response|RedirectResponse
     {
-        $ressource = new \App\Entity\Ressource();
+        $ressource = new Ressource();
 
-        $form = $this->createForm(RessourceForm::class, $ressource)
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder & continuer']);
+        $form = $this->createForm(RessourceForm::class, $ressource)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+            'label' => 'Sauvegarder & continuer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -67,11 +69,11 @@ class RessourceController extends AbstractController
             $entityManager->persist($ressource);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La ressource a été ajoutée.');
+            $this->addFlash('success', 'La ressource a été ajoutée.');
 
-            if ($form->get('save')->isClicked()) {
+            if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
                 return $this->redirectToRoute('ressource.index', [], 303);
-            } elseif ($form->get('save_continue')->isClicked()) {
+            } elseif ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
                 return $this->redirectToRoute('ressource.add', [], 303);
             }
         }
@@ -85,25 +87,28 @@ class RessourceController extends AbstractController
      * Mise à jour d'une ressource.
      */
     #[Route('/ressource/{ressource}/update', name: 'ressource.update')]
-    public function updateAction(Request $request,  EntityManagerInterface $entityManager, Ressource $ressource): Response|RedirectResponse
-    {
-        $form = $this->createForm(RessourceForm::class, $ressource)
-            ->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder'])
-            ->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Ressource $ressource,
+    ): Response|RedirectResponse {
+        $form = $this->createForm(RessourceForm::class, $ressource)->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ])->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $ressource = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 $entityManager->persist($ressource);
                 $entityManager->flush();
-               $this->addFlash('success', 'La ressource a été mise à jour.');
-            } elseif ($form->get('delete')->isClicked()) {
+                $this->addFlash('success', 'La ressource a été mise à jour.');
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 $entityManager->remove($ressource);
                 $entityManager->flush();
-               $this->addFlash('success', 'La ressource a été supprimée.');
+                $this->addFlash('success', 'La ressource a été supprimée.');
             }
 
             return $this->redirectToRoute('ressource.index');
@@ -119,22 +124,19 @@ class RessourceController extends AbstractController
      * Affiche de détail d'une ressource.
      */
     #[Route('/ressource/{ressource}/detail', name: 'ressource.detail')]
-    public function detailAction(Request $request, EntityManagerInterface $entityManager, Ressource $ressource): Response|RedirectResponse
-    {
-        if ($ressource) {
-            return $this->render('ressource/detail.twig', ['ressource' => $ressource]);
-        } else {
-           $this->addFlash('error', 'La ressource n\'a pas été trouvée.');
-
-            return $this->redirectToRoute('ressource.index');
-        }
+    public function detailAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Ressource $ressource,
+    ): Response|RedirectResponse {
+        return $this->render('ressource/detail.twig', ['ressource' => $ressource]);
     }
 
-    public function detailExportAction(Request $request,  EntityManagerInterface $entityManager): void
+    public function detailExportAction(Request $request, EntityManagerInterface $entityManager): void
     {
     }
 
-    public function exportAction(Request $request,  EntityManagerInterface $entityManager): void
+    public function exportAction(Request $request, EntityManagerInterface $entityManager): void
     {
     }
 }

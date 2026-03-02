@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,7 +23,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseAppelation', 'extended' => 'Appelation'])]
 class BaseAppelation
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'label', type: Types::STRING, length: 45)]
@@ -36,6 +38,7 @@ class BaseAppelation
     /**
      * @var Collection<int, Appelation>|Appelation[]
      */
+    /** @var Collection<int, Appelation> */
     #[OneToMany(mappedBy: 'appelation', targetEntity: Appelation::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: false)]
     protected Collection $appelations;
@@ -43,6 +46,7 @@ class BaseAppelation
     /**
      * @var Collection<int, Territoire>|Territoire[]
      */
+    /** @var Collection<int, Territoire> */
     #[OneToMany(mappedBy: 'appelation', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'appelation_id', nullable: false)]
     protected Collection $territoires;
@@ -119,6 +123,7 @@ class BaseAppelation
         return $this;
     }
 
+    /** @return Collection<int, Appelation> */
     public function getAppelations(): Collection
     {
         return $this->appelations;
@@ -138,6 +143,7 @@ class BaseAppelation
         return $this;
     }
 
+    /** @return Collection<int, Territoire> */
     public function getTerritoires(): Collection
     {
         return $this->territoires;
@@ -156,7 +162,7 @@ class BaseAppelation
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'appelation_id', 'label', 'description', 'titre'];
-    } */
+     * {
+     * return ['id', 'appelation_id', 'label', 'description', 'titre'];
+     * } */
 }

@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Controller;
 
 use App\Entity\Notification;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -17,8 +20,11 @@ class NotificationController extends AbstractController
     /**
      * Supprime une notification.
      */
-    public function removeAction( EntityManagerInterface $entityManager, Request $request, Notification $notification): bool
-    {
+    public function removeAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Notification $notification,
+    ): bool {
         if ($notification->getUser() != $this->getUser()) {
             return false;
         }
@@ -33,10 +39,10 @@ class NotificationController extends AbstractController
      * Fourni la liste des notifications de l'utilisateur courant
      * On en profite pour stocker ses informations de connection.
      */
-    public function listAction( EntityManagerInterface $entityManager, Request $request): JsonResponse
+    public function listAction(EntityManagerInterface $entityManager, Request $request): JsonResponse
     {
         $qb = $entityManager->createQueryBuilder();
-        $qb->from(\App\Entity\Notification::class, 'n');
+        $qb->from(Notification::class, 'n');
         $qb->select('n');
         $qb->join('n.User', 'u');
         $qb->where('u.id = :UserId');
@@ -45,17 +51,17 @@ class NotificationController extends AbstractController
         $notifications = $qb->getQuery()->getArrayResult();
 
         foreach ($notifications as $key => $value) {
-            $value['url_delete'] = $app['url_generator']->generate('notification.remove', ['notification' => $value['id']]);
+            $value['url_delete'] = $this->generateUrl('notification.remove', ['notification' => $value['id']]);
             $notifications[$key] = $value;
         }
 
-        $this->getUser()->setLastConnectionDate(new \DateTime('NOW'));
+        $this->getUser()->setLastConnectionDate(new DateTime('NOW'));
         $entityManager->persist($this->getUser());
         $entityManager->flush();
 
         $lastConnected = $entityManager->getRepository(\App\Entity\User::class)->lastConnected();
         foreach ($lastConnected as $key => $value) {
-            $value['url'] = $app['url_generator']->generate('User.view', ['id' => $value['id']]);
+            $value['url'] = $this->generateUrl('User.view', ['id' => $value['id']]);
             $lastConnected[$key] = $value;
         }
 

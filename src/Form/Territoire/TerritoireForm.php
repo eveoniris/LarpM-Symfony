@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Territoire;
 
 use App\Entity\Appelation;
 use App\Entity\Langue;
-use App\Entity\Merveille;
 use App\Entity\Religion;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
@@ -15,7 +16,6 @@ use App\Repository\RessourceRepository;
 use App\Repository\TerritoireRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -29,10 +29,11 @@ class TerritoireForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', TextType::class, [
-            'label' => 'Nom',
-            'required' => true,
-        ])
+        $builder
+            ->add('nom', TextType::class, [
+                'label' => 'Nom',
+                'required' => true,
+            ])
             ->add('appelation', EntityType::class, [
                 'label' => "Choisissez l'appelation de ce territoire",
                 'required' => true,
@@ -63,11 +64,11 @@ class TerritoireForm extends AbstractType
                 'class' => TerritoireStatut::class,
             ])
             /*->add('statut', ChoiceType::class, [
-                'label' => 'Statut',
-                'required' => false,
-                'choices' => ['Normal' => 'Normal', 'Instable' => 'Instable'],
-            ])/
-        */
+             * 'label' => 'Statut',
+             * 'required' => false,
+             * 'choices' => ['Normal' => 'Normal', 'Instable' => 'Instable'],
+             * ])/
+             */
             ->add('geojson', TextareaType::class, [
                 'label' => 'GeoJSON',
                 'required' => false,
@@ -144,9 +145,7 @@ class TerritoireForm extends AbstractType
                 'expanded' => true,
                 'mapped' => true,
                 'choice_label' => 'label',
-                'query_builder' => static function (RessourceRepository $rr) {
-                    return $rr->createQueryBuilder('rri')->orderBy('rri.label', 'ASC');
-                },
+                'query_builder' => static fn (RessourceRepository $rr) => $rr->createQueryBuilder('rri')->orderBy('rri.label', 'ASC'),
             ])
             ->add('exportations', EntityType::class, [
                 'required' => false,
@@ -156,9 +155,7 @@ class TerritoireForm extends AbstractType
                 'expanded' => true,
                 'mapped' => true,
                 'choice_label' => 'label',
-                'query_builder' => static function (RessourceRepository $rr) {
-                    return $rr->createQueryBuilder('rre')->orderBy('rre.label', 'ASC');
-                },
+                'query_builder' => static fn (RessourceRepository $rr) => $rr->createQueryBuilder('rre')->orderBy('rre.label', 'ASC'),
             ])
             ->add('languePrincipale', EntityType::class, [
                 'required' => false,
@@ -167,9 +164,7 @@ class TerritoireForm extends AbstractType
                 'multiple' => false,
                 'mapped' => true,
                 'choice_label' => 'label',
-                'query_builder' => static function (LangueRepository $lr) {
-                    return $lr->createQueryBuilder('lr')->orderBy('lr.label', 'ASC');
-                },
+                'query_builder' => static fn (LangueRepository $lr) => $lr->createQueryBuilder('lr')->orderBy('lr.label', 'ASC'),
             ])
             ->add('langues', EntityType::class, [
                 'required' => false,
@@ -179,9 +174,7 @@ class TerritoireForm extends AbstractType
                 'expanded' => true,
                 'mapped' => true,
                 'choice_label' => 'label',
-                'query_builder' => static function (LangueRepository $lr) {
-                    return $lr->createQueryBuilder('lr')->orderBy('lr.label', 'ASC');
-                },
+                'query_builder' => static fn (LangueRepository $lr) => $lr->createQueryBuilder('lr')->orderBy('lr.label', 'ASC'),
             ])
             ->add('religionPrincipale', EntityType::class, [
                 'required' => false,
@@ -190,9 +183,7 @@ class TerritoireForm extends AbstractType
                 'multiple' => false,
                 'mapped' => true,
                 'choice_label' => 'label',
-                'query_builder' => static function (ReligionRepository $rr) {
-                    return $rr->createQueryBuilder('rr')->orderBy('rr.label', 'ASC');
-                },
+                'query_builder' => static fn (ReligionRepository $rr) => $rr->createQueryBuilder('rr')->orderBy('rr.label', 'ASC'),
             ])
             ->add('religions', EntityType::class, [
                 'required' => false,
@@ -202,9 +193,7 @@ class TerritoireForm extends AbstractType
                 'expanded' => true,
                 'mapped' => true,
                 'choice_label' => 'label',
-                'query_builder' => static function (ReligionRepository $rr) {
-                    return $rr->createQueryBuilder('rr')->orderBy('rr.label', 'ASC');
-                },
+                'query_builder' => static fn (ReligionRepository $rr) => $rr->createQueryBuilder('rr')->orderBy('rr.label', 'ASC'),
             ])
             ->add('territoire', EntityType::class, [
                 'required' => false,
@@ -214,20 +203,19 @@ class TerritoireForm extends AbstractType
                 // 'empty_data' => 'Aucun, territoire indépendant',
                 'empty_data' => null,
                 'mapped' => true,
-                'query_builder' => static function (TerritoireRepository $tr) {
-                    return $tr->createQueryBuilder('tr')->orderBy('tr.nom', 'ASC');
-                },
+                'query_builder' => static fn (TerritoireRepository $tr) => $tr->createQueryBuilder('tr')->orderBy('tr.nom', 'ASC'),
             ]);
+
         /* Merveille are added from MerveilleForm
-        ->add('merveilles', EntityType::class, [
-            'required' => false,
-            'label' => 'Merveille',
-            'class' => Merveille::class,
-            'multiple' => true,
-            'expanded' => true,
-            'mapped' => true,
-            'choice_label' => 'label',
-        ])*/
+         * ->add('merveilles', EntityType::class, [
+         * 'required' => false,
+         * 'label' => 'Merveille',
+         * 'class' => Merveille::class,
+         * 'multiple' => true,
+         * 'expanded' => true,
+         * 'mapped' => true,
+         * 'choice_label' => 'label',
+         * ])*/
     }
 
     /**

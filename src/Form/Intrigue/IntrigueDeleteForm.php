@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Intrigue;
 
@@ -22,12 +23,12 @@ class IntrigueDeleteForm extends AbstractType
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\Intrigue::class,
+            'data_class' => '\\' . \App\Entity\Intrigue::class,
         ]);
     }
 

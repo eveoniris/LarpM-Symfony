@@ -30,7 +30,6 @@ final class Version20250224083644 extends AbstractMigration
         $this->addSql('ALTER TABLE personnage_bonus DROP INDEX UNIQ_35CB734069545666, ADD INDEX fk_bonus_idx (bonus_id)');
         $this->addSql('ALTER TABLE personnage_bonus CHANGE personnage_id personnage_id INT NOT NULL');
         $this->addSql('ALTER TABLE personnage_bonus RENAME INDEX idx_35cb73405e315342 TO fk_personnage_idx');
-
     }
 
     public function down(Schema $schema): void
@@ -46,5 +45,5 @@ final class Version20250224083644 extends AbstractMigration
         $this->addSql('ALTER TABLE personnage_bonus DROP INDEX fk_bonus_idx, ADD UNIQUE INDEX UNIQ_35CB734069545666 (bonus_id)');
         $this->addSql('ALTER TABLE personnage_bonus CHANGE personnage_id personnage_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE personnage_bonus RENAME INDEX fk_personnage_idx TO IDX_35CB73405E315342');
-        }
+    }
 }

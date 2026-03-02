@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Debriefing;
 
 use App\Entity\Debriefing;
@@ -30,15 +32,16 @@ class DebriefingForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('titre', TextType::class, [
-            'required' => true,
-            'label' => 'Titre',
-            'attr' => ['maxlength' => 45],
-            'constraints' => [
-                new Length(['max' => 45]),
-                new NotBlank(),
-            ],
-        ])
+        $builder
+            ->add('titre', TextType::class, [
+                'required' => true,
+                'label' => 'Titre',
+                'attr' => ['maxlength' => 45],
+                'constraints' => [
+                    new Length(['max' => 45]),
+                    new NotBlank(),
+                ],
+            ])
             ->add('text', TextareaType::class, [
                 'required' => true,
                 'label' => 'Contenu',
@@ -73,8 +76,7 @@ class DebriefingForm extends AbstractType
                 'choice_label' => 'nom',
                 'query_builder' => static function (GroupeRepository $g) use ($options) {
                     $qb = $g->createQueryBuilder('g');
-                    if ($options['groupeId'])
-                    {
+                    if ($options['groupeId']) {
                         $qb->where('g.id = :groupeId');
                         $qb->setParameter('groupeId', $options['groupeId']);
                     }
@@ -95,7 +97,8 @@ class DebriefingForm extends AbstractType
                 'label' => 'Téléversez un document PDF',
                 'required' => false,
                 'mapped' => false,
-                'attr' => ['accept' => '.pdf'], ]);
+                'attr' => ['accept' => '.pdf'],
+            ]);
     }
 
     /**

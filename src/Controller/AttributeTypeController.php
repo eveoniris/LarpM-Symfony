@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\AttributeType;
@@ -44,34 +46,29 @@ class AttributeTypeController extends AbstractController
     #[Route('/{attributeType}/update', name: 'update', requirements: ['attributeType' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] AttributeType $attributeType): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $attributeType,
-            AttributeTypeForm::class
-        );
+        return $this->handleCreateOrUpdate($request, $attributeType, AttributeTypeForm::class);
     }
 
-    #[Route('/{attributeType}/delete', name: 'delete', requirements: ['attributeType' => Requirement::DIGITS], methods: [
-        'DELETE',
-        'GET',
-        'POST',
-    ])]
+    #[Route(
+        '/{attributeType}/delete',
+        name: 'delete',
+        requirements: ['attributeType' => Requirement::DIGITS],
+        methods: [
+            'DELETE',
+            'GET',
+            'POST',
+        ],
+    )]
     public function deleteAction(#[MapEntity] AttributeType $attributeType): RedirectResponse|Response
     {
-        return $this->genericDelete(
-            $attributeType,
-            title: 'Supprimer un type d\'attribut',
-            successMsg: 'Le type d\'attribut a été supprimée',
-            redirect: 'attributeType.list',
-            breadcrumb: [
-                ['route' => $this->generateUrl('attributeType.list'), 'name' => 'Liste des types d\'attributs'],
-                [
-                    'route' => $this->generateUrl('attributeType.detail', ['attributeType' => $attributeType->getId()]),
-                    'name' => $attributeType->getLabel(),
-                ],
-                ['name' => 'Supprimer un type d\'attribut'],
-            ]
-        );
+        return $this->genericDelete($attributeType, title: 'Supprimer un type d\'attribut', successMsg: 'Le type d\'attribut a été supprimée', redirect: 'attributeType.list', breadcrumb: [
+            ['route' => $this->generateUrl('attributeType.list'), 'name' => 'Liste des types d\'attributs'],
+            [
+                'route' => $this->generateUrl('attributeType.detail', ['attributeType' => $attributeType->getId()]),
+                'name' => $attributeType->getLabel(),
+            ],
+            ['name' => 'Supprimer un type d\'attribut'],
+        ]);
     }
 
     /**
@@ -84,9 +81,10 @@ class AttributeTypeController extends AbstractController
         return $this->render('attributeType/detail.twig', ['attributeType' => $attributeType]);
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
         Request $request,
-        $entity,
+        object $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
@@ -109,7 +107,7 @@ class AttributeTypeController extends AbstractController
                 'title_add' => $this->translator->trans("Ajouter un type d'attribut"),
                 'title_update' => $this->translator->trans("Modifier un type d'attribut"),
             ],
-            entityCallback: $entityCallback
+            entityCallback: $entityCallback,
         );
     }
 }

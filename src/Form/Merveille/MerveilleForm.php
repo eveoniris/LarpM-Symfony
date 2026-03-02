@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Merveille;
 
 use App\Entity\Bonus;
@@ -21,10 +23,11 @@ class MerveilleForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', TextType::class, [
-            'required' => true,
-            'label' => 'Nom',
-        ])
+        $builder
+            ->add('nom', TextType::class, [
+                'required' => true,
+                'label' => 'Nom',
+            ])
             ->add('description', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description succinte',
@@ -74,7 +77,7 @@ class MerveilleForm extends AbstractType
                 'class' => Bonus::class,
                 'autocomplete' => true,
                 'label_html' => true,
-                'choice_label' => static fn (Bonus $bonus, $currentKey) => $bonus->getTitre().' - '.$bonus->getDescription(),
+                'choice_label' => static fn (Bonus $bonus, $currentKey) => $bonus->getTitre() . ' - ' . $bonus->getDescription(),
             ])
             ->add('territoire', EntityType::class, [
                 'required' => false,

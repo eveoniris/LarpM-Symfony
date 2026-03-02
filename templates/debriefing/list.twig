@@ -16,7 +16,7 @@
             {
                 'canAdd': {'title': 'Ajouter un debriefing', 'path': path('debriefing.add')},
                 'actionPath' : path('debriefing.list')
-            } 
+            }
         %}
     </div>
 
@@ -64,7 +64,7 @@
                         <a href="{{ path('user.view', {'user': debriefing.player.id}) }}">{{ debriefing.player.displayName|highlight(pagerService.searchValue) }}</a>
                     {% endif %}
                 </td>
-                <td>{{ debriefing.visibility }}</td>
+                <td>{{ debriefing.visibility.value }}</td>
                 <td>
                     {% if debriefing.documentUrl %}
                         <a class="btn btn-default" data-toggle="tooltip" data-placement="top"

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,6 +14,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
+use SensitiveParameter;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'langue')]
@@ -21,7 +24,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BaseLangue', 'extended' => 'Langue'])]
 abstract class BaseLangue
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'label', type: Types::STRING, length: 100)]
@@ -33,11 +36,13 @@ abstract class BaseLangue
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $diffusion = 0;
 
+    /** @var Collection<int, PersonnageLangues> */
     #[OneToMany(mappedBy: 'langue', targetEntity: PersonnageLangues::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: false)]
     #[OrderBy(['langue' => 'ASC'])]
     protected Collection $personnageLangues;
 
+    /** @var Collection<int, Territoire> */
     #[OneToMany(mappedBy: 'langue', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'langue_id', nullable: false)]
     protected Collection $territoires;
@@ -46,15 +51,17 @@ abstract class BaseLangue
     #[JoinColumn(name: 'groupe_langue_id', referencedColumnName: 'id', nullable: false)]
     protected GroupeLangue $groupeLangue;
 
+    /** @var Collection<int, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'langues')]
     protected Collection $documents;
 
     #[Column(type: Types::BOOLEAN, nullable: false, options: ['default' => 0])]
     protected bool $secret = false;
 
-    #[ORM\Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
+    #[Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $documentUrl = null;
 
+    /** @var Collection<int, Territoire> */
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'langues')]
     protected Collection $territoireSecondaires;
 
@@ -122,10 +129,8 @@ abstract class BaseLangue
 
     /**
      * Set the value of diffusion.
-     *
-     * @param int $diffusion
      */
-    public function setDiffusion(string $diffusion): static
+    public function setDiffusion(?int $diffusion): static
     {
         $this->diffusion = $diffusion;
 
@@ -135,9 +140,9 @@ abstract class BaseLangue
     /**
      * Get the value of diffusion.
      */
-    public function getDiffusion(): int
+    public function getDiffusion(): ?int
     {
-        return $this->diffusion ?? '';
+        return $this->diffusion;
     }
 
     /**
@@ -162,6 +167,8 @@ abstract class BaseLangue
 
     /**
      * Get PersonnageLangues entity collection (one to many).
+     *
+     * @return Collection<int, PersonnageLangues>
      *
      * @OrderBy({"secret" = "ASC", "diffusion" = "DESC", "label" = "ASC"})
      */
@@ -192,6 +199,8 @@ abstract class BaseLangue
 
     /**
      * Get Territoire entity collection (one to many).
+     *
+     * @return Collection<int, Territoire>
      */
     public function getTerritoires(): Collection
     {
@@ -238,6 +247,8 @@ abstract class BaseLangue
 
     /**
      * Get Document entity collection.
+     *
+     * @return Collection<int, Document>
      */
     public function getDocuments(): Collection
     {
@@ -247,7 +258,7 @@ abstract class BaseLangue
     /**
      * Set the value of secret.
      */
-    public function setSecret(bool $secret): static
+    public function setSecret(#[SensitiveParameter] bool $secret): static
     {
         $this->secret = $secret;
 
@@ -280,6 +291,7 @@ abstract class BaseLangue
         return $this->documentUrl ?? '';
     }
 
+    /** @return Collection<int, Territoire> */
     public function getTerritoireSecondaires(): Collection
     {
         return $this->territoireSecondaires;
@@ -299,9 +311,8 @@ abstract class BaseLangue
         return $this;
     }
 
-
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description', 'diffusion', 'groupe_langue_id', 'secret'];
-    } */
+     * {
+     * return ['id', 'label', 'description', 'diffusion', 'groupe_langue_id', 'secret'];
+     * } */
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Enum;
+declare(strict_types=1);
 
-use Exception;
+namespace App\Enum;
 
 enum ChronologyType: string
 {

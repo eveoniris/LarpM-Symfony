@@ -1,16 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Construction;
-use App\Form\ConstructionDeleteForm;
 use App\Form\ConstructionForm;
 use App\Repository\ConstructionRepository;
 use App\Repository\TerritoireRepository;
 use App\Service\PagerService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +29,7 @@ class ConstructionController extends AbstractController
     public function indexAction(
         Request $request,
         PagerService $pagerService,
-        ConstructionRepository $constructionRepository
+        ConstructionRepository $constructionRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($constructionRepository)->setLimit(25);
 
@@ -46,11 +45,7 @@ class ConstructionController extends AbstractController
     #[Route('/add', name: 'add')]
     public function addAction(Request $request): Response|RedirectResponse
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            new Construction(),
-            ConstructionForm::class
-        );
+        return $this->handleCreateOrUpdate($request, new Construction(), ConstructionForm::class);
     }
 
     /**
@@ -59,35 +54,24 @@ class ConstructionController extends AbstractController
     #[Route('/{construction}/update', name: 'update', requirements: ['construction' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Construction $construction): Response|RedirectResponse
     {
-        return $this->handleCreateOrUpdate(
-            $request,
-            $construction,
-            ConstructionForm::class
-        );
+        return $this->handleCreateOrUpdate($request, $construction, ConstructionForm::class);
     }
 
     /**
      * Supprime une construction.
      */
     #[Route('/{construction}/delete', name: 'delete', requirements: ['construction' => Requirement::DIGITS])]
-    public function deleteAction(
-        #[MapEntity] Construction $construction
-    ): Response|RedirectResponse {
-        return $this->genericDelete(
-            $construction,
-            'Supprimer une construction',
-            'La construction a été supprimée',
-            'construction.list',
+    public function deleteAction(#[MapEntity] Construction $construction): Response|RedirectResponse
+    {
+        return $this->genericDelete($construction, 'Supprimer une construction', 'La construction a été supprimée', 'construction.list', [
+            ['route' => $this->generateUrl('construction.list'), 'name' => 'Liste des constructions'],
             [
-                ['route' => $this->generateUrl('construction.list'), 'name' => 'Liste des constructions'],
-                [
-                    'route' => $this->generateUrl('construction.detail', ['construction' => $construction->getId()]),
-                    'technologie' => $construction->getId(),
-                    'name' => $construction->getLabel(),
-                ],
-                ['name' => 'Supprimer une construction'],
-            ]
-        );
+                'route' => $this->generateUrl('construction.detail', ['construction' => $construction->getId()]),
+                'technologie' => $construction->getId(),
+                'name' => $construction->getLabel(),
+            ],
+            ['name' => 'Supprimer une construction'],
+        ]);
     }
 
     /**
@@ -106,13 +90,10 @@ class ConstructionController extends AbstractController
         Request $request,
         PagerService $pagerService,
         TerritoireRepository $territoireRepository,
-        #[MapEntity] Construction $construction
+        #[MapEntity]
+        Construction $construction,
     ): Response {
-        $pagerService
-            ->setRequest($request)
-            ->setRepository($territoireRepository)
-            ->setLimit(25);
-
+        $pagerService->setRequest($request)->setRepository($territoireRepository)->setLimit(25);
 
         $alias = $territoireRepository->getAlias();
         $queryBuilder = $territoireRepository->createQueryBuilder($alias);
@@ -120,21 +101,19 @@ class ConstructionController extends AbstractController
         return $this->render('construction/territoires.twig', [
             'pagerService' => $pagerService,
             'construction' => $construction,
-            'paginator' => $territoireRepository->searchPaginated(
-                $pagerService,
-                $territoireRepository->construction($queryBuilder, $construction),
-            ),
+            'paginator' => $territoireRepository->searchPaginated($pagerService, $territoireRepository->construction($queryBuilder, $construction)),
         ]);
     }
 
+    /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
     protected function handleCreateOrUpdate(
         Request $request,
-        $entity,
+        object $entity,
         string $formClass,
         array $breadcrumb = [],
         array $routes = [],
         array $msg = [],
-        ?callable $entityCallback = null
+        ?callable $entityCallback = null,
     ): RedirectResponse|Response {
         return parent::handleCreateOrUpdate(
             request: $request,
@@ -152,7 +131,7 @@ class ConstructionController extends AbstractController
                 'title_update' => $this->translator->trans('Modifier une construction'),
                 ...$msg,
             ],
-            entityCallback: $entityCallback
+            entityCallback: $entityCallback,
         );
     }
 }

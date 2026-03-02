@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
-use App\Enum\CompetenceFamilyType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -16,6 +17,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
+use SensitiveParameter;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'competence')]
@@ -26,7 +28,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BaseCompetence', 'extended' => 'Competence'])]
 class BaseCompetence
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::TEXT, nullable: true)]
@@ -62,10 +64,12 @@ class BaseCompetence
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: false)]
     protected Collection $personnageSecondaireCompetences;
 
+    /** @var Collection<int, PersonnageSecondairesCompetences> */
     #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageSecondairesCompetences::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: false)]
     protected Collection $personnageSecondairesCompetences;
 
+    /** @var Collection<int, PersonnageSecondairesSkills> */
     #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageSecondairesSkills::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_id', nullable: false)]
     protected Collection $personnageSecondairesSkills;
@@ -79,12 +83,14 @@ class BaseCompetence
     #[JoinColumn(name: 'level_id', referencedColumnName: 'id')]
     protected ?Level $level = null;
 
+    /** @var Collection<int, Personnage> */
     #[ManyToMany(targetEntity: Personnage::class, inversedBy: 'competences')]
     #[ORM\JoinTable(name: 'personnages_competences')]
     #[JoinColumn(name: 'competence_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
     protected Collection $personnages;
 
+    /** @var Collection<int, PersonnageApprentissage> */
     #[OneToMany(mappedBy: 'competence', targetEntity: PersonnageApprentissage::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'competence_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $personnageApprentissages;
@@ -115,6 +121,7 @@ class BaseCompetence
 
     public function addPersonnage(Personnage $personnage): static
     {
+        /* @phpstan-ignore argument.type */
         $personnage->addCompetence($this);
         $this->personnages[] = $personnage;
 
@@ -128,13 +135,14 @@ class BaseCompetence
         return $this;
     }
 
-    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence,
-    ): static {
+    public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
+    {
         $this->personnageSecondaireCompetences[] = $personnageSecondaireCompetence;
 
         return $this;
     }
 
+    /** @return Collection<int, CompetenceAttribute> */
     public function getCompetenceAttributes(): Collection
     {
         return $this->competenceAttributes;
@@ -169,13 +177,14 @@ class BaseCompetence
         return $this->documentUrl ?? '';
     }
 
-    public function setDocumentUrl(string $documentUrl): static
+    public function setDocumentUrl(?string $documentUrl): static
     {
         $this->documentUrl = $documentUrl;
 
         return $this;
     }
 
+    /** @return Collection<int, ExperienceUsage> */
     public function getExperienceUsages(): Collection
     {
         return $this->experienceUsages;
@@ -217,16 +226,19 @@ class BaseCompetence
         return $this;
     }
 
+    /** @return Collection<int, PersonnageApprentissage> */
     public function getPersonnageApprentissages(): Collection
     {
         return $this->personnageApprentissages;
     }
 
+    /** @return Collection<int, PersonnageSecondaireCompetence> */
     public function getPersonnageSecondaireCompetences(): Collection
     {
         return $this->personnageSecondaireCompetences;
     }
 
+    /** @return Collection<int, Personnage> */
     public function getPersonnages(): Collection
     {
         return $this->personnages;
@@ -253,6 +265,7 @@ class BaseCompetence
 
     public function removePersonnage(Personnage $personnage): static
     {
+        /* @phpstan-ignore argument.type */
         $personnage->removeCompetence($this);
         $this->personnages->removeElement($personnage);
 
@@ -266,14 +279,14 @@ class BaseCompetence
         return $this;
     }
 
-    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence,
-    ): static {
+    public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
+    {
         $this->personnageSecondaireCompetences->removeElement($personnageSecondaireCompetence);
 
         return $this;
     }
 
-    public function setSecret(?bool $secret): static
+    public function setSecret(#[SensitiveParameter] ?bool $secret): static
     {
         $this->secret = $secret;
 
@@ -281,7 +294,7 @@ class BaseCompetence
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'description', 'competence_family_id', 'level_id', 'documentUrl', 'materiel'];
-    } */
+     * {
+     * return ['id', 'description', 'competence_family_id', 'level_id', 'documentUrl', 'materiel'];
+     * } */
 }

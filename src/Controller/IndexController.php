@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -44,7 +46,7 @@ class IndexController extends AbstractController
 
     /** Testing mail send */
     #[Route('/mail', name: 'mail')]
-    public function mail(MailerInterface $mailer)
+    public function mail(MailerInterface $mailer): Response
     {
         // DETECT ENV : dump($_SERVER['APP_ENV']);
         // OR DETECT ENV : dump($this->getParameter('kernel.environment'));
@@ -56,7 +58,7 @@ class IndexController extends AbstractController
             return $this->redirectToRoute('homepage');
         }
 
-        $email = (new Email())
+        $email = new Email()
             ->from('gestion@eveoniris.com')
             ->to('gectou4@eveoniris.com')
             // ->cc('cc@example.com')
@@ -70,6 +72,8 @@ class IndexController extends AbstractController
             ->html('<p>See Twig integration for better HTML integration!</p>');
 
         $mailer->send($email);
+
+        return $this->redirectToRoute('homepage');
     }
 
     #[Route('/setpwd', name: 'setpwd')]
@@ -109,10 +113,7 @@ class IndexController extends AbstractController
         }
 
         // hash the password (based on the security.yaml config for the $user class)
-        $hashedPassword = $passwordHasher->hashPassword(
-            $user,
-            $plaintextPassword,
-        );
+        $hashedPassword = $passwordHasher->hashPassword($user, $plaintextPassword);
         $user->setPassword($hashedPassword);
 
         $roles = explode(',', $request->get('roles', 'ROLE_ADMIN,ROLE_USER,ROLE_ORGA'));
@@ -124,7 +125,7 @@ class IndexController extends AbstractController
         // actually executes the queries (i.e. the INSERT query)
         $entityManager->flush();
 
-        $this->addFlash('success', 'Password & Role updated for user '.$userId);
+        $this->addFlash('success', 'Password & Role updated for user ' . $userId);
 
         return $this->redirectToRoute('homepage');
     }

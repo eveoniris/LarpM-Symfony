@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Rumeur;
 
@@ -24,14 +25,13 @@ class RumeurFindForm extends AbstractType
             'attr' => [
                 'placeholder' => 'Votre recherche',
             ],
-        ])
-            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                    'Contenu' => 'text',
-                    'Territoire' => 'territoire',
-                ],
-            ]);
+        ])->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                'Contenu' => 'text',
+                'Territoire' => 'territoire',
+            ],
+        ]);
     }
 
     /**

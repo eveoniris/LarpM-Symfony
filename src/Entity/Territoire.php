@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\TerritoireStatut;
 use App\Repository\TerritoireRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
+use JsonSerializable;
+use Stringable;
 
 /**
  * Je définie les relations ManyToMany içi au lieu de le faire dans Mysql Workbench
@@ -15,8 +18,9 @@ use Doctrine\ORM\Mapping\Entity;
  * les mêmes entities (c'est dommage ...).
  */
 #[Entity(repositoryClass: TerritoireRepository::class)]
-class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringable
+class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
 {
+    /** @var ArrayCollection<int, OrigineBonus> */
     private ArrayCollection $valideOrigineBonus;
 
     /**
@@ -39,8 +43,6 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
 
     /**
      * Add Ressource entity to collection.
-     *
-     * @return Territoire
      */
     public function addExportation(Ressource $ressource): static
     {
@@ -52,8 +54,6 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
 
     /**
      * Add Ressource entity to collection.
-     *
-     * @return Territoire
      */
     public function addImportation(Ressource $ressource): static
     {
@@ -65,15 +65,16 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
 
     /**
      * Fourni tous les ancêtres d'un territoire.
+     *
+     * @return Collection<int, Territoire>
      */
     public function getAncestors(): Collection
     {
+        /** @var ArrayCollection<int, Territoire> $ancestors */
         $ancestors = new ArrayCollection();
         if ($this->getTerritoire()) {
             $ancestors[] = $this->getTerritoire();
-            $ancestors = new ArrayCollection(
-                array_merge($ancestors->toArray(), $this->getTerritoire()->getAncestors()->toArray()),
-            );
+            $ancestors = new ArrayCollection(array_merge($ancestors->toArray(), $this->getTerritoire()->getAncestors()->toArray()));
         }
 
         return $ancestors;
@@ -115,7 +116,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Get Ressource entity collection.
      *
-     * @return Collection
+     * @return Collection<int, Ressource>
      */
     public function getExportations()
     {
@@ -124,6 +125,8 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
 
     /**
      * Fourni le nom de tous les groupes présents dans ce territoire.
+     *
+     * @return array<int, string>
      */
     public function getGroupesNom(): array
     {
@@ -134,7 +137,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         }
 
         foreach ($this->getTerritoires() as $territoire) {
-            $groupes = array_merge($groupes, $territoire->getGroupes());
+            $groupes = array_merge($groupes, $territoire->getGroupes()->toArray());
         }
 
         return array_unique($groupes);
@@ -142,6 +145,8 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
 
     /**
      * Fourni le nom de tous les groupes de PJ présents dans ce territoire.
+     *
+     * @return array<int, mixed>
      */
     public function getGroupesPj(): array
     {
@@ -151,9 +156,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         }
 
         foreach ($this->getTerritoires() as $territoire) {
-            if (!$groupes->contains($territoire)) {
-                $groupes->add($territoire->getGroupesPj());
-            }
+            $groupes->add($territoire->getGroupesPj());
         }
 
         return $groupes->toArray();
@@ -162,16 +165,18 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Get Ressource entity collection.
      *
-     * @return Collection
+     * @return Collection<int, Ressource>
      */
-    public function getImportations($rarete = null)
+    public function getImportations(?int $rarete = null)
     {
         if ($rarete) {
             $importations = new ArrayCollection();
             foreach ($this->importations as $ressource) {
-                if ($ressource->getRarete()->getLabel() == $rarete) {
-                    $importations[] = $ressource;
+                if ($ressource->getRarete()->getLabel() != $rarete) {
+                    continue;
                 }
+
+                $importations->add($ressource);
             }
 
             return $importations;
@@ -183,38 +188,44 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Fourni la langue principale du territoire.
      */
-    public function getLanguePrincipale()
+    public function getLanguePrincipale(): ?Langue
     {
         return $this->getLangue();
     }
 
     /**
      * Fourni le nombre de personnages nobles rattachés à ce territoire.
+     *
+     * @return array<int, int>
      */
     public function getNbrNoble(): array
     {
         $nobles = [];
         foreach ($this->getGroupesFull() as $groupe) {
             foreach ($groupe->getPersonnages() as $personnage) {
-                if ($personnage->hasCompetence('Noblesse')) {
-                    $nobles[] = $personnage->getId();
+                if (!$personnage->hasCompetence('Noblesse')) {
+                    continue;
                 }
+
+                $nobles[] = $personnage->getId();
             }
         }
 
         foreach ($this->getTerritoires() as $territoire) {
             $nobles = array_unique(array_merge($nobles, $territoire->getNbrNoble()));
+
             /*
-            echo "<pre>";
-            echo $territoire->getNom()." : ".count($territoire->getNbrNoble())."/".count($nobles);
-            echo "</pre>";
-            echo "<hr />";
-            */
+             * echo "<pre>";
+             * echo $territoire->getNom()." : ".count($territoire->getNbrNoble())."/".count($nobles);
+             * echo "</pre>";
+             * echo "<hr />";
+             */
         }
 
         return array_unique($nobles);
     }
 
+    /** @return array<int, Groupe> */
     public function getGroupesFull(): array
     {
         $groupes = [];
@@ -237,7 +248,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         $string = $this->getNom();
 
         if ($this->getGroupe()) {
-            $string .= ' (#'.$this->getGroupe()->getNumero().' '.$this->getGroupe()->getNom().')';
+            $string .= ' (#' . $this->getGroupe()->getNumero() . ' ' . $this->getGroupe()->getNom() . ')';
         }
 
         return $string;
@@ -246,7 +257,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Fourni le nom complet d'un territoire.
      */
-    public function getNomTree()
+    public function getNomTree(): string
     {
         $string = $this->getNom();
 
@@ -261,7 +272,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Fourni la religion principale du territoire.
      */
-    public function getReligionPrincipale()
+    public function getReligionPrincipale(): ?Religion
     {
         return $this->getReligion();
     }
@@ -292,15 +303,12 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         }
 
         // gestion de l'état du territoire
-        return $this->isStable()
-            ? $this->tresor
-            : ceil($tresor / 2);
+        return $this->isStable() ? $this->tresor : ceil($tresor / 2);
     }
 
     public function isStable(): bool
     {
-        return TerritoireStatut::STABLE->value === strtolower($this->getStatut()?->value ?? '');
-
+        return TerritoireStatut::STABLE->value === strtolower($this->getStatut()->value ?? '');
     }
 
     /**
@@ -309,7 +317,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     public function getStatutIndex(): int
     {
         return match ($this->getStatut()) {
-            TerritoireStatut::INSTABLE->value => 1,
+            TerritoireStatut::INSTABLE => 1,
             default => 0,
         };
     }
@@ -317,10 +325,10 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Fourni l'arbre des territoires'.
      */
-    public function getTree()
+    public function getTree(): string|static
     {
         if ($this->getTerritoire()) {
-            return $this.' --- '.$this->getTerritoire().' --- '.$this->getTerritoire()->getRoot();
+            return $this . ' --- ' . $this->getTerritoire() . ' --- ' . $this->getTerritoire()->getRoot();
         }
 
         return $this;
@@ -329,9 +337,10 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Fourni le territoire racine.
      */
-    public function getRoot()
+    public function getRoot(): static
     {
         if ($this->getTerritoire()) {
+            /* @phpstan-ignore return.type */
             return $this->getTerritoire()->getRoot();
         }
 
@@ -339,7 +348,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     }
 
     /**
-     * @return Collection<int, Bonus>
+     * @return Collection<int, OrigineBonus>
      */
     public function getValideOrigineBonus(): Collection
     {
@@ -350,9 +359,11 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
         $this->valideOrigineBonus = new ArrayCollection();
 
         foreach ($this->getOriginesBonus() as $origineBonus) {
-            if ($origineBonus->isValid()) {
-                $this->valideOrigineBonus->add($origineBonus);
+            if (!$origineBonus->isValid()) {
+                continue;
             }
+
+            $this->valideOrigineBonus->add($origineBonus);
         }
 
         return $this->valideOrigineBonus;
@@ -361,7 +372,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Determine si un territoire dispose d'une construction.
      */
-    public function hasConstruction($label): bool
+    public function hasConstruction(string $label): bool
     {
         foreach ($this->getConstructions() as $construction) {
             if ($construction->getLabel() == $label) {
@@ -394,24 +405,22 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
             'noms_masculin' => $this->getNomsMasculin(),
             'noms_feminin' => $this->getNomsFeminin(),
             'frontieres' => $this->getFrontieres(),
-            'religion_id' => ($this->getReligion()) ? $this->getReligion()->getId() : '',
+            'religion_id' => $this->getReligion() ? $this->getReligion()->getId() : '',
             /*'chronologies'
-            'groupes'
-            'langue_principale'
-            'religion_principale'
-            'langues'
-            'religions'
-            'importations'
-            'exporations'*/
+             'groupes'
+             'langue_principale'
+             'religion_principale'
+             'langues'
+             'religions'
+             'importations'
+             'exporations'*/
         ];
     }
 
     /**
      * Unserializer.
-     *
-     * @param unknown $payload
      */
-    public function jsonUnserialize($payload): void
+    public function jsonUnserialize(object $payload): void
     {
         $this->setNom($payload->nom);
         $this->setDescription($payload->description);
@@ -432,8 +441,6 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
 
     /**
      * Remove Ressource entity from collection.
-     *
-     * @return Territoire
      */
     public function removeExportation(Ressource $ressource): static
     {
@@ -445,8 +452,6 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
 
     /**
      * Remove Ressource entity from collection.
-     *
-     * @return Territoire
      */
     public function removeImportation(Ressource $ressource): static
     {
@@ -459,7 +464,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Défini la langue principale du territoire.
      */
-    public function setLanguePrincipale(Langue $langue)
+    public function setLanguePrincipale(Langue $langue): static
     {
         return $this->setLangue($langue);
     }
@@ -467,7 +472,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Défini la religion principale d'un territoire.
      */
-    public function setReligionPrincipale(Religion $religion)
+    public function setReligionPrincipale(Religion $religion): static
     {
         return $this->setReligion($religion);
     }
@@ -475,7 +480,7 @@ class Territoire extends BaseTerritoire implements \JsonSerializable, \Stringabl
     /**
      * Calcule le nombre d'étape necessaire pour revenir au parent le plus ancien.
      */
-    public function stepCount($count = 0)
+    public function stepCount(int $count = 0): int
     {
         if ($this->getTerritoire()) {
             return $this->getTerritoire()->stepCount($count + 1);

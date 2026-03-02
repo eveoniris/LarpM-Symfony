@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -25,19 +26,17 @@ class RuleForm extends AbstractType
         $builder->add('rule', 'file', [
             'label' => 'Choisissez votre fichier',
             'required' => true,
-        ])
-            ->add('label', TextType::class, [
-                'label' => 'Choisissez un titre',
-                'required' => true,
-            ])
-            ->add('description', TextareaType::class, [
-                'label' => 'Ecrivez une petite description',
-                'required' => true,
-                'attr' => [
-                    'class' => 'tinymce',
-                    'rows' => 5,
-                ],
-            ]);
+        ])->add('label', TextType::class, [
+            'label' => 'Choisissez un titre',
+            'required' => true,
+        ])->add('description', TextareaType::class, [
+            'label' => 'Ecrivez une petite description',
+            'required' => true,
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 5,
+            ],
+        ]);
     }
 
     /**

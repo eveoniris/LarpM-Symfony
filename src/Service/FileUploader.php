@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Enum\DocumentType;
@@ -19,8 +21,11 @@ final class FileUploader
     private string $extension;
     private SluggerInterface $slugger;
 
-    public function __construct(string $projectDirectory, SluggerInterface $slugger, protected LoggerInterface $logger)
-    {
+    public function __construct(
+        string $projectDirectory,
+        SluggerInterface $slugger,
+        private LoggerInterface $logger,
+    ) {
         $this->storedFileName = '';
         $this->filePath = '';
         $this->fileName = '';
@@ -67,13 +72,12 @@ final class FileUploader
      */
     public function upload(
         UploadedFile $file,
-        FolderType   $folderType,
+        FolderType $folderType,
         DocumentType $docType,
-        ?string      $filename = null,
-        ?int         $filenameMaxLength = null,
-        bool         $useUniqueId = true,
-    ): self
-    {
+        ?string $filename = null,
+        ?int $filenameMaxLength = null,
+        bool $useUniqueId = true,
+    ): self {
         $this->extension = $file->guessExtension();
 
         $filenameMaxLength ??= mb_strlen($this->getOriginalFilename($file));
@@ -81,11 +85,7 @@ final class FileUploader
         $uid = $useUniqueId ? str_replace('.', '-', '-' . uniqid('', true)) : '';
         $filename ??= mb_substr($this->getOriginalFilename($file) . $uid, 0, $filenameMaxLength);
 
-        $this->storedFileName = sprintf(
-            '%s.%s',
-            $filename,
-            $this->extension,
-        );
+        $this->storedFileName = \sprintf('%s.%s', $filename, $this->extension);
 
         $this->filePath = $this->getDirectory($folderType, $docType);
 
@@ -112,7 +112,7 @@ final class FileUploader
 
     public function getOriginalFilename(UploadedFile $file, bool $unSafe = false): string
     {
-        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $originalFilename = pathinfo($file->getClientOriginalName(), \PATHINFO_FILENAME);
 
         if ($unSafe) {
             return $originalFilename;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\Role;
@@ -8,6 +10,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use SensitiveParameter;
 use Stringable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -31,18 +34,20 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     public function __construct(string $email = '')
     {
         // @deprecated
-        $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
+        $this->salt = base_convert(sha1(uniqid((string) mt_rand(), true)), 16, 36);
 
         $this->email = $email;
         $this->setCreationDate(new DateTime('NOW'));
         parent::__construct();
     }
 
+    /** @return array<string, string> */
     public static function getAvailableRoles(): array
     {
         return Role::toArray();
     }
 
+    /** @return array<string, string> */
     public static function getAvailableRolesLabels(): array
     {
         return [
@@ -90,7 +95,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
             return;
         }
 
-        $roles = explode(',', (string)$this->rights);
+        $roles = explode(',', (string) $this->rights);
 
         if (!$this->hasRole($role)) {
             $roles[] = $role;
@@ -112,10 +117,10 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
             $role = $role->value;
         }
 
-        return in_array(strtoupper($role), $this->getRoles(), true);
+        return \in_array(strtoupper($role), $this->getRoles(), true);
     }
 
-    public function equals(User $User): void
+    public function equals(self $User): void
     {
     }
 
@@ -170,14 +175,18 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
 
     /**
      * Fourni tous les billets d'un utilisateur.
+     *
+     * @return Collection<int, Billet>
      */
     public function getBillets(): Collection
     {
         $billets = new ArrayCollection();
         foreach ($this->getParticipants() as $participant) {
-            if ($participant->getBillet()) {
-                $billets[] = $participant->getBillet();
+            if (!$participant->getBillet()) {
+                continue;
             }
+
+            $billets->add($participant->getBillet());
         }
 
         return $billets;
@@ -203,6 +212,8 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
 
     /**
      * Fourni la liste de tous les événements futur auquel l'utilisateur participe.
+     *
+     * @return Collection<int, Participant>
      */
     public function getFuturEvents(): Collection
     {
@@ -210,9 +221,11 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         $now = new DateTime('NOW');
 
         foreach ($this->getParticipants() as $participant) {
-            if ($participant->getGn()->getDateDebut() > $now) {
-                $futurEvents[] = $participant;
+            if ($participant->getGn()->getDateDebut() <= $now) {
+                continue;
             }
+
+            $futurEvents->add($participant);
         }
 
         return $futurEvents;
@@ -220,12 +233,14 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
 
     /**
      * Fourni la liste des tous les GN auquel l'utillisateur participe.
+     *
+     * @return Collection<int, Gn>
      */
     public function getGns(): Collection
     {
         $gns = new ArrayCollection();
         foreach ($this->getParticipants() as $participant) {
-            $gns[] = $participant->getGn();
+            $gns->add($participant->getGn());
         }
 
         return $gns;
@@ -233,8 +248,10 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
 
     /**
      * Fourni la liste des groupes dont l'utilisateur est le scénariste.
+     *
+     * @return Collection<int, Groupe>
      */
-    public function getGroupeScenariste()
+    public function getGroupeScenariste(): Collection
     {
         return $this->getGroupeRelatedByScenaristeIds();
     }
@@ -247,14 +264,15 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         return $this->getUsername() . ' ' . $this->getEmail();
     }
 
-    public function getLastPersonnage()
+    public function getLastPersonnage(): ?Personnage
     {
         $last = null;
         foreach ($this->getParticipants() as $participant) {
-            if (null != $participant->getPersonnage() && (null == $last || $participant->getId() > $last->getId())) {
-                // On conserve la dernière participation avec un personnage
-                $last = $participant;
+            if (!(null != $participant->getPersonnage() && (null == $last || $participant->getId() > $last->getId()))) {
+                continue;
             }
+
+            $last = $participant;
         }
 
         return $last?->getPersonnage();
@@ -262,18 +280,18 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
 
     public function getPersonnage(bool $onlyActive = false): ?Personnage
     {
-        if ($onlyActive)  {
+        if ($onlyActive) {
             return parent::getPersonnage();
         }
 
-        return parent::getPersonnage() // actif
-            ?? $this->getPersonnages()->last()
-            ?? $this->getParticipants()->last()?->getPersonnage()
-            ?: null;
-
+        return (
+            parent::getPersonnage() // actif
+            ?? ($this->getPersonnages()->last() ?: null) ?? ($this->getParticipants()->last() ?: null)?->getPersonnage()
+            ?: null
+        );
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(#[SensitiveParameter] string $password): static
     {
         // we use a different password column until we switch the new larp
         $this->pwd = $password;
@@ -284,7 +302,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     /**
      * Alias vers Username.
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->getUsername();
     }
@@ -310,21 +328,26 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     {
         $personnages_vivants = [];
         foreach ($this->personnages as $personnage) {
-            if ($personnage->getVivant()) {
-                $personnages_vivants[] = $personnage;
+            if (!$personnage->getVivant()) {
+                continue;
             }
+
+            $personnages_vivants[] = $personnage;
         }
 
         return $personnages_vivants;
     }
 
+    /** @return array<int, Personnage> */
     public function getPersonnagesAvailableToParticipation(): array
     {
         $available = [];
         foreach ($this->personnages as $personnage) {
-            if ($personnage->getVivant() && $personnage->getId() !== $this->getPersonnageSecondaire()?->getId()) {
-                $available[] = $personnage;
+            if (!($personnage->getVivant() && $personnage->getId() !== $this->getPersonnageSecondaire()?->getId())) {
+                continue;
             }
+
+            $available[] = $personnage;
         }
 
         return $available;
@@ -350,7 +373,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
      */
     public function hasRealUsername(): bool
     {
-        return !is_null($this->username);
+        return null !== $this->username;
     }
 
     /**
@@ -418,7 +441,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     /**
      * Indique si l'utilisateur est membre d'un groupe.
      */
-    public function isMemberOf(Groupe $groupe)
+    public function isMemberOf(Groupe $groupe): bool
     {
         return $this->getGroupes()->contains($groupe);
     }
@@ -433,7 +456,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
             return true;
         }
 
-        return $timeRequested + $ttl < time();
+        return ($timeRequested + $ttl) < time();
     }
 
     /**
@@ -443,9 +466,9 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
      */
     public function removeRole($role): void
     {
-        $roles = explode(',', (string)$this->rights);
+        $roles = explode(',', (string) $this->rights);
 
-        if (false !== $key = array_search(strtoupper($role), $roles, true)) {
+        if (false !== ($key = array_search(strtoupper($role), $roles, true))) {
             unset($roles[$key]);
             $this->rights = implode(',', array_values($roles));
         }
@@ -465,7 +488,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         ]);
     }
 
-    public function setEnabled($isEnabled): static
+    public function setEnabled(bool $isEnabled): static
     {
         return $this->setIsEnabled($isEnabled);
     }
@@ -487,7 +510,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     /**
      * Validate the User object.
      *
-     * @return array an array of error messages, or an empty array if there were no errors
+     * @return array<string, string> an array of error messages, or an empty array if there were no errors
      */
     public function validate(): array
     {
@@ -498,17 +521,17 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         } elseif (!strpos($this->getEmail(), '@')) {
             // Basic email format sanity check. Real validation comes from sending them an email with a link they have to click.
             $errors['email'] = 'Email address appears to be invalid.';
-        } elseif (strlen($this->getEmail()) > 100) {
+        } elseif (\strlen($this->getEmail()) > 100) {
             $errors['email'] = "Email address can't be longer than 100 characters.";
         }
 
         if ('' === $this->getPassword() || '0' === $this->getPassword()) {
             $errors['password'] = 'Password is required.';
-        } elseif (strlen($this->getPassword()) > 255) {
+        } elseif (\strlen($this->getPassword()) > 255) {
             $errors['password'] = "Password can't be longer than 255 characters.";
         }
 
-        if (strlen($this->getUsername()) > 100) {
+        if (\strlen($this->getUsername()) > 100) {
             $errors['name'] = "Name can't be longer than 100 characters.";
         }
 
@@ -546,13 +569,13 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         return $this->username;
     }
 
-    public function validatePasswordStrength(string $password): ?string
+    public function validatePasswordStrength(#[SensitiveParameter] string $password): ?string
     {
         if (empty($password)) {
             return "Pas de mot de passe, pas d'accès";
         }
 
-        if (strlen($password) < 5) {
+        if (\strlen($password) < 5) {
             return 'Mot de passe de moins de 5 caractères ? Même un Cimérien fait mieux !';
         }
 

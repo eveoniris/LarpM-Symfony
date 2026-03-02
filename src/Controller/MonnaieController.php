@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -12,16 +13,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
 class MonnaieController extends AbstractController
 {
     /**
      * Liste les monnaies.
      */
     #[Route('/monnaie', name: 'monnaie.list')]
-    public function listAction( EntityManagerInterface $entityManager, Request $request)
+    public function listAction(EntityManagerInterface $entityManager, Request $request): Response
     {
-        $monnaies = $entityManager->getRepository('\\'.\App\Entity\Monnaie::class)->findAll();
+        $monnaies = $entityManager->getRepository('\\' . Monnaie::class)->findAll();
 
         return $this->render('monnaie/list.twig', [
             'monnaies' => $monnaies,
@@ -32,10 +33,9 @@ class MonnaieController extends AbstractController
      * Ajoute une monnaie.
      */
     #[Route('/monnaie/add', name: 'monnaie.add')]
-    public function addAction( EntityManagerInterface $entityManager, Request $request)
+    public function addAction(EntityManagerInterface $entityManager, Request $request): Response
     {
-        $form = $this->createForm(MonnaieForm::class, new Monnaie())
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(MonnaieForm::class, new Monnaie())->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -44,7 +44,7 @@ class MonnaieController extends AbstractController
             $entityManager->persist($monnaie);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La monnaie a été enregistrée.');
+            $this->addFlash('success', 'La monnaie a été enregistrée.');
 
             return $this->redirectToRoute('monnaie.list', [], 303);
         }
@@ -58,10 +58,9 @@ class MonnaieController extends AbstractController
      * Met à jour une monnaie.
      */
     #[Route('/monnaie/{monnaie}/update', name: 'monnaie.update')]
-    public function updateAction( EntityManagerInterface $entityManager, Request $request, Monnaie $monnaie)
+    public function updateAction(EntityManagerInterface $entityManager, Request $request, Monnaie $monnaie): Response
     {
-        $form = $this->createForm(MonnaieForm::class, $monnaie)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(MonnaieForm::class, $monnaie)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -70,7 +69,7 @@ class MonnaieController extends AbstractController
             $entityManager->persist($monnaie);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La monnaie a été enregistrée.');
+            $this->addFlash('success', 'La monnaie a été enregistrée.');
 
             return $this->redirectToRoute('monnaie.list', [], 303);
         }
@@ -85,10 +84,9 @@ class MonnaieController extends AbstractController
      * Supprime une monnaie.
      */
     #[Route('/monnaie/{monnaie}/delete', name: 'monnaie.delete')]
-    public function deleteAction( EntityManagerInterface $entityManager, Request $request, Monnaie $monnaie)
+    public function deleteAction(EntityManagerInterface $entityManager, Request $request, Monnaie $monnaie): Response
     {
-        $form = $this->createForm(MonnaieDeleteForm::class, $monnaie)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(MonnaieDeleteForm::class, $monnaie)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -97,7 +95,7 @@ class MonnaieController extends AbstractController
             $entityManager->remove($monnaie);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La monnaie a été supprimée.');
+            $this->addFlash('success', 'La monnaie a été supprimée.');
 
             return $this->redirectToRoute('monnaie.list', [], 303);
         }
@@ -112,7 +110,7 @@ class MonnaieController extends AbstractController
      * Fourni le détail d'une monnaie.
      */
     #[Route('/monnaie/{monnaie}/detail', name: 'monnaie.detail')]
-    public function detailAction( EntityManagerInterface $entityManager, Request $request, Monnaie $monnaie)
+    public function detailAction(EntityManagerInterface $entityManager, Request $request, Monnaie $monnaie): Response
     {
         return $this->render('monnaie/detail.twig', [
             'monnaie' => $monnaie,

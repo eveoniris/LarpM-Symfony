@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Etat;
@@ -20,7 +22,7 @@ class StockController extends AbstractController
     #[Route('/stock', name: 'stock.index')]
     public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository('\\'.Objet::class);
+        $repo = $entityManager->getRepository('\\' . Objet::class);
 
         $qb = $repo->createQueryBuilder('objet');
         $qb->select('COUNT(objet)');
@@ -47,19 +49,19 @@ class StockController extends AbstractController
 
         $last_add = $repo->findBy([], ['creation_date' => 'DESC'], 10, 0);
 
-        $repo = $entityManager->getRepository('\\'.Etat::class);
+        $repo = $entityManager->getRepository('\\' . Etat::class);
         $etats = $repo->findAll();
 
-        $repo = $entityManager->getRepository('\\'.Tag::class);
+        $repo = $entityManager->getRepository('\\' . Tag::class);
         $tags = $repo->findAll();
 
-        $repo = $entityManager->getRepository('\\'.Localisation::class);
+        $repo = $entityManager->getRepository('\\' . Localisation::class);
         $localisations = $repo->findAll();
 
-        $repo = $entityManager->getRepository('\\'.Rangement::class);
+        $repo = $entityManager->getRepository('\\' . Rangement::class);
         $rangements = $repo->findAll();
 
-        $repo = $entityManager->getRepository('\\'.Proprietaire::class);
+        $repo = $entityManager->getRepository('\\' . Proprietaire::class);
         $proprietaires = $repo->findAll();
 
         return $this->render('stock/index.twig', [

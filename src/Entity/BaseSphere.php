@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,16 +21,18 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\DiscriminatorMap(['base' => 'BaseSphere', 'extended' => 'Sphere'])]
 abstract class BaseSphere
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $label = null;
 
+    /** @var Collection<int, Priere> */
     #[OneToMany(mappedBy: 'sphere', targetEntity: Priere::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'sphere_id', nullable: false)]
     protected Collection $prieres;
 
+    /** @var Collection<int, Religion> */
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'spheres')]
     #[ORM\JoinTable(name: 'religions_spheres')]
     #[JoinColumn(name: 'sphere_id', referencedColumnName: 'id', nullable: false)]
@@ -100,6 +104,8 @@ abstract class BaseSphere
 
     /**
      * Get Priere entity collection (one to many).
+     *
+     * @return Collection<int, Priere>
      */
     public function getPrieres(): Collection
     {
@@ -111,6 +117,7 @@ abstract class BaseSphere
      */
     public function addReligion(Religion $religion): static
     {
+        /* @phpstan-ignore argument.type */
         $religion->addSphere($this);
         $this->religions[] = $religion;
 
@@ -122,6 +129,7 @@ abstract class BaseSphere
      */
     public function removeReligion(Religion $religion): static
     {
+        /* @phpstan-ignore argument.type */
         $religion->removeSphere($this);
         $this->religions->removeElement($religion);
 
@@ -130,6 +138,8 @@ abstract class BaseSphere
 
     /**
      * Get Religion entity collection.
+     *
+     * @return Collection<int, Religion>
      */
     public function getReligions(): Collection
     {

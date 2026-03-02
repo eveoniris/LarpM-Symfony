@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\EspeceType;
@@ -8,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use SensitiveParameter;
 
 #[ORM\Entity(repositoryClass: EspeceRepository::class)]
 class Espece
@@ -141,7 +144,7 @@ class Espece
         return $this;
     }
 
-    public function setSecret(bool $secret): static
+    public function setSecret(#[SensitiveParameter] bool $secret): static
     {
         $this->secret = $secret;
 

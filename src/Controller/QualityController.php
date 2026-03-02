@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Controller;
 
 use App\Entity\Quality;
-use App\Entity\QualityValeur;
-use Doctrine\Common\Collections\ArrayCollection;
 use App\Form\Quality\QualityDeleteForm;
 use App\Form\Quality\QualityForm;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,16 +15,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
 class QualityController extends AbstractController
 {
     /**
      * Liste les qualitys.
      */
     #[Route('/quality', name: 'quality.list')]
-    public function listAction( EntityManagerInterface $entityManager, Request $request): Response
+    public function listAction(EntityManagerInterface $entityManager, Request $request): Response
     {
-        $qualities = $entityManager->getRepository('\\'.\App\Entity\Quality::class)->findAll();
+        $qualities = $entityManager->getRepository('\\' . Quality::class)->findAll();
 
         return $this->render('quality/list.twig', [
             'qualities' => $qualities,
@@ -35,10 +35,9 @@ class QualityController extends AbstractController
      * Ajoute une quality.
      */
     #[Route('/quality/add', name: 'quality.add')]
-    public function addAction( EntityManagerInterface $entityManager, Request $request): Response|RedirectResponse
+    public function addAction(EntityManagerInterface $entityManager, Request $request): Response|RedirectResponse
     {
-        $form = $this->createForm(QualityForm::class, new Quality())
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(QualityForm::class, new Quality())->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -55,7 +54,7 @@ class QualityController extends AbstractController
             $entityManager->persist($quality);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La quality a été enregistrée.');
+            $this->addFlash('success', 'La quality a été enregistrée.');
 
             return $this->redirectToRoute('quality.list', [], 303);
         }
@@ -69,8 +68,11 @@ class QualityController extends AbstractController
      * Met à jour une quality.
      */
     #[Route('/quality/{quality}/update', name: 'quality.update')]
-    public function updateAction( EntityManagerInterface $entityManager, Request $request, Quality $quality): Response|RedirectResponse
-    {
+    public function updateAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Quality $quality,
+    ): Response|RedirectResponse {
         $originalQualityValeurs = new ArrayCollection();
 
         /*
@@ -79,10 +81,9 @@ class QualityController extends AbstractController
         foreach ($quality->getQualityValeurs() as $qualityValeur) {
             $originalQualityValeurs->add($qualityValeur);
         }
-        //dump($quality);
+        // dump($quality);
 
-        $form = $this->createForm(QualityForm::class, $quality)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(QualityForm::class, $quality)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -100,15 +101,17 @@ class QualityController extends AbstractController
              *  supprime la relation entre participantHasRestauration et le participant
              */
             foreach ($originalQualityValeurs as $qualityValeur) {
-                if (false == $quality->getQualityValeurs()->contains($qualityValeur)) {
-                    $entityManager->remove($qualityValeur);
+                if (false != $quality->getQualityValeurs()->contains($qualityValeur)) {
+                    continue;
                 }
+
+                $entityManager->remove($qualityValeur);
             }
 
             $entityManager->persist($quality);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La quality a été enregistrée.');
+            $this->addFlash('success', 'La quality a été enregistrée.');
 
             return $this->redirectToRoute('quality.list', [], 303);
         }
@@ -123,10 +126,12 @@ class QualityController extends AbstractController
      * Supprime une quality.
      */
     #[Route('/quality/{quality}/delete', name: 'quality.delete')]
-    public function deleteAction( EntityManagerInterface $entityManager, Request $request, Quality $quality): Response|RedirectResponse
-    {
-        $form = $this->createForm(QualityDeleteForm::class, $quality)
-            ->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+    public function deleteAction(
+        EntityManagerInterface $entityManager,
+        Request $request,
+        Quality $quality,
+    ): Response|RedirectResponse {
+        $form = $this->createForm(QualityDeleteForm::class, $quality)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -135,7 +140,7 @@ class QualityController extends AbstractController
             $entityManager->remove($quality);
             $entityManager->flush();
 
-           $this->addFlash('success', 'La quality a été supprimée.');
+            $this->addFlash('success', 'La quality a été supprimée.');
 
             return $this->redirectToRoute('quality.list', [], 303);
         }
@@ -150,7 +155,7 @@ class QualityController extends AbstractController
      * Fourni le détail d'une quality.
      */
     #[Route('/quality/{quality}/detail', name: 'quality.detail')]
-    public function detailAction( EntityManagerInterface $entityManager, Request $request, Quality $quality): Response
+    public function detailAction(EntityManagerInterface $entityManager, Request $request, Quality $quality): Response
     {
         return $this->render('quality/detail.twig', [
             'quality' => $quality,

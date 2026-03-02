@@ -1,31 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Repository\ReligionRepository;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 #[Entity(repositoryClass: ReligionRepository::class)]
-class Religion extends BaseReligion implements \Stringable
+class Religion extends BaseReligion implements Stringable
 {
     public function __toString(): string
     {
         return $this->getLabel();
     }
 
-    public function getBlasonFileUrl()
+    public function getBlasonFileUrl(): string
     {
         // TODO params ?
-        return 'img/religions/'.$this->getBlason();
+        return 'img/religions/' . $this->getBlason();
     }
 
     /**
      * Fourni la liste des territoires ou la religion est la religion principale.
+     *
+     * @return \Doctrine\Common\Collections\Collection<int, Territoire>
      */
-    public function getTerritoirePrincipaux()
+    public function getTerritoirePrincipaux(): \Doctrine\Common\Collections\Collection
     {
         return $this->getTerritoires();
     }
@@ -34,7 +39,7 @@ class Religion extends BaseReligion implements \Stringable
     {
         // dump((new AsciiSlugger())->slug($this->getLabel()).'.stl');
 
-        return file_exists('../'.$this->getStl()->getDocument());
+        return file_exists('../' . $this->getStl()->getDocument());
     }
 
     public function getStl(): Document
@@ -43,7 +48,7 @@ class Religion extends BaseReligion implements \Stringable
 
         $document->setDocumentType(DocumentType::Religion3D);
         $document->setFolderType(FolderType::Photos);
-        $document->setFilename((new AsciiSlugger())->slug($this->getLabel()).'.stl');
+        $document->setFilename(new AsciiSlugger()->slug($this->getLabel()) . '.stl');
         $document->setLabel($this->getLabel());
         $document->setFilenameMaxLength(45);
         $document->setDocumentExtension('.stl');

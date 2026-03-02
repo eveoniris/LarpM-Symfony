@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -14,7 +16,7 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseFormulaire', 'extended' => 'Formulaire'])]
 abstract class BaseFormulaire
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45, nullable: true)]
@@ -45,7 +47,7 @@ abstract class BaseFormulaire
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'title'];
-    } */
+     * {
+     * return ['id', 'title'];
+     * } */
 }

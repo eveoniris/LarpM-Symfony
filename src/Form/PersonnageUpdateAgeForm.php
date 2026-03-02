@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -26,11 +27,10 @@ class PersonnageUpdateAgeForm extends AbstractType
             'class' => Age::class,
             'choice_label' => 'fullLabel',
             'label' => 'Choisissez la catégorie d\'age du personnage',
-        ])
-            ->add('ageReel', NumberType::class, [
-                'required' => true,
-                'label' => "Indiquez l'age du personnage",
-            ]);
+        ])->add('ageReel', NumberType::class, [
+            'required' => true,
+            'label' => "Indiquez l'age du personnage",
+        ]);
     }
 
     /**

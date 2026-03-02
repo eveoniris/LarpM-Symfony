@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Type;
 
+use App\Entity\IntrigueHasDocument;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,7 +29,7 @@ class IntrigueHasDocumentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\IntrigueHasDocument::class,
+            'data_class' => IntrigueHasDocument::class,
         ]);
     }
 

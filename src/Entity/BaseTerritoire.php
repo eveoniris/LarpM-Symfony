@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * ATTENTION Cette classe n'est pas généré car elle contient une ManyToMany sur elle-même
  * à travers la table territoire_quete.
@@ -48,7 +50,6 @@ abstract class BaseTerritoire
 
     #[Column(type: Types::STRING, length: 45, unique: true)]
     #[Assert\Length(max: 45)]
-
     protected ?string $capitale = null;
 
     #[Column(type: Types::STRING, length: 45, unique: true)]
@@ -119,30 +120,37 @@ abstract class BaseTerritoire
     #[Column(type: Types::INTEGER)]
     protected int $ordre_social = 0;
 
+    /** @var Collection<int, Chronologie> */
     #[OneToMany(mappedBy: 'territoire', targetEntity: Chronologie::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'zone_politique_id', nullable: false)]
     protected Collection $chronologies;
 
+    /** @var Collection<int, Groupe> */
     #[OneToMany(mappedBy: 'territoire', targetEntity: Groupe::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: false)]
     protected ?Collection $groupes;
 
+    /** @var Collection<int, Personnage> */
     #[OneToMany(mappedBy: 'territoire', targetEntity: Personnage::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: false)]
     protected Collection $personnages;
 
+    /** @var Collection<int, Rumeur> */
     #[OneToMany(mappedBy: 'territoire', targetEntity: Rumeur::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: false)]
     protected Collection $rumeurs;
 
+    /** @var Collection<int, Territoire> */
     #[OneToMany(mappedBy: 'territoire', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: false)]
     protected Collection $territoires;
 
+    /** @var Collection<int, TitreTerritoire> */
     #[OneToMany(mappedBy: 'territoire', targetEntity: TitreTerritoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'territoire_id', nullable: false)]
     protected Collection $titreTerritoires;
 
+    /** @var Collection<int, GroupeGnOrdre> */
     #[OneToMany(mappedBy: 'cible', targetEntity: GroupeGnOrdre::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'cible_id', nullable: false)]
     protected Collection $groupeGnOrdres;
@@ -166,12 +174,14 @@ abstract class BaseTerritoire
     #[JoinColumn(name: 'religion_id', referencedColumnName: 'id')]
     protected ?Religion $religion;
 
+    /** @var Collection<int, Territoire> */
     #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'territoireStarts')]
     #[ORM\JoinTable(name: 'territoire_quete')]
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'territoire_cible_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $territoireCibles;
 
+    /** @var Collection<int, Territoire> */
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'territoireCibles')]
     protected Collection $territoireStarts;
 
@@ -183,42 +193,49 @@ abstract class BaseTerritoire
     #[JoinColumn(name: 'culture_id', referencedColumnName: 'id')]
     protected ?Culture $culture = null;
 
+    /** @var Collection<int, Construction> */
     #[ORM\ManyToMany(targetEntity: Construction::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_construction')]
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'construction_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $constructions;
 
+    /** @var Collection<int, Loi> */
     #[ORM\ManyToMany(targetEntity: Loi::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_loi')]
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'loi_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $lois;
 
+    /** @var Collection<int, Ingredient> */
     #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_ingredient')]
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'ingredient_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $ingredients;
 
+    /** @var Collection<int, Ressource> */
     #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'importateurs')]
     #[ORM\JoinTable(name: 'territoire_importation')]
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $importations;
 
+    /** @var Collection<int, Ressource> */
     #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'exportateurs')]
     #[ORM\JoinTable(name: 'territoire_exportation')]
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $exportations;
 
+    /** @var Collection<int, Langue> */
     #[ORM\ManyToMany(targetEntity: Langue::class, inversedBy: 'territoireSecondaires')]
     #[ORM\JoinTable(name: 'territoire_langue')]
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $langues;
 
+    /** @var Collection<int, Religion> */
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'territoireSecondaires')]
     #[ORM\JoinTable(name: 'territoire_religion')]
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
@@ -234,6 +251,7 @@ abstract class BaseTerritoire
     #[ORM\OrderBy(['id' => 'DESC'])]
     private ?Collection $originesBonus;
 
+    /** @var Collection<int, Merveille> */
     #[OneToMany(mappedBy: 'territoire', targetEntity: Merveille::class)]
     private Collection $merveilles;
 
@@ -273,6 +291,7 @@ abstract class BaseTerritoire
      */
     public function addConstruction(Construction $construction): static
     {
+        /* @phpstan-ignore argument.type */
         $construction->addTerritoire($this);
         $this->constructions[] = $construction;
 
@@ -304,6 +323,7 @@ abstract class BaseTerritoire
      */
     public function addIngredient(Ingredient $ingredient): static
     {
+        /* @phpstan-ignore argument.type */
         $ingredient->addTerritoire($this);
         $this->ingredients[] = $ingredient;
 
@@ -315,6 +335,7 @@ abstract class BaseTerritoire
      */
     public function addLangue(Langue $langue): static
     {
+        /* @phpstan-ignore argument.type */
         $langue->addTerritoireSecondaire($this);
         $this->langues[] = $langue;
 
@@ -326,6 +347,7 @@ abstract class BaseTerritoire
      */
     public function addLoi(Loi $loi): static
     {
+        /* @phpstan-ignore argument.type */
         $loi->addTerritoire($this);
         $this->lois[] = $loi;
 
@@ -336,6 +358,7 @@ abstract class BaseTerritoire
     {
         if (!$this->merveilles->contains($merveille)) {
             $this->merveilles->add($merveille);
+            /* @phpstan-ignore argument.type */
             $merveille->setTerritoire($this);
         }
 
@@ -346,6 +369,7 @@ abstract class BaseTerritoire
     {
         if (!$this->originesBonus->contains($origineBonus)) {
             $this->originesBonus->add($origineBonus);
+            /* @phpstan-ignore argument.type */
             $origineBonus->setTerritoire($this);
         }
 
@@ -367,6 +391,7 @@ abstract class BaseTerritoire
      */
     public function addReligion(Religion $religion): static
     {
+        /* @phpstan-ignore argument.type */
         $religion->addTerritoireSecondaire($this);
         $this->religions[] = $religion;
 
@@ -488,6 +513,7 @@ abstract class BaseTerritoire
     /**
      * Get Chronologie entity collection (one to many).
      */
+    /** @return Collection<int, Chronologie> */
     public function getChronologies(): Collection
     {
         return $this->chronologies;
@@ -514,6 +540,7 @@ abstract class BaseTerritoire
     /**
      * Get Construction entity collection.
      */
+    /** @return Collection<int, Construction> */
     public function getConstructions(): Collection
     {
         return $this->constructions;
@@ -648,6 +675,7 @@ abstract class BaseTerritoire
     /**
      * Get Groupe entity collection (one to many).
      */
+    /** @return Collection<int, Groupe> */
     public function getGroupes(): ?Collection
     {
         return $this->groupes;
@@ -674,6 +702,7 @@ abstract class BaseTerritoire
     /**
      * Get Ingredient entity collection.
      */
+    /** @return Collection<int, Ingredient> */
     public function getIngredients(): Collection
     {
         return $this->ingredients;
@@ -718,6 +747,7 @@ abstract class BaseTerritoire
     /**
      * Get Langue entity collection.
      */
+    /** @return Collection<int, Langue> */
     public function getLangues(): Collection
     {
         return $this->langues;
@@ -726,6 +756,7 @@ abstract class BaseTerritoire
     /**
      * Get Loi entity collection.
      */
+    /** @return Collection<int, Loi> */
     public function getLois(): Collection
     {
         return $this->lois;
@@ -803,16 +834,15 @@ abstract class BaseTerritoire
 
     /**
      * Set the value of ordre_social.
-     *
-     * @param int $ordre_social
      */
-    public function setOrdreSocial(string $ordre_social): static
+    public function setOrdreSocial(int $ordre_social): static
     {
         $this->ordre_social = $ordre_social;
 
         return $this;
     }
 
+    /** @return Collection<int, OrigineBonus> */
     public function getOriginesBonus(): ?Collection
     {
         return $this->originesBonus;
@@ -821,6 +851,7 @@ abstract class BaseTerritoire
     /**
      * Get Personnage entity collection (one to many).
      */
+    /** @return Collection<int, Personnage> */
     public function getPersonnages(): Collection
     {
         return $this->personnages;
@@ -855,7 +886,7 @@ abstract class BaseTerritoire
     /**
      * Set the value of population.
      */
-    public function setPopulation(?string $population)
+    public function setPopulation(?string $population): static
     {
         $this->population = $population;
 
@@ -883,6 +914,7 @@ abstract class BaseTerritoire
     /**
      * Fourni la collection de religions.
      */
+    /** @return Collection<int, Religion> */
     public function getReligions(): Collection
     {
         return $this->religions;
@@ -898,10 +930,8 @@ abstract class BaseTerritoire
 
     /**
      * Set the value of resistance.
-     *
-     * @param int $resistance
      */
-    public function setResistance(string $resistance): static
+    public function setResistance(?int $resistance): static
     {
         $this->resistance = $resistance;
 
@@ -911,6 +941,7 @@ abstract class BaseTerritoire
     /**
      * Get Rumeur entity collection (one to many).
      */
+    /** @return Collection<int, Rumeur> */
     public function getRumeurs(): Collection
     {
         return $this->rumeurs;
@@ -981,6 +1012,7 @@ abstract class BaseTerritoire
     /**
      * Get territoireCibles entity collection.
      */
+    /** @return Collection<int, Territoire> */
     public function getTerritoireCibles(): Collection
     {
         return $this->territoireCibles;
@@ -1007,6 +1039,7 @@ abstract class BaseTerritoire
     /**
      * Get TerritoireStarts entity collection.
      */
+    /** @return Collection<int, Territoire> */
     public function getTerritoireStarts(): Collection
     {
         return $this->territoireStarts;
@@ -1015,6 +1048,7 @@ abstract class BaseTerritoire
     /**
      * Get Territoire entity collection (one to many).
      */
+    /** @return Collection<int, Territoire> */
     public function getTerritoires(): Collection
     {
         return $this->territoires;
@@ -1023,6 +1057,7 @@ abstract class BaseTerritoire
     /**
      * Get TitreTerritoire entity collection (one to many).
      */
+    /** @return Collection<int, TitreTerritoire> */
     public function getTitreTerritoires(): Collection
     {
         return $this->titreTerritoires;
@@ -1099,6 +1134,7 @@ abstract class BaseTerritoire
      */
     public function removeConstruction(Construction $construction): static
     {
+        /* @phpstan-ignore argument.type */
         $construction->removeTerritoire($this);
         $this->constructions->removeElement($construction);
 
@@ -1130,6 +1166,7 @@ abstract class BaseTerritoire
      */
     public function removeIngredient(Ingredient $ingredient): static
     {
+        /* @phpstan-ignore argument.type */
         $ingredient->removeTerritoire($this);
         $this->ingredients->removeElement($ingredient);
 
@@ -1141,6 +1178,7 @@ abstract class BaseTerritoire
      */
     public function removeLangue(Langue $langue): static
     {
+        /* @phpstan-ignore argument.type */
         $langue->removeTerritoireSecondaire($this);
         $this->langues->removeElement($langue);
 
@@ -1152,6 +1190,7 @@ abstract class BaseTerritoire
      */
     public function removeLoi(Loi $loi): static
     {
+        /* @phpstan-ignore argument.type */
         $loi->removeTerritoire($this);
         $this->lois->removeElement($loi);
 
@@ -1215,6 +1254,7 @@ abstract class BaseTerritoire
      */
     public function removeReligion(Religion $religion): static
     {
+        /* @phpstan-ignore argument.type */
         $religion->removeTerritoireSecondaire($this);
         $this->religions->removeElement($religion);
 

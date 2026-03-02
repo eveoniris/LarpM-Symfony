@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Classe;
 
 use App\Entity\Classe;
@@ -69,44 +71,35 @@ class ClasseForm extends AbstractType
                 'constraints' => [new Length(['max' => 450])],
             ])
             ->add('competenceFamilyFavorites', EntityType::class, [
-                    'label' => "Famille de compétences favorites (n'oubliez pas de cocher aussi la/les compétences acquises à la création)",
-                    'required' => false,
-                    'choice_label' => 'label',
-                    'multiple' => true,
-                    'expanded' => true,
-                    'mapped' => true,
-                    'class' => \App\Entity\CompetenceFamily::class,
-                    'query_builder' => static function (CompetenceFamilyRepository $cfr) {
-                        return $cfr->createQueryBuilder('cfr')->orderBy('cfr.label', 'ASC');
-                    },
-                ]
-            )
+                'label' => "Famille de compétences favorites (n'oubliez pas de cocher aussi la/les compétences acquises à la création)",
+                'required' => false,
+                'choice_label' => 'label',
+                'multiple' => true,
+                'expanded' => true,
+                'mapped' => true,
+                'class' => \App\Entity\CompetenceFamily::class,
+                'query_builder' => static fn (CompetenceFamilyRepository $cfr) => $cfr->createQueryBuilder('cfr')->orderBy('cfr.label', 'ASC'),
+            ])
             ->add('competenceFamilyNormales', EntityType::class, [
-                    'label' => 'Famille de compétences normales',
-                    'required' => false,
-                    'choice_label' => 'label',
-                    'multiple' => true,
-                    'expanded' => true,
-                    'mapped' => true,
-                    'class' => \App\Entity\CompetenceFamily::class,
-                    'query_builder' => static function (CompetenceFamilyRepository $cfr) {
-                        return $cfr->createQueryBuilder('cfr')->orderBy('cfr.label', 'ASC');
-                    },
-                ]
-            )
+                'label' => 'Famille de compétences normales',
+                'required' => false,
+                'choice_label' => 'label',
+                'multiple' => true,
+                'expanded' => true,
+                'mapped' => true,
+                'class' => \App\Entity\CompetenceFamily::class,
+                'query_builder' => static fn (CompetenceFamilyRepository $cfr) => $cfr->createQueryBuilder('cfr')->orderBy('cfr.label', 'ASC'),
+            ])
             ->add('competenceFamilyCreations', EntityType::class, [
-                    'label' => 'Famille de compétences acquises à la création',
-                    'required' => false,
-                    'choice_label' => 'label',
-                    'multiple' => true,
-                    'expanded' => true,
-                    'mapped' => true,
-                    'class' => \App\Entity\CompetenceFamily::class,
-                    'query_builder' => static function (CompetenceFamilyRepository $cfr) {
-                        return $cfr->createQueryBuilder('cfr')->orderBy('cfr.label', 'ASC');
-                    },
-                ]
-            );
+                'label' => 'Famille de compétences acquises à la création',
+                'required' => false,
+                'choice_label' => 'label',
+                'multiple' => true,
+                'expanded' => true,
+                'mapped' => true,
+                'class' => \App\Entity\CompetenceFamily::class,
+                'query_builder' => static fn (CompetenceFamilyRepository $cfr) => $cfr->createQueryBuilder('cfr')->orderBy('cfr.label', 'ASC'),
+            ]);
     }
 
     /**
@@ -125,29 +118,28 @@ class ClasseForm extends AbstractType
                 new Callback(static function (Classe $classe, ExecutionContextInterface $context): void {
                     $competenceFamilyLabelsInCommons = $classe->getCompetenceFamilyLabelsInCommons();
                     if ([] !== $competenceFamilyLabelsInCommons) {
-                        $context->buildViolation(
-                            sprintf(
+                        $context
+                            ->buildViolation(\sprintf(
                                 '%s : ne %s être que favorite ou normal, mais pas les deux en même temps',
                                 implode(', ', $competenceFamilyLabelsInCommons),
-                                \count($competenceFamilyLabelsInCommons) > 1 ? 'peuvent' : 'peut'
-                            )
-                        )
+                                \count($competenceFamilyLabelsInCommons) > 1 ? 'peuvent' : 'peut',
+                            ))
                             ->addViolation();
                     }
 
                     /* A activer si on souhaite imposer qu'une compétence offerte à la création ce doit d'être coché comme favorite
-                    $competenceFamilyLabelsIncreationNotInFavorites = $classe->getCompetenceFamilyCreationLabelsInNotInFavorites();
-                    if (!empty($competenceFamilyLabelsIncreationNotInFavorites)) {
-                        $context->buildViolation(
-                            sprintf(
-                                "%s : ne %s être offerte en création sans être marqué en favoris'",
-                                implode(', ', $competenceFamilyLabelsIncreationNotInFavorites),
-                                \count($competenceFamilyLabelsIncreationNotInFavorites) > 1 ? 'peuvent' : 'peut'
-                            )
-                        )
-                            ->addViolation();
-                    }
-                    */
+                     * $competenceFamilyLabelsIncreationNotInFavorites = $classe->getCompetenceFamilyCreationLabelsInNotInFavorites();
+                     * if (!empty($competenceFamilyLabelsIncreationNotInFavorites)) {
+                     * $context->buildViolation(
+                     * sprintf(
+                     * "%s : ne %s être offerte en création sans être marqué en favoris'",
+                     * implode(', ', $competenceFamilyLabelsIncreationNotInFavorites),
+                     * \count($competenceFamilyLabelsIncreationNotInFavorites) > 1 ? 'peuvent' : 'peut'
+                     * )
+                     * )
+                     * ->addViolation();
+                     * }
+                     */
                 }),
             ],
         ]);

@@ -1,8 +1,59 @@
 parameters:
     level: 6
+    phpVersion: 80400
     paths:
         - bin/
         - config/
         - public/
         - src/
         - tests/
+
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+
+    excludePaths:
+        # Dead Silex-era code referencing non-existent App\Entity\Joueur
+        - src/Controller/JoueurController.php
+        - src/Repository/JoueurRepository.php
+        - src/Form/JoueurXpForm.php
+        - src/Form/JoueurForm.php
+        # Dead code referencing non-existent App\Entity\Post (forum feature not migrated)
+        - src/Form/PostDeleteForm.php
+        - src/Form/PostForm.php
+        # Third-party utility class (color generation) -- lacks PHP type annotations by design
+        - src/Manager/RandomColor.php
+        # Dead legacy controller referencing non-existent App\Entity\Guilde
+        - src/Controller/GuildeController.php
+
+    ignoreErrors:
+        # Doctrine getRepository() returns generic EntityRepository<T>, not the specific repository class.
+        # Methods like findNext(), findRare(), findCount(), etc. DO exist on the actual repository classes.
+        # Install phpstan/phpstan-doctrine to fix this properly.
+        - '#Call to an undefined method Doctrine\\ORM\\EntityRepository(<[^>]+>)?::#'
+
+        # Doctrine magic methods like findByLastName(), findByFirstName() work at runtime via __call()
+        - '#Call to an undefined method App\\Repository\\ParticipantRepository::findBy(LastName|FirstName)\(\)#'
+
+        # Legacy methods on entities not yet migrated (partial Symfony migration)
+        - '#Call to an undefined method App\\Entity\\Participant::(removeGroupe|getTavernId|setTavernId)\(\)#'
+        - '#Call to an undefined method App\\Entity\\Groupe::(getExportValue|getParticipants|getBackground)\(\)#'
+        - '#Call to an undefined method App\\Entity\\User::(getUserHasBillets|getGroupes|getParticipantByGroupe)\(\)#'
+        - '#Call to an undefined method App\\Entity\\BaseAppelation::stepCount\(\)#'
+
+        # EnumTraits: intentional defensive branches for non-backed enums — always unreachable for backed enums
+        - message: '#Unreachable statement - code above always terminates#'
+          path: src/Enum/EnumTraits.php
+          identifier: deadCode.unreachable
+
+        # Unused public methods that may be called externally (templates, API, CLI, legacy routes)
+        - message: '#Method App\\Controller\\InstallController::loadUserTables\(\) is unused#'
+          identifier: method.unused
+        - message: '#Method App\\Controller\\PersonnageController::getErrorMessages\(\) is unused#'
+          identifier: method.unused
+        - message: '#Method App\\Service\\MailService::getRequest\(\) is unused#'
+          identifier: method.unused
+
+includes:
+    - phpstan-baseline.neon
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Competence;
@@ -12,50 +14,53 @@ use App\Entity\User;
 use App\Service\OrderBy;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\QueryBuilder;
-use JetBrains\PhpStorm\Deprecated;
 
 class PersonnageRepository extends BaseRepository
 {
+    /**
+     * @return array<int, Personnage>
+     */
     public function findAll(): array
     {
         return $this->findBy([], ['nom' => 'ASC']);
     }
 
-    public function findAllWithoutLangue(Gn $gn)
+    /**
+     * @return array<int, Personnage>
+     */
+    public function findAllWithoutLangue(Gn $gn): array
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                    SELECT p FROM App\Entity\Personnage p
-                    INNER JOIN p.participants as pr
-                    LEFT JOIN p.personnageLangues pl
-                    WHERE pl.id IS NULL and pr.gn = :gnid
-                DQL,
-            );
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+                SELECT p FROM App\Entity\Personnage p
+                INNER JOIN p.participants as pr
+                LEFT JOIN p.personnageLangues pl
+                WHERE pl.id IS NULL and pr.gn = :gnid
+            DQL);
         $query->setParameter('gnid', $gn->getId());
 
         return $query->getResult();
     }
 
-    public function findAllVivant()
+    /**
+     * @return array<int, Personnage>
+     */
+    public function findAllVivant(): array
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                    SELECT p FROM App\Entity\Personnage p
-                    WHERE p.vivant = 1
-                DQL,
-            );
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+                SELECT p FROM App\Entity\Personnage p
+                WHERE p.vivant = 1
+            DQL);
 
         return $query->getResult();
     }
 
     /**
      * Trouve tous les backgrounds liés aux personnages.
-     *
-     * @param int $gnId
      */
-    public function findBackgrounds($gnId)
+    /**
+     * @return array<int, object>
+     */
+    public function findBackgrounds(int $gnId): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('pb');
@@ -71,9 +76,12 @@ class PersonnageRepository extends BaseRepository
 
     /**
      * Find multiple personnage.
+     *
+     * @param array<int, int> $ids
+     *
+     * @return array<int, Personnage>
      */
-    #[Deprecated]
-    public function findByIds(array $ids)
+    public function findByIds(array $ids): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -84,14 +92,14 @@ class PersonnageRepository extends BaseRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findCompetencesOrdered(Personnage $personnage)
+    /**
+     * @return array<int, Competence>
+     */
+    public function findCompetencesOrdered(Personnage $personnage): array
     {
         /** @var CompetenceRepository $competenceRepository */
         $competenceRepository = $this->getEntityManager()->getRepository(Competence::class);
-        $queryBuilder = $competenceRepository->getQueryBuilderFindAllOrderedByLabel()
-            ->select('c')
-            ->join('c.personnages', 'p')
-            ->andWhere('p.id = :pid');
+        $queryBuilder = $competenceRepository->getQueryBuilderFindAllOrderedByLabel()->select('c')->join('c.personnages', 'p')->andWhere('p.id = :pid');
 
         $queryBuilder->setParameter('pid', $personnage->getId());
 
@@ -100,9 +108,10 @@ class PersonnageRepository extends BaseRepository
 
     /**
      * Trouve le nombre de personnages correspondant aux critères de recherche.
+     *
+     * @param array<string, mixed> $criteria
      */
-    #[Deprecated]
-    public function findCount(array $criteria = [])
+    public function findCount(array $criteria = []): int
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -112,70 +121,69 @@ class PersonnageRepository extends BaseRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    /** @param array<string, mixed> $criteria */
     private function buildSearchFromJoinWhereQuery(QueryBuilder $qb, array $criteria, ?string $orderBy = null): void
     {
         $qb->from(Personnage::class, 'p');
         // jointure sur le dernier participant créé (on se base sur le max id des personnage participants)
-        $qb->leftjoin(
-            'p.participants',
-            'pa',
-            'with',
-            'pa.id =
+        $qb->leftjoin('p.participants', 'pa', 'WITH', 'pa.id =
  (SELECT MAX(pa2.id)
 FROM App\Entity\Personnage p2
 LEFT JOIN p2.participants pa2
  WHERE p2 = p
-)',
-        );
-        if (array_key_exists('religion', $criteria)) {
+)');
+        if (\array_key_exists('religion', $criteria)) {
             $qb->join('p.personnagesReligions', 'ppr');
             $qb->join('ppr.religion', 'pr');
         }
 
-        if (array_key_exists('classe', $criteria) || (null !== $orderBy && '' !== $orderBy && 'classe' == $orderBy)) {
+        if (\array_key_exists('classe', $criteria) || null !== $orderBy && '' !== $orderBy && 'classe' == $orderBy) {
             $qb->join('p.classe', 'cl');
         }
 
-        if (array_key_exists('competence', $criteria)) {
+        if (\array_key_exists('competence', $criteria)) {
             $qb->join('p.competences', 'cmp');
         }
 
-        if (array_key_exists('groupe', $criteria) || (null !== $orderBy && '' !== $orderBy && 'groupe' == $orderBy)) {
+        if (\array_key_exists('groupe', $criteria) || null !== $orderBy && '' !== $orderBy && 'groupe' == $orderBy) {
             // on rajoute la jointure sur le groupeGn -> groupe à partir du dernier participant
             $qb->join('pa.groupeGn', 'grgn');
             $qb->join('grgn.groupe', 'gr');
         }
 
         // ajoute les conditions
-        if (array_key_exists('classe', $criteria)) {
+        if (\array_key_exists('classe', $criteria)) {
             $qb->andWhere('cl.id = :classeId')->setParameter('classeId', $criteria['classe']);
         }
 
-        if (array_key_exists('competence', $criteria)) {
+        if (\array_key_exists('competence', $criteria)) {
             $qb->andWhere('cmp.id = :competenceId')->setParameter('competenceId', $criteria['competence']);
         }
 
-        if (array_key_exists('groupe', $criteria)) {
+        if (\array_key_exists('groupe', $criteria)) {
             $qb->andWhere('gr.id = :groupeId')->setParameter('groupeId', $criteria['groupe']);
         }
 
-        if (array_key_exists('religion', $criteria)) {
+        if (\array_key_exists('religion', $criteria)) {
             $qb->andWhere('pr.id = :religionId')->setParameter('religionId', $criteria['religion']);
         }
 
-        if (array_key_exists('id', $criteria)) {
+        if (\array_key_exists('id', $criteria)) {
             $qb->andWhere('p.id = :personnageId')->setParameter('personnageId', $criteria['id']);
         }
 
-        if (array_key_exists('nom', $criteria)) {
-            $qb->andWhere('p.nom LIKE :nom OR p.surnom LIKE :nom')->setParameter('nom', '%'.$criteria['nom'].'%');
+        if (\array_key_exists('nom', $criteria)) {
+            $qb->andWhere('p.nom LIKE :nom OR p.surnom LIKE :nom')->setParameter('nom', '%' . $criteria['nom'] . '%');
         }
     }
 
     /**
      * Fourni la liste des descendants directs.
      */
-    public function findDescendants($personnage_id)
+    /**
+     * @return array<int, PersonnageLignee>
+     */
+    public function findDescendants(Personnage $personnage): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -184,18 +192,26 @@ LEFT JOIN p2.participants pa2
         $qb->join('d.personnage', 'p');
         $qb->where('(d.parent1 = :parent OR d.parent2 = :parent)');
         $qb->orderBy('d.personnage', 'DESC');
-        $qb->setParameter('parent', $personnage_id);
+        $qb->setParameter('parent', $personnage->getId());
 
         return $qb->getQuery()->getResult();
     }
 
-    public function findList(array $criteria = [], ?array $order = [], ?int $limit = null, ?int $offset = null)
-    {
+    /**
+     * @param array<string, mixed>       $criteria
+     * @param array<string, string>|null $order
+     */
+    public function findList(
+        array $criteria = [],
+        ?array $order = [],
+        ?int $limit = null,
+        ?int $offset = null,
+    ): \Doctrine\ORM\Query {
         $orderBy = '';
         $orderDir = 'ASC';
-        if ($order && array_key_exists('by', $order)) {
+        if ($order && \array_key_exists('by', $order)) {
             $orderBy = $order['by'];
-            if (array_key_exists('dir', $order)) {
+            if (\array_key_exists('dir', $order)) {
                 $orderDir = $order['dir'];
             }
         }
@@ -224,7 +240,7 @@ LEFT JOIN p2.participants pa2
                     // $qb->addOrderBy('p.genre', $orderDir);
                     break;
                 default:
-                    $qb->orderBy('p.'.$orderBy, $orderDir);
+                    $qb->orderBy('p.' . $orderBy, $orderDir);
             }
         }
 
@@ -234,7 +250,10 @@ LEFT JOIN p2.participants pa2
     /**
      * Fourni la liste des descendants directs.
      */
-    public function findTitre($renommee)
+    /**
+     * @return array<int, Titre>
+     */
+    public function findTitre(int $renommee): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -256,28 +275,31 @@ LEFT JOIN p2.participants pa2
         $qb->from(Personnage::class, $this->alias);
         $qb = $this->gender($qb, $genderId, $ambigus);
 
-        return $qb->orderBy($this->alias.'.nom', 'ASC');
+        return $qb->orderBy($this->alias . '.nom', 'ASC');
     }
 
     public function gender(QueryBuilder $qb, int $gender, ?int $ambigus = null): QueryBuilder
     {
         if (!$ambigus) {
-            $qb->andWhere($this->alias.'.genre = :value');
+            $qb->andWhere($this->alias . '.genre = :value');
         } else {
-            $qb->andWhere($this->alias.'.genre = :value OR '.$this->alias.'.genre = :ambigus');
+            $qb->andWhere($this->alias . '.genre = :value OR ' . $this->alias . '.genre = :ambigus');
             $qb->setParameter('ambigus', $ambigus);
         }
 
         return $qb->setParameter('value', $gender);
     }
 
+    /**
+     * @return array<int, Personnage>
+     */
     public function findAllElder(int $age = 60): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select($this->alias);
         $qb->from(Personnage::class, $this->alias);
-        $qb->andWhere($this->alias.'.age_reel >= :age');
-        $qb->andWhere($this->alias.'.vivant = 1');
+        $qb->andWhere($this->alias . '.age_reel >= :age');
+        $qb->andWhere($this->alias . '.vivant = 1');
         $qb->setParameter('age', $age);
 
         return $qb->getQuery()->getResult();
@@ -288,8 +310,7 @@ LEFT JOIN p2.participants pa2
         $connection = $this->getEntityManager()->getConnection();
 
         // On ajoute le nombre de nouvelles années et maj la tranche d'age
-        $sql =
-            <<<SQL
+        $sql = <<<SQL
                 UPDATE personnage p
                 JOIN (
                     SELECT p.id,
@@ -316,6 +337,7 @@ LEFT JOIN p2.participants pa2
         return $statement->executeQuery();
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -325,61 +347,73 @@ LEFT JOIN p2.participants pa2
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias.'.user', 'user');
-       // $query->leftJoin('user.etatCivil', 'etatCivil');
+        $query->join($alias . '.user', 'user');
+        // $query->leftJoin('user.etatCivil', 'etatCivil');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    public function searchAttributes(): array
+    /**
+     * @return array<int, string|null>
+     */
+    /**
+     * @return array<int, string|null>
+     */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             self::SEARCH_ALL,
-            $alias.'.nom',
-            $alias.'.surnom',
-       //     'user.username as username',
-         //   'etatCivil.nom as user_nom',
-         //   'etatCivil.prenom as user_prenom',
-         //   'user.email as email',
-          //  "CONCAT(etatCivil.nom, ' ', etatCivil.prenom) AS HIDDEN nomPrenom",
+            $alias . '.nom',
+            $alias . '.surnom',
+            //     'user.username as username',
+            //   'etatCivil.nom as user_nom',
+            //   'etatCivil.prenom as user_prenom',
+            //   'user.email as email',
+            //  "CONCAT(etatCivil.nom, ' ', etatCivil.prenom) AS HIDDEN nomPrenom",
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::sortAttributes($alias),
-            $alias.'.nom' => [
-                OrderBy::ASC => [$alias.'.nom' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.nom' => OrderBy::DESC],
+            $alias . '.nom' => [
+                OrderBy::ASC => [$alias . '.nom' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.nom' => OrderBy::DESC],
             ],
-           /* 'email' => [
-                OrderBy::ASC => ['email' => OrderBy::ASC],
-                OrderBy::DESC => ['email' => OrderBy::DESC],
-            ],
-            'username' => [
-                OrderBy::ASC => ['username' => OrderBy::ASC],
-                OrderBy::DESC => ['username' => OrderBy::DESC],
-            ],*/
-          /*  'etatCivil.nom' => [
-                OrderBy::ASC => ['etatCivil.nom' => OrderBy::ASC],
-                OrderBy::DESC => ['etatCivil.nom' => OrderBy::DESC],
-            ],
-            'etatCivil.prenom' => [
-                OrderBy::ASC => ['etatCivil.prenom' => OrderBy::ASC],
-                OrderBy::DESC => ['etatCivil.prenom' => OrderBy::DESC],
-            ],
-            'nomPrenom' => [
-                OrderBy::ASC => ['nomPrenom' => OrderBy::ASC],
-                OrderBy::DESC => ['nomPrenom' => OrderBy::DESC],
-            ],*/
+            /* 'email' => [
+             * OrderBy::ASC => ['email' => OrderBy::ASC],
+             * OrderBy::DESC => ['email' => OrderBy::DESC],
+             * ],
+             * 'username' => [
+             * OrderBy::ASC => ['username' => OrderBy::ASC],
+             * OrderBy::DESC => ['username' => OrderBy::DESC],
+             * ],*/
+            /*  'etatCivil.nom' => [
+             * OrderBy::ASC => ['etatCivil.nom' => OrderBy::ASC],
+             * OrderBy::DESC => ['etatCivil.nom' => OrderBy::DESC],
+             * ],
+             * 'etatCivil.prenom' => [
+             * OrderBy::ASC => ['etatCivil.prenom' => OrderBy::ASC],
+             * OrderBy::DESC => ['etatCivil.prenom' => OrderBy::DESC],
+             * ],
+             * 'nomPrenom' => [
+             * OrderBy::ASC => ['nomPrenom' => OrderBy::ASC],
+             * OrderBy::DESC => ['nomPrenom' => OrderBy::DESC],
+             * ],*/
         ];
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function translateAttributes(): array
     {
         return [
@@ -395,26 +429,28 @@ LEFT JOIN p2.participants pa2
         ];
     }
 
+    public function alive(QueryBuilder $query, bool $vivant = true): QueryBuilder
+    {
+        return $query->andWhere($this->alias . '.vivant = :vivant')->setParameter('vivant', $vivant);
+    }
+
     public function user(QueryBuilder $query, User $user): QueryBuilder
     {
-        $query->andWhere($this->alias.'.user = :value');
+        $query->andWhere($this->alias . '.user = :value');
 
         return $query->setParameter('value', $user->getId());
     }
 
     /**
-     * Count alive personnage per user
+     * Count alive personnage per user.
      */
     public function countUser(User $user): int
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                    SELECT COUNT(p) FROM App\Entity\Personnage p
-                    INNER JOIN p.user u
-                    WHERE u.id = :uid AND p.vivant = 1
-                DQL,
-            );
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+                SELECT COUNT(p) FROM App\Entity\Personnage p
+                INNER JOIN p.user u
+                WHERE u.id = :uid AND p.vivant = 1
+            DQL);
         $query->setParameter('uid', $user->getId());
 
         return (int) $query->getSingleScalarResult();

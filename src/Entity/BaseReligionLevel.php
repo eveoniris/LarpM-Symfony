@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,28 +18,31 @@ use Doctrine\ORM\Mapping\OneToMany;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['base' => 'BaseReligionLevel', 'extended' => 'ReligionLevel'])]
-
 abstract class BaseReligionLevel
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, name: "`index`")]
+    #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, name: '`index`')]
     protected int $index = 0;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
     protected ?string $description = null;
 
+    /** @var Collection<int, PersonnagesReligions> */
     #[OneToMany(mappedBy: 'religionLevel', targetEntity: PersonnagesReligions::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'religion_level_id', nullable: false)]
-    protected $personnagesReligions;
+    /** @var Collection<int, PersonnagesReligions> */
+    protected Collection $personnagesReligions;
 
+    /** @var Collection<int, ReligionDescription> */
     #[OneToMany(mappedBy: 'religionLevel', targetEntity: ReligionDescription::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'religion_level_id', nullable: false)]
-    protected $religionDescriptions;
+    /** @var Collection<int, ReligionDescription> */
+    protected Collection $religionDescriptions;
 
     public function __construct()
     {
@@ -138,6 +143,8 @@ abstract class BaseReligionLevel
 
     /**
      * Get PersonnagesReligions entity collection (one to many).
+     *
+     * @return Collection<int, PersonnagesReligions>
      */
     public function getPersonnagesReligions(): Collection
     {
@@ -145,7 +152,7 @@ abstract class BaseReligionLevel
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'index', 'description'];
-    } */
+     * {
+     * return ['id', 'label', 'index', 'description'];
+     * } */
 }

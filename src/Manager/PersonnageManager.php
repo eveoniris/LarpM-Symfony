@@ -1,55 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Manager;
 
 use App\Entity\Competence;
-use App\Entity\Loi;
 use App\Entity\Personnage;
 use App\Entity\Religion;
-use App\Enum\CompetenceFamilyType;
-use App\Enum\LevelType;
+use App\Entity\Titre;
 use App\Service\Utilities;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 
 // TODO Split and migrate in Service/PersonnageManager
 final class PersonnageManager
 {
     /**
-     * Stock le personnage courant de la session.
-     */
-    public function setCurrentPersonnage($personnageId)
-    {
-        $this->app['session']->set('personnageId', $personnageId);
-    }
-
-    /**
-     * Récupére le personnage courant de la session.
-     *
-     * @return Personnage $personnage
-     */
-    public function getCurrentPersonnage()
-    {
-        $personnageId = $this->app['session']->get('personnageId');
-        if ($personnageId) {
-            return $this->app['converter.personnage']->convert($personnageId);
-        }
-
-        return null;
-    }
-
-    /**
-     * Reset le personnage courant.
-     */
-    public function resetCurrentPersonnage()
-    {
-        $this->app['session']->set('personnageId', null);
-    }
-
-    /**
      * Calcul le cout d'une compétence en fonction de la classe du personnage.
      */
-    public function getCompetenceCout(Personnage $personnage, Competence $competence)
+    public function getCompetenceCout(Personnage $personnage, Competence $competence): mixed
     {
         $classe = $personnage->getClasse();
         if ($classe->getCompetenceFamilyFavorites()->contains($competence->getCompetenceFamily())) {
@@ -66,15 +36,17 @@ final class PersonnageManager
     /**
      * Fourni le titre du personnage en fonction de sa renommée.
      */
-    public function titre(Personnage $personnage, EntityManagerInterface $entityManager)
+    public function titre(Personnage $personnage, EntityManagerInterface $entityManager): ?Titre
     {
         $result = null;
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Titre::class);
+        $repo = $entityManager->getRepository('\\' . Titre::class);
         $titres = $repo->findByRenomme();
         foreach ($titres as $titre) {
-            if ($personnage->getRenomme() >= $titre->getRenomme()) {
-                $result = $titre;
+            if ($personnage->getRenomme() < $titre->getRenomme()) {
+                continue;
             }
+
+            $result = $titre;
         }
 
         return $result;
@@ -83,7 +55,7 @@ final class PersonnageManager
     /**
      * Indique si un personnage connait une religion.
      */
-    public function knownReligion(Personnage $personnage, Religion $religion)
+    public function knownReligion(Personnage $personnage, Religion $religion): bool
     {
         $personnageReligions = $personnage->getPersonnagesReligions();
 
@@ -99,17 +71,22 @@ final class PersonnageManager
     /**
      * Retourne la liste des toutes les religions inconnues d'un personnage.
      */
-    public function getAvailableDescriptionReligion(Personnage $personnage, EntityManagerInterface $entityManager)
-    {
+    /** @return ArrayCollection<int, Religion> */
+    public function getAvailableDescriptionReligion(
+        Personnage $personnage,
+        EntityManagerInterface $entityManager,
+    ): ArrayCollection {
         $availableDescriptionReligions = new ArrayCollection();
 
-        $repo = $entityManager->getRepository('\\'.Religion::class);
+        $repo = $entityManager->getRepository('\\' . Religion::class);
         $religions = $repo->findAll();
 
         foreach ($religions as $religion) {
-            if (!$personnage->getReligions()->contains($religion)) {
-                $availableDescriptionReligions[] = $religion;
+            if ($personnage->getReligions()->contains($religion)) {
+                continue;
             }
+
+            $availableDescriptionReligions->add($religion);
         }
 
         return $availableDescriptionReligions;
@@ -117,27 +94,29 @@ final class PersonnageManager
 
     /**
      * Trouve toutes les langues non connues d'un personnages en fonction du niveau de diffusion voulu.
-     *
-     * @param unknown $diffusion
      */
-    public function getAvailableLangues(Personnage $personnage, $diffusion, EntityManagerInterface $entityManager)
-    {
+    /** @return ArrayCollection<int, \App\Entity\Langue> */
+    public function getAvailableLangues(
+        Personnage $personnage,
+        int $diffusion,
+        EntityManagerInterface $entityManager,
+    ): ArrayCollection {
         $availableLangues = new ArrayCollection();
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Langue::class);
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Langue::class);
         $langues = $repo->findBy([], ['label' => 'ASC']);
 
         foreach ($langues as $langue) {
-            if (0 == $langue->getSecret()) {
-                if (0 == $diffusion) {
-                    if ($langue->getDiffusion() == $diffusion
-                        && !$personnage->isKnownLanguage($langue)) {
-                        $availableLangues[] = $langue;
-                    }
-                } elseif ($langue->getDiffusion() >= $diffusion
-                    && !$personnage->isKnownLanguage($langue)) {
-                    $availableLangues[] = $langue;
+            if (0 != $langue->getSecret()) {
+                continue;
+            }
+
+            if (0 == $diffusion) {
+                if ($langue->getDiffusion() == $diffusion && !$personnage->isKnownLanguage($langue)) {
+                    $availableLangues->add($langue);
                 }
+            } elseif ($langue->getDiffusion() >= $diffusion && !$personnage->isKnownLanguage($langue)) {
+                $availableLangues->add($langue);
             }
         }
 
@@ -147,17 +126,23 @@ final class PersonnageManager
     /**
      * Trouve tous les sorts non connus d'un personnage en fonction du niveau du sort.
      */
-    public function getAvailableSorts(Personnage $personnage, $niveau, EntityManagerInterface $entityManager)
-    {
+    /** @return ArrayCollection<int, \App\Entity\Sort> */
+    public function getAvailableSorts(
+        Personnage $personnage,
+        int $niveau,
+        EntityManagerInterface $entityManager,
+    ): ArrayCollection {
         $availableSorts = new ArrayCollection();
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Sort::class);
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Sort::class);
         $sorts = $repo->findByNiveau($niveau);
 
         foreach ($sorts as $sort) {
-            if (!$personnage->isKnownSort($sort)) {
-                $availableSorts[] = $sort;
+            if ($personnage->isKnownSort($sort)) {
+                continue;
             }
+
+            $availableSorts[] = $sort;
         }
 
         return $availableSorts;
@@ -166,17 +151,20 @@ final class PersonnageManager
     /**
      * Trouve tous les domaines de magie non connus d'un personnage.
      */
-    public function getAvailableDomaines(Personnage $personnage, EntityManagerInterface $entityManager)
+    /** @return ArrayCollection<int, \App\Entity\Domaine> */
+    public function getAvailableDomaines(Personnage $personnage, EntityManagerInterface $entityManager): ArrayCollection
     {
         $availableDomaines = new ArrayCollection();
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Domaine::class);
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Domaine::class);
         $domaines = $repo->findAll();
 
         foreach ($domaines as $domaine) {
-            if (!$personnage->isKnownDomaine($domaine)) {
-                $availableDomaines[] = $domaine;
+            if ($personnage->isKnownDomaine($domaine)) {
+                continue;
             }
+
+            $availableDomaines->add($domaine);
         }
 
         return $availableDomaines;
@@ -185,17 +173,22 @@ final class PersonnageManager
     /**
      * Récupére la liste de toutes les religions non connues du personnage.
      */
-    public function getAvailableReligions(Personnage $personnage, EntityManagerInterface $entityManager)
-    {
+    /** @return ArrayCollection<int, Religion> */
+    public function getAvailableReligions(
+        Personnage $personnage,
+        EntityManagerInterface $entityManager,
+    ): ArrayCollection {
         $availableReligions = new ArrayCollection();
 
-        $repo = $entityManager->getRepository('\\'.Religion::class);
+        $repo = $entityManager->getRepository('\\' . Religion::class);
         $religions = $repo->findAllPublicOrderedByLabel();
 
         foreach ($religions as $religion) {
-            if (!$this->knownReligion($personnage, $religion)) {
-                $availableReligions->add($religion);
+            if ($this->knownReligion($personnage, $religion)) {
+                continue;
             }
+
+            $availableReligions->add($religion);
         }
 
         return $availableReligions;
@@ -204,17 +197,22 @@ final class PersonnageManager
     /**
      * Récupére la liste de toutes les religions non connue du personnage, vue admin.
      */
-    public function getAdminAvailableReligions(Personnage $personnage, EntityManagerInterface $entityManager)
-    {
+    /** @return ArrayCollection<int, Religion> */
+    public function getAdminAvailableReligions(
+        Personnage $personnage,
+        EntityManagerInterface $entityManager,
+    ): ArrayCollection {
         $availableReligions = new ArrayCollection();
 
-        $repo = $entityManager->getRepository('\\'.Religion::class);
+        $repo = $entityManager->getRepository('\\' . Religion::class);
         $religions = $repo->findAllOrderedByLabel();
 
         foreach ($religions as $religion) {
-            if (!$this->knownReligion($personnage, $religion)) {
-                $availableReligions->add($religion);
+            if ($this->knownReligion($personnage, $religion)) {
+                continue;
             }
+
+            $availableReligions->add($religion);
         }
 
         return $availableReligions;
@@ -223,20 +221,22 @@ final class PersonnageManager
     /**
      * Fourni la dernière compétence acquise par un presonnage.
      */
-    public function getLastCompetence(Personnage $personnage)
+    public function getLastCompetence(Personnage $personnage): ?Competence
     {
         $competence = null;
         $operationDate = null;
 
         foreach ($personnage->getExperienceUsages() as $experienceUsage) {
-            if ($personnage->getCompetences()->contains($experienceUsage->getCompetence())) {
-                if (!$operationDate) {
-                    $operationDate = $experienceUsage->getOperationDate();
-                    $competence = $experienceUsage->getCompetence();
-                } elseif ($operationDate < $experienceUsage->getOperationDate()) {
-                    $operationDate = $experienceUsage->getOperationDate();
-                    $competence = $experienceUsage->getCompetence();
-                }
+            if (!$personnage->getCompetences()->contains($experienceUsage->getCompetence())) {
+                continue;
+            }
+
+            if (!$operationDate) {
+                $operationDate = $experienceUsage->getOperationDate();
+                $competence = $experienceUsage->getCompetence();
+            } elseif ($operationDate < $experienceUsage->getOperationDate()) {
+                $operationDate = $experienceUsage->getOperationDate();
+                $competence = $experienceUsage->getCompetence();
             }
         }
 
@@ -246,17 +246,22 @@ final class PersonnageManager
     /**
      * Trouve toutes les technologies non connues d'un personnage.
      */
-    public function getAvailableTechnologies(Personnage $personnage, EntityManagerInterface $entityManager)
-    {
+    /** @return ArrayCollection<int, \App\Entity\Technologie> */
+    public function getAvailableTechnologies(
+        Personnage $personnage,
+        EntityManagerInterface $entityManager,
+    ): ArrayCollection {
         $availableTechnologies = new ArrayCollection();
 
-        $repo = $entityManager->getRepository('\\'.\App\Entity\Technologie::class);
+        $repo = $entityManager->getRepository('\\' . \App\Entity\Technologie::class);
         $technologies = $repo->findPublicOrderedByLabel();
 
         foreach ($technologies as $technologie) {
-            if (!$personnage->isKnownTechnologie($technologie)) {
-                $availableTechnologies[] = $technologie;
+            if ($personnage->isKnownTechnologie($technologie)) {
+                continue;
             }
+
+            $availableTechnologies[] = $technologie;
         }
 
         return $availableTechnologies;
@@ -272,7 +277,8 @@ final class PersonnageManager
      * - hasAnomalie
      * - status.
      */
-    public static function sort(array &$personnages, string $sortFieldName, bool $isAsc)
+    /** @param array<int, Personnage> $personnages */
+    public static function sort(array &$personnages, string $sortFieldName, bool $isAsc): bool
     {
         switch ($sortFieldName) {
             case 'id':
@@ -309,10 +315,10 @@ final class PersonnageManager
                 $sortByFunctionName = 'sortByHasAnomalie';
                 break;
             default:
-                throw new \Exception('Le champ de tri '.$sortFieldName.' n\'a pas été implémenté');
+                throw new Exception('Le champ de tri ' . $sortFieldName . ' n\'a pas été implémenté');
         }
         if (!$isAsc) {
-            $sortByFunctionName = $sortByFunctionName.'Desc';
+            $sortByFunctionName .= 'Desc';
         }
 
         // PersonnageManager::stable_uasort($personnages, array('\App\Manager\PersonnageManager', $sortByFunctionName));
@@ -323,8 +329,8 @@ final class PersonnageManager
         foreach ($personnages as &$item) {
             $item = [$index++, $item];
         }
-        $result = uasort($personnages, function ($a, $b) use ($sortByFunctionName) {
-            $result = call_user_func(__NAMESPACE__.'\PersonnageManager::'.$sortByFunctionName, $a[1], $b[1]);
+        $result = uasort($personnages, static function ($a, $b) use ($sortByFunctionName) {
+            $result = \call_user_func(__NAMESPACE__ . '\PersonnageManager::' . $sortByFunctionName, $a[1], $b[1]);
 
             return 0 == $result ? $a[0] - $b[0] : $result;
         });
@@ -589,7 +595,7 @@ final class PersonnageManager
         }
 
         // on prend le statut à l'envers, ici 0 = mort donc on veut plutôt du + grand au + petit
-        return ($aStatus > $bStatus) ? -1 : 1;
+        return $aStatus > $bStatus ? -1 : 1;
     }
 
     /**
@@ -616,7 +622,7 @@ final class PersonnageManager
         }
 
         // on prend le statut à l'envers, ici 0 = mort donc on veut plutôt du + grand au + petit
-        return ($aStatus > $bStatus) ? -1 : 1;
+        return $aStatus > $bStatus ? -1 : 1;
     }
 
     /**
@@ -653,7 +659,7 @@ final class PersonnageManager
         }
 
         // on prend le statut à l'envers, ici 0 = mort donc on veut plutôt du + grand au + petit
-        return ($aStatus > $bStatus) ? -1 : 1;
+        return $aStatus > $bStatus ? -1 : 1;
     }
 
     /**

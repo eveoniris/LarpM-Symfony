@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -17,7 +20,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseRenommeHistory', 'extended' => 'RenommeHistory'])]
 abstract class BaseRenommeHistory
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
@@ -27,7 +30,7 @@ abstract class BaseRenommeHistory
     protected ?string $explication = '';
 
     #[Column(name: 'date', type: \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)]
-    protected \DateTime $date;
+    protected DateTime $date;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'renommeHistories')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
@@ -35,7 +38,7 @@ abstract class BaseRenommeHistory
 
     public function __construct()
     {
-        $this->setDate(new \DateTime('NOW'));
+        $this->setDate(new DateTime('NOW'));
     }
 
     /**
@@ -95,7 +98,7 @@ abstract class BaseRenommeHistory
     /**
      * Set the value of date.
      */
-    public function setDate(\DateTime $date): static
+    public function setDate(DateTime $date): static
     {
         $this->date = $date;
 
@@ -105,7 +108,7 @@ abstract class BaseRenommeHistory
     /**
      * Get the value of date.
      */
-    public function getDate(): \DateTime
+    public function getDate(): DateTime
     {
         return $this->date;
     }
@@ -129,7 +132,7 @@ abstract class BaseRenommeHistory
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'renomme', 'explication', 'date', 'personnage_id'];
-    } */
+     * {
+     * return ['id', 'renomme', 'explication', 'date', 'personnage_id'];
+     * } */
 }

@@ -1,0 +1,4657 @@
+variant = "loose"
+
+[[issues]]
+file = "src/Command/DiscordBot.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Command/GnGiveLearning.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Command/GnGiveLearning.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Command/GnLock.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Command/GnLockGiveLiterature.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Command/GnLockGiveRenomme.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Command/GnParticipationXp.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Command/GnUnLock.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Command/VieillirPersonnages.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "assert-description"
+message = "Missing description in assert function."
+count = 1
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 4
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 2
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (5.760000000000001)."
+count = 1
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "literal-named-argument"
+message = 'Literal argument `".\n\r\t\v\0"` should be passed as a named argument for clarity.'
+count = 1
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "literal-named-argument"
+message = "Literal argument `'.'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "literal-named-argument"
+message = "Literal argument `';'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "literal-named-argument"
+message = "Literal argument `'w'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 2
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 3
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 5
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 5
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "no-literal-password"
+message = "Literal passwords or sensitive data should not be stored in code."
+count = 1
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 5
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 3
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/AdminController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/AdminController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/AdminController.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 4
+
+[[issues]]
+file = "src/Controller/AdminController.php"
+code = "literal-named-argument"
+message = "Literal argument `'/'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/AdminController.php"
+code = "literal-named-argument"
+message = "Literal argument `'r'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/AdminController.php"
+code = "no-debug-symbols"
+message = "Do not commit debug functions."
+count = 5
+
+[[issues]]
+file = "src/Controller/AdminController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/AdminController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 3
+
+[[issues]]
+file = "src/Controller/AdminController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/AgeController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/AgeController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/AnnonceController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/AppelationController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/AppelationController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/AppelationController.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/AppelationController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/AppelationController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/AttributeTypeController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/AttributeTypeController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/BackgroundController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/BackgroundController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/BackgroundController.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 3
+
+[[issues]]
+file = "src/Controller/BackgroundController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/BackgroundController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 3
+
+[[issues]]
+file = "src/Controller/BilletController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/BilletController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 2
+
+[[issues]]
+file = "src/Controller/BonusController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/BonusController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/BonusController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Controller/ChronologieController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/ChronologieController.php"
+code = "literal-named-argument"
+message = "Literal argument `512` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/ChronologieController.php"
+code = "literal-named-argument"
+message = "Literal argument `false` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/ClasseController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/ClasseController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/CompetenceController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/CompetenceController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/CompetenceController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 2
+
+[[issues]]
+file = "src/Controller/CompetenceController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/CompetenceFamilyController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/CompetenceFamilyController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/ConnaissanceController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/ConnaissanceController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/ConstructionController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/ConstructionController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/CultureController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/DebriefingController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/DebriefingController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/DebriefingController.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Controller/DebriefingController.php"
+code = "no-empty-catch-clause"
+message = "Do not use empty `catch` blocks."
+count = 1
+
+[[issues]]
+file = "src/Controller/DiscordController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/DiscordController.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/DiscordController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Controller/DocumentController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/DocumentController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/DocumentController.php"
+code = "literal-named-argument"
+message = "Literal argument `';'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/DocumentController.php"
+code = "literal-named-argument"
+message = "Literal argument `'ISO-8859-1'` should be passed as a named argument for clarity."
+count = 9
+
+[[issues]]
+file = "src/Controller/DocumentController.php"
+code = "literal-named-argument"
+message = "Literal argument `'w'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/DocumentController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 3
+
+[[issues]]
+file = "src/Controller/EconomieController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/EconomieController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/EconomieController.php"
+code = "halstead"
+message = "Method has a high halstead difficulty"
+count = 1
+
+[[issues]]
+file = "src/Controller/EconomieController.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Controller/EconomieController.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Controller/EconomieController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (2.87)."
+count = 1
+
+[[issues]]
+file = "src/Controller/EconomieController.php"
+code = "literal-named-argument"
+message = "Literal argument `';'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/EconomieController.php"
+code = "literal-named-argument"
+message = "Literal argument `'ISO-8859-1'` should be passed as a named argument for clarity."
+count = 17
+
+[[issues]]
+file = "src/Controller/EconomieController.php"
+code = "literal-named-argument"
+message = "Literal argument `'w'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/EconomieController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 5
+
+[[issues]]
+file = "src/Controller/EspeceController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/EspeceController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/EtatCivilController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/GenreController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/GenreController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/GenreController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (2.23)."
+count = 1
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "literal-named-argument"
+message = "Literal argument `';'` should be passed as a named argument for clarity."
+count = 8
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "literal-named-argument"
+message = "Literal argument `'ISO-8859-1'` should be passed as a named argument for clarity."
+count = 14
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "literal-named-argument"
+message = "Literal argument `'w'` should be passed as a named argument for clarity."
+count = 4
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 2
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 2
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 5
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (11.450000000000001)."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "literal-named-argument"
+message = "Literal argument `','` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "literal-named-argument"
+message = "Literal argument `';'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "literal-named-argument"
+message = "Literal argument `'ISO-8859-1'` should be passed as a named argument for clarity."
+count = 4
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "literal-named-argument"
+message = "Literal argument `'w'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 3
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 11
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 2
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 9
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (2.5700000000000003)."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 3
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (3.5)."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireController.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireController.php"
+code = "literal-named-argument"
+message = "Literal argument `255` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireController.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 2
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireController.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireTypeController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeSecondaireTypeController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 2
+
+[[issues]]
+file = "src/Controller/HomepageController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/HomepageController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/HomepageController.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 3
+
+[[issues]]
+file = "src/Controller/HomepageController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (2.59)."
+count = 1
+
+[[issues]]
+file = "src/Controller/HomepageController.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Controller/HomepageController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/IndexController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/IngredientController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/InstallController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/InstallController.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Controller/InstallController.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Controller/IntrigueController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/IntrigueController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/IntrigueController.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Controller/IntrigueController.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Controller/IntrigueController.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 1
+
+[[issues]]
+file = "src/Controller/IntrigueController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (8.01)."
+count = 1
+
+[[issues]]
+file = "src/Controller/IntrigueController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/IntrigueController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/IntrigueController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 3
+
+[[issues]]
+file = "src/Controller/JoueurController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/JoueurController.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 1
+
+[[issues]]
+file = "src/Controller/JoueurController.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 1
+
+[[issues]]
+file = "src/Controller/LangueController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/LangueController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/LangueController.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 2
+
+[[issues]]
+file = "src/Controller/LangueController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 4
+
+[[issues]]
+file = "src/Controller/LangueController.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 2
+
+[[issues]]
+file = "src/Controller/LangueController.php"
+code = "no-empty-catch-clause"
+message = "Do not use empty `catch` blocks."
+count = 1
+
+[[issues]]
+file = "src/Controller/LevelController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/LevelController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/LieuController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/LieuController.php"
+code = "literal-named-argument"
+message = "Literal argument `';'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/LieuController.php"
+code = "literal-named-argument"
+message = "Literal argument `'ISO-8859-1'` should be passed as a named argument for clarity."
+count = 3
+
+[[issues]]
+file = "src/Controller/LieuController.php"
+code = "literal-named-argument"
+message = "Literal argument `'w'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/LieuController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/LigneeController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/LigneeController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/LigneeController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 2
+
+[[issues]]
+file = "src/Controller/LigneeController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 3
+
+[[issues]]
+file = "src/Controller/LoiController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/MagieController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/MagieController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Controller/MagieController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/MerveilleController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/MerveilleController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/MessageController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/MessageController.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 2
+
+[[issues]]
+file = "src/Controller/MessageController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/MonnaieController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/NiveauController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/NiveauController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 2
+
+[[issues]]
+file = "src/Controller/NotificationController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/NotificationController.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 1
+
+[[issues]]
+file = "src/Controller/ObjetController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/ObjetController.php"
+code = "literal-named-argument"
+message = "Literal argument `10` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/ObjetController.php"
+code = "literal-named-argument"
+message = "Literal argument `20` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/ObjetController.php"
+code = "literal-named-argument"
+message = "Literal argument `99` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/ObjetController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 2
+
+[[issues]]
+file = "src/Controller/ObjetController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 3
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 3
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 4
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 2
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (10.090000000000002)."
+count = 1
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "literal-named-argument"
+message = "Literal argument `4` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 3
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 2
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 3
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "strict-behavior"
+message = "Call to `in_array` must enforce strict comparison."
+count = 1
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 4
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 2
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 4
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 2
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 5
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 3
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (29.440000000000005)."
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 3
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "literal-named-argument"
+message = "Literal argument `2` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "literal-named-argument"
+message = "Literal argument `4` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 53
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 11
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 3
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 4
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "no-literal-password"
+message = "Literal passwords or sensitive data should not be stored in code."
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 3
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 9
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageSecondaireController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageSecondaireController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Controller/PnjController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/PnjController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Controller/QrCodeGeneratorController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/QualityController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/QualityController.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 1
+
+[[issues]]
+file = "src/Controller/QuestionController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 1
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 2
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (2.72)."
+count = 1
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
+code = "literal-named-argument"
+message = "Literal argument `';'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
+code = "literal-named-argument"
+message = "Literal argument `'w'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 2
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
+code = "strict-behavior"
+message = "Call to `in_array` must enforce strict comparison."
+count = 1
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/RessourceController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/RessourceController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 2
+
+[[issues]]
+file = "src/Controller/RestaurationController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/RestaurationController.php"
+code = "literal-named-argument"
+message = "Literal argument `';'` should be passed as a named argument for clarity."
+count = 4
+
+[[issues]]
+file = "src/Controller/RestaurationController.php"
+code = "literal-named-argument"
+message = "Literal argument `'ISO-8859-1'` should be passed as a named argument for clarity."
+count = 5
+
+[[issues]]
+file = "src/Controller/RestaurationController.php"
+code = "literal-named-argument"
+message = "Literal argument `'w'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/RestaurationController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 2
+
+[[issues]]
+file = "src/Controller/RestrictionController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/RestrictionController.php"
+code = "literal-named-argument"
+message = "Literal argument `';'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/RestrictionController.php"
+code = "literal-named-argument"
+message = "Literal argument `'ISO-8859-1'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/RestrictionController.php"
+code = "literal-named-argument"
+message = "Literal argument `'w'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/RightController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/RuleController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/RuleController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/RuleController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/RumeurController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/SecurityController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/SecurityController.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Controller/SecurityController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 2
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 2
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 2
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (6.5600000000000005)."
+count = 1
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 3
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockEtatController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockEtatController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockLocalisationController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockLocalisationController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockObjetController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockObjetController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockObjetController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (1.92)."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockObjetController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 3
+
+[[issues]]
+file = "src/Controller/StockObjetController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockObjetController.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 2
+
+[[issues]]
+file = "src/Controller/StockObjetController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockObjetController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockProprietaireController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockProprietaireController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockRangementController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockRangementController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockTagController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/StockTagController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/StrategieController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/StrategieController.php"
+code = "literal-named-argument"
+message = "Literal argument `';'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/StrategieController.php"
+code = "literal-named-argument"
+message = "Literal argument `'ISO-8859-1'` should be passed as a named argument for clarity."
+count = 18
+
+[[issues]]
+file = "src/Controller/StrategieController.php"
+code = "literal-named-argument"
+message = "Literal argument `'w'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/TechnologieController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/TechnologieController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/TechnologieController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (4.01)."
+count = 1
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 3
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 4
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "no-sprintf-concat"
+message = "String concatenation with `sprintf` can be simplified."
+count = 1
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "strict-behavior"
+message = "Call to `in_array` must enforce strict comparison."
+count = 1
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 2
+
+[[issues]]
+file = "src/Controller/TerritoireController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/TitreController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/TokenController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/TokenController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/TokenController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 2
+
+[[issues]]
+file = "src/Controller/TrombinoscopeController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (4.9)."
+count = 1
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "literal-named-argument"
+message = "Literal argument `'9'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "literal-named-argument"
+message = "Literal argument `'Z'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 2
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 4
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 5
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "no-insecure-comparison"
+message = "Insecure comparison of sensitive data."
+count = 4
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "no-literal-password"
+message = "Literal passwords or sensitive data should not be stored in code."
+count = 1
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 1
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 5
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseAge.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseAnnonce.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseBillet.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseBonus.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseBonus.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseClasse.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseClasse.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseCompetence.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseCompetence.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseConnaissance.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseDebriefing.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseDocument.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Entity/BaseDocument.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseDocument.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseEtatCivil.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseExperienceGain.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseExperienceGain.php"
+code = "literal-named-argument"
+message = "Literal argument `100` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseGn.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseGn.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseGn.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseGroupe.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 5
+
+[[issues]]
+file = "src/Entity/BaseGroupe.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseGroupe.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseGroupe.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseGroupeAllie.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Entity/BaseGroupeEnemy.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Entity/BaseGroupeGn.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 10
+
+[[issues]]
+file = "src/Entity/BaseGroupeGn.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseGroupeGn.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseIntrigue.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseIntrigue.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseItem.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseItem.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseLangue.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseLangue.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseLangue.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseMembre.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseMessage.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseObjet.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseObjet.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseObjet.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseParticipant.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseParticipant.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BasePersonnage.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Entity/BasePersonnage.php"
+code = "halstead"
+message = "Method has a high halstead difficulty"
+count = 1
+
+[[issues]]
+file = "src/Entity/BasePersonnage.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (3.0200000000000005)."
+count = 1
+
+[[issues]]
+file = "src/Entity/BasePersonnage.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 3
+
+[[issues]]
+file = "src/Entity/BasePersonnage.php"
+code = "strict-behavior"
+message = "Call to `in_array` must enforce strict comparison."
+count = 1
+
+[[issues]]
+file = "src/Entity/BasePersonnage.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BasePersonnage.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BasePersonnageHasQuestion.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BasePersonnageLangues.php"
+code = "no-literal-password"
+message = "Literal passwords or sensitive data should not be stored in code."
+count = 1
+
+[[issues]]
+file = "src/Entity/BasePersonnageTrigger.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BasePostulant.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BasePotion.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseReligion.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseReligion.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseRessource.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseSecondaryGroup.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseSecondaryGroup.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseSecondaryGroup.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseSort.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseTechnologie.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseTerritoire.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseTerritoire.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseTerritoire.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseTrigger.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseUser.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseUser.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseUser.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseUser.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/Billet.php"
+code = "literal-named-argument"
+message = "Literal argument `'PNJ'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Bonus.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Bonus.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (2.93)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Bonus.php"
+code = "literal-named-argument"
+message = "Literal argument `'s'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Bonus.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 3
+
+[[issues]]
+file = "src/Entity/Bonus.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 2
+
+[[issues]]
+file = "src/Entity/Bonus.php"
+code = "no-redundant-method-override"
+message = "Redundant method override."
+count = 1
+
+[[issues]]
+file = "src/Entity/Bonus.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 2
+
+[[issues]]
+file = "src/Entity/Bonus.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Bonus.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/Competence.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Competence.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (2.8500000000000005)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Competence.php"
+code = "literal-named-argument"
+message = "Literal argument `'_'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Competence.php"
+code = "literal-named-argument"
+message = "Literal argument `2` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Competence.php"
+code = "literal-named-argument"
+message = "Literal argument `30` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Competence.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Competence.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Entity/Competence.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 3
+
+[[issues]]
+file = "src/Entity/Competence.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/CompetenceFamily.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 2
+
+[[issues]]
+file = "src/Entity/CompetenceFamily.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 2
+
+[[issues]]
+file = "src/Entity/CompetenceFamily.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/Debriefing.php"
+code = "literal-named-argument"
+message = "Literal argument `'_'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Document.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 7
+
+[[issues]]
+file = "src/Entity/Document.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/Espece.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/Gn.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Gn.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 3
+
+[[issues]]
+file = "src/Entity/Gn.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (4.44)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Gn.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Gn.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 2
+
+[[issues]]
+file = "src/Entity/Gn.php"
+code = "strict-behavior"
+message = "Call to `in_array` must enforce strict comparison."
+count = 1
+
+[[issues]]
+file = "src/Entity/Gn.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/Groupe.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Groupe.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 25
+
+[[issues]]
+file = "src/Entity/Groupe.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 1
+
+[[issues]]
+file = "src/Entity/Groupe.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (9.330000000000002)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Groupe.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Entity/Groupe.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 2
+
+[[issues]]
+file = "src/Entity/Groupe.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/GroupeGn.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/Langue.php"
+code = "literal-named-argument"
+message = "Literal argument `'_'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Objet.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Objet.php"
+code = "literal-named-argument"
+message = "Literal argument `3` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Participant.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Participant.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 2
+
+[[issues]]
+file = "src/Entity/Participant.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (2.74)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Participant.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 2
+
+[[issues]]
+file = "src/Entity/Participant.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 26
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 11
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (22.61)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "literal-named-argument"
+message = "Literal argument `'Suppression de la compétence'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 5
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 6
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 7
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 9
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "no-empty-catch-clause"
+message = "Do not use empty `catch` blocks."
+count = 3
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 2
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "no-nested-ternary"
+message = "Nested ternary expressions are confusing due to PHP's operator associativity rules."
+count = 3
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 1
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "strict-behavior"
+message = "Call to `in_array` must enforce strict comparison."
+count = 1
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/PersonnageLignee.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Photo.php"
+code = "no-debug-symbols"
+message = "Do not commit debug functions."
+count = 2
+
+[[issues]]
+file = "src/Entity/Photo.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Entity/Potion.php"
+code = "literal-named-argument"
+message = "Literal argument `'_'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Priere.php"
+code = "literal-named-argument"
+message = "Literal argument `'_'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/QrCodeScanLog.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/Question.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 2
+
+[[issues]]
+file = "src/Entity/Religion.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Restauration.php"
+code = "block-statement"
+message = "`if` statement should use a block body."
+count = 1
+
+[[issues]]
+file = "src/Entity/Restauration.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (1.7000000000000002)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Restauration.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 3
+
+[[issues]]
+file = "src/Entity/Rule.php"
+code = "literal-named-argument"
+message = "Literal argument `'_'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Rule.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 1
+
+[[issues]]
+file = "src/Entity/Sort.php"
+code = "literal-named-argument"
+message = "Literal argument `'_'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Technologie.php"
+code = "literal-named-argument"
+message = "Literal argument `'_'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Territoire.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Territoire.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 1
+
+[[issues]]
+file = "src/Entity/Territoire.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 2
+
+[[issues]]
+file = "src/Entity/Territoire.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (4.44)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Territoire.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 2
+
+[[issues]]
+file = "src/Entity/Territoire.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Entity/Territoire.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/Token.php"
+code = "literal-named-argument"
+message = "Literal argument `'ISO-8859-1'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/Token.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 3
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 1
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (3.9000000000000004)."
+count = 1
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "literal-named-argument"
+message = "Literal argument `'@'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "literal-named-argument"
+message = "Literal argument `16` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "literal-named-argument"
+message = "Literal argument `36` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 3
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 3
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 2
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "no-insecure-comparison"
+message = "Insecure comparison of sensitive data."
+count = 1
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "no-literal-password"
+message = "Literal passwords or sensitive data should not be stored in code."
+count = 2
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 4
+
+[[issues]]
+file = "src/Entity/User.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Enum/CompetenceFamilyType.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Enum/CompetenceFamilyType.php"
+code = "too-many-enum-cases"
+message = "Enum has too many cases."
+count = 1
+
+[[issues]]
+file = "src/Enum/EnumTraits.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Enum/LevelType.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Enum/LogActionType.php"
+code = "too-many-enum-cases"
+message = "Enum has too many cases."
+count = 1
+
+[[issues]]
+file = "src/Enum/SortLevel.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Enum/TriggerType.php"
+code = "too-many-methods"
+message = "Enum has too many methods."
+count = 1
+
+[[issues]]
+file = "src/EventListener/JWTCreatedListener.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Form/Bonus/BonusForm.php"
+code = "literal-named-argument"
+message = "Literal argument `512` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Form/Bonus/BonusForm.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Form/DeleteForm.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
+file = "src/Form/DocumentForm.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Form/Espece/EspeceForm.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Form/EtatCivilForm.php"
+code = "literal-named-argument"
+message = "Literal argument `2020` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Form/GroupeGn/GroupeGnForm.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Form/GroupeGn/GroupeGnForm.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Form/GroupeGn/GroupeGnForm.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Form/GroupeGn/GroupeGnForm.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 2
+
+[[issues]]
+file = "src/Form/GroupeGn/GroupeGnForm.php"
+code = "prefer-arrow-function"
+message = "This closure can be simplified to a more concise arrow function."
+count = 1
+
+[[issues]]
+file = "src/Form/GroupeGn/GroupeGnForm.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 4
+
+[[issues]]
+file = "src/Form/GroupeSecondaire/GroupeSecondaireForm.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Form/Item/ItemForm.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Form/PriereForm.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Form/Territoire/TerritoireForm.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Form/TerritoireForm.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Form/UserFindForm.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Helper/StringHelper.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 2
+
+[[issues]]
+file = "src/Helper/StringHelper.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Helper/StringHelper.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Helper/StringHelper.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Manager/FedegnManager.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Manager/FedegnManager.php"
+code = "literal-named-argument"
+message = '''Literal argument `'\1'` should be passed as a named argument for clarity.'''
+count = 2
+
+[[issues]]
+file = "src/Manager/FedegnManager.php"
+code = "no-error-control-operator"
+message = "Unsafe use of error control operator `@`."
+count = 1
+
+[[issues]]
+file = "src/Manager/GroupeManager.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Manager/GroupeManager.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 3
+
+[[issues]]
+file = "src/Manager/GroupeManager.php"
+code = "literal-named-argument"
+message = "Literal argument `4` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Manager/PersonnageManager.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Manager/PersonnageManager.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 6
+
+[[issues]]
+file = "src/Manager/PersonnageManager.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 1
+
+[[issues]]
+file = "src/Manager/PersonnageManager.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (4.53)."
+count = 1
+
+[[issues]]
+file = "src/Manager/PersonnageManager.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Manager/PersonnageManager.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 2
+
+[[issues]]
+file = "src/Manager/PersonnageManager.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Manager/PersonnageManager.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "halstead"
+message = "Method has a high halstead difficulty"
+count = 1
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (2.7)."
+count = 1
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "literal-named-argument"
+message = "Literal argument `'0'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "literal-named-argument"
+message = "Literal argument `2` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "literal-named-argument"
+message = "Literal argument `4` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 3
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "no-error-control-operator"
+message = "Unsafe use of error control operator `@`."
+count = 6
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 3
+
+[[issues]]
+file = "src/Manager/RandomColor.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Repository/AgeRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Repository/AttributeTypeRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/BackgroundRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "halstead"
+message = "Method has a high halstead difficulty"
+count = 1
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 1
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (5.800000000000001)."
+count = 1
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `' AS '` should be passed as a named argument for clarity."
+count = 3
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `'.'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 3
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 9
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 6
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 1
+
+[[issues]]
+file = "src/Repository/BaseRepository.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Repository/BonusRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/ClasseRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/CompetenceRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Repository/CompetenceRepository.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Repository/CompetenceRepository.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Repository/ConnaissanceRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Repository/ConnaissanceRepository.php"
+code = "no-insecure-comparison"
+message = "Insecure comparison of sensitive data."
+count = 1
+
+[[issues]]
+file = "src/Repository/ConstructionRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/DebriefingRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Repository/DebriefingRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/DocumentRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Repository/DocumentRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/DocumentRepository.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Repository/DomaineRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/EqualExpression.php"
+code = "literal-named-argument"
+message = "Literal argument `'_'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Repository/EspeceRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/GnRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/GnRepository.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Repository/GnRepository.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Repository/GroupeGnRepository.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 2
+
+[[issues]]
+file = "src/Repository/GroupeRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/GroupeRepository.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Repository/IntrigueRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/ItemRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/LevelRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/LikeExpression.php"
+code = "literal-named-argument"
+message = "Literal argument `'_'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Repository/LogActionRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `512` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Repository/LogActionRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Repository/LogActionRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/LogActionRepository.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Repository/ObjetRepository.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Repository/ObjetRepository.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 4
+
+[[issues]]
+file = "src/Repository/ParticipantRepository.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Repository/ParticipantRepository.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Repository/ParticipantRepository.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Repository/ParticipantRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/ParticipantRepository.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Repository/PersonnageRepository.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Repository/PersonnageRepository.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 2
+
+[[issues]]
+file = "src/Repository/PersonnageRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Repository/PersonnageRepository.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Repository/PersonnageRepository.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Repository/PersonnageRepository.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Repository/PotionRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Repository/PotionRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Repository/PotionRepository.php"
+code = "no-insecure-comparison"
+message = "Insecure comparison of sensitive data."
+count = 1
+
+[[issues]]
+file = "src/Repository/PriereRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Repository/PriereRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/PriereRepository.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Repository/QrCodeScanLogRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/ReligionRepository.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 2
+
+[[issues]]
+file = "src/Repository/RumeurRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/SecondaryGroupRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Repository/SecondaryGroupRepository.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Repository/SecondaryGroupRepository.php"
+code = "no-insecure-comparison"
+message = "Insecure comparison of sensitive data."
+count = 1
+
+[[issues]]
+file = "src/Repository/SecondaryGroupRepository.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Repository/SecondaryGroupRepository.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Repository/SortRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Repository/SortRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Repository/SortRepository.php"
+code = "no-insecure-comparison"
+message = "Insecure comparison of sensitive data."
+count = 1
+
+[[issues]]
+file = "src/Repository/SphereRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/StrategieRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/TechnologieRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/TerritoireRepository.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 1
+
+[[issues]]
+file = "src/Repository/TerritoireRepository.php"
+code = "identity-comparison"
+message = "Use identity inequality `!==` instead of inequality comparison `!=`."
+count = 1
+
+[[issues]]
+file = "src/Repository/TerritoireRepository.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (1.78)."
+count = 1
+
+[[issues]]
+file = "src/Repository/TerritoireRepository.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Repository/TerritoireRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Repository/TerritoireRepository.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 3
+
+[[issues]]
+file = "src/Repository/TerritoireRepository.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
+file = "src/Repository/TerritoireRepository.php"
+code = "no-sprintf-concat"
+message = "String concatenation with `sprintf` can be simplified."
+count = 2
+
+[[issues]]
+file = "src/Repository/TerritoireRepository.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Repository/TerritoireRepository.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Repository/TokenRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/TokenRepository.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Repository/UserRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Repository/UserRepository.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Repository/UserRepository.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Security/AppAuthenticator.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Service/Competence/AlchimieService.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 1
+
+[[issues]]
+file = "src/Service/Competence/LitteratureService.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 2
+
+[[issues]]
+file = "src/Service/Competence/MagieService.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 4
+
+[[issues]]
+file = "src/Service/Competence/PretriseService.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 3
+
+[[issues]]
+file = "src/Service/CompetenceService.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/CompetenceService.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (5.11)."
+count = 1
+
+[[issues]]
+file = "src/Service/CompetenceService.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Service/CompetenceService.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Service/CompetenceService.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Service/CompetenceService.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 3
+
+[[issues]]
+file = "src/Service/CompetenceService.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 6
+
+[[issues]]
+file = "src/Service/CompetenceService.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Service/ConditionsService.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/ConditionsService.php"
+code = "halstead"
+message = "Method has a high halstead difficulty"
+count = 1
+
+[[issues]]
+file = "src/Service/ConditionsService.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Service/ConditionsService.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (4.07)."
+count = 1
+
+[[issues]]
+file = "src/Service/ConditionsService.php"
+code = "literal-named-argument"
+message = "Literal argument `'s'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Service/ConditionsService.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/ConditionsService.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Service/ConditionsService.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Service/ConditionsService.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 2
+
+[[issues]]
+file = "src/Service/DataFormatterService.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/DataFormatterService.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Service/DataFormatterService.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Service/DataFormatterService.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/DataFormatterService.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Service/DataFormatterService.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 4
+
+[[issues]]
+file = "src/Service/DataFormatterService.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 2
+
+[[issues]]
+file = "src/Service/FileUploader.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Service/FileUploader.php"
+code = "literal-named-argument"
+message = "Literal argument `'-'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/FileUploader.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/FileUploader.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/FileUploader.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "src/Service/FileUploader.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Service/FileUploader.php"
+code = "no-self-assignment"
+message = "Self-assignment has no effect."
+count = 1
+
+[[issues]]
+file = "src/Service/GroupeService.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/GroupeService.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 2
+
+[[issues]]
+file = "src/Service/GroupeService.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 4
+
+[[issues]]
+file = "src/Service/GroupeService.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (14.770000000000001)."
+count = 1
+
+[[issues]]
+file = "src/Service/GroupeService.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 3
+
+[[issues]]
+file = "src/Service/GroupeService.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 13
+
+[[issues]]
+file = "src/Service/GroupeService.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 3
+
+[[issues]]
+file = "src/Service/GroupeService.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 2
+
+[[issues]]
+file = "src/Service/GroupeService.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Service/ImageOptimizer.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Service/MailService.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Service/MailService.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Service/MailService.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 2
+
+[[issues]]
+file = "src/Service/MailService.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 2
+
+[[issues]]
+file = "src/Service/OrderBy.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/OrderBy.php"
+code = "literal-named-argument"
+message = "Literal argument `'-'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/OrderBy.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/OrderBy.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 2
+
+[[issues]]
+file = "src/Service/OrderBy.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
+file = "src/Service/OrderBy.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 3
+
+[[issues]]
+file = "src/Service/OrderBy.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Service/PagerService.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/PagerService.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (2.15)."
+count = 1
+
+[[issues]]
+file = "src/Service/PagerService.php"
+code = "literal-named-argument"
+message = "Literal argument `','` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/PagerService.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Service/PagerService.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 5
+
+[[issues]]
+file = "src/Service/PagerService.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 6
+
+[[issues]]
+file = "src/Service/PagerService.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 3
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 5
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "halstead"
+message = "Method has a high halstead volume"
+count = 2
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "identity-comparison"
+message = "Use identity comparison `===` instead of equality comparison `==`."
+count = 1
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "kan-defect"
+message = "Class has a high kan defect score (23.760000000000005)."
+count = 1
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "literal-named-argument"
+message = "Literal argument `2` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "literal-named-argument"
+message = "Literal argument `4` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "no-assign-in-condition"
+message = "Avoid assignments in conditions."
+count = 8
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 16
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 5
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "no-else-clause"
+message = "Avoid `elseif` clauses."
+count = 2
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "no-empty"
+message = "Use of the `empty` construct."
+count = 8
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 8
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "no-redundant-math"
+message = "Redundant multiplication by `-1`: multiplication by -1 is equivalent to negation."
+count = 1
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 7
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "tagged-todo"
+message = "TODO should be tagged with (@username) or (#issue)."
+count = 6
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Service/StatsService.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Service/Utilities.php"
+code = "no-redundant-math"
+message = "Redundant multiplication by `-1`: multiplication by -1 is equivalent to negation."
+count = 1
+
+[[issues]]
+file = "src/Trait/EntityFileUploadTrait.php"
+code = "cyclomatic-complexity"
+message = "Trait has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Trait/EntityFileUploadTrait.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 3
+
+[[issues]]
+file = "src/Trait/EntityFileUploadTrait.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
+file = "src/Trait/EntityFileUploadTrait.php"
+code = "too-many-methods"
+message = "Trait has too many methods."
+count = 1

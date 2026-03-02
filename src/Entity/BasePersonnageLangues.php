@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -20,7 +22,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageLangues', 'extended' => 'PersonnageLangues'])]
 abstract class BasePersonnageLangues
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'source', type: Types::STRING, length: 45)]
@@ -108,7 +110,7 @@ abstract class BasePersonnageLangues
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'personnage_id', 'langue_id', 'source'];
-    } */
+     * {
+     * return ['id', 'personnage_id', 'langue_id', 'source'];
+     * } */
 }

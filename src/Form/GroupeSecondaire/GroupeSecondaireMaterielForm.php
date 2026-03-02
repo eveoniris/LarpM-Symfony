@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\GroupeSecondaire;
 
@@ -25,17 +26,16 @@ class GroupeSecondaireMaterielForm extends AbstractType
             'attr' => [
                 'row' => 9,
             ],
-        ])
-            ->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        ])->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.\App\Entity\SecondaryGroup::class,
+            'data_class' => '\\' . \App\Entity\SecondaryGroup::class,
         ]);
     }
 

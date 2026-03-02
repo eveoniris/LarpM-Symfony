@@ -26,7 +26,7 @@ final class Version20250415174133 extends AbstractMigration
         $this->addSql('ALTER TABLE personnage_apprentissage ADD competence_id INT NULL');
         $this->addSql('ALTER TABLE personnage_apprentissage ADD CONSTRAINT FK_EA259B5115761DAB FOREIGN KEY (competence_id) REFERENCES competence (id)');
         $this->addSql('CREATE INDEX IDX_EA259B5115761DAB ON personnage_apprentissage (competence_id)');
-       }
+    }
 
     public function down(Schema $schema): void
     {

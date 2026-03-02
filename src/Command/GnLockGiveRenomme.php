@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\Gn;
@@ -18,22 +20,19 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand(
-    name: 'app:gn-lock-give-renomme',
-    description: 'Donne les 2pts de renommé pour les nobles expert',
-)]
+#[AsCommand(name: 'app:gn-lock-give-renomme', description: 'Donne les 2pts de renommé pour les nobles expert')]
 class GnLockGiveRenomme extends Command
 {
-    public function __construct(protected readonly PersonnageService $personnageService, protected readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        protected readonly PersonnageService $personnageService,
+        protected readonly EntityManagerInterface $entityManager,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
-        $this
-            ->addArgument('gn', InputArgument::OPTIONAL, 'GN id if not the next session', default: null)
-            ->addArgument('renomme', InputArgument::OPTIONAL, 'Number of renomme to give', default: 2);
+        $this->addArgument('gn', InputArgument::OPTIONAL, 'GN id if not the next session', default: null)->addArgument('renomme', InputArgument::OPTIONAL, 'Number of renomme to give', default: 2);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -59,7 +58,8 @@ class GnLockGiveRenomme extends Command
             $progressBar->advance();
         }
         $progressBar->finish();
-        $io->success(sprintf('Terminé pour %d personnage(s)', $total));
+        $io->success(\sprintf('Terminé pour %d personnage(s)', $total));
+
         return Command::SUCCESS;
     }
 }

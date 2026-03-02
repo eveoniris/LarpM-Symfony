@@ -1,26 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Participant;
 use App\Enum\Role;
 use App\Security\MultiRolesExpression;
-use Doctrine\ORM\EntityManagerInterface;
-use PhpParser\Node\Expr\AssignOp\Mul;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ParticipantForm extends AbstractType
 {
     public function __construct(
         private readonly Security $security,
-    )
-    {
+    ) {
     }
 
     /**
@@ -30,7 +28,11 @@ class ParticipantForm extends AbstractType
     {
         $builder->add('couchage', ChoiceType::class, [
             'label' => 'Type de couchage',
-            'choices' => ["Sur votre camps en tente RP, qu'elle soit définie en jeu ou non" => 'RP', "Dans le champ HRP hors du jeu" => 'HRP', "Hors de l'enceinte du site de jeu" => 'HSJ'],
+            'choices' => [
+                "Sur votre camps en tente RP, qu'elle soit définie en jeu ou non" => 'RP',
+                'Dans le champ HRP hors du jeu' => 'HRP',
+                "Hors de l'enceinte du site de jeu" => 'HSJ',
+            ],
             'required' => true,
         ]);
 

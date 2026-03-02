@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -8,7 +10,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
-use Symfony\Component\Mime\Encoder\QpEncoder;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'reponse')]
@@ -19,7 +20,7 @@ use Symfony\Component\Mime\Encoder\QpEncoder;
 #[ORM\DiscriminatorMap(['base' => 'BaseReponse', 'extended' => 'Reponse'])]
 abstract class BaseReponse
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::STRING, length: 45)]
@@ -106,7 +107,7 @@ abstract class BaseReponse
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'question_id', 'reponse', 'participant_id'];
-    } */
+     * {
+     * return ['id', 'question_id', 'reponse', 'participant_id'];
+     * } */
 }

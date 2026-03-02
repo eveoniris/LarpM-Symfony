@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Personnage;
@@ -7,20 +9,20 @@ use App\Entity\Potion;
 use App\Service\OrderBy;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
+use SensitiveParameter;
 
 class PotionRepository extends BaseRepository
 {
     /**
      * Trouve toute les potions en fonction de leur niveau.
      *
-     * @return ArrayCollection $sorts
+     * @return ArrayCollection<int, Potion>
      */
-    public function findByNiveau($niveau)
+    public function findByNiveau(int $niveau)
     {
-        return $this->getEntityManager()
-            ->createQuery(
-                'SELECT p FROM App\Entity\Potion p Where p.niveau = ?1 and (p.secret = false or p.secret is null) ORDER BY p.label ASC',
-            )
+        return $this
+            ->getEntityManager()
+            ->createQuery('SELECT p FROM App\Entity\Potion p Where p.niveau = ?1 and (p.secret = false or p.secret is null) ORDER BY p.label ASC')
             ->setParameter(1, $niveau)
             ->getResult();
     }
@@ -28,7 +30,7 @@ class PotionRepository extends BaseRepository
     /**
      * Trouve le nombre de potions correspondant aux critères de recherche.
      */
-    public function findCount(?string $type, $value)
+    public function findCount(?string $type, mixed $value): int
     {
         $qb = $this->getQueryBuilder($type, $value);
         $qb->select($qb->expr()->count('p'));
@@ -36,7 +38,7 @@ class PotionRepository extends BaseRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    protected function getQueryBuilder(?string $type, $value): QueryBuilder
+    protected function getQueryBuilder(?string $type, mixed $value): QueryBuilder
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -50,11 +52,11 @@ class PotionRepository extends BaseRepository
             switch ($type) {
                 case 'label':
                     $qb->andWhere('p.label LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'description':
                     $qb->andWhere('p.description LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'numero':
                     $qb->andWhere('p.numero = :value');
@@ -73,12 +75,17 @@ class PotionRepository extends BaseRepository
     /**
      * Trouve les potions correspondant aux critères de recherche.
      */
-    public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
+    /**
+     * @param array<string, string> $order
+     *
+     * @return array<int, Potion>
+     */
+    public function findList(?string $type, mixed $value, array $order = [], int $limit = 50, int $offset = 0): array
     {
         $qb = $this->getQueryBuilder($type, $value);
         $qb->setFirstResult($offset);
         $qb->setMaxResults($limit);
-        $qb->orderBy('p.'.$order['by'], $order['dir']);
+        $qb->orderBy('p.' . $order['by'], $order['dir']);
 
         return $qb->getQuery()->getResult();
     }
@@ -88,12 +95,10 @@ class PotionRepository extends BaseRepository
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
-        return $personnageRepository->createQueryBuilder('perso')
-            ->innerJoin('perso.potions', 'p')
-            ->where('p.id = :pid')
-            ->setParameter('pid', $potion->getId());
+        return $personnageRepository->createQueryBuilder('perso')->innerJoin('perso.potions', 'p')->where('p.id = :pid')->setParameter('pid', $potion->getId());
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -108,35 +113,34 @@ class PotionRepository extends BaseRepository
             $query = $this->createQueryBuilder($alias);
             $orderBy->addOrderToQuery($query);
 
-            return $this->secret(
-                $query,
-                filter_var($search, FILTER_VALIDATE_BOOLEAN),
-            );
+            return $this->secret($query, filter_var($search, \FILTER_VALIDATE_BOOLEAN));
         }
 
         return parent::search($search, $attributes, $orderBy, $alias);
     }
 
-    public function secret(QueryBuilder $query, bool $secret): QueryBuilder
+    public function secret(QueryBuilder $query, #[SensitiveParameter] bool $secret): QueryBuilder
     {
-        $query->andWhere($this->alias.'.secret = :value');
+        $query->andWhere($this->alias . '.secret = :value');
 
         return $query->setParameter('value', $secret);
     }
 
-    public function searchAttributes(): array
+    /** @return array<string, array<string, mixed>> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::searchAttributes(),
-            $alias.'.label', // => 'Libellé',
-            $alias.'.description', // => 'Description',
-            $alias.'.niveau',
-            $alias.'.numero',
+            $alias . '.label', // => 'Libellé',
+            $alias . '.description', // => 'Description',
+            $alias . '.niveau',
+            $alias . '.numero',
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
@@ -144,28 +148,29 @@ class PotionRepository extends BaseRepository
         return [
             ...parent::sortAttributes($alias),
             'label' => [
-                OrderBy::ASC => [$alias.'.label' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.label' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.label' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.label' => OrderBy::DESC],
             ],
             'description' => [
-                OrderBy::ASC => [$alias.'.description' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.description' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.description' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.description' => OrderBy::DESC],
             ],
             'secret' => [
-                OrderBy::ASC => [$alias.'.secret' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.secret' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.secret' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.secret' => OrderBy::DESC],
             ],
             'niveau' => [
-                OrderBy::ASC => [$alias.'.niveau' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.niveau' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.niveau' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.niveau' => OrderBy::DESC],
             ],
             'numero' => [
-                OrderBy::ASC => [$alias.'.numero' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.numero' => OrderBy::DESC],
+                OrderBy::ASC => [$alias . '.numero' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.numero' => OrderBy::DESC],
             ],
         ];
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [

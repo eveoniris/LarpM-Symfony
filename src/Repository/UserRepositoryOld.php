@@ -1,19 +1,18 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Repository;
-
-use Doctrine\ORM\EntityRepository;
 
 class UserRepositoryOld extends BaseRepository
 {
     /**
      * Fourni la liste des derniers utilisateurs connectés.
      */
-    public function lastConnected()
+    /** @return array<int, \App\Entity\User> */
+    public function lastConnected(): array
     {
-        $query = $this->getEntityManager()
-            ->createQuery('SELECT u FROM App\Entity\User u WHERE u.lastConnectionDate > CURRENT_TIMESTAMP() - 720 ORDER BY u.lastConnectionDate DESC');
+        $query = $this->getEntityManager()->createQuery('SELECT u FROM App\Entity\User u WHERE u.lastConnectionDate > CURRENT_TIMESTAMP() - 720 ORDER BY u.lastConnectionDate DESC');
 
         return $query->getArrayResult();
     }
@@ -21,18 +20,20 @@ class UserRepositoryOld extends BaseRepository
     /**
      * Utilisateurs sans etat-civil.
      */
-    public function findWithoutEtatCivil()
+    /** @return array<int, \App\Entity\User> */
+    public function findWithoutEtatCivil(): array
     {
-        $query = $this->getEntityManager()
-            ->createQuery('SELECT u FROM App\Entity\User u WHERE IDENTITY(u.etatCivil) IS NULL ORDER BY u.email ASC');
+        $query = $this->getEntityManager()->createQuery('SELECT u FROM App\Entity\User u WHERE IDENTITY(u.etatCivil) IS NULL ORDER BY u.email ASC');
 
         return $query->getResult();
     }
 
     /**
      * Trouve le nombre d'utilisateurs correspondant aux critères de recherche.
+     *
+     * @param array<string, mixed> $criteria
      */
-    public function findCount(array $criteria = [])
+    public function findCount(array $criteria = []): int
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -49,11 +50,13 @@ class UserRepositoryOld extends BaseRepository
 
     /**
      * Trouve les utilisateurs correspondant aux critères de recherche.
-     *
-     * @param unknown $limit
-     * @param unknown $offset
      */
-    public function findList($type, ?string $value, $limit, $offset, array $order = [])
+    /**
+     * @param array<string, string> $order
+     *
+     * @return array<int, \App\Entity\User>
+     */
+    public function findList(string $type, ?string $value, int $limit, int $offset, array $order = []): array
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -64,16 +67,16 @@ class UserRepositoryOld extends BaseRepository
             switch ($type) {
                 case 'Username':
                     $qb->andWhere('u.Username LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'nom':
                     $qb->join('u.etatCivil', 'ec');
                     $qb->andWhere('ec.nom LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'email':
                     $qb->andWhere('u.email LIKE :value');
-                    $qb->setParameter('value', '%'.$value.'%');
+                    $qb->setParameter('value', '%' . $value . '%');
                     break;
                 case 'id':
                     $qb->andWhere('u.id = :value');
@@ -82,9 +85,9 @@ class UserRepositoryOld extends BaseRepository
             }
         }
 
-        $qb->setFirstResult($offset);
-        $qb->setMaxResults($limit);
-        $qb->orderBy('u.'.$order['by'], $order['dir']);
+        $qb->setFirstResult((int) $offset);
+        $qb->setMaxResults((int) $limit);
+        $qb->orderBy('u.' . $order['by'], $order['dir']);
 
         return $qb->getQuery()->getResult();
     }

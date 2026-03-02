@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\GroupeSecondaire;
 
 use App\Entity\Personnage;
@@ -22,7 +24,7 @@ class GroupeSecondaireNewMembreForm extends AbstractType
             'label' => 'Choississez le personnage',
             'class' => Personnage::class,
             'autocomplete' => true,
-            'query_builder' => static fn(EntityRepository $er) => $er->createQueryBuilder('p')->orderBy('p.nom', 'ASC'),
+            'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('p')->orderBy('p.nom', 'ASC'),
             // 'attr' => [
             //    //'class' => 'selectpicker',
             //    'data-live-search' => 'true',
@@ -30,12 +32,11 @@ class GroupeSecondaireNewMembreForm extends AbstractType
             // ],
             'choice_label' => 'idName',
             'mapped' => false,
-        ])
-            ->add('submit', SubmitType::class, ['label' => 'Ajouter']);
+        ])->add('submit', SubmitType::class, ['label' => 'Ajouter']);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {

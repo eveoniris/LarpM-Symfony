@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * LarpManager - A Live Action Role Playing Manager
- * Copyright (C) 2016 Kevin Polez
+ * Copyright (C) 2016 Kevin Polez.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,21 +23,18 @@
 namespace App\Controller;
 
 use App\Enum\Role;
-use App\Form\PnjInscriptionForm;
 use App\Manager\GroupeManager;
 use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 // TODO
 #[IsGranted(new MultiRolesExpression(Role::ORGA))]
 class PnjController extends AbstractController
 {
-    /**
-     *
-     */
-    public function listAction(Request $request, EntityManagerInterface $entityManager)
+    public function listAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $gn = GroupeManager::getGnActif($entityManager);
 

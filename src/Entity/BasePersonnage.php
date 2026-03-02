@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\PersonnageRepository;
+use ArrayIterator;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -13,6 +17,8 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
+use Exception;
+use SensitiveParameter;
 
 #[Entity(repositoryClass: PersonnageRepository::class)]
 #[ORM\Table(name: 'personnage')]
@@ -74,71 +80,88 @@ abstract class BasePersonnage
     #[Column(type: Types::BOOLEAN, nullable: false)]
     protected ?bool $bracelet = null;
 
+    /** @var Collection<int, ExperienceGain> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceGain::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $experienceGains;
 
+    /** @var Collection<int, ExperienceUsage> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceUsage::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $experienceUsages;
 
+    /** @var Collection<int, Trigger> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: Trigger::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: true)]
     protected Collection $triggers;
 
+    /** @var Collection<int, HeroismeHistory> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: HeroismeHistory::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $heroismeHistories;
 
+    /** @var Collection<int, Membre> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: Membre::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $membres;
 
+    /** @var Collection<int, Participant> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: Participant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $participants;
 
+    /** @var Collection<int, PersonnageBackground> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageBackground::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageBackgrounds;
 
+    /** @var Collection<int, PersonnageHasToken> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageHasToken::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageHasTokens;
 
+    /** @var Collection<int, PersonnageIngredient> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageIngredient::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageIngredients;
 
+    /** @var Collection<int, PersonnageLangues> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLangues::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     #[OrderBy(['langue' => 'ASC'])]
     protected Collection $personnageLangues;
 
+    /** @var Collection<int, PersonnageRessource> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageRessource::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageRessources;
 
+    /** @var Collection<int, PersonnageTrigger> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageTrigger::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageTriggers;
 
+    /** @var Collection<int, PersonnagesReligions> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnagesReligions::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnagesReligions;
 
+    /** @var Collection<int, Postulant> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: Postulant::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $postulants;
 
+    /** @var Collection<int, RenommeHistory> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: RenommeHistory::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $renommeHistories;
 
+    /** @var Collection<int, SecondaryGroup> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: SecondaryGroup::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $secondaryGroups;
 
+    /** @var Collection<int, User> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: User::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $users;
@@ -167,10 +190,12 @@ abstract class BasePersonnage
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
+    /** @var Collection<int, PersonnageHasQuestion> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageHasQuestion::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageHasQuestions;
 
+    /** @var Collection<int, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_document')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
@@ -178,6 +203,7 @@ abstract class BasePersonnage
     #[OrderBy(['code' => 'ASC'])]
     protected Collection $documents;
 
+    /** @var Collection<int, Item> */
     #[ORM\ManyToMany(targetEntity: Item::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_item')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
@@ -185,28 +211,33 @@ abstract class BasePersonnage
     #[OrderBy(['label' => 'ASC'])]
     protected Collection $items;
 
+    /** @var Collection<int, Technologie> */
     #[ORM\ManyToMany(targetEntity: Technologie::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_technologie')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'technologie_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $technologies;
 
+    /** @var Collection<int, Religion> */
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_religion_description')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $religions;
 
+    /** @var Collection<int, Competence> */
     #[ORM\ManyToMany(targetEntity: Competence::class, mappedBy: 'personnages')]
     // #[ORM\OrderBy(['competenceFamily' => 'ASC', 'level' => 'ASC'])]
     protected Collection $competences;
 
+    /** @var Collection<int, Domaine> */
     #[ORM\ManyToMany(targetEntity: Domaine::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_domaines')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $domaines;
 
+    /** @var Collection<int, Potion> */
     #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'personnages', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'personnages_potions')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
@@ -214,12 +245,14 @@ abstract class BasePersonnage
     #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $potions;
 
+    /** @var Collection<int, Priere> */
     #[ORM\ManyToMany(targetEntity: Priere::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_prieres')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'priere_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $prieres;
 
+    /** @var Collection<int, Sort> */
     #[ORM\ManyToMany(targetEntity: Sort::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_sorts')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
@@ -227,6 +260,7 @@ abstract class BasePersonnage
     #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $sorts;
 
+    /** @var Collection<int, Connaissance> */
     #[ORM\ManyToMany(targetEntity: Connaissance::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_connaissances')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
@@ -234,23 +268,28 @@ abstract class BasePersonnage
     #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $connaissances;
 
+    /** @var Collection<int, PugilatHistory> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PugilatHistory::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $pugilatHistories;
 
+    /** @var Collection<int, PersonnageChronologie> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageChronologie::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     #[OrderBy(['annee' => 'ASC', 'id' => 'ASC'])]
     protected Collection $personnageChronologie;
 
+    /** @var Collection<int, PersonnageLignee> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLignee::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageLignee;
 
+    /** @var Collection<int, PersonnageLignee> */
     #[OneToMany(mappedBy: 'parent1', targetEntity: PersonnageLignee::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'parent1_id', nullable: false)]
     protected Collection $PersonnageLigneeParent1;
 
+    /** @var Collection<int, PersonnageLignee> */
     #[OneToMany(mappedBy: 'parent2', targetEntity: PersonnageLignee::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'parent2_id', nullable: false)]
     protected Collection $PersonnageLigneeParent2;
@@ -325,6 +364,7 @@ abstract class BasePersonnage
     {
         if (!$this->apprentissages->contains($apprentissage)) {
             $this->apprentissages->add($apprentissage);
+            /* @phpstan-ignore argument.type */
             $apprentissage->setPersonnage($this);
         }
 
@@ -346,6 +386,7 @@ abstract class BasePersonnage
      */
     public function addConnaissance(Connaissance $connaissance): static
     {
+        /* @phpstan-ignore argument.type */
         $connaissance->addPersonnage($this);
         $this->connaissances[] = $connaissance;
 
@@ -357,6 +398,7 @@ abstract class BasePersonnage
      */
     public function addDocument(Document $document): static
     {
+        /* @phpstan-ignore argument.type */
         $document->addPersonnage($this);
         $this->documents[] = $document;
 
@@ -368,6 +410,7 @@ abstract class BasePersonnage
      */
     public function addDomaine(Domaine $domaine): static
     {
+        /* @phpstan-ignore argument.type */
         $domaine->addPersonnage($this);
         $this->domaines[] = $domaine;
 
@@ -378,6 +421,7 @@ abstract class BasePersonnage
     {
         if (!$this->especes->contains($espece)) {
             $this->especes->add($espece);
+            /* @phpstan-ignore argument.type */
             $espece->addPersonnage($this);
         }
 
@@ -419,6 +463,7 @@ abstract class BasePersonnage
      */
     public function addItem(Item $item): static
     {
+        /* @phpstan-ignore argument.type */
         $item->addPersonnage($this);
         $this->items[] = $item;
 
@@ -449,6 +494,7 @@ abstract class BasePersonnage
     {
         if (!$this->apprentissageEnseignants->contains($personnageApprentissage)) {
             $this->apprentissageEnseignants->add($personnageApprentissage);
+            /* @phpstan-ignore argument.type */
             $personnageApprentissage->setEnseignant($this);
         }
 
@@ -469,6 +515,7 @@ abstract class BasePersonnage
     {
         if (!$this->personnageBonus->contains($personnageBonus)) {
             $this->personnageBonus->add($personnageBonus);
+            /* @phpstan-ignore argument.type */
             $personnageBonus->setPersonnage($this);
         }
 
@@ -478,7 +525,7 @@ abstract class BasePersonnage
     /**
      * Add PersonnageHasToken entity to collection (one to many).
      */
-    public function addPersonnageHasToken(PersonnageHasToken $personnageHasToken): static
+    public function addPersonnageHasToken(#[SensitiveParameter] PersonnageHasToken $personnageHasToken): static
     {
         $this->personnageHasTokens[] = $personnageHasToken;
 
@@ -550,6 +597,7 @@ abstract class BasePersonnage
      */
     public function addPotion(Potion $potion): static
     {
+        /* @phpstan-ignore argument.type */
         $potion->addPersonnage($this);
         $this->potions[] = $potion;
 
@@ -581,6 +629,7 @@ abstract class BasePersonnage
      */
     public function addReligion(Religion $religion): static
     {
+        /* @phpstan-ignore argument.type */
         $religion->addPersonnage($this);
         $this->religions[] = $religion;
 
@@ -612,6 +661,7 @@ abstract class BasePersonnage
      */
     public function addSort(Sort $sort): static
     {
+        /* @phpstan-ignore argument.type */
         $sort->addPersonnage($this);
         $this->sorts[] = $sort;
 
@@ -623,6 +673,7 @@ abstract class BasePersonnage
      */
     public function addTechnologie(Technologie $technologie): static
     {
+        /* @phpstan-ignore argument.type */
         $technologie->addPersonnage($this);
         $this->technologies[] = $technologie;
 
@@ -686,9 +737,11 @@ abstract class BasePersonnage
 
         $apprentissages = new ArrayCollection();
         foreach ($this->apprentissages as $apprentissage) {
-            if (null === $apprentissage->getDeletedAt()) {
-                $apprentissages->add($apprentissage);
+            if (null !== $apprentissage->getDeletedAt()) {
+                continue;
             }
+
+            $apprentissages->add($apprentissage);
         }
 
         return $apprentissages;
@@ -712,15 +765,16 @@ abstract class BasePersonnage
         return $this;
     }
 
+    /** @return Collection<int, Competence> */
     public function getCompentecesByFamilyLevel(): Collection
     {
         return $this->competences;
     }
 
     /**
-     * @return Collection<Competence>
+     * @return Collection<int, Competence>
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getCompetences(): Collection
     {
@@ -743,17 +797,17 @@ abstract class BasePersonnage
         unset($family);
 
         /*
-        $iterator = $this->competences->getIterator();
-        $iterator->uasort(static function (Competence $a, Competence $b): int {
-            $aC = $a->getCompetenceFamily()?->getLabel().'_'.$a->getLevel()?->getIndex();
-            $bC = $b->getCompetenceFamily()?->getLabel().'_'.$b->getLevel()?->getIndex();
-
-            return $aC <=> $bC;
-        });
-
-
-        return new ArrayCollection(iterator_to_array($iterator));
-        */
+         * $iterator = $this->competences->getIterator();
+         * $iterator->uasort(static function (Competence $a, Competence $b): int {
+         * $aC = $a->getCompetenceFamily()?->getLabel().'_'.$a->getLevel()?->getIndex();
+         * $bC = $b->getCompetenceFamily()?->getLabel().'_'.$b->getLevel()?->getIndex();
+         *
+         * return $aC <=> $bC;
+         * });
+         *
+         *
+         * return new ArrayCollection(iterator_to_array($iterator));
+         */
         ksort($families);
 
         foreach ($families as $family) {
@@ -768,6 +822,7 @@ abstract class BasePersonnage
     /**
      * Get Connaissance entity collection.
      */
+    /** @return Collection<int, Connaissance> */
     public function getConnaissances(): Collection
     {
         return $this->connaissances;
@@ -776,6 +831,7 @@ abstract class BasePersonnage
     /**
      * Get Document entity collection.
      */
+    /** @return Collection<int, Document> */
     public function getDocuments(): Collection
     {
         return $this->documents;
@@ -784,6 +840,7 @@ abstract class BasePersonnage
     /**
      * Get Domaine entity collection.
      */
+    /** @return Collection<int, Domaine> */
     public function getDomaines(): Collection
     {
         return $this->domaines;
@@ -800,6 +857,7 @@ abstract class BasePersonnage
     /**
      * Get ExperienceGain entity collection (one to many).
      */
+    /** @return Collection<int, ExperienceGain> */
     public function getExperienceGains(): Collection
     {
         return $this->experienceGains;
@@ -808,6 +866,7 @@ abstract class BasePersonnage
     /**
      * Get ExperienceUsage entity collection (one to many).
      */
+    /** @return Collection<int, ExperienceUsage> */
     public function getExperienceUsages(): Collection
     {
         return $this->experienceUsages;
@@ -871,6 +930,7 @@ abstract class BasePersonnage
     /**
      * Get HeroismeHistory entity collection (one to many).
      */
+    /** @return Collection<int, HeroismeHistory> */
     public function getHeroismeHistories(): Collection
     {
         return $this->heroismeHistories;
@@ -897,24 +957,27 @@ abstract class BasePersonnage
     /**
      * Get Item entity collection.
      */
+    /** @return Collection<int, Item> */
     public function getItems(): Collection
     {
         return $this->items;
     }
 
+    /** @return array<int, string> */
     public function getLangueMateriel(): array
     {
         $langueMateriel = [];
         foreach ($this->getPersonnageLangues() as $langue) {
-            if ($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId(
-                ) < 6) {
-                if (!in_array('Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
-                    $langueMateriel[] = 'Bracelet '.$langue->getLangue()->getGroupeLangue()->getCouleur();
-                }
+            if (!($langue->getLangue()->getGroupeLangue()->getId() > 0 && $langue->getLangue()->getGroupeLangue()->getId() < 6)) {
+                continue;
+            }
 
-                if (0 === $langue->getLangue()->getDiffusion()) {
-                    $langueMateriel[] = 'Alphabet '.$langue->getLangue()->getLabel();
-                }
+            if (!\in_array('Bracelet ' . $langue->getLangue()->getGroupeLangue()->getCouleur(), $langueMateriel)) {
+                $langueMateriel[] = 'Bracelet ' . $langue->getLangue()->getGroupeLangue()->getCouleur();
+            }
+
+            if (0 === $langue->getLangue()->getDiffusion()) {
+                $langueMateriel[] = 'Alphabet ' . $langue->getLangue()->getLabel();
             }
         }
 
@@ -926,6 +989,7 @@ abstract class BasePersonnage
     /**
      * Get PersonnageLangues entity collection (one to many).
      */
+    /** @return Collection<int, PersonnageLangues> */
     public function getPersonnageLangues(): Collection
     {
         return $this->personnageLangues;
@@ -970,6 +1034,7 @@ abstract class BasePersonnage
     /**
      * Get Membre entity collection (one to many).
      */
+    /** @return Collection<int, Membre> */
     public function getMembres(): Collection
     {
         return $this->membres;
@@ -996,6 +1061,7 @@ abstract class BasePersonnage
     /**
      * Get Participant entity collection (one to many).
      */
+    /** @return Collection<int, Participant> */
     public function getParticipants(): Collection
     {
         return $this->participants;
@@ -1004,11 +1070,13 @@ abstract class BasePersonnage
     /**
      * Get PersonnageBackground entity collection (one to many).
      */
+    /** @return Collection<int, PersonnageBackground> */
     public function getPersonnageBackgrounds(): Collection
     {
         return $this->personnageBackgrounds;
     }
 
+    /** @return Collection<int, PersonnageBonus> */
     public function getPersonnageBonus(): ?Collection
     {
         return $this->personnageBonus;
@@ -1017,16 +1085,21 @@ abstract class BasePersonnage
     /**
      * Get personnageChronologie entity collection.
      */
+    /** @return Collection<int, PersonnageChronologie> */
     public function getPersonnageChronologie(): Collection
     {
         return $this->personnageChronologie;
     }
 
+    /** @return Collection<int, PersonnageHasQuestion> */
     public function getPersonnageHasQuestions(): Collection
     {
         return $this->personnageHasQuestions;
     }
 
+    /**
+     * @param Collection<int, PersonnageHasQuestion> $personnageHasQuestions
+     */
     public function setPersonnageHasQuestions(Collection $personnageHasQuestions): static
     {
         $this->personnageHasQuestions = $personnageHasQuestions;
@@ -1037,6 +1110,7 @@ abstract class BasePersonnage
     /**
      * Get PersonnageHasToken entity collection (one to many).
      */
+    /** @return Collection<int, PersonnageHasToken> */
     public function getPersonnageHasTokens(): Collection
     {
         return $this->personnageHasTokens;
@@ -1045,6 +1119,7 @@ abstract class BasePersonnage
     /**
      * Get PersonnageIngredient entity collection (one to many).
      */
+    /** @return Collection<int, PersonnageIngredient> */
     public function getPersonnageIngredients(): Collection
     {
         return $this->personnageIngredients;
@@ -1053,6 +1128,7 @@ abstract class BasePersonnage
     /**
      * Get personnageLignee entity collection.
      */
+    /** @return Collection<int, PersonnageLignee> */
     public function getPersonnageLignee(): Collection
     {
         return $this->personnageLignee;
@@ -1061,6 +1137,7 @@ abstract class BasePersonnage
     /**
      * Get PersonnageRessource entity collection (one to many).
      */
+    /** @return Collection<int, PersonnageRessource> */
     public function getPersonnageRessources(): Collection
     {
         return $this->personnageRessources;
@@ -1069,6 +1146,7 @@ abstract class BasePersonnage
     /**
      * Get PersonnageTrigger entity collection (one to many).
      */
+    /** @return Collection<int, PersonnageTrigger> */
     public function getPersonnageTriggers(): Collection
     {
         return $this->personnageTriggers;
@@ -1077,14 +1155,15 @@ abstract class BasePersonnage
     /**
      * Get PersonnagesReligions entity collection (one to many).
      */
+    /** @return Collection<int, PersonnagesReligions> */
     public function getPersonnagesReligions(): Collection
     {
+        /** @var ArrayIterator<int, mixed> $iterator */
         $iterator = $this->personnagesReligions->getIterator();
-        $iterator->uasort(static function (PersonnagesReligions $a, PersonnagesReligions $b): int {
-            return $a->getReligionLevel() <=> $b->getReligionLevel();
-        });
+        $iterator->uasort(static fn (PersonnagesReligions $a, PersonnagesReligions $b): int => $a->getReligionLevel() <=> $b->getReligionLevel());
 
         return new ArrayCollection(iterator_to_array($iterator));
+
         // return $this->personnagesReligions;
     }
 
@@ -1109,6 +1188,7 @@ abstract class BasePersonnage
     /**
      * Get Postulant entity collection (one to many).
      */
+    /** @return Collection<int, Postulant> */
     public function getPostulants(): Collection
     {
         return $this->postulants;
@@ -1117,6 +1197,7 @@ abstract class BasePersonnage
     /**
      * Get Potion entity collection.
      */
+    /** @return Collection<int, Potion> */
     public function getPotions(): Collection
     {
         return $this->potions;
@@ -1125,6 +1206,7 @@ abstract class BasePersonnage
     /**
      * Get Priere entity collection.
      */
+    /** @return Collection<int, Priere> */
     public function getPrieres(): Collection
     {
         return $this->prieres;
@@ -1133,6 +1215,7 @@ abstract class BasePersonnage
     /**
      * Get PugilatHistory entity collection (one to many).
      */
+    /** @return Collection<int, PugilatHistory> */
     public function getPugilatHistories(): Collection
     {
         return $this->pugilatHistories;
@@ -1141,6 +1224,7 @@ abstract class BasePersonnage
     /**
      * Get Religion entity collection.
      */
+    /** @return Collection<int, Religion> */
     public function getReligions(): Collection
     {
         return $this->religions;
@@ -1167,6 +1251,7 @@ abstract class BasePersonnage
     /**
      * Get RenommeHistory entity collection (one to many).
      */
+    /** @return Collection<int, RenommeHistory> */
     public function getRenommeHistories(): Collection
     {
         return $this->renommeHistories;
@@ -1193,6 +1278,7 @@ abstract class BasePersonnage
     /**
      * Get SecondaryGroup entity collection (one to many).
      */
+    /** @return Collection<int, SecondaryGroup> */
     public function getSecondaryGroups(): Collection
     {
         return $this->secondaryGroups;
@@ -1219,6 +1305,7 @@ abstract class BasePersonnage
     /**
      * Get Sort entity collection.
      */
+    /** @return Collection<int, Sort> */
     public function getSorts(): Collection
     {
         return $this->sorts;
@@ -1245,6 +1332,7 @@ abstract class BasePersonnage
     /**
      * Get Technologie entity collection.
      */
+    /** @return Collection<int, Technologie> */
     public function getTechnologies(): Collection
     {
         return $this->technologies;
@@ -1307,6 +1395,7 @@ abstract class BasePersonnage
     /**
      * Get User entity collection (one to many).
      */
+    /** @return Collection<int, User> */
     public function getUsers(): Collection
     {
         return $this->users;
@@ -1377,14 +1466,15 @@ abstract class BasePersonnage
 
     public function prochaineParticipation(): Participant
     {
-        $now = new \DateTime();
+        $now = new DateTime();
         $prochain = null;
 
         foreach ($this->participants as $p) {
-            if ($now < $p->getGn()->getDateFin() && (null === $prochain || $prochain->getGn()->getDateDebut(
-                    ) > $p->getGn()->getDateDebut())) {
-                $prochain = $p;
+            if (!($now < $p->getGn()->getDateFin() && (null === $prochain || $prochain->getGn()->getDateDebut() > $p->getGn()->getDateDebut()))) {
+                continue;
             }
+
+            $prochain = $p;
         }
 
         return $prochain;
@@ -1417,6 +1507,7 @@ abstract class BasePersonnage
      */
     public function removeConnaissance(Connaissance $connaissance): static
     {
+        /* @phpstan-ignore argument.type */
         $connaissance->removePersonnage($this);
         $this->connaissances->removeElement($connaissance);
 
@@ -1428,6 +1519,7 @@ abstract class BasePersonnage
      */
     public function removeDocument(Document $document): static
     {
+        /* @phpstan-ignore argument.type */
         $document->removePersonnage($this);
         $this->documents->removeElement($document);
 
@@ -1439,6 +1531,7 @@ abstract class BasePersonnage
      */
     public function removeDomaine(Domaine $domaine): static
     {
+        /* @phpstan-ignore argument.type */
         $domaine->removePersonnage($this);
         $this->domaines->removeElement($domaine);
 
@@ -1448,6 +1541,7 @@ abstract class BasePersonnage
     public function removeEspece(Espece $espece): static
     {
         if ($this->especes->removeElement($espece)) {
+            /* @phpstan-ignore argument.type */
             $espece->removePersonnage($this);
         }
 
@@ -1489,6 +1583,7 @@ abstract class BasePersonnage
      */
     public function removeItem(Item $item): static
     {
+        /* @phpstan-ignore argument.type */
         $item->removePersonnage($this);
         $this->items->removeElement($item);
 
@@ -1552,7 +1647,7 @@ abstract class BasePersonnage
     /**
      * Remove PersonnageHasToken entity from collection (one to many).
      */
-    public function removePersonnageHasToken(PersonnageHasToken $personnageHasToken): static
+    public function removePersonnageHasToken(#[SensitiveParameter] PersonnageHasToken $personnageHasToken): static
     {
         $this->personnageHasTokens->removeElement($personnageHasToken);
 
@@ -1624,6 +1719,7 @@ abstract class BasePersonnage
      */
     public function removePotion(Potion $potion): static
     {
+        /* @phpstan-ignore argument.type */
         $potion->removePersonnage($this);
         $this->potions->removeElement($potion);
 
@@ -1655,6 +1751,7 @@ abstract class BasePersonnage
      */
     public function removeReligion(Religion $religion): static
     {
+        /* @phpstan-ignore argument.type */
         $religion->removePersonnage($this);
         $this->religions->removeElement($religion);
 
@@ -1686,6 +1783,7 @@ abstract class BasePersonnage
      */
     public function removeSort(Sort $sort): static
     {
+        /* @phpstan-ignore argument.type */
         $sort->removePersonnage($this);
         $this->sorts->removeElement($sort);
 
@@ -1697,6 +1795,7 @@ abstract class BasePersonnage
      */
     public function removeTechnologie(Technologie $technologie): static
     {
+        /* @phpstan-ignore argument.type */
         $technologie->removePersonnage($this);
         $this->technologies->removeElement($technologie);
 

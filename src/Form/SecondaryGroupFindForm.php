@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -18,14 +19,13 @@ class SecondaryGroupFindForm extends AbstractType
     {
         $builder->add('search', TextType::class, [
             'required' => true,
-        ])
-            ->add('type', ChoiceType::class, [
-                'required' => true,
-                'choices' => [
-                    'numero' => 'Numéro',
-                    'group_name' => 'Nom du groupe',
-                ],
-            ]);
+        ])->add('type', ChoiceType::class, [
+            'required' => true,
+            'choices' => [
+                'numero' => 'Numéro',
+                'group_name' => 'Nom du groupe',
+            ],
+        ]);
     }
 
     /**

@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Territoire;
 
@@ -26,11 +27,9 @@ class TerritoireConstructionForm extends AbstractType
             'class' => \App\Entity\Construction::class,
             'multiple' => true,
             'expanded' => true,
-            //'mapped' => true,
+            // 'mapped' => true,
             'choice_label' => 'label',
-            'query_builder' => static function (ConstructionRepository $er) {
-                return $er->createQueryBuilder('c')->orderBy('c.label', 'ASC');
-            },
+            'query_builder' => static fn (ConstructionRepository $er) => $er->createQueryBuilder('c')->orderBy('c.label', 'ASC'),
         ]);
     }
 

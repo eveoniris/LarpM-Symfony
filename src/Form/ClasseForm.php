@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Entity\Classe;
@@ -18,9 +20,10 @@ class ClasseForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label_masculin', TextType::class, [
-            'required' => true,
-        ])
+        $builder
+            ->add('label_masculin', TextType::class, [
+                'required' => true,
+            ])
             ->add('image_m', TextType::class, [
                 'label' => 'Adresse de l\'image utilisé pour représenté cette classe',
                 'required' => true,
@@ -33,8 +36,8 @@ class ClasseForm extends AbstractType
                 'required' => true,
             ])
             ->add('description', TextareaType::class, [
-                'required' => false, ]
-            )
+                'required' => false,
+            ])
             ->add('competenceFamilyFavorites', EntityType::class, [
                 'label' => "Famille de compétences favorites (n'oubliez pas de cochez aussi la/les compétences acquises à la création)",
                 'required' => false,
@@ -42,8 +45,8 @@ class ClasseForm extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'mapped' => true,
-                'class' => CompetenceFamily::class, ]
-            )
+                'class' => CompetenceFamily::class,
+            ])
             ->add('competenceFamilyNormales', EntityType::class, [
                 'label' => 'Famille de compétences normales',
                 'required' => false,
@@ -51,8 +54,8 @@ class ClasseForm extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'mapped' => true,
-                'class' => CompetenceFamily::class, ]
-            )
+                'class' => CompetenceFamily::class,
+            ])
             ->add('competenceFamilyCreations', EntityType::class, [
                 'label' => 'Famille de compétences acquises à la création',
                 'required' => false,
@@ -60,8 +63,8 @@ class ClasseForm extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'mapped' => true,
-                'class' => CompetenceFamily::class, ]
-            );
+                'class' => CompetenceFamily::class,
+            ]);
     }
 
     /**

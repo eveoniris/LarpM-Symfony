@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -19,9 +21,6 @@ class RightController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ADMIN))]
     public function listAction(Request $request): Response
     {
-        return $this->render(
-            'right/list.twig',
-            ['rights' => User::getAvailableRolesLabels()],
-        );
+        return $this->render('right/list.twig', ['rights' => User::getAvailableRolesLabels()]);
     }
 }

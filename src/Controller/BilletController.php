@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Billet;
@@ -27,21 +29,13 @@ class BilletController extends AbstractController
     #[Route('/billet/list', name: 'billet.list')]
     public function listAction(Request $request, BilletRepository $billetRepository): Response
     {
-        $orderBy = $this->getRequestOrder(
-            alias: 'b',
-            allowedFields: $billetRepository->getFieldNames()
-        );
+        $orderBy = $this->getRequestOrder(alias: 'b', allowedFields: $billetRepository->getFieldNames());
 
-        $query = $billetRepository->createQueryBuilder('b')
-            ->orderBy(key($orderBy), current($orderBy));
+        $query = $billetRepository->createQueryBuilder('b')->orderBy(key($orderBy), current($orderBy));
 
-        $paginator = $billetRepository->findPaginatedQuery(
-            $query->getQuery(), $this->getRequestLimit(), $this->getRequestPage()
-        );
+        $paginator = $billetRepository->findPaginatedQuery($query->getQuery(), $this->getRequestLimit(), $this->getRequestPage());
 
-        return $this->render(
-            'billet\list.twig', ['paginator' => $paginator]
-        );
+        return $this->render('billet\list.twig', ['paginator' => $paginator]);
     }
 
     /**
@@ -49,8 +43,11 @@ class BilletController extends AbstractController
      */
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
     #[Route('/billet/add', name: 'billet.add')]
-    public function addAction(Request $request, BilletRepository $repository, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
+    public function addAction(
+        Request $request,
+        BilletRepository $repository,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse|Response {
         $billet = new Billet();
         $gnId = $request->get('gn');
 
@@ -59,8 +56,7 @@ class BilletController extends AbstractController
             $billet->setGn($gn);
         }
 
-        $form = $this->createForm(BilletForm::class, $billet)
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+        $form = $this->createForm(BilletForm::class, $billet)->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -75,12 +71,9 @@ class BilletController extends AbstractController
             return $this->redirectToRoute('billet.list', [], 303);
         }
 
-        return $this->render(
-            'billet\add.twig',
-            [
-                'form' => $form->createView(),
-            ]
-        );
+        return $this->render('billet\add.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
@@ -90,10 +83,7 @@ class BilletController extends AbstractController
     public function detailAction(Request $request, #[MapEntity] Billet $billet): Response
     {
         // TODO ? access si possède le billet ?
-        return $this->render(
-            'billet\detail.twig',
-            ['billet' => $billet]
-        );
+        return $this->render('billet\detail.twig', ['billet' => $billet]);
     }
 
     /**
@@ -101,10 +91,13 @@ class BilletController extends AbstractController
      */
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
     #[Route('/billet/{billet}/update', name: 'billet.update')]
-    public function updateAction(Request $request, #[MapEntity] Billet $billet, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
-        $form = $this->createForm(BilletForm::class, $billet)
-            ->add('submit', SubmitType::class, ['label' => 'Valider']);
+    public function updateAction(
+        Request $request,
+        #[MapEntity]
+        Billet $billet,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(BilletForm::class, $billet)->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -118,12 +111,10 @@ class BilletController extends AbstractController
             return $this->redirectToRoute('billet.list', [], 303);
         }
 
-        return $this->render('billet\update.twig',
-            [
-                'form' => $form->createView(),
-                'billet' => $billet,
-            ]
-        );
+        return $this->render('billet\update.twig', [
+            'form' => $form->createView(),
+            'billet' => $billet,
+        ]);
     }
 
     /**
@@ -131,10 +122,15 @@ class BilletController extends AbstractController
      */
     #[IsGranted(new Expression('is_granted("ROLE_ADMIN") or is_granted("ROLE_ORGA")'))]
     #[Route('/billet/{billet}/delete', name: 'billet.delete')]
-    public function deleteAction(Request $request, Billet $billet, EntityManagerInterface $entityManager): RedirectResponse|Response
-    {
-        $form = $this->createForm(BilletDeleteForm::class, $billet)
-            ->add('submit', SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn btn-danger']]);
+    public function deleteAction(
+        Request $request,
+        Billet $billet,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(BilletDeleteForm::class, $billet)->add('submit', SubmitType::class, [
+            'label' => 'Supprimer',
+            'attr' => ['class' => 'btn btn-danger'],
+        ]);
 
         $form->handleRequest($request);
 
@@ -148,49 +144,35 @@ class BilletController extends AbstractController
             return $this->redirectToRoute('billet.list', [], 303);
         }
 
-        return $this->render(
-            'billet\delete.twig',
-            [
-                'form' => $form->createView(),
-                'billet' => $billet,
-            ]
-        );
+        return $this->render('billet\delete.twig', [
+            'form' => $form->createView(),
+            'billet' => $billet,
+        ]);
     }
 
     /**
      * Liste des utilisateurs ayant ce billet.
      */
     #[Route('/billet/{billet}/participants', name: 'billet.participants')]
-    public function participantsAction(Request $request, #[MapEntity] Billet $billet, EntityManagerInterface $entityManager): Response
-    {
-        $participantRepository = $entityManager->getRepository('\\'.\App\Entity\Participant::class);
+    public function participantsAction(
+        Request $request,
+        #[MapEntity]
+        Billet $billet,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $participantRepository = $entityManager->getRepository('\\' . \App\Entity\Participant::class);
 
         $alias = ParticipantRepository::getEntityAlias();
 
-        $orderBy = $this->getRequestOrder(
-            defOrderBy: 'id',
-            alias: $alias,
-            allowedFields: $participantRepository->getFieldNames()
-        );
+        $orderBy = $this->getRequestOrder(defOrderBy: 'id', alias: $alias, allowedFields: $participantRepository->getFieldNames());
 
-        $criterias[] = Criteria::create()->where(
-            Criteria::expr()?->eq($alias.'.billet', $billet->getId())
-        );
+        $criterias[] = Criteria::create()->where(Criteria::expr()->eq($alias . '.billet', $billet->getId()));
 
-        $paginator = $participantRepository->getPaginator(
-            limit: $this->getRequestLimit(),
-            page: $this->getRequestPage(),
-            orderBy: $orderBy,
-            alias: $alias,
-            criterias: $criterias
-        );
+        $paginator = $participantRepository->getPaginator(limit: $this->getRequestLimit(), page: $this->getRequestPage(), orderBy: $orderBy, alias: $alias, criterias: $criterias);
 
-        return $this->render(
-            'billet\participants.twig',
-            [
-                'billet' => $billet,
-                'paginator' => $paginator,
-            ]
-        );
+        return $this->render('billet\participants.twig', [
+            'billet' => $billet,
+            'paginator' => $paginator,
+        ]);
     }
 }

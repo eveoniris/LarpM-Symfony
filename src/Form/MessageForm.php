@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -25,15 +26,14 @@ class MessageForm extends AbstractType
         $builder->add('title', TextType::class, [
             'required' => true,
             'label' => 'Titre',
-        ])
-            ->add('text', TextareaType::class, [
-                'required' => true,
-                'label' => 'Message',
-                'attr' => [
-                    'rows' => 9,
-                    'class' => 'tinymce',
-                ],
-            ]);
+        ])->add('text', TextareaType::class, [
+            'required' => true,
+            'label' => 'Message',
+            'attr' => [
+                'rows' => 9,
+                'class' => 'tinymce',
+            ],
+        ]);
     }
 
     /**

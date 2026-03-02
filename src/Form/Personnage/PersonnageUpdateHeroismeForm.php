@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Personnage;
 
@@ -25,12 +26,11 @@ class PersonnageUpdateHeroismeForm extends AbstractType
             'label' => 'Combien de points d\'Héroïsme voulez-vous ajouter ? (indiquez une valeur négative pour retirer des points)',
             'mapped' => false,
             'attr' => ['max' => 3],
-        ])
-            ->add('explication', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'required' => true,
-                'mapped' => false,
-                'label' => 'Donnez une explication',
-            ]);
+        ])->add('explication', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'required' => true,
+            'mapped' => false,
+            'label' => 'Donnez une explication',
+        ]);
     }
 
     /**

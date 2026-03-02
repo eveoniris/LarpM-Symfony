@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use DateTime;
@@ -20,7 +22,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseExperienceUsage', 'extended' => 'ExperienceUsage'])]
 abstract class BaseExperienceUsage
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
@@ -98,7 +100,7 @@ abstract class BaseExperienceUsage
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'operation_date', 'xp_use', 'competence_id', 'personnage_id'];
-    } */
+     * {
+     * return ['id', 'operation_date', 'xp_use', 'competence_id', 'personnage_id'];
+     * } */
 }

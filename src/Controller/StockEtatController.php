@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Etat;
@@ -29,8 +31,7 @@ class StockEtatController extends AbstractController
     {
         $etat = new Etat();
 
-        $form = $this->createForm(EtatType::class, $etat)
-            ->add('save', SubmitType::class);
+        $form = $this->createForm(EtatType::class, $etat)->add('save', SubmitType::class);
 
         // on passe la requête de l'utilisateur au formulaire
         $form->handleRequest($request);
@@ -51,24 +52,26 @@ class StockEtatController extends AbstractController
     }
 
     #[Route('/stock/etat/{etat}/update', name: 'stockEtat.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Etat $etat): RedirectResponse|Response
-    {
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        Etat $etat,
+    ): RedirectResponse|Response {
         $id = $request->get('index');
 
-        $form = $this->createForm(EtatType::class, $etat)
-            ->add('update', SubmitType::class)
-            ->add('delete', SubmitType::class);
+        $form = $this->createForm(EtatType::class, $etat)->add('update', SubmitType::class)->add('delete', SubmitType::class);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $etat = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 $entityManager->persist($etat);
                 $entityManager->flush();
                 $this->addFlash('success', 'L\'état a été mis à jour.');
-            } elseif ($form->get('delete')->isClicked()) {
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 $entityManager->remove($etat);
                 $entityManager->flush();
                 $this->addFlash('success', 'L\'état a été supprimé.');
@@ -79,6 +82,7 @@ class StockEtatController extends AbstractController
 
         return $this->render('stock/etat/update.twig', [
             'etat' => $etat,
-            'form' => $form->createView()]);
+            'form' => $form->createView(),
+        ]);
     }
 }

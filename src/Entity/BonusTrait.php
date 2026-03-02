@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
-use App\Enum\BonusType;
 use App\Enum\Status;
 
 trait BonusTrait

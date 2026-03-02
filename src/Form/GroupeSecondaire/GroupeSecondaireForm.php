@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\GroupeSecondaire;
 
 use App\Entity\Personnage;
@@ -34,7 +36,8 @@ class GroupeSecondaireForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if ($this->security->isGranted(Role::ROLE_GROUPE_TRANSVERSE->value)) {
-            $builder->add('label', TextType::class)
+            $builder
+                ->add('label', TextType::class)
                 ->add('description', TextareaType::class, [
                     'required' => true,
                     'label' => 'Description',
@@ -60,14 +63,12 @@ class GroupeSecondaireForm extends AbstractType
                     'autocomplete' => true,
                     'query_builder' => static function (EntityRepository $er) {
                         $qb = $er->createQueryBuilder('u');
-                        $qb->where(
-                            $qb->expr()->orX(
-                                $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
-                                $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
-                                $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')),
-                                $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%'))
-                            ),
-                        );
+                        $qb->where($qb->expr()->orX(
+                            $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                            $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
+                            $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')),
+                            $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                        ));
 
                         return $qb;
                     },
@@ -76,10 +77,7 @@ class GroupeSecondaireForm extends AbstractType
                     'required' => false,
                     'label' => 'Recruteur responsable du groupe',
                     'class' => Personnage::class,
-                    'query_builder' => static fn(EntityRepository $er) => $er->createQueryBuilder('p')->orderBy(
-                        'p.nom',
-                        'ASC',
-                    ),
+                    'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('p')->orderBy('p.nom', 'ASC'),
                     'choice_label' => 'nom',
                     // 'mapped' => false,
                 ])
@@ -98,36 +96,29 @@ class GroupeSecondaireForm extends AbstractType
         $builder->add('private', CheckboxType::class, [
             'label' => 'Cochez cette case pour rendre le groupe privé (Seul le chef et ceux qui peuvent voir les secrets verront les autres membres)',
             'required' => false,
-        ])
-            ->add('show_discord', CheckboxType::class, [
-                'label' => 'Cochez cette case pour afficher le lien de votre serveur discord pour tout le monde si le groupe est publique)',
-                'required' => false,
-            ])
-            ->add('discord', TextType::class, [
-                'required' => false,
-                'label' => 'Lien discord',
-                'help' => 'https://discord.gg/xxxx',
-                'constraints' => [
-                    new Assert\Callback([
-                        'callback' => function (?string $data, ExecutionContextInterface $context) {
-                            if (empty($data)) {
-                                return;
-                            }
+        ])->add('show_discord', CheckboxType::class, [
+            'label' => 'Cochez cette case pour afficher le lien de votre serveur discord pour tout le monde si le groupe est publique)',
+            'required' => false,
+        ])->add('discord', TextType::class, [
+            'required' => false,
+            'label' => 'Lien discord',
+            'help' => 'https://discord.gg/xxxx',
+            'constraints' => [
+                new Assert\Callback(function (?string $data, ExecutionContextInterface $context): void {
+                    if (empty($data)) {
+                        return;
+                    }
 
-                            if (!str_starts_with($data, 'https://discord.gg/')) {
-                                $context
-                                    ->buildViolation($this->translator->trans('groupe.discord.link'))
-                                    ->atPath('[discord]')
-                                    ->addViolation();
-                            }
-                        },
-                    ]),
-                ],
-            ]);
+                    if (!str_starts_with($data, 'https://discord.gg/')) {
+                        $context->buildViolation($this->translator->trans('groupe.discord.link'))->atPath('[discord]')->addViolation();
+                    }
+                }),
+            ],
+        ]);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {

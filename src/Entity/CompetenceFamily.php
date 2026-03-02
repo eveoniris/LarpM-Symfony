@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\CompetenceFamilyType;
@@ -7,26 +9,33 @@ use App\Repository\CompetenceFamilyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
 #[Entity(repositoryClass: CompetenceFamilyRepository::class)]
-class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
+class CompetenceFamily extends BaseCompetenceFamily implements Stringable
 {
-    public static $LITTERATURE = 'Littérature';
+    public static string $LITTERATURE = 'Littérature';
 
     /**
      * @ManyToMany(targetEntity="Classe", mappedBy="competenceFamilyFavorites")
+     *
+     * @var Collection<int, Classe>
      */
-    protected $classeFavorites;
+    protected Collection $classeFavorites;
 
     /**
      * @ManyToMany(targetEntity="Classe", mappedBy="competenceFamilyNormales")
+     *
+     * @var Collection<int, Classe>
      */
-    protected $classeNormales;
+    protected Collection $classeNormales;
 
     /**
      * @ManyToMany(targetEntity="Classe", mappedBy="competenceFamilyCreations")
+     *
+     * @var Collection<int, Classe>
      */
-    protected $classeCreations;
+    protected Collection $classeCreations;
 
     public function __construct()
     {
@@ -39,7 +48,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
 
     public function __toString(): string
     {
-        return $this->getLabel() ?? '';
+        return (string) $this->getLabel();
     }
 
     /**
@@ -94,7 +103,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Fourni la compétence de plus haut niveau d'une famille de compétence.
      */
-    public function getLastCompetence()
+    public function getLastCompetence(): ?Competence
     {
         $maximumIndex = null;
         $competenceLast = null;
@@ -114,8 +123,6 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
 
     /**
      * Add Classe entity to collection.
-     *
-     * @return CompetenceFamily
      */
     public function addClasseFavorite(Classe $classe): static
     {
@@ -126,8 +133,6 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
 
     /**
      * Remove Classe entity from collection.
-     *
-     * @return CompetenceFamily
      */
     public function removeClasseFavorite(Classe $classe): static
     {
@@ -139,7 +144,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Get Objet entity collection.
      *
-     * @return Collection
+     * @return Collection<int, Classe>
      */
     public function getClasseFavorites()
     {
@@ -148,8 +153,6 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
 
     /**
      * Add Classe entity to collection.
-     *
-     * @return CompetenceFamily
      */
     public function addClasseNormale(Classe $classe): static
     {
@@ -160,8 +163,6 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
 
     /**
      * Remove Classe entity from collection.
-     *
-     * @return CompetenceFamily
      */
     public function removeClasseNormale(Classe $classe): static
     {
@@ -173,7 +174,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Get Objet entity collection.
      *
-     * @return Collection
+     * @return Collection<int, Classe>
      */
     public function getClasseNormales()
     {
@@ -182,8 +183,6 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
 
     /**
      * Add Classe entity to collection.
-     *
-     * @return CompetenceFamily
      */
     public function addClasseCreation(Classe $classe): static
     {
@@ -194,8 +193,6 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
 
     /**
      * Remove Classe entity from collection.
-     *
-     * @return CompetenceFamily
      */
     public function removeClasseCreation(Classe $classe): static
     {
@@ -207,7 +204,7 @@ class CompetenceFamily extends BaseCompetenceFamily implements \Stringable
     /**
      * Get Objet entity collection.
      *
-     * @return Collection
+     * @return Collection<int, Classe>
      */
     public function getClasseCreations()
     {

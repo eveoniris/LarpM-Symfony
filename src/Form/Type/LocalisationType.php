@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Type;
 
 use App\Entity\Localisation;
@@ -13,8 +15,7 @@ class LocalisationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('label', TextType::class)
-            ->add('precision', TextareaType::class, ['required' => false]);
+        $builder->add('label', TextType::class)->add('precision', TextareaType::class, ['required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

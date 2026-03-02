@@ -1,18 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Enum\LevelType;
 use App\Repository\ParticipantRepository;
+use DateTime;
 use Doctrine\ORM\Mapping\Entity;
+use Stringable;
 
 #[Entity(repositoryClass: ParticipantRepository::class)]
-class Participant extends BaseParticipant implements \Stringable
+class Participant extends BaseParticipant implements Stringable
 {
     public function __construct()
     {
         parent::__construct();
-        $this->setSubscriptionDate(new \DateTime('NOW'));
+        $this->setSubscriptionDate(new DateTime('NOW'));
     }
 
     public function __toString(): string
@@ -61,7 +65,7 @@ class Participant extends BaseParticipant implements \Stringable
     }
 
     /**
-     * @return mixed[]
+     * @return array<int, Potion>
      */
     public function getPotionsEnveloppe(): array
     {
@@ -76,7 +80,8 @@ class Participant extends BaseParticipant implements \Stringable
         return $potions;
     }
 
-    public function getPotionsDepartByLevel(int|LevelType|null $niveau = 1)
+    /** @return array<int, Potion> */
+    public function getPotionsDepartByLevel(int|LevelType|null $niveau = 1): array
     {
         if (!$niveau) {
             return [];
@@ -100,7 +105,7 @@ class Participant extends BaseParticipant implements \Stringable
         return $return;
     }
 
-    public function getPotionsRandomByLevel(int|LevelType|null $niveau = 1)
+    public function getPotionsRandomByLevel(int|LevelType|null $niveau = 1): ?Potion
     {
         if (!$niveau) {
             return null;
@@ -120,13 +125,13 @@ class Participant extends BaseParticipant implements \Stringable
             return null;
         }
 
-        return $potions[random_int(0, count($potions) - 1)];
+        return $potions[random_int(0, \count($potions) - 1)];
     }
 
     /**
      * Fourni la session de jeu auquel participe l'utilisateur.
      */
-    public function getSession()
+    public function getSession(): ?GroupeGn
     {
         return $this->getGroupeGn();
     }
@@ -141,7 +146,7 @@ class Participant extends BaseParticipant implements \Stringable
 
     public function getUserIdentity(): string
     {
-        return $this->getUser()?->getDisplayName().' '.$this->getUser()?->getEmail();
+        return $this->getUser()?->getDisplayName() . ' ' . $this->getUser()?->getEmail();
     }
 
     public function hasPotionsDepart(Potion $potionDepart): bool

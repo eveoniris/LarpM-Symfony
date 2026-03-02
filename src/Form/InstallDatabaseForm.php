@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -15,11 +16,11 @@ class InstallDatabaseForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('database_name', TextType::class, ['required' => true])
-            ->add('database_host', TextType::class, ['required' => true])
-            ->add('database_port', TextType::class, ['required' => false])
-            ->add('database_User', TextType::class, ['required' => true])
-            ->add('database_password', PasswordType::class, ['required' => false]);
+        $builder->add('database_name', TextType::class, ['required' => true])->add('database_host', TextType::class, [
+            'required' => true,
+        ])->add('database_port', TextType::class, ['required' => false])->add('database_User', TextType::class, [
+            'required' => true,
+        ])->add('database_password', PasswordType::class, ['required' => false]);
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Rangement;
@@ -30,8 +32,7 @@ class StockRangementController extends AbstractController
     {
         $rangement = new Rangement();
 
-        $form = $this->createForm(RangementType::class, $rangement)
-            ->add('save', SubmitType::class);
+        $form = $this->createForm(RangementType::class, $rangement)->add('save', SubmitType::class);
 
         // on passe la requête de l'utilisateur au formulaire
         $form->handleRequest($request);
@@ -52,22 +53,24 @@ class StockRangementController extends AbstractController
     }
 
     #[Route('/stock/rangement/{rangement}/update', name: 'stockRangement.update')]
-    public function updateAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Rangement $rangement): RedirectResponse|Response
-    {
-        $form = $this->createForm(RangementType::class, $rangement)
-            ->add('update', SubmitType::class)
-            ->add('delete', SubmitType::class);
+    public function updateAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        Rangement $rangement,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(RangementType::class, $rangement)->add('update', SubmitType::class)->add('delete', SubmitType::class);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $rangement = $form->getData();
 
-            if ($form->get('update')->isClicked()) {
+            if ($form->get('update') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('update')->isClicked()) {
                 $entityManager->persist($rangement);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le rangement a été mise à jour');
-            } elseif ($form->get('delete')->isClicked()) {
+            } elseif ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked()) {
                 $entityManager->remove($rangement);
                 $entityManager->flush();
                 $this->addFlash('success', 'Le rangement a été suprimé');
@@ -78,6 +81,7 @@ class StockRangementController extends AbstractController
 
         return $this->render('stock/rangement/update.twig', [
             'rangement' => $rangement,
-            'form' => $form->createView()]);
+            'form' => $form->createView(),
+        ]);
     }
 }

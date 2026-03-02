@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Groupe;
 
 use App\Entity\GroupeLangue;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -31,16 +32,15 @@ class GroupeLangueForm extends AbstractType
                 new Length(['max' => 45]),
                 new NotBlank(),
             ],
-        ])
-            ->add('couleur', TextType::class, [
-                'label' => 'Couleur',
-                'required' => true,
-                'attr' => ['maxlength' => 45],
-                'constraints' => [
-                    new Length(['max' => 45]),
-                    new NotBlank(),
-                ],
-            ]);
+        ])->add('couleur', TextType::class, [
+            'label' => 'Couleur',
+            'required' => true,
+            'attr' => ['maxlength' => 45],
+            'constraints' => [
+                new Length(['max' => 45]),
+                new NotBlank(),
+            ],
+        ]);
     }
 
     /**

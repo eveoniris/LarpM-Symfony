@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -10,9 +12,10 @@ class PaysForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
-            'required' => true, ])
-            ->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
-                'required' => false, ]);
+            'required' => true,
+        ])->add('description', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'required' => false,
+        ]);
     }
 
     public function getName(): string

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Gn;
@@ -7,7 +9,6 @@ use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\PersonnageLangues;
 use App\Entity\PersonnagesReligions;
-use App\Entity\User;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\LevelType;
 use App\Service\OrderBy;
@@ -19,59 +20,61 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class ParticipantRepository extends BaseRepository
 {
+    /**
+     * @return array<int, Participant>
+     */
     public function findAll(): array
     {
         return $this->findBy([], ['id' => 'ASC']);
     }
 
-    public function findAllWithoutPersonnage(Gn $gn)
+    /**
+     * @return array<int, Participant>
+     */
+    public function findAllWithoutPersonnage(Gn $gn): array
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                    SELECT p FROM App\Entity\Participant p
-                    WHERE p.personnage IS NULL and p.gn = :gnid
-                DQL,
-            );
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+                SELECT p FROM App\Entity\Participant p
+                WHERE p.personnage IS NULL and p.gn = :gnid
+            DQL);
         $query->setParameter('gnid', $gn->getId());
 
         return $query->getResult();
     }
 
-    public function findAllWithoutPersonnageSecondaire(Gn $gn)
+    /**
+     * @return array<int, Participant>
+     */
+    public function findAllWithoutPersonnageSecondaire(Gn $gn): array
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                    SELECT p FROM App\Entity\Participant p
-                    WHERE p.personnageSecondaire IS NULL and p.gn = :gnid
-                DQL,
-            );
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+                SELECT p FROM App\Entity\Participant p
+                WHERE p.personnageSecondaire IS NULL and p.gn = :gnid
+            DQL);
         $query->setParameter('gnid', $gn->getId());
 
         return $query->getResult();
     }
 
-    public function findAllByCompentenceFamilyLevel(Gn $gn, CompetenceFamilyType $cft, ?LevelType $level)
+    /**
+     * @return array<int, Participant>
+     */
+    public function findAllByCompentenceFamilyLevel(Gn $gn, CompetenceFamilyType $cft, ?LevelType $level): array
     {
         $levelQuery = null;
         if ($level) {
             $levelQuery = ' and l.index = :lindex ';
         }
 
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                    SELECT p FROM App\Entity\Participant p
-                    INNER JOIN p.personnage pe
-                     INNER JOIN pe.competences c
-                     INNER JOIN c.competenceFamily cf
-                     INNER JOIN c.level l
-                    WHERE cf.id = :cfid $levelQuery and p.gn = :gnid
-                DQL,
-            );
-        $query->setParameter('gnid', $gn->getId())
-            ->setParameter('cfid', $cft->getId());
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+                SELECT p FROM App\Entity\Participant p
+                INNER JOIN p.personnage pe
+                 INNER JOIN pe.competences c
+                 INNER JOIN c.competenceFamily cf
+                 INNER JOIN c.level l
+                WHERE cf.id = :cfid {$levelQuery} and p.gn = :gnid
+            DQL);
+        $query->setParameter('gnid', $gn->getId())->setParameter('cfid', $cft->getId());
 
         if ($level) {
             $query->setParameter('lindex', $level->getIndex());
@@ -82,28 +85,25 @@ class ParticipantRepository extends BaseRepository
 
     public function countAllByCompentenceFamilyLevel(Gn $gn, CompetenceFamilyType $cft, LevelType $level): int
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                    SELECT COUNT(p) FROM App\Entity\Participant p
-                    INNER JOIN p.personnage pe
-                     INNER JOIN pe.competences c
-                     INNER JOIN c.competenceFamily cf
-                     INNER JOIN c.level l
-                    WHERE cf.id = :cfid and l.index = :lindex and p.gn = :gnid
-                DQL,
-            );
-        $query->setParameter('gnid', $gn->getId())
-            ->setParameter('cfid', $cft->getId())
-            ->setParameter('lindex', $level->getIndex());
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+                SELECT COUNT(p) FROM App\Entity\Participant p
+                INNER JOIN p.personnage pe
+                 INNER JOIN pe.competences c
+                 INNER JOIN c.competenceFamily cf
+                 INNER JOIN c.level l
+                WHERE cf.id = :cfid and l.index = :lindex and p.gn = :gnid
+            DQL);
+        $query->setParameter('gnid', $gn->getId())->setParameter('cfid', $cft->getId())->setParameter('lindex', $level->getIndex());
 
-        return (int)$query->getSingleScalarResult();
+        return (int) $query->getSingleScalarResult();
     }
 
     /**
      * Trouve le nombre d'utilisateurs correspondant aux critères de recherche.
+     *
+     * @param array<string, mixed> $criteria
      */
-    public function findCount(array $criteria = [])
+    public function findCount(array $criteria = []): int
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -140,19 +140,19 @@ class ParticipantRepository extends BaseRepository
     }
 
     /*public function sortAttributes(string $alias = null): array
-    {
-        $alias ??= static::getEntityAlias();
-
-        dump(1);
-
-        return [
-            //'groupe' => [OrderBy::ASC => ['groupe' => OrderBy::ASC], OrderBy::DESC => ['groupe' => OrderBy::DESC]],
-            ...parent::sortAttributes($alias),
-            // using alias like "scriptwriter" require another template loop due to the added $query->select() entity
-            //'user.username' => [OrderBy::ASC => ['user.username' => OrderBy::ASC], OrderBy::DESC => ['user.username' => OrderBy::DESC]],
-            //'player.username' => [OrderBy::ASC => ['player.username' => OrderBy::ASC], OrderBy::DESC => ['player.username' => OrderBy::DESC]],
-        ];
-    }*/
+     * {
+     * $alias ??= static::getEntityAlias();
+     *
+     * dump(1);
+     *
+     * return [
+     * //'groupe' => [OrderBy::ASC => ['groupe' => OrderBy::ASC], OrderBy::DESC => ['groupe' => OrderBy::DESC]],
+     * ...parent::sortAttributes($alias),
+     * // using alias like "scriptwriter" require another template loop due to the added $query->select() entity
+     * //'user.username' => [OrderBy::ASC => ['user.username' => OrderBy::ASC], OrderBy::DESC => ['user.username' => OrderBy::DESC]],
+     * //'player.username' => [OrderBy::ASC => ['player.username' => OrderBy::ASC], OrderBy::DESC => ['player.username' => OrderBy::DESC]],
+     * ];
+     * }*/
 
     public function gn(QueryBuilder $query, Gn $gn): QueryBuilder
     {
@@ -173,58 +173,46 @@ class ParticipantRepository extends BaseRepository
         $rsm->addScalarResult('billet', 'billet', 'string');
 
         /* @noinspection SqlNoDataSourceInspection */
-        return $this->entityManager->createNativeQuery(
-            <<<SQL
-                SELECT pt.id,
-                       CONCAT(ec.nom, ' ', ec.prenom) as participant,
-                       g.numero                       as groupe_numero,
-                       g.nom                          as groupe_nom,
-                       u.email,
-                       GROUP_CONCAT(r.label)          as restauration,
-                       b.label                        as billet
-                FROM participant pt
-                         INNER JOIN gn ON pt.gn_id = gn.id
-                         LEFT JOIN `user` u ON u.id = pt.user_id
-                         LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
-                         LEFT JOIN participant_has_restauration pr ON pr.participant_id = pt.id
-                         LEFT JOIN restauration r ON r.id = pr.restauration_id
-                         LEFT JOIN groupe_gn ggn ON pt.groupe_gn_id = ggn.id
-                         LEFT JOIN groupe g ON ggn.groupe_id = g.id
-                         LEFT JOIN billet b ON b.id = pt.billet_id
-                WHERE pt.gn_id = 10
-                GROUP BY id, participant, g.numero, g.nom, email, billet
-                ORDER BY participant ASC;
-                SQL,
-            $rsm,
-        )->setParameter('gnid', $gn->getId());
+        return $this->entityManager->createNativeQuery(<<<SQL
+            SELECT pt.id,
+                   CONCAT(ec.nom, ' ', ec.prenom) as participant,
+                   g.numero                       as groupe_numero,
+                   g.nom                          as groupe_nom,
+                   u.email,
+                   GROUP_CONCAT(r.label)          as restauration,
+                   b.label                        as billet
+            FROM participant pt
+                     INNER JOIN gn ON pt.gn_id = gn.id
+                     LEFT JOIN `user` u ON u.id = pt.user_id
+                     LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
+                     LEFT JOIN participant_has_restauration pr ON pr.participant_id = pt.id
+                     LEFT JOIN restauration r ON r.id = pr.restauration_id
+                     LEFT JOIN groupe_gn ggn ON pt.groupe_gn_id = ggn.id
+                     LEFT JOIN groupe g ON ggn.groupe_id = g.id
+                     LEFT JOIN billet b ON b.id = pt.billet_id
+            WHERE pt.gn_id = 10
+            GROUP BY id, participant, g.numero, g.nom, email, billet
+            ORDER BY participant ASC;
+            SQL, $rsm)->setParameter('gnid', $gn->getId());
     }
 
+    /** @return Paginator<Participant> */
     public function searchPaginatedByGn(PagerService $pageRequest, int $gnid): Paginator
     {
-        $query = $this->searchByGn(
-            $gnid,
-            $pageRequest->getSearchValue(),
-            $pageRequest->getSearchType(),
-            $pageRequest->getOrderBy(),
-            $this->getAlias(),
-        )->getQuery();
+        $query = $this->searchByGn($gnid, $pageRequest->getSearchValue(), $pageRequest->getSearchType(), $pageRequest->getOrderBy(), $this->getAlias())->getQuery();
 
-        return $this->findPaginatedQuery(
-            $query,
-            $pageRequest->getLimit(),
-            $pageRequest->getPage(),
-        );
+        return $this->findPaginatedQuery($query, $pageRequest->getLimit(), $pageRequest->getPage());
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function searchByGn(
-        int               $gnid,
-        mixed             $search = null,
+        int $gnid,
+        mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
-        ?OrderBy          $orderBy = null,
-        ?string           $alias = null,
-        ?QueryBuilder     $query = null,
-    ): QueryBuilder
-    {
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null,
+    ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
 
@@ -298,7 +286,7 @@ class ParticipantRepository extends BaseRepository
             case 'participant.renommee':
                 $renommee = $search;
                 $query->andWhere('personnage.renomme >= :renommee');
-                $query->setParameter('renommee', (int)$renommee);
+                $query->setParameter('renommee', (int) $renommee);
                 $search = '';
                 break;
         }
@@ -306,14 +294,14 @@ class ParticipantRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
-        mixed             $search = null,
+        mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
-        ?OrderBy          $orderBy = null,
-        ?string           $alias = null,
-        ?QueryBuilder     $query = null,
-    ): QueryBuilder
-    {
+        ?OrderBy $orderBy = null,
+        ?string $alias = null,
+        ?QueryBuilder $query = null,
+    ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
         $query->join($alias . '.user', 'user');
@@ -326,12 +314,15 @@ class ParticipantRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    public function searchAttributes(?string $alias = null): array
+    /**
+     * @return array<int, string|null>
+     */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
-            ...parent::searchAttributes(),
+            ...parent::searchAttributes($alias, $withAlias),
             'user.username as username',
             'etatCivil.nom as lastname',
             'etatCivil.prenom as firstname',
@@ -341,6 +332,9 @@ class ParticipantRepository extends BaseRepository
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
@@ -386,6 +380,9 @@ class ParticipantRepository extends BaseRepository
         return parent::translateAttribute($attribute);
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function translateAttributes(): array
     {
         return [
@@ -397,7 +394,6 @@ class ParticipantRepository extends BaseRepository
             'billet' => $this->translator->trans('Billet', domain: 'repository'),
             'nomPrenom',
             'HIDDEN nomPrenom' => $this->translator->trans('Participant', domain: 'repository'),
-
         ];
     }
 }

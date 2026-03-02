@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Repository;
+declare(strict_types=1);
 
-use App\Entity\Billet;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+namespace App\Repository;
 
 class BilletRepository extends BaseRepository
 {

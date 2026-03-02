@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form;
 
@@ -21,15 +22,14 @@ class RessourceForm extends AbstractType
     {
         $builder->add('label', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
             'required' => true,
-        ])
-            ->add('rarete', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'label' => 'Rareté',
-                'required' => true,
-                'choice_label' => 'label',
-                'multiple' => false,
-                'mapped' => true,
-                'class' => \App\Entity\Rarete::class,
-            ]);
+        ])->add('rarete', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            'label' => 'Rareté',
+            'required' => true,
+            'choice_label' => 'label',
+            'multiple' => false,
+            'mapped' => true,
+            'class' => \App\Entity\Rarete::class,
+        ]);
     }
 
     /**

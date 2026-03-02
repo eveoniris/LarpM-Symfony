@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -27,7 +30,7 @@ abstract class BaseExperienceGain
     protected string $explanation;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
-    protected \DateTime $operation_date;
+    protected DateTime $operation_date;
 
     #[Column(type: Types::INTEGER)]
     protected int $xp_gain;
@@ -60,14 +63,14 @@ abstract class BaseExperienceGain
         return $this->explanation ?? '';
     }
 
-    public function setOperationDate(\DateTime $operation_date): static
+    public function setOperationDate(DateTime $operation_date): static
     {
         $this->operation_date = $operation_date;
 
         return $this;
     }
 
-    public function getOperationDate(): \DateTime
+    public function getOperationDate(): DateTime
     {
         return $this->operation_date;
     }

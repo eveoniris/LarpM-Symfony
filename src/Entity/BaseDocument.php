@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -22,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BaseDocument', 'extended' => 'Document'])]
 abstract class BaseDocument
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Assert\NotNull]
@@ -51,10 +54,10 @@ abstract class BaseDocument
     protected ?string $auteur = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $creation_date = null;
+    protected ?DateTime $creation_date = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $update_date = null;
+    protected ?DateTime $update_date = null;
 
     #[Column(type: Types::BOOLEAN)]
     protected bool $impression;
@@ -63,21 +66,26 @@ abstract class BaseDocument
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
     protected ?User $user = null;
 
+    /** @var Collection<int, Langue> */
     #[ORM\ManyToMany(targetEntity: Langue::class, inversedBy: 'documents')]
     #[ORM\JoinTable(name: 'document_has_langue')]
     #[JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $langues;
 
+    /** @var Collection<int, Groupe> */
     #[ORM\ManyToMany(targetEntity: Groupe::class, mappedBy: 'documents')]
     protected Collection $groupes;
 
+    /** @var Collection<int, Lieu> */
     #[ORM\ManyToMany(targetEntity: Lieu::class, mappedBy: 'documents')]
     protected Collection $lieus;
 
+    /** @var Collection<int, Personnage> */
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'documents')]
     protected Collection $personnages;
 
+    /** @var Collection<int, IntrigueHasDocument> */
     #[ORM\OneToMany(mappedBy: 'document', targetEntity: IntrigueHasDocument::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'document_id', nullable: false)]
     protected Collection $intrigueHasDocuments;
@@ -174,7 +182,7 @@ abstract class BaseDocument
         return $this->statut ?? '';
     }
 
-    public function setAuteur(string $auteur)
+    public function setAuteur(string $auteur): static
     {
         $this->auteur = $auteur;
 
@@ -186,26 +194,26 @@ abstract class BaseDocument
         return $this->auteur;
     }
 
-    public function setCreationDate(?\DateTime $creation_date): static
+    public function setCreationDate(?DateTime $creation_date): static
     {
         $this->creation_date = $creation_date;
 
         return $this;
     }
 
-    public function getCreationDate(): ?\DateTime
+    public function getCreationDate(): ?DateTime
     {
         return $this->creation_date;
     }
 
-    public function setUpdateDate(?\DateTime $update_date): static
+    public function setUpdateDate(?DateTime $update_date): static
     {
         $this->update_date = $update_date;
 
         return $this;
     }
 
-    public function getUpdateDate(): ?\DateTime
+    public function getUpdateDate(): ?DateTime
     {
         return $this->update_date;
     }
@@ -236,6 +244,7 @@ abstract class BaseDocument
 
     public function addLangue(Langue $langue): static
     {
+        /* @phpstan-ignore argument.type */
         $langue->addDocument($this);
         $this->langues[] = $langue;
 
@@ -244,12 +253,14 @@ abstract class BaseDocument
 
     public function removeLangue(Langue $langue): static
     {
+        /* @phpstan-ignore argument.type */
         $langue->removeDocument($this);
         $this->langues->removeElement($langue);
 
         return $this;
     }
 
+    /** @return Collection<int, Langue> */
     public function getLangues(): Collection
     {
         return $this->langues;
@@ -269,6 +280,7 @@ abstract class BaseDocument
         return $this;
     }
 
+    /** @return Collection<int, Groupe> */
     public function getGroupes(): Collection
     {
         return $this->groupes;
@@ -288,6 +300,7 @@ abstract class BaseDocument
         return $this;
     }
 
+    /** @return Collection<int, Lieu> */
     public function getLieus(): Collection
     {
         return $this->lieus;
@@ -307,13 +320,14 @@ abstract class BaseDocument
         return $this;
     }
 
+    /** @return Collection<int, Personnage> */
     public function getPersonnages(): Collection
     {
         return $this->personnages;
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'code', 'titre', 'description', 'documentUrl', 'cryptage', 'statut', 'auteur', 'User_id', 'creation_date', 'update_date', 'impression'];
-    } */
+     * {
+     * return ['id', 'code', 'titre', 'description', 'documentUrl', 'cryptage', 'statut', 'auteur', 'User_id', 'creation_date', 'update_date', 'impression'];
+     * } */
 }

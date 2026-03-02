@@ -1,9 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Repository;
-
-use Doctrine\ORM\EntityRepository;
 
 /**
  * LarpManager\Repository\LieuRepository.
@@ -14,13 +13,10 @@ class LieuRepository extends BaseRepository
 {
     /**
      * Trouve tous les lieux classé par ordre alphabétique.
-     *
-     * @return ArrayCollection $classes
      */
-    public function findAllOrderedByNom()
+    /** @return array<int, \App\Entity\Lieu> */
+    public function findAllOrderedByNom(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT l FROM App\Entity\Lieu l ORDER BY l.nom ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT l FROM App\Entity\Lieu l ORDER BY l.nom ASC')->getResult();
     }
 }

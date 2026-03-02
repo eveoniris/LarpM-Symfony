@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -40,6 +42,7 @@ abstract class BaseAge
     /**
      * @var Collection<int, Personnage>|Personnage[]
      */
+    /** @var Collection<int, Personnage> */
     #[OneToMany(mappedBy: 'age', targetEntity: Personnage::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'age_id', nullable: false)]
     protected Collection $personnages;
@@ -85,14 +88,14 @@ abstract class BaseAge
         return $this->description;
     }
 
-    public function setBonus(bool $bonus): self
+    public function setBonus(?int $bonus): self
     {
         $this->bonus = $bonus;
 
         return $this;
     }
 
-    public function getBonus(): int
+    public function getBonus(): ?int
     {
         return $this->bonus;
     }
@@ -135,6 +138,7 @@ abstract class BaseAge
         return $this;
     }
 
+    /** @return Collection<int, Personnage> */
     public function getPersonnages(): Collection
     {
         return $this->personnages;

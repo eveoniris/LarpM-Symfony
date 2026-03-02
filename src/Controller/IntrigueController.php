@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Intrigue;
@@ -10,6 +12,7 @@ use App\Form\Intrigue\IntrigueForm;
 use App\Form\Intrigue\IntrigueRelectureForm;
 use App\Repository\IntrigueRepository;
 use App\Service\PagerService;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -33,7 +36,7 @@ class IntrigueController extends AbstractController
     public function listAction(
         Request $request,
         PagerService $pagerService,
-        IntrigueRepository $intrigueRepository
+        IntrigueRepository $intrigueRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($intrigueRepository);
 
@@ -47,30 +50,22 @@ class IntrigueController extends AbstractController
      * Ajouter une intrigue.
      */
     #[Route('/add', name: 'add')]
-    public function addAction(
-        Request $request,
-        EntityManagerInterface $entityManager
-    ): RedirectResponse|Response {
+    public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
+    {
         $intrigue = new Intrigue();
-        $form = $this->createForm(IntrigueForm::class, $intrigue)
-            ->add('state', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Etat',
-                'choices' => [
-                    'L\'élément est actif' => 'ACTIF',
-                    'L\'élément est inactif' => 'INACTIF',
-                ],
-            ])
-            ->add(
-                'add',
-                SubmitType::class,
-                [
-                    'label' => "Ajouter l'intrigue",
-                    'attr' => [
-                        'class' => 'btn btn-secondary',
-                    ],
-                ]
-            );
+        $form = $this->createForm(IntrigueForm::class, $intrigue)->add('state', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Etat',
+            'choices' => [
+                'L\'élément est actif' => 'ACTIF',
+                'L\'élément est inactif' => 'INACTIF',
+            ],
+        ])->add('add', SubmitType::class, [
+            'label' => "Ajouter l'intrigue",
+            'attr' => [
+                'class' => 'btn btn-secondary',
+            ],
+        ]);
 
         $form->handleRequest($request);
 
@@ -164,7 +159,7 @@ class IntrigueController extends AbstractController
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Intrigue $intrigue
+        Intrigue $intrigue,
     ): RedirectResponse|Response {
         $originalIntrigueHasGroupes = new ArrayCollection();
         $originalIntrigueHasGroupeSecondaires = new ArrayCollection();
@@ -215,31 +210,25 @@ class IntrigueController extends AbstractController
             $originalIntrigueHasLieus->add($intrigueHasLieu);
         }
 
-        $form = $this->createForm(IntrigueForm::class, $intrigue)
-            ->add('state', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Etat',
-                'choices' => [
-                    'L\'élément est actif' => 'ACTIF',
-                    'L\'élément est inactif' => 'INACTIF',
-                ],
-            ])
-            ->add(
-                'enregistrer',
-                SubmitType::class,
-                [
-                    'label' => 'Enregistrer',
-                    'attr' => [
-                        'class' => 'btn btn-secondary',
-                    ],
-                ]
-            );
+        $form = $this->createForm(IntrigueForm::class, $intrigue)->add('state', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Etat',
+            'choices' => [
+                'L\'élément est actif' => 'ACTIF',
+                'L\'élément est inactif' => 'INACTIF',
+            ],
+        ])->add('enregistrer', SubmitType::class, [
+            'label' => 'Enregistrer',
+            'attr' => [
+                'class' => 'btn btn-secondary',
+            ],
+        ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $intrigue = $form->getData();
-            $intrigue->setDateUpdate(new \DateTime('NOW'));
+            $intrigue->setDateUpdate(new DateTime('NOW'));
 
             /*
              * Pour tous les groupes de l'intrigue
@@ -287,54 +276,66 @@ class IntrigueController extends AbstractController
              *  supprime la relation entre intrigueHasGroupe et l'intrigue
              */
             foreach ($originalIntrigueHasGroupes as $intrigueHasGroupe) {
-                if (!$intrigue->getIntrigueHasGroupes()->contains($intrigueHasGroupe)) {
-                    $entityManager->remove($intrigueHasGroupe);
+                if ($intrigue->getIntrigueHasGroupes()->contains($intrigueHasGroupe)) {
+                    continue;
                 }
+
+                $entityManager->remove($intrigueHasGroupe);
             }
 
             /*
              *  supprime la relation entre intrigueHasGroupe et l'intrigue
              */
             foreach ($originalIntrigueHasGroupeSecondaires as $intrigueHasGroupeSecondaire) {
-                if (!$intrigue->getIntrigueHasGroupes()->contains($intrigueHasGroupeSecondaire)) {
-                    $entityManager->remove($intrigueHasGroupeSecondaire);
+                if ($intrigue->getIntrigueHasGroupes()->contains($intrigueHasGroupeSecondaire)) {
+                    continue;
                 }
+
+                $entityManager->remove($intrigueHasGroupeSecondaire);
             }
 
             /*
              *  supprime la relation entre intrigueHasEvenement et l'intrigue
              */
             foreach ($originalIntrigueHasEvenements as $intrigueHasEvenement) {
-                if (!$intrigue->getIntrigueHasEvenements()->contains($intrigueHasEvenement)) {
-                    $entityManager->remove($intrigueHasEvenement);
+                if ($intrigue->getIntrigueHasEvenements()->contains($intrigueHasEvenement)) {
+                    continue;
                 }
+
+                $entityManager->remove($intrigueHasEvenement);
             }
 
             /*
              *  supprime la relation entre intrigueHasObjectif et l'intrigue
              */
             foreach ($originalIntrigueHasObjectifs as $intrigueHasObjectif) {
-                if (!$intrigue->getIntrigueHasObjectifs()->contains($intrigueHasObjectif)) {
-                    $entityManager->remove($intrigueHasObjectif);
+                if ($intrigue->getIntrigueHasObjectifs()->contains($intrigueHasObjectif)) {
+                    continue;
                 }
+
+                $entityManager->remove($intrigueHasObjectif);
             }
 
             /*
              *  supprime la relation entre intrigueHasDocument et l'intrigue
              */
             foreach ($originalIntrigueHasDocuments as $intrigueHasDocument) {
-                if (!$intrigue->getIntrigueHasDocuments()->contains($intrigueHasDocument)) {
-                    $entityManager->remove($intrigueHasDocument);
+                if ($intrigue->getIntrigueHasDocuments()->contains($intrigueHasDocument)) {
+                    continue;
                 }
+
+                $entityManager->remove($intrigueHasDocument);
             }
 
             /*
              *  supprime la relation entre intrigueHasLieu et l'intrigue
              */
             foreach ($originalIntrigueHasLieus as $intrigueHasLieu) {
-                if (!$intrigue->getIntrigueHasLieus()->contains($intrigueHasLieu)) {
-                    $entityManager->remove($intrigueHasLieu);
+                if ($intrigue->getIntrigueHasLieus()->contains($intrigueHasLieu)) {
+                    continue;
                 }
+
+                $entityManager->remove($intrigueHasLieu);
             }
 
             /**
@@ -360,20 +361,22 @@ class IntrigueController extends AbstractController
              * Envoyer une notification à tous les utilisateurs ayant préalablement modifier cette intrigue (hors utilisateur courant, et hors scénariste d'un groupe concerné)
              */
             foreach ($intrigue->getIntrigueHasModifications() as $modification) {
-                if ($modification->getUser() != $this->getUser()) {
-                    $sendNotification = true;
-                    foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
-                        if ($modification->getUser()->getGroupeScenariste()->contains(
-                            $intrigueHasGroupe->getGroupe()
-                        )) {
-                            $sendNotification = false;
-                        }
+                if ($modification->getUser() == $this->getUser()) {
+                    continue;
+                }
+
+                $sendNotification = true;
+                foreach ($intrigue->getIntrigueHasGroupes() as $intrigueHasGroupe) {
+                    if (!$modification->getUser()->getGroupeScenariste()->contains($intrigueHasGroupe->getGroupe())) {
+                        continue;
                     }
 
-                    if ($sendNotification) {
-                        // TODO NOTIFY
-                        // NOTIFY $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
-                    }
+                    $sendNotification = false;
+                }
+
+                if ($sendNotification) {
+                    // TODO NOTIFY
+                    // NOTIFY $app['notify']->intrigue($intrigue, $intrigueHasGroupe->getGroupe());
                 }
             }
 
@@ -395,10 +398,11 @@ class IntrigueController extends AbstractController
     public function deleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Intrigue $intrigue
+        Intrigue $intrigue,
     ): RedirectResponse|Response {
-        $form = $this->createForm(IntrigueDeleteForm::class, $intrigue)
-            ->add('supprimer', SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(IntrigueDeleteForm::class, $intrigue)->add('supprimer', SubmitType::class, [
+            'label' => 'Supprimer',
+        ]);
 
         $form->handleRequest($request);
 
@@ -425,20 +429,15 @@ class IntrigueController extends AbstractController
     public function relectureAddAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        Intrigue $intrigue
+        Intrigue $intrigue,
     ): RedirectResponse|Response {
         $relecture = new Relecture();
-        $form = $this->createForm(IntrigueRelectureForm::class, $relecture)
-            ->add(
-                'enregistrer',
-                SubmitType::class,
-                [
-                    'label' => 'Enregistrer',
-                    'attr' => [
-                        'class' => 'btn btn-secondary',
-                    ],
-                ]
-            );
+        $form = $this->createForm(IntrigueRelectureForm::class, $relecture)->add('enregistrer', SubmitType::class, [
+            'label' => 'Enregistrer',
+            'attr' => [
+                'class' => 'btn btn-secondary',
+            ],
+        ]);
 
         $form->handleRequest($request);
 

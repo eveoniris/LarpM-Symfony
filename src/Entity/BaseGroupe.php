@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,7 +27,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupe', 'extended' => 'Groupe'])]
 class BaseGroupe
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 100, nullable: true)]
@@ -61,55 +63,68 @@ class BaseGroupe
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $richesse = null;
 
+    /** @var Collection<int, Background> */
     #[OneToMany(mappedBy: 'groupe', targetEntity: Background::class)]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
     protected Collection $backgrounds;
 
+    /** @var Collection<int, Debriefing> */
     #[OneToMany(mappedBy: 'groupe', targetEntity: Debriefing::class)]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     protected Collection $debriefings;
 
+    /** @var Collection<int, GroupeAllie> */
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeId', targetEntity: GroupeAllie::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $groupeAllieRelatedByGroupeIds;
 
+    /** @var Collection<int, GroupeAllie> */
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeAllieId', targetEntity: GroupeAllie::class)]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'groupe_allie_id', nullable: false)]
     protected Collection $groupeAllieRelatedByGroupeAllieIds;
 
+    /** @var Collection<int, GroupeClasse> */
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeClasse::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $groupeClasses;
 
+    /** @var Collection<int, GroupeEnemy> */
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeId', targetEntity: GroupeEnemy::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $groupeEnemyRelatedByGroupeIds;
 
+    /** @var Collection<int, GroupeEnemy> */
     #[OneToMany(mappedBy: 'groupeRelatedByGroupeEnemyId', targetEntity: GroupeEnemy::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_enemy_id', nullable: false)]
     protected Collection $groupeEnemyRelatedByGroupeEnemyIds;
 
+    /** @var Collection<int, GroupeGn> */
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeGn::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     #[OrderBy(['groupe' => 'ASC'])]
     protected Collection $groupeGns;
 
+    /** @var Collection<int, GroupeHasIngredient> */
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeHasIngredient::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $groupeHasIngredients;
 
+    /** @var Collection<int, GroupeHasRessource> */
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeHasRessource::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $groupeHasRessources;
 
+    /** @var Collection<int, IntrigueHasGroupe> */
     #[OneToMany(mappedBy: 'groupe', targetEntity: IntrigueHasGroupe::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $intrigueHasGroupes;
 
+    /** @var Collection<int, Personnage> */
     #[OneToMany(mappedBy: 'groupe', targetEntity: Personnage::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $personnages;
 
+    /** @var Collection<int, Territoire> */
     #[OneToMany(mappedBy: 'groupe', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_id', nullable: false)]
     protected Collection $territoires;
@@ -126,6 +141,7 @@ class BaseGroupe
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
     protected ?Territoire $territoire;
 
+    /** @var Collection<int, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'groupes')]
     #[ORM\JoinTable(name: 'groupe_has_document')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
@@ -133,6 +149,7 @@ class BaseGroupe
     #[OrderBy(['code' => 'ASC'])]
     protected Collection $documents;
 
+    /** @var Collection<int, Item> */
     #[ORM\ManyToMany(targetEntity: Item::class, inversedBy: 'groupes')]
     #[ORM\JoinTable(name: 'groupe_has_item')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
@@ -148,10 +165,10 @@ class BaseGroupe
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     private ?Collection $groupeBonus;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[Column(length: 255, nullable: true)]
     private ?string $discord = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     private ?string $description_membres = null;
 
     public function __construct()
@@ -199,6 +216,7 @@ class BaseGroupe
      */
     public function addDocument(Document $document): static
     {
+        /* @phpstan-ignore argument.type */
         $document->addGroupe($this);
         $this->documents[] = $document;
 
@@ -229,6 +247,7 @@ class BaseGroupe
     {
         if (!$this->groupeBonus->contains($groupeBonus)) {
             $this->groupeBonus->add($groupeBonus);
+            /* @phpstan-ignore argument.type */
             $groupeBonus->setGroupe($this);
         }
 
@@ -310,6 +329,7 @@ class BaseGroupe
      */
     public function addItem(Item $item): static
     {
+        /* @phpstan-ignore argument.type */
         $item->addGroupe($this);
         $this->items[] = $item;
 
@@ -339,6 +359,7 @@ class BaseGroupe
     /**
      * Get Background entity collection (one to many).
      */
+    /** @return Collection<int, Background> */
     public function getBackgrounds(): Collection
     {
         return $this->backgrounds;
@@ -383,6 +404,7 @@ class BaseGroupe
     /**
      * Get Debriefing entity collection (one to many).
      */
+    /** @return Collection<int, Debriefing> */
     public function getDebriefings(): Collection
     {
         return $this->debriefings;
@@ -433,6 +455,7 @@ class BaseGroupe
     /**
      * Get Document entity collection.
      */
+    /** @return Collection<int, Document> */
     public function getDocuments(): Collection
     {
         return $this->documents;
@@ -441,6 +464,7 @@ class BaseGroupe
     /**
      * Get GroupeAllie entity related by `groupe_allie_id` collection (one to many).
      */
+    /** @return Collection<int, GroupeAllie> */
     public function getGroupeAllieRelatedByGroupeAllieIds(): Collection
     {
         return $this->groupeAllieRelatedByGroupeAllieIds;
@@ -449,11 +473,13 @@ class BaseGroupe
     /**
      * Get GroupeAllie entity related by `groupe_id` collection (one to many).
      */
+    /** @return Collection<int, GroupeAllie> */
     public function getGroupeAllieRelatedByGroupeIds(): Collection
     {
         return $this->groupeAllieRelatedByGroupeIds;
     }
 
+    /** @return Collection<int, GroupeBonus> */
     public function getGroupeBonus(): ?Collection
     {
         return $this->groupeBonus;
@@ -462,6 +488,7 @@ class BaseGroupe
     /**
      * Get GroupeClasse entity collection (one to many).
      */
+    /** @return Collection<int, GroupeClasse> */
     public function getGroupeClasses(): Collection
     {
         return $this->groupeClasses;
@@ -470,6 +497,7 @@ class BaseGroupe
     /**
      * Get GroupeEnemy entity related by `groupe_enemy_id` collection (one to many).
      */
+    /** @return Collection<int, GroupeEnemy> */
     public function getGroupeEnemyRelatedByGroupeEnemyIds(): Collection
     {
         return $this->groupeEnemyRelatedByGroupeEnemyIds;
@@ -478,6 +506,7 @@ class BaseGroupe
     /**
      * Get GroupeEnemy entity related by `groupe_id` collection (one to many).
      */
+    /** @return Collection<int, GroupeEnemy> */
     public function getGroupeEnemyRelatedByGroupeIds(): Collection
     {
         return $this->groupeEnemyRelatedByGroupeIds;
@@ -486,6 +515,7 @@ class BaseGroupe
     /**
      * Get GroupeGn entity collection (one to many).
      */
+    /** @return Collection<int, GroupeGn> */
     public function getGroupeGns(): Collection
     {
         return $this->groupeGns;
@@ -494,6 +524,7 @@ class BaseGroupe
     /**
      * Get GroupeHasIngredient entity collection (one to many).
      */
+    /** @return Collection<int, GroupeHasIngredient> */
     public function getGroupeHasIngredients(): Collection
     {
         return $this->groupeHasIngredients;
@@ -502,6 +533,7 @@ class BaseGroupe
     /**
      * Get GroupeHasRessource entity collection (one to many).
      */
+    /** @return Collection<int, GroupeHasRessource> */
     public function getGroupeHasRessources(): Collection
     {
         return $this->groupeHasRessources;
@@ -528,6 +560,7 @@ class BaseGroupe
     /**
      * Get IntrigueHasGroupe entity collection (one to many).
      */
+    /** @return Collection<int, IntrigueHasGroupe> */
     public function getIntrigueHasGroupes(): Collection
     {
         return $this->intrigueHasGroupes;
@@ -536,6 +569,7 @@ class BaseGroupe
     /**
      * Get Item entity collection.
      */
+    /** @return Collection<int, Item> */
     public function getItems(): Collection
     {
         return $this->items;
@@ -595,6 +629,12 @@ class BaseGroupe
         return $this;
     }
 
+    // TODO: setFree() should be on GroupeGn, not Groupe — needs schema migration
+    public function setFree(bool $free): static
+    {
+        return $this;
+    }
+
     /**
      * Get the value of materiel.
      */
@@ -634,7 +674,7 @@ class BaseGroupe
     /**
      * Get the value of numero.
      */
-    public function getNumero(): string
+    public function getNumero(): int
     {
         return $this->numero;
     }
@@ -652,6 +692,7 @@ class BaseGroupe
     /**
      * Get Personnage entity collection (one to many).
      */
+    /** @return Collection<int, Personnage> */
     public function getPersonnages(): Collection
     {
         return $this->personnages;
@@ -714,6 +755,7 @@ class BaseGroupe
     /**
      * Get Territoire entity collection (one to many).
      */
+    /** @return Collection<int, Territoire> */
     public function getTerritoires(): Collection
     {
         return $this->territoires;
@@ -780,6 +822,7 @@ class BaseGroupe
      */
     public function removeDocument(Document $document): static
     {
+        /* @phpstan-ignore argument.type */
         $document->removeGroupe($this);
         $this->documents->removeElement($document);
 
@@ -891,6 +934,7 @@ class BaseGroupe
      */
     public function removeItem(Item $item): static
     {
+        /* @phpstan-ignore argument.type */
         $item->removeGroupe($this);
         $this->items->removeElement($item);
 

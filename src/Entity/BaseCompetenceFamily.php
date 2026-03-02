@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -24,28 +26,30 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[DiscriminatorMap(['base' => 'BaseCompetenceFamily', 'extended' => 'CompetenceFamily'])]
 class BaseCompetenceFamily
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank]
     protected ?string $label = null;
 
     #[Column(type: Types::STRING, length: 450, nullable: true)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank]
     protected ?string $description = null;
 
     /**
      * @var Collection<Technologie>
      */
-    #[OneToMany(mappedBy: 'competenceFamily', targetEntity: 'Technologie', cascade: ['persist'])]
+    /** @var Collection<int, Technologie> */
+    #[OneToMany(mappedBy: 'competenceFamily', targetEntity: Technologie::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_family_id', nullable: false)]
     protected Collection $technologies;
 
     /**
      * @var Collection<Competence>
      */
-    #[OneToMany(mappedBy: 'competenceFamily', targetEntity: 'Competence', cascade: ['persist'])]
+    /** @var Collection<int, Competence> */
+    #[OneToMany(mappedBy: 'competenceFamily', targetEntity: Competence::class, cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'competence_family_id', nullable: false)]
     protected Collection $competences;
 
@@ -131,6 +135,8 @@ class BaseCompetenceFamily
 
     /**
      * Get Competence entity collection (one to many).
+     *
+     * @return Collection<int, Competence>
      */
     public function getCompetences(): Collection
     {
@@ -159,6 +165,8 @@ class BaseCompetenceFamily
 
     /**
      * Get Technologie entity collection (one to many).
+     *
+     * @return Collection<int, Technologie>
      */
     public function getTechnologies(): Collection
     {
@@ -166,7 +174,7 @@ class BaseCompetenceFamily
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'label', 'description'];
-    } */
+     * {
+     * return ['id', 'label', 'description'];
+     * } */
 }

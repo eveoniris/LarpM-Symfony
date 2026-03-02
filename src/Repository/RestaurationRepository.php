@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Repository;
 
@@ -16,13 +17,15 @@ class RestaurationRepository extends BaseRepository
     /**
      * Fourni la liste des restrictions alimentaires.
      */
-    public function findAllOrderedByLabel()
+    /** @return list<Restauration> */
+    public function findAllOrderedByLabel(): array
     {
         $query = $this->getEntityManager()->createQuery('SELECT r FROM App\Entity\Restauration r ORDER BY r.label ASC');
 
         return $query->getResult();
     }
 
+    /** @return array<int, array<string, mixed>> */
     public function gerRestrictionByGn(Restauration $restauration): array
     {
         $results = [];
@@ -33,24 +36,20 @@ class RestaurationRepository extends BaseRepository
         $rsm->addScalarResult('restriction_id', 'restriction_id', 'integer');
         $rsm->addScalarResult('total', 'total', 'integer');
 
-        $query = $this->getEntityManager()
-            ->createNativeQuery(
-                <<<SQL
-                SELECT gn.id,
-                       gn.label,
-                       r.label                   as restriction,
-                       uhr.restriction_id        as restriction_id,
-                       COUNT(phr.participant_id) as total
-                FROM participant_has_restauration phr
-                         INNER JOIN participant p ON p.id = phr.participant_id
-                         INNER JOIN gn ON p.gn_id = gn.id
-                         INNER JOIN user u ON p.user_id = u.id
-                         LEFT JOIN user_has_restriction uhr ON uhr.user_id = u.id
-                         INNER JOIN restriction r ON uhr.restriction_id = r.id
-                WHERE restauration_id = :restaurationId
-                SQL,
-                $rsm
-            );
+        $query = $this->getEntityManager()->createNativeQuery(<<<SQL
+            SELECT gn.id,
+                   gn.label,
+                   r.label                   as restriction,
+                   uhr.restriction_id        as restriction_id,
+                   COUNT(phr.participant_id) as total
+            FROM participant_has_restauration phr
+                     INNER JOIN participant p ON p.id = phr.participant_id
+                     INNER JOIN gn ON p.gn_id = gn.id
+                     INNER JOIN user u ON p.user_id = u.id
+                     LEFT JOIN user_has_restriction uhr ON uhr.user_id = u.id
+                     INNER JOIN restriction r ON uhr.restriction_id = r.id
+            WHERE restauration_id = :restaurationId
+            SQL, $rsm);
 
         $query->setParameter('restaurationId', $restauration->getId());
 
@@ -69,6 +68,7 @@ class RestaurationRepository extends BaseRepository
         return $results;
     }
 
+    /** @return array<int, array<string, mixed>> */
     public function getUsersByGn(Restauration $restauration): array
     {
         $results = [];
@@ -81,27 +81,23 @@ class RestaurationRepository extends BaseRepository
         $rsm->addScalarResult('user_id', 'user_id', 'integer');
         $rsm->addScalarResult('restriction', 'restriction', 'string');
 
-        $query = $this->getEntityManager()
-            ->createNativeQuery(
-                <<<SQL
-                SELECT gn.id, 
-                       gn.label,
-                       ec.prenom,
-                       ec.nom,
-                       uhr.restriction_id,
-                       uhr.user_id,
-                       r.label as restriction
-                FROM participant_has_restauration phr
-                         INNER JOIN participant p ON p.id = phr.participant_id
-                         INNER JOIN gn ON p.gn_id = gn.id
-                         INNER JOIN user u ON p.user_id = u.id
-                         LEFT JOIN etat_civil ec ON u.etat_civil_id = ec.id
-                         LEFT JOIN user_has_restriction uhr ON uhr.user_id = u.id
-                         INNER JOIN restriction r ON uhr.restriction_id = r.id
-                WHERE restauration_id = :restaurationId
-                SQL,
-                $rsm
-            );
+        $query = $this->getEntityManager()->createNativeQuery(<<<SQL
+            SELECT gn.id, 
+                   gn.label,
+                   ec.prenom,
+                   ec.nom,
+                   uhr.restriction_id,
+                   uhr.user_id,
+                   r.label as restriction
+            FROM participant_has_restauration phr
+                     INNER JOIN participant p ON p.id = phr.participant_id
+                     INNER JOIN gn ON p.gn_id = gn.id
+                     INNER JOIN user u ON p.user_id = u.id
+                     LEFT JOIN etat_civil ec ON u.etat_civil_id = ec.id
+                     LEFT JOIN user_has_restriction uhr ON uhr.user_id = u.id
+                     INNER JOIN restriction r ON uhr.restriction_id = r.id
+            WHERE restauration_id = :restaurationId
+            SQL, $rsm);
 
         $query->setParameter('restaurationId', $restauration->getId());
 

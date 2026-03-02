@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Type;
 
 use App\Entity\Etat;
@@ -18,7 +20,7 @@ class EtatType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => '\\'.Etat::class,
+            'data_class' => Etat::class,
         ]);
     }
 

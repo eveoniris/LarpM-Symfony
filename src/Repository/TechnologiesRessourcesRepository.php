@@ -1,13 +1,8 @@
 <?php
 
-namespace App\Repository;
+declare(strict_types=1);
 
-use App\Entity\Personnage;
-use App\Entity\Priere;
-use App\Entity\Technologie;
-use App\Enum\CompetenceFamilyType;
-use App\Service\OrderBy;
-use Doctrine\ORM\QueryBuilder;
+namespace App\Repository;
 
 class TechnologiesRessourcesRepository extends BaseRepository
 {

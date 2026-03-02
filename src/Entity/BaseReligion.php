@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,6 +13,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
+use SensitiveParameter;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
@@ -20,12 +23,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BaseReligion', 'extended' => 'Religion'])]
 abstract class BaseReligion
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
-    #[Assert\NotBlank()]
-    #[Assert\NotNull()]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     protected string $label = '';
 
     #[Column(type: Types::STRING, nullable: true)]
@@ -49,24 +52,30 @@ abstract class BaseReligion
     #[Column(type: Types::BOOLEAN, nullable: true, options: ['default' => 0])]
     protected ?bool $secret = null;
 
+    /** @var Collection<int, PersonnagesReligions> */
     #[OneToMany(mappedBy: 'religion', targetEntity: PersonnagesReligions::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: false)]
     protected Collection $personnagesReligions;
 
+    /** @var Collection<int, ReligionDescription> */
     #[OneToMany(mappedBy: 'religion', targetEntity: ReligionDescription::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: false)]
     protected Collection $religionDescriptions;
 
+    /** @var Collection<int, Territoire> */
     #[OneToMany(mappedBy: 'religion', targetEntity: Territoire::class)]
     #[JoinColumn(name: 'id', referencedColumnName: 'religion_id', nullable: false)]
     protected Collection $territoires;
 
+    /** @var Collection<int, Personnage> */
     #[ORM\ManyToMany(targetEntity: Personnage::class, mappedBy: 'religions')]
     protected Collection $personnages;
 
+    /** @var Collection<int, Sphere> */
     #[ORM\ManyToMany(targetEntity: Sphere::class, mappedBy: 'religions')]
     protected Collection $spheres;
 
+    /** @var Collection<int, Territoire> */
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'religions')]
     protected Collection $territoireSecondaires;
 
@@ -227,7 +236,7 @@ abstract class BaseReligion
     /**
      * Set the value of secret.
      */
-    public function setSecret(int $secret): static
+    public function setSecret(#[SensitiveParameter] ?bool $secret): static
     {
         $this->secret = $secret;
 
@@ -237,7 +246,7 @@ abstract class BaseReligion
     /**
      * Get the value of secret.
      */
-    public function getSecret(): int
+    public function getSecret(): ?bool
     {
         return $this->secret;
     }
@@ -265,6 +274,7 @@ abstract class BaseReligion
     /**
      * Get PersonnagesReligions entity collection (one to many).
      */
+    /** @return Collection<int, PersonnagesReligions> */
     public function getPersonnagesReligions(): Collection
     {
         return $this->personnagesReligions;
@@ -293,6 +303,7 @@ abstract class BaseReligion
     /**
      * Get ReligionDescription entity collection (one to many).
      */
+    /** @return Collection<int, ReligionDescription> */
     public function getReligionDescriptions(): Collection
     {
         return $this->religionDescriptions;
@@ -321,6 +332,7 @@ abstract class BaseReligion
     /**
      * Get Territoire entity collection (one to many).
      */
+    /** @return Collection<int, Territoire> */
     public function getTerritoires(): Collection
     {
         return $this->territoires;
@@ -349,6 +361,7 @@ abstract class BaseReligion
     /**
      * Get Personnage entity collection.
      */
+    /** @return Collection<int, Personnage> */
     public function getPersonnages(): Collection
     {
         return $this->personnages;
@@ -377,6 +390,7 @@ abstract class BaseReligion
     /**
      * Get Sphere entity collection.
      */
+    /** @return Collection<int, Sphere> */
     public function getSpheres(): Collection
     {
         return $this->spheres;
@@ -385,6 +399,7 @@ abstract class BaseReligion
     /**
      * Fourni la liste des territoires ou la religion est une religion secondaire.
      */
+    /** @return Collection<int, Territoire> */
     public function getTerritoireSecondaires(): Collection
     {
         return $this->territoireSecondaires;

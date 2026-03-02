@@ -1,22 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\User;
 use App\Service\OrderBy;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
-use JetBrains\PhpStorm\Deprecated;
+use SensitiveParameter;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
- * @extends ServiceEntityRepository<User>
- *
- * @implements PasswordUpgraderInterface<User>
- *
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
  * @method User|null findOneBy(array $criteria, array $orderBy = null)
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
@@ -31,26 +28,25 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
     protected function propertyExists(User $user, string $property): bool
     {
         $qb = $this->createQueryBuilder('u');
-        $result = $qb->where(
-            $qb->expr()->eq('u.'.$property, ':'.$property),
-        )->andWhere(
-            $qb->expr()->notIn('u.id', ':id'),
-        )
-            ->setParameters(
-                [
-                    ':'.$property => $user->{'get'.ucfirst($property)}(),
-                    ':id' => $user->getId(),
-                ],
-            )->getQuery();
+        $result = $qb
+            ->where($qb->expr()->eq('u.' . $property, ':' . $property))
+            ->andWhere($qb->expr()->notIn('u.id', ':id'))
+            ->setParameters([
+                ':' . $property => $user->{'get' . ucfirst($property)}(),
+                ':id' => $user->getId(),
+            ])
+            ->getQuery();
 
         return !empty($result->getScalarResult());
     }
 
+    /** @return list<User> */
     public function findAll(): array
     {
         return $this->findBy([], ['username' => 'ASC']);
     }
 
+    /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
     public function search(
         mixed $search = null,
         string|array|null $attributes = self::SEARCH_NOONE,
@@ -60,39 +56,41 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias.'.etatCivil', 'etatCivil');
+        $query->join($alias . '.etatCivil', 'etatCivil');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    public function searchAttributes(): array
+    /** @return array<int, string> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             self::SEARCH_ALL,
-            $alias.'.email',
-            $alias.'.roles',
-            $alias.'.username',
+            $alias . '.email',
+            $alias . '.roles',
+            $alias . '.username',
             'etatCivil.nom as nom',
             'etatCivil.prenom as prenom',
             "CONCAT(etatCivil.nom, ' ', etatCivil.prenom) AS HIDDEN nomPrenom",
         ];
     }
 
+    /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
         $alias ??= static::getEntityAlias();
 
         return [
             ...parent::sortAttributes($alias),
-            $alias.'.username' => [
-                OrderBy::ASC => [$alias.'.username' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.username' => OrderBy::DESC],
+            $alias . '.username' => [
+                OrderBy::ASC => [$alias . '.username' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.username' => OrderBy::DESC],
             ],
-            $alias.'.email' => [
-                OrderBy::ASC => [$alias.'.email' => OrderBy::ASC],
-                OrderBy::DESC => [$alias.'.email' => OrderBy::DESC],
+            $alias . '.email' => [
+                OrderBy::ASC => [$alias . '.email' => OrderBy::ASC],
+                OrderBy::DESC => [$alias . '.email' => OrderBy::DESC],
             ],
             'etatCivil.nom' => [
                 OrderBy::ASC => ['etatCivil.nom' => OrderBy::ASC],
@@ -109,6 +107,7 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         ];
     }
 
+    /** @return array<string, string> */
     public function translateAttributes(): array
     {
         return [
@@ -127,42 +126,38 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
     /**
      * @throws NonUniqueResultException
      */
-    public function findOneByConfirmationToken(string $token): ?User
+    public function findOneByConfirmationToken(#[SensitiveParameter] string $token): ?User
     {
-        return $this->createQueryBuilder('u')
+        return $this
+            ->createQueryBuilder('u')
             ->andWhere('u.confirmationToken = :val')
             ->setParameter('val', $token)
             ->getQuery()
             ->getOneOrNullResult();
     }
 
-    #[Deprecated]
-    public function findWithoutEtatCivil()
+    /** @return list<User> */
+    public function findWithoutEtatCivil(): array
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                SELECT u 
-                FROM App\Entity\User u 
-                WHERE IDENTITY(u.etatCivil) IS NULL 
-                ORDER BY u.email ASC
-                DQL,
-            );
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+            SELECT u
+            FROM App\Entity\User u
+            WHERE IDENTITY(u.etatCivil) IS NULL
+            ORDER BY u.email ASC
+            DQL);
 
         return $query->getResult();
     }
 
+    /** @return array<int, int> */
     public function getPersonnagesIds(User $user): array
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                <<<DQL
-                SELECT p.id
-                FROM App\Entity\User u 
-                INNER JOIN App\Entity\Personnage p
-                WHERE u.id = :uid
-                DQL,
-            );
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+            SELECT p.id
+            FROM App\Entity\User u
+            INNER JOIN App\Entity\Personnage p
+            WHERE u.id = :uid
+            DQL);
 
         return $query->setParameter('uid', $user->getId())->getScalarResult();
     }
@@ -170,10 +165,13 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
-    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
-    {
+    public function upgradePassword(
+        PasswordAuthenticatedUserInterface $user,
+        #[SensitiveParameter]
+        string $newHashedPassword,
+    ): void {
         if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
+            throw new UnsupportedUserException(\sprintf('Instances of "%s" are not supported.', $user::class));
         }
 
         $user->setPassword($newHashedPassword);

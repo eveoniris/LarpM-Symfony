@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupeEnemy', 'extended' => 'GroupeEnemy'])]
 abstract class BaseGroupeEnemy
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: \Doctrine\DBAL\Types\Types::BOOLEAN)]
@@ -98,7 +100,7 @@ abstract class BaseGroupeEnemy
     /**
      * Set the value of message.
      */
-    public function setMessage(string $message): GroupeEnemy
+    public function setMessage(string $message): static
     {
         $this->message = $message;
 
@@ -116,7 +118,7 @@ abstract class BaseGroupeEnemy
     /**
      * Set the value of message_enemy.
      */
-    public function setMessageEnemy(string $message_enemy): GroupeEnemy
+    public function setMessageEnemy(string $message_enemy): static
     {
         $this->message_enemy = $message_enemy;
 
@@ -168,7 +170,7 @@ abstract class BaseGroupeEnemy
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'groupe_id', 'groupe_enemy_id', 'groupe_peace', 'groupe_enemy_peace', 'message', 'message_enemy'];
-    } */
+     * {
+     * return ['id', 'groupe_id', 'groupe_enemy_id', 'groupe_peace', 'groupe_enemy_peace', 'message', 'message_enemy'];
+     * } */
 }

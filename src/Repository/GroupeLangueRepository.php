@@ -1,9 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Repository;
-
-use Doctrine\ORM\EntityRepository;
 
 /**
  * LarpManager\Repository\GroupeLangueRepository.
@@ -14,13 +13,10 @@ class GroupeLangueRepository extends BaseRepository
 {
     /**
      * Find all groupelangues ordered by label.
-     *
-     * @return ArrayCollection $groupelangues
      */
-    public function findAllOrderedByLabel()
+    /** @return array<int, \App\Entity\GroupeLangue> */
+    public function findAllOrderedByLabel(): array
     {
-        return $this->getEntityManager()
-            ->createQuery('SELECT l FROM App\Entity\GroupeLangue l ORDER BY l.label ASC')
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT l FROM App\Entity\GroupeLangue l ORDER BY l.label ASC')->getResult();
     }
 }

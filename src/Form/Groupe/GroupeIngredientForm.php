@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Form\Groupe;
 
@@ -25,19 +26,18 @@ class GroupeIngredientForm extends AbstractType
             'allow_delete' => true,
             'by_reference' => false,
             'entry_type' => GroupeHasIngredientType::class,
-        ])
-            ->add('random', IntegerType::class, [
-                'mapped' => false,
-                'label' => 'X ingrédients choisis au hasard',
-                'required' => false,
-                'attr' => [
-                    'help' => 'Indiquez combien d\'ingrédient il faut ajouter à ce groupe.',
-                ],
-            ]);
+        ])->add('random', IntegerType::class, [
+            'mapped' => false,
+            'label' => 'X ingrédients choisis au hasard',
+            'required' => false,
+            'attr' => [
+                'help' => 'Indiquez combien d\'ingrédient il faut ajouter à ce groupe.',
+            ],
+        ]);
     }
 
     /**
-     * Définition de l'entité conercné.
+     * Définition de l'entité concernée.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {

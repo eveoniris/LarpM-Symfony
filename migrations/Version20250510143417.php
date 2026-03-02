@@ -53,6 +53,5 @@ final class Version20250510143417 extends AbstractMigration
             CREATE INDEX IDX_717A91A31674CEC6 ON secondary_group (scenariste_id)
         SQL,
         );
-
     }
 }

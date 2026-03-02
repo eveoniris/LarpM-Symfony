@@ -134,6 +134,5 @@ final class Version20250216202635 extends AbstractMigration
         $this->addSql('DROP TABLE qualite');
         $this->addSql('DROP TABLE qualite_valeur');
         $this->addSql('DROP TABLE messenger_messages');
-
     }
 }

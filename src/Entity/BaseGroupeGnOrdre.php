@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -18,7 +20,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BaseGroupeGnOrdre', 'extended' => 'GroupeGnOrdre'])]
 abstract class BaseGroupeGnOrdre
 {
-    #[Id, Column(type: Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING)]
@@ -56,7 +58,7 @@ abstract class BaseGroupeGnOrdre
     /**
      * Set the value of ordre.
      */
-    public function setOrdre(bool $ordre): static
+    public function setOrdre(string $ordre): static
     {
         $this->ordre = $ordre;
 
@@ -66,7 +68,7 @@ abstract class BaseGroupeGnOrdre
     /**
      * Get the value of ordre.
      */
-    public function getOrdre(): bool
+    public function getOrdre(): string
     {
         return $this->ordre;
     }
@@ -74,7 +76,7 @@ abstract class BaseGroupeGnOrdre
     /**
      * Set the value of extra.
      */
-    public function setExtra(bool $extra): static
+    public function setExtra(string $extra): static
     {
         $this->extra = $extra;
 
@@ -84,7 +86,7 @@ abstract class BaseGroupeGnOrdre
     /**
      * Get the value of extra.
      */
-    public function getExtra(): bool
+    public function getExtra(): string
     {
         return $this->extra;
     }
@@ -117,6 +119,18 @@ abstract class BaseGroupeGnOrdre
         return $this;
     }
 
+    public function addGroupeGn(GroupeGn $groupeGn): static
+    {
+        $this->groupeGn = $groupeGn;
+
+        return $this;
+    }
+
+    public function removeGroupeGn(GroupeGn $groupeGn): static
+    {
+        return $this;
+    }
+
     /**
      * Get GroupeGn entity (many to one).
      */
@@ -126,7 +140,7 @@ abstract class BaseGroupeGnOrdre
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'ordre', 'groupe_gn_id', 'cible_id'];
-    } */
+     * {
+     * return ['id', 'ordre', 'groupe_gn_id', 'cible_id'];
+     * } */
 }

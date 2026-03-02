@@ -1,21 +1,19 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Gn;
 use App\Repository\GnRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Form\Trombinoscope\TrombinoscopeForm;
 use App\Repository\ParticipantRepository;
 use App\Service\PagerService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[isGranted('ROLE_SCENARISTE')]
+#[IsGranted('ROLE_SCENARISTE')]
 class TrombinoscopeController extends AbstractController
 {
     /**
@@ -39,78 +37,78 @@ class TrombinoscopeController extends AbstractController
         ]);
 
         /*
-
-
-        $form = $this->createForm(TrombinoscopeForm::class);
-
-        $form->handleRequest($request);
-
-        $renomme = 0;
-        $territoire = null;
-        $competence = null;
-        $classe = null;
-        $religion = null;
-        $language = null;
-        $groupe = null;
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-
-            if ($data['renomme']) {
-                $renomme = $data['renomme'];
-            }
-
-            if ($data['territoire']) {
-                $territoire = $data['territoire'];
-            }
-
-            if ($data['classe']) {
-                $classe = $data['classe'];
-            }
-
-            if ($data['competence']) {
-                $competence = $data['competence'];
-            }
-
-            if ($data['religion']) {
-                $religion = $data['religion'];
-            }
-
-            if ($data['language']) {
-                $language = $data['language'];
-            }
-
-            if ($data['groupe']) {
-                $groupe = $data['groupe'];
-            }
-        }
-
-        $participants = new ArrayCollection();
-        foreach ($gn->getParticipants() as $participant) {
-            if ($participant->getPersonnage()
-                && $participant->getPersonnage()->getRenomme() >= $renomme
-                && (!$territoire || ($participant->getGroupeGn() && $territoire == $participant->getGroupeGn()->getGroupe()->getTerritoire()))
-                && (!$classe || ($participant->getPersonnage()->getClasse() == $classe))
-                && (!$competence || $participant->getPersonnage()->isKnownCompetence($competence))
-                && (!$religion || $participant->getPersonnage()->isKnownReligion($religion))
-                && (!$language || $participant->getPersonnage()->isKnownLanguage($language))
-                && (!$groupe || ($participant->getGroupeGn() && $groupe == $participant->getGroupeGn()->getGroupe()))) {
-                $participants[] = $participant;
-            }
-        }
-
-        return $this->render('trombinoscope.twig', [
-            'gn' => $gn,
-            'participants' => $participants,
-            'form' => $form->createView(),
-            'renomme' => $renomme,
-            'territoire' => $territoire,
-            'classe' => $classe,
-            'competence' => $competence,
-            'religion' => $religion,
-            'language' => $language,
-            'groupe' => $groupe,
-        ]);*/
+         *
+         *
+         * $form = $this->createForm(TrombinoscopeForm::class);
+         *
+         * $form->handleRequest($request);
+         *
+         * $renomme = 0;
+         * $territoire = null;
+         * $competence = null;
+         * $classe = null;
+         * $religion = null;
+         * $language = null;
+         * $groupe = null;
+         *
+         * if ($form->isSubmitted() && $form->isValid()) {
+         * $data = $form->getData();
+         *
+         * if ($data['renomme']) {
+         * $renomme = $data['renomme'];
+         * }
+         *
+         * if ($data['territoire']) {
+         * $territoire = $data['territoire'];
+         * }
+         *
+         * if ($data['classe']) {
+         * $classe = $data['classe'];
+         * }
+         *
+         * if ($data['competence']) {
+         * $competence = $data['competence'];
+         * }
+         *
+         * if ($data['religion']) {
+         * $religion = $data['religion'];
+         * }
+         *
+         * if ($data['language']) {
+         * $language = $data['language'];
+         * }
+         *
+         * if ($data['groupe']) {
+         * $groupe = $data['groupe'];
+         * }
+         * }
+         *
+         * $participants = new ArrayCollection();
+         * foreach ($gn->getParticipants() as $participant) {
+         * if ($participant->getPersonnage()
+         * && $participant->getPersonnage()->getRenomme() >= $renomme
+         * && (!$territoire || ($participant->getGroupeGn() && $territoire == $participant->getGroupeGn()->getGroupe()->getTerritoire()))
+         * && (!$classe || ($participant->getPersonnage()->getClasse() == $classe))
+         * && (!$competence || $participant->getPersonnage()->isKnownCompetence($competence))
+         * && (!$religion || $participant->getPersonnage()->isKnownReligion($religion))
+         * && (!$language || $participant->getPersonnage()->isKnownLanguage($language))
+         * && (!$groupe || ($participant->getGroupeGn() && $groupe == $participant->getGroupeGn()->getGroupe()))) {
+         * $participants[] = $participant;
+         * }
+         * }
+         *
+         * return $this->render('trombinoscope.twig', [
+         * 'gn' => $gn,
+         * 'participants' => $participants,
+         * 'form' => $form->createView(),
+         * 'renomme' => $renomme,
+         * 'territoire' => $territoire,
+         * 'classe' => $classe,
+         * 'competence' => $competence,
+         * 'religion' => $religion,
+         * 'language' => $language,
+         * 'groupe' => $groupe,
+         * ]);*/
     }
 
     /**
@@ -122,7 +120,8 @@ class TrombinoscopeController extends AbstractController
         $personnages = null;
         $titre = null;
 
-        $form = $this->createForm()
+        $form = $this
+            ->createFormBuilder()
             ->add('titre', 'text', [
                 'label' => 'Le titre de votre sélection',
             ])
@@ -130,7 +129,8 @@ class TrombinoscopeController extends AbstractController
                 'label' => 'Indiquez les numéros des personnages séparé d\'un espace',
             ])
             ->add('send', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Envoyer'])
-            ->add('print', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Imprimer']);
+            ->add('print', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Imprimer'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -139,10 +139,10 @@ class TrombinoscopeController extends AbstractController
             $titre = $data['titre'];
             $ids = $data['ids'];
             $ids = explode(' ', (string) $ids);
-            $repo = $entityManager->getRepository('\\'.\App\Entity\Personnage::class);
+            $repo = $entityManager->getRepository('\\' . \App\Entity\Personnage::class);
             $personnages = $repo->findByIds($ids);
 
-            if ($form->get('print')->isClicked()) {
+            if ($form->get('print') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('print')->isClicked()) {
                 return $this->render('trombinoscopePersoPrint.twig', [
                     'titre' => $titre,
                     'personnages' => $personnages,

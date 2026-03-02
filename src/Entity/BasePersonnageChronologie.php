@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Created by Kevin F.
  */
@@ -20,7 +22,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageChronologie', 'extended' => 'PersonnageChronologie'])]
 abstract class BasePersonnageChronologie
 {
-    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER, ), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: \Doctrine\DBAL\Types\Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageChronologie')]
@@ -106,7 +108,7 @@ abstract class BasePersonnageChronologie
     }
 
     /* public function __sleep()
-    {
-        return ['id', 'personnage_id', 'evenement', 'annee'];
-    } */
+     * {
+     * return ['id', 'personnage_id', 'evenement', 'annee'];
+     * } */
 }

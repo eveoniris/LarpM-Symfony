@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\TechnologiesRessourcesRepository;
@@ -10,11 +12,11 @@ class TechnologiesRessources extends BaseTechnologiesRessources
 {
     public function getLabel(): ?string
     {
-        return $this->getQuantite().' '.$this->getRessource()->getLabel();
+        return $this->getQuantite() . ' ' . $this->getRessource()->getLabel();
     }
 
     public function getDescription(): ?string
     {
-        return sprintf('Pour la technologie %s', $this->getTechnologie()->getLabel());
+        return \sprintf('Pour la technologie %s', $this->getTechnologie()->getLabel());
     }
 }

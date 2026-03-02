@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
-use App\Repository\BasePostulantRepository;
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -20,11 +22,11 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePostulant', 'extended' => 'Postulant'])]
 abstract class BasePostulant
 {
-    #[Id, Column(type: Types::INTEGER,), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(name: 'date', type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTime $date;
+    protected ?DateTime $date;
 
     #[Column(type: Types::TEXT)]
     protected string $explanation;
@@ -42,7 +44,7 @@ abstract class BasePostulant
     /**
      * Get the value of date.
      */
-    public function getDate(): ?\DateTime
+    public function getDate(): ?DateTime
     {
         return $this->date;
     }
@@ -50,7 +52,7 @@ abstract class BasePostulant
     /**
      * Set the value of date.
      */
-    public function setDate(\DateTime $date): static
+    public function setDate(DateTime $date): static
     {
         $this->date = $date;
 

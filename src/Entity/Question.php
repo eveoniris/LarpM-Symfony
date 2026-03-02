@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\QuestionRepository;
@@ -12,10 +14,8 @@ class Question extends BaseQuestion
 {
     /**
      * Fourni la réponse à une question en fonction de son hash.
-     *
-     * @param unknown $hash
      */
-    public function getReponse($hash): string|bool
+    public function getReponse(string $hash): string|bool
     {
         foreach (preg_split('/[;]+/', $this->getChoix()) as $reponse) {
             if (sha1($reponse) === $hash) {
@@ -28,16 +28,16 @@ class Question extends BaseQuestion
 
     /**
      * Compte les réponse à une question.
-     *
-     * @param unknown $reponse
      */
-    public function getReponsesCount($reponse): int
+    public function getReponsesCount(string $reponse): int
     {
         $count = 0;
         foreach ($this->getReponses() as $rep) {
-            if ($rep->getReponse() == sha1($reponse)) {
-                ++$count;
+            if ($rep->getReponse() != sha1($reponse)) {
+                continue;
             }
+
+            ++$count;
         }
 
         return $count;
@@ -45,17 +45,18 @@ class Question extends BaseQuestion
 
     /**
      * Obtient la liste des participants ayant répondu (en fonction de la réponse).
-     *
-     * @param unknown $rep
      */
-    public function getParticipants($rep): Collection
+    /** @return Collection<int, Participant> */
+    public function getParticipants(string $rep): Collection
     {
         $participants = new ArrayCollection();
 
         foreach ($this->getReponses() as $reponse) {
-            if ($reponse->getReponse() == sha1($rep)) {
-                $participants[] = $reponse->getParticipant();
+            if ($reponse->getReponse() != sha1($rep)) {
+                continue;
             }
+
+            $participants->add($reponse->getParticipant());
         }
 
         return $participants;

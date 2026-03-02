@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use App\Entity\Personnage;
@@ -16,10 +18,10 @@ class PersonnageApprentissageRepository extends BaseRepository
         }
 
         $dql = <<<DQL
-                SELECT COUNT(pa) AS exists
-                FROM App\Entity\PersonnageApprentissage pa
-                WHERE pa.personnage = :pid AND pa.deleted_at IS NULL
-                DQL;
+            SELECT COUNT(pa) AS exists
+            FROM App\Entity\PersonnageApprentissage pa
+            WHERE pa.personnage = :pid AND pa.deleted_at IS NULL
+            DQL;
 
         if ($fromDate) {
             $dql .= ' AND pa.date_enseignement >= :fromDate';
