@@ -117,19 +117,177 @@ Noter: --compact pour un fichier sans commentaire, et --no-create-db pour évite
 
 # Tests
 
-Lancez les tests PHPUnit:
+## Lancer les tests
 
-```
+```bash
+# Tous les tests
 docker compose exec frankenphp ./vendor/bin/phpunit
+
+# Un fichier précis
+docker compose exec frankenphp ./vendor/bin/phpunit tests/Unit/Service/ConditionsServiceTest.php
+
+# Un groupe (unit ou integration)
+docker compose exec frankenphp ./vendor/bin/phpunit --group unit
+docker compose exec frankenphp ./vendor/bin/phpunit --group integration
+
+# Avec sortie lisible (noms des tests)
+docker compose exec frankenphp ./vendor/bin/phpunit --testdox
 ```
 
-Notes:
+## Structure des tests
 
-- L'environnement de test utilise APP_ENV=test (défini dans phpunit.dist.xml).
-- Un test d'exemple est fourni: tests/UtilitiesTest.php (unit test pur) et tests/Smoke/KernelBootTest.php (vérifie le
-  boot du Kernel sans toucher à la base de données).
-- Des exemples de tests API via fichiers HTTP se trouvent dans tests/rest (ex: tests/rest/stats.http) et peuvent être
-  exécutés depuis un IDE compatible.
+```
+tests/
+├── bootstrap.php                        # Initialisation PHPUnit (charge .env.test)
+├── Factory/                             # Foundry factories (données de test)
+│   ├── PersonnageFactory.php
+│   ├── GroupeFactory.php
+│   ├── CompetenceFactory.php
+│   └── ...                              # une factory par entité Doctrine
+├── Unit/                                # Tests unitaires (pas de DB, pas de Kernel)
+│   ├── Entity/
+│   ├── Enum/
+│   └── Service/
+└── Integration/                         # Tests d'intégration (Kernel + DB réelle)
+    └── Service/
+        ├── CompetenceServiceTest.php
+        └── SanctuaireEffectTest.php
+```
+
+## Outils utilisés
+
+| Outil | Rôle |
+|---|---|
+| **PHPUnit 11** | Framework de test |
+| **DAMA DoctrineTestBundle** | Enveloppe chaque test dans une transaction → rollback automatique, isolation sans reset de schéma |
+| **zenstruck/foundry** | Factories pour créer des entités Doctrine en test |
+
+## Écrire un test unitaire
+
+Les tests unitaires n'ont pas besoin de la base de données ni du Kernel Symfony.
+Ils héritent de `PHPUnit\Framework\TestCase` et utilisent des stubs/mocks.
+
+```php
+// tests/Unit/Service/MonServiceTest.php
+namespace App\Tests\Unit\Service;
+
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Group;
+
+#[Group('unit')]
+class MonServiceTest extends TestCase
+{
+    public function testQuelqueChose(): void
+    {
+        $service = new MonService();
+        self::assertTrue($service->maMethode());
+    }
+}
+```
+
+## Écrire un test d'intégration
+
+Les tests d'intégration démarrent le Kernel Symfony et accèdent à la vraie base de données.
+Ils héritent de `Symfony\Bundle\FrameworkBundle\Test\KernelTestCase` et utilisent le trait `Factories`.
+
+Le **DAMA bundle** encapsule chaque test dans une transaction Doctrine qui est rollbackée
+automatiquement à la fin — pas besoin de vider/recréer le schéma entre les tests.
+
+```php
+// tests/Integration/Service/MonServiceTest.php
+namespace App\Tests\Integration\Service;
+
+use App\Service\MonService;
+use App\Tests\Factory\PersonnageFactory;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Test\Factories;
+
+/**
+ * @group integration
+ */
+class MonServiceTest extends KernelTestCase
+{
+    use Factories; // PAS ResetDatabase — DAMA gère le rollback
+
+    private MonService $service;
+    private EntityManagerInterface $entityManager;
+
+    protected function setUp(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $this->service = $container->get(MonService::class);
+        $this->entityManager = $container->get(EntityManagerInterface::class);
+    }
+
+    public function testAvecDonneesReelles(): void
+    {
+        $personnage = PersonnageFactory::createOne(['xp' => 50]);
+
+        $result = $this->service->maMethode($personnage->_real());
+
+        self::assertTrue($result);
+    }
+}
+```
+
+## Créer une Factory Foundry
+
+Les factories se trouvent dans `tests/Factory/`. Chaque factory correspond à une entité Doctrine.
+
+```php
+// tests/Factory/MonEntiteFactory.php
+namespace App\Tests\Factory;
+
+use App\Entity\MonEntite;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+
+/** @extends PersistentProxyObjectFactory<MonEntite> */
+final class MonEntiteFactory extends PersistentProxyObjectFactory
+{
+    public static function class(): string
+    {
+        return MonEntite::class;
+    }
+
+    /** @return array<string, mixed> */
+    protected function defaults(): array
+    {
+        return [
+            'nom'    => self::faker()->words(2, true),
+            'actif'  => true,
+            // les relations vers d'autres entités s'expriment avec leur factory :
+            'groupe' => GroupeFactory::new(),
+        ];
+    }
+}
+```
+
+Utilisation dans un test :
+
+```php
+// Créer avec les valeurs par défaut
+$entite = MonEntiteFactory::createOne();
+
+// Surcharger certaines valeurs
+$entite = MonEntiteFactory::createOne(['nom' => 'Valeur fixe', 'actif' => false]);
+
+// Accéder à l'entité réelle (unwrap le proxy Foundry)
+$entite->_real()->getNom();
+
+// Créer plusieurs entités
+$entites = MonEntiteFactory::createMany(5);
+```
+
+## Notes importantes
+
+- **`APP_ENV=test`** est forcé par `phpunit.dist.xml` et `.env.test` — la base de données utilisée
+  est `larpm_test` (suffixe `_test` ajouté automatiquement par Doctrine).
+- Les **dépréciations** (marqueur `D` dans la sortie) sont des avertissements PHP 8.5 / Doctrine
+  vendor-level, non bloquants.
+- Des exemples de tests API via fichiers HTTP se trouvent dans `tests/rest/` (ex: `tests/rest/stats.http`)
+  et peuvent être exécutés depuis un IDE compatible.
 
 # Divers
 

@@ -13,7 +13,10 @@
     <php>
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />
+        <env name="APP_ENV" value="test" force="true" />
+        <env name="APP_DEBUG" value="1" force="true" />
         <server name="APP_ENV" value="test" force="true" />
+        <server name="APP_DEBUG" value="1" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
     </php>
 
@@ -30,6 +33,8 @@
     </source>
 
     <extensions>
+        <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+        <bootstrap class="Zenstruck\Foundry\PHPUnit\FoundryExtension" />
         <bootstrap class="Symfony\Bridge\PhpUnit\SymfonyExtension">
             <parameter name="clock-mock-namespaces" value="App" />
             <parameter name="dns-mock-namespaces" value="App" />

@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Factory;
+
+use App\Entity\User;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+
+/**
+ * @extends PersistentProxyObjectFactory<User>
+ */
+final class UserFactory extends PersistentProxyObjectFactory
+{
+    public static function class(): string
+    {
+        return User::class;
+    }
+
+    /** @return array<string, mixed> */
+    protected function defaults(): array
+    {
+        return [
+            'email' => self::faker()->unique()->safeEmail(),
+            'username' => self::faker()->unique()->userName(),
+            'password' => '$2y$13$hashed_test_password',
+            'pwd' => 'test_password',
+            'rights' => '',
+            'isEnabled' => true,
+            'roles' => [],
+        ];
+    }
+}
