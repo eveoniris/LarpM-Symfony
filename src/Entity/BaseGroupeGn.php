@@ -80,22 +80,28 @@ abstract class BaseGroupeGn
     #[Column(length: 255, nullable: true)]
     private ?string $bateaux_localisation = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Personnage::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Personnage $suzerin = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Personnage::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Personnage $connetable = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Personnage::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Personnage $intendant = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Personnage::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Personnage $navigateur = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Personnage::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Personnage $camarilla = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Personnage::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Personnage $diplomate = null;
 
     /*

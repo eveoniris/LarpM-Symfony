@@ -56,7 +56,7 @@ abstract class BasePersonnage
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $xp;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $materiel = null;
 
     #[Column(type: Types::BOOLEAN)]
@@ -77,7 +77,7 @@ abstract class BasePersonnage
     #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $sensible = null;
 
-    #[Column(type: Types::BOOLEAN, nullable: false)]
+    #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $bracelet = null;
 
     /** @var Collection<int, ExperienceGain> */

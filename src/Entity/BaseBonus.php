@@ -21,8 +21,9 @@ use Doctrine\ORM\Mapping\JoinColumn;
 #[ORM\DiscriminatorMap(['base' => 'BaseBonus', 'extended' => 'Bonus'])]
 abstract class BaseBonus
 {
-    #[ORM\OneToOne(targetEntity: Competence::class, cascade: ['persist'])]
-    protected Competence $competence;
+    #[ORM\ManyToOne(targetEntity: Competence::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    protected ?Competence $competence = null;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

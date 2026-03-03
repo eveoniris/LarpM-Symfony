@@ -76,6 +76,7 @@ abstract class BaseUser
     #[Column(name: 'timePasswordResetRequested', type: Types::INTEGER, nullable: true)]
     protected ?int $timePasswordResetRequested = null;
 
+    #[Column(name: 'trombineUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $trombineUrl = null;
 
     #[Column(name: 'lastConnectionDate', type: Types::DATETIME_MUTABLE, nullable: true)]

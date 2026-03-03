@@ -43,7 +43,7 @@ class BaseEtatCivil
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?DateTime $date_naissance = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $probleme_medicaux = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
