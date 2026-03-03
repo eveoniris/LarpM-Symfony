@@ -63,10 +63,10 @@ class BaseGn
     #[Column(type: Types::BOOLEAN)]
     protected bool $actif;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $billetterie = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $conditions_inscription = null;
 
     /** @var Collection<int, Annonce> */

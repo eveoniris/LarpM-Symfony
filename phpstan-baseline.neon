@@ -821,52 +821,7 @@ parameters:
 			path: src/Entity/BaseBackground.php
 
 		-
-			message: "#^Cannot call method removeElement\\(\\) on \\(Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Participant\\>&iterable\\<App\\\\Entity\\\\Participant\\>\\)\\|null\\.$#"
-			count: 1
-			path: src/Entity/BaseBillet.php
-
-		-
-			message: "#^Method App\\\\Entity\\\\BaseBillet\\:\\:getParticipants\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Participant\\> but returns \\(Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Participant\\>&iterable\\<App\\\\Entity\\\\Participant\\>\\)\\|null\\.$#"
-			count: 1
-			path: src/Entity/BaseBillet.php
-
-		-
-			message: "#^Property App\\\\Entity\\\\BaseBillet\\:\\:\\$participants \\(\\(Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Participant\\>&iterable\\<App\\\\Entity\\\\Participant\\>\\)\\|null\\) does not accept array\\{App\\\\Entity\\\\Participant\\}\\|Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\Participant\\>\\.$#"
-			count: 1
-			path: src/Entity/BaseBillet.php
-
-		-
-			message: "#^Cannot call method add\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null\\.$#"
-			count: 1
-			path: src/Entity/BaseBonus.php
-
-		-
-			message: "#^Cannot call method contains\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null\\.$#"
-			count: 1
-			path: src/Entity/BaseBonus.php
-
-		-
-			message: "#^Cannot call method removeElement\\(\\) on Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null\\.$#"
-			count: 2
-			path: src/Entity/BaseBonus.php
-
-		-
-			message: "#^Method App\\\\Entity\\\\BaseBonus\\:\\:getGroupeBonus\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\> but returns Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\|null\\.$#"
-			count: 1
-			path: src/Entity/BaseBonus.php
-
-		-
-			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\BonusApplication\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
-			count: 1
-			path: src/Entity/BaseBonus.php
-
-		-
-			message: "#^Parameter \\#1 \\$value of static method App\\\\Enum\\\\BonusType\\:\\:tryFrom\\(\\) expects int\\|string, string\\|null given\\.$#"
-			count: 1
-			path: src/Entity/BaseBonus.php
-
-		-
-			message: "#^Property App\\\\Entity\\\\BaseBonus\\:\\:\\$competence \\(App\\\\Entity\\\\Competence\\) does not accept App\\\\Entity\\\\Competence\\|null\\.$#"
+			message: "#^Parameter \\#1 \\$element of method Doctrine\\\\Common\\\\Collections\\\\Collection\\<int, App\\\\Entity\\\\GroupeBonus\\>\\:\\:removeElement\\(\\) expects App\\\\Entity\\\\GroupeBonus, App\\\\Entity\\\\PersonnageBonus given\\.$#"
 			count: 1
 			path: src/Entity/BaseBonus.php
 

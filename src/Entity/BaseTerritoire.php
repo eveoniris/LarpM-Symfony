@@ -45,18 +45,18 @@ abstract class BaseTerritoire
     #[Assert\Length(max: 45)]
     protected string $nom = '';
 
-    #[Column(type: Types::STRING, length: 180, unique: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(type: Types::STRING, length: 45, unique: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     #[Assert\Length(max: 45)]
     protected ?string $capitale = null;
 
-    #[Column(type: Types::STRING, length: 45, unique: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     #[Assert\Length(max: 45)]
     protected ?string $politique = null;
 
-    #[Column(type: Types::STRING, length: 45, unique: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     #[Assert\Length(max: 45)]
     protected ?string $dirigeant = null;
 
@@ -72,28 +72,28 @@ abstract class BaseTerritoire
     #[Assert\Length(max: 45)]
     protected ?string $tech_level = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $type_racial = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $inspiration = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $armes_predilection = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $vetements = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $noms_masculin = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $noms_feminin = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $frontieres = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $geojson = null;
 
     #[Column(type: Types::STRING, length: 7, nullable: true)]
@@ -113,7 +113,7 @@ abstract class BaseTerritoire
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description_secrete = null;
 
-    #[Column(type: Types::TEXT, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     #[Assert\Length(max: 45)]
     protected ?string $statut = null;
 
