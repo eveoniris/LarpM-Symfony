@@ -308,7 +308,7 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
 
     public function isStable(): bool
     {
-        return TerritoireStatut::STABLE->value === strtolower($this->getStatut()->value ?? '');
+        return TerritoireStatut::STABLE->value === strtolower($this->getStatut()?->value ?? '');
     }
 
     /**

@@ -27,7 +27,7 @@ final class HighlightTwigExtension extends AbstractExtension
             return (string) $text;
         }
 
-        return StringHelper::highlightWords($text, \is_array($words) ? $words : [(string) $words], $options);
+        return StringHelper::highlightWords((string) $text, \is_array($words) ? $words : [(string) $words], $options);
     }
 
     public function getName(): string

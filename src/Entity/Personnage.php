@@ -370,7 +370,7 @@ class Personnage extends BasePersonnage implements Stringable
         return $this->baseGroupeGn;
     }
 
-    public function getCompetenceLevel(Competence $competence): Level
+    public function getCompetenceLevel(Competence $competence): ?Level
     {
         return $competence->getLevel();
     }

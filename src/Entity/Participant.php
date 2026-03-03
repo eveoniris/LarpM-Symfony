@@ -41,7 +41,12 @@ class Participant extends BaseParticipant implements Stringable
     public function getAgeJoueur(): int
     {
         $gn_date = $this->getGn()->getDateFin();
-        $naissance = $this->getUser()->getEtatCivil()->getDateNaissance();
+        $naissance = $this->getUser()?->getEtatCivil()?->getDateNaissance();
+
+        if (!$naissance || !$gn_date) {
+            return 0;
+        }
+
         $interval = date_diff($gn_date, $naissance);
 
         return (int) $interval->format('%y');

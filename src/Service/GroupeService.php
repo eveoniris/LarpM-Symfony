@@ -159,7 +159,7 @@ readonly class GroupeService
             $all += $richesse['value'] ?? 0;
         }
 
-        return $all;
+        return (int) $all;
     }
 
     /**
@@ -204,7 +204,7 @@ readonly class GroupeService
             }
 
             // arrondi au sup
-            $value = ceil($value);
+            $value = (int) ceil($value);
 
             $label = \sprintf(
                 "<strong>%s pièces d'argent</strong> fournies par <strong>%s</strong>. Etat %s 3 x (%d %s)",
@@ -388,7 +388,7 @@ readonly class GroupeService
                 $ingredient = clone $ingredientProvided;
                 $nb = $ingredient->getQuantite();
                 if (!$territoire->isStable()) {
-                    $nb = ceil($nb * 0.5);
+                    $nb = (int) ceil($nb * 0.5);
                 }
 
                 $ingredient->setLabel('<strong>' . $ingredient->getLabel() . '</strong> fourni(e)s par <strong>' . $territoire->getNom() . '</strong>');
@@ -488,7 +488,7 @@ readonly class GroupeService
                 $nbRessource = $ressource->getQuantite();
 
                 if (!$territoire->isStable()) {
-                    $nbRessource = ceil($nbRessource * 0.5);
+                    $nbRessource = (int) ceil($nbRessource * 0.5);
                 }
                 $ressource->setLabel('<strong>' . $ressource->getLabel() . '</strong> fourni(e)s par <strong>' . $territoire->getNom() . '</strong>');
 
