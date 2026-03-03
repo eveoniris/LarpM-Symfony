@@ -90,23 +90,23 @@ class Restauration extends BaseRestauration
 
     public function isVisibleOnMaterielEnveloppe(): bool
     {
-        if (str_ends_with(strtoupper(trim($this->label)), 'REPAS ENFANTS')) {
+        if (str_ends_with(strtoupper(trim($this->label ?? '')), 'REPAS ENFANTS')) {
             return true;
         }
 
-        if (str_ends_with(strtoupper(trim($this->label)), 'REPAS CARNE')) {
+        if (str_ends_with(strtoupper(trim($this->label ?? '')), 'REPAS CARNE')) {
             return true;
         }
 
-        if (str_ends_with(strtoupper(trim($this->label)), 'REPAS CARNÉ')) {
+        if (str_ends_with(strtoupper(trim($this->label ?? '')), 'REPAS CARNÉ')) {
             return true;
         }
 
-        if (str_ends_with(strtoupper(trim($this->label)), 'REPAS CARNé')) {
+        if (str_ends_with(strtoupper(trim($this->label ?? '')), 'REPAS CARNé')) {
             return true;
         }
 
-        if (str_ends_with(strtoupper(trim($this->label)), 'CARTE DE BOISSONS')) {
+        if (str_ends_with(strtoupper(trim($this->label ?? '')), 'CARTE DE BOISSONS')) {
             return true;
         }
 

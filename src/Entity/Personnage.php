@@ -722,7 +722,7 @@ class Personnage extends BasePersonnage implements Stringable
         if ($full && ($participant = $this->getParticipants()->last())) {
             $groupeLabel = $participant->getGroupeGn()?->getGroupe()?->getNom();
 
-            return \sprintf('%s (%s)', $withId ? $this->getIdName() : $this->getPublicName(), $participant->getGn()->getLabel() . ($groupeLabel ? ' - ' : '') . $groupeLabel);
+            return \sprintf('%s (%s)', $withId ? $this->getIdName() : $this->getPublicName(), $participant->getGn()?->getLabel() . ($groupeLabel ? ' - ' : '') . $groupeLabel);
         }
 
         return $withId ? $this->getIdName() : $this->getNameSurname();

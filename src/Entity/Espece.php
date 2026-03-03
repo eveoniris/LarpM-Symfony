@@ -124,12 +124,12 @@ class Espece
 
     public function isOmbrelin(): bool
     {
-        return 'OMBRELIN' === strtoupper($this->nom);
+        return 'OMBRELIN' === strtoupper($this->nom ?? '');
     }
 
     public function isProfond(): bool
     {
-        return 'PROFOND' === strtoupper($this->nom);
+        return 'PROFOND' === strtoupper($this->nom ?? '');
     }
 
     public function isSecret(): ?bool

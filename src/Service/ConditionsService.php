@@ -248,7 +248,7 @@ class ConditionsService
                     return true;
                 }
 
-                if (strtoupper($service->getCompetence()->getCompetenceFamily()?->getCompetenceFamilyType()?->value) === strtoupper($this->getConditionValue($condition))) {
+                if (strtoupper($service->getCompetence()->getCompetenceFamily()?->getCompetenceFamilyType()?->value ?? '') === strtoupper($this->getConditionValue($condition))) {
                     return true;
                 }
             }
@@ -260,7 +260,7 @@ class ConditionsService
                 return true;
             }
 
-            if (strtoupper($entity->getCompetenceFamilyType()?->value) === $this->getConditionValue($condition)) {
+            if (strtoupper($entity->getCompetenceFamilyType()?->value ?? '') === $this->getConditionValue($condition)) {
                 return true;
             }
 
@@ -269,7 +269,7 @@ class ConditionsService
                     return true;
                 }
 
-                if (strtoupper($service->getCompetence()->getCompetenceFamily()?->getCompetenceFamilyType()?->value) === $this->getConditionValue($condition)) {
+                if (strtoupper($service->getCompetence()->getCompetenceFamily()?->getCompetenceFamilyType()?->value ?? '') === $this->getConditionValue($condition)) {
                     return true;
                 }
             }
@@ -293,7 +293,7 @@ class ConditionsService
      */
     public function getConditionType(array $condition): string
     {
-        return strtoupper($this->getKeyValue('type', $condition) ?? '');
+        return strtoupper((string) ($this->getKeyValue('type', $condition) ?? ''));
     }
 
     /**
@@ -301,6 +301,6 @@ class ConditionsService
      */
     public function getConditionValue(array $condition): string
     {
-        return strtoupper($this->getKeyValue('value', $condition) ?? '');
+        return strtoupper((string) ($this->getKeyValue('value', $condition) ?? ''));
     }
 }
