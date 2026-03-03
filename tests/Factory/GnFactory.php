@@ -23,6 +23,8 @@ final class GnFactory extends PersistentProxyObjectFactory
         return [
             'label' => self::faker()->words(3, true),
             'xp_creation' => 20,
+            'actif' => false,
+            'date_jeu' => 800, // in-game year (Hyborian Age setting)
         ];
     }
 }
