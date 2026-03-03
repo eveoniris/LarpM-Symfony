@@ -90,10 +90,10 @@ class CompetenceFamily extends BaseCompetenceFamily implements Stringable
         foreach ($this->getCompetences() as $competence) {
             if (null == $minimumIndex) {
                 $competenceFirst = $competence;
-                $minimumIndex = $competence->getLevel()->getIndex();
+                $minimumIndex = $competence->getLevel()?->getIndex();
             } elseif ($competence->getLevel()->getIndex() < $minimumIndex) {
                 $competenceFirst = $competence;
-                $minimumIndex = $competence->getLevel()->getIndex();
+                $minimumIndex = $competence->getLevel()?->getIndex();
             }
         }
 
@@ -111,10 +111,10 @@ class CompetenceFamily extends BaseCompetenceFamily implements Stringable
         foreach ($this->getCompetences() as $competence) {
             if (null == $maximumIndex) {
                 $competenceLast = $competence;
-                $maximumIndex = $competence->getLevel()->getIndex();
+                $maximumIndex = $competence->getLevel()?->getIndex();
             } elseif ($competence->getLevel()->getIndex() > $maximumIndex) {
                 $competenceLast = $competence;
-                $maximumIndex = $competence->getLevel()->getIndex();
+                $maximumIndex = $competence->getLevel()?->getIndex();
             }
         }
 

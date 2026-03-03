@@ -60,7 +60,7 @@ class Objet extends BaseObjet
             'localisation' => $this->getRangement()?->getLocalisation()->getLabel() ?? '',
             'etat' => $this->getEtat() ? $this->getEtat()->getLabel() : '',
             'proprietaire' => $this->getProprietaire() ? $this->getProprietaire()->getNom() : '',
-            'responsable' => $this->getResponsable()->getUserName(),
+            'responsable' => $this->getResponsable()?->getUserName() ?? '',
             'nombre' => $this->getNombre(),
             'objet de jeu' => $this->getItemsNumeroLabels(),
             'creation_date' => $this->getCreationDate()->format('Y-m-d H:i:s'),
