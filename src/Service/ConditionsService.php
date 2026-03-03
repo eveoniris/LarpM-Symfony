@@ -234,7 +234,7 @@ class ConditionsService
                 return $entity->hasCompetenceId((int) $this->getConditionValue($condition));
             }
 
-            return $entity->hasCompetenceLevel(CompetenceFamilyType::tryFrom($this->getConditionValue($condition)), LevelType::tryFrom($this->getKeyValue('level', $condition)));
+            return $entity->hasCompetenceLevel(CompetenceFamilyType::tryFrom($this->getConditionValue($condition)), LevelType::tryFrom((string) ($this->getKeyValue('level', $condition) ?? '')));
         }
 
         // Parmi les familles de competence du personnage
