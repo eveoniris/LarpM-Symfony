@@ -276,7 +276,7 @@ class CompetenceService
                         if (($bonusJsonData['id'] ?? null) === $family->getId()) {
                             $canApply = true;
                         }
-                        if (strtoupper($bonusJsonData['type'] ?? null) === strtoupper($family->getCompetenceFamilyType()->value)) {
+                        if (strtoupper($bonusJsonData['type'] ?? '') === strtoupper($family->getCompetenceFamilyType()?->value ?? '')) {
                             $canApply = true;
                         }
 

@@ -28,6 +28,6 @@ class PersonnageBackground extends BasePersonnageBackground
 
     public function isPrivate(): bool
     {
-        return 'private' === strtolower($this->visibility);
+        return 'private' === strtolower($this->visibility ?? '');
     }
 }

@@ -43,7 +43,7 @@ class Rule extends BaseRule implements Stringable
 
     public function getPrintLabel(): string
     {
-        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->filename ?: time()));
+        return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->filename ?: (string) time()));
     }
 
     protected function afterUpload(FileUploader $fileUploader): FileUploader

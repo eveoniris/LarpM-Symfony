@@ -24,11 +24,11 @@ final class FedegnManager
     {
         $str = htmlentities($str, \ENT_NOQUOTES, $charset);
 
-        $str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
-        $str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str); // pour les ligatures e.g. '&oelig;'
+        $str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str) ?? $str;
+        $str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str) ?? $str; // pour les ligatures e.g. '&oelig;'
         // supprime les autres caractères
 
-        return preg_replace('#&[^;]+;#', '', $str);
+        return preg_replace('#&[^;]+;#', '', $str) ?? $str;
     }
 
     /**
