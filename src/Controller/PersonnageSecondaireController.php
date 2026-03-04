@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\PersonnageSecondaire;
-use App\Form\PersonnageSecondaireDeleteForm;
-use App\Form\PersonnageSecondaireForm;
+use App\Form\PersonnageSecondaireDeleteType;
+use App\Form\PersonnageSecondaireType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -51,7 +51,7 @@ class PersonnageSecondaireController extends AbstractController
     #[Route('/personnageSecondaire/add', name: 'personnageSecondaire.add')]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        $form = $this->createForm(PersonnageSecondaireForm::class, new PersonnageSecondaire())->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(PersonnageSecondaireType::class, new PersonnageSecondaire())->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -95,7 +95,7 @@ class PersonnageSecondaireController extends AbstractController
             $originalPersonnageSecondaireComptences->add($personnageSecondaireCompetence);
         }
 
-        $form = $this->createForm(PersonnageSecondaireForm::class, $personnageSecondaire)->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageSecondaireType::class, $personnageSecondaire)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
             'attr' => [
                 'class' => 'btn btn-secondary',
@@ -148,7 +148,7 @@ class PersonnageSecondaireController extends AbstractController
         #[MapEntity]
         PersonnageSecondaire $personnageSecondaire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(PersonnageSecondaireDeleteForm::class, $personnageSecondaire)->add('delete', SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(PersonnageSecondaireDeleteType::class, $personnageSecondaire)->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

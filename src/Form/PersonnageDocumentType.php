@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Form;
+
+use App\Entity\Personnage;
+use App\Repository\DocumentRepository;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+class PersonnageDocumentType extends AbstractType
+{
+    /**
+     * Construction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('documents', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+            'label' => 'Choisissez les documents possédé par le personnage en début de jeu',
+            'multiple' => true,
+            'expanded' => true,
+            'required' => false,
+            'class' => \App\Entity\Document::class,
+            'choice_label' => 'identity',
+            'query_builder' => static fn (DocumentRepository $er) => $er->createQueryBuilder('d')->orderBy('d.code', 'ASC'),
+        ]);
+    }
+
+    /**
+     * Définition de l'entité concernée.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Personnage::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+}

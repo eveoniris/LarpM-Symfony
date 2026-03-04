@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Ressource;
-use App\Form\RessourceForm;
+use App\Form\RessourceType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -55,7 +55,7 @@ class RessourceController extends AbstractController
     {
         $ressource = new Ressource();
 
-        $form = $this->createForm(RessourceForm::class, $ressource)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+        $form = $this->createForm(RessourceType::class, $ressource)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
             'label' => 'Sauvegarder & continuer',
@@ -92,7 +92,7 @@ class RessourceController extends AbstractController
         EntityManagerInterface $entityManager,
         Ressource $ressource,
     ): Response|RedirectResponse {
-        $form = $this->createForm(RessourceForm::class, $ressource)->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+        $form = $this->createForm(RessourceType::class, $ressource)->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 

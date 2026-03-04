@@ -24,8 +24,4 @@ class EtatType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'etat';
-    }
 }

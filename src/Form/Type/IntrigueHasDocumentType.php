@@ -33,8 +33,4 @@ class IntrigueHasDocumentType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'intrigueHasDocument';
-    }
 }

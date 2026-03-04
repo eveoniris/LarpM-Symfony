@@ -30,8 +30,4 @@ class ObjetTagType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'ObjetTag';
-    }
 }

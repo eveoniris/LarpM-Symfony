@@ -68,8 +68,4 @@ class ObjetType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'objet';
-    }
 }

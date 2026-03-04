@@ -10,7 +10,7 @@ use App\Entity\Gn;
 use App\Entity\Level;
 use App\Enum\LevelType;
 use App\Enum\Role;
-use App\Form\CompetenceForm;
+use App\Form\CompetenceType;
 use App\Repository\CompetenceRepository;
 use App\Repository\LevelRepository;
 use App\Security\MultiRolesExpression;
@@ -65,7 +65,7 @@ class CompetenceController extends AbstractController
             }
         }
 
-        return $this->handleCreateOrUpdate($request, $competence, CompetenceForm::class);
+        return $this->handleCreateOrUpdate($request, $competence, CompetenceType::class);
     }
 
     /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
@@ -314,6 +314,6 @@ class CompetenceController extends AbstractController
     #[IsGranted('ROLE_REGLE')]
     public function updateAction(Request $request, #[MapEntity] Competence $competence): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $competence, CompetenceForm::class);
+        return $this->handleCreateOrUpdate($request, $competence, CompetenceType::class);
     }
 }

@@ -7,9 +7,9 @@ namespace App\Controller;
 use App\Entity\Item;
 use App\Entity\Objet;
 use App\Enum\Role;
-use App\Form\Item\ItemDeleteForm;
-use App\Form\Item\ItemForm;
-use App\Form\Item\ItemLinkForm;
+use App\Form\Item\ItemDeleteType;
+use App\Form\Item\ItemType;
+use App\Form\Item\ItemLinkType;
 use App\Repository\ItemRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
@@ -33,7 +33,7 @@ class ObjetController extends AbstractController
     #[Route('/{item}/delete', name: 'delete')]
     public function deleteAction(Request $request, #[MapEntity] Item $item): RedirectResponseAlias|Response
     {
-        $form = $this->createForm(ItemDeleteForm::class, $item);
+        $form = $this->createForm(ItemDeleteType::class, $item);
 
         $form->handleRequest($request);
 
@@ -97,7 +97,7 @@ class ObjetController extends AbstractController
     #[Route('/{item}/link', name: 'link')]
     public function linkAction(Request $request, Item $item): RedirectResponseAlias|Response
     {
-        $form = $this->createForm(ItemLinkForm::class, $item);
+        $form = $this->createForm(ItemLinkType::class, $item);
 
         $form->handleRequest($request);
 
@@ -133,7 +133,7 @@ class ObjetController extends AbstractController
         $item = new Item();
         $item->setObjet($objet);
 
-        $form = $this->createForm(ItemForm::class, $item);
+        $form = $this->createForm(ItemType::class, $item);
 
         $form->handleRequest($request);
 
@@ -229,7 +229,7 @@ class ObjetController extends AbstractController
     #[Route('/{item}/update', name: 'update')]
     public function updateAction(Request $request, #[MapEntity] Item $item): RedirectResponseAlias|Response
     {
-        $form = $this->createForm(ItemForm::class, $item);
+        $form = $this->createForm(ItemType::class, $item);
 
         $form->handleRequest($request);
 

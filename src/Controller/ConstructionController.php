@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Construction;
-use App\Form\ConstructionForm;
+use App\Form\ConstructionType;
 use App\Repository\ConstructionRepository;
 use App\Repository\TerritoireRepository;
 use App\Service\PagerService;
@@ -45,7 +45,7 @@ class ConstructionController extends AbstractController
     #[Route('/add', name: 'add')]
     public function addAction(Request $request): Response|RedirectResponse
     {
-        return $this->handleCreateOrUpdate($request, new Construction(), ConstructionForm::class);
+        return $this->handleCreateOrUpdate($request, new Construction(), ConstructionType::class);
     }
 
     /**
@@ -54,7 +54,7 @@ class ConstructionController extends AbstractController
     #[Route('/{construction}/update', name: 'update', requirements: ['construction' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Construction $construction): Response|RedirectResponse
     {
-        return $this->handleCreateOrUpdate($request, $construction, ConstructionForm::class);
+        return $this->handleCreateOrUpdate($request, $construction, ConstructionType::class);
     }
 
     /**

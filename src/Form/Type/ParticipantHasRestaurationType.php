@@ -30,8 +30,4 @@ class ParticipantHasRestaurationType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'participantHasRestauration';
-    }
 }

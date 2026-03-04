@@ -33,8 +33,4 @@ class IntrigueHasLieuType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'intrigueHasLieu';
-    }
 }

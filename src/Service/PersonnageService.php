@@ -52,7 +52,7 @@ use App\Enum\CompetenceFamilyType;
 use App\Enum\LevelType;
 use App\Enum\LogActionType;
 use App\Enum\TriggerType;
-use App\Form\PersonnageFindForm;
+use App\Form\PersonnageFindType;
 use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageRepository;
 use App\Repository\ReligionRepository;
@@ -2190,7 +2190,7 @@ class PersonnageService
 
         // construit le formulaire contenant les filtres de recherche
 
-        $form = $this->formFactory->create(PersonnageFindForm::class, null, [
+        $form = $this->formFactory->create(PersonnageFindType::class, null, [
             'data' => [
                 'religion' => $religion,
                 'classe' => $classe,

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\AttributeType;
-use App\Form\AttributeTypeForm;
+use App\Form\AttributeTypeType;
 use App\Repository\AttributeTypeRepository;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -40,13 +40,13 @@ class AttributeTypeController extends AbstractController
     {
         $attributeType = new AttributeType();
 
-        return $this->handleCreateOrUpdate($request, $attributeType, AttributeTypeForm::class);
+        return $this->handleCreateOrUpdate($request, $attributeType, AttributeTypeType::class);
     }
 
     #[Route('/{attributeType}/update', name: 'update', requirements: ['attributeType' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] AttributeType $attributeType): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $attributeType, AttributeTypeForm::class);
+        return $this->handleCreateOrUpdate($request, $attributeType, AttributeTypeType::class);
     }
 
     #[Route(

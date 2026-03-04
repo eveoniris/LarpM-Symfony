@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Level;
-use App\Form\NiveauForm;
+use App\Form\NiveauType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\ClickableInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -30,7 +30,7 @@ class NiveauController extends AbstractController
     {
         $niveau = new Level();
 
-        $form = $this->createForm(NiveauForm::class, $niveau)->add('save', SubmitType::class, [
+        $form = $this->createForm(NiveauType::class, $niveau)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -62,7 +62,7 @@ class NiveauController extends AbstractController
 
         $niveau = $entityManager->find(Level::class, $id);
 
-        $form = $this->createForm(NiveauForm::class, $niveau)->add('update', SubmitType::class, [
+        $form = $this->createForm(NiveauType::class, $niveau)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 

@@ -30,25 +30,25 @@ use App\Enum\LevelType;
 use App\Enum\LogActionType;
 use App\Enum\Role;
 use App\Enum\TriggerType;
-use App\Form\DeleteForm;
-use App\Form\FindJoueurForm;
-use App\Form\Groupe\GroupeInscriptionForm;
-use App\Form\Groupe\GroupeSecondairePostulerForm;
-use App\Form\JoueurForm;
-use App\Form\JoueurXpForm;
-use App\Form\MessageForm;
-use App\Form\Participant\ParticipantGroupeForm;
-use App\Form\Participant\ParticipantNewForm;
-use App\Form\Participant\ParticipantRemoveForm;
-use App\Form\ParticipantBilletForm;
-use App\Form\ParticipantForm;
-use App\Form\ParticipantPersonnageSecondaireForm;
-use App\Form\ParticipantRestaurationForm;
-use App\Form\Personnage\PersonnageEditForm;
-use App\Form\Personnage\PersonnageForm;
-use App\Form\Personnage\PersonnageOriginForm;
-use App\Form\PersonnageOldFindForm;
-use App\Form\TrombineForm;
+use App\Form\DeleteType;
+use App\Form\FindJoueurType;
+use App\Form\Groupe\GroupeInscriptionType;
+use App\Form\Groupe\GroupeSecondairePostulerType;
+use App\Form\JoueurType;
+use App\Form\JoueurXpType;
+use App\Form\MessageType;
+use App\Form\Participant\ParticipantGroupeType;
+use App\Form\Participant\ParticipantNewType;
+use App\Form\Participant\ParticipantRemoveType;
+use App\Form\ParticipantBilletType;
+use App\Form\ParticipantType;
+use App\Form\ParticipantPersonnageSecondaireType;
+use App\Form\ParticipantRestaurationType;
+use App\Form\Personnage\PersonnageEditType;
+use App\Form\Personnage\PersonnageType;
+use App\Form\Personnage\PersonnageOriginType;
+use App\Form\PersonnageOldFindType;
+use App\Form\TrombineType;
 use App\Repository\GnRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageSecondaireRepository;
@@ -86,7 +86,7 @@ class ParticipantController extends AbstractController
     {
         $joueur = new Participant();
 
-        $form = $this->createForm(JoueurForm::class, $joueur)->add('save', SubmitType::class, [
+        $form = $this->createForm(JoueurType::class, $joueur)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -142,7 +142,7 @@ class ParticipantController extends AbstractController
 
         // j'ajoute içi certain champs du formulaires (les classes)
         // car j'ai besoin des informations du groupe pour les alimenter
-        $form = $this->createForm(PersonnageForm::class, $personnage)->add('classe', EntityType::class, [
+        $form = $this->createForm(PersonnageType::class, $personnage)->add('classe', EntityType::class, [
             'label' => 'Classes disponibles',
             'choice_label' => 'label',
             'class' => Classe::class,
@@ -282,7 +282,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $form = $this->createForm(PersonnageOldFindForm::class, $participant);
+        $form = $this->createForm(PersonnageOldFindType::class, $participant);
 
         $form->handleRequest($request);
 
@@ -333,7 +333,7 @@ class ParticipantController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function adminXpAction(Request $request, Participant $participant): Response
     {
-        $form = $this->createForm(JoueurXpForm::class, $participant)->add('update', SubmitType::class, [
+        $form = $this->createForm(JoueurXpType::class, $participant)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -419,7 +419,7 @@ class ParticipantController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function billetAction(Request $request, #[MapEntity] Participant $participant): RedirectResponse|Response
     {
-        $form = $this->createForm(ParticipantBilletForm::class, $participant, ['gnId' => $participant->getGn()->getId()])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(ParticipantBilletType::class, $participant, ['gnId' => $participant->getGn()->getId()])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -502,7 +502,7 @@ class ParticipantController extends AbstractController
          * return $this->redirectToRoute('gn.detail', array('gn' => $participant->getGn()->getId())),303);
          * }
          */
-        $form = $this->createForm(ParticipantGroupeForm::class, $participant, ['gnId' => $participant->getGn()->getId()])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(ParticipantGroupeType::class, $participant, ['gnId' => $participant->getGn()->getId()])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -537,7 +537,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $form = $this->createForm(GroupeInscriptionForm::class, [])->add('subscribe', SubmitType::class, [
+        $form = $this->createForm(GroupeInscriptionType::class, [])->add('subscribe', SubmitType::class, [
             'label' => "S'inscrire",
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -735,7 +735,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $form = $this->createForm(GroupeSecondairePostulerForm::class)->add('postuler', SubmitType::class, [
+        $form = $this->createForm(GroupeSecondairePostulerType::class)->add('postuler', SubmitType::class, [
             'label' => 'Postuler',
         ]);
 
@@ -831,7 +831,7 @@ class ParticipantController extends AbstractController
         $message->setCreationDate(new DateTime('NOW'));
         $message->setUpdateDate(new DateTime('NOW'));
 
-        $form = $this->createForm(MessageForm::class, $message)->add('envoyer', SubmitType::class, [
+        $form = $this->createForm(MessageType::class, $message)->add('envoyer', SubmitType::class, [
             'label' => 'Envoyer votre réponse',
         ]);
 
@@ -944,7 +944,7 @@ class ParticipantController extends AbstractController
             $participant->setUser($user);
         }
 
-        $form = $this->createForm(ParticipantNewForm::class, $participant)->add('save', SubmitType::class, [
+        $form = $this->createForm(ParticipantNewType::class, $participant)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -993,7 +993,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $form = $this->createForm(PersonnageOriginForm::class, $personnage)->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageOriginType::class, $personnage)->add('save', SubmitType::class, [
             'label' => 'Valider votre origine',
         ]);
 
@@ -1042,7 +1042,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $form = $this->createForm(PersonnageEditForm::class, $personnage)->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageEditType::class, $personnage)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
             'attr' => ['class' => 'btn-secondary'],
         ]);
@@ -1112,7 +1112,7 @@ class ParticipantController extends AbstractController
 
         // j'ajoute ici certains champs du formulaires (les classes)
         // car j'ai besoin des informations du groupe pour les alimenter
-        $form = $this->createForm(PersonnageForm::class, $personnage)->add('classe', EntityType::class, [
+        $form = $this->createForm(PersonnageType::class, $personnage)->add('classe', EntityType::class, [
             'label' => 'Classes disponibles',
             'choice_label' => 'label',
             'class' => Classe::class,
@@ -1447,7 +1447,7 @@ class ParticipantController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $form = $this->createForm(ParticipantPersonnageSecondaireForm::class, $participant)->add('choice', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
+        $form = $this->createForm(ParticipantPersonnageSecondaireType::class, $participant)->add('choice', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
 
@@ -1485,7 +1485,7 @@ class ParticipantController extends AbstractController
         Participant $participant,
         Personnage $personnage,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TrombineForm::class, [])->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
+        $form = $this->createForm(TrombineType::class, [])->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
 
         $form->handleRequest($request);
 
@@ -1731,7 +1731,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('personnage.detail', ['gn' => $participant->getGn()->getId(), 'personnage' => $participant->getPersonnage()?->getId()], 303);
         }
 
-        $form = $this->createForm(DeleteForm::class, $potion, ['class' => $potion::class]);
+        $form = $this->createForm(DeleteType::class, $potion, ['class' => $potion::class]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -1979,7 +1979,7 @@ class ParticipantController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function removeAction(Request $request, #[MapEntity] Participant $participant): RedirectResponse|Response
     {
-        $form = $this->createForm(ParticipantRemoveForm::class, $participant, ['gnId' => $participant->getGn()->getId()])->add('save', SubmitType::class, [
+        $form = $this->createForm(ParticipantRemoveType::class, $participant, ['gnId' => $participant->getGn()->getId()])->add('save', SubmitType::class, [
             'label' => 'Oui, retirer la participation de cet utilisateur',
         ]);
 
@@ -2081,7 +2081,7 @@ class ParticipantController extends AbstractController
             $originalParticipantHasRestaurations->add($participantHasRestauration);
         }
 
-        $form = $this->createForm(ParticipantRestaurationForm::class, $participant)->add('save', SubmitType::class, [
+        $form = $this->createForm(ParticipantRestaurationType::class, $participant)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -2144,7 +2144,7 @@ class ParticipantController extends AbstractController
         Request $request,
         ParticipantRepository $participantRepository,
     ): RedirectResponse|Response {
-        $form = $this->createForm(FindJoueurForm::class, [])->add('submit', SubmitType::class, [
+        $form = $this->createForm(FindJoueurType::class, [])->add('submit', SubmitType::class, [
             'label' => 'Rechercher',
         ]);
 
@@ -2199,7 +2199,7 @@ class ParticipantController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::USER))]
     public function updateAction(Request $request, #[MapEntity] Participant $participant): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $participant, ParticipantForm::class, routes: [
+        return $this->handleCreateOrUpdate($request, $participant, ParticipantType::class, routes: [
             'root' => 'participant.',
             'list' => false,
         ]);

@@ -33,8 +33,4 @@ class ClasseType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'groupeClasse';
-    }
 }

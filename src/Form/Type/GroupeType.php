@@ -44,8 +44,4 @@ class GroupeType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'groupe';
-    }
 }

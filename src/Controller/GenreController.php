@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Genre;
-use App\Form\GenreForm;
+use App\Form\GenreType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -37,7 +37,7 @@ class GenreController extends AbstractController
     {
         $genre = new Genre();
 
-        $form = $this->createForm(GenreForm::class, $genre)->add('save', SubmitType::class, [
+        $form = $this->createForm(GenreType::class, $genre)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -95,7 +95,7 @@ class GenreController extends AbstractController
         #[MapEntity]
         ?Genre $genre,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GenreForm::class, $genre)->add('update', SubmitType::class, [
+        $form = $this->createForm(GenreType::class, $genre)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 

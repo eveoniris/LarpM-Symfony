@@ -9,10 +9,10 @@ use App\Entity\GroupeGn;
 use App\Entity\Participant;
 use App\Entity\User;
 use App\Enum\Role;
-use App\Form\GroupeGn\GroupeGnForm;
-use App\Form\GroupeGn\GroupeGnOrdreForm;
-use App\Form\GroupeGn\GroupeGnPlaceAvailableForm;
-use App\Form\GroupeGn\GroupeGnResponsableForm;
+use App\Form\GroupeGn\GroupeGnType;
+use App\Form\GroupeGn\GroupeGnOrdreType;
+use App\Form\GroupeGn\GroupeGnPlaceAvailableType;
+use App\Form\GroupeGn\GroupeGnResponsableType;
 use App\Repository\GroupeGnRepository;
 use App\Repository\ParticipantRepository;
 use App\Security\MultiRolesExpression;
@@ -51,7 +51,7 @@ class GroupeGnController extends AbstractController
             $groupeGn->setJeuMaritime($jeu->getJeuMaritime());
         }
 
-        $form = $this->createForm(GroupeGnForm::class, $groupeGn)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeGnType::class, $groupeGn)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -154,7 +154,7 @@ class GroupeGnController extends AbstractController
         Groupe $groupe,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeGnOrdreForm::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(GroupeGnOrdreType::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -259,7 +259,7 @@ class GroupeGnController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
     public function participantAddAction(Request $request, GroupeGn $groupeGn): RedirectResponse|Response
     {
-        // $form = $this->createForm(GroupeGnForm::class, $groupeGn)
+        // $form = $this->createForm(GroupeGnType::class, $groupeGn)
         //    ->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
         // TODO Migrate to V2
         $form = $this
@@ -358,7 +358,7 @@ class GroupeGnController extends AbstractController
     ): RedirectResponse|Response {
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
-        $form = $this->createForm(GroupeGnPlaceAvailableForm::class, $groupeGn)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeGnPlaceAvailableType::class, $groupeGn)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -395,7 +395,7 @@ class GroupeGnController extends AbstractController
         Groupe $groupe,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeGnResponsableForm::class, $groupeGn)->add('responsable', EntityType::class, [
+        $form = $this->createForm(GroupeGnResponsableType::class, $groupeGn)->add('responsable', EntityType::class, [
             'label' => 'Responsable',
             'required' => false,
             'class' => Participant::class,
@@ -454,7 +454,7 @@ class GroupeGnController extends AbstractController
 
         $this->hasAccess($groupeGn, [Role::WARGAME]);
 
-        $form = $this->createForm(GroupeGnForm::class, $groupeGn, [
+        $form = $this->createForm(GroupeGnType::class, $groupeGn, [
             'allow_extra_fields' => true,
         ])->add('submit', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
 

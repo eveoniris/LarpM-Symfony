@@ -6,7 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Rule;
 use App\Enum\Role;
-use App\Form\Rule\RuleForm;
+use App\Form\Rule\RuleType;
 use App\Repository\RuleRepository;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -27,10 +27,10 @@ class RuleController extends AbstractController
     #[Route('/rule/add', name: 'rule.add')]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, new Rule(), RuleForm::class);
+        return $this->handleCreateOrUpdate($request, new Rule(), RuleType::class);
 
         /* OLD
-         * $form = $this->createForm(RuleForm::class, [])
+         * $form = $this->createForm(RuleType::class, [])
          * ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
          *
          * $form->handleRequest($request);
@@ -188,10 +188,10 @@ class RuleController extends AbstractController
     #[Route('/rule/{rule}/update', name: 'rule.update', requirements: ['rule' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Rule $rule): Response
     {
-        return $this->handleCreateOrUpdate($request, $rule, RuleForm::class);
+        return $this->handleCreateOrUpdate($request, $rule, RuleType::class);
 
         /* Old
-         * $form = $this->createForm(RuleUpdateForm::class, $rule)
+         * $form = $this->createForm(RuleUpdateType::class, $rule)
          * ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
          *
          * $form->handleRequest($request);

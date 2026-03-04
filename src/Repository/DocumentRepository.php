@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Document;
-use App\Form\DocumentForm;
+use App\Form\DocumentType;
 use App\Service\OrderBy;
 use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
@@ -203,7 +203,7 @@ class DocumentRepository extends BaseRepository
     public function getPersonnages(Document $document): QueryBuilder
     {
         /** @var static $documentRepository */
-        $documentRepository = $this->entityManager->getRepository(DocumentForm::class);
+        $documentRepository = $this->entityManager->getRepository(DocumentType::class);
 
         return $documentRepository->createQueryBuilder('perso')->innerJoin('perso.documents', 'd')->where('d.id = :did')->setParameter('did', $document->getId());
     }
