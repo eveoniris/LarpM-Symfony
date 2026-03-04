@@ -27,6 +27,9 @@ import './bootstrap.js'; // may neeed to move to stimulus bootstrap (todo check)
 import jquery from 'jquery';
 import * as bootstrap from 'bootstrap'
 
+// Make jQuery global
+window.$ = window.jQuery = jquery;
+
 const JQUERY_NO_CONFLICT = jQuery.fn['tooltip']
 jQuery.fn['tooltip'] = bootstrap.Tooltip.jQueryInterface
 jQuery.fn['tooltip'].Constructor = bootstrap.Tooltip
@@ -34,9 +37,6 @@ jQuery.fn['tooltip'].noConflict = () => {
     jQuery.fn['tooltip'] = JQUERY_NO_CONFLICT
     return bootstrap.Tooltip.jQueryInterface
 }
-
-// Make jQuery global
-window.$ = window.jQuery = $;
 
 //import 'bootstrap';
 import bsCustomFileInput from 'bs-custom-file-input';
