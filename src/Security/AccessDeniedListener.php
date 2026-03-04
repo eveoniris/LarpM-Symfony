@@ -27,12 +27,17 @@ class AccessDeniedListener implements EventSubscriberInterface
     {
         $exception = $event->getThrowable();
 
-        if ($exception instanceof AccessDeniedException) {
-            $event->setResponse(new RedirectResponse(new Route('access_denied')->getPath()));
-
-            $event->stopPropagation();
-
+        if (!$exception instanceof AccessDeniedException) {
             return;
         }
+
+        // API consumers expect a 401 JSON response from the JWT entry point, not an HTML
+        // redirect. Let the security ExceptionListener handle /api/* requests normally.
+        if (str_starts_with($event->getRequest()->getPathInfo(), '/api/')) {
+            return;
+        }
+
+        $event->setResponse(new RedirectResponse(new Route('access_denied')->getPath()));
+        $event->stopPropagation();
     }
 }
