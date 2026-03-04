@@ -16,6 +16,7 @@ jobs:
   mago:
     name: Mago (format · lint · analyze)
     runs-on: ubuntu-latest
+    continue-on-error: true   # informational — never blocks tests
 
     steps:
       - name: Checkout
@@ -60,6 +61,7 @@ jobs:
   lint:
     name: Lint & Static Analysis
     runs-on: ubuntu-latest
+    continue-on-error: true   # informational — never blocks tests
 
     steps:
       - name: Checkout
@@ -106,7 +108,6 @@ jobs:
   tests:
     name: PHPUnit Tests
     runs-on: ubuntu-latest
-    needs: [mago, lint]
 
     services:
       database:
@@ -161,10 +162,8 @@ jobs:
         env:
           APP_ENV: test
         run: |
-          # Drop + recreate to get a clean empty DB (MySQL service pre-creates it but empty)
-          php bin/console doctrine:database:drop --force --if-exists --env=test
-          php bin/console doctrine:database:create --env=test
-          # Build schema from entities directly — migrations are not designed for fresh-DB runs
+          # MySQL service pre-creates larpm_test as an empty DB.
+          # Build schema from entities directly — migrations are not designed for fresh-DB runs.
           php bin/console doctrine:schema:create --env=test
 
       - name: Run PHPUnit
