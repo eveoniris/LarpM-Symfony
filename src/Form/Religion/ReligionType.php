@@ -96,7 +96,7 @@ class ReligionType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

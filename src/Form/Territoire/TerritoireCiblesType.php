@@ -48,7 +48,7 @@ class TerritoireCiblesType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

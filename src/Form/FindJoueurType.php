@@ -39,7 +39,7 @@ class FindJoueurType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -44,7 +44,7 @@ class ReligionLevelType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

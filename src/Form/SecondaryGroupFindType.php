@@ -35,7 +35,7 @@ class SecondaryGroupFindType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

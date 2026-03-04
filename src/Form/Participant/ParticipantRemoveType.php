@@ -33,7 +33,7 @@ class ParticipantRemoveType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -31,5 +31,4 @@ class RangementType extends AbstractType
             'data_class' => Rangement::class,
         ]);
     }
-
 }

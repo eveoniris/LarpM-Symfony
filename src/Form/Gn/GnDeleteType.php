@@ -32,7 +32,7 @@ class GnDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

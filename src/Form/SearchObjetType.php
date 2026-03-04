@@ -28,7 +28,7 @@ class SearchObjetType extends AbstractType
         ])->add('value', \Symfony\Component\Form\Extension\Core\Type\TextType::class, ['required' => true]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

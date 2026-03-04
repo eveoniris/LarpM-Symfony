@@ -51,7 +51,7 @@ class RequestAllianceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

@@ -45,7 +45,7 @@ class RefuseAllianceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

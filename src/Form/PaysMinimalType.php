@@ -17,5 +17,4 @@ class PaysMinimalType extends AbstractType
             'required' => false,
         ]);
     }
-
 }

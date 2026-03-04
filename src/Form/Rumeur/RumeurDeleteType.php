@@ -32,7 +32,7 @@ class RumeurDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

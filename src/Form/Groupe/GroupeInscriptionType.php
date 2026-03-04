@@ -25,7 +25,7 @@ class GroupeInscriptionType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

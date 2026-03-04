@@ -35,5 +35,4 @@ class PersonnageRessourceType extends AbstractType
             'data_class' => PersonnageRessource::class,
         ]);
     }
-
 }

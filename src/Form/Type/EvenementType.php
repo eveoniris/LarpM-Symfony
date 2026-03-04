@@ -34,5 +34,4 @@ class EvenementType extends AbstractType
             'data_class' => Evenement::class,
         ]);
     }
-
 }

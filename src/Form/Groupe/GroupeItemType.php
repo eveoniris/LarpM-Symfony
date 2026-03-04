@@ -40,7 +40,7 @@ class GroupeItemType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

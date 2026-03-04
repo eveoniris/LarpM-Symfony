@@ -55,7 +55,7 @@ class CompetenceFamilyType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

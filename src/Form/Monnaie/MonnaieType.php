@@ -48,7 +48,7 @@ class MonnaieType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -49,7 +49,7 @@ class UserPersonnageSecondaireType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

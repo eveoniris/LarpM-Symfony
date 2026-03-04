@@ -33,6 +33,9 @@ return new Config()
         '@PHP8x4Migration:risky' => true,
 
         // ── PHP 8.4 spécifique ────────────────────────────────────────
+        // Keep (new Foo())->bar() parentheses: PHPStan's parser does not yet
+        // support PHP 8.4 "new without parentheses" even at phpVersion=80400.
+        'new_expression_parentheses' => ['use_parentheses' => true],
         'declare_strict_types' => true,
         'nullable_type_declaration_for_default_null_value' => true,
         'use_arrow_functions' => true,

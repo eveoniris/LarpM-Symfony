@@ -61,7 +61,7 @@ class PersonnageBackgroundType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

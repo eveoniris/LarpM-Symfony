@@ -49,7 +49,7 @@ class ParticipantBilletType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

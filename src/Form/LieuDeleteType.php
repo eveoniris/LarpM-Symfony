@@ -32,7 +32,7 @@ class LieuDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

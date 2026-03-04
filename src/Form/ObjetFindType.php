@@ -91,7 +91,7 @@ class ObjetFindType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

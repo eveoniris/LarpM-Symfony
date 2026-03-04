@@ -32,7 +32,7 @@ class PostDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

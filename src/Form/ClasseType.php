@@ -77,7 +77,7 @@ class ClasseType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

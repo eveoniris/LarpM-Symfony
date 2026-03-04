@@ -32,7 +32,7 @@ class QuestionDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -53,7 +53,7 @@ class ParticipantNewType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

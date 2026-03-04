@@ -40,7 +40,7 @@ class PriereFindType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

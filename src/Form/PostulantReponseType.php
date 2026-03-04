@@ -37,7 +37,7 @@ class PostulantReponseType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -46,7 +46,7 @@ class TerritoireStrategieType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

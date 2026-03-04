@@ -40,5 +40,4 @@ class PersonnageIngredientType extends AbstractType
             'data_class' => PersonnageIngredient::class,
         ]);
     }
-
 }

@@ -63,7 +63,7 @@ class NewMessageType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

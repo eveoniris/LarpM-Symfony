@@ -43,7 +43,7 @@ class PersonnageUpdateAgeType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -32,7 +32,7 @@ class GroupeGnResponsableType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -120,6 +120,7 @@ class ConditionsServiceTest extends TestCase
      * Known bug: COMPETENCE condition by type string value is broken.
      * getConditionValue() uppercases the value ('ALCHEMY'), but CompetenceFamilyType::tryFrom()
      * requires exact case ('Alchemy') → tryFrom(null) is passed to hasCompetenceLevel.
+     *
      * @todo Fix: use case-insensitive lookup (tryFromOlder or strtolower normalization).
      *
      * In the meantime, numeric ID matching (testCompetenceConditionMatchesByNumericId) works correctly.

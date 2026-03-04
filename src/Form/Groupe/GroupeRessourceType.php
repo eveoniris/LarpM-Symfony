@@ -53,7 +53,7 @@ class GroupeRessourceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

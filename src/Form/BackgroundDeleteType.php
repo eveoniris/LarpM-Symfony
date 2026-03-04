@@ -33,7 +33,7 @@ class BackgroundDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -32,5 +32,4 @@ class PersonnageSecondairesCompetencesType extends AbstractType
             'data_class' => PersonnageSecondaireCompetence::class,
         ]);
     }
-
 }

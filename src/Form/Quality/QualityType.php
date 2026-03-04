@@ -51,7 +51,7 @@ class QualityType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -32,7 +32,7 @@ class PersonnageSecondaireDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

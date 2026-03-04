@@ -93,7 +93,7 @@ class EtatCivilType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

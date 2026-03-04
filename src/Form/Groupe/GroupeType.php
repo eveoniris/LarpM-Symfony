@@ -120,7 +120,7 @@ class GroupeType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

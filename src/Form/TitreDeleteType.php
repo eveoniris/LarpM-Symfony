@@ -32,7 +32,7 @@ class TitreDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

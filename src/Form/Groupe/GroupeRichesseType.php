@@ -40,7 +40,7 @@ class GroupeRichesseType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

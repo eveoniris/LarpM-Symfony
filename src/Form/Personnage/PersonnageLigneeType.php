@@ -55,7 +55,7 @@ class PersonnageLigneeType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -43,7 +43,7 @@ class LigneeType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

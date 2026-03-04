@@ -38,5 +38,4 @@ class QualityValeurType extends AbstractType
             'data_class' => QualityValeur::class,
         ]);
     }
-
 }

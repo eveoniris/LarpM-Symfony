@@ -40,7 +40,7 @@ class PersonnageItemType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

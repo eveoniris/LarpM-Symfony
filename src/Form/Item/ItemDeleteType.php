@@ -38,7 +38,7 @@ class ItemDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

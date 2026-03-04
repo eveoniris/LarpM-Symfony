@@ -98,7 +98,7 @@ class LangueType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

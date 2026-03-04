@@ -32,7 +32,7 @@ class DebriefingDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

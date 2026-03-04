@@ -124,7 +124,7 @@ class DocumentType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

@@ -42,7 +42,7 @@ class GroupeSecondaireNewMembreType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

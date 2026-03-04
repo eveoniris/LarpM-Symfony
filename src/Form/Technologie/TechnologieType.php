@@ -64,7 +64,7 @@ class TechnologieType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

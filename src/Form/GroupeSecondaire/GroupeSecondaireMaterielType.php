@@ -39,7 +39,7 @@ class GroupeSecondaireMaterielType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

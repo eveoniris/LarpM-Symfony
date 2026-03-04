@@ -21,5 +21,4 @@ class RegionMinimalType extends AbstractType
             'choice_label' => 'nom',
         ]);
     }
-
 }

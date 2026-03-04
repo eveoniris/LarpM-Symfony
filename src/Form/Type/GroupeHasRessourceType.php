@@ -35,5 +35,4 @@ class GroupeHasRessourceType extends AbstractType
             'data_class' => GroupeHasRessource::class,
         ]);
     }
-
 }

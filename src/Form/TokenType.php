@@ -48,7 +48,7 @@ class TokenType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

@@ -39,7 +39,7 @@ class PotionFindType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

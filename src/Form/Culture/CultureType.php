@@ -56,7 +56,7 @@ class CultureType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

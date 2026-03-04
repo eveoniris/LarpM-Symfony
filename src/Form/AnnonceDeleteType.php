@@ -32,7 +32,7 @@ class AnnonceDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

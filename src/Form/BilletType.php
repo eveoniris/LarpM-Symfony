@@ -70,7 +70,7 @@ class BilletType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

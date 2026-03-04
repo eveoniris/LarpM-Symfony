@@ -32,5 +32,4 @@ class IntrigueHasGroupeType extends AbstractType
             'data_class' => IntrigueHasGroupe::class,
         ]);
     }
-
 }

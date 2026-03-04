@@ -91,7 +91,7 @@ class LigneeAddMembreType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

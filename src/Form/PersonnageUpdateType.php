@@ -105,7 +105,7 @@ class PersonnageUpdateType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

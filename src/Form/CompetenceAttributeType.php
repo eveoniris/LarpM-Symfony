@@ -41,7 +41,7 @@ class CompetenceAttributeType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

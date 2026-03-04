@@ -37,7 +37,7 @@ class ParticipantPersonnageSecondaireType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

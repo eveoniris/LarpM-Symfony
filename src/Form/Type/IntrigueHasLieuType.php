@@ -32,5 +32,4 @@ class IntrigueHasLieuType extends AbstractType
             'data_class' => IntrigueHasLieu::class,
         ]);
     }
-
 }

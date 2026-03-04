@@ -39,7 +39,7 @@ class UserNewType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

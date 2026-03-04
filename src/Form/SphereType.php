@@ -33,7 +33,7 @@ class SphereType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

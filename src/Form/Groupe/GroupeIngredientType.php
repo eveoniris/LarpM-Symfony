@@ -46,7 +46,7 @@ class GroupeIngredientType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -35,7 +35,7 @@ class TerritoireStatutType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

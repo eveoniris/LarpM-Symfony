@@ -20,5 +20,4 @@ class UserNewPasswordType extends AbstractType
             'required' => true,
         ]);
     }
-
 }

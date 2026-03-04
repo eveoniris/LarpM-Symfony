@@ -32,7 +32,7 @@ class RefusePeaceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

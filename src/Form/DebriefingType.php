@@ -55,7 +55,7 @@ class DebriefingType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

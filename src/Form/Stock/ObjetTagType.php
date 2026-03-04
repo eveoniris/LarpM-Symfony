@@ -42,5 +42,4 @@ class ObjetTagType extends AbstractType
             'cascade_validation' => true,
         ]);
     }
-
 }

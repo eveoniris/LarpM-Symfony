@@ -52,7 +52,7 @@ class IntrigueRelectureType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

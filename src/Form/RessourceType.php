@@ -42,7 +42,7 @@ class RessourceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

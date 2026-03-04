@@ -62,7 +62,7 @@ class ItemLinkType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

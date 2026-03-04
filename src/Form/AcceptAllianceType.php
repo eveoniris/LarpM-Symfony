@@ -47,7 +47,7 @@ class AcceptAllianceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

@@ -46,7 +46,7 @@ class GroupeSecondairePostulerType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

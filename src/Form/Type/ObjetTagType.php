@@ -29,5 +29,4 @@ class ObjetTagType extends AbstractType
             'data_class' => 'App\Entity\ObjetTag',
         ]);
     }
-
 }

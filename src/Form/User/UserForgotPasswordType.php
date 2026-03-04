@@ -17,5 +17,4 @@ class UserForgotPasswordType extends AbstractType
             'required' => true,
         ]);
     }
-
 }

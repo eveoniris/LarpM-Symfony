@@ -44,7 +44,7 @@ class RestaurationType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

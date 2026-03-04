@@ -50,7 +50,7 @@ class ConstructionType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

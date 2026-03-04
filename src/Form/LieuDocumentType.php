@@ -43,7 +43,7 @@ class LieuDocumentType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

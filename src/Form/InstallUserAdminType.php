@@ -22,7 +22,7 @@ class InstallUserAdminType extends AbstractType
         ])->add('password', PasswordType::class, ['required' => true]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

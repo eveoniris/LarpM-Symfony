@@ -28,5 +28,4 @@ class DeleteType extends AbstractType
             'cascade_validation' => true,
         ]);
     }
-
 }

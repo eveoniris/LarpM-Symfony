@@ -74,7 +74,7 @@ class BackgroundType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

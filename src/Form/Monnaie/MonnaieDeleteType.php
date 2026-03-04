@@ -32,7 +32,7 @@ class MonnaieDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

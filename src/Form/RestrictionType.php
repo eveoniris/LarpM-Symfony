@@ -33,7 +33,7 @@ class RestrictionType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

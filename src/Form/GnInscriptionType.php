@@ -22,7 +22,7 @@ class GnInscriptionType extends AbstractType
         $builder->add('idGn', 'hidden');
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

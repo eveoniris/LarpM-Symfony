@@ -42,7 +42,7 @@ class PersonnageUpdateDomaineType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

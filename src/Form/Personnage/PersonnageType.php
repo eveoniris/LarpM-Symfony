@@ -114,5 +114,4 @@ class PersonnageType extends AbstractType
             'data_class' => Personnage::class,
         ]);
     }
-
 }

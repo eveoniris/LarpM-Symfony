@@ -39,7 +39,7 @@ class PersonnageUpdateRenommeType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

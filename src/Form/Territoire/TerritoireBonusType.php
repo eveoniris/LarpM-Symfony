@@ -37,7 +37,7 @@ class TerritoireBonusType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

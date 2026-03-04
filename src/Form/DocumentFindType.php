@@ -63,7 +63,7 @@ class DocumentFindType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

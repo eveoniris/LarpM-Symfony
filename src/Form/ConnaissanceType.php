@@ -70,7 +70,7 @@ class ConnaissanceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

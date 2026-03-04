@@ -49,7 +49,7 @@ class LieuType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

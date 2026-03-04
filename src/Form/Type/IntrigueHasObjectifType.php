@@ -30,5 +30,4 @@ class IntrigueHasObjectifType extends AbstractType
             'data_class' => IntrigueHasObjectif::class,
         ]);
     }
-
 }

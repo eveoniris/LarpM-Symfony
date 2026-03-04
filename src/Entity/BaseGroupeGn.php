@@ -81,27 +81,27 @@ abstract class BaseGroupeGn
     private ?string $bateaux_localisation = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[JoinColumn(nullable: true)]
     private ?Personnage $suzerin = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[JoinColumn(nullable: true)]
     private ?Personnage $connetable = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[JoinColumn(nullable: true)]
     private ?Personnage $intendant = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[JoinColumn(nullable: true)]
     private ?Personnage $navigateur = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[JoinColumn(nullable: true)]
     private ?Personnage $camarilla = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[JoinColumn(nullable: true)]
     private ?Personnage $diplomate = null;
 
     /*

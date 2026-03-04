@@ -32,7 +32,7 @@ class DomaineDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

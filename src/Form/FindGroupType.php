@@ -38,7 +38,7 @@ class FindGroupType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

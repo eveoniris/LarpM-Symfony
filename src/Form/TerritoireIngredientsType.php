@@ -42,7 +42,7 @@ class TerritoireIngredientsType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

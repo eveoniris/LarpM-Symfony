@@ -41,7 +41,7 @@ class TerritoireLoiType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

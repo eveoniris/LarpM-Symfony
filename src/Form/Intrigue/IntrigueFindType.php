@@ -40,7 +40,7 @@ class IntrigueFindType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

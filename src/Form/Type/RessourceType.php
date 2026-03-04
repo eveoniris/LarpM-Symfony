@@ -31,5 +31,4 @@ class RessourceType extends AbstractType
             'data_class' => '\App\Entity\RegionRessource',
         ]);
     }
-
 }
