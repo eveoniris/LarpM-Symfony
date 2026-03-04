@@ -6,8 +6,8 @@ namespace App\Controller;
 
 use App\Entity\Billet;
 use App\Entity\Gn;
-use App\Form\BilletDeleteForm;
-use App\Form\BilletForm;
+use App\Form\BilletDeleteType;
+use App\Form\BilletType;
 use App\Repository\BilletRepository;
 use App\Repository\ParticipantRepository;
 use Doctrine\Common\Collections\Criteria;
@@ -56,7 +56,7 @@ class BilletController extends AbstractController
             $billet->setGn($gn);
         }
 
-        $form = $this->createForm(BilletForm::class, $billet)->add('submit', SubmitType::class, ['label' => 'Valider']);
+        $form = $this->createForm(BilletType::class, $billet)->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -97,7 +97,7 @@ class BilletController extends AbstractController
         Billet $billet,
         EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
-        $form = $this->createForm(BilletForm::class, $billet)->add('submit', SubmitType::class, ['label' => 'Valider']);
+        $form = $this->createForm(BilletType::class, $billet)->add('submit', SubmitType::class, ['label' => 'Valider']);
 
         $form->handleRequest($request);
 
@@ -127,7 +127,7 @@ class BilletController extends AbstractController
         Billet $billet,
         EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
-        $form = $this->createForm(BilletDeleteForm::class, $billet)->add('submit', SubmitType::class, [
+        $form = $this->createForm(BilletDeleteType::class, $billet)->add('submit', SubmitType::class, [
             'label' => 'Supprimer',
             'attr' => ['class' => 'btn btn-danger'],
         ]);

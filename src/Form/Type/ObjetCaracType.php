@@ -27,8 +27,4 @@ class ObjetCaracType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'tag';
-    }
 }

@@ -31,8 +31,4 @@ class ObjectifType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'Objectif';
-    }
 }

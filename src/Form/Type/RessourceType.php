@@ -32,8 +32,4 @@ class RessourceType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'regionRessource';
-    }
 }

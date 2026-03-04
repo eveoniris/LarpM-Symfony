@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Quality;
-use App\Form\Quality\QualityDeleteForm;
-use App\Form\Quality\QualityForm;
+use App\Form\Quality\QualityDeleteType;
+use App\Form\Quality\QualityType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -37,7 +37,7 @@ class QualityController extends AbstractController
     #[Route('/quality/add', name: 'quality.add')]
     public function addAction(EntityManagerInterface $entityManager, Request $request): Response|RedirectResponse
     {
-        $form = $this->createForm(QualityForm::class, new Quality())->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(QualityType::class, new Quality())->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -83,7 +83,7 @@ class QualityController extends AbstractController
         }
         // dump($quality);
 
-        $form = $this->createForm(QualityForm::class, $quality)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(QualityType::class, $quality)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -131,7 +131,7 @@ class QualityController extends AbstractController
         Request $request,
         Quality $quality,
     ): Response|RedirectResponse {
-        $form = $this->createForm(QualityDeleteForm::class, $quality)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(QualityDeleteType::class, $quality)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

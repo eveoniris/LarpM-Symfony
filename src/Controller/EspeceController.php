@@ -7,7 +7,7 @@ namespace App\Controller;
 use App\Entity\Espece;
 use App\Entity\User;
 use App\Enum\Role;
-use App\Form\Espece\EspeceForm;
+use App\Form\Espece\EspeceType;
 use App\Repository\EspeceRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
@@ -40,7 +40,7 @@ class EspeceController extends AbstractController
     #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, new Espece(), EspeceForm::class);
+        return $this->handleCreateOrUpdate($request, new Espece(), EspeceType::class);
     }
 
     #[Route('/{espece}/detail', name: 'detail', requirements: ['espece' => Requirement::DIGITS])]
@@ -68,7 +68,7 @@ class EspeceController extends AbstractController
     #[IsGranted('ROLE_REGLE')]
     public function updateAction(Request $request, #[MapEntity] Espece $espece): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $espece, EspeceForm::class);
+        return $this->handleCreateOrUpdate($request, $espece, EspeceType::class);
     }
 
     #[Route('/{espece}/delete', name: 'delete', requirements: ['espece' => Requirement::DIGITS])]

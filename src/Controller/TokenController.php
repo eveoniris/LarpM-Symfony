@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Token;
-use App\Form\TokenForm;
+use App\Form\TokenType;
 use App\Repository\TokenRepository;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -58,7 +58,7 @@ class TokenController extends AbstractController
     {
         $token = new Token();
 
-        return $this->handleCreateOrUpdate($request, $token, TokenForm::class);
+        return $this->handleCreateOrUpdate($request, $token, TokenType::class);
     }
 
     #[Route('/{token}', name: 'view', requirements: ['token' => Requirement::DIGITS])]
@@ -73,7 +73,7 @@ class TokenController extends AbstractController
     public function updateAction(Request $request, #[SensitiveParameter]
         #[MapEntity] Token $token): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $token, TokenForm::class);
+        return $this->handleCreateOrUpdate($request, $token, TokenType::class);
     }
 
     // Todo translate all delete message

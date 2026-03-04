@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Lieu;
-use App\Form\LieuDeleteForm;
-use App\Form\LieuDocumentForm;
-use App\Form\LieuForm;
+use App\Form\LieuDeleteType;
+use App\Form\LieuDocumentType;
+use App\Form\LieuType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -91,7 +91,7 @@ class LieuController extends AbstractController
     #[Route('/lieu/add', name: 'lieu.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(LieuForm::class, new Lieu())->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+        $form = $this->createForm(LieuType::class, new Lieu())->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
             'label' => 'Sauvegarder & continuer',
@@ -134,7 +134,7 @@ class LieuController extends AbstractController
     #[Route('/lieu/{lieu}/update', name: 'lieu.update')]
     public function updateAction(Request $request, EntityManagerInterface $entityManager, Lieu $lieu): Response
     {
-        $form = $this->createForm(LieuForm::class, $lieu)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(LieuType::class, $lieu)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -160,7 +160,7 @@ class LieuController extends AbstractController
     #[Route('/lieu/{lieu}/delete', name: 'lieu.delete')]
     public function deleteAction(Request $request, EntityManagerInterface $entityManager, Lieu $lieu): Response
     {
-        $form = $this->createForm(LieuDeleteForm::class, $lieu)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(LieuDeleteType::class, $lieu)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -187,7 +187,7 @@ class LieuController extends AbstractController
     #[Route('/lieu/{lieu}/document', name: 'lieu.documents')]
     public function documentAction(Request $request, EntityManagerInterface $entityManager, Lieu $lieu): Response
     {
-        $form = $this->createForm(LieuDocumentForm::class, $lieu)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(LieuDocumentType::class, $lieu)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 

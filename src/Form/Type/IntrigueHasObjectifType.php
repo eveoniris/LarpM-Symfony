@@ -31,8 +31,4 @@ class IntrigueHasObjectifType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'intrigueHasObjectif';
-    }
 }

@@ -31,8 +31,4 @@ class IntrigueHasEvenementType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'intrigueHasEvenement';
-    }
 }

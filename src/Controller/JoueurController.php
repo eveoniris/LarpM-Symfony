@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Form\JoueurForm;
+use App\Form\JoueurType;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -23,7 +23,7 @@ class JoueurController extends AbstractController
     {
         $joueur = new \App\Entity\Joueur();
 
-        $form = $this->createForm(JoueurForm::class, $joueur)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(JoueurType::class, $joueur)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -81,7 +81,7 @@ class JoueurController extends AbstractController
 
         $joueur = $entityManager->find('\App\Entity\Joueur', $id);
 
-        $form = $this->createForm(JoueurForm::class, $joueur)->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(JoueurType::class, $joueur)->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 

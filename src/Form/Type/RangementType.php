@@ -32,8 +32,4 @@ class RangementType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'rangement';
-    }
 }

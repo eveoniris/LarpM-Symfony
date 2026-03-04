@@ -6,8 +6,8 @@ namespace App\Controller;
 
 use App\Entity\Restriction;
 use App\Enum\Role;
-use App\Form\RestrictionDeleteForm;
-use App\Form\RestrictionForm;
+use App\Form\RestrictionDeleteType;
+use App\Form\RestrictionType;
 use App\Repository\RestrictionRepository;
 use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,7 +28,7 @@ class RestrictionController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $form = $this->createForm(RestrictionForm::class, new Restriction())->add('save', SubmitType::class, [
+        $form = $this->createForm(RestrictionType::class, new Restriction())->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, [
             'label' => 'Sauvegarder & continuer',
@@ -69,7 +69,7 @@ class RestrictionController extends AbstractController
         Restriction $restriction,
         EntityManagerInterface $entityManager,
     ): Response {
-        $form = $this->createForm(RestrictionDeleteForm::class, $restriction)->add('save', SubmitType::class, [
+        $form = $this->createForm(RestrictionDeleteType::class, $restriction)->add('save', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
 
@@ -174,7 +174,7 @@ class RestrictionController extends AbstractController
         Restriction $restriction,
         EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
-        $form = $this->createForm(RestrictionForm::class, $restriction)->add('save', SubmitType::class, [
+        $form = $this->createForm(RestrictionType::class, $restriction)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 

@@ -10,8 +10,8 @@ use App\Entity\Genre;
 use App\Entity\Level;
 use App\Entity\Rarete;
 use App\Entity\User;
-use App\Form\InstallDatabaseForm;
-use App\Form\InstallUserAdminForm;
+use App\Form\InstallDatabaseType;
+use App\Form\InstallUserAdminType;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -77,7 +77,7 @@ class InstallController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
     ): RedirectResponse|Response {
         // preparation du formulaire
-        $form = $this->createForm(InstallUserAdminForm::class)->add('create', SubmitType::class);
+        $form = $this->createForm(InstallUserAdminType::class)->add('create', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -126,7 +126,7 @@ class InstallController extends AbstractController
         ];
 
         // preparation du formulaire
-        $form = $this->createForm(InstallDatabaseForm::class, $default)->add('create', SubmitType::class);
+        $form = $this->createForm(InstallDatabaseType::class, $default)->add('create', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -166,7 +166,7 @@ class InstallController extends AbstractController
         ];
 
         // preparation du formulaire
-        $form = $this->createForm(InstallDatabaseForm::class, $default)->add('create', SubmitType::class);
+        $form = $this->createForm(InstallDatabaseType::class, $default)->add('create', SubmitType::class);
 
         $form->handleRequest($request);
 

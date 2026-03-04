@@ -6,7 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Message;
 use App\Entity\User;
-use App\Form\NewMessageForm;
+use App\Form\NewMessageType;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -146,7 +146,7 @@ class MessageController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
     ): RedirectResponse|FormInterface {
-        $form = $this->createForm(NewMessageForm::class, $message)->add('envoyer', SubmitType::class, [
+        $form = $this->createForm(NewMessageType::class, $message)->add('envoyer', SubmitType::class, [
             'label' => 'Envoyer votre message',
         ]);
 

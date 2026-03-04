@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Monnaie;
-use App\Form\Monnaie\MonnaieDeleteForm;
-use App\Form\Monnaie\MonnaieForm;
+use App\Form\Monnaie\MonnaieDeleteType;
+use App\Form\Monnaie\MonnaieType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,7 +35,7 @@ class MonnaieController extends AbstractController
     #[Route('/monnaie/add', name: 'monnaie.add')]
     public function addAction(EntityManagerInterface $entityManager, Request $request): Response
     {
-        $form = $this->createForm(MonnaieForm::class, new Monnaie())->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(MonnaieType::class, new Monnaie())->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -60,7 +60,7 @@ class MonnaieController extends AbstractController
     #[Route('/monnaie/{monnaie}/update', name: 'monnaie.update')]
     public function updateAction(EntityManagerInterface $entityManager, Request $request, Monnaie $monnaie): Response
     {
-        $form = $this->createForm(MonnaieForm::class, $monnaie)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(MonnaieType::class, $monnaie)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -86,7 +86,7 @@ class MonnaieController extends AbstractController
     #[Route('/monnaie/{monnaie}/delete', name: 'monnaie.delete')]
     public function deleteAction(EntityManagerInterface $entityManager, Request $request, Monnaie $monnaie): Response
     {
-        $form = $this->createForm(MonnaieDeleteForm::class, $monnaie)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(MonnaieDeleteType::class, $monnaie)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

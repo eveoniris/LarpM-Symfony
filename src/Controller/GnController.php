@@ -10,8 +10,8 @@ use App\Entity\GroupeGn;
 use App\Entity\Loi;
 use App\Entity\Personnage;
 use App\Enum\Role;
-use App\Form\Gn\GnDeleteForm;
-use App\Form\Gn\GnForm;
+use App\Form\Gn\GnDeleteType;
+use App\Form\Gn\GnType;
 use App\Manager\GroupeManager;
 use App\Repository\ClasseRepository;
 use App\Repository\GnRepository;
@@ -48,7 +48,7 @@ class GnController extends AbstractController
     #[IsGranted('ROLE_ORGA')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $form = $this->createForm(GnForm::class, new Gn())->add('save', SubmitType::class, [
+        $form = $this->createForm(GnType::class, new Gn())->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -169,7 +169,7 @@ class GnController extends AbstractController
         #[MapEntity]
         Gn $gn,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GnDeleteForm::class, $gn)->add('delete', SubmitType::class, [
+        $form = $this->createForm(GnDeleteType::class, $gn)->add('delete', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
         $form->handleRequest($request);
@@ -836,7 +836,7 @@ class GnController extends AbstractController
         #[MapEntity]
         Gn $gn,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GnForm::class, $gn)->add('update', SubmitType::class, [
+        $form = $this->createForm(GnType::class, $gn)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
         $form->handleRequest($request);

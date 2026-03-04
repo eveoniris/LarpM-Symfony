@@ -35,8 +35,4 @@ class EvenementType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'Evenement';
-    }
 }

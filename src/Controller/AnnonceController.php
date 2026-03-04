@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Annonce;
-use App\Form\AnnonceDeleteForm;
-use App\Form\AnnonceForm;
+use App\Form\AnnonceDeleteType;
+use App\Form\AnnonceType;
 use App\Repository\AnnonceRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,7 +27,7 @@ class AnnonceController extends AbstractController
     #[Route('/annonce/add', name: 'annonce.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponseAlias|Response
     {
-        $form = $this->createForm(AnnonceForm::class, new Annonce())->add('save', SubmitType::class, [
+        $form = $this->createForm(AnnonceType::class, new Annonce())->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -63,7 +63,7 @@ class AnnonceController extends AbstractController
         EntityManagerInterface $entityManager,
         Annonce $annonce,
     ): RedirectResponseAlias|Response {
-        $form = $this->createForm(AnnonceDeleteForm::class, $annonce)->add('delete', SubmitType::class, [
+        $form = $this->createForm(AnnonceDeleteType::class, $annonce)->add('delete', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
 
@@ -120,7 +120,7 @@ class AnnonceController extends AbstractController
         Annonce $annonce,
         EntityManagerInterface $entityManager,
     ): RedirectResponseAlias|Response {
-        $form = $this->createForm(AnnonceForm::class, $annonce)->add('update', SubmitType::class, [
+        $form = $this->createForm(AnnonceType::class, $annonce)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 

@@ -17,18 +17,18 @@ use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Enum\LevelType;
 use App\Enum\Role;
-use App\Form\ChronologieForm;
-use App\Form\Territoire\FiefForm;
-use App\Form\Territoire\TerritoireBlasonForm;
-use App\Form\Territoire\TerritoireCiblesForm;
-use App\Form\Territoire\TerritoireConstructionForm;
-use App\Form\Territoire\TerritoireCultureForm;
-use App\Form\Territoire\TerritoireDeleteForm;
-use App\Form\Territoire\TerritoireForm;
-use App\Form\Territoire\TerritoireIngredientsForm;
-use App\Form\Territoire\TerritoireLoiForm;
-use App\Form\Territoire\TerritoireStatutForm;
-use App\Form\Territoire\TerritoireStrategieForm;
+use App\Form\ChronologieType;
+use App\Form\Territoire\FiefType;
+use App\Form\Territoire\TerritoireBlasonType;
+use App\Form\Territoire\TerritoireCiblesType;
+use App\Form\Territoire\TerritoireConstructionType;
+use App\Form\Territoire\TerritoireCultureType;
+use App\Form\Territoire\TerritoireDeleteType;
+use App\Form\Territoire\TerritoireType;
+use App\Form\Territoire\TerritoireIngredientsType;
+use App\Form\Territoire\TerritoireLoiType;
+use App\Form\Territoire\TerritoireStatutType;
+use App\Form\Territoire\TerritoireStrategieType;
 use App\Repository\BonusRepository;
 use App\Repository\TerritoireRepository;
 use App\Security\MultiRolesExpression;
@@ -59,7 +59,7 @@ class TerritoireController extends AbstractController
     {
         $territoire = new Territoire();
 
-        $form = $this->createForm(TerritoireForm::class, $territoire)->add('save', SubmitType::class, [
+        $form = $this->createForm(TerritoireType::class, $territoire)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -127,7 +127,7 @@ class TerritoireController extends AbstractController
         #[MapEntity]
         Territoire $territoire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireConstructionForm::class, $territoire)->add('save', SubmitType::class, [
+        $form = $this->createForm(TerritoireConstructionType::class, $territoire)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -217,7 +217,7 @@ class TerritoireController extends AbstractController
         #[MapEntity]
         Territoire $territoire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireDeleteForm::class, $territoire)->add('delete', SubmitType::class, [
+        $form = $this->createForm(TerritoireDeleteType::class, $territoire)->add('delete', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
 
@@ -309,7 +309,7 @@ class TerritoireController extends AbstractController
 
         $event ??= new Chronologie();
 
-        $form = $this->createForm(ChronologieForm::class, $event)->add('add', SubmitType::class, [
+        $form = $this->createForm(ChronologieType::class, $event)->add('add', SubmitType::class, [
             'label' => 'Ajouter',
         ]);
 
@@ -345,7 +345,7 @@ class TerritoireController extends AbstractController
     ): RedirectResponse|Response {
         $event = $request->get('event');
 
-        $form = $this->createForm(ChronologieForm::class, $event)->add('update', SubmitType::class, [
+        $form = $this->createForm(ChronologieType::class, $event)->add('update', SubmitType::class, [
             'label' => 'Mettre à jour',
         ]);
 
@@ -395,7 +395,7 @@ class TerritoireController extends AbstractController
         $listeProvinces = $this->entityManager->getRepository(Territoire::class)->findProvinces();
 
         $form = $this->createForm(
-            FiefForm::class,
+            FiefType::class,
             ['type' => ''],
             [
                 'data' => [
@@ -568,7 +568,7 @@ class TerritoireController extends AbstractController
     #[Route('/territoire/{territoire}/update', name: 'territoire.update')]
     public function updateAction(Request $request, #[MapEntity] Territoire $territoire): RedirectResponse|Response
     {
-        $form = $this->createForm(TerritoireForm::class, $territoire)->add('update', SubmitType::class, [
+        $form = $this->createForm(TerritoireType::class, $territoire)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -601,7 +601,7 @@ class TerritoireController extends AbstractController
         #[MapEntity]
         Territoire $territoire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireBlasonForm::class, $territoire)->add('update', SubmitType::class, [
+        $form = $this->createForm(TerritoireBlasonType::class, $territoire)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -650,7 +650,7 @@ class TerritoireController extends AbstractController
         Territoire $territoire,
         BonusRepository $bonusRepository,
     ): RedirectResponse|Response {
-        /*$form = $this->createForm(TerritoireBonusForm::class, $territoire->getOriginesBonus())
+        /*$form = $this->createForm(TerritoireBonusType::class, $territoire->getOriginesBonus())
          ->add('update', SubmitType::class, ['label' => 'Sauvegarder', 'attr' => ['class' => 'btn btn-secondary']]);
          */
         // TODO auto selected existing and check why it's not working
@@ -707,7 +707,7 @@ class TerritoireController extends AbstractController
         #[MapEntity]
         Territoire $territoire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireCiblesForm::class, $territoire)->add('update', SubmitType::class, [
+        $form = $this->createForm(TerritoireCiblesType::class, $territoire)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -741,7 +741,7 @@ class TerritoireController extends AbstractController
         #[MapEntity]
         Territoire $territoire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireCultureForm::class, $territoire)->add('update', SubmitType::class, [
+        $form = $this->createForm(TerritoireCultureType::class, $territoire)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -773,7 +773,7 @@ class TerritoireController extends AbstractController
         #[MapEntity]
         Territoire $territoire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireIngredientsForm::class, $territoire)->add('update', SubmitType::class, [
+        $form = $this->createForm(TerritoireIngredientsType::class, $territoire)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -807,7 +807,7 @@ class TerritoireController extends AbstractController
         #[MapEntity]
         Territoire $territoire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireLoiForm::class, $territoire)->add('update', SubmitType::class, [
+        $form = $this->createForm(TerritoireLoiType::class, $territoire)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -837,7 +837,7 @@ class TerritoireController extends AbstractController
     #[Route('/territoire/{territoire}/updateStatut', name: 'territoire.updateStatut')]
     public function updateStatutAction(Request $request, #[MapEntity] Territoire $territoire): RedirectResponse|Response
     {
-        $form = $this->createForm(TerritoireStatutForm::class, $territoire)->add('update', SubmitType::class, [
+        $form = $this->createForm(TerritoireStatutType::class, $territoire)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -869,7 +869,7 @@ class TerritoireController extends AbstractController
         #[MapEntity]
         Territoire $territoire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireStrategieForm::class, $territoire)->add('update', SubmitType::class, [
+        $form = $this->createForm(TerritoireStrategieType::class, $territoire)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
