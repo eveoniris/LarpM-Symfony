@@ -31,6 +31,9 @@ jobs:
     # Only deploy when CI passes (for auto-deploy from push)
     # For workflow_dispatch, CI check is manual responsibility
     environment: production
+    # TODO: re-enable once SSH_PRIVATE_KEY / SSH_HOST / SSH_USER / DEPLOY_PATH
+    # secrets are configured in the repository settings.
+    if: false
 
     steps:
       - name: Checkout
