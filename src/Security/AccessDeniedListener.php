@@ -37,7 +37,7 @@ class AccessDeniedListener implements EventSubscriberInterface
             return;
         }
 
-        $event->setResponse(new RedirectResponse(new Route('access_denied')->getPath()));
+        $event->setResponse(new RedirectResponse((new Route('access_denied'))->getPath()));
         $event->stopPropagation();
     }
 }

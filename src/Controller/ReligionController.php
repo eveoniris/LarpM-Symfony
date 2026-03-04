@@ -297,7 +297,7 @@ class ReligionController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function persoActionCsv(#[MapEntity] Religion $religion): Response
     {
-        return $this->sendCsv(title: 'eveoniris_religion_personnage_' . new AsciiSlugger()->slug($religion->getLabel()) . '_' . date('Ymd'), content: static function () use ($religion): void {
+        return $this->sendCsv(title: 'eveoniris_religion_personnage_' . (new AsciiSlugger())->slug($religion->getLabel()) . '_' . date('Ymd'), content: static function () use ($religion): void {
             $output = fopen('php://output', 'w');
 
             fputcsv(

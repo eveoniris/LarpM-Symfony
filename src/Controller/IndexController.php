@@ -58,7 +58,7 @@ class IndexController extends AbstractController
             return $this->redirectToRoute('homepage');
         }
 
-        $email = new Email()
+        $email = (new Email())
             ->from('gestion@eveoniris.com')
             ->to('gectou4@eveoniris.com')
             // ->cc('cc@example.com')

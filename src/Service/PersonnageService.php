@@ -281,7 +281,7 @@ class PersonnageService
             // Chronologie : Naissance
             if ($gn) {
                 $this->entityManager->persist(
-                    new PersonnageChronologie()
+                    (new PersonnageChronologie())
                         ->setAnnee($gn->getDateJeu() - $age)
                         ->setEvenement('Naissance')
                         ->setPersonnage($personnage),
@@ -295,7 +295,7 @@ class PersonnageService
 
             // historique
             $this->entityManager->persist(
-                new ExperienceGain()
+                (new ExperienceGain())
                     ->setExplanation('Création de votre personnage')
                     ->setOperationDate(new DateTime('NOW'))
                     ->setPersonnage($personnage)
@@ -305,7 +305,7 @@ class PersonnageService
 
         if ($gn) {
             $this->entityManager->persist(
-                new PersonnageChronologie()
+                (new PersonnageChronologie())
                     ->setAnnee($gn->getDateJeu())
                     ->setEvenement('Participation ' . $gn->getLabel())
                     ->setPersonnage($personnage),
@@ -315,7 +315,7 @@ class PersonnageService
         if ($xpAgeBonus = $personnage->getAge()->getBonus()) {
             $personnage->addXp($xpAgeBonus);
             $this->entityManager->persist(
-                new ExperienceGain()
+                (new ExperienceGain())
                     ->setExplanation("Bonus lié à l'age")
                     ->setOperationDate(new DateTime('NOW'))
                     ->setPersonnage($personnage)

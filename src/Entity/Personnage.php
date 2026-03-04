@@ -802,7 +802,7 @@ class Personnage extends BasePersonnage implements Stringable
 
     public function getPrintLabel(): ?string
     {
-        return new AsciiSlugger()->slug($this->getLabel());
+        return (new AsciiSlugger())->slug($this->getLabel());
     }
 
     /**

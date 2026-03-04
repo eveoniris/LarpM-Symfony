@@ -448,7 +448,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $isNew = !$this->entityManager->getUnitOfWork()->isInIdentityMap($entity);
 
         try {
-            $root = $routes['root'] ?? new ReflectionClass(static::class)->getAttributes(Route::class)[0]->getArguments()['name'] ?? '';
+            $root = $routes['root'] ?? (new ReflectionClass(static::class))->getAttributes(Route::class)[0]->getArguments()['name'] ?? '';
             $routes['root'] = $root; // ensure if from other
         } catch (ErrorException $e) {
             $this->logger->error($e);

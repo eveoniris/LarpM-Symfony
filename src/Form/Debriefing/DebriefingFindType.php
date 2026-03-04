@@ -8,7 +8,7 @@ use App\Form\ListFindType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class DebriefingFindType extends ListFindForm
+class DebriefingFindType extends ListFindType
 {
     /**
      * Construction du formulaire.
