@@ -7,6 +7,9 @@
     <file>src</file>
     <file>tests</file>
 
+    <!-- Fichiers tiers exclus -->
+    <exclude-pattern>src/Manager/RandomColor.php</exclude-pattern>
+
     <!-- Version PHP cible -->
     <config name="php_version" value="80400"/>
 
@@ -14,6 +17,11 @@
     <!-- Le style Symfony est géré par PHP CS Fixer (.php-cs-fixer.dist.php) -->
     <rule ref="PSR12">
         <exclude name="PSR12.Files.FileHeader"/>
+        <!-- Héritage Silex : certaines méthodes utilisent le préfixe _ ou snake_case -->
+        <exclude name="PSR2.Methods.MethodDeclaration.Underscore"/>
+        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
+        <!-- Les longueurs de ligne sont gérées par PHP CS Fixer -->
+        <exclude name="Generic.Files.LineLength"/>
     </rule>
 
     <rule ref="Generic.PHP.RequireStrictTypes"/>

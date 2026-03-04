@@ -50,7 +50,8 @@ class Restauration extends BaseRestauration
         /** @var ArrayCollection<int, array<string, mixed>> $result */
         $result = new ArrayCollection();
         foreach ($this->getParticipantHasRestaurations() as $participantHasRestauration) {
-            if ($participantHasRestauration->getParticipant()->getUser()->getRestrictions()->count() > 0);
+            if ($participantHasRestauration->getParticipant()->getUser()->getRestrictions()->count() > 0) {
+            }
 
             if ($result->containsKey($participantHasRestauration->getParticipant()->getGn()->getId())) {
                 /** @var array{gn: object, restrictions: ArrayCollection<int, mixed>} $gn */
