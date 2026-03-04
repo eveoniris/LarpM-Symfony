@@ -77,7 +77,7 @@ abstract class BaseSecondaryGroup
     private ?bool $private = null;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'secondaryGroups')]
-    #[JoinColumn(name: 'scenariste_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'scenariste_id', referencedColumnName: 'id', options: ['unsigned' => true])]
     private ?User $scenariste = null;
 
     #[Column(nullable: true)]

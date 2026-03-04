@@ -35,7 +35,7 @@ abstract class BaseUser
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[Column]
+    #[Column(options: ['unsigned' => true])]
     protected ?int $id = null;
 
     #[Column(name: 'email', type: Types::STRING, length: 100)]
