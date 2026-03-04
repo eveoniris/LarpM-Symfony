@@ -96,11 +96,11 @@ class DataFormatterService
             // Application du décorateur si disponible
             if (isset($this->decorators[$key]) && !\is_array($value)) {
                 $output .= $this->decorators[$key]($value);
-            } // Traitement récursif pour les tableaux
-            elseif (\is_array($value)) {
+            } elseif (\is_array($value)) {
+                // Traitement récursif pour les tableaux
                 $output .= "\n" . $this->format($value, $level + 1);
-            } // Valeur simple
-            else {
+            } else {
+                // Valeur simple
                 $output .= $this->formatValue($value);
             }
 

@@ -819,7 +819,8 @@ class GnController extends AbstractController
     #[Route('/{gn}/renom', name: 'renom')]
     #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
     public function renomAction(Request $request, EntityManagerInterface $entityManager, #[MapEntity] Gn $gn): Response
-    { // trouver tous les personnages participants au prochain GN et ayant une renommé supérieur à 10
+    {
+ // trouver tous les personnages participants au prochain GN et ayant une renommé supérieur à 10
         $personnages = $gn->getPersonnagesRenom(10);
 
         return $this->render('gn/renom.twig', [

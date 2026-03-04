@@ -26,7 +26,7 @@ class PersonnageTransfertType extends AbstractType
             'class' => \App\Entity\User::class,
             'choice_label' => 'identity',
             'mapped' => false,
-            /*					'query_builder' => function(\LarpManager\Repository\TerritoireRepository $er) {
+            /*                  'query_builder' => function(\LarpManager\Repository\TerritoireRepository $er) {
              * $qb = $er->createQueryBuilder('t');
              * $qb->andWhere('t.territoire IS NULL');
              * $qb->orderBy('t.nom', 'ASC');

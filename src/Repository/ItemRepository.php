@@ -15,7 +15,7 @@ class ItemRepository extends BaseRepository
     {
         try {
             $numeroMax = (int) $this->getEntityManager()->createQuery('SELECT MAX(i.numero) FROM App\Entity\Item i')->getSingleScalarResult();
-        } catch (NonUniqueResultException|NoResultException $e) {
+        } catch (NonUniqueResultException | NoResultException $e) {
             // LOG ?
             $numeroMax = 0;
         }
