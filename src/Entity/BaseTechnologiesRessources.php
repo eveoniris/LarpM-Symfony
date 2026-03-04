@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class BaseTechnologiesRessources
 {
     #[Id]
-    #[Column(type: Types::INTEGER)]
+    #[Column(type: Types::INTEGER, options: ['unsigned' => true])]
     #[GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 

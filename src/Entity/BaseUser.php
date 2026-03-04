@@ -49,7 +49,7 @@ abstract class BaseUser
     #[Assert\NotBlank]
     protected ?string $pwd = '';
 
-    #[Column(type: Types::STRING, length: 180, unique: true)]
+    #[Column(type: Types::STRING, length: 100, unique: true)]
     #[Assert\NotBlank]
     // #[Assert\Required]
     protected ?string $username = null;
@@ -58,8 +58,8 @@ abstract class BaseUser
     #[Column(type: 'json')]
     protected ?array $roles = [];
 
-    #[Column(type: Types::STRING, length: 255, nullable: true)]
-    protected ?string $salt = null;
+    #[Column(type: Types::STRING, length: 255)]
+    protected string $salt = '';
 
     #[Column(type: Types::STRING, length: 255)]
     protected string $rights = '';
@@ -969,7 +969,7 @@ abstract class BaseUser
      */
     public function setSalt(?string $salt): static
     {
-        $this->salt = $salt;
+        $this->salt = $salt ?? '';
 
         return $this;
     }

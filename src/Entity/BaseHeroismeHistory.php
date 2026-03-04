@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping\Id;
 #[ORM\DiscriminatorMap(['base' => 'BaseHeroismeHistory', 'extended' => 'HeroismeHistory'])]
 abstract class BaseHeroismeHistory
 {
-    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::DATETIME_MUTABLE)]

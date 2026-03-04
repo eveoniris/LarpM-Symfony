@@ -91,7 +91,6 @@ jobs:
 
       - name: PHP CodeSniffer — PSR-12 check
         run: ./vendor/bin/phpcs
-        continue-on-error: true   # remove once codebase is clean
 
       - name: PHPStan — static analysis (level 6)
         run: |
