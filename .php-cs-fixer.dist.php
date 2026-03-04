@@ -10,7 +10,12 @@ $finder = Finder::create()
     ->in(__DIR__ . '/src')
     ->in(__DIR__ . '/tests')
     ->exclude('var')
-    ->exclude('vendor');
+    ->exclude('vendor')
+    ->notPath([
+        'config/bundles.php',
+        'config/reference.php',
+    ])
+;
 
 return new Config()
     ->setParallelConfig(ParallelConfigFactory::detect())
