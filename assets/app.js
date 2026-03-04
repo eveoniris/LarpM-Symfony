@@ -1,3 +1,4 @@
+import './stimulus_bootstrap.js';
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -21,7 +22,7 @@ import './styles/style.css';
 
 // start the Stimulus application
 import '@popperjs/core';
-import './bootstrap.js';
+import './bootstrap.js'; // may neeed to move to stimulus bootstrap (todo check)
 //import $ from 'jquery';
 import jquery from 'jquery';
 import * as bootstrap from 'bootstrap'
