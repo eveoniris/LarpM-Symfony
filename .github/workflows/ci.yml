@@ -161,8 +161,11 @@ jobs:
         env:
           APP_ENV: test
         run: |
-          php bin/console doctrine:database:create --if-not-exists --env=test
-          php bin/console doctrine:migrations:migrate --no-interaction --env=test
+          # Drop + recreate to get a clean empty DB (MySQL service pre-creates it but empty)
+          php bin/console doctrine:database:drop --force --if-exists --env=test
+          php bin/console doctrine:database:create --env=test
+          # Build schema from entities directly — migrations are not designed for fresh-DB runs
+          php bin/console doctrine:schema:create --env=test
 
       - name: Run PHPUnit
         env:
