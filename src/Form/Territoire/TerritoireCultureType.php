@@ -41,7 +41,7 @@ class TerritoireCultureType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

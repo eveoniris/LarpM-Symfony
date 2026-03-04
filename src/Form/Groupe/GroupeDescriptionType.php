@@ -60,7 +60,7 @@ class GroupeDescriptionType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

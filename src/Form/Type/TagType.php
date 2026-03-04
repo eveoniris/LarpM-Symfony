@@ -29,5 +29,4 @@ class TagType extends AbstractType
             'data_class' => '\\' . \App\Entity\Tag::class,
         ]);
     }
-
 }

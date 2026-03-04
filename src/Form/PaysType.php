@@ -17,5 +17,4 @@ class PaysType extends AbstractType
             'required' => false,
         ]);
     }
-
 }

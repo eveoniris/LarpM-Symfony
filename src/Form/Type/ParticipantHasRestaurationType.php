@@ -29,5 +29,4 @@ class ParticipantHasRestaurationType extends AbstractType
             'data_class' => ParticipantHasRestauration::class,
         ]);
     }
-
 }

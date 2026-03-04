@@ -48,5 +48,4 @@ class RegionType extends AbstractType
                 'choice_label' => 'label',
             ]);
     }
-
 }

@@ -67,5 +67,4 @@ class ObjetType extends AbstractType
             'cascade_validation' => true,
         ]);
     }
-
 }

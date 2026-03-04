@@ -41,7 +41,7 @@ class PersonnageTechnologieType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

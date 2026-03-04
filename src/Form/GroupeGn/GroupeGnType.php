@@ -268,7 +268,7 @@ class GroupeGnType extends AbstractType
         $resolver->setDefaults(['class' => GroupeGn::class]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

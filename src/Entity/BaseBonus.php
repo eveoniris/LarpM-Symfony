@@ -22,7 +22,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 abstract class BaseBonus
 {
     #[ORM\ManyToOne(targetEntity: Competence::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[JoinColumn(nullable: true)]
     protected ?Competence $competence = null;
     #[ORM\Id]
     #[ORM\GeneratedValue]

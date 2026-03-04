@@ -39,7 +39,7 @@ class PersonnageDocumentType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

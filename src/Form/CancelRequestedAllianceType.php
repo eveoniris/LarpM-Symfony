@@ -32,7 +32,7 @@ class CancelRequestedAllianceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

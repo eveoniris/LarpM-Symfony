@@ -33,7 +33,7 @@ class RestaurationDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

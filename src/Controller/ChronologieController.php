@@ -6,8 +6,8 @@ namespace App\Controller;
 
 use App\Entity\Chronologie;
 use App\Entity\Territoire;
-use App\Form\ChronologieType;
 use App\Form\ChronologieRemoveType;
+use App\Form\ChronologieType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

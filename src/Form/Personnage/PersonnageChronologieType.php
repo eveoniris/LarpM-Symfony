@@ -39,7 +39,7 @@ class PersonnageChronologieType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

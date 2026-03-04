@@ -35,7 +35,7 @@ class DebriefingFindType extends ListFindType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

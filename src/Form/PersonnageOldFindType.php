@@ -46,7 +46,7 @@ class PersonnageOldFindType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

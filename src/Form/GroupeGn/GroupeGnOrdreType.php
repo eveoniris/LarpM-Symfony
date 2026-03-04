@@ -65,7 +65,7 @@ class GroupeGnOrdreType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

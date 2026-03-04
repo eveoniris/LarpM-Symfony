@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service;
 
+use App\Enum\TerritoireStatut;
 use App\Service\GroupeService;
 use App\Tests\Factory\GroupeFactory;
 use App\Tests\Factory\TerritoireFactory;
-use App\Enum\TerritoireStatut;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;

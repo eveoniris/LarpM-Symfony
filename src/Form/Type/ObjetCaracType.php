@@ -26,5 +26,4 @@ class ObjetCaracType extends AbstractType
             'data_class' => ObjetCarac::class,
         ]);
     }
-
 }

@@ -23,5 +23,4 @@ class EtatType extends AbstractType
             'data_class' => Etat::class,
         ]);
     }
-
 }

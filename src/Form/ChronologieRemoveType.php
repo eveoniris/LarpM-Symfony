@@ -32,7 +32,7 @@ class ChronologieRemoveType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

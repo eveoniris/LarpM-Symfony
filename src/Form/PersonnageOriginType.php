@@ -44,7 +44,7 @@ class PersonnageOriginType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -45,7 +45,7 @@ class PersonnageUpdateLangueType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

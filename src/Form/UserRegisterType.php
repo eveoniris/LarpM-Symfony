@@ -60,5 +60,4 @@ class UserRegisterType extends AbstractType
             ],
         ]);
     }
-
 }

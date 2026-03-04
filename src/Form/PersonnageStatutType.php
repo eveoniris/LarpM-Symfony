@@ -38,7 +38,7 @@ class PersonnageStatutType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

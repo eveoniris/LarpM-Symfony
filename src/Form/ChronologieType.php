@@ -68,7 +68,7 @@ class ChronologieType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

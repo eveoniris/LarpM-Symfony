@@ -43,7 +43,7 @@ class RuleUpdateType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

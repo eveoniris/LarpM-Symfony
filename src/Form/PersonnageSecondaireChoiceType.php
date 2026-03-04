@@ -38,7 +38,7 @@ class PersonnageSecondaireChoiceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

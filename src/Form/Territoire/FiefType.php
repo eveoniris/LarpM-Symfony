@@ -65,7 +65,7 @@ class FiefType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

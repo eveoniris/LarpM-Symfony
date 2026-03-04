@@ -34,7 +34,7 @@ class TrombineType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

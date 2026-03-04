@@ -45,5 +45,4 @@ class GroupeHasIngredientType extends AbstractType
             'data_class' => GroupeHasIngredient::class,
         ]);
     }
-
 }

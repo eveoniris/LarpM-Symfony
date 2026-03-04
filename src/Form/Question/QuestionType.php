@@ -48,7 +48,7 @@ class QuestionType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

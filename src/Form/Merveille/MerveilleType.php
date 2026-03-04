@@ -101,7 +101,7 @@ class MerveilleType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

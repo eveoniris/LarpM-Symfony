@@ -34,5 +34,4 @@ class NiveauType extends AbstractType
             'data' => 'App\Entity\Niveau',
         ]);
     }
-
 }

@@ -27,5 +27,4 @@ class PhotoType extends AbstractType
             'data_class' => Photo::class,
         ]);
     }
-
 }

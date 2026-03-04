@@ -31,5 +31,4 @@ class CompetenceType extends AbstractType
             'data_class' => '\App\Entity\PersonnageCompetence',
         ]);
     }
-
 }

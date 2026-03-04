@@ -90,7 +90,7 @@ class EspeceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

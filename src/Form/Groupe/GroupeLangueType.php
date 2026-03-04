@@ -53,7 +53,7 @@ class GroupeLangueType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -32,7 +32,7 @@ class TechnologieDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

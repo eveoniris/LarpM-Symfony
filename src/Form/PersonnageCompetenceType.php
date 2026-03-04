@@ -33,7 +33,7 @@ class PersonnageCompetenceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -27,5 +27,4 @@ class UserType extends AbstractType
             'data_class' => Etat::class,
         ]);
     }
-
 }

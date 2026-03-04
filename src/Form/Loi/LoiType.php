@@ -46,7 +46,7 @@ class LoiType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -76,7 +76,7 @@ class PriereType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -33,7 +33,7 @@ class TerritoireDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

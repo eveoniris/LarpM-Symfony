@@ -44,7 +44,7 @@ class GenreType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

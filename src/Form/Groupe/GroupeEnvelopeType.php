@@ -46,7 +46,7 @@ class GroupeEnvelopeType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

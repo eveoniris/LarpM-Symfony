@@ -36,7 +36,7 @@ class GroupeGnPlaceAvailableType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

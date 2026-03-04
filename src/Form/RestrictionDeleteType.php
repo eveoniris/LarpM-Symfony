@@ -28,7 +28,7 @@ class RestrictionDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

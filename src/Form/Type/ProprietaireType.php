@@ -25,5 +25,4 @@ class ProprietaireType extends AbstractType
             'data_class' => Proprietaire::class,
         ]);
     }
-
 }

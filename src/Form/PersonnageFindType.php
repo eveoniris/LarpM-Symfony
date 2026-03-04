@@ -95,7 +95,7 @@ class PersonnageFindType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

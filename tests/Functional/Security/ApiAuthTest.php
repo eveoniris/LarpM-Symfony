@@ -27,7 +27,7 @@ class ApiAuthTest extends WebTestCase
     public function testValidCredentialsReturnToken(): void
     {
         $client = static::createClient();
-        $hashedPassword = password_hash('test123', PASSWORD_BCRYPT);
+        $hashedPassword = password_hash('test123', \PASSWORD_BCRYPT);
         UserFactory::createOne([
             'email' => 'apitest@example.com',
             'pwd'   => $hashedPassword,
@@ -53,7 +53,7 @@ class ApiAuthTest extends WebTestCase
     public function testInvalidPasswordReturns401(): void
     {
         $client = static::createClient();
-        $hashedPassword = password_hash('test123', PASSWORD_BCRYPT);
+        $hashedPassword = password_hash('test123', \PASSWORD_BCRYPT);
         UserFactory::createOne([
             'email' => 'apifail@example.com',
             'pwd'   => $hashedPassword,
@@ -105,7 +105,7 @@ class ApiAuthTest extends WebTestCase
     public function testProtectedEndpointWithValidTokenSucceeds(): void
     {
         $client = static::createClient();
-        $hashedPassword = password_hash('test123', PASSWORD_BCRYPT);
+        $hashedPassword = password_hash('test123', \PASSWORD_BCRYPT);
         UserFactory::createOne([
             'email' => 'apiok@example.com',
             'pwd'   => $hashedPassword,

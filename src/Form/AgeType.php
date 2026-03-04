@@ -47,7 +47,7 @@ class AgeType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

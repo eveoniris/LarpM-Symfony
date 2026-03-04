@@ -31,5 +31,4 @@ class CompetenceNiveauType extends AbstractType
             'data' => 'App\Entity\CompetenceNiveau',
         ]);
     }
-
 }

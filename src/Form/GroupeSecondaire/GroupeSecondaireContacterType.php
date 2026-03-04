@@ -38,7 +38,7 @@ class GroupeSecondaireContacterType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

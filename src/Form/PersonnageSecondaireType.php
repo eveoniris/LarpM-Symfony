@@ -42,7 +42,7 @@ class PersonnageSecondaireType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

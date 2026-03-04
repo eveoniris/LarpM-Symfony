@@ -39,7 +39,7 @@ class JoueurXpType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

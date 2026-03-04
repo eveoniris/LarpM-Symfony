@@ -55,7 +55,7 @@ class PersonnageRessourceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

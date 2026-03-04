@@ -32,7 +32,7 @@ class AttributeTypeType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -30,7 +30,7 @@ class ReligionDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

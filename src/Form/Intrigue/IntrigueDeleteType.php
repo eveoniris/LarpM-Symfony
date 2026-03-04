@@ -32,7 +32,7 @@ class IntrigueDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

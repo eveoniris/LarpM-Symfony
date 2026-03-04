@@ -39,7 +39,7 @@ class PersonnageRichesseType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

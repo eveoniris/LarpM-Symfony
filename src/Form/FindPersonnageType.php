@@ -39,7 +39,7 @@ class FindPersonnageType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

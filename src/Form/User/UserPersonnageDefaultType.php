@@ -49,7 +49,7 @@ class UserPersonnageDefaultType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

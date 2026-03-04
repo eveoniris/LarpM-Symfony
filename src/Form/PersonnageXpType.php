@@ -32,5 +32,4 @@ class PersonnageXpType extends AbstractType
             ],
         ]);
     }
-
 }

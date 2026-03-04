@@ -87,7 +87,7 @@ class RumeurType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

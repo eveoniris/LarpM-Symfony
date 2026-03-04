@@ -36,7 +36,7 @@ class PersonnageReligionType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

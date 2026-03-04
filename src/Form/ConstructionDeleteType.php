@@ -32,7 +32,7 @@ class ConstructionDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

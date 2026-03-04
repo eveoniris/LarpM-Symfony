@@ -47,7 +47,7 @@ class PersonnageEditType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

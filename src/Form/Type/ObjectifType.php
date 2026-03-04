@@ -30,5 +30,4 @@ class ObjectifType extends AbstractType
             'data_class' => Objectif::class,
         ]);
     }
-
 }

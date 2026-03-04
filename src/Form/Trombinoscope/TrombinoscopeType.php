@@ -144,7 +144,7 @@ class TrombinoscopeType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

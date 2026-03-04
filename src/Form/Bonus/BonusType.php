@@ -97,7 +97,7 @@ class BonusType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

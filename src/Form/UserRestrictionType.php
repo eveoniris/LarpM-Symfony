@@ -47,7 +47,7 @@ class UserRestrictionType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

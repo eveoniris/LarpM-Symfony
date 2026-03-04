@@ -28,7 +28,7 @@ class TriggerDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

@@ -42,7 +42,7 @@ class GroupeCompositionType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

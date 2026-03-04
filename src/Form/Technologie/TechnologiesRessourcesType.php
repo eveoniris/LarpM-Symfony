@@ -47,7 +47,7 @@ class TechnologiesRessourcesType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

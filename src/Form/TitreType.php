@@ -40,7 +40,7 @@ class TitreType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

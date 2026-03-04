@@ -23,7 +23,7 @@ class InstallDatabaseType extends AbstractType
         ])->add('database_password', PasswordType::class, ['required' => false]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

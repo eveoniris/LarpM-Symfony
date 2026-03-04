@@ -43,7 +43,7 @@ class TerritoireConstructionType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

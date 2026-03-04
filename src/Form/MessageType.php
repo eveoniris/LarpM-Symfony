@@ -49,7 +49,7 @@ class MessageType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

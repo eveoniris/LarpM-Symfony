@@ -47,7 +47,7 @@ class PersonnageIngredientType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

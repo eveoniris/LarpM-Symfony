@@ -29,7 +29,7 @@ class BreakAllianceType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

@@ -48,7 +48,7 @@ class DeclareWarType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

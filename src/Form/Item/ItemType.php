@@ -210,7 +210,7 @@ class ItemType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

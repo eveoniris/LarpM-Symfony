@@ -38,7 +38,7 @@ class ParticipantRestaurationType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

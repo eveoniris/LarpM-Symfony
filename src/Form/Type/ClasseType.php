@@ -32,5 +32,4 @@ class ClasseType extends AbstractType
             'data_class' => GroupeClasse::class,
         ]);
     }
-
 }

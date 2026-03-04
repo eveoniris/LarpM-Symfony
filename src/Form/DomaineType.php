@@ -46,7 +46,7 @@ class DomaineType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

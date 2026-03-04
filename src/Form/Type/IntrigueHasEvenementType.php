@@ -30,5 +30,4 @@ class IntrigueHasEvenementType extends AbstractType
             'data_class' => IntrigueHasEvenement::class,
         ]);
     }
-
 }

@@ -54,7 +54,7 @@ class IngredientType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

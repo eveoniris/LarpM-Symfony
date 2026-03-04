@@ -41,7 +41,7 @@ class RumeurFindType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

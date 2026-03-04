@@ -24,5 +24,4 @@ class LocalisationType extends AbstractType
             'data_class' => Localisation::class,
         ]);
     }
-
 }

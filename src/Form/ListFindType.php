@@ -50,7 +50,7 @@ class ListFindType extends AbstractType
         $resolver->setAllowedTypes('type_choices', 'array');
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

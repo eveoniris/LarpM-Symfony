@@ -32,7 +32,7 @@ class IngredientDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

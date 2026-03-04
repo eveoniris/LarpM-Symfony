@@ -52,7 +52,7 @@ class RuleType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

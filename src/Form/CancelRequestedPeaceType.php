@@ -32,7 +32,7 @@ class CancelRequestedPeaceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

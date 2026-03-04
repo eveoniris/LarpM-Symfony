@@ -30,5 +30,4 @@ class UserType extends AbstractType
             'required' => true,
         ]);
     }
-
 }

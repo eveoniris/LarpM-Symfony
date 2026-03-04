@@ -39,7 +39,7 @@ class PersonnageUpdatePugilatType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

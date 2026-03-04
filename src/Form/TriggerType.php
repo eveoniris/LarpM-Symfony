@@ -36,7 +36,7 @@ class TriggerType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

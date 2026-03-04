@@ -40,7 +40,7 @@ class PersonnageUpdateHeroismeType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

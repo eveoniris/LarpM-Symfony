@@ -117,7 +117,7 @@ class DebriefingType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

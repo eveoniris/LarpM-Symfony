@@ -32,7 +32,7 @@ class DocumentDeleteType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }

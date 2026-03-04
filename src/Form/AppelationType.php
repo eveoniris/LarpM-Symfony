@@ -52,7 +52,7 @@ class AppelationType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

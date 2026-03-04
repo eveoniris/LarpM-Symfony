@@ -17,5 +17,4 @@ class CompetenceMinimalType extends AbstractType
             'required' => false,
         ]);
     }
-
 }

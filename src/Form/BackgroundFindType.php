@@ -40,7 +40,7 @@ class BackgroundFindType extends AbstractType
     {
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

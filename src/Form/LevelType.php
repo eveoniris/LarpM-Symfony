@@ -46,7 +46,7 @@ class LevelType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

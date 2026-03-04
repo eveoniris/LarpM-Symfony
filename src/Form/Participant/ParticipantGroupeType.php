@@ -47,7 +47,7 @@ class ParticipantGroupeType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

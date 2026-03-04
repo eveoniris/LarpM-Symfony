@@ -32,5 +32,4 @@ class IntrigueHasDocumentType extends AbstractType
             'data_class' => IntrigueHasDocument::class,
         ]);
     }
-
 }

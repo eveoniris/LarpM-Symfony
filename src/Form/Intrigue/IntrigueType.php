@@ -120,7 +120,7 @@ class IntrigueType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formulaire.
      */
 }

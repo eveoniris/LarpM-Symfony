@@ -60,7 +60,7 @@ class AnnonceType extends AbstractType
         ]);
     }
 
-    /**
+    /*
      * Nom du formlaire.
      */
 }
