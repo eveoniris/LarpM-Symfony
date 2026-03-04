@@ -7,8 +7,8 @@ namespace App\Controller;
 use App\Entity\Technologie;
 use App\Entity\TechnologiesRessources;
 use App\Enum\Role;
-use App\Form\Technologie\TechnologieForm;
-use App\Form\Technologie\TechnologiesRessourcesForm;
+use App\Form\Technologie\TechnologieType;
+use App\Form\Technologie\TechnologiesRessourcesType;
 use App\Repository\TechnologieRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\OrderBy;
@@ -34,7 +34,7 @@ class TechnologieController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, new Technologie(), TechnologieForm::class);
+        return $this->handleCreateOrUpdate($request, new Technologie(), TechnologieType::class);
     }
 
     /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
@@ -89,7 +89,7 @@ class TechnologieController extends AbstractController
         return $this->handleCreateOrUpdate(
             $request,
             new TechnologiesRessources(),
-            TechnologiesRessourcesForm::class,
+            TechnologiesRessourcesType::class,
             breadcrumb: [
                 ['route' => $this->generateUrl('technologie.list'), 'name' => 'Liste des techologies'],
                 [
@@ -268,7 +268,7 @@ class TechnologieController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
     public function updateAction(Request $request, #[MapEntity] Technologie $technologie): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $technologie, TechnologieForm::class);
+        return $this->handleCreateOrUpdate($request, $technologie, TechnologieType::class);
     }
 
     #[Route('/{technologie}/ressource/{technologiesRessources}/update', name: 'ressource.update', requirements: [
@@ -286,7 +286,7 @@ class TechnologieController extends AbstractController
         return $this->handleCreateOrUpdate(
             $request,
             $technologiesRessources,
-            TechnologiesRessourcesForm::class,
+            TechnologiesRessourcesType::class,
             breadcrumb: [
                 ['route' => $this->generateUrl('technologie.list'), 'name' => 'Liste des technologies'],
                 [

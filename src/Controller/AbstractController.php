@@ -14,7 +14,7 @@ use App\Entity\User;
 use App\Enum\FolderType;
 use App\Enum\LogActionType;
 use App\Enum\Role;
-use App\Form\DeleteForm;
+use App\Form\DeleteType;
 use App\Repository\BaseRepository;
 use App\Repository\GnRepository;
 use App\Service\FileUploader;
@@ -296,7 +296,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ?callable $callbackOnValid = null,
     ): RedirectResponse|Response {
         $request = $this->requestStack->getCurrentRequest();
-        $form = $this->createForm(DeleteForm::class, $entity, ['class' => $entity::class]);
+        $form = $this->createForm(DeleteType::class, $entity, ['class' => $entity::class]);
         $form->handleRequest($request);
 
         $entityToDelete = null;

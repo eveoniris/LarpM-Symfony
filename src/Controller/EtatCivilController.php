@@ -7,7 +7,7 @@ namespace App\Controller;
 use App\Entity\EtatCivil;
 use App\Entity\User;
 use App\Enum\Role;
-use App\Form\EtatCivilForm;
+use App\Form\EtatCivilType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,7 +45,7 @@ class EtatCivilController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        return $this->handleCreateOrUpdate($request, $etatCivil, EtatCivilForm::class, routes: [
+        return $this->handleCreateOrUpdate($request, $etatCivil, EtatCivilType::class, routes: [
             'root' => 'etatCivil.',
             'list' => false,
         ]);

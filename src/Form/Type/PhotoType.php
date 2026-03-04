@@ -28,8 +28,4 @@ class PhotoType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'photo';
-    }
 }

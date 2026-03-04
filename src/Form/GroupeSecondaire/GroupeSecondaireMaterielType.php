@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Form\GroupeSecondaire;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+/**
+ * LarpManager\Form\Groupe\GroupeEnvelopeForm.
+ *
+ * @author kevin
+ */
+class GroupeSecondaireMaterielType extends AbstractType
+{
+    /**
+     * Contruction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('materiel', \Symfony\Component\Form\Extension\Core\Type\TextareaType::class, [
+            'label' => "Contenu libre de l'enveloppe",
+            'required' => false,
+            'attr' => [
+                'row' => 9,
+            ],
+        ])->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+    }
+
+    /**
+     * Définition de l'entité concernée.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\' . \App\Entity\SecondaryGroup::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+}

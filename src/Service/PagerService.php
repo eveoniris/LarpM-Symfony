@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Form\Entity\ListSearch;
-use App\Form\ListFindForm;
+use App\Form\ListFindType;
 use App\Repository\BaseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -238,7 +238,7 @@ final class PagerService
             $this->searchType = $type;
         }
 
-        $this->form = $this->formFactory->create(type: $type ?? ListFindForm::class, data: $data, options: $options);
+        $this->form = $this->formFactory->create(type: $type ?? ListFindType::class, data: $data, options: $options);
 
         if ($request = $this->getRequest()) {
             $this->form->handleRequest($request);

@@ -6,9 +6,9 @@ namespace App\Controller;
 
 use App\Entity\Lignee;
 use App\Entity\PersonnageLignee;
-use App\Form\Lignee\LigneeAddMembreForm;
-use App\Form\Lignee\LigneeFindForm;
-use App\Form\Lignee\LigneeForm;
+use App\Form\Lignee\LigneeAddMembreType;
+use App\Form\Lignee\LigneeFindType;
+use App\Form\Lignee\LigneeType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -29,7 +29,7 @@ class LigneeController extends AbstractController
     {
         $lignee = new Lignee();
 
-        $form = $this->createForm(LigneeForm::class, $lignee)->add('save', SubmitType::class, [
+        $form = $this->createForm(LigneeType::class, $lignee)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder et retour à la liste',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder et nouvelle lignée']);
 
@@ -62,7 +62,7 @@ class LigneeController extends AbstractController
     #[Route('/lignee/{lignee}/addMembre', name: 'lignee.addMembre')]
     public function addMembreAction(Request $request, #[MapEntity] Lignee $lignee): RedirectResponse|Response
     {
-        $form = $this->createForm(LigneeAddMembreForm::class);
+        $form = $this->createForm(LigneeAddMembreType::class);
 
         $form->handleRequest($request);
 
@@ -131,7 +131,7 @@ class LigneeController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $this->createForm(LigneeFindForm::class);
+        $form = $this->createForm(LigneeFindType::class);
 
         $form->handleRequest($request);
 
@@ -182,7 +182,7 @@ class LigneeController extends AbstractController
         EntityManagerInterface $entityManager,
         Lignee $lignee,
     ): RedirectResponse|Response {
-        $form = $this->createForm(LigneeForm::class, $lignee)->add('update', SubmitType::class, [
+        $form = $this->createForm(LigneeType::class, $lignee)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('delete', SubmitType::class, [
             'label' => 'Supprimer',

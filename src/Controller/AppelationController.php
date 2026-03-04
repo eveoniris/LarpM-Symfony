@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Appelation;
-use App\Form\AppelationForm;
+use App\Form\AppelationType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,7 +46,7 @@ class AppelationController extends AbstractController
     #[Route('/appelation/add', name: 'appelation.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(AppelationForm::class, new Appelation())->add('save', SubmitType::class, [
+        $form = $this->createForm(AppelationType::class, new Appelation())->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -80,7 +80,7 @@ class AppelationController extends AbstractController
         EntityManagerInterface $entityManager,
         Appelation $appelation,
     ): Response {
-        $form = $this->createForm(AppelationForm::class, $appelation)->add('update', SubmitType::class, [
+        $form = $this->createForm(AppelationType::class, $appelation)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 

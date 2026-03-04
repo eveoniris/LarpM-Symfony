@@ -6,8 +6,8 @@ namespace App\Controller;
 
 use App\Entity\GroupeLangue;
 use App\Entity\Langue;
-use App\Form\Groupe\GroupeLangueForm;
-use App\Form\LangueForm;
+use App\Form\Groupe\GroupeLangueType;
+use App\Form\LangueType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
@@ -53,7 +53,7 @@ class LangueController extends AbstractController
     {
         $langue = new Langue();
 
-        $form = $this->createForm(LangueForm::class, $langue)->add('save', SubmitType::class, [
+        $form = $this->createForm(LangueType::class, $langue)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -108,7 +108,7 @@ class LangueController extends AbstractController
             . $langue->getDocuments()->count()
             . ' documents et ne peut pas être supprimée';
 
-        $formBuilder = $this->createForm(LangueForm::class, $langue, [
+        $formBuilder = $this->createForm(LangueType::class, $langue, [
             'hasDocumentUrl' => $hasDocumentUrl,
         ])->add('update', SubmitType::class, ['label' => 'Sauvegarder'])->add('delete', SubmitType::class, [
             'label' => 'Supprimer',
@@ -220,7 +220,7 @@ class LangueController extends AbstractController
     {
         $groupeLangue = new GroupeLangue();
 
-        $form = $this->createForm(GroupeLangueForm::class, $groupeLangue)->add('save', SubmitType::class, [
+        $form = $this->createForm(GroupeLangueType::class, $groupeLangue)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -264,7 +264,7 @@ class LangueController extends AbstractController
             ? ''
             : 'Ce groupe est référencé par ' . $groupeLangue->getLangues()->count() . ' langues et ne peut pas être supprimé';
 
-        $formBuilder = $this->createForm(GroupeLangueForm::class, $groupeLangue)->add('update', SubmitType::class, [
+        $formBuilder = $this->createForm(GroupeLangueType::class, $groupeLangue)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('delete', SubmitType::class, [
             'label' => 'Supprimer',

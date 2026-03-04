@@ -25,8 +25,4 @@ class LocalisationType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'localisation';
-    }
 }

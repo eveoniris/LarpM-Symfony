@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Form\Groupe\GroupeSecondaireTypeForm;
+use App\Form\Groupe\GroupeSecondaireTypeType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +25,7 @@ class GroupeSecondaireTypeController extends AbstractController
     {
         $groupeSecondaireType = new \App\Entity\SecondaryGroupType();
 
-        $form = $this->createForm(GroupeSecondaireTypeForm::class, $groupeSecondaireType)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+        $form = $this->createForm(GroupeSecondaireTypeType::class, $groupeSecondaireType)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
             'label' => 'Sauvegarder & continuer',
@@ -90,7 +90,7 @@ class GroupeSecondaireTypeController extends AbstractController
 
         $groupeSecondaireType = $entityManager->find('\\' . \App\Entity\SecondaryGroupType::class, $id);
 
-        $form = $this->createForm(GroupeSecondaireTypeForm::class, $groupeSecondaireType)->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+        $form = $this->createForm(GroupeSecondaireTypeType::class, $groupeSecondaireType)->add('update', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('delete', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 

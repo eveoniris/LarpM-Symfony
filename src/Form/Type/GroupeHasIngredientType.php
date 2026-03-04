@@ -46,8 +46,4 @@ class GroupeHasIngredientType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'groupeHasIngredient';
-    }
 }

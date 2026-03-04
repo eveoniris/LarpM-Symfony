@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Titre;
-use App\Form\TitreDeleteForm;
-use App\Form\TitreForm;
+use App\Form\TitreDeleteType;
+use App\Form\TitreType;
 use App\Repository\TitreRepository;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,7 +55,7 @@ class TitreController extends AbstractController
     {
         $titre = new Titre();
 
-        $form = $this->createForm(TitreForm::class, $titre)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(TitreType::class, $titre)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -85,7 +85,7 @@ class TitreController extends AbstractController
         EntityManagerInterface $entityManager,
         Titre $titre,
     ): Response|RedirectResponse {
-        $form = $this->createForm(TitreForm::class, $titre)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(TitreType::class, $titre)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -115,7 +115,7 @@ class TitreController extends AbstractController
         EntityManagerInterface $entityManager,
         Titre $titre,
     ): Response|RedirectResponse {
-        $form = $this->createForm(TitreDeleteForm::class, $titre)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(TitreDeleteType::class, $titre)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

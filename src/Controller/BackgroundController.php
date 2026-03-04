@@ -8,9 +8,9 @@ use App\Entity\Background;
 use App\Entity\Groupe;
 use App\Enum\Role;
 use App\Enum\VisibilityType;
-use App\Form\BackgroundDeleteForm;
-use App\Form\BackgroundFindForm;
-use App\Form\BackgroundForm;
+use App\Form\BackgroundDeleteType;
+use App\Form\BackgroundFindType;
+use App\Form\BackgroundType;
 use App\Repository\BackgroundRepository;
 use App\Repository\GnRepository;
 use App\Repository\GroupeGnRepository;
@@ -38,7 +38,7 @@ class BackgroundController extends AbstractController
         $background = new Background();
         $background->setGroupe($groupe);
 
-        $form = $this->createForm(BackgroundForm::class, $background, ['groupeId' => $groupe->getId()])->add('visibility', EnumType::class, [
+        $form = $this->createForm(BackgroundType::class, $background, ['groupeId' => $groupe->getId()])->add('visibility', EnumType::class, [
             'required' => true,
             'label' => 'Visibilité',
             'choice_label' => 'label',
@@ -81,7 +81,7 @@ class BackgroundController extends AbstractController
         EntityManagerInterface $entityManager,
         Background $background,
     ): Response {
-        $form = $this->createForm(BackgroundDeleteForm::class, $background)->add('save', SubmitType::class, [
+        $form = $this->createForm(BackgroundDeleteType::class, $background)->add('save', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
 
@@ -139,7 +139,7 @@ class BackgroundController extends AbstractController
         $type = null;
         $value = null;
 
-        $form = $this->createForm(BackgroundFindForm::class);
+        $form = $this->createForm(BackgroundFindType::class);
 
         $form->handleRequest($request);
 
@@ -218,7 +218,7 @@ class BackgroundController extends AbstractController
         EntityManagerInterface $entityManager,
         Background $background,
     ): Response {
-        $form = $this->createForm(BackgroundForm::class, $background)->add('visibility', EnumType::class, [
+        $form = $this->createForm(BackgroundType::class, $background)->add('visibility', EnumType::class, [
             'required' => true,
             'label' => 'Visibilité',
             'choice_label' => 'label',

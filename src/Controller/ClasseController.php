@@ -6,7 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Classe;
 use App\Enum\Role;
-use App\Form\Classe\ClasseForm;
+use App\Form\Classe\ClasseType;
 use App\Repository\ClasseRepository;
 use App\Repository\CompetenceFamilyRepository;
 use App\Security\MultiRolesExpression;
@@ -27,7 +27,7 @@ class ClasseController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function addAction(Request $request): Response
     {
-        return $this->handleCreateOrUpdate($request, new Classe(), ClasseForm::class);
+        return $this->handleCreateOrUpdate($request, new Classe(), ClasseType::class);
     }
 
     /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
@@ -193,6 +193,6 @@ class ClasseController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function updateAction(Request $request, #[MapEntity] Classe $classe): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $classe, ClasseForm::class);
+        return $this->handleCreateOrUpdate($request, $classe, ClasseType::class);
     }
 }

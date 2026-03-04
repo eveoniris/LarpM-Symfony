@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Rumeur;
-use App\Form\Rumeur\RumeurForm;
+use App\Form\Rumeur\RumeurType;
 use App\Repository\RumeurRepository;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -52,7 +52,7 @@ class RumeurController extends AbstractController
     #[Route('/add', name: 'add')]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, new Rumeur(), RumeurForm::class);
+        return $this->handleCreateOrUpdate($request, new Rumeur(), RumeurType::class);
     }
 
     /**
@@ -61,7 +61,7 @@ class RumeurController extends AbstractController
     #[Route('/{rumeur}/update', name: 'update', requirements: ['rumeur' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Rumeur $rumeur): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $rumeur, RumeurForm::class);
+        return $this->handleCreateOrUpdate($request, $rumeur, RumeurType::class);
     }
 
     /**

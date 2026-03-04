@@ -51,30 +51,30 @@ use App\Enum\LevelType;
 use App\Enum\LogActionType;
 use App\Enum\Role;
 use App\Enum\TriggerType;
-use App\Form\Personnage\PersonnageChronologieForm;
-use App\Form\Personnage\PersonnageDocumentForm;
-use App\Form\Personnage\PersonnageIngredientForm;
-use App\Form\Personnage\PersonnageItemForm;
-use App\Form\Personnage\PersonnageLigneeForm;
-use App\Form\Personnage\PersonnageOriginForm;
-use App\Form\Personnage\PersonnageReligionForm;
-use App\Form\Personnage\PersonnageRessourceForm;
-use App\Form\Personnage\PersonnageRichesseForm;
-use App\Form\Personnage\PersonnageUpdateHeroismeForm;
-use App\Form\Personnage\PersonnageUpdatePugilatForm;
-use App\Form\Personnage\PersonnageUpdateRenommeForm;
-use App\Form\PersonnageBackgroundForm;
-use App\Form\PersonnageDeleteForm;
-use App\Form\PersonnageFindForm;
-use App\Form\PersonnageForm;
-use App\Form\PersonnageStatutForm;
-use App\Form\PersonnageUpdateAgeForm;
-use App\Form\PersonnageUpdateDomaineForm;
-use App\Form\PersonnageUpdateForm;
-use App\Form\PersonnageXpForm;
-use App\Form\TriggerDeleteForm;
-use App\Form\TriggerForm;
-use App\Form\TrombineForm;
+use App\Form\Personnage\PersonnageChronologieType;
+use App\Form\Personnage\PersonnageDocumentType;
+use App\Form\Personnage\PersonnageIngredientType;
+use App\Form\Personnage\PersonnageItemType;
+use App\Form\Personnage\PersonnageLigneeType;
+use App\Form\Personnage\PersonnageOriginType;
+use App\Form\Personnage\PersonnageReligionType;
+use App\Form\Personnage\PersonnageRessourceType;
+use App\Form\Personnage\PersonnageRichesseType;
+use App\Form\Personnage\PersonnageUpdateHeroismeType;
+use App\Form\Personnage\PersonnageUpdatePugilatType;
+use App\Form\Personnage\PersonnageUpdateRenommeType;
+use App\Form\PersonnageBackgroundType;
+use App\Form\PersonnageDeleteType;
+use App\Form\PersonnageFindType;
+use App\Form\PersonnageType;
+use App\Form\PersonnageStatutType;
+use App\Form\PersonnageUpdateAgeType;
+use App\Form\PersonnageUpdateDomaineType;
+use App\Form\PersonnageUpdateType;
+use App\Form\PersonnageXpType;
+use App\Form\TriggerDeleteType;
+use App\Form\TriggerType as TriggerFormType;
+use App\Form\TrombineType;
 use App\Manager\GroupeManager;
 use App\Repository\AgeRepository;
 use App\Repository\CompetenceRepository;
@@ -424,7 +424,7 @@ class PersonnageController extends AbstractController
             $participant = $this->entityManager->getRepository(Participant::class)->find($participant);
         }
 
-        $form = $this->createForm(PersonnageForm::class, $personnage)->add('classe', EntityType::class, [
+        $form = $this->createForm(PersonnageType::class, $personnage)->add('classe', EntityType::class, [
             'label' => 'Classes disponibles',
             'choice_label' => 'label',
             'class' => Classe::class,
@@ -516,7 +516,7 @@ class PersonnageController extends AbstractController
         $background->setPersonnage($personnage);
         $background->setUser($this->getUser());
 
-        $form = $this->createForm(PersonnageBackgroundForm::class, $background);
+        $form = $this->createForm(PersonnageBackgroundType::class, $background);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -550,7 +550,7 @@ class PersonnageController extends AbstractController
         $personnageChronologie = new PersonnageChronologie();
         $personnageChronologie->setPersonnage($personnage);
 
-        $form = $this->createForm(PersonnageChronologieForm::class, $personnageChronologie)->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageChronologieType::class, $personnageChronologie)->add('save', SubmitType::class, [
             'label' => 'Valider l\'évènement',
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -625,7 +625,7 @@ class PersonnageController extends AbstractController
         $personnageLignee = new PersonnageLignee();
         $personnageLignee->setPersonnage($personnage);
 
-        $form = $this->createForm(PersonnageLigneeForm::class, $personnageLignee)->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageLigneeType::class, $personnageLignee)->add('save', SubmitType::class, [
             'label' => 'Valider les modifications',
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -760,7 +760,7 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-        $form = $this->createForm(PersonnageReligionForm::class, $personnageReligion)->add('religion', ChoiceType::class, [
+        $form = $this->createForm(PersonnageReligionType::class, $personnageReligion)->add('religion', ChoiceType::class, [
             'required' => true,
             'label' => 'Votre religion',
             'choices' => $availableReligions,
@@ -910,7 +910,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(PersonnageDeleteForm::class, $personnage)->add('delete', SubmitType::class, [
+        $form = $this->createForm(PersonnageDeleteType::class, $personnage)->add('delete', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
 
@@ -2189,7 +2189,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(PersonnageStatutForm::class, $personnage)->add('submit', SubmitType::class, [
+        $form = $this->createForm(PersonnageStatutType::class, $personnage)->add('submit', SubmitType::class, [
             'label' => 'Valider',
         ]);
 
@@ -2343,7 +2343,7 @@ class PersonnageController extends AbstractController
         $trigger->setPersonnage($personnage);
         $trigger->setDone(false);
 
-        $form = $this->createForm(TriggerForm::class, $trigger)->add('save', SubmitType::class, [
+        $form = $this->createForm(TriggerFormType::class, $trigger)->add('save', SubmitType::class, [
             'label' => 'Valider les modifications',
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -2388,7 +2388,7 @@ class PersonnageController extends AbstractController
         Personnage $personnage,
     ): RedirectResponse|Response {
         // TODO update route redirect to personnage Detail
-        return $this->handleCreateOrUpdate($request, $personnage, PersonnageUpdateAgeForm::class);
+        return $this->handleCreateOrUpdate($request, $personnage, PersonnageUpdateAgeType::class);
     }
 
     /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
@@ -2436,7 +2436,7 @@ class PersonnageController extends AbstractController
         #[MapEntity]
         PersonnageBackground $background,
     ): RedirectResponse|Response {
-        $form = $this->createForm(PersonnageBackgroundForm::class, $background);
+        $form = $this->createForm(PersonnageBackgroundType::class, $background);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -2503,7 +2503,7 @@ class PersonnageController extends AbstractController
             $originalDomaines->add($domaine);
         }
 
-        $form = $this->createForm(PersonnageUpdateDomaineForm::class, $personnage)->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageUpdateDomaineType::class, $personnage)->add('save', SubmitType::class, [
             'label' => 'Valider les modifications',
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -2554,7 +2554,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(PersonnageUpdateHeroismeForm::class)->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageUpdateHeroismeType::class)->add('save', SubmitType::class, [
             'label' => 'Valider les modifications',
         ]);
 
@@ -2610,7 +2610,7 @@ class PersonnageController extends AbstractController
             $originalPersonnageIngredients->add($personnageIngredient);
         }
 
-        $form = $this->createForm(PersonnageIngredientForm::class, $personnage);
+        $form = $this->createForm(PersonnageIngredientType::class, $personnage);
 
         $form->handleRequest($request);
 
@@ -2687,7 +2687,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(PersonnageOriginForm::class, $personnage)->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageOriginType::class, $personnage)->add('save', SubmitType::class, [
             'label' => "Valider l'origine du personnage",
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -2801,7 +2801,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(PersonnageUpdatePugilatForm::class)->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageUpdatePugilatType::class)->add('save', SubmitType::class, [
             'label' => 'Valider les modifications',
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -2849,7 +2849,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(PersonnageUpdateRenommeForm::class)->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageUpdateRenommeType::class)->add('save', SubmitType::class, [
             'label' => 'Valider les modifications',
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -2908,7 +2908,7 @@ class PersonnageController extends AbstractController
             $originalPersonnageRessources->add($personnageRessource);
         }
 
-        $form = $this->createForm(PersonnageRessourceForm::class, $personnage);
+        $form = $this->createForm(PersonnageRessourceType::class, $personnage);
 
         $form->handleRequest($request);
 
@@ -3000,7 +3000,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(PersonnageRichesseForm::class, $personnage);
+        $form = $this->createForm(PersonnageRichesseType::class, $personnage);
 
         $form->handleRequest($request);
 
@@ -3116,7 +3116,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(PersonnageXpForm::class, [])->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageXpType::class, [])->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -3418,7 +3418,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(PersonnageDocumentForm::class, $personnage)->add('submit', SubmitType::class, [
+        $form = $this->createForm(PersonnageDocumentType::class, $personnage)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
             'attr' => ['class' => 'btn-secondary'],
         ]);
@@ -3627,7 +3627,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(PersonnageItemForm::class, $personnage)->add('submit', SubmitType::class, [
+        $form = $this->createForm(PersonnageItemType::class, $personnage)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -3747,7 +3747,7 @@ class PersonnageController extends AbstractController
         $optionalParameters = '';
 
         // construit le formulaire contenant les filtres de recherche
-        $form = $this->createForm(PersonnageFindForm::class, null, [
+        $form = $this->createForm(PersonnageFindType::class, null, [
             'data' => [
                 'religion' => $religion,
                 'classe' => $classe,
@@ -3922,7 +3922,7 @@ class PersonnageController extends AbstractController
     {
         $personnage = new Personnage();
 
-        $form = $this->createForm(PersonnageForm::class, $personnage)->add('valider', SubmitType::class, [
+        $form = $this->createForm(PersonnageType::class, $personnage)->add('valider', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -4259,7 +4259,7 @@ class PersonnageController extends AbstractController
         #[MapEntity]
         PersonnageTrigger $trigger,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TriggerDeleteForm::class, $trigger)->add('save', SubmitType::class, [
+        $form = $this->createForm(TriggerDeleteType::class, $trigger)->add('save', SubmitType::class, [
             'label' => 'Valider les modifications',
         ]);
 
@@ -4297,7 +4297,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(PersonnageUpdateForm::class, $personnage)->add('save', SubmitType::class, [
+        $form = $this->createForm(PersonnageUpdateType::class, $personnage)->add('save', SubmitType::class, [
             'label' => 'Valider les modifications',
             'attr' => [
                 'class' => 'btn btn-secondary',
@@ -4539,7 +4539,7 @@ class PersonnageController extends AbstractController
             $this->redirectToRoute('homepage', [], 303);
         }
 
-        $form = $this->createForm(TrombineForm::class, $personnage)->add('envoyer', SubmitType::class, [
+        $form = $this->createForm(TrombineType::class, $personnage)->add('envoyer', SubmitType::class, [
             'label' => 'Envoyer',
             'attr' => ['class' => 'btn btn-secondary'],
         ]);

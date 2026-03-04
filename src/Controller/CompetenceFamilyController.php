@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\CompetenceFamily;
-use App\Form\CompetenceFamilyForm;
+use App\Form\CompetenceFamilyType;
 use App\Repository\CompetenceFamilyRepository;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -46,7 +46,7 @@ class CompetenceFamilyController extends AbstractController
     {
         $competenceFamily = new CompetenceFamily();
 
-        $form = $this->createForm(CompetenceFamilyForm::class, $competenceFamily)->add('save', SubmitType::class, [
+        $form = $this->createForm(CompetenceFamilyType::class, $competenceFamily)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -84,7 +84,7 @@ class CompetenceFamilyController extends AbstractController
         #[MapEntity]
         ?CompetenceFamily $competenceFamily,
     ): RedirectResponse|Response {
-        $form = $this->createForm(CompetenceFamilyForm::class, $competenceFamily)->add('update', SubmitType::class, [
+        $form = $this->createForm(CompetenceFamilyType::class, $competenceFamily)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 

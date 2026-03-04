@@ -26,8 +26,4 @@ class ProprietaireType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'proprietaire';
-    }
 }

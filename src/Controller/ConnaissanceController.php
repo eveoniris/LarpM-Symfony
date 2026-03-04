@@ -6,7 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Connaissance;
 use App\Enum\Role;
-use App\Form\ConnaissanceForm;
+use App\Form\ConnaissanceType;
 use App\Repository\ConnaissanceRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
@@ -59,7 +59,7 @@ class ConnaissanceController extends AbstractController
     {
         $connaissance = new Connaissance();
 
-        return $this->handleCreateOrUpdate($request, $connaissance, ConnaissanceForm::class);
+        return $this->handleCreateOrUpdate($request, $connaissance, ConnaissanceType::class);
     }
 
     /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
@@ -105,7 +105,7 @@ class ConnaissanceController extends AbstractController
     #[Route('/{connaissance}/update', name: 'update', requirements: ['connaissance' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Connaissance $connaissance): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $connaissance, ConnaissanceForm::class);
+        return $this->handleCreateOrUpdate($request, $connaissance, ConnaissanceType::class);
     }
 
     /**

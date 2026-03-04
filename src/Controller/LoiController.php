@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Loi;
-use App\Form\Loi\LoiDeleteForm;
-use App\Form\Loi\LoiForm;
+use App\Form\Loi\LoiDeleteType;
+use App\Form\Loi\LoiType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -26,7 +26,7 @@ class LoiController extends AbstractController
     #[Route('/loi/add', name: 'loi.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): Response|RedirectResponse
     {
-        $form = $this->createForm(LoiForm::class, new Loi());
+        $form = $this->createForm(LoiType::class, new Loi());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -83,7 +83,7 @@ class LoiController extends AbstractController
         #[MapEntity]
         Loi $loi,
     ): Response|RedirectResponse {
-        $form = $this->createForm(LoiDeleteForm::class, $loi)->add('submit', SubmitType::class, [
+        $form = $this->createForm(LoiDeleteType::class, $loi)->add('submit', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
 
@@ -172,7 +172,7 @@ class LoiController extends AbstractController
         #[MapEntity]
         Loi $loi,
     ): Response|RedirectResponse {
-        $form = $this->createForm(LoiForm::class, $loi);
+        $form = $this->createForm(LoiType::class, $loi);
 
         $form->handleRequest($request);
 

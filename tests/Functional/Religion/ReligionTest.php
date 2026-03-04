@@ -45,13 +45,13 @@ class ReligionTest extends WebTestCase
 
         // Pick the first available religion option value from the rendered select
         $firstOptionValue = $crawler
-            ->filter('select[name="personnage_religion_form[religion]"] option')
+            ->filter('select[name="personnage_religion[religion]"] option')
             ->first()
             ->attr('value');
 
         $form = $crawler->selectButton('Valider votre religion')->form([
-            'personnage_religion_form[religion]'      => $firstOptionValue,
-            'personnage_religion_form[religionLevel]' => (string) $pratiquantLevel->getId(),
+            'personnage_religion[religion]'      => $firstOptionValue,
+            'personnage_religion[religionLevel]' => (string) $pratiquantLevel->getId(),
         ]);
         $client->submit($form);
 
@@ -109,14 +109,14 @@ class ReligionTest extends WebTestCase
         self::assertResponseIsSuccessful();
 
         $firstOptionValue = $crawler
-            ->filter('select[name="personnage_religion_form[religion]"] option')
+            ->filter('select[name="personnage_religion[religion]"] option')
             ->first()
             ->attr('value');
 
         // Try to add religion2 as fervent
         $form = $crawler->selectButton('Valider votre religion')->form([
-            'personnage_religion_form[religion]'      => $firstOptionValue,
-            'personnage_religion_form[religionLevel]' => (string) $ferventLevel->getId(),
+            'personnage_religion[religion]'      => $firstOptionValue,
+            'personnage_religion[religionLevel]' => (string) $ferventLevel->getId(),
         ]);
         $client->submit($form);
 

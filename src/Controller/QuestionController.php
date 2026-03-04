@@ -6,8 +6,8 @@ namespace App\Controller;
 
 use App\Entity\Question;
 use App\Enum\Role;
-use App\Form\Question\QuestionDeleteForm;
-use App\Form\Question\QuestionForm;
+use App\Form\Question\QuestionDeleteType;
+use App\Form\Question\QuestionType;
 use App\Repository\QuestionRepository;
 use App\Security\MultiRolesExpression;
 use DateTime;
@@ -29,7 +29,7 @@ class QuestionController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $form = $this->createForm(QuestionForm::class, new Question());
+        $form = $this->createForm(QuestionType::class, new Question());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -60,7 +60,7 @@ class QuestionController extends AbstractController
         EntityManagerInterface $entityManager,
         Question $question,
     ): RedirectResponse|Response {
-        $form = $this->createForm(QuestionDeleteForm::class, $question)->add('submit', SubmitType::class, [
+        $form = $this->createForm(QuestionDeleteType::class, $question)->add('submit', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
 
@@ -124,7 +124,7 @@ class QuestionController extends AbstractController
         #[MapEntity]
         Question $question,
     ): RedirectResponse|Response {
-        $form = $this->createForm(QuestionForm::class, $question);
+        $form = $this->createForm(QuestionType::class, $question);
 
         $form->handleRequest($request);
 

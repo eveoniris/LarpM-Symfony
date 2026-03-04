@@ -15,16 +15,16 @@ use App\Entity\User;
 use App\Enum\LogActionType;
 use App\Enum\Role;
 use App\Form\Entity\ListSearch;
-use App\Form\EtatCivilForm;
-use App\Form\Personnage\PersonnageForm;
-use App\Form\User\UserForgotPasswordForm;
-use App\Form\User\UserNewForm;
-use App\Form\User\UserNewPasswordForm;
-use App\Form\User\UserPersonnageDefaultForm;
-use App\Form\User\UserPersonnageSecondaireForm;
-use App\Form\UserFindForm;
-use App\Form\UserRegisterForm;
-use App\Form\UserRestrictionForm;
+use App\Form\EtatCivilType;
+use App\Form\Personnage\PersonnageType;
+use App\Form\User\UserForgotPasswordType;
+use App\Form\User\UserNewType;
+use App\Form\User\UserNewPasswordType;
+use App\Form\User\UserPersonnageDefaultType;
+use App\Form\User\UserPersonnageSecondaireType;
+use App\Form\UserFindType;
+use App\Form\UserRegisterType;
+use App\Form\UserRestrictionType;
 use App\Manager\FedegnManager;
 use App\Repository\PersonnageRepository;
 use App\Repository\UserRepository;
@@ -85,7 +85,7 @@ class UserController extends AbstractController
         $value = null;
 
         $userSearch = new ListSearch();
-        $form = $this->createForm(UserFindForm::class, $userSearch);
+        $form = $this->createForm(UserFindType::class, $userSearch);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -148,7 +148,7 @@ class UserController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
     ): RedirectResponse|Response {
-        $form = $this->createForm(UserNewForm::class, [])->add('save', SubmitType::class, [
+        $form = $this->createForm(UserNewType::class, [])->add('save', SubmitType::class, [
             'label' => "Créer l'utilisateur",
         ]);
 
@@ -349,7 +349,7 @@ class UserController extends AbstractController
             $etatCivil = new EtatCivil();
         }
 
-        $form = $this->createForm(EtatCivilForm::class, $etatCivil)->add('save', SubmitType::class, [
+        $form = $this->createForm(EtatCivilType::class, $etatCivil)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -405,7 +405,7 @@ class UserController extends AbstractController
             throw new NotFoundHttpException('Password resetting is not enabled.');
         }
 
-        $form = $this->createForm(UserForgotPasswordForm::class, [])->add('save', SubmitType::class, [
+        $form = $this->createForm(UserForgotPasswordType::class, [])->add('save', SubmitType::class, [
             'label' => 'Envoyer une réinitialisation de votre mot de passe',
             'attr' => [
                 'class' => 'btn btn-secondary',
@@ -579,7 +579,7 @@ class UserController extends AbstractController
             $etatCivil = new EtatCivil();
         }
 
-        $form = $this->createForm(EtatCivilForm::class, $etatCivil)->add('valider', SubmitType::class, [
+        $form = $this->createForm(EtatCivilType::class, $etatCivil)->add('valider', SubmitType::class, [
             'label' => 'Étape suivante',
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -604,7 +604,7 @@ class UserController extends AbstractController
     #[Route('/user/new/step3', name: 'user.new-step3')]
     public function newUserStep3Action(Request $request): RedirectResponse|Response
     {
-        $form = $this->createForm(UserRestrictionForm::class, $this->getUser())->add('valider', SubmitType::class, [
+        $form = $this->createForm(UserRestrictionType::class, $this->getUser())->add('valider', SubmitType::class, [
             'label' => 'Étape suivante',
             'attr' => ['class' => 'btn btn-secondary'],
         ]);
@@ -650,7 +650,7 @@ class UserController extends AbstractController
     public function personnageDefaultAction(Request $request, #[MapEntity] User $user): RedirectResponse|Response
     {
         $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
-        $form = $this->createForm(UserPersonnageDefaultForm::class, $user, [
+        $form = $this->createForm(UserPersonnageDefaultType::class, $user, [
             'user_id' => $user->getId(),
             'secondaire_id' => (int) $user->getPersonnageSecondaire()?->getId(),
         ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -693,7 +693,7 @@ class UserController extends AbstractController
             $principalIds[] = $persoId;
         }
 
-        $form = $this->createForm(UserPersonnageSecondaireForm::class, $user, [
+        $form = $this->createForm(UserPersonnageSecondaireType::class, $user, [
             'user_id' => $user->getId(),
             'principal_ids' => $principalIds,
         ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -747,7 +747,7 @@ class UserController extends AbstractController
     ): RedirectResponse|Response {
         $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
 
-        $form = $this->createForm(PersonnageForm::class, new Personnage());
+        $form = $this->createForm(PersonnageType::class, new Personnage());
 
         // Check if user can create new personnage, admin always can
         if (!$this->can(self::IS_ADMIN) && PersonnageService::MAX_PER_USER <= $personnageRepository->countUser($user)) {
@@ -781,7 +781,7 @@ class UserController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         Security $security,
     ): RedirectResponse|Response {
-        $form = $this->createForm(UserRegisterForm::class);
+        $form = $this->createForm(UserRegisterType::class);
 
         $form->handleRequest($request);
 
@@ -857,7 +857,7 @@ class UserController extends AbstractController
             throw new NotFoundHttpException('Password resetting is not enabled.');
         }
 
-        $form = $this->createForm(UserNewPasswordForm::class, [])->add('save', SubmitType::class, [
+        $form = $this->createForm(UserNewPasswordType::class, [])->add('save', SubmitType::class, [
             'label' => 'Modifier',
             'attr' => [
                 'class' => 'btn btn-secondary',
@@ -936,7 +936,7 @@ class UserController extends AbstractController
     #[Route('/user/restriction', name: 'user.restriction')]
     public function restrictionAction(Request $request): RedirectResponse|Response
     {
-        $form = $this->createForm(UserRestrictionForm::class, $this->getUser())->add('save', SubmitType::class, [
+        $form = $this->createForm(UserRestrictionType::class, $this->getUser())->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 

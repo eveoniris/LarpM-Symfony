@@ -6,8 +6,8 @@ namespace App\Controller;
 
 use App\Entity\Restauration;
 use App\Enum\Role;
-use App\Form\RestaurationDeleteForm;
-use App\Form\RestaurationForm;
+use App\Form\RestaurationDeleteType;
+use App\Form\RestaurationType;
 use App\Repository\RestaurationRepository;
 use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,7 +28,7 @@ class RestaurationController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this page.')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        $form = $this->createForm(RestaurationForm::class, new Restauration())->add('save', SubmitType::class, [
+        $form = $this->createForm(RestaurationType::class, new Restauration())->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -66,7 +66,7 @@ class RestaurationController extends AbstractController
         Restauration $restauration,
         EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
-        $form = $this->createForm(RestaurationDeleteForm::class, $restauration)->add('save', SubmitType::class, [
+        $form = $this->createForm(RestaurationDeleteType::class, $restauration)->add('save', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
 
@@ -190,7 +190,7 @@ class RestaurationController extends AbstractController
         Restauration $restauration,
         EntityManagerInterface $entityManager,
     ): Response {
-        $form = $this->createForm(RestaurationForm::class, $restauration)->add('save', SubmitType::class, [
+        $form = $this->createForm(RestaurationType::class, $restauration)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
