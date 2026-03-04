@@ -104,7 +104,7 @@ jobs:
 
       - name: Create .env.test.local
         run: |
-          echo "DATABASE_URL=mysql://admin:password@127.0.0.1:3306/larpm_test" >> .env.test.local
+          echo "DATABASE_URL=mysql://admin:password@127.0.0.1:3306/larpm" >> .env.test.local
 
       - name: Generate JWT keys
         # JWT_SECRET_KEY / JWT_PUBLIC_KEY / JWT_PASSPHRASE are already defined in .env
