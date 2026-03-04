@@ -70,14 +70,14 @@ class ObjetFindType extends AbstractType
         ])->add('tag', ChoiceType::class, [
             'required' => false,
             'placeholder' => 'Tous les tags',
-            'choices' => array_merge([new Tag()->setNom(\sprintf('Objets sans tag (%d)', $this->objetRepository->findCount([
+            'choices' => array_merge([(new Tag())->setNom(\sprintf('Objets sans tag (%d)', $this->objetRepository->findCount([
                 'tag' => ObjetRepository::CRIT_WITHOUT,
             ])))], $this->tagRepository->findAll()),
             'choice_label' => 'nom',
         ])->add('rangement', ChoiceType::class, [
             'required' => false,
             'placeholder' => 'Tous les rangements',
-            'choices' => array_merge([new Rangement()->setLabel(\sprintf('Objets sans rangement (%d)', $this->objetRepository->findCount([
+            'choices' => array_merge([(new Rangement())->setLabel(\sprintf('Objets sans rangement (%d)', $this->objetRepository->findCount([
                 'rangement' => ObjetRepository::CRIT_WITHOUT,
             ])))], $this->rangementRepository->findAll()),
             'choice_label' => 'label',

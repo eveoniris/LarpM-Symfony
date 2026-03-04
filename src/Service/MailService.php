@@ -87,7 +87,7 @@ final class MailService
         $subject = $this->twig->load($template)->renderBlock('subject', $context);
         $textBody = $this->twig->load($template)->renderBlock('body_text', $context);
 
-        return new TemplatedEmail()
+        return (new TemplatedEmail())
             ->subject($subject)
             ->text($textBody)
             ->htmlTemplate($template)

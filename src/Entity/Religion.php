@@ -48,7 +48,7 @@ class Religion extends BaseReligion implements Stringable
 
         $document->setDocumentType(DocumentType::Religion3D);
         $document->setFolderType(FolderType::Photos);
-        $document->setFilename(new AsciiSlugger()->slug($this->getLabel()) . '.stl');
+        $document->setFilename((new AsciiSlugger())->slug($this->getLabel()) . '.stl');
         $document->setLabel($this->getLabel());
         $document->setFilenameMaxLength(45);
         $document->setDocumentExtension('.stl');

@@ -40,7 +40,7 @@ class Connaissance extends BaseConnaissance
 
     public function getPrintLabel(): ?string
     {
-        return new AsciiSlugger()->slug($this->getLabel());
+        return (new AsciiSlugger())->slug($this->getLabel());
     }
 
     protected function afterUpload(FileUploader $fileUploader): FileUploader

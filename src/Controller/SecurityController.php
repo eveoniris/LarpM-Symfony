@@ -87,7 +87,7 @@ class SecurityController extends AbstractController
         $textBody = $this->renderBlock('user/email/renewPassword.twig', 'body_text', $context);
         $context['subject'] = $subject;
 
-        $email = new TemplatedEmail()
+        $email = (new TemplatedEmail())
             ->to($user->getEmail())
             ->subject($subject->getContent())
             // TODo ->locale($user->getLocal())

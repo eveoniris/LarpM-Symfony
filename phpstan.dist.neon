@@ -15,11 +15,11 @@ parameters:
         # Dead Silex-era code referencing non-existent App\Entity\Joueur
         - src/Controller/JoueurController.php
         - src/Repository/JoueurRepository.php
-        - src/Form/JoueurXpForm.php
-        - src/Form/JoueurForm.php
+        - src/Form/JoueurXpType.php
+        - src/Form/JoueurType.php
         # Dead code referencing non-existent App\Entity\Post (forum feature not migrated)
-        - src/Form/PostDeleteForm.php
-        - src/Form/PostForm.php
+        - src/Form/PostDeleteType.php
+        - src/Form/PostType.php
         # Third-party utility class (color generation) -- lacks PHP type annotations by design
         - src/Manager/RandomColor.php
         # Dead legacy controller referencing non-existent App\Entity\Guilde

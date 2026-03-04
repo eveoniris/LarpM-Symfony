@@ -236,7 +236,7 @@ class UserController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-        $security->login($user, 'form_login', 'main', [new RememberMeBadge()->enable()]);
+        $security->login($user, 'form_login', 'main', [(new RememberMeBadge())->enable()]);
 
         $this->addFlash('alert', 'Merci ! Votre compte a été activé.');
 
@@ -447,7 +447,7 @@ class UserController extends AbstractController
                 $textBody = $this->renderBlock('user/email/forgotPassword.twig', 'body_text', $context);
                 $context['subject'] = $subject;
 
-                $email = new TemplatedEmail()
+                $email = (new TemplatedEmail())
                     ->to($user->getEmail())
                     ->subject($subject->getContent())
                     // TODo ->locale($user->getLocal())
@@ -820,7 +820,7 @@ class UserController extends AbstractController
                     ]);
                 }
 
-                $security->login($user, 'form_login', 'main', [new RememberMeBadge()->enable()]);
+                $security->login($user, 'form_login', 'main', [(new RememberMeBadge())->enable()]);
                 $this->addFlash('success', 'Votre compte a été créé ! vous pouvez maintenant rejoindre un groupe et créer votre personnage');
 
                 return $this->redirectToRoute('homepage');
@@ -915,7 +915,7 @@ class UserController extends AbstractController
 
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
-                $security->login($user, 'form_login', 'main', [new RememberMeBadge()->enable()]);
+                $security->login($user, 'form_login', 'main', [(new RememberMeBadge())->enable()]);
                 $this->addFlash('alert', 'Your password has been reset and you are now signed in.');
 
                 return $this->redirectToRoute('user.view', ['user' => $user->getId()]);

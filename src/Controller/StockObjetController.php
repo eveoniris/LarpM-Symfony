@@ -353,7 +353,7 @@ class StockObjetController extends AbstractController
 
         if ($miniature) {
             try {
-                $image = new Imagine()->open($filename);
+                $image = (new Imagine())->open($filename);
             } catch (RuntimeException $e) {
                 return $this->sendNoImageAvailable();
             }

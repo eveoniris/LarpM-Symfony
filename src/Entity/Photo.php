@@ -35,7 +35,7 @@ class Photo extends BasePhoto
 
         // Try Rezise
         try {
-            $image = new Imagine()->open($fileUploader->getStoredFileWithPath());
+            $image = (new Imagine())->open($fileUploader->getStoredFileWithPath());
             $image->resize($image->getSize()->widen(480));
             $image->save($fileUploader->getStoredFileWithPath());
         } catch (RuntimeException $e) {
@@ -62,7 +62,7 @@ class Photo extends BasePhoto
         }
 
         try {
-            $image = new Imagine()->read($this->getData());
+            $image = (new Imagine())->read($this->getData());
             $image->resize($image->getSize()->widen(480));
             $image->save($path . $this->getFilename());
         } catch (RuntimeException $e) {

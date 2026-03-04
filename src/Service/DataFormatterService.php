@@ -58,7 +58,7 @@ class DataFormatterService
                 // Ajout du décorateur spécial
                 if (!isset($this->decorators[$key])) {
                     try {
-                        $repo = $this->entityManager->getRepository(new ('App\Entity\\' . ucfirst($entityKey))()::class);
+                        $repo = $this->entityManager->getRepository('App\\Entity\\' . ucfirst($entityKey));
                     } catch (Exception $e) {
                         $repo = null;
                         $this->logger->info($e);
