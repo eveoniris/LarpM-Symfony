@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service;
 
+use App\Entity\ExperienceGain;
 use App\Entity\ExperienceUsage;
 use App\Service\CompetenceService;
 use App\Tests\Factory\AgeFactory;
@@ -256,5 +257,51 @@ class CompetenceServiceTest extends KernelTestCase
         $service = $this->competenceService->init($personnage->_real(), $competence->_real());
 
         self::assertGreaterThanOrEqual(0, $service->getCompetenceCout());
+    }
+
+    // -------------------------------------------------------------------------
+    // removeCompetence
+    // -------------------------------------------------------------------------
+
+    public function testRemoveCompetenceRefundsXp(): void
+    {
+        $level = LevelFactory::createOne(['index' => 40, 'cout' => 5, 'cout_favori' => 3, 'cout_meconu' => 8]);
+        $family = CompetenceFamilyFactory::createOne();
+        $competence = CompetenceFactory::createOne(['competenceFamily' => $family, 'level' => $level]);
+        $personnage = PersonnageFactory::createOne(['xp' => 45]);
+
+        // Personnage already knows the competence
+        $personnage->_real()->addCompetence($competence->_real());
+        $this->entityManager->flush();
+
+        $this->competenceService
+            ->init($personnage->_real(), $competence->_real())
+            ->removeCompetence(5);
+
+        $this->entityManager->refresh($personnage->_real());
+        // giveXP(5, ...) adds 5 to current xp: 45 + 5 = 50
+        self::assertSame(50, $personnage->_real()->getXp());
+    }
+
+    public function testRemoveCompetenceCreatesExperienceGainRecord(): void
+    {
+        $level = LevelFactory::createOne(['index' => 41, 'cout' => 7, 'cout_favori' => 4, 'cout_meconu' => 10]);
+        $family = CompetenceFamilyFactory::createOne();
+        $competence = CompetenceFactory::createOne(['competenceFamily' => $family, 'level' => $level]);
+        $personnage = PersonnageFactory::createOne(['xp' => 30]);
+
+        $personnage->_real()->addCompetence($competence->_real());
+        $this->entityManager->flush();
+
+        $this->competenceService
+            ->init($personnage->_real(), $competence->_real())
+            ->removeCompetence(7);
+
+        $gains = $this->entityManager
+            ->getRepository(ExperienceGain::class)
+            ->findBy(['personnage' => $personnage->_real()]);
+
+        self::assertCount(1, $gains);
+        self::assertSame(7, $gains[0]->getXpGain());
     }
 }
