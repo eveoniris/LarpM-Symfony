@@ -628,7 +628,7 @@ class PersonnageService
 
         // A des potions de départ
         /** @var Potion $potion */
-        foreach ((array) $personnage->getLastParticipant()->getPotionsDepartByLevel($level->getIndex()) as $potion) {
+        foreach ((array) $personnage->getLastParticipant()?->getPotionsDepartByLevel($level->getIndex()) as $potion) {
             $potions[] = $potion->getLabel();
         }
 
