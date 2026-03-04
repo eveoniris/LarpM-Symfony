@@ -10,29 +10,29 @@
     <!-- Version PHP cible -->
     <config name="php_version" value="80400"/>
 
-    <!-- ── Priorité 1 : Symfony ─────────────────────────────────────── -->
-    <!-- Nécessite : composer require --dev escapestudios/symfony2-coding-standard -->
+    <!-- Priorité 1 : Symfony -->
+    <!-- Nécessite : composer require -dev escapestudios/symfony2-coding-standard -->
     <rule ref="Symfony">
         <!-- Désactive les règles Symfony qui contredisent PSR-12 -->
         <!-- (en pratique très peu, Symfony est un sur-ensemble) -->
     </rule>
 
-    <!-- ── Priorité 2 : PSR-12 (comble les trous de Symfony) ───────── -->
+    <!-- Priorité 2 : PSR-12 (comble les trous de Symfony) -->
     <rule ref="PSR12">
         <!-- On exclut ce que Symfony gère déjà pour éviter les conflits -->
         <exclude name="PSR12.Files.FileHeader"/>
         <exclude name="Generic.Files.LineLength"/> <!-- géré par Symfony -->
     </rule>
 
-    <!-- ── Priorité 3 : PHPUnit ─────────────────────────────────────── -->
-    <!-- Nécessite : composer require --dev phpcsstandards/phpcsutils
-                     et          : composer require --dev phpunitstandards/phpunit-coding-standard -->
+    <!-- Priorité 3 : PHPUnit -->
+    <!-- Nécessite : composer require -dev phpcsstandards/phpcsutils -->
+    <!-- et         : composer require -dev phpunitstandards/phpunit-coding-standard -->
     <rule ref="PHPUnit">
         <include-pattern>*/tests/*</include-pattern>
         <include-pattern>*/Test.php</include-pattern>
     </rule>
 
-    <!-- ── Règles globales ──────────────────────────────────────────── -->
+    <!-- Règles globales -->
     <rule ref="Generic.PHP.RequireStrictTypes"/>
 
     <!-- Longueur de ligne : 120 (Symfony recommande 120) -->

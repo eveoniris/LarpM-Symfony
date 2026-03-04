@@ -4,6 +4,7 @@ php-version = "8.4"
 [source]
 paths        = ["src", "tests"]
 excludes     = ["vendor", "var", "public/index.php"]
+includes     = ["vendor"]
 
 # ── Linter ────────────────────────────────────────────────────────────────
 [linter]
