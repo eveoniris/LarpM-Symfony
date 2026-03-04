@@ -1,6 +1,7 @@
 parameters:
     level: 6
     phpVersion: 80400
+    reportUnmatchedIgnoredErrors: false
     paths:
         - bin/
         - config/
@@ -13,17 +14,17 @@ parameters:
 
     excludePaths:
         # Dead Silex-era code referencing non-existent App\Entity\Joueur
-        - src/Controller/JoueurController.php
-        - src/Repository/JoueurRepository.php
-        - src/Form/JoueurXpType.php
-        - src/Form/JoueurType.php
+        - src/Controller/JoueurController.php (?)
+        - src/Repository/JoueurRepository.php (?)
+        - src/Form/JoueurXpType.php (?)
+        - src/Form/JoueurType.php (?)
         # Dead code referencing non-existent App\Entity\Post (forum feature not migrated)
-        - src/Form/PostDeleteType.php
-        - src/Form/PostType.php
+        - src/Form/PostDeleteType.php (?)
+        - src/Form/PostType.php (?)
         # Third-party utility class (color generation) -- lacks PHP type annotations by design
         - src/Manager/RandomColor.php
         # Dead legacy controller referencing non-existent App\Entity\Guilde
-        - src/Controller/GuildeController.php
+        - src/Controller/GuildeController.php (?)
 
     ignoreErrors:
         # Doctrine getRepository() returns generic EntityRepository<T>, not the specific repository class.

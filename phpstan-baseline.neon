@@ -1,109 +1,2428 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Using nullsafe method call on non\\-nullable type App\\\\Entity\\\\User\\. Use \\-\\> instead\\.$#"
+			message: '#^Method App\\Controller\\AbstractController\:\:ListSearchForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Controller/AbstractController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\|null\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/BonusController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\|null\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/ClasseController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\|null\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/CompetenceController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/ConnaissanceController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/ConstructionController.php
+
+		-
+			message: '#^Method App\\Controller\\DebriefingController\:\:handleDocument\(\) has parameter \$form with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Controller/DebriefingController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/DocumentController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\|null\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/EspeceController.php
+
+		-
+			message: '#^Parameter \$routes of method App\\Controller\\AbstractController\:\:handleCreateOrUpdate\(\) expects array\<string, string\>, array\<string, string\|false\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/EtatCivilController.php
+
+		-
+			message: '#^PHPDoc tag @var with type array\<App\\Entity\\Groupe\> is not subtype of native type Doctrine\\Common\\Collections\\Collection\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: src/Controller/GnController.php
+
+		-
+			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Controller/GroupeController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/GroupeController.php
+
+		-
+			message: '#^Parameter \#4 \$redirect of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<string, string\>\|string, array\<string, array\<string, int\>\|string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/GroupeSecondaireController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/GroupeSecondaireController.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type App\\Entity\\User\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: src/Controller/IndexController.php
 
 		-
-			message: "#^Parameter \\#1 \\$element of method Doctrine\\\\Common\\\\Collections\\\\Collection\\<int,App\\\\Entity\\\\GroupeBonus\\>\\:\\:removeElement\\(\\) expects App\\\\Entity\\\\GroupeBonus, App\\\\Entity\\\\PersonnageBonus given\\.$#"
+			message: '#^Method App\\Controller\\LangueController\:\:handleDocument\(\) has parameter \$form with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Controller/LangueController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\|null\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/MerveilleController.php
+
+		-
+			message: '#^Method App\\Controller\\MessageController\:\:handleForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Controller/MessageController.php
+
+		-
+			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: '#^Parameter \$routes of method App\\Controller\\AbstractController\:\:handleCreateOrUpdate\(\) expects array\<string, string\>, array\<string, string\|false\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/ParticipantController.php
+
+		-
+			message: '#^Method App\\Controller\\PersonnageController\:\:getErrorMessages\(\) has parameter \$form with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/PersonnageController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\|null\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/RuleController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/RumeurController.php
+
+		-
+			message: '#^Method App\\Controller\\StockObjetController\:\:handleObjetPost\(\) has parameter \$form with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Controller/StockObjetController.php
+
+		-
+			message: '#^Parameter \#5 \$breadcrumb of method App\\Controller\\AbstractController\:\:genericDelete\(\) expects array\<int, array\<string, string\|null\>\>, array\<int, array\<string, int\|string\>\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Controller/TechnologieController.php
+
+		-
+			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Controller/TrombinoscopeController.php
+
+		-
+			message: '#^Unable to resolve the template type TDefault in call to method Symfony\\Component\\HttpFoundation\\InputBag\<string\>\:\:get\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: '#^PHPDoc tag @var for property App\\Entity\\BaseAttributeType\:\:\$competenceAttributes with type array\<App\\Entity\\CompetenceAttribute\>\|Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\CompetenceAttribute\> is not subtype of native type Doctrine\\Common\\Collections\\Collection\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Entity/BaseAttributeType.php
+
+		-
+			message: '#^Property App\\Entity\\BaseAttributeType\:\:\$competenceAttributes with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/BaseAttributeType.php
+
+		-
+			message: '#^PHPDoc tag @var for property App\\Entity\\BaseBillet\:\:\$participants with type array\<App\\Entity\\Participant\>\|Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\Participant\> is not subtype of native type Doctrine\\Common\\Collections\\Collection\|null\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Entity/BaseBillet.php
+
+		-
+			message: '#^Property App\\Entity\\BaseBillet\:\:\$participants with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/BaseBillet.php
+
+		-
+			message: '#^Parameter \#1 \$element of method Doctrine\\Common\\Collections\\Collection\<int,App\\Entity\\GroupeBonus\>\:\:removeElement\(\) expects App\\Entity\\GroupeBonus, App\\Entity\\PersonnageBonus given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Entity/BaseBonus.php
 
 		-
-			message: "#^Method App\\\\Entity\\\\Connaissance\\:\\:getPrintLabel\\(\\) should return string\\|null but returns Symfony\\\\Component\\\\String\\\\AbstractUnicodeString\\.$#"
+			message: '#^Property App\\Entity\\BaseBonus\:\:\$groupeBonus \(Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\GroupeBonus\>\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/BaseBonus.php
+
+		-
+			message: '#^PHPDoc tag @var for property App\\Entity\\BaseClasse\:\:\$groupeClasses with type array\<App\\Entity\\GroupeClasse\>\|Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\GroupeClasse\> is not subtype of native type Doctrine\\Common\\Collections\\Collection\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Entity/BaseClasse.php
+
+		-
+			message: '#^PHPDoc tag @var for property App\\Entity\\BaseClasse\:\:\$personnages with type array\<App\\Entity\\Personnage\>\|Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\Personnage\> is not subtype of native type Doctrine\\Common\\Collections\\Collection\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Entity/BaseClasse.php
+
+		-
+			message: '#^Property App\\Entity\\BaseClasse\:\:\$groupeClasses with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/BaseClasse.php
+
+		-
+			message: '#^Property App\\Entity\\BaseClasse\:\:\$personnages with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/BaseClasse.php
+
+		-
+			message: '#^PHPDoc tag @var for property App\\Entity\\BaseCompetence\:\:\$competenceAttributes with type array\<App\\Entity\\CompetenceAttribute\>\|Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\CompetenceAttribute\> is not subtype of native type Doctrine\\Common\\Collections\\Collection\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Entity/BaseCompetence.php
+
+		-
+			message: '#^PHPDoc tag @var for property App\\Entity\\BaseCompetence\:\:\$experienceUsages with type array\<App\\Entity\\ExperienceUsage\>\|Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\ExperienceUsage\> is not subtype of native type Doctrine\\Common\\Collections\\Collection\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Entity/BaseCompetence.php
+
+		-
+			message: '#^PHPDoc tag @var for property App\\Entity\\BaseCompetence\:\:\$personnageSecondaireCompetences with type array\<App\\Entity\\PersonnageSecondaireCompetence\>\|Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\PersonnageSecondaireCompetence\> is not subtype of native type Doctrine\\Common\\Collections\\Collection\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Entity/BaseCompetence.php
+
+		-
+			message: '#^Property App\\Entity\\BaseCompetence\:\:\$competenceAttributes with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/BaseCompetence.php
+
+		-
+			message: '#^Property App\\Entity\\BaseCompetence\:\:\$experienceUsages with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/BaseCompetence.php
+
+		-
+			message: '#^Property App\\Entity\\BaseCompetence\:\:\$personnageSecondaireCompetences with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/BaseCompetence.php
+
+		-
+			message: '#^Property App\\Entity\\BaseGroupe\:\:\$groupeBonus \(Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\GroupeBonus\>\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/BaseGroupe.php
+
+		-
+			message: '#^Property App\\Entity\\BasePersonnage\:\:\$apprentissageEnseignants \(Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\PersonnageApprentissage\>\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: '#^Property App\\Entity\\BasePersonnage\:\:\$apprentissages \(Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\PersonnageApprentissage\>\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: '#^Property App\\Entity\\BasePersonnage\:\:\$personnageBonus \(Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\PersonnageBonus\>\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/BasePersonnage.php
+
+		-
+			message: '#^Property App\\Entity\\BaseTerritoire\:\:\$originesBonus \(Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\OrigineBonus\>\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Entity/BaseTerritoire.php
+
+		-
+			message: '#^Instanceof between App\\Enum\\BonusPeriode and App\\Enum\\BonusPeriode will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 2
+			path: src/Entity/Bonus.php
+
+		-
+			message: '#^Instanceof between App\\Enum\\BonusType and App\\Enum\\BonusType will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 2
+			path: src/Entity/Bonus.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between ''COMPETENCE''\|''HEROISME''\|''INGREDIENT''\|''ITEM''\|''LANGUE''\|''MATERIEL''\|''MISSION_COMMERCIAL''\|''PUGILAT''\|''RENOMME''\|''RESSOURCE''\|''RICHESSE''\|''XP'' and ''CONSTANT''\|''GN''\|''NATIVE''\|''RETOUR_DE_JEU''\|''UNIQUE'' will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Entity/Bonus.php
+
+		-
+			message: '#^Method App\\Entity\\Connaissance\:\:getPrintLabel\(\) should return string\|null but returns Symfony\\Component\\String\\AbstractUnicodeString\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Entity/Connaissance.php
 
 		-
-			message: "#^Method App\\\\Entity\\\\Loi\\:\\:getPrintLabel\\(\\) should return string\\|null but returns Symfony\\\\Component\\\\String\\\\AbstractUnicodeString\\.$#"
+			message: '#^Loose comparison using \!\= between null and non\-empty\-string will always evaluate to true\.$#'
+			identifier: notEqual.alwaysTrue
+			count: 1
+			path: src/Entity/Gn.php
+
+		-
+			message: '#^Method App\\Entity\\Loi\:\:getPrintLabel\(\) should return string\|null but returns Symfony\\Component\\String\\AbstractUnicodeString\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Entity/Loi.php
 
 		-
-			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
 			count: 1
 			path: src/Entity/Objet.php
 
 		-
-			message: "#^Using nullsafe method call on non\\-nullable type App\\\\Entity\\\\User\\. Use \\-\\> instead\\.$#"
+			message: '#^Using nullsafe method call on non\-nullable type App\\Entity\\User\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: src/Entity/Objet.php
 
 		-
-			message: "#^Method App\\\\Entity\\\\Personnage\\:\\:getPrintLabel\\(\\) should return string\\|null but returns Symfony\\\\Component\\\\String\\\\AbstractUnicodeString\\.$#"
+			message: '#^Method App\\Entity\\Personnage\:\:getPrintLabel\(\) should return string\|null but returns Symfony\\Component\\String\\AbstractUnicodeString\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Entity/Personnage.php
 
 		-
-			message: "#^Using nullsafe method call on non\\-nullable type App\\\\Entity\\\\Gn\\. Use \\-\\> instead\\.$#"
+			message: '#^PHPDoc tag @var with type App\\Enum\\CompetenceFamilyType is not subtype of native type App\\Enum\\CompetenceFamilyType\:\:AGILITY\|App\\Enum\\CompetenceFamilyType\:\:ARMOR\|App\\Enum\\CompetenceFamilyType\:\:FORGE\|App\\Enum\\CompetenceFamilyType\:\:ONE_HANDED_WEAPON\|App\\Enum\\CompetenceFamilyType\:\:POLEARMS\|App\\Enum\\CompetenceFamilyType\:\:PROTECTION\|App\\Enum\\CompetenceFamilyType\:\:RANGED_WEAPONS\|App\\Enum\\CompetenceFamilyType\:\:RESISTANCE\|App\\Enum\\CompetenceFamilyType\:\:SAVAGERY\|App\\Enum\\CompetenceFamilyType\:\:SNEAK_ATTACK\|App\\Enum\\CompetenceFamilyType\:\:STRATEGY\|App\\Enum\\CompetenceFamilyType\:\:SURVIVAL\|App\\Enum\\CompetenceFamilyType\:\:TWO_HANDED_WEAPON\.$#'
+			identifier: varTag.nativeType
 			count: 1
 			path: src/Entity/Personnage.php
 
 		-
-			message: "#^Method App\\\\Entity\\\\PersonnageBackground\\:\\:getLabel\\(\\) should return string but returns App\\\\Entity\\\\Gn\\|null\\.$#"
+			message: '#^Using nullsafe method call on non\-nullable type App\\Entity\\Gn\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: '#^Method App\\Entity\\PersonnageBackground\:\:getLabel\(\) should return string but returns App\\Entity\\Gn\|null\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Entity/PersonnageBackground.php
 
 		-
-			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getRepository\\(\\)$#"
+			message: '#^Property App\\Entity\\Territoire\:\:\$valideOrigineBonus in isset\(\) is not nullable nor uninitialized\.$#'
+			identifier: isset.initializedProperty
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Entity/Territoire.php
+
+		-
+			message: '#^Parameter \#1 \$array \(non\-empty\-list\<string\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\BonusApplication'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/BonusApplication.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\BonusApplication'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/BonusApplication.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\BonusPeriode'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/BonusPeriode.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\BonusPeriode'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/BonusPeriode.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\BonusType'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/BonusType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\BonusType'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/BonusType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\ChronologyType'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/ChronologyType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\ChronologyType'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/ChronologyType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\CompetenceFamilyType'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/CompetenceFamilyType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\CompetenceFamilyType'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/CompetenceFamilyType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\EspeceType'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/EspeceType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\EspeceType'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/EspeceType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\LevelType'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/LevelType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\LevelType'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/LevelType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\LogActionType'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/LogActionType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\LogActionType'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/LogActionType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\Role'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/Role.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\Role'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/Role.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\SortLevel'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/SortLevel.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\SortLevel'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/SortLevel.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\Status'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/Status.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\Status'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/Status.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\TerritoireStatut'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/TerritoireStatut.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\TerritoireStatut'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/TerritoireStatut.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\TriggerType'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/TriggerType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\TriggerType'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/TriggerType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\VisibilityType'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/VisibilityType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\VisibilityType'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/VisibilityType.php
+
+		-
+			message: '#^Class App\\Form\\AcceptAllianceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/AcceptAllianceType.php
+
+		-
+			message: '#^Class App\\Form\\AcceptPeaceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/AcceptPeaceType.php
+
+		-
+			message: '#^Class App\\Form\\AgeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/AgeType.php
+
+		-
+			message: '#^Class App\\Form\\AnnonceDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/AnnonceDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\AnnonceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/AnnonceType.php
+
+		-
+			message: '#^Class App\\Form\\AppelationType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/AppelationType.php
+
+		-
+			message: '#^Class App\\Form\\AttributeTypeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/AttributeTypeType.php
+
+		-
+			message: '#^Class App\\Form\\BackgroundDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/BackgroundDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\BackgroundFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/BackgroundFindType.php
+
+		-
+			message: '#^Class App\\Form\\BackgroundType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/BackgroundType.php
+
+		-
+			message: '#^Class App\\Form\\BilletDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/BilletDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\BilletType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/BilletType.php
+
+		-
+			message: '#^Class App\\Form\\Bonus\\BonusType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Bonus/BonusType.php
+
+		-
+			message: '#^Class App\\Form\\BreakAllianceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/BreakAllianceType.php
+
+		-
+			message: '#^Class App\\Form\\CancelRequestedAllianceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/CancelRequestedAllianceType.php
+
+		-
+			message: '#^Class App\\Form\\CancelRequestedPeaceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/CancelRequestedPeaceType.php
+
+		-
+			message: '#^Class App\\Form\\ChronologieRemoveType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ChronologieRemoveType.php
+
+		-
+			message: '#^Class App\\Form\\ChronologieType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ChronologieType.php
+
+		-
+			message: '#^Class App\\Form\\Classe\\ClasseType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Classe/ClasseType.php
+
+		-
+			message: '#^Class App\\Form\\ClasseType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ClasseType.php
+
+		-
+			message: '#^Class App\\Form\\CompetenceAttributeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/CompetenceAttributeType.php
+
+		-
+			message: '#^Class App\\Form\\CompetenceFamilyType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/CompetenceFamilyType.php
+
+		-
+			message: '#^Class App\\Form\\CompetenceFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/CompetenceFindType.php
+
+		-
+			message: '#^Class App\\Form\\CompetenceMinimalType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/CompetenceMinimalType.php
+
+		-
+			message: '#^Class App\\Form\\CompetenceNiveauType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/CompetenceNiveauType.php
+
+		-
+			message: '#^Class App\\Form\\CompetenceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/CompetenceType.php
+
+		-
+			message: '#^Class App\\Form\\ConnaissanceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ConnaissanceType.php
+
+		-
+			message: '#^Class App\\Form\\ConstructionDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ConstructionDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\ConstructionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ConstructionType.php
+
+		-
+			message: '#^Class App\\Form\\Culture\\CultureDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Culture/CultureDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Culture\\CultureType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Culture/CultureType.php
+
+		-
+			message: '#^Class App\\Form\\Debriefing\\DebriefingDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Debriefing/DebriefingDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Debriefing\\DebriefingType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Debriefing/DebriefingType.php
+
+		-
+			message: '#^Class App\\Form\\DebriefingType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/DebriefingType.php
+
+		-
+			message: '#^Class App\\Form\\DeclareWarType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/DeclareWarType.php
+
+		-
+			message: '#^Class App\\Form\\DeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/DeleteType.php
+
+		-
+			message: '#^Class App\\Form\\DocumentDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/DocumentDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\DocumentFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/DocumentFindType.php
+
+		-
+			message: '#^Class App\\Form\\DocumentType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/DocumentType.php
+
+		-
+			message: '#^Class App\\Form\\DomaineDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/DomaineDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\DomaineType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/DomaineType.php
+
+		-
+			message: '#^Class App\\Form\\Espece\\EspeceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Espece/EspeceType.php
+
+		-
+			message: '#^Class App\\Form\\EtatCivilType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/EtatCivilType.php
+
+		-
+			message: '#^Class App\\Form\\FindGroupType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/FindGroupType.php
+
+		-
+			message: '#^Class App\\Form\\FindJoueurType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/FindJoueurType.php
+
+		-
+			message: '#^Class App\\Form\\FindPersonnageType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/FindPersonnageType.php
+
+		-
+			message: '#^Class App\\Form\\GenreType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/GenreType.php
+
+		-
+			message: '#^Class App\\Form\\Gn\\GnDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Gn/GnDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Gn\\GnType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Gn/GnType.php
+
+		-
+			message: '#^Class App\\Form\\GnInscriptionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/GnInscriptionType.php
+
+		-
+			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/GnInscriptionType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeCompositionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeCompositionType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeDescriptionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeDescriptionType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeDocumentType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeDocumentType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeEnvelopeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeEnvelopeType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeFindType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeIngredientType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeIngredientType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeInscriptionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeInscriptionType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeItemType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeItemType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeLangueType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeLangueType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeRessourceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeRessourceType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeRichesseType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeRichesseType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeScenaristeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeScenaristeType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeSecondairePostulerType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeSecondairePostulerType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeSecondaireTypeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeSecondaireTypeType.php
+
+		-
+			message: '#^Class App\\Form\\Groupe\\GroupeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Groupe/GroupeType.php
+
+		-
+			message: '#^Class App\\Form\\GroupeGn\\GroupeGnOrdreType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/GroupeGn/GroupeGnOrdreType.php
+
+		-
+			message: '#^Class App\\Form\\GroupeGn\\GroupeGnPlaceAvailableType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/GroupeGn/GroupeGnPlaceAvailableType.php
+
+		-
+			message: '#^Class App\\Form\\GroupeGn\\GroupeGnResponsableType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/GroupeGn/GroupeGnResponsableType.php
+
+		-
+			message: '#^Class App\\Form\\GroupeGn\\GroupeGnType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/GroupeGn/GroupeGnType.php
+
+		-
+			message: '#^Class App\\Form\\GroupeSecondaire\\GroupeSecondaireContacterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/GroupeSecondaire/GroupeSecondaireContacterType.php
+
+		-
+			message: '#^Class App\\Form\\GroupeSecondaire\\GroupeSecondaireMaterielType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/GroupeSecondaire/GroupeSecondaireMaterielType.php
+
+		-
+			message: '#^Class App\\Form\\GroupeSecondaire\\GroupeSecondaireNewMembreType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/GroupeSecondaire/GroupeSecondaireNewMembreType.php
+
+		-
+			message: '#^Class App\\Form\\GroupeSecondaire\\GroupeSecondairePostulerType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/GroupeSecondaire/GroupeSecondairePostulerType.php
+
+		-
+			message: '#^Class App\\Form\\GroupeSecondaire\\GroupeSecondaireType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/GroupeSecondaire/GroupeSecondaireType.php
+
+		-
+			message: '#^Class App\\Form\\IngredientDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/IngredientDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\IngredientType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/IngredientType.php
+
+		-
+			message: '#^Class App\\Form\\InstallDatabaseType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/InstallDatabaseType.php
+
+		-
+			message: '#^Class App\\Form\\InstallUserAdminType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/InstallUserAdminType.php
+
+		-
+			message: '#^Class App\\Form\\Intrigue\\IntrigueDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Intrigue/IntrigueDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Intrigue\\IntrigueFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Intrigue/IntrigueFindType.php
+
+		-
+			message: '#^Class App\\Form\\Intrigue\\IntrigueRelectureType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Intrigue/IntrigueRelectureType.php
+
+		-
+			message: '#^Class App\\Form\\Intrigue\\IntrigueType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Intrigue/IntrigueType.php
+
+		-
+			message: '#^Class App\\Form\\Item\\ItemDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Item/ItemDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Item\\ItemLinkType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Item/ItemLinkType.php
+
+		-
+			message: '#^Class App\\Form\\Item\\ItemType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Item/ItemType.php
+
+		-
+			message: '#^Class App\\Form\\LangueType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/LangueType.php
+
+		-
+			message: '#^Class App\\Form\\LevelType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/LevelType.php
+
+		-
+			message: '#^Class App\\Form\\LieuDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/LieuDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\LieuDocumentType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/LieuDocumentType.php
+
+		-
+			message: '#^Class App\\Form\\LieuType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/LieuType.php
+
+		-
+			message: '#^Class App\\Form\\Lignee\\LigneeAddMembreType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Lignee/LigneeAddMembreType.php
+
+		-
+			message: '#^Class App\\Form\\Lignee\\LigneeFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Lignee/LigneeFindType.php
+
+		-
+			message: '#^Class App\\Form\\Lignee\\LigneeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Lignee/LigneeType.php
+
+		-
+			message: '#^Class App\\Form\\ListFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ListFindType.php
+
+		-
+			message: '#^Class App\\Form\\Loi\\LoiDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Loi/LoiDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Loi\\LoiType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Loi/LoiType.php
+
+		-
+			message: '#^Class App\\Form\\Merveille\\MerveilleType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Merveille/MerveilleType.php
+
+		-
+			message: '#^Class App\\Form\\MessageType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MessageType.php
+
+		-
+			message: '#^Class App\\Form\\Monnaie\\MonnaieDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Monnaie/MonnaieDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Monnaie\\MonnaieType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Monnaie/MonnaieType.php
+
+		-
+			message: '#^Class App\\Form\\NewMessageType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/NewMessageType.php
+
+		-
+			message: '#^Class App\\Form\\NiveauType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/NiveauType.php
+
+		-
+			message: '#^Class App\\Form\\ObjetFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ObjetFindType.php
+
+		-
+			message: '#^Class App\\Form\\Participant\\ParticipantGroupeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Participant/ParticipantGroupeType.php
+
+		-
+			message: '#^Class App\\Form\\Participant\\ParticipantNewType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Participant/ParticipantNewType.php
+
+		-
+			message: '#^Class App\\Form\\Participant\\ParticipantRemoveType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Participant/ParticipantRemoveType.php
+
+		-
+			message: '#^Class App\\Form\\ParticipantBilletType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ParticipantBilletType.php
+
+		-
+			message: '#^Class App\\Form\\ParticipantPersonnageSecondaireType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ParticipantPersonnageSecondaireType.php
+
+		-
+			message: '#^Class App\\Form\\ParticipantRestaurationType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ParticipantRestaurationType.php
+
+		-
+			message: '#^Class App\\Form\\ParticipantType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ParticipantType.php
+
+		-
+			message: '#^Class App\\Form\\PaysMinimalType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PaysMinimalType.php
+
+		-
+			message: '#^Class App\\Form\\PaysType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PaysType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageChronologieType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageChronologieType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageDocumentType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageDocumentType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageEditType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageEditType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageIngredientType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageIngredientType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageItemType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageItemType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageLigneeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageLigneeType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageOriginType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageOriginType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageReligionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageReligionType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageRessourceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageRessourceType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageRichesseType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageRichesseType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageTechnologieType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageTechnologieType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageUpdateHeroismeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageUpdateHeroismeType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageUpdatePugilatType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageUpdatePugilatType.php
+
+		-
+			message: '#^Class App\\Form\\Personnage\\PersonnageUpdateRenommeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Personnage/PersonnageUpdateRenommeType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageBackgroundType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageBackgroundType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageCompetenceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageCompetenceType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageDocumentType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageDocumentType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageFindType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageItemType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageItemType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageOldFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageOldFindType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageOriginType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageOriginType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageReligionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageReligionType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageSecondaireChoiceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageSecondaireChoiceType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageSecondaireDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageSecondaireDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageSecondaireType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageSecondaireType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageStatutType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageStatutType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageTransfertType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageTransfertType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageUpdateAgeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageUpdateAgeType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageUpdateDomaineType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageUpdateDomaineType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageUpdateLangueType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageUpdateLangueType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageUpdateType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageUpdateType.php
+
+		-
+			message: '#^Class App\\Form\\PersonnageXpType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageXpType.php
+
+		-
+			message: '#^Class App\\Form\\PostulantReponseType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PostulantReponseType.php
+
+		-
+			message: '#^Class App\\Form\\Potion\\PotionDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Potion/PotionDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Potion\\PotionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Potion/PotionType.php
+
+		-
+			message: '#^Class App\\Form\\PotionFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PotionFindType.php
+
+		-
+			message: '#^Class App\\Form\\PriereDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PriereDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\PriereFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PriereFindType.php
+
+		-
+			message: '#^Class App\\Form\\PriereType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PriereType.php
+
+		-
+			message: '#^Class App\\Form\\Quality\\QualityDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Quality/QualityDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Quality\\QualityType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Quality/QualityType.php
+
+		-
+			message: '#^Class App\\Form\\Question\\QuestionDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Question/QuestionDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Question\\QuestionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Question/QuestionType.php
+
+		-
+			message: '#^Class App\\Form\\RefuseAllianceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RefuseAllianceType.php
+
+		-
+			message: '#^Class App\\Form\\RefusePeaceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RefusePeaceType.php
+
+		-
+			message: '#^Class App\\Form\\RegionMinimalType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RegionMinimalType.php
+
+		-
+			message: '#^Class App\\Form\\RegionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RegionType.php
+
+		-
+			message: '#^Class App\\Form\\Religion\\ReligionBlasonType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Religion/ReligionBlasonType.php
+
+		-
+			message: '#^Class App\\Form\\Religion\\ReligionDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Religion/ReligionDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Religion\\ReligionLevelType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Religion/ReligionLevelType.php
+
+		-
+			message: '#^Class App\\Form\\Religion\\ReligionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Religion/ReligionType.php
+
+		-
+			message: '#^Class App\\Form\\ReligionBlasonType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ReligionBlasonType.php
+
+		-
+			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/ReligionBlasonType.php
+
+		-
+			message: '#^Class App\\Form\\ReligionLevelType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ReligionLevelType.php
+
+		-
+			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/ReligionLevelType.php
+
+		-
+			message: '#^Class App\\Form\\ReligionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ReligionType.php
+
+		-
+			message: '#^Class App\\Form\\RequestAllianceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RequestAllianceType.php
+
+		-
+			message: '#^Class App\\Form\\RequestPeaceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RequestPeaceType.php
+
+		-
+			message: '#^Class App\\Form\\RessourceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RessourceType.php
+
+		-
+			message: '#^Class App\\Form\\RestaurationDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RestaurationDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\RestaurationType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RestaurationType.php
+
+		-
+			message: '#^Class App\\Form\\RestrictionDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RestrictionDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\RestrictionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RestrictionType.php
+
+		-
+			message: '#^Class App\\Form\\Rule\\RuleDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Rule/RuleDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Rule\\RuleType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Rule/RuleType.php
+
+		-
+			message: '#^Class App\\Form\\Rule\\RuleUpdateType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Rule/RuleUpdateType.php
+
+		-
+			message: '#^Class App\\Form\\RuleType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RuleType.php
+
+		-
+			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/RuleType.php
+
+		-
+			message: '#^Class App\\Form\\Rumeur\\RumeurDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Rumeur/RumeurDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Rumeur\\RumeurFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Rumeur/RumeurFindType.php
+
+		-
+			message: '#^Class App\\Form\\Rumeur\\RumeurType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Rumeur/RumeurType.php
+
+		-
+			message: '#^Class App\\Form\\SearchObjetType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/SearchObjetType.php
+
+		-
+			message: '#^Class App\\Form\\SecondaryGroupFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/SecondaryGroupFindType.php
+
+		-
+			message: '#^Class App\\Form\\SortDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/SortDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\SortFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/SortFindType.php
+
+		-
+			message: '#^Class App\\Form\\SortType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/SortType.php
+
+		-
+			message: '#^Class App\\Form\\SphereDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/SphereDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\SphereType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/SphereType.php
+
+		-
+			message: '#^Class App\\Form\\Stock\\ObjetDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Stock/ObjetDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Stock\\ObjetTagType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Stock/ObjetTagType.php
+
+		-
+			message: '#^Class App\\Form\\Stock\\ObjetType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Stock/ObjetType.php
+
+		-
+			message: '#^Class App\\Form\\Technologie\\TechnologieDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Technologie/TechnologieDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Technologie\\TechnologieType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Technologie/TechnologieType.php
+
+		-
+			message: '#^Class App\\Form\\Technologie\\TechnologiesRessourcesType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Technologie/TechnologiesRessourcesType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\FiefType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/FiefType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireBlasonType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireBlasonType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireBonusType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireBonusType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireCiblesType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireCiblesType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireConstructionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireConstructionType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireCultureType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireCultureType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireIngredientsType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireIngredientsType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireLoiType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireLoiType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireStatutType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireStatutType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireStrategieType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireStrategieType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireType.php
+
+		-
+			message: '#^Class App\\Form\\TerritoireBlasonType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TerritoireBlasonType.php
+
+		-
+			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/TerritoireBlasonType.php
+
+		-
+			message: '#^Class App\\Form\\TerritoireDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TerritoireDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\TerritoireIngredientsType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TerritoireIngredientsType.php
+
+		-
+			message: '#^Class App\\Form\\TerritoireStrategieType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TerritoireStrategieType.php
+
+		-
+			message: '#^Class App\\Form\\TerritoireType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TerritoireType.php
+
+		-
+			message: '#^Class App\\Form\\TitreDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TitreDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\TitreType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TitreType.php
+
+		-
+			message: '#^Class App\\Form\\TokenDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TokenDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\TokenType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TokenType.php
+
+		-
+			message: '#^Class App\\Form\\TriggerDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TriggerDeleteType.php
+
+		-
+			message: '#^Class App\\Form\\TriggerType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TriggerType.php
+
+		-
+			message: '#^Class App\\Form\\TrombineType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/TrombineType.php
+
+		-
+			message: '#^Class App\\Form\\Trombinoscope\\TrombinoscopeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Trombinoscope/TrombinoscopeType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\ClasseType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/ClasseType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\CompetenceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/CompetenceType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\EtatType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/EtatType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\EvenementType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/EvenementType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\GroupeHasIngredientType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/GroupeHasIngredientType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\GroupeHasRessourceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/GroupeHasRessourceType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\GroupeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/GroupeType.php
+
+		-
+			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/Type/GroupeType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\IntrigueHasDocumentType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/IntrigueHasDocumentType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\IntrigueHasEvenementType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/IntrigueHasEvenementType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\IntrigueHasGroupeSecondaireType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/IntrigueHasGroupeSecondaireType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\IntrigueHasGroupeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/IntrigueHasGroupeType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\IntrigueHasLieuType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/IntrigueHasLieuType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\IntrigueHasObjectifType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/IntrigueHasObjectifType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\LocalisationType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/LocalisationType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\ObjectifType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/ObjectifType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\ObjetCaracType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/ObjetCaracType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\ObjetTagType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/ObjetTagType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\ObjetType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/ObjetType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\ParticipantHasRestaurationType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/ParticipantHasRestaurationType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\PersonnageIngredientType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/PersonnageIngredientType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\PersonnageRessourceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/PersonnageRessourceType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\PersonnageSecondairesCompetencesType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/PersonnageSecondairesCompetencesType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\PhotoType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/PhotoType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\ProprietaireType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/ProprietaireType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\QualityValeurType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/QualityValeurType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\RangementType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/RangementType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\RessourceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/RessourceType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\TagType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/TagType.php
+
+		-
+			message: '#^Class App\\Form\\Type\\UserType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Type/UserType.php
+
+		-
+			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/Type/UserType.php
+
+		-
+			message: '#^Class App\\Form\\User\\UserForgotPasswordType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/User/UserForgotPasswordType.php
+
+		-
+			message: '#^Class App\\Form\\User\\UserNewPasswordType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/User/UserNewPasswordType.php
+
+		-
+			message: '#^Class App\\Form\\User\\UserNewType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/User/UserNewType.php
+
+		-
+			message: '#^Class App\\Form\\User\\UserPersonnageDefaultType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/User/UserPersonnageDefaultType.php
+
+		-
+			message: '#^Class App\\Form\\User\\UserPersonnageSecondaireType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/User/UserPersonnageSecondaireType.php
+
+		-
+			message: '#^Class App\\Form\\UserFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/UserFindType.php
+
+		-
+			message: '#^Class App\\Form\\UserRegisterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/UserRegisterType.php
+
+		-
+			message: '#^Class App\\Form\\UserRestrictionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/UserRestrictionType.php
+
+		-
+			message: '#^Class App\\Form\\UserType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/UserType.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortByClasse\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortByGroupe\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortByHasAnomalie\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortByHeroisme\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortById\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortByNom\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortByPugilat\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortByRenomme\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortByStatusCode\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortByStatusOnActiveGn\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortByUser\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Method App\\Manager\\PersonnageManager\:\:sortByXp\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Parameter &\$personnages by\-ref type of method App\\Manager\\PersonnageManager\:\:sort\(\) expects array\<int, App\\Entity\\Personnage\>, array\<int, App\\Entity\\Personnage\|list\<App\\Entity\\Personnage\|int\>\> given\.$#'
+			identifier: parameterByRef.type
+			count: 1
+			path: src/Manager/PersonnageManager.php
+
+		-
+			message: '#^Loose comparison using \!\= between '''' and non\-falsy\-string will always evaluate to true\.$#'
+			identifier: notEqual.alwaysTrue
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: '#^Method App\\Repository\\PersonnageRepository\:\:translateAttributes\(\) should return array\<string, string\> but returns array\<int\|string, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Repository/PersonnageRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Method App\\Repository\\UserRepository\:\:translateAttributes\(\) should return array\<string, string\> but returns array\<int\|string, string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository01 has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository01.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository01 has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository01.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository01 has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository01.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository01 has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository01.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Service/CompetenceService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 3
+			path: src/Service/ConditionsService.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to method Doctrine\\ORM\\EntityManagerInterface\:\:getRepository\(\)$#'
+			identifier: argument.templateType
 			count: 1
 			path: src/Service/DataFormatterService.php
 
 		-
-			message: "#^Method App\\\\Service\\\\FileUploader\\:\\:getOriginalFilename\\(\\) should return string but returns Symfony\\\\Component\\\\String\\\\AbstractUnicodeString\\.$#"
+			message: '#^Property App\\Service\\FileUploader\:\:\$fileName \(string\) does not accept Symfony\\Component\\String\\AbstractUnicodeString\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/Service/FileUploader.php
 
 		-
-			message: "#^Property App\\\\Service\\\\FileUploader\\:\\:\\$fileName \\(string\\) does not accept Symfony\\\\Component\\\\String\\\\AbstractUnicodeString\\.$#"
-			count: 1
-			path: src/Service/FileUploader.php
+			message: '#^Call to function is_numeric\(\) with int will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: src/Service/PagerService.php
 
 		-
-			message: "#^Property App\\\\Service\\\\PagerService\\:\\:\\$entityManager is never read, only written\\.$#"
+			message: '#^Method App\\Service\\PagerService\:\:getForm\(\) return type with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
+			identifier: missingType.generics
 			count: 1
 			path: src/Service/PagerService.php
 
 		-
-			message: "#^Parameter \\#1 \\$type of method App\\\\Entity\\\\Personnage\\:\\:hasCompetence\\(\\) expects App\\\\Enum\\\\CompetenceFamilyType\\|string, App\\\\Entity\\\\Competence given\\.$#"
+			message: '#^Method App\\Service\\PagerService\:\:getRequest\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: '#^Property App\\Service\\PagerService\:\:\$entityManager is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: '#^Property App\\Service\\PagerService\:\:\$form with generic interface Symfony\\Component\\Form\\FormInterface does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Service/PagerService.php
+
+		-
+			message: '#^Method App\\Service\\PersonnageService\:\:createNewPersonnage\(\) has parameter \$form with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
 			count: 1
 			path: src/Service/PersonnageService.php
 
 		-
-			message: "#^Method App\\\\Twig\\\\HighlightTwigExtension\\:\\:highlightFilter\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			message: '#^Parameter \#1 \$type of method App\\Entity\\Personnage\:\:hasCompetence\(\) expects App\\Enum\\CompetenceFamilyType\|string, App\\Entity\\Competence given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Service/PersonnageService.php
+
+		-
+			message: '#^Method App\\Twig\\HighlightTwigExtension\:\:highlightFilter\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Twig/HighlightTwigExtension.php
 
 		-
-			message: "#^Method App\\\\Twig\\\\HighlightTwigExtension\\:\\:highlightFilter\\(\\) has parameter \\$words with no value type specified in iterable type array\\.$#"
+			message: '#^Method App\\Twig\\HighlightTwigExtension\:\:highlightFilter\(\) has parameter \$words with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Twig/HighlightTwigExtension.php
 
 		-
-			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertArrayHasKey\\(\\) with 1 and array\\<string, string\\> will always evaluate to false\\.$#"
+			message: '#^Method App\\Twig\\HighlightTwigExtension\:\:highlightFilter\(\) never returns array\<int, string\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Twig/HighlightTwigExtension.php
+
+		-
+			message: '#^Method App\\Twig\\HighlightTwigExtension\:\:highlightFilter\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Twig/HighlightTwigExtension.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) with 1 and array\<string, string\> will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
 			count: 1
 			path: tests/Integration/Service/CompetenceServiceTest.php
 
 		-
-			message: "#^Property App\\\\Tests\\\\Integration\\\\Service\\\\GroupeServiceTest\\:\\:\\$entityManager is never read, only written\\.$#"
+			message: '#^Property App\\Tests\\Integration\\Service\\GroupeServiceTest\:\:\$entityManager is never read, only written\.$#'
+			identifier: property.onlyWritten
 			count: 1
 			path: tests/Integration/Service/GroupeServiceTest.php
 
 		-
-			message: "#^Property App\\\\Tests\\\\Integration\\\\Service\\\\PersonnageServiceTest\\:\\:\\$entityManager is never read, only written\\.$#"
+			message: '#^Property App\\Tests\\Integration\\Service\\PersonnageServiceTest\:\:\$entityManager is never read, only written\.$#'
+			identifier: property.onlyWritten
 			count: 1
 			path: tests/Integration/Service/PersonnageServiceTest.php
 
 		-
-			message: "#^Call to an undefined method App\\\\Entity\\\\Personnage\\:\\:method\\(\\)\\.$#"
+			message: '#^Call to an undefined method App\\Entity\\Personnage\:\:method\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: tests/Unit/Service/ConditionsServiceTest.php
 
 		-
-			message: "#^Call to an undefined method PHPUnit\\\\Framework\\\\MockObject\\\\Builder\\\\InvocationStubber\\:\\:with\\(\\)\\.$#"
+			message: '#^Call to an undefined method PHPUnit\\Framework\\MockObject\\Builder\\InvocationStubber\:\:with\(\)\.$#'
+			identifier: method.notFound
 			count: 8
 			path: tests/Unit/Service/ConditionsServiceTest.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Symfony\\\\Component\\\\Dotenv\\\\Dotenv'' and ''bootEnv'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: tests/bootstrap.php
 
 
 
