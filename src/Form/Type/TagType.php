@@ -30,8 +30,4 @@ class TagType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'tag';
-    }
 }

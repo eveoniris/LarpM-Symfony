@@ -10,11 +10,11 @@ use App\Entity\Priere;
 use App\Entity\Sort;
 use App\Entity\Sphere;
 use App\Enum\Role;
-use App\Form\DomaineForm;
-use App\Form\Potion\PotionForm;
-use App\Form\PriereForm;
-use App\Form\SortForm;
-use App\Form\SphereForm;
+use App\Form\DomaineType;
+use App\Form\Potion\PotionType;
+use App\Form\PriereType;
+use App\Form\SortType;
+use App\Form\SphereType;
 use App\Repository\DomaineRepository;
 use App\Repository\PotionRepository;
 use App\Repository\PriereRepository;
@@ -45,7 +45,7 @@ class MagieController extends AbstractController
     #[Route('/domaine/add', name: 'domaine.add')]
     public function domaineAddAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, new Domaine(), DomaineForm::class, routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'], msg: $this->getDomaineMsg());
+        return $this->handleCreateOrUpdate($request, new Domaine(), DomaineType::class, routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'], msg: $this->getDomaineMsg());
     }
 
     /** @return array<string, string> */
@@ -121,7 +121,7 @@ class MagieController extends AbstractController
     #[Route('/domaine/{domaine}/update', name: 'domaine.update', requirements: ['domaine' => Requirement::DIGITS])]
     public function domaineUpdateAction(Request $request, #[MapEntity] Domaine $domaine): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $domaine, DomaineForm::class, routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'], msg: $this->getDomaineMsg());
+        return $this->handleCreateOrUpdate($request, $domaine, DomaineType::class, routes: ['root' => 'magie.domaine.', 'entityAlias' => 'domaine'], msg: $this->getDomaineMsg());
     }
 
     /**
@@ -199,7 +199,7 @@ class MagieController extends AbstractController
         return $this->handleCreateOrUpdate(
             $request,
             new Potion(),
-            PotionForm::class,
+            PotionType::class,
             routes: ['root' => 'magie.potion.', 'entityAlias' => 'potion'],
             msg: $this->getPotionMsg(),
             entityCallback: $this->getDocumentCallBack(),
@@ -322,7 +322,7 @@ class MagieController extends AbstractController
         return $this->handleCreateOrUpdate(
             $request,
             $potion,
-            PotionForm::class,
+            PotionType::class,
             routes: ['root' => 'magie.potion.', 'entityAlias' => 'potion'],
             msg: $this->getPotionMsg(),
             entityCallback: $this->getDocumentCallBack(),
@@ -338,7 +338,7 @@ class MagieController extends AbstractController
         return $this->handleCreateOrUpdate(
             $request,
             new Priere(),
-            PriereForm::class,
+            PriereType::class,
             routes: ['root' => 'magie.priere.', 'entityAlias' => 'priere'],
             msg: $this->getPriereMsg(),
             entityCallback: $this->getDocumentCallBack(),
@@ -450,7 +450,7 @@ class MagieController extends AbstractController
         return $this->handleCreateOrUpdate(
             $request,
             $priere,
-            PriereForm::class,
+            PriereType::class,
             routes: ['root' => 'magie.priere.', 'entityAlias' => 'priere'],
             msg: $this->getPriereMsg(),
             entityCallback: $this->getDocumentCallBack(),
@@ -466,7 +466,7 @@ class MagieController extends AbstractController
         return $this->handleCreateOrUpdate(
             $request,
             new Sort(),
-            SortForm::class,
+            SortType::class,
             routes: ['root' => 'magie.sort.', 'entityAlias' => 'sort'],
             msg: $this->getSortMsg(),
             entityCallback: $this->getDocumentCallBack(),
@@ -578,7 +578,7 @@ class MagieController extends AbstractController
         return $this->handleCreateOrUpdate(
             $request,
             $sort,
-            SortForm::class,
+            SortType::class,
             routes: ['root' => 'magie.sort.', 'entityAlias' => 'sort'],
             msg: $this->getSortMsg(),
             entityCallback: $this->getDocumentCallBack(),
@@ -591,7 +591,7 @@ class MagieController extends AbstractController
     #[Route('/sphere/add', name: 'sphere.add')]
     public function sphereAddAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, new Sphere(), SphereForm::class, routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'], msg: $this->getSphereMsg());
+        return $this->handleCreateOrUpdate($request, new Sphere(), SphereType::class, routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'], msg: $this->getSphereMsg());
     }
 
     /** @return array<string, string> */
@@ -668,6 +668,6 @@ class MagieController extends AbstractController
     #[Route('/sphere/{sphere}/update', name: 'sphere.update', requirements: ['sphere' => Requirement::DIGITS])]
     public function sphereUpdateAction(Request $request, #[MapEntity] Sphere $sphere): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $sphere, SphereForm::class, routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'], msg: $this->getSphereMsg());
+        return $this->handleCreateOrUpdate($request, $sphere, SphereType::class, routes: ['root' => 'magie.sphere.', 'entityAlias' => 'sphere'], msg: $this->getSphereMsg());
     }
 }

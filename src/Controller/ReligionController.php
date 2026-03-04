@@ -8,10 +8,10 @@ use App\Entity\PersonnagesReligions;
 use App\Entity\Religion;
 use App\Entity\ReligionLevel;
 use App\Enum\Role;
-use App\Form\Religion\ReligionBlasonForm;
-use App\Form\Religion\ReligionDeleteForm;
-use App\Form\Religion\ReligionForm;
-use App\Form\Religion\ReligionLevelForm;
+use App\Form\Religion\ReligionBlasonType;
+use App\Form\Religion\ReligionDeleteType;
+use App\Form\Religion\ReligionType;
+use App\Form\Religion\ReligionLevelType;
 use App\Repository\ReligionLevelRepository;
 use App\Repository\ReligionRepository;
 use App\Security\MultiRolesExpression;
@@ -38,7 +38,7 @@ class ReligionController extends AbstractController
     {
         $religion = new Religion();
 
-        $form = $this->createForm(ReligionForm::class, $religion)->add('save', SubmitType::class, [
+        $form = $this->createForm(ReligionType::class, $religion)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -93,7 +93,7 @@ class ReligionController extends AbstractController
         EntityManagerInterface $entityManager,
         Religion $religion,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ReligionDeleteForm::class, $religion)->add('delete', SubmitType::class, [
+        $form = $this->createForm(ReligionDeleteType::class, $religion)->add('delete', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
 
@@ -176,7 +176,7 @@ class ReligionController extends AbstractController
     {
         $religionLevel = new ReligionLevel();
 
-        $form = $this->createForm(ReligionLevelForm::class, $religionLevel)->add('save', SubmitType::class, [
+        $form = $this->createForm(ReligionLevelType::class, $religionLevel)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -239,7 +239,7 @@ class ReligionController extends AbstractController
         EntityManagerInterface $entityManager,
         ReligionLevel $religionLevel,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ReligionLevelForm::class, $religionLevel)->add('update', SubmitType::class, [
+        $form = $this->createForm(ReligionLevelType::class, $religionLevel)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
@@ -353,7 +353,7 @@ class ReligionController extends AbstractController
         Request $request,
         Religion $religion,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ReligionForm::class, $religion)->add('update', SubmitType::class, [
+        $form = $this->createForm(ReligionType::class, $religion)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
@@ -413,7 +413,7 @@ class ReligionController extends AbstractController
         EntityManagerInterface $entityManager,
         Religion $religion,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ReligionBlasonForm::class, $religion)->add('update', SubmitType::class, [
+        $form = $this->createForm(ReligionBlasonType::class, $religion)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 

@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Form\Rumeur;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+/**
+ * LarpManager\Form\Groupe\RumeurDeleteForm.
+ *
+ * @author kevin
+ */
+class RumeurDeleteType extends AbstractType
+{
+    /**
+     * Contruction du formulaire.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+    }
+
+    /**
+     * Définition de l'entité concernée.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => '\\' . \App\Entity\Rumeur::class,
+        ]);
+    }
+
+    /**
+     * Nom du formulaire.
+     */
+}

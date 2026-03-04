@@ -6,8 +6,8 @@ namespace App\Controller;
 
 use App\Entity\Ingredient;
 use App\Enum\Role;
-use App\Form\IngredientDeleteForm;
-use App\Form\IngredientForm;
+use App\Form\IngredientDeleteType;
+use App\Form\IngredientType;
 use App\Repository\IngredientRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
@@ -28,7 +28,7 @@ class IngredientController extends AbstractController
     {
         $ingredient = new Ingredient();
 
-        $form = $this->createForm(IngredientForm::class, $ingredient)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(IngredientType::class, $ingredient)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -58,7 +58,7 @@ class IngredientController extends AbstractController
         EntityManagerInterface $entityManager,
         Ingredient $ingredient,
     ): Response {
-        $form = $this->createForm(IngredientDeleteForm::class, $ingredient)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(IngredientDeleteType::class, $ingredient)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 
@@ -116,7 +116,7 @@ class IngredientController extends AbstractController
         EntityManagerInterface $entityManager,
         Ingredient $ingredient,
     ): Response {
-        $form = $this->createForm(IngredientForm::class, $ingredient)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(IngredientType::class, $ingredient)->add('save', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 

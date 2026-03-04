@@ -36,8 +36,4 @@ class PersonnageRessourceType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'personnageRessource';
-    }
 }

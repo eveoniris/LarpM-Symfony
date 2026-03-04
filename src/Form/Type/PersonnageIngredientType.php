@@ -41,8 +41,4 @@ class PersonnageIngredientType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'personnageIngredient';
-    }
 }

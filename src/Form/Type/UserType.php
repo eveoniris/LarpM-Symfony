@@ -28,8 +28,4 @@ class UserType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'etat';
-    }
 }

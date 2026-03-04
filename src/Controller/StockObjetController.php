@@ -7,10 +7,10 @@ namespace App\Controller;
 use App\Entity\Etat;
 use App\Entity\Objet;
 use App\Form\Entity\ObjetSearch;
-use App\Form\ObjetFindForm;
-use App\Form\Stock\ObjetDeleteForm;
-use App\Form\Stock\ObjetForm;
-use App\Form\Stock\ObjetTagForm;
+use App\Form\ObjetFindType;
+use App\Form\Stock\ObjetDeleteType;
+use App\Form\Stock\ObjetType;
+use App\Form\Stock\ObjetTagType;
 use App\Repository\ObjetRepository;
 use App\Service\ImageOptimizer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,7 +47,7 @@ class StockObjetController extends AbstractController
             $objet->setEtat($etat);
         }
 
-        $form = $this->createForm(ObjetForm::class, $objet)->add('save', SubmitType::class, [
+        $form = $this->createForm(ObjetType::class, $objet)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder et fermer',
         ])->add('save_continue', SubmitType::class, [
             'label' => 'Sauvegarder et créer un nouveau',
@@ -116,7 +116,7 @@ class StockObjetController extends AbstractController
             $newObjet->setNumero($numero . '_2');
         }
 
-        $form = $this->createForm(ObjetForm::class, $newObjet)->add('save', SubmitType::class, [
+        $form = $this->createForm(ObjetType::class, $newObjet)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder et fermer',
         ])->add('save_clone', SubmitType::class, ['label' => 'Sauvegarder et cloner']);
 
@@ -145,7 +145,7 @@ class StockObjetController extends AbstractController
         #[MapEntity]
         Objet $objet,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ObjetDeleteForm::class, $objet);
+        $form = $this->createForm(ObjetDeleteType::class, $objet);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -196,7 +196,7 @@ class StockObjetController extends AbstractController
         $rangement = null;
 
         $objetSearch = new ObjetSearch();
-        $form = $this->createForm(type: ObjetFindForm::class, data: $objetSearch);
+        $form = $this->createForm(type: ObjetFindType::class, data: $objetSearch);
 
         // TODO move photo from database to drive
 
@@ -383,7 +383,7 @@ class StockObjetController extends AbstractController
         EntityManagerInterface $entityManager,
         Objet $objet,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ObjetTagForm::class, $objet);
+        $form = $this->createForm(ObjetTagType::class, $objet);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -416,7 +416,7 @@ class StockObjetController extends AbstractController
         #[MapEntity]
         Objet $objet,
     ): RedirectResponse|Response {
-        $form = $this->createForm(ObjetForm::class, $objet)->add('update', SubmitType::class, [
+        $form = $this->createForm(ObjetType::class, $objet)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder et fermer',
         ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 

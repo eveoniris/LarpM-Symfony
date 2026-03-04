@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Age;
-use App\Form\AgeForm;
+use App\Form\AgeType;
 use App\Repository\AgeRepository;
 use App\Repository\PersonnageRepository;
 use App\Service\PagerService;
@@ -60,7 +60,7 @@ class AgeController extends AbstractController
     {
         $age = new Age();
 
-        return $this->handleCreateOrUpdate($request, $age, AgeForm::class);
+        return $this->handleCreateOrUpdate($request, $age, AgeType::class);
     }
 
     #[Route(
@@ -75,7 +75,7 @@ class AgeController extends AbstractController
     )]
     public function updateAction(Request $request, #[MapEntity] Age $age): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $age, AgeForm::class);
+        return $this->handleCreateOrUpdate($request, $age, AgeType::class);
     }
 
     /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */

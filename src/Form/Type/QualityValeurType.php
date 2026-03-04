@@ -39,8 +39,4 @@ class QualityValeurType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'qualityValeur';
-    }
 }

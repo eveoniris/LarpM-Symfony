@@ -7,8 +7,8 @@ namespace App\Controller;
 use App\Entity\Debriefing;
 use App\Entity\Groupe;
 use App\Enum\Role;
-use App\Form\Debriefing\DebriefingDeleteForm;
-use App\Form\Debriefing\DebriefingForm;
+use App\Form\Debriefing\DebriefingDeleteType;
+use App\Form\Debriefing\DebriefingType;
 use App\Repository\DebriefingRepository;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -45,7 +45,7 @@ class DebriefingController extends AbstractController
             }
         }
 
-        $form = $this->createForm(DebriefingForm::class, $debriefing, [
+        $form = $this->createForm(DebriefingType::class, $debriefing, [
             'groupeId' => $groupeId,
         ])->add('visibility', ChoiceType::class, [
             'required' => true,
@@ -140,7 +140,7 @@ class DebriefingController extends AbstractController
         EntityManagerInterface $entityManager,
         Debriefing $debriefing,
     ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
-        $form = $this->createForm(DebriefingDeleteForm::class, $debriefing)->add('save', SubmitType::class, [
+        $form = $this->createForm(DebriefingDeleteType::class, $debriefing)->add('save', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
 
@@ -234,7 +234,7 @@ class DebriefingController extends AbstractController
         EntityManagerInterface $entityManager,
         Debriefing $debriefing,
     ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
-        $form = $this->createForm(DebriefingForm::class, $debriefing)->add('visibility', ChoiceType::class, [
+        $form = $this->createForm(DebriefingType::class, $debriefing)->add('visibility', ChoiceType::class, [
             'required' => true,
             'label' => 'Visibilité',
             'choices' => [

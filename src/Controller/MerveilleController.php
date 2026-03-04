@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Merveille;
-use App\Form\Merveille\MerveilleForm;
+use App\Form\Merveille\MerveilleType;
 use App\Repository\MerveilleRepository;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,7 +24,7 @@ class MerveilleController extends AbstractController
     #[Route('/add', name: 'add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, new Merveille(), MerveilleForm::class);
+        return $this->handleCreateOrUpdate($request, new Merveille(), MerveilleType::class);
     }
 
     /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
@@ -105,6 +105,6 @@ class MerveilleController extends AbstractController
     #[Route('/{merveille}/udpate', name: 'update', requirements: ['merveille' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Merveille $merveille): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $merveille, MerveilleForm::class);
+        return $this->handleCreateOrUpdate($request, $merveille, MerveilleType::class);
     }
 }

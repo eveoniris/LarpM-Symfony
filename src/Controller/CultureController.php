@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Culture;
-use App\Form\Culture\CultureDeleteForm;
-use App\Form\Culture\CultureForm;
+use App\Form\Culture\CultureDeleteType;
+use App\Form\Culture\CultureType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,7 +36,7 @@ class CultureController extends AbstractController
     #[Route('/culture/add', name: 'culture.add')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(CultureForm::class, new Culture());
+        $form = $this->createForm(CultureType::class, new Culture());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -79,7 +79,7 @@ class CultureController extends AbstractController
         #[MapEntity]
         Culture $culture,
     ): Response {
-        $form = $this->createForm(CultureForm::class, $culture);
+        $form = $this->createForm(CultureType::class, $culture);
 
         $form->handleRequest($request);
 
@@ -109,7 +109,7 @@ class CultureController extends AbstractController
         #[MapEntity]
         Culture $culture,
     ): Response {
-        $form = $this->createForm(CultureDeleteForm::class, $culture)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
+        $form = $this->createForm(CultureDeleteType::class, $culture)->add('submit', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, ['label' => 'Supprimer']);
 
         $form->handleRequest($request);
 

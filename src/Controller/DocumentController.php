@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Document;
-use App\Form\DocumentForm;
+use App\Form\DocumentType;
 use App\Repository\DocumentRepository;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,7 +29,7 @@ class DocumentController extends AbstractController
     #[Route('/add', name: 'add')]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, new Document(), DocumentForm::class);
+        return $this->handleCreateOrUpdate($request, new Document(), DocumentType::class);
     }
 
     /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
@@ -230,6 +230,6 @@ class DocumentController extends AbstractController
     #[Route('/{document}/update', name: 'update')]
     public function updateAction(Request $request, #[MapEntity] Document $document): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $document, DocumentForm::class);
+        return $this->handleCreateOrUpdate($request, $document, DocumentType::class);
     }
 }

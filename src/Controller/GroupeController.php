@@ -18,17 +18,17 @@ use App\Entity\Personnage;
 use App\Entity\Ressource;
 use App\Entity\Territoire;
 use App\Enum\Role;
-use App\Form\BackgroundForm;
-use App\Form\Groupe\GroupeCompositionForm;
-use App\Form\Groupe\GroupeDescriptionForm;
-use App\Form\Groupe\GroupeDocumentForm;
-use App\Form\Groupe\GroupeEnvelopeForm;
-use App\Form\Groupe\GroupeForm;
-use App\Form\Groupe\GroupeIngredientForm;
-use App\Form\Groupe\GroupeItemForm;
-use App\Form\Groupe\GroupeRessourceForm;
-use App\Form\Groupe\GroupeRichesseForm;
-use App\Form\Groupe\GroupeScenaristeForm;
+use App\Form\BackgroundType;
+use App\Form\Groupe\GroupeCompositionType;
+use App\Form\Groupe\GroupeDescriptionType;
+use App\Form\Groupe\GroupeDocumentType;
+use App\Form\Groupe\GroupeEnvelopeType;
+use App\Form\Groupe\GroupeType;
+use App\Form\Groupe\GroupeIngredientType;
+use App\Form\Groupe\GroupeItemType;
+use App\Form\Groupe\GroupeRessourceType;
+use App\Form\Groupe\GroupeRichesseType;
+use App\Form\Groupe\GroupeScenaristeType;
 use App\Manager\GroupeManager;
 use App\Repository\GroupeRepository;
 use App\Repository\RessourceRepository;
@@ -60,7 +60,7 @@ class GroupeController extends AbstractController
     #[Route('/add', name: 'add')]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, new Groupe(), GroupeForm::class);
+        return $this->handleCreateOrUpdate($request, new Groupe(), GroupeType::class);
     }
 
     /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
@@ -107,7 +107,7 @@ class GroupeController extends AbstractController
         $background = new Background();
         $background->setGroupe($groupe);
 
-        $form = $this->createForm(BackgroundForm::class, $background)->add('save', SubmitType::class, [
+        $form = $this->createForm(BackgroundType::class, $background)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 
@@ -139,7 +139,7 @@ class GroupeController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(GroupeDocumentForm::class, $groupe)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeDocumentType::class, $groupe)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -183,7 +183,7 @@ class GroupeController extends AbstractController
             $originalGroupeHasIngredients->add($groupeHasIngredient);
         }
 
-        $form = $this->createForm(GroupeIngredientForm::class, $groupe)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeIngredientType::class, $groupe)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -257,7 +257,7 @@ class GroupeController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(GroupeItemForm::class, $groupe)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeItemType::class, $groupe)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -391,7 +391,7 @@ class GroupeController extends AbstractController
             return $r;
         }
 
-        $form = $this->createForm(GroupeRichesseForm::class, $groupe)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeRichesseType::class, $groupe)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -454,7 +454,7 @@ class GroupeController extends AbstractController
             $originalGroupeClasses->add($groupeClasse);
         }
 
-        $form = $this->createForm(GroupeCompositionForm::class, $groupe)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeCompositionType::class, $groupe)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -530,7 +530,7 @@ class GroupeController extends AbstractController
         #[MapEntity]
         Groupe $groupe,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeDescriptionForm::class, $groupe)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeDescriptionType::class, $groupe)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -558,7 +558,7 @@ class GroupeController extends AbstractController
     {
         $this->checkHasAccess([Role::ORGA, Role::SCENARISTE], fn () => $this->groupeService->isUserIsGroupeResponsable($groupe));
 
-        $form = $this->createForm(GroupeDescriptionForm::class, $groupe)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeDescriptionType::class, $groupe)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -656,7 +656,7 @@ class GroupeController extends AbstractController
         #[MapEntity]
         Groupe $groupe,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeEnvelopeForm::class, $groupe)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeEnvelopeType::class, $groupe)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -740,7 +740,7 @@ class GroupeController extends AbstractController
          * $type = null;
          * $value = null;
          *
-         * $form = $this->createForm(GroupeFindForm::class);
+         * $form = $this->createForm(GroupeFindType::class);
          *
          * $form->handleRequest($request);
          *
@@ -1136,7 +1136,7 @@ class GroupeController extends AbstractController
             $originalGroupeHasRessources->add($groupeHasRessource);
         }
 
-        $form = $this->createForm(GroupeRessourceForm::class, $groupe)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeRessourceType::class, $groupe)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -1289,7 +1289,7 @@ class GroupeController extends AbstractController
         #[MapEntity]
         Groupe $groupe,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeScenaristeForm::class, $groupe)->add('submit', SubmitType::class, [
+        $form = $this->createForm(GroupeScenaristeType::class, $groupe)->add('submit', SubmitType::class, [
             'label' => 'Enregistrer',
         ]);
 
@@ -1470,7 +1470,7 @@ class GroupeController extends AbstractController
             $originalTerritoires->add($territoire);
         }
 
-        $form = $this->createForm(GroupeForm::class, $groupe)->add('update', SubmitType::class, [
+        $form = $this->createForm(GroupeType::class, $groupe)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('delete', SubmitType::class, ['label' => 'Supprimer']);
 
@@ -1574,7 +1574,7 @@ class GroupeController extends AbstractController
         $groupe = $this->entityManager->find(Groupe::class, $id);
 
         /** @phpstan-ignore argument.templateType */
-        $form = $this->createForm(BackgroundForm::class, $groupe->getBackground())->add('save', SubmitType::class, [
+        $form = $this->createForm(BackgroundType::class, $groupe->getBackground())->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
 

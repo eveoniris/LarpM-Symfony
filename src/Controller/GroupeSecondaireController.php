@@ -9,11 +9,11 @@ use App\Entity\Message;
 use App\Entity\Postulant;
 use App\Entity\SecondaryGroup;
 use App\Enum\Role;
-use App\Form\GroupeSecondaire\GroupeSecondaireForm;
-use App\Form\GroupeSecondaire\GroupeSecondaireMaterielForm;
-use App\Form\GroupeSecondaire\GroupeSecondaireNewMembreForm;
-use App\Form\GroupeSecondaire\GroupeSecondairePostulerForm;
-use App\Form\MessageForm;
+use App\Form\GroupeSecondaire\GroupeSecondaireType;
+use App\Form\GroupeSecondaire\GroupeSecondaireMaterielType;
+use App\Form\GroupeSecondaire\GroupeSecondaireNewMembreType;
+use App\Form\GroupeSecondaire\GroupeSecondairePostulerType;
+use App\Form\MessageType;
 use App\Manager\GroupeManager;
 use App\Repository\SecondaryGroupRepository;
 use App\Service\PagerService;
@@ -142,7 +142,7 @@ class GroupeSecondaireController extends AbstractController
     {
         $groupeSecondaire = new SecondaryGroup();
 
-        $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)->add('save', SubmitType::class, [
+        $form = $this->createForm(GroupeSecondaireType::class, $groupeSecondaire)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
         ])->add('save_continue', SubmitType::class, ['label' => 'Sauvegarder & continuer']);
 
@@ -218,7 +218,7 @@ class GroupeSecondaireController extends AbstractController
         $message->setCreationDate(new DateTime('NOW'));
         $message->setUpdateDate(new DateTime('NOW'));
 
-        $form = $this->createForm(MessageForm::class, $message)->add('envoyer', SubmitType::class, [
+        $form = $this->createForm(MessageType::class, $message)->add('envoyer', SubmitType::class, [
             'label' => 'Envoyer votre message',
         ]);
 
@@ -275,7 +275,7 @@ class GroupeSecondaireController extends AbstractController
         $message->setCreationDate(new DateTime('NOW'));
         $message->setUpdateDate(new DateTime('NOW'));
 
-        $form = $this->createForm(MessageForm::class, $message)->add('envoyer', SubmitType::class, [
+        $form = $this->createForm(MessageType::class, $message)->add('envoyer', SubmitType::class, [
             'label' => 'Envoyer votre message',
         ]);
 
@@ -376,7 +376,7 @@ class GroupeSecondaireController extends AbstractController
             return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
         }
 
-        $form = $this->createForm(GroupeSecondairePostulerForm::class)->add('postuler', SubmitType::class, [
+        $form = $this->createForm(GroupeSecondairePostulerType::class)->add('postuler', SubmitType::class, [
             'label' => 'Postuler',
         ]);
 
@@ -495,7 +495,7 @@ class GroupeSecondaireController extends AbstractController
         #[MapEntity]
         SecondaryGroup $groupeSecondaire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(GroupeSecondaireMaterielForm::class, $groupeSecondaire);
+        $form = $this->createForm(GroupeSecondaireMaterielType::class, $groupeSecondaire);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -524,7 +524,7 @@ class GroupeSecondaireController extends AbstractController
         SecondaryGroup $groupeSecondaire,
     ): RedirectResponse|Response {
         $this->canManageGroup($groupeSecondaire);
-        $form = $this->createForm(GroupeSecondaireNewMembreForm::class);
+        $form = $this->createForm(GroupeSecondaireNewMembreType::class);
 
         $form->handleRequest($request);
 
@@ -588,7 +588,7 @@ class GroupeSecondaireController extends AbstractController
         $message->setCreationDate(new DateTime('NOW'));
         $message->setUpdateDate(new DateTime('NOW'));
 
-        $form = $this->createForm(MessageForm::class, $message)->add('envoyer', SubmitType::class, [
+        $form = $this->createForm(MessageType::class, $message)->add('envoyer', SubmitType::class, [
             'label' => 'Envoyer votre réponse',
         ]);
 
@@ -745,7 +745,7 @@ class GroupeSecondaireController extends AbstractController
     ): RedirectResponse|Response {
         $this->canManageGroup($groupeSecondaire);
 
-        $form = $this->createForm(GroupeSecondaireForm::class, $groupeSecondaire)->add('update', SubmitType::class, [
+        $form = $this->createForm(GroupeSecondaireType::class, $groupeSecondaire)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
             'attr' => ['class' => 'btn btn-secondary'],
         ])->add('delete', SubmitType::class, ['label' => 'Supprimer', 'attr' => ['class' => 'btn btn-secondary']]);

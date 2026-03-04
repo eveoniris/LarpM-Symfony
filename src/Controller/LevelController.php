@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Level;
-use App\Form\LevelForm;
+use App\Form\LevelType;
 use App\Repository\LevelRepository;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -39,7 +39,7 @@ class LevelController extends AbstractController
     {
         $level = new Level();
 
-        return $this->handleCreateOrUpdate($request, $level, LevelForm::class);
+        return $this->handleCreateOrUpdate($request, $level, LevelType::class);
     }
 
     #[Route(
@@ -54,7 +54,7 @@ class LevelController extends AbstractController
     )]
     public function updateAction(Request $request, #[MapEntity] Level $level): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $level, LevelForm::class);
+        return $this->handleCreateOrUpdate($request, $level, LevelType::class);
     }
 
     #[Route('/{level}/detail', name: 'detail', requirements: ['level' => Requirement::DIGITS], methods: ['GET'])]

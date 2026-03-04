@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Bonus;
-use App\Form\Bonus\BonusForm;
+use App\Form\Bonus\BonusType;
 use App\Repository\BonusRepository;
 use App\Repository\PersonnageBonusRepository;
 use App\Service\PagerService;
@@ -47,7 +47,7 @@ class BonusController extends AbstractController
     #[Route('/add', name: 'add')]
     public function addAction(Request $request): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, new Bonus(), BonusForm::class, breadcrumb: [
+        return $this->handleCreateOrUpdate($request, new Bonus(), BonusType::class, breadcrumb: [
             ['route' => $this->generateUrl('bonus.list'), 'name' => 'Liste des bonus'],
             ['name' => 'Ajouter un bonus'],
         ]);
@@ -71,7 +71,7 @@ class BonusController extends AbstractController
     #[Route('/{bonus}/udpate', name: 'update', requirements: ['bonus' => Requirement::DIGITS])]
     public function updateAction(Request $request, #[MapEntity] Bonus $bonus): RedirectResponse|Response
     {
-        return $this->handleCreateOrUpdate($request, $bonus, BonusForm::class, breadcrumb: [
+        return $this->handleCreateOrUpdate($request, $bonus, BonusType::class, breadcrumb: [
             ['route' => $this->generateUrl('bonus.list'), 'name' => 'Liste des bonus'],
             [
                 'route' => $this->generateUrl('bonus.detail', ['bonus' => $bonus->getId()]),

@@ -36,8 +36,4 @@ class GroupeHasRessourceType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'groupeHasRessource';
-    }
 }

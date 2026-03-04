@@ -6,8 +6,8 @@ namespace App\Controller;
 
 use App\Entity\Chronologie;
 use App\Entity\Territoire;
-use App\Form\ChronologieForm;
-use App\Form\ChronologieRemoveForm;
+use App\Form\ChronologieType;
+use App\Form\ChronologieRemoveType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -107,7 +107,7 @@ class ChronologieController extends AbstractController
             }
         }
 
-        $form = $this->createForm(ChronologieForm::class, $chronologie, [
+        $form = $this->createForm(ChronologieType::class, $chronologie, [
             'territoireId' => $territoireId,
         ])->add('visibilite', ChoiceType::class, [
             'required' => true,
@@ -142,7 +142,7 @@ class ChronologieController extends AbstractController
         EntityManagerInterface $entityManager,
         Chronologie $chronologie,
     ): Response {
-        $form = $this->createForm(ChronologieForm::class, $chronologie)->add('visibilite', ChoiceType::class, [
+        $form = $this->createForm(ChronologieType::class, $chronologie)->add('visibilite', ChoiceType::class, [
             'required' => true,
             'label' => 'Visibilité',
             'choices' => [
@@ -177,7 +177,7 @@ class ChronologieController extends AbstractController
         EntityManagerInterface $entityManager,
         Chronologie $chronologie,
     ): Response {
-        $form = $this->createForm(ChronologieRemoveForm::class, $chronologie)->add('save', SubmitType::class, [
+        $form = $this->createForm(ChronologieRemoveType::class, $chronologie)->add('save', SubmitType::class, [
             'label' => 'Supprimer',
         ]);
 

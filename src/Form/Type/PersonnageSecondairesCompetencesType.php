@@ -33,8 +33,4 @@ class PersonnageSecondairesCompetencesType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'personnageSecondairesCompetences';
-    }
 }

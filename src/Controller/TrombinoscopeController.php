@@ -39,7 +39,7 @@ class TrombinoscopeController extends AbstractController
         /*
          *
          *
-         * $form = $this->createForm(TrombinoscopeForm::class);
+         * $form = $this->createForm(TrombinoscopeType::class);
          *
          * $form->handleRequest($request);
          *

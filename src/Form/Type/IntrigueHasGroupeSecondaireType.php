@@ -33,8 +33,4 @@ class IntrigueHasGroupeSecondaireType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'intrigueHasGroupeSecondaire';
-    }
 }

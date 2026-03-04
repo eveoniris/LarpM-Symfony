@@ -32,8 +32,4 @@ class CompetenceType extends AbstractType
         ]);
     }
 
-    public function getName(): string
-    {
-        return 'personnageCompetence';
-    }
 }
