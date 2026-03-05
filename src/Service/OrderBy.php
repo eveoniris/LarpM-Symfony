@@ -60,7 +60,7 @@ final class OrderBy
         return $this->sort ?? self::ASC;
     }
 
-    private function isAllowed(string $value): bool
+    private function isAllowed(?string $value): bool
     {
         return \in_array($value, [self::ASC, self::DESC], true);
     }
