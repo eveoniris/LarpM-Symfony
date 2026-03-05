@@ -131,10 +131,10 @@ class BackgroundController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     public function listAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $order_by = $request->get('order_by') ?: 'id';
-        $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $order_by = $request->query->get('order_by') ?: 'id';
+        $order_dir = 'DESC' == $request->query->get('order_dir') ? 'DESC' : 'ASC';
+        $limit = (int) ($request->query->get('limit') ?: 50);
+        $page = (int) ($request->query->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $type = null;
         $value = null;

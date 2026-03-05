@@ -36,7 +36,7 @@ class DebriefingController extends AbstractController
         EntityManagerInterface $entityManager,
     ): \Symfony\Component\HttpFoundation\RedirectResponse|Response {
         $debriefing = new Debriefing();
-        $groupeId = $request->get('groupe');
+        $groupeId = $request->query->get('groupe');
         if ($groupeId) {
             $groupeRepository = $entityManager->getRepository(Groupe::class);
             $groupe = $groupeRepository->find($groupeId);

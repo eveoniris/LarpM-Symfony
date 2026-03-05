@@ -58,7 +58,7 @@ class GroupeSecondaireTypeController extends AbstractController
      */
     public function adminDetailAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $id = $request->get('index');
+        $id = $request->query->get('index');
 
         $groupeSecondaireType = $entityManager->find('\\' . \App\Entity\SecondaryGroupType::class, $id);
 
@@ -86,7 +86,7 @@ class GroupeSecondaireTypeController extends AbstractController
      */
     public function adminUpdateAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $id = $request->get('index');
+        $id = $request->query->get('index');
 
         $groupeSecondaireType = $entityManager->find('\\' . \App\Entity\SecondaryGroupType::class, $id);
 

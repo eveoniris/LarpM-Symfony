@@ -101,7 +101,7 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     public function addBackgroundAction(Request $request): RedirectResponse|Response
     {
-        $id = $request->get('index');
+        $id = $request->query->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
 
         $background = new Background();
@@ -286,7 +286,7 @@ class GroupeController extends AbstractController
     // TODO
     public function adminParticipantAddAction(Request $request): RedirectResponse|Response
     {
-        $groupe = $request->get('groupe');
+        $groupe = $request->query->get('groupe');
 
         $repo = $this->entityManager->getRepository(Participant::class);
 
@@ -346,8 +346,8 @@ class GroupeController extends AbstractController
     // TODO
     public function adminParticipantRemoveAction(Request $request): RedirectResponse|Response
     {
-        $participantId = $request->get('participant');
-        $groupe = $request->get('groupe');
+        $participantId = $request->query->get('participant');
+        $groupe = $request->query->get('groupe');
 
         $participant = $this->entityManager->find(Participant::class, $participantId);
 
@@ -732,10 +732,10 @@ class GroupeController extends AbstractController
         ]);
 
         /* OLD
-         * $order_by = $request->get('order_by') ?: 'numero';
-         * $order_dir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
-         * $limit = (int)($request->get('limit') ?: 50);
-         * $page = (int)($request->get('page') ?: 1);
+         * $order_by = $request->query->get('order_by') ?: 'numero';
+         * $order_dir = 'DESC' == $request->query->get('order_dir') ? 'DESC' : 'ASC';
+         * $limit = (int)($request->query->get('limit') ?: 50);
+         * $page = (int)($request->query->get('page') ?: 1);
          * $offset = ($page - 1) * $limit;
          * $type = null;
          * $value = null;
@@ -855,11 +855,11 @@ class GroupeController extends AbstractController
     // TODO
     public function placeAction(Request $request): RedirectResponse|Response
     {
-        $id = $request->get('index');
+        $id = $request->query->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
 
         if ('POST' == $request->getMethod()) {
-            $newPlaces = $request->get('place');
+            $newPlaces = $request->request->get('place');
 
             /*
              * Met à jour uniquement si la valeur à changé
@@ -1055,7 +1055,7 @@ class GroupeController extends AbstractController
             }
         }
 
-        if ($request->get('csv')) {
+        if ($request->query->get('csv')) {
             $header = [
                 'nom',
                 'pays',
@@ -1570,7 +1570,7 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_SCENARISTE')]
     public function updateBackgroundAction(Request $request): RedirectResponse|Response
     {
-        $id = $request->get('index');
+        $id = $request->query->get('index');
         $groupe = $this->entityManager->find(Groupe::class, $id);
 
         /** @phpstan-ignore argument.templateType */

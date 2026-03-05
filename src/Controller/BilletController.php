@@ -49,7 +49,7 @@ class BilletController extends AbstractController
         EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
         $billet = new Billet();
-        $gnId = $request->get('gn');
+        $gnId = $request->query->get('gn');
 
         if ($gnId) {
             $gn = $this->entityManager->getRepository(Gn::class)->find($gnId);

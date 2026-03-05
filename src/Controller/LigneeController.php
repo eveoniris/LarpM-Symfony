@@ -101,7 +101,7 @@ class LigneeController extends AbstractController
         #[MapEntity]
         Lignee $lignee,
     ): RedirectResponse|Response {
-        $id = $request->get('lignee');
+        $id = $request->attributes->get('lignee');
 
         $lignee = $entityManager->find(Lignee::class, $id);
 
@@ -123,10 +123,10 @@ class LigneeController extends AbstractController
     #[Route('/lignee', name: 'lignee.list')]
     public function listAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $order_by = $request->get('order_by') ?: 'id';
-        $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $order_by = $request->query->get('order_by') ?: 'id';
+        $order_dir = 'DESC' === $request->query->get('order_dir') ? 'DESC' : 'ASC';
+        $limit = (int) ($request->query->get('limit') ?: 50);
+        $page = (int) ($request->query->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $type = null;
         $value = null;
@@ -159,9 +159,9 @@ class LigneeController extends AbstractController
     #[Route('/lignee/{lignee}/removeMembre', name: 'lignee.removeMembre')]
     public function removeMembreAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse
     {
-        $lignee = $request->get('lignee');
-        $membreNom = $request->get('membreNom');
-        $membre = $request->get('membre');
+        $lignee = $request->query->get('lignee');
+        $membreNom = $request->query->get('membreNom');
+        $membre = $request->query->get('membre');
 
         $personnageLignee = $entityManager->find(PersonnageLignee::class, $membre);
 

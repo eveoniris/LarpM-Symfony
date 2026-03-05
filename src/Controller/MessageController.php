@@ -63,7 +63,7 @@ class MessageController extends AbstractController
         $message = new Message();
         $message->setUserRelatedByAuteur($this->getUser());
 
-        $to_id = $request->get('to');
+        $to_id = $request->query->get('to');
         if ($to_id) {
             $userRepository = $entityManager->getRepository(User::class);
             if ($to = $userRepository->find($to_id)) {

@@ -77,7 +77,7 @@ class JoueurController extends AbstractController
      */
     public function updateAction(Request $request, EntityManagerInterface $entityManager)
     {
-        $id = $request->get('index');
+        $id = $request->query->get('index');
 
         $joueur = $entityManager->find('\App\Entity\Joueur', $id);
 
@@ -110,8 +110,8 @@ class JoueurController extends AbstractController
         $joueurs = $repo->findAll();
 
         if ('POST' == $request->getMethod()) {
-            $newXps = $request->get('xp');
-            $explanation = $request->get('explanation');
+            $newXps = $request->request->get('xp');
+            $explanation = $request->request->get('explanation');
 
             foreach ($joueurs as $joueur) {
                 $personnage = $joueur->getPersonnage();
