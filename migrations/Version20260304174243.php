@@ -14,7 +14,7 @@ final class Version20260304174243 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Schema alignment phase 2: username VARCHAR(100), salt NOT NULL, DROP is_enabled, unsigned IDs (connaissance/heroisme/pugilat/renomme_history/technologie/technologies_ressources), plus accumulated DEV→PROD drift';
+        return 'Schema alignment phase 2: username VARCHAR(100), salt NOT NULL, DROP is_enabled, unsigned IDs, plus accumulated DEV→PROD drift. REQUIRES Version20260303150041 to have run first.';
     }
 
     public function up(Schema $schema): void
@@ -137,7 +137,7 @@ final class Version20260304174243 extends AbstractMigration
         $this->addSql('ALTER TABLE sorts CHANGE description description VARCHAR(255) DEFAULT NULL');
         $this->addSql('ALTER TABLE technologie DROP FOREIGN KEY FK_technologie_competence_family');
         $this->addSql('ALTER TABLE technologie CHANGE description description TEXT NOT NULL');
-        $this->addSql('ALTER TABLE technologie ADD CONSTRAINT FK_AD813674F7EB2017 FOREIGN KEY (competence_family_id) REFERENCES competence_family (id)');
+        // FK_AD813674F7EB2017 already added by Version20260303150041 — do not re-add
         $this->addSql('ALTER TABLE technologie RENAME INDEX fk_technologie_competence_family TO IDX_AD813674F7EB2017');
         $this->addSql('ALTER TABLE technologies_ressources DROP FOREIGN KEY FK_B15E3D68261A27D2');
         $this->addSql('ALTER TABLE technologies_ressources CHANGE technologie_id technologie_id INT UNSIGNED DEFAULT NULL, CHANGE ressource_id ressource_id INT DEFAULT NULL');
@@ -270,7 +270,7 @@ final class Version20260304174243 extends AbstractMigration
         $this->addSql('ALTER TABLE secondary_group_type CHANGE description description LONGTEXT DEFAULT NULL');
         $this->addSql('ALTER TABLE sort CHANGE description description LONGTEXT DEFAULT NULL');
         $this->addSql('ALTER TABLE sorts CHANGE description description LONGTEXT DEFAULT NULL');
-        $this->addSql('ALTER TABLE technologie DROP FOREIGN KEY FK_AD813674F7EB2017');
+        // FK_AD813674F7EB2017 was not added by this migration (added by Version20260303150041) — do not drop it here
         $this->addSql('ALTER TABLE technologie CHANGE description description LONGTEXT NOT NULL');
         $this->addSql('ALTER TABLE technologie ADD CONSTRAINT FK_technologie_competence_family FOREIGN KEY (competence_family_id) REFERENCES competence_family (id) ON DELETE SET NULL');
         $this->addSql('ALTER TABLE technologie RENAME INDEX idx_ad813674f7eb2017 TO FK_technologie_competence_family');
@@ -282,8 +282,7 @@ final class Version20260304174243 extends AbstractMigration
         $this->addSql('ALTER TABLE territoire CHANGE appelation_id appelation_id INT NOT NULL, CHANGE culture_id culture_id INT UNSIGNED DEFAULT NULL');
         $this->addSql('ALTER TABLE territoire RENAME INDEX fk_territoire_territoire1_idx TO fk_zone_politique_zone_politique1_idx');
         $this->addSql('ALTER TABLE territoire_has_loi CHANGE loi_id loi_id INT UNSIGNED NOT NULL');
-        $this->addSql('ALTER TABLE territoire_quete DROP FOREIGN KEY FK_63718DCD0F97A8');
-        $this->addSql('ALTER TABLE territoire_quete DROP FOREIGN KEY FK_63718DCB011823');
+        // territoire_quete FKs added by Version20260303150041, not this migration — do not drop them here
         $this->addSql('ALTER TABLE token CHANGE description description LONGTEXT DEFAULT NULL');
         $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649E6917FB3');
         $this->addSql('ALTER TABLE user ADD is_enabled TINYINT(1) DEFAULT NULL, CHANGE password password VARCHAR(255) DEFAULT NULL, CHANGE pwd pwd VARCHAR(255) DEFAULT NULL, CHANGE username username VARCHAR(100) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_bin`, CHANGE creation_date creation_date DATETIME NOT NULL, CHANGE timePasswordResetRequested timePasswordResetRequested INT UNSIGNED DEFAULT NULL');
