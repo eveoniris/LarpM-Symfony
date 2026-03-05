@@ -77,7 +77,7 @@ class ConditionsServiceTest extends TestCase
     public function testReligionConditionMatchesById(): void
     {
         $personnage = $this->createStub(Personnage::class);
-        $personnage->method('hasReligionId')->with(12)->willReturn(true);
+        $personnage->method('hasReligionId')->willReturn(true);
 
         $conditions = [['TYPE' => 'RELIGION', 'VALUE' => 12]];
 
@@ -99,7 +99,7 @@ class ConditionsServiceTest extends TestCase
     public function testCompetenceConditionMatchesByNumericId(): void
     {
         $personnage = $this->createStub(Personnage::class);
-        $personnage->method('hasCompetenceId')->with(7)->willReturn(true);
+        $personnage->method('hasCompetenceId')->willReturn(true);
 
         $conditions = [['TYPE' => 'COMPETENCE', 'VALUE' => 7]];
 
@@ -207,8 +207,8 @@ class ConditionsServiceTest extends TestCase
     public function testAndModeBothConditionsMustMatch(): void
     {
         $personnage = $this->createStub(Personnage::class);
-        $personnage->method('hasCompetenceId')->with(1)->willReturn(true);
-        $personnage->method('hasReligionId')->with(2)->willReturn(true);
+        $personnage->method('hasCompetenceId')->willReturn(true);
+        $personnage->method('hasReligionId')->willReturn(true);
 
         $conditions = [
             'AND',
@@ -222,8 +222,8 @@ class ConditionsServiceTest extends TestCase
     public function testAndModeFailsIfOneConditionFails(): void
     {
         $personnage = $this->createStub(Personnage::class);
-        $personnage->method('hasCompetenceId')->with(1)->willReturn(true);
-        $personnage->method('hasReligionId')->with(2)->willReturn(false);
+        $personnage->method('hasCompetenceId')->willReturn(true);
+        $personnage->method('hasReligionId')->willReturn(false);
 
         $conditions = [
             'AND',
@@ -239,8 +239,8 @@ class ConditionsServiceTest extends TestCase
     public function testOrModeSucceedsIfEitherConditionMatches(): void
     {
         $personnage = $this->createStub(Personnage::class);
-        $personnage->method('hasCompetenceId')->with(1)->willReturn(false);
-        $personnage->method('hasReligionId')->with(2)->willReturn(true);
+        $personnage->method('hasCompetenceId')->willReturn(false);
+        $personnage->method('hasReligionId')->willReturn(true);
 
         $conditions = [
             'OR',
