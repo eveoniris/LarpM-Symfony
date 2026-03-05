@@ -144,16 +144,16 @@ class BaseGroupe
     /** @var Collection<int, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'groupes')]
     #[ORM\JoinTable(name: 'groupe_has_document')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'document_id', referencedColumnName: 'id')]
     #[OrderBy(['code' => 'ASC'])]
     protected Collection $documents;
 
     /** @var Collection<int, Item> */
     #[ORM\ManyToMany(targetEntity: Item::class, inversedBy: 'groupes')]
     #[ORM\JoinTable(name: 'groupe_has_item')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'item_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'item_id', referencedColumnName: 'id')]
     #[OrderBy(['label' => 'ASC'])]
     protected Collection $items;
 
@@ -162,7 +162,7 @@ class BaseGroupe
      */
     #[OneToMany(mappedBy: 'groupe', targetEntity: GroupeBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'groupe_bonus')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id')]
     private ?Collection $groupeBonus;
 
     #[Column(length: 255, nullable: true)]

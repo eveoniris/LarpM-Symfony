@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Factory;
 
 use App\Entity\CompetenceFamily;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<CompetenceFamily>
+ * @extends PersistentObjectFactory<CompetenceFamily>
  */
-final class CompetenceFamilyFactory extends PersistentProxyObjectFactory
+final class CompetenceFamilyFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

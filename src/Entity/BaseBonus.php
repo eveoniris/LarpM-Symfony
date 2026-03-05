@@ -46,19 +46,19 @@ abstract class BaseBonus
     /** @var Collection<int, OrigineBonus> */
     #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: OrigineBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'origine_bonus')]
-    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id')]
     private Collection $originesBonus;
 
     /** @var Collection<int, PersonnageBonus> */
     #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: PersonnageBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'personnage_bonus')]
-    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id')]
     private Collection $personnageBonus;
 
     /** @var Collection<int, GroupeBonus>|null */
     #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: GroupeBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'groupe_bonus')]
-    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id')]
     private ?Collection $groupeBonus;
 
     /** @var Collection<int, Merveille> */

@@ -130,6 +130,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
      * This is a no-op, since we never store the plain text credentials in this object.
      * It's required by UserInterface.
      */
+    #[\Deprecated]
     public function eraseCredentials(): void
     {
     }

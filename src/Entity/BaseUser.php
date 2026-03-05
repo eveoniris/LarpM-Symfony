@@ -202,8 +202,8 @@ abstract class BaseUser
     /** @var Collection<int, Restriction> */
     #[ORM\ManyToMany(targetEntity: Restriction::class, inversedBy: 'users')]
     #[ORM\JoinTable(name: 'user_has_restriction')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'restriction_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'restriction_id', referencedColumnName: 'id')]
     protected Collection $restrictions;
 
     /**
@@ -503,6 +503,7 @@ abstract class BaseUser
     /**
      * @see UserInterface
      */
+    #[\Deprecated]
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here

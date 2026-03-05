@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Factory;
 
 use App\Entity\ReligionLevel;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<ReligionLevel>
+ * @extends PersistentObjectFactory<ReligionLevel>
  */
-final class ReligionLevelFactory extends PersistentProxyObjectFactory
+final class ReligionLevelFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

@@ -11,7 +11,6 @@ use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Functional tests for competence purchase and document access.
@@ -22,7 +21,6 @@ use Zenstruck\Foundry\Test\Factories;
  */
 class CompetenceAchatTest extends WebTestCase
 {
-    use Factories;
 
     // -------------------------------------------------------------------------
     // Document access
@@ -39,7 +37,7 @@ class CompetenceAchatTest extends WebTestCase
         $personnage = PersonnageFactory::createOne(['user' => $user]);
 
         // Personnage does NOT know this competence
-        $client->loginUser($user->_real());
+        $client->loginUser($user);
         $client->request('GET', '/personnage/' . $personnage->getId() . '/competence/' . $competence->getId() . '/document');
 
         // Controller redirects with flash error: "Vous ne connaissez pas cette compétence !"
@@ -62,7 +60,7 @@ class CompetenceAchatTest extends WebTestCase
         // Personnage has 1000 XP — enough for any cost tier
         $personnage = PersonnageFactory::createOne(['user' => $user, 'xp' => 1000]);
 
-        $client->loginUser($user->_real());
+        $client->loginUser($user);
 
         $crawler = $client->request('GET', '/personnage/' . $personnage->getId() . '/competence/add');
         self::assertResponseIsSuccessful();
@@ -95,7 +93,7 @@ class CompetenceAchatTest extends WebTestCase
         // Personnage has 0 XP — cannot afford any non-free competence
         $personnage = PersonnageFactory::createOne(['user' => $user, 'xp' => 0]);
 
-        $client->loginUser($user->_real());
+        $client->loginUser($user);
 
         $crawler = $client->request('GET', '/personnage/' . $personnage->getId() . '/competence/add');
         self::assertResponseIsSuccessful();

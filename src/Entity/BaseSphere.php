@@ -35,8 +35,8 @@ abstract class BaseSphere
     /** @var Collection<int, Religion> */
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'spheres')]
     #[ORM\JoinTable(name: 'religions_spheres')]
-    #[JoinColumn(name: 'sphere_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'sphere_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id')]
     #[ORM\OrderBy(['label' => 'ASC'])]
     protected Collection $religions;
 

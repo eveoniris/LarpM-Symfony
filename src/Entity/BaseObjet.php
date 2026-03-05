@@ -98,8 +98,8 @@ abstract class BaseObjet
     /** @var Collection<int, Tag> */
     #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'objets')]
     #[ORM\JoinTable(name: 'objet_tag')]
-    #[JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'tag_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'objet_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'tag_id', referencedColumnName: 'id')]
     protected Collection $tags;
 
     public function __construct()

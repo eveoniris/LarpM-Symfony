@@ -37,8 +37,8 @@ abstract class BaseLieu
     /** @var Collection<int, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'lieus')]
     #[ORM\JoinTable(name: 'lieu_has_document')]
-    #[JoinColumn(name: 'lieu_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'lieu_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'document_id', referencedColumnName: 'id')]
     protected Collection $documents;
 
     public function __construct()

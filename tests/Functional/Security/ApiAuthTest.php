@@ -7,7 +7,6 @@ namespace App\Tests\Functional\Security;
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Functional tests for JWT API authentication.
@@ -18,7 +17,6 @@ use Zenstruck\Foundry\Test\Factories;
  */
 class ApiAuthTest extends WebTestCase
 {
-    use Factories;
 
     // -------------------------------------------------------------------------
     // Login check
