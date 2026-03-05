@@ -30,8 +30,6 @@ class ChronologieController extends AbstractController
         EntityManagerInterface $entityManager,
         Chronologie $event,
     ): JsonResponse {
-        $event = $request->get('event');
-
         $payload = json_decode($request->getContent(), false, 512, \JSON_THROW_ON_ERROR);
 
         $territoire = $entityManager->find(Territoire::class, $payload->territoire_id);
@@ -55,7 +53,6 @@ class ChronologieController extends AbstractController
         EntityManagerInterface $entityManager,
         Chronologie $event,
     ): JsonResponse {
-        $event = $request->get('event');
         $entityManager->remove($event);
         $entityManager->flush();
 
@@ -99,7 +96,7 @@ class ChronologieController extends AbstractController
         $chronologie = new Chronologie();
 
         // Un territoire peut avoir été passé en paramètre
-        $territoireId = $request->get('territoire');
+        $territoireId = $request->query->get('territoire');
         if ($territoireId) {
             $territoire = $entityManager->find(Territoire::class, $territoireId);
             if ($territoire) {

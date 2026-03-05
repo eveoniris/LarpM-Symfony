@@ -89,7 +89,7 @@ class IndexController extends AbstractController
             return $this->redirectToRoute('homepage');
         }
 
-        $userId = $request->get('userid');
+        $userId = $request->query->get('userid');
         if (!$userId) {
             $this->addFlash('error', 'Missing userid parameter');
 
@@ -104,7 +104,7 @@ class IndexController extends AbstractController
             return $this->redirectToRoute('homepage');
         }
 
-        $plaintextPassword = $request->get('pwd');
+        $plaintextPassword = $request->query->get('pwd');
 
         if (!$plaintextPassword) {
             $this->addFlash('error', 'Missing pwd parameter');
@@ -116,7 +116,7 @@ class IndexController extends AbstractController
         $hashedPassword = $passwordHasher->hashPassword($user, $plaintextPassword);
         $user->setPassword($hashedPassword);
 
-        $roles = explode(',', $request->get('roles', 'ROLE_ADMIN,ROLE_USER,ROLE_ORGA'));
+        $roles = explode(',', $request->query->get('roles', 'ROLE_ADMIN,ROLE_USER,ROLE_ORGA'));
         $user->setRoles($roles);
 
         // tell Doctrine you want to (eventually) save the Product (no queries yet)

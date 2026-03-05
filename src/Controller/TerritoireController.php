@@ -305,7 +305,7 @@ class TerritoireController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function eventAddAction(Request $request, #[MapEntity] Territoire $territoire): RedirectResponse|Response
     {
-        $event = $request->get('event');
+        $event = $request->query->get('event');
 
         $event ??= new Chronologie();
 
@@ -343,7 +343,7 @@ class TerritoireController extends AbstractController
         #[MapEntity]
         Territoire $territoire,
     ): RedirectResponse|Response {
-        $event = $request->get('event');
+        $event = $request->query->get('event');
 
         $form = $this->createForm(ChronologieType::class, $event)->add('update', SubmitType::class, [
             'label' => 'Mettre à jour',
@@ -375,10 +375,10 @@ class TerritoireController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE, Role::CARTOGRAPHE))]
     public function fiefAction(Request $request): Response
     {
-        $order_by = $request->get('order_by') ?: 'id';
-        $order_dir = 'DESC' === $request->get('order_dir') ? 'DESC' : 'ASC';
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $order_by = $request->query->get('order_by') ?: 'id';
+        $order_dir = 'DESC' === $request->query->get('order_dir') ? 'DESC' : 'ASC';
+        $limit = (int) ($request->query->get('limit') ?: 50);
+        $page = (int) ($request->query->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 

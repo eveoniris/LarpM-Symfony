@@ -58,7 +58,7 @@ class StockEtatController extends AbstractController
         #[MapEntity]
         Etat $etat,
     ): RedirectResponse|Response {
-        $id = $request->get('index');
+        $id = $request->query->get('index');
 
         $form = $this->createForm(EtatType::class, $etat)->add('update', SubmitType::class)->add('delete', SubmitType::class);
 

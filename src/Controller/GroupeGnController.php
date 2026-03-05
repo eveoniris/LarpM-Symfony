@@ -92,7 +92,7 @@ class GroupeGnController extends AbstractController
 
         return $this->render('groupe/detail.twig', [
             'groupe' => $groupeGn->getGroupe(),
-            'tab' => $request->get('tab', 'detail'),
+            'tab' => $request->query->get('tab', 'detail'),
             'participant' => $participant,
             'groupeGn' => $groupeGn,
             'canSeePrivateDetail' => $canSeePrivateDetail,
@@ -450,7 +450,7 @@ class GroupeGnController extends AbstractController
             return $r;
         }
 
-        $redirect = $request->get('redirect');
+        $redirect = $request->query->get('redirect');
 
         $this->hasAccess($groupeGn, [Role::WARGAME]);
 
