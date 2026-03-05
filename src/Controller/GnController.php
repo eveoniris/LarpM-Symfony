@@ -668,7 +668,7 @@ class GnController extends AbstractController
         $descendants = $entityManager->getRepository(Personnage::class)->findDescendants($personnage);
         $titre = $entityManager->getRepository(Personnage::class)->findTitre($personnage->getRenomme());
 
-        $tab = $request->get('tab', 'general');
+        $tab = $request->query->get('tab', 'general');
         if (!$twig->getLoader()->exists('personnage/fragment/tab_' . $tab . '.twig')) {
             $tab = 'general';
         }

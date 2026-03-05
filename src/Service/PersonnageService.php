@@ -2164,11 +2164,11 @@ class PersonnageService
         ?QueryBuilder $query = null,
     ): array {
         // récupère les filtres et tris de recherche + pagination renseignés dans le formulaire
-        $orderBy = $request->get('order_by') ?: 'id';
-        $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
+        $orderBy = $request->query->get('order_by') ?: 'id';
+        $orderDir = 'DESC' == $request->query->get('order_dir') ? 'DESC' : 'ASC';
         $isAsc = 'ASC' === $orderDir;
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $limit = (int) ($request->query->get('limit') ?: 50);
+        $page = (int) ($request->query->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
         $alias = $query->getRootAliases()[0] ?? 'p';

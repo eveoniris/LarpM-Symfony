@@ -58,7 +58,7 @@ class NiveauController extends AbstractController
 
     public function updateAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $id = $request->get('index');
+        $id = $request->query->get('index');
 
         $niveau = $entityManager->find(Level::class, $id);
 
@@ -92,7 +92,7 @@ class NiveauController extends AbstractController
 
     public function detailAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $id = $request->get('index');
+        $id = $request->query->get('index');
 
         $niveau = $entityManager->find(Level::class, $id);
 

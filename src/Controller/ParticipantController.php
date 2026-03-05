@@ -340,8 +340,8 @@ class ParticipantController extends AbstractController
         $form->handleRequest($request);
 
         if ('POST' == $request->getMethod()) {
-            $newXps = $request->get('xp');
-            $explanation = $request->get('explanation');
+            $newXps = $request->request->get('xp');
+            $explanation = $request->request->get('explanation');
 
             $personnage = $participant->getPersonnage();
             if ($personnage->getXp() != $newXps) {
@@ -938,7 +938,7 @@ class ParticipantController extends AbstractController
     {
         $participant = new Participant();
         $userRepository = $this->entityManager->getRepository(User::class);
-        $user = $userRepository->find($request->get('user'));
+        $user = $userRepository->find($request->query->get('user'));
 
         if ($user) {
             $participant->setUser($user);
@@ -1583,7 +1583,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $niveau = $request->get('niveau');
+        $niveau = $request->query->get('niveau');
 
         if ($participant->getPersonnage()?->getCompetenceNiveau(CompetenceFamilyType::ALCHEMY) < LevelType::getTypeId(LevelType::APPRENTICE)) {
             $this->addFlash('error', 'Seul un alchimiste peu avoir des potions de départ');
