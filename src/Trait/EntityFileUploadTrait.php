@@ -14,14 +14,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 // may be better as Service to handle multiple file field in an entity and get some Project DI
 trait EntityFileUploadTrait
 {
-    #[Assert\File([
-        'maxSize' => 6_000_000,
-        'extensions' => [
-            'pdf' => ['application/pdf', 'application/x-pdf'],
-        ],
-        'mimeTypes' => ['application/pdf', 'application/x-pdf'],
-        'groups' => ['pdf', 'file'],
-    ])]
+    #[Assert\File(
+        maxSize: 6_000_000,
+        extensions: ['pdf' => ['application/pdf', 'application/x-pdf']],
+        mimeTypes: ['application/pdf', 'application/x-pdf'],
+        groups: ['pdf', 'file'],
+    )]
     protected ?UploadedFile $file;
     protected ?int $filenameMaxLength;
     protected bool $useUniqueId = true;

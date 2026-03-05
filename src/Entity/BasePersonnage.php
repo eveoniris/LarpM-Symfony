@@ -198,31 +198,31 @@ abstract class BasePersonnage
     /** @var Collection<int, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_document')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'Document_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'Document_id', referencedColumnName: 'id')]
     #[OrderBy(['code' => 'ASC'])]
     protected Collection $documents;
 
     /** @var Collection<int, Item> */
     #[ORM\ManyToMany(targetEntity: Item::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_item')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'item_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'item_id', referencedColumnName: 'id')]
     #[OrderBy(['label' => 'ASC'])]
     protected Collection $items;
 
     /** @var Collection<int, Technologie> */
     #[ORM\ManyToMany(targetEntity: Technologie::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_has_technologie')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'technologie_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'technologie_id', referencedColumnName: 'id')]
     protected Collection $technologies;
 
     /** @var Collection<int, Religion> */
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnage_religion_description')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id')]
     protected Collection $religions;
 
     /** @var Collection<int, Competence> */
@@ -233,38 +233,38 @@ abstract class BasePersonnage
     /** @var Collection<int, Domaine> */
     #[ORM\ManyToMany(targetEntity: Domaine::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_domaines')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'domaine_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'domaine_id', referencedColumnName: 'id')]
     protected Collection $domaines;
 
     /** @var Collection<int, Potion> */
     #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'personnages', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'personnages_potions')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id')]
     #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $potions;
 
     /** @var Collection<int, Priere> */
     #[ORM\ManyToMany(targetEntity: Priere::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_prieres')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'priere_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'priere_id', referencedColumnName: 'id')]
     protected Collection $prieres;
 
     /** @var Collection<int, Sort> */
     #[ORM\ManyToMany(targetEntity: Sort::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_sorts')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'sort_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'sort_id', referencedColumnName: 'id')]
     #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $sorts;
 
     /** @var Collection<int, Connaissance> */
     #[ORM\ManyToMany(targetEntity: Connaissance::class, inversedBy: 'personnages')]
     #[ORM\JoinTable(name: 'personnages_connaissances')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'connaissance_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'connaissance_id', referencedColumnName: 'id')]
     #[OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $connaissances;
 
@@ -299,7 +299,7 @@ abstract class BasePersonnage
      */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'personnage_bonus')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
     private ?Collection $personnageBonus;
 
     /**

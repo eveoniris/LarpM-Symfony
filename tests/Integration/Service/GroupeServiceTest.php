@@ -10,7 +10,6 @@ use App\Tests\Factory\GroupeFactory;
 use App\Tests\Factory\TerritoireFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Integration tests for GroupeService wealth calculation.
@@ -21,7 +20,6 @@ use Zenstruck\Foundry\Test\Factories;
  */
 class GroupeServiceTest extends KernelTestCase
 {
-    use Factories;
 
     private GroupeService $groupeService;
     private EntityManagerInterface $entityManager;
@@ -42,7 +40,7 @@ class GroupeServiceTest extends KernelTestCase
     {
         $groupe = GroupeFactory::createOne();
 
-        self::assertSame(0, $this->groupeService->getAllRichesse($groupe->_real()));
+        self::assertSame(0, $this->groupeService->getAllRichesse($groupe));
     }
 
     public function testGetAllRichesseWithStableTerritoire(): void
@@ -55,7 +53,7 @@ class GroupeServiceTest extends KernelTestCase
             'groupe'  => $groupe,
         ]);
 
-        self::assertSame(300, $this->groupeService->getAllRichesse($groupe->_real()));
+        self::assertSame(300, $this->groupeService->getAllRichesse($groupe));
     }
 
     public function testGetAllRichesseWithInstableTerritoire(): void
@@ -68,7 +66,7 @@ class GroupeServiceTest extends KernelTestCase
             'groupe'  => $groupe,
         ]);
 
-        self::assertSame(150, $this->groupeService->getAllRichesse($groupe->_real()));
+        self::assertSame(150, $this->groupeService->getAllRichesse($groupe));
     }
 
     public function testGetAllRichesseWithMultipleTerritoires(): void
@@ -87,6 +85,6 @@ class GroupeServiceTest extends KernelTestCase
             'groupe'  => $groupe,
         ]);
 
-        self::assertSame(375, $this->groupeService->getAllRichesse($groupe->_real()));
+        self::assertSame(375, $this->groupeService->getAllRichesse($groupe));
     }
 }

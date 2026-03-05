@@ -19,7 +19,6 @@ use App\Tests\Factory\TerritoireFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Integration tests for PersonnageService.
@@ -30,7 +29,6 @@ use Zenstruck\Foundry\Test\Factories;
  */
 class PersonnageServiceTest extends KernelTestCase
 {
-    use Factories;
 
     private PersonnageService $personnageService;
     private EntityManagerInterface $entityManager;
@@ -54,7 +52,7 @@ class PersonnageServiceTest extends KernelTestCase
         // 2 vivant personnages — below MAX_PER_USER (3)
         PersonnageFactory::createMany(2, ['user' => $user, 'vivant' => true]);
 
-        self::assertTrue($this->personnageService->canCreatePersonnage($user->_real()));
+        self::assertTrue($this->personnageService->canCreatePersonnage($user));
     }
 
     public function testCanCreatePersonnageReturnsFalseWhenUserHasMaxPersonnages(): void
@@ -64,7 +62,7 @@ class PersonnageServiceTest extends KernelTestCase
         // 3 vivant personnages — equal to MAX_PER_USER (3)
         PersonnageFactory::createMany(3, ['user' => $user, 'vivant' => true]);
 
-        self::assertFalse($this->personnageService->canCreatePersonnage($user->_real()));
+        self::assertFalse($this->personnageService->canCreatePersonnage($user));
     }
 
     public function testCanCreatePersonnageIgnoresDeadPersonnages(): void
@@ -74,7 +72,7 @@ class PersonnageServiceTest extends KernelTestCase
         // 3 dead personnages do NOT count toward the limit
         PersonnageFactory::createMany(3, ['user' => $user, 'vivant' => false]);
 
-        self::assertTrue($this->personnageService->canCreatePersonnage($user->_real()));
+        self::assertTrue($this->personnageService->canCreatePersonnage($user));
     }
 
     public function testCanCreatePersonnageReturnsFalseForNullUser(): void
@@ -99,18 +97,18 @@ class PersonnageServiceTest extends KernelTestCase
 
         $personnage = $this->personnageService->createNewPersonnage(
             null,
-            $user->_real(),
+            $user,
             null,
-            $gn->_real(),
+            $gn,
             static function (Personnage $p) use ($age, $classe, $genre, $groupe, $territoire): void {
                 $p->setNom('Test Personnage');
                 $p->setVivant(true);
                 $p->setBracelet(false);
-                $p->setAge($age->_real());
-                $p->setClasse($classe->_real());
-                $p->setGenre($genre->_real());
-                $p->setGroupe($groupe->_real());
-                $p->setTerritoire($territoire->_real());
+                $p->setAge($age);
+                $p->setClasse($classe);
+                $p->setGenre($genre);
+                $p->setGroupe($groupe);
+                $p->setTerritoire($territoire);
             },
         );
 
@@ -130,18 +128,18 @@ class PersonnageServiceTest extends KernelTestCase
 
         $personnage = $this->personnageService->createNewPersonnage(
             null,
-            $user->_real(),
+            $user,
             null,
-            $gn->_real(),
+            $gn,
             static function (Personnage $p) use ($age, $classe, $genre, $groupe, $territoire): void {
                 $p->setNom('Aged Personnage');
                 $p->setVivant(true);
                 $p->setBracelet(false);
-                $p->setAge($age->_real());
-                $p->setClasse($classe->_real());
-                $p->setGenre($genre->_real());
-                $p->setGroupe($groupe->_real());
-                $p->setTerritoire($territoire->_real());
+                $p->setAge($age);
+                $p->setClasse($classe);
+                $p->setGenre($genre);
+                $p->setGroupe($groupe);
+                $p->setTerritoire($territoire);
             },
         );
 
@@ -161,18 +159,18 @@ class PersonnageServiceTest extends KernelTestCase
 
         $personnage = $this->personnageService->createNewPersonnage(
             null,
-            $user->_real(),
+            $user,
             null,
-            $gn->_real(),
+            $gn,
             static function (Personnage $p) use ($age, $classe, $genre, $groupe, $territoire): void {
                 $p->setNom('Persisted Personnage');
                 $p->setVivant(true);
                 $p->setBracelet(false);
-                $p->setAge($age->_real());
-                $p->setClasse($classe->_real());
-                $p->setGenre($genre->_real());
-                $p->setGroupe($groupe->_real());
-                $p->setTerritoire($territoire->_real());
+                $p->setAge($age);
+                $p->setClasse($classe);
+                $p->setGenre($genre);
+                $p->setGroupe($groupe);
+                $p->setTerritoire($territoire);
             },
         );
 
@@ -191,7 +189,7 @@ class PersonnageServiceTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne(['xp' => 100]);
 
         // Personnage does NOT have the competence
-        self::assertFalse($this->personnageService->canTeachCompetence($personnage->_real(), $competence->_real()));
+        self::assertFalse($this->personnageService->canTeachCompetence($personnage, $competence));
     }
 
     public function testCanTeachCompetenceReturnsFalseWhenCompetenceFamilyHasNoType(): void
@@ -204,9 +202,9 @@ class PersonnageServiceTest extends KernelTestCase
 
         $personnage = PersonnageFactory::createOne(['xp' => 100]);
         // Add the competence to the personnage (isKnownCompetence will return true)
-        $personnage->_real()->addCompetence($competence->_real());
+        $personnage->addCompetence($competence);
 
         // hasCompetenceLevel(null, ...) → false even though personnage knows the competence
-        self::assertFalse($this->personnageService->canTeachCompetence($personnage->_real(), $competence->_real()));
+        self::assertFalse($this->personnageService->canTeachCompetence($personnage, $competence));
     }
 }

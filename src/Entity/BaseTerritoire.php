@@ -177,8 +177,8 @@ abstract class BaseTerritoire
     /** @var Collection<int, Territoire> */
     #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'territoireStarts')]
     #[ORM\JoinTable(name: 'territoire_quete')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'territoire_cible_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'territoire_cible_id', referencedColumnName: 'id')]
     protected Collection $territoireCibles;
 
     /** @var Collection<int, Territoire> */
@@ -196,50 +196,50 @@ abstract class BaseTerritoire
     /** @var Collection<int, Construction> */
     #[ORM\ManyToMany(targetEntity: Construction::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_construction')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'construction_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'construction_id', referencedColumnName: 'id')]
     protected Collection $constructions;
 
     /** @var Collection<int, Loi> */
     #[ORM\ManyToMany(targetEntity: Loi::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_has_loi')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'loi_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'loi_id', referencedColumnName: 'id')]
     protected Collection $lois;
 
     /** @var Collection<int, Ingredient> */
     #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'territoires')]
     #[ORM\JoinTable(name: 'territoire_ingredient')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'ingredient_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'ingredient_id', referencedColumnName: 'id')]
     protected Collection $ingredients;
 
     /** @var Collection<int, Ressource> */
     #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'importateurs')]
     #[ORM\JoinTable(name: 'territoire_importation')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id')]
     protected Collection $importations;
 
     /** @var Collection<int, Ressource> */
     #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'exportateurs')]
     #[ORM\JoinTable(name: 'territoire_exportation')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'ressource_id', referencedColumnName: 'id')]
     protected Collection $exportations;
 
     /** @var Collection<int, Langue> */
     #[ORM\ManyToMany(targetEntity: Langue::class, inversedBy: 'territoireSecondaires')]
     #[ORM\JoinTable(name: 'territoire_langue')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id')]
     protected Collection $langues;
 
     /** @var Collection<int, Religion> */
     #[ORM\ManyToMany(targetEntity: Religion::class, inversedBy: 'territoireSecondaires')]
     #[ORM\JoinTable(name: 'territoire_religion')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'religion_id', referencedColumnName: 'id')]
     protected Collection $religions;
 
     /**
@@ -247,7 +247,7 @@ abstract class BaseTerritoire
      */
     #[OneToMany(mappedBy: 'territoire', targetEntity: OrigineBonus::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'origine_bonus')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
     #[ORM\OrderBy(['id' => 'DESC'])]
     private ?Collection $originesBonus;
 

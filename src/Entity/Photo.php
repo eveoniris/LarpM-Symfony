@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Entity]
 class Photo extends BasePhoto
 {
-    #[Assert\File(['maxSize' => 6_000_000])]
+    #[Assert\File(maxSize: 6_000_000)]
     #[Assert\Image(minWidth: 200, minHeight: 200)]
     protected ?UploadedFile $file;
 
