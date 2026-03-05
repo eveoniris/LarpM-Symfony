@@ -104,7 +104,10 @@ class Participant extends BaseParticipant implements Stringable
         }
 
         if (empty($return)) {
-            $return[] = $this->getPotionsRandomByLevel($niveau);
+            $random = $this->getPotionsRandomByLevel($niveau);
+            if ($random !== null) {
+                $return[] = $random;
+            }
         }
 
         return $return;
