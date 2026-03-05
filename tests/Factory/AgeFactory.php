@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Factory;
 
 use App\Entity\Age;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Age>
+ * @extends PersistentObjectFactory<Age>
  */
-final class AgeFactory extends PersistentProxyObjectFactory
+final class AgeFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

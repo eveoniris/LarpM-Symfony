@@ -14,7 +14,6 @@ use App\Tests\Factory\LevelFactory;
 use App\Tests\Factory\PersonnageFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Integration tests for CompetenceService XP gating and cost tiers.
@@ -26,7 +25,6 @@ use Zenstruck\Foundry\Test\Factories;
  */
 class CompetenceServiceTest extends KernelTestCase
 {
-    use Factories;
 
     private CompetenceService $competenceService;
     private EntityManagerInterface $entityManager;
@@ -51,7 +49,7 @@ class CompetenceServiceTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne(['xp' => 50]);
 
         $service = $this->competenceService
-            ->init($personnage->_real(), $competence->_real());
+            ->init($personnage, $competence);
 
         self::assertTrue($service->canLearn(5));
         self::assertFalse($service->hasErrors());
@@ -65,7 +63,7 @@ class CompetenceServiceTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne(['xp' => 5]);
 
         $service = $this->competenceService
-            ->init($personnage->_real(), $competence->_real());
+            ->init($personnage, $competence);
 
         self::assertFalse($service->canLearn(10));
         self::assertTrue($service->hasErrors());
@@ -81,7 +79,7 @@ class CompetenceServiceTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne(['xp' => -10]);
 
         $service = $this->competenceService
-            ->init($personnage->_real(), $competence->_real());
+            ->init($personnage, $competence);
 
         self::assertTrue($service->canLearn(0));
         self::assertFalse($service->hasErrors());
@@ -95,13 +93,13 @@ class CompetenceServiceTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne(['xp' => 50]);
 
         $service = $this->competenceService
-            ->init($personnage->_real(), $competence->_real());
+            ->init($personnage, $competence);
         $service->addCompetence(5);
 
         self::assertFalse($service->hasErrors());
 
-        $this->entityManager->refresh($personnage->_real());
-        self::assertSame(45, $personnage->_real()->getXp());
+        $this->entityManager->refresh($personnage);
+        self::assertSame(45, $personnage->getXp());
     }
 
     public function testAddCompetenceCreatesExperienceUsageRecord(): void
@@ -112,12 +110,12 @@ class CompetenceServiceTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne(['xp' => 50]);
 
         $service = $this->competenceService
-            ->init($personnage->_real(), $competence->_real());
+            ->init($personnage, $competence);
         $service->addCompetence(5);
 
         $usages = $this->entityManager
             ->getRepository(ExperienceUsage::class)
-            ->findBy(['personnage' => $personnage->_real()]);
+            ->findBy(['personnage' => $personnage]);
 
         self::assertCount(1, $usages);
         self::assertSame(5, $usages[0]->getXpUse());
@@ -131,13 +129,13 @@ class CompetenceServiceTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne(['xp' => 50]);
 
         $service = $this->competenceService
-            ->init($personnage->_real(), $competence->_real());
+            ->init($personnage, $competence);
         $service->addCompetence(5);
 
         self::assertFalse($service->hasErrors());
 
-        $this->entityManager->refresh($personnage->_real());
-        self::assertTrue($personnage->_real()->getCompetences()->contains($competence->_real()));
+        $this->entityManager->refresh($personnage);
+        self::assertTrue($personnage->getCompetences()->contains($competence));
     }
 
     // -------------------------------------------------------------------------
@@ -152,7 +150,7 @@ class CompetenceServiceTest extends KernelTestCase
         $competence = CompetenceFactory::createOne(['competenceFamily' => $creationFamily, 'level' => $level]);
 
         $classe = ClasseFactory::createOne();
-        $classe->_real()->addCompetenceFamilyCreation($creationFamily->_real());
+        $classe->addCompetenceFamilyCreation($creationFamily);
         $this->entityManager->flush();
 
         $personnage = PersonnageFactory::createOne([
@@ -161,7 +159,7 @@ class CompetenceServiceTest extends KernelTestCase
         ]);
 
         $service = $this->competenceService
-            ->init($personnage->_real(), $competence->_real());
+            ->init($personnage, $competence);
 
         self::assertSame(0, $service->getCompetenceCout());
     }
@@ -178,12 +176,12 @@ class CompetenceServiceTest extends KernelTestCase
         $competence = CompetenceFactory::createOne(['competenceFamily' => $favoriteFamily, 'level' => $level]);
 
         $classe = ClasseFactory::createOne();
-        $classe->_real()->addCompetenceFamilyFavorite($favoriteFamily->_real());
+        $classe->addCompetenceFamilyFavorite($favoriteFamily);
         $this->entityManager->flush();
 
         $personnage = PersonnageFactory::createOne(['xp' => 100, 'classe' => $classe]);
 
-        $service = $this->competenceService->init($personnage->_real(), $competence->_real());
+        $service = $this->competenceService->init($personnage, $competence);
 
         self::assertSame(3, $service->getCompetenceCout());
     }
@@ -200,12 +198,12 @@ class CompetenceServiceTest extends KernelTestCase
         $competence = CompetenceFactory::createOne(['competenceFamily' => $normaleFamily, 'level' => $level]);
 
         $classe = ClasseFactory::createOne();
-        $classe->_real()->addCompetenceFamilyNormale($normaleFamily->_real());
+        $classe->addCompetenceFamilyNormale($normaleFamily);
         $this->entityManager->flush();
 
         $personnage = PersonnageFactory::createOne(['xp' => 100, 'classe' => $classe]);
 
-        $service = $this->competenceService->init($personnage->_real(), $competence->_real());
+        $service = $this->competenceService->init($personnage, $competence);
 
         self::assertSame(6, $service->getCompetenceCout());
     }
@@ -225,7 +223,7 @@ class CompetenceServiceTest extends KernelTestCase
         $classe = ClasseFactory::createOne();
         $personnage = PersonnageFactory::createOne(['xp' => 100, 'classe' => $classe]);
 
-        $service = $this->competenceService->init($personnage->_real(), $competence->_real());
+        $service = $this->competenceService->init($personnage, $competence);
 
         self::assertSame(9, $service->getCompetenceCout());
     }
@@ -243,13 +241,13 @@ class CompetenceServiceTest extends KernelTestCase
         $competence = CompetenceFactory::createOne(['competenceFamily' => $favoriteFamily, 'level' => $level]);
 
         $classe = ClasseFactory::createOne();
-        $classe->_real()->addCompetenceFamilyFavorite($favoriteFamily->_real());
+        $classe->addCompetenceFamilyFavorite($favoriteFamily);
         $this->entityManager->flush();
 
         // xp=100, normal favori cout=1, no bonus → cost = max(1 - 0, 0) = 1
         $personnage = PersonnageFactory::createOne(['xp' => 100, 'classe' => $classe]);
 
-        $service = $this->competenceService->init($personnage->_real(), $competence->_real());
+        $service = $this->competenceService->init($personnage, $competence);
 
         self::assertGreaterThanOrEqual(0, $service->getCompetenceCout());
     }
@@ -266,16 +264,16 @@ class CompetenceServiceTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne(['xp' => 45]);
 
         // Personnage already knows the competence
-        $personnage->_real()->addCompetence($competence->_real());
+        $personnage->addCompetence($competence);
         $this->entityManager->flush();
 
         $this->competenceService
-            ->init($personnage->_real(), $competence->_real())
+            ->init($personnage, $competence)
             ->removeCompetence(5);
 
-        $this->entityManager->refresh($personnage->_real());
+        $this->entityManager->refresh($personnage);
         // giveXP(5, ...) adds 5 to current xp: 45 + 5 = 50
-        self::assertSame(50, $personnage->_real()->getXp());
+        self::assertSame(50, $personnage->getXp());
     }
 
     public function testRemoveCompetenceCreatesExperienceGainRecord(): void
@@ -285,16 +283,16 @@ class CompetenceServiceTest extends KernelTestCase
         $competence = CompetenceFactory::createOne(['competenceFamily' => $family, 'level' => $level]);
         $personnage = PersonnageFactory::createOne(['xp' => 30]);
 
-        $personnage->_real()->addCompetence($competence->_real());
+        $personnage->addCompetence($competence);
         $this->entityManager->flush();
 
         $this->competenceService
-            ->init($personnage->_real(), $competence->_real())
+            ->init($personnage, $competence)
             ->removeCompetence(7);
 
         $gains = $this->entityManager
             ->getRepository(ExperienceGain::class)
-            ->findBy(['personnage' => $personnage->_real()]);
+            ->findBy(['personnage' => $personnage]);
 
         self::assertCount(1, $gains);
         self::assertSame(7, $gains[0]->getXpGain());

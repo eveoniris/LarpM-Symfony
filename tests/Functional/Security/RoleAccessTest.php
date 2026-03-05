@@ -6,7 +6,6 @@ namespace App\Tests\Functional\Security;
 
 use App\Tests\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Functional tests for role-based access control.
@@ -18,7 +17,6 @@ use Zenstruck\Foundry\Test\Factories;
  */
 class RoleAccessTest extends WebTestCase
 {
-    use Factories;
 
     // -------------------------------------------------------------------------
     // Anonymous access
@@ -50,7 +48,7 @@ class RoleAccessTest extends WebTestCase
     {
         $client = static::createClient();
         $user = UserFactory::createOne(['roles' => ['ROLE_USER']]);
-        $client->loginUser($user->_real());
+        $client->loginUser($user);
 
         $client->request('GET', '/admin');
 
@@ -66,7 +64,7 @@ class RoleAccessTest extends WebTestCase
     {
         $client = static::createClient();
         $user = UserFactory::createOne(['roles' => ['ROLE_ADMIN']]);
-        $client->loginUser($user->_real());
+        $client->loginUser($user);
 
         $client->request('GET', '/admin');
 
@@ -81,7 +79,7 @@ class RoleAccessTest extends WebTestCase
     {
         $client = static::createClient();
         $user = UserFactory::createOne(['roles' => ['ROLE_SCENARISTE']]);
-        $client->loginUser($user->_real());
+        $client->loginUser($user);
 
         $client->request('GET', '/intrigue');
 
@@ -92,7 +90,7 @@ class RoleAccessTest extends WebTestCase
     {
         $client = static::createClient();
         $user = UserFactory::createOne(['roles' => ['ROLE_SCENARISTE']]);
-        $client->loginUser($user->_real());
+        $client->loginUser($user);
 
         $client->request('GET', '/admin');
 
@@ -107,7 +105,7 @@ class RoleAccessTest extends WebTestCase
     {
         $client = static::createClient();
         $user = UserFactory::createOne(['roles' => ['ROLE_TERRITOIRE']]);
-        $client->loginUser($user->_real());
+        $client->loginUser($user);
 
         $client->request('GET', '/territoire');
 

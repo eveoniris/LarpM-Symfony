@@ -69,8 +69,8 @@ abstract class BaseDocument
     /** @var Collection<int, Langue> */
     #[ORM\ManyToMany(targetEntity: Langue::class, inversedBy: 'documents')]
     #[ORM\JoinTable(name: 'document_has_langue')]
-    #[JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'document_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'langue_id', referencedColumnName: 'id')]
     protected Collection $langues;
 
     /** @var Collection<int, Groupe> */
