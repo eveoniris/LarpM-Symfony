@@ -964,6 +964,10 @@ class PersonnageController extends AbstractController
                 $this->entityManager->remove($token);
             }
 
+            foreach ($personnage->getPersonnageChronologie() as $chronologie) {
+                $this->entityManager->remove($chronologie);
+            }
+
             foreach ($personnage->getParticipants() as $participant) {
                 $participant->setPersonnage();
                 $this->entityManager->persist($participant);
