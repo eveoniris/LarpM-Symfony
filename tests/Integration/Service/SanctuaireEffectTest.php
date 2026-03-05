@@ -11,7 +11,6 @@ use App\Tests\Factory\ReligionFactory;
 use App\Tests\Factory\ReligionLevelFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Integration tests for the business-logic guards used by lockGnGiveSanctuaireGnEffect().
@@ -30,7 +29,6 @@ use Zenstruck\Foundry\Test\Factories;
  */
 class SanctuaireEffectTest extends KernelTestCase
 {
-    use Factories;
 
     private PersonnageService $personnageService;
     private EntityManagerInterface $entityManager;
@@ -57,7 +55,7 @@ class SanctuaireEffectTest extends KernelTestCase
         $pr = new PersonnagesReligions();
         $pr->setPersonnage($personnage);
         $pr->setReligion($religion);
-        $pr->setReligionLevel($level->_real());
+        $pr->setReligionLevel($level);
         $this->entityManager->persist($pr);
         $this->entityManager->flush();
         $this->entityManager->refresh($personnage);
@@ -73,7 +71,7 @@ class SanctuaireEffectTest extends KernelTestCase
         $religion = ReligionFactory::createOne();
 
         self::assertFalse(
-            $this->personnageService->knownReligion($personnage->_real(), $religion->_real()),
+            $this->personnageService->knownReligion($personnage, $religion),
         );
     }
 
@@ -82,10 +80,10 @@ class SanctuaireEffectTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne();
         $religion = ReligionFactory::createOne();
 
-        $this->assignReligionAtLevel($personnage->_real(), $religion->_real(), 1);
+        $this->assignReligionAtLevel($personnage, $religion, 1);
 
         self::assertTrue(
-            $this->personnageService->knownReligion($personnage->_real(), $religion->_real()),
+            $this->personnageService->knownReligion($personnage, $religion),
         );
     }
 
@@ -95,10 +93,10 @@ class SanctuaireEffectTest extends KernelTestCase
         $religion = ReligionFactory::createOne();
         $otherReligion = ReligionFactory::createOne();
 
-        $this->assignReligionAtLevel($personnage->_real(), $religion->_real(), 1);
+        $this->assignReligionAtLevel($personnage, $religion, 1);
 
         self::assertFalse(
-            $this->personnageService->knownReligion($personnage->_real(), $otherReligion->_real()),
+            $this->personnageService->knownReligion($personnage, $otherReligion),
         );
     }
 
@@ -110,7 +108,7 @@ class SanctuaireEffectTest extends KernelTestCase
     {
         $personnage = PersonnageFactory::createOne();
 
-        self::assertFalse($personnage->_real()->isFanatique());
+        self::assertFalse($personnage->isFanatique());
     }
 
     public function testIsFanaticReturnsFalseWithPratiquantLevel(): void
@@ -118,9 +116,9 @@ class SanctuaireEffectTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne();
         $religion = ReligionFactory::createOne();
 
-        $this->assignReligionAtLevel($personnage->_real(), $religion->_real(), 1);
+        $this->assignReligionAtLevel($personnage, $religion, 1);
 
-        self::assertFalse($personnage->_real()->isFanatique());
+        self::assertFalse($personnage->isFanatique());
     }
 
     public function testIsFanaticReturnsTrueWithFanatiqueLevel(): void
@@ -129,9 +127,9 @@ class SanctuaireEffectTest extends KernelTestCase
         $religion = ReligionFactory::createOne();
 
         // level index=3 is the fanatique level
-        $this->assignReligionAtLevel($personnage->_real(), $religion->_real(), 3);
+        $this->assignReligionAtLevel($personnage, $religion, 3);
 
-        self::assertTrue($personnage->_real()->isFanatique());
+        self::assertTrue($personnage->isFanatique());
     }
 
     // -------------------------------------------------------------------------
@@ -143,7 +141,7 @@ class SanctuaireEffectTest extends KernelTestCase
         $deadPersonnage = PersonnageFactory::createOne(['vivant' => false]);
 
         // The sanctuaire effect skips personnages where getVivant() is false
-        self::assertFalse($deadPersonnage->_real()->getVivant());
+        self::assertFalse($deadPersonnage->getVivant());
     }
 
     // -------------------------------------------------------------------------
@@ -156,16 +154,16 @@ class SanctuaireEffectTest extends KernelTestCase
         $religion = ReligionFactory::createOne();
 
         self::assertFalse(
-            $this->personnageService->knownReligion($personnage->_real(), $religion->_real()),
+            $this->personnageService->knownReligion($personnage, $religion),
             'Personnage should not know religion before assignment',
         );
-        self::assertFalse($personnage->_real()->isFanatique());
+        self::assertFalse($personnage->isFanatique());
 
         // Simulate what lockGnGiveSanctuaireGnEffect() does for eligible personnages
-        $this->assignReligionAtLevel($personnage->_real(), $religion->_real(), 1);
+        $this->assignReligionAtLevel($personnage, $religion, 1);
 
         self::assertTrue(
-            $this->personnageService->knownReligion($personnage->_real(), $religion->_real()),
+            $this->personnageService->knownReligion($personnage, $religion),
             'Personnage should know religion after assignment',
         );
     }
@@ -175,11 +173,11 @@ class SanctuaireEffectTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne(['vivant' => true]);
         $religion = ReligionFactory::createOne();
 
-        $this->assignReligionAtLevel($personnage->_real(), $religion->_real(), 1);
+        $this->assignReligionAtLevel($personnage, $religion, 1);
 
         // knownReligion() returns true → the sanctuaire effect would skip this personnage
         self::assertTrue(
-            $this->personnageService->knownReligion($personnage->_real(), $religion->_real()),
+            $this->personnageService->knownReligion($personnage, $religion),
             'knownReligion must return true to prevent duplicate assignment',
         );
     }
@@ -191,17 +189,17 @@ class SanctuaireEffectTest extends KernelTestCase
         $otherReligion = ReligionFactory::createOne();
 
         // Personnage already has Déiste religion at level 1
-        $this->assignReligionAtLevel($personnage->_real(), $deiste->_real(), 1);
+        $this->assignReligionAtLevel($personnage, $deiste, 1);
 
         // The sanctuaire effect checks: if ($deiste && $this->knownReligion($personnage, $deiste)) → skip
         self::assertTrue(
-            $this->personnageService->knownReligion($personnage->_real(), $deiste->_real()),
+            $this->personnageService->knownReligion($personnage, $deiste),
             'knownReligion must return true for deiste personnage to trigger the exclusion guard',
         );
 
         // Such a personnage would not receive the other religion
         self::assertFalse(
-            $this->personnageService->knownReligion($personnage->_real(), $otherReligion->_real()),
+            $this->personnageService->knownReligion($personnage, $otherReligion),
         );
     }
 }

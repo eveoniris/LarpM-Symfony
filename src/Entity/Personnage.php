@@ -29,7 +29,7 @@ class Personnage extends BasePersonnage implements Stringable
     public Personnage $personnageChoosen;
 
     // For some FormBuilder search
-    #[Assert\File(['maxSize' => 6_000_000])]
+    #[Assert\File(maxSize: 6_000_000)]
     #[Assert\Image(minWidth: 200, minHeight: 200)]
     protected ?UploadedFile $file;
     protected bool $isCreation = false;

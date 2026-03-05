@@ -11,7 +11,6 @@ use App\Tests\Factory\ReligionLevelFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Functional tests for religion addition restrictions.
@@ -22,7 +21,6 @@ use Zenstruck\Foundry\Test\Factories;
  */
 class ReligionTest extends WebTestCase
 {
-    use Factories;
 
     // -------------------------------------------------------------------------
     // Add religion
@@ -38,7 +36,7 @@ class ReligionTest extends WebTestCase
         $pratiquantLevel = ReligionLevelFactory::createOne(['index' => 1]);
         $personnage = PersonnageFactory::createOne(['user' => $user]);
 
-        $client->loginUser($user->_real());
+        $client->loginUser($user);
 
         $crawler = $client->request('GET', '/personnage/' . $personnage->getId() . '/addReligion');
         self::assertResponseIsSuccessful();
@@ -70,13 +68,14 @@ class ReligionTest extends WebTestCase
 
         // Make personnage a fanatique of a religion
         $personnageReligion = new PersonnagesReligions();
-        $personnageReligion->setPersonnage($personnage->_real());
-        $personnageReligion->setReligion($religion->_real());
-        $personnageReligion->setReligionLevel($fanatiqueLevel->_real());
+        $personnageReligion->setPersonnage($personnage);
+        $personnageReligion->setReligion($religion);
+        $personnageReligion->setReligionLevel($fanatiqueLevel);
         $em->persist($personnageReligion);
         $em->flush();
+        $em->clear(); // detach all so controller loads fresh from DB
 
-        $client->loginUser($user->_real());
+        $client->loginUser($user);
         $client->request('GET', '/personnage/' . $personnage->getId() . '/addReligion');
 
         // Controller immediately redirects with error for fanatique personnage
@@ -96,13 +95,14 @@ class ReligionTest extends WebTestCase
 
         // Personnage is already fervent for religion1
         $existingFervent = new PersonnagesReligions();
-        $existingFervent->setPersonnage($personnage->_real());
-        $existingFervent->setReligion($religion1->_real());
-        $existingFervent->setReligionLevel($ferventLevel->_real());
+        $existingFervent->setPersonnage($personnage);
+        $existingFervent->setReligion($religion1);
+        $existingFervent->setReligionLevel($ferventLevel);
         $em->persist($existingFervent);
         $em->flush();
+        $em->clear(); // detach all so controller loads fresh from DB
 
-        $client->loginUser($user->_real());
+        $client->loginUser($user);
 
         // religion2 should appear as available (religion1 is already practiced)
         $crawler = $client->request('GET', '/personnage/' . $personnage->getId() . '/addReligion');

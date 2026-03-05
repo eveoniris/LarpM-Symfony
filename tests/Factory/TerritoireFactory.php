@@ -6,12 +6,12 @@ namespace App\Tests\Factory;
 
 use App\Entity\Territoire;
 use App\Enum\TerritoireStatut;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Territoire>
+ * @extends PersistentObjectFactory<Territoire>
  */
-final class TerritoireFactory extends PersistentProxyObjectFactory
+final class TerritoireFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {
@@ -33,6 +33,7 @@ final class TerritoireFactory extends PersistentProxyObjectFactory
             'tresor' => 100,
             'resistance' => 10,
             'ordre_social' => 0,
+            'langue' => null,
         ];
     }
 }

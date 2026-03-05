@@ -68,8 +68,8 @@ class BaseParticipant
     /** @var Collection<int, Potion> */
     #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'participants')]
     #[ORM\JoinTable(name: 'participant_potions_depart')]
-    #[JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'participant_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'potion_id', referencedColumnName: 'id')]
     #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $potions_depart;
     #[Column(length: 32, nullable: true)]

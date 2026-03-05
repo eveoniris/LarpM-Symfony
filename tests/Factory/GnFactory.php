@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Factory;
 
 use App\Entity\Gn;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Gn>
+ * @extends PersistentObjectFactory<Gn>
  */
-final class GnFactory extends PersistentProxyObjectFactory
+final class GnFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {
