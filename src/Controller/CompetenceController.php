@@ -46,8 +46,8 @@ class CompetenceController extends AbstractController
         // n'a pas été défini pour cette famille
         // voir si réalisable dans le Forma
 
-        $competenceFamilyId = $request->get('competenceFamily');
-        $levelIndex = $request->get('level');
+        $competenceFamilyId = $request->query->get('competenceFamily');
+        $levelIndex = $request->query->get('level');
 
         if ($competenceFamilyId) {
             $competenceFamily = $this->entityManager->find(CompetenceFamily::class, $competenceFamilyId);
@@ -224,7 +224,7 @@ class CompetenceController extends AbstractController
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function persoAction(Request $request): Response
     {
-        $competence = $request->get('competence');
+        $competence = $request->query->get('competence');
 
         return $this->render('competence/perso.twig', ['competence' => $competence]);
     }

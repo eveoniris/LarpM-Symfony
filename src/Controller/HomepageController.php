@@ -315,9 +315,9 @@ class HomepageController extends AbstractController
      */
     public function updateCountryGeomAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $territoire = $request->get('territoire');
-        $geom = $request->get('geom');
-        $color = $request->get('color');
+        $territoire = $request->attributes->get('territoire');
+        $geom = $request->request->get('geom');
+        $color = $request->request->get('color');
 
         $territoire->setGeojson($geom);
         $territoire->setColor($color);

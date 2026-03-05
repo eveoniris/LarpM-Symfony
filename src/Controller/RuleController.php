@@ -162,7 +162,7 @@ class RuleController extends AbstractController
     #[Route('/rule/{rule}/document', name: 'rule.document', requirements: ['rule' => Requirement::DIGITS])]
     public function documentAction(#[MapEntity] Rule $rule, Request $request): Response
     {
-        return $this->sendDocument($rule, null, !(bool) $request->get('stream', false));
+        return $this->sendDocument($rule, null, !(bool) $request->query->get('stream', false));
     }
 
     /**

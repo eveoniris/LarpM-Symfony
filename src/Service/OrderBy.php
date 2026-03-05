@@ -72,7 +72,7 @@ final class OrderBy
             return null;
         }
 
-        $this->orderBy = $request->query->getString('order_by') ?: $request->get('order_by') ?: null;
+        $this->orderBy = $request->query->getString('order_by') ?: null;
 
         if (!$this->orderBy) {
             return null;

@@ -328,7 +328,7 @@ class StockObjetController extends AbstractController
         // PROD path https://larpmanager.eveoniris.com/stock/objet/1200/photo?miniature=1
         // PROD lARPV2 https://larpm.eveoniris.com/stock/objet/90/photo
 
-        $miniature = $request->get('miniature');
+        $miniature = $request->query->get('miniature');
         $photo = $objet->getPhoto();
 
         if (!$photo) {

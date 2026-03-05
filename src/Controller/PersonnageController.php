@@ -363,7 +363,7 @@ class PersonnageController extends AbstractController
 
     protected function getParticipant(Personnage $personnage, Request $request): ?Participant
     {
-        if ($id = $request->get('participant')) {
+        if ($id = $request->query->get('participant')) {
             $participant = $this->entityManager->getRepository(Participant::class)->findOneBy(['id' => $id]);
             if ($participant) {
                 return $participant;
@@ -408,7 +408,7 @@ class PersonnageController extends AbstractController
         $personnage = new Personnage();
         $gnActif = GroupeManager::getGnActif($this->entityManager);
 
-        $participant = $request->get('participant');
+        $participant = $request->query->get('participant');
         if (!$participant) {
             // essaye de récupérer le participant du gn actif
 
@@ -669,7 +669,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $potionID = $request->get('potion');
+        $potionID = $request->query->get('potion');
 
         $potion = $this->entityManager->getRepository(Potion::class)->find($potionID);
 
@@ -2238,7 +2238,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $token = $request->get('token');
+        $token = $request->query->get('token');
         $token = $this->entityManager->getRepository(Token::class)->findOneByTag($token);
 
         // donne un jeton vieillesse
@@ -3541,7 +3541,7 @@ class PersonnageController extends AbstractController
     {
         // PROD path https://larpmanager.eveoniris.com/ => ???
         // PROD lARPV2 https://larpm.eveoniris.com/ => ???
-        $miniature = $request->get('miniature');
+        $miniature = $request->query->get('miniature');
         $projectDir = $this->fileUploader->getProjectDirectory();
 
         $filename = $personnage->getTrombine($projectDir);
@@ -3595,7 +3595,7 @@ class PersonnageController extends AbstractController
             if (str_ends_with($ext, '.gif')) {
                 $response->headers->set('Content-Type', 'image/gif');
             }
-            $request->get('debug') && $response->headers->set('X-debug-FILE', $filename);
+            $request->query->get('debug') && $response->headers->set('X-debug-FILE', $filename);
         }
 
         return $response;
@@ -3727,11 +3727,11 @@ class PersonnageController extends AbstractController
     public function getSearchViewParameters(Request $request, string $routeName, array $columnKeys = []): array
     {
         // récupère les filtres et tris de recherche + pagination renseignés dans le formulaire
-        $orderBy = $request->get('order_by') ?: 'id';
-        $orderDir = 'DESC' == $request->get('order_dir') ? 'DESC' : 'ASC';
+        $orderBy = $request->query->get('order_by') ?: 'id';
+        $orderDir = 'DESC' == $request->query->get('order_dir') ? 'DESC' : 'ASC';
         $isAsc = 'ASC' == $orderDir;
-        $limit = (int) ($request->get('limit') ?: 50);
-        $page = (int) ($request->get('page') ?: 1);
+        $limit = (int) ($request->query->get('limit') ?: 50);
+        $page = (int) ($request->query->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
 

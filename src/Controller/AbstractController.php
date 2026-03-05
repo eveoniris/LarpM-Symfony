@@ -258,10 +258,10 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         if ($request = $this->requestStack->getCurrentRequest()) {
-            if ($request->get('personnage') && ($personnage = $this->entityManager->getRepository(Personnage::class)->findOneBy(['id' => $request->get('personnage')]))) {
+            if ($request->query->get('personnage') && ($personnage = $this->entityManager->getRepository(Personnage::class)->findOneBy(['id' => $request->query->get('personnage')]))) {
                 return $personnage;
             }
-            if ($request->get('participant') && ($participant = $this->entityManager->getRepository(Participant::class)->findOneBy(['id' => $request->get('participant')]))) {
+            if ($request->query->get('participant') && ($participant = $this->entityManager->getRepository(Participant::class)->findOneBy(['id' => $request->query->get('participant')]))) {
                 return $participant->getPersonnage();
             }
 
