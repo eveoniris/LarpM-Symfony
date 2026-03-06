@@ -149,8 +149,8 @@ class GroupeRepository extends BaseRepository
         $query ??= $this->createQueryBuilder($alias);
         $query->join($alias . '.userRelatedByScenaristeId', 'scenariste');
         $query->join('scenariste.etatCivil', 'etatCivil');
-        $query->leftJoin($alias . '.groupeGns', 'groupeGn')->addSelect('groupeGn');
-        $query->leftJoin('groupeGn.gn', 'gn')->addSelect('gn');
+        $query->leftJoin($alias . '.groupeGns', 'groupeGn');
+        $query->leftJoin('groupeGn.gn', 'gn');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
