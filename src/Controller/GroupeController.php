@@ -728,7 +728,7 @@ class GroupeController extends AbstractController
 
         return $this->render('groupe/list.twig', [
             'pagerService' => $pagerService,
-            'paginator' => $groupeRepository->searchPaginated($pagerService),
+            'paginator' => $groupeRepository->searchPaginated($pagerService, null, true),
         ]);
 
         /* OLD
