@@ -833,7 +833,7 @@ readonly class GroupeService
         return $this->entityManager
             ->getRepository(Gn::class)
             ->matching($criteria)
-            ->first();
+            ->first() ?: null;
     }
 
     public function getStatutTerritoire(Territoire $territoire): TerritoireStatut

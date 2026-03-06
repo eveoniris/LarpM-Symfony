@@ -12,9 +12,10 @@ use Doctrine\ORM\QueryBuilder;
 
 class ClasseRepository extends BaseRepository
 {
-    /** @return list<Classe> */
+    /** @return array<int, Classe> */
     public function findAll(): array
     {
+        /** @var array<int, Classe> */
         return $this->findBy([], ['label_masculin' => 'ASC']);
     }
 

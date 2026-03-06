@@ -39,14 +39,14 @@ class CompetenceService
     public const COUT_GRATUIT = 0;
     public const COUT_DEFAUT = -1;
 
-    /** @var array<int, mixed> */
+    /** @var array<int, array<string, mixed>> */
     private static array $classesCompetencesFamilies = [];
     protected ?Competence $competence;
     protected ?CompetenceFamily $competenceFamily;
     protected ?Level $competenceLevel;
     protected ?Personnage $personnage;
     protected ?Classe $classe;
-    /** @var array<string, string> */
+    /** @var array<int|string, string> */
     protected array $errors;
     protected bool $hasBonus = false;
 
@@ -332,6 +332,7 @@ class CompetenceService
     private function isCompetenceFamilyTypeOf(string $type, Classe $classe, CompetenceFamily $competenceFamily): bool
     {
         if (!isset(self::$classesCompetencesFamilies[$classe->getId()][$type])) {
+            /** @phpstan-ignore assign.propertyType */
             self::$classesCompetencesFamilies[$classe->getId()][$type] = match ($type) {
                 'normale' => $classe->getCompetenceFamilyNormales(),
                 'meconnue' => ['*'], // not in others
@@ -512,10 +513,13 @@ class CompetenceService
 
     public function getService(string $class): self
     {
-        return new $class($this->entityManager, $this->urlGenerator, $this->security, $this->conditionService);
+        /** @var self $service */
+        $service = new $class($this->entityManager, $this->urlGenerator, $this->security, $this->conditionService);
+
+        return $service;
     }
 
-    /** @return array<string, string> */
+    /** @return array<int|string, string> */
     final public function getErrors(): array
     {
         return $this->errors;

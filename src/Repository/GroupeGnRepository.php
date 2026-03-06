@@ -140,7 +140,7 @@ class GroupeGnRepository extends BaseRepository
         }
 
         try {
-            return $query->setParameter('pid', $personnage->getId())->getSingleScalarResult() ?: '';
+            return (string) ($query->setParameter('pid', $personnage->getId())->getSingleScalarResult() ?? '');
         } catch (NoResultException $e) {
             return '';
         }

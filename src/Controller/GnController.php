@@ -228,6 +228,7 @@ class GnController extends AbstractController
         header('Pragma: no-cache');
         header('Expires: 0');
         $output = fopen('php://output', 'w');
+        assert($output !== false);
         // header
         fputcsv(
             $output,
@@ -486,6 +487,7 @@ class GnController extends AbstractController
         header('Pragma: no-cache');
         header('Expires: 0');
         $output = fopen('php://output', 'w');
+        assert($output !== false);
         // header
         fputcsv(
             $output,
@@ -543,6 +545,7 @@ class GnController extends AbstractController
         header('Pragma: no-cache');
         header('Expires: 0');
         $output = fopen('php://output', 'w');
+        assert($output !== false);
         // header
         fputcsv(
             $output,
@@ -605,6 +608,7 @@ class GnController extends AbstractController
         header('Expires: 0');
 
         $output = fopen('php://output', 'w');
+        assert($output !== false);
 
         // header
         fputcsv(

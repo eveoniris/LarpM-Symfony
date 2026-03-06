@@ -19,8 +19,9 @@ class AccessEventListener
         // if (!$this->security->isGranted('ROLE_ADMIN')) {
         //    $event->setController(fn() => new RedirectResponse('/login'));
         // }
-        if (\is_array($event->getController()) && method_exists($event->getController()[0], 'loadGrantedAccess')) {
-            $event->getController()[0]->loadGrantedAccess();
+        $controller = $event->getController();
+        if (\is_array($controller) && \is_object($controller[0]) && method_exists($controller[0], 'loadGrantedAccess')) {
+            $controller[0]->loadGrantedAccess();
         }
     }
 

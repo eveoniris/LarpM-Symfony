@@ -47,6 +47,7 @@ class GnUnLock extends Command
             return Command::INVALID;
         }
 
+        assert($gn instanceof Gn);
         $gnRepository->unlockAllGroup($gn);
         $gn->setActif(false);
         $this->entityManager->persist($gn);

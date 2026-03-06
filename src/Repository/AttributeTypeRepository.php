@@ -22,7 +22,7 @@ class AttributeTypeRepository extends BaseRepository
         return $this->getEntityManager()->createQuery('SELECT cf FROM App\Entity\AttributeType cf ORDER BY cf.label ASC')->getResult();
     }
 
-    /** @return array<string, array<string, mixed>> */
+    /** @return array<int|string, string|array<string, mixed>|null> */
     public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();

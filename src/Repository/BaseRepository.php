@@ -43,6 +43,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         protected readonly TranslatorInterface $translator,
         protected readonly EntityManagerInterface $entityManager,
     ) {
+        /** @phpstan-ignore argument.type */
         parent::__construct($registry, static::getEntityClass());
         $this->alias = static::getEntityAlias();
     }
@@ -74,8 +75,8 @@ abstract class BaseRepository extends ServiceEntityRepository
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
 
-        $this->addOrderBy($query);
         if ($query instanceof QueryBuilder) {
+            $this->addOrderBy($query);
             $query = $query->getQuery();
         }
 
@@ -116,6 +117,10 @@ abstract class BaseRepository extends ServiceEntityRepository
         $orderBy ??= $this->orderBy;
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
+
+        if (!$query instanceof QueryBuilder) {
+            return $query;
+        }
 
         // NEO MULTI
         if (!empty($orderBy->getOrders())) {
@@ -279,6 +284,10 @@ abstract class BaseRepository extends ServiceEntityRepository
         $asAttributes = [];
 
         foreach ($this->searchAttributes($alias) as $attribute) {
+            if (!is_string($attribute)) {
+                continue;
+            }
+
             if (!$this->isAs($attribute)) {
                 continue;
             }
@@ -475,9 +484,10 @@ abstract class BaseRepository extends ServiceEntityRepository
     public function isEntity(string|object $class): bool
     {
         if (\is_object($class)) {
-            $class = $class instanceof Proxy ? get_parent_class($class) : $class::class;
+            $class = $class instanceof Proxy ? (get_parent_class($class) ?: $class::class) : $class::class;
         }
 
+        /** @phpstan-ignore argument.type */
         return !$this->getEntityManager()->getMetadataFactory()->isTransient($class);
     }
 
@@ -548,6 +558,10 @@ abstract class BaseRepository extends ServiceEntityRepository
             // if attribute is without label
             if (\is_int($attribute)) {
                 $attribute = $label;
+            }
+
+            if (!is_string($attribute)) {
+                continue;
             }
 
             if (!$this->isAllowedAttribute($attribute, $searchAttributes)) {

@@ -75,7 +75,7 @@ class ConnaissanceRepository extends BaseRepository
         return $query->setParameter('value', $secret);
     }
 
-    /** @return array<string, array<string, mixed>> */
+    /** @return array<int|string, string|array<string, mixed>|null> */
     public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();

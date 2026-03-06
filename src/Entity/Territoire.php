@@ -126,7 +126,7 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
     /**
      * Fourni le nom de tous les groupes présents dans ce territoire.
      *
-     * @return array<int, string>
+     * @return array<int, mixed>
      */
     public function getGroupesNom(): array
     {
@@ -420,7 +420,7 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
     /**
      * Unserializer.
      */
-    public function jsonUnserialize(object $payload): void
+    public function jsonUnserialize(\stdClass $payload): void
     {
         $this->setNom($payload->nom);
         $this->setDescription($payload->description);

@@ -595,6 +595,7 @@ class GroupeController extends AbstractController
         header('Expires: 0');
 
         $output = fopen('php://output', 'w');
+        assert($output !== false);
 
         // header
         fputcsv(
@@ -761,7 +762,7 @@ class GroupeController extends AbstractController
         $groupe = $this->entityManager->find(Groupe::class, $id);
 
         if ('POST' == $request->getMethod()) {
-            $newPlaces = $request->request->get('place');
+            $newPlaces = (int) $request->request->get('place');
 
             /*
              * Met à jour uniquement si la valeur à changé
@@ -984,6 +985,7 @@ class GroupeController extends AbstractController
             header('Expires: 0');
 
             $output = fopen('php://output', 'w');
+        assert($output !== false);
 
             fputcsv($output, $header, ';');
 

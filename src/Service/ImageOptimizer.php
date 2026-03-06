@@ -28,7 +28,11 @@ class ImageOptimizer
 
     public function resize(string $filename): void
     {
-        [$iwidth, $iheight] = getimagesize($filename);
+        $size = getimagesize($filename);
+        if (false === $size) {
+            return;
+        }
+        [$iwidth, $iheight] = $size;
         $ratio = $iwidth / $iheight;
         $width = self::MAX_WIDTH;
         $height = self::MAX_HEIGHT;
@@ -39,7 +43,7 @@ class ImageOptimizer
         }
 
         $photo = $this->imagine->open($filename);
-        $photo->resize(new Box($width, $height))->save($filename);
+        $photo->resize(new Box((int) $width, (int) $height))->save($filename);
     }
 
     public function getProjectDirectory(): string

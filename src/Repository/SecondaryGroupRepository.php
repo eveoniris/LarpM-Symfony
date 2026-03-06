@@ -40,7 +40,7 @@ class SecondaryGroupRepository extends BaseRepository
             $qb->setParameter(1, $critere);
         }
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     /**
@@ -211,7 +211,7 @@ class SecondaryGroupRepository extends BaseRepository
             ->setParameter('personnageId', $personnagesId);
     }
 
-    /** @return list<SecondaryGroup> */
+    /** @return array<int, array<string, mixed>> */
     public function visibleForUser(User $user): array
     {
         $query = $this->getEntityManager()->createQuery(<<<DQL

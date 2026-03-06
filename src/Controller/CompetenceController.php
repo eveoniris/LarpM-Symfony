@@ -59,6 +59,7 @@ class CompetenceController extends AbstractController
         if ($levelIndex) {
             /** @var LevelRepository $repo */
             $repo = $this->entityManager->getRepository(Level::class);
+            /** @var Level|null $level */
             $level = $repo->findOneBy(['index' => (int) $levelIndex + 1]);
             if ($level) {
                 $competence->setLevel($level);

@@ -146,7 +146,7 @@ class TerritoireRepository extends BaseRepository
             ++$count;
         }
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     /**
@@ -191,7 +191,7 @@ class TerritoireRepository extends BaseRepository
     }
 
     /**
-     * @return array<int, string|null>
+     * @return array<int|string, string|array<string, mixed>|null>
      */
     public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {

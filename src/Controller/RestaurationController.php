@@ -113,6 +113,7 @@ class RestaurationController extends AbstractController
         header('Expires: 0');
 
         $output = fopen('php://output', 'w');
+        assert($output !== false);
 
         // header
         fputcsv(
@@ -244,6 +245,7 @@ class RestaurationController extends AbstractController
         header('Expires: 0');
 
         $output = fopen('php://output', 'w');
+        assert($output !== false);
 
         // header
         fputcsv(

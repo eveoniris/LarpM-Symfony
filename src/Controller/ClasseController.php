@@ -116,7 +116,7 @@ class ClasseController extends AbstractController
 
         $filename = __DIR__ . '/../../assets/img/' . $image;
 
-        $response = new Response(file_get_contents($filename));
+        $response = new Response((string) file_get_contents($filename));
         $response->headers->set('Content-Type', 'image/png');
 
         return $response;

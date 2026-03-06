@@ -126,7 +126,7 @@ class CompetenceRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    /** @return array<string, array<string, mixed>> */
+    /** @return array<int|string, string|array<string, mixed>|null> */
     public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();

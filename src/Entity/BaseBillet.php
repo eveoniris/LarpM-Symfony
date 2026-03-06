@@ -139,7 +139,7 @@ abstract class BaseBillet
 
     public function addParticipant(Participant $participant): self
     {
-        $this->participants[] = $participant;
+        $this->participants?->add($participant);
 
         return $this;
     }

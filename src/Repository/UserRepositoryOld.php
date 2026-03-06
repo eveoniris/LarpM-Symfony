@@ -45,7 +45,7 @@ class UserRepositoryOld extends BaseRepository
             $qb->setParameter(1, $criter);
         }
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     /**

@@ -58,14 +58,14 @@ class AdminController extends AbstractController
         // taille du cache
         $cacheTotalSpace = $this->foldersize(__DIR__ . '/../../var/cache');
         if ($cacheTotalSpace) {
-            $cacheTotalSpace = $this->getSymbolByQuantity($cacheTotalSpace);
+            $cacheTotalSpace = $this->getSymbolByQuantity((int) $cacheTotalSpace);
         }
 
         // taille du log
-        $logTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__ . '/../../var/log'));
+        $logTotalSpace = $this->getSymbolByQuantity((int) $this->foldersize(__DIR__ . '/../../var/log'));
 
         // taille des documents
-        $docTotalSpace = $this->getSymbolByQuantity($this->foldersize(__DIR__ . '/../../private/doc'));
+        $docTotalSpace = $this->getSymbolByQuantity((int) $this->foldersize(__DIR__ . '/../../private/doc'));
 
         return $this->render('index.twig', [
             'phpVersion' => $phpVersion,
@@ -84,11 +84,11 @@ class AdminController extends AbstractController
 
         if ($max_size < 0) {
             // Start with post_max_size.
-            $max_size = $this->parse_size(\ini_get('post_max_size'));
+            $max_size = $this->parse_size((string) \ini_get('post_max_size'));
 
             // If upload_max_size is less, then reduce. Except if upload_max_size is
             // zero, which indicates no limit.
-            $upload_max = $this->parse_size(\ini_get('upload_max_filesize'));
+            $upload_max = $this->parse_size((string) \ini_get('upload_max_filesize'));
             if ($upload_max > 0 && $upload_max < $max_size) {
                 $max_size = $upload_max;
             }
@@ -145,9 +145,9 @@ class AdminController extends AbstractController
     private function getSymbolByQuantity(int $bytes): string
     {
         $symbols = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-        $exp = $bytes ? floor(log($bytes) / log(1024)) : 0;
+        $exp = $bytes ? (int) floor(log($bytes) / log(1024)) : 0;
 
-        return \sprintf('%.2f ' . $symbols[$exp], $bytes / (1024 ** floor($exp)));
+        return \sprintf('%.2f ' . $symbols[$exp], $bytes / (1024 ** $exp));
     }
 
     /**
@@ -170,7 +170,8 @@ class AdminController extends AbstractController
         $handle = fopen($filename, 'r');
         $lineCount = 0;
         while (!$logfile->eof()) {
-            $linetmp = $logfile->current();
+            $current = $logfile->current();
+            $linetmp = is_string($current) ? $current : '';
             if (str_contains($linetmp, 'CRITICAL')) {
                 $linesFatal[] = $linetmp;
             }

@@ -77,7 +77,7 @@ class ReligionController extends AbstractController
         $blason = $religion->getBlason();
         $filename = __DIR__ . '/../../assets/img/religions/' . $blason;
 
-        $response = new Response(file_get_contents($filename));
+        $response = new Response((string) file_get_contents($filename));
         $response->headers->set('Content-Type', 'image/png');
 
         return $response;
@@ -299,6 +299,7 @@ class ReligionController extends AbstractController
     {
         return $this->sendCsv(title: 'eveoniris_religion_personnage_' . (new AsciiSlugger())->slug($religion->getLabel()) . '_' . date('Ymd'), content: static function () use ($religion): void {
             $output = fopen('php://output', 'w');
+        assert($output !== false);
 
             fputcsv(
                 $output,

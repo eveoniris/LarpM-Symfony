@@ -25,6 +25,7 @@ class ParticipantRepository extends BaseRepository
      */
     public function findAll(): array
     {
+        /** @var array<int, Participant> */
         return $this->findBy([], ['id' => 'ASC']);
     }
 
@@ -116,7 +117,7 @@ class ParticipantRepository extends BaseRepository
             $qb->setParameter(1, $criter);
         }
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     public function getPersonnagesAlive(Participant $participant): QueryBuilder
@@ -201,7 +202,10 @@ class ParticipantRepository extends BaseRepository
     {
         $query = $this->searchByGn($gnid, $pageRequest->getSearchValue(), $pageRequest->getSearchType(), $pageRequest->getOrderBy(), $this->getAlias())->getQuery();
 
-        return $this->findPaginatedQuery($query, $pageRequest->getLimit(), $pageRequest->getPage());
+        /** @var Paginator<Participant> $paginator */
+        $paginator = $this->findPaginatedQuery($query, $pageRequest->getLimit(), $pageRequest->getPage());
+
+        return $paginator;
     }
 
     /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
@@ -315,7 +319,7 @@ class ParticipantRepository extends BaseRepository
     }
 
     /**
-     * @return array<int, string|null>
+     * @return array<int|string, string|array<string, mixed>|null>
      */
     public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
@@ -381,7 +385,7 @@ class ParticipantRepository extends BaseRepository
     }
 
     /**
-     * @return array<string, string>
+     * @return array<int|string, string>
      */
     public function translateAttributes(): array
     {

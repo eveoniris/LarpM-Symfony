@@ -19,7 +19,7 @@ class PriereRepository extends BaseRepository
         $qb = $this->getQueryBuilder($type, $value);
         $qb->select($qb->expr()->count('p'));
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     protected function getQueryBuilder(?string $type, mixed $value): QueryBuilder
@@ -105,7 +105,7 @@ class PriereRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    /** @return array<string, array<string, mixed>> */
+    /** @return array<int|string, string|array<string, mixed>|null> */
     public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();

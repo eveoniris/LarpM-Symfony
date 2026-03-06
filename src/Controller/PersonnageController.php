@@ -1932,7 +1932,8 @@ class PersonnageController extends AbstractController
         $filename = __DIR__ . '/../../private/doc/' . $competence->getDocumentUrl();
         $file = new File($filename);
 
-        return $this->file($file, $competence->getPrintLabel() . '.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+        $printLabel = $competence->getPrintLabel();
+        return $this->file($file, (is_array($printLabel) ? implode(' ', $printLabel) : (string) $printLabel) . '.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     /**
@@ -4092,9 +4093,13 @@ class PersonnageController extends AbstractController
         CompetenceRepository $competenceRepository,
         TerritoireRepository $territoireRepository,
     ): Response {
+        /** @var Competence|null $protectionApprenti */
         $protectionApprenti = $competenceRepository->findOneBy(['id' => 117]);
+        /** @var Competence|null $ressistanceApp */
         $ressistanceApp = $competenceRepository->findOneBy(['id' => 122]);
+        /** @var Competence|null $agiliteApprenti */
         $agiliteApprenti = $competenceRepository->findOneBy(['id' => 1]);
+        /** @var Competence|null $richesseApprenti */
         $richesseApprenti = $competenceRepository->findOneBy(['id' => 127]);
 
         $data = '<br />Richesse<br />';
@@ -4643,7 +4648,7 @@ class PersonnageController extends AbstractController
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      */
     private function getErrorMessages(\Symfony\Component\Form\FormInterface $form): array
     {
@@ -4651,7 +4656,10 @@ class PersonnageController extends AbstractController
 
         foreach ($form->getErrors() as $key => $error) {
             if ($form->isRoot()) {
-                $errors['#'][] = $error->getMessage();
+                /** @var list<string> $rootErrors */
+                $rootErrors = $errors['#'] ?? [];
+                $rootErrors[] = $error->getMessage();
+                $errors['#'] = $rootErrors;
             } else {
                 $errors[] = $error->getMessage();
             }

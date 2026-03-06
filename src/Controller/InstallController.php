@@ -27,6 +27,7 @@ class InstallController extends AbstractController
     private function loadUserTables(\Doctrine\DBAL\Connection $connection, string $dir): void
     {
         $sql = file_get_contents($dir . 'mysql.sql');
+        assert(false !== $sql);
         $statement = $connection->prepare($sql);
         $statement->executeQuery();
     }
@@ -34,6 +35,7 @@ class InstallController extends AbstractController
     private function loadLarpManagerTables(\Doctrine\DBAL\Connection $connection, string $dir): void
     {
         $sql = file_get_contents($dir . 'create_or_update.sql');
+        assert(false !== $sql);
         $statement = $connection->prepare($sql);
         $statement->executeQuery();
     }

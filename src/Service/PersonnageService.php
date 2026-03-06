@@ -479,6 +479,7 @@ class PersonnageService
         $q = $this->entityManager->getRepository(Competence::class)->getPersonnages($competence, $gn);
 
         if ($count) {
+            assert($q instanceof \Doctrine\ORM\QueryBuilder);
             return (int) (clone $q)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
         }
 
@@ -1125,7 +1126,7 @@ class PersonnageService
 
     public function getAllPugilat(Personnage $personnage): int
     {
-        $pugilat = $personnage->getPugilat();
+        $pugilat = (int) $personnage->getPugilat();
 
         foreach ($this->getAllBonus($personnage, BonusType::PUGILAT) as $bonus) {
             if (!$bonus->isPugilat()) {

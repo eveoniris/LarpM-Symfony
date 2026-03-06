@@ -6,9 +6,8 @@ namespace App\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\Persistence\ObjectRepository;
 
-#[Entity(repositoryClass: ObjectRepository::class)]
+#[Entity]
 class Objectif extends BaseObjectif
 {
     public function __construct()

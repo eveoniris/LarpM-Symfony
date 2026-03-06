@@ -51,6 +51,7 @@ class ObjetRepository extends BaseRepository
     /** @return array<int, \App\Entity\Objet> */
     public function findAll(): array
     {
+        /** @var array<int, \App\Entity\Objet> */
         return $this->findBy([], ['nom' => 'ASC']);
     }
 

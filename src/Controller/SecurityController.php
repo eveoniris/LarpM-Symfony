@@ -89,9 +89,9 @@ class SecurityController extends AbstractController
 
         $email = (new TemplatedEmail())
             ->to($user->getEmail())
-            ->subject($subject->getContent())
+            ->subject((string) $subject->getContent())
             // TODo ->locale($user->getLocal())
-            ->text($textBody->getContent())
+            ->text((string) $textBody->getContent())
             ->htmlTemplate('user/email/renewPassword.twig')
             ->context($context);
         $mailer->send($email);
