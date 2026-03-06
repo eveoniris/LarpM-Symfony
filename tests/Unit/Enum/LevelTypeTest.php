@@ -34,11 +34,7 @@ class LevelTypeTest extends TestCase
     public function testGetIdAndGetIndexAreIdenticalForAllCases(): void
     {
         foreach (LevelType::cases() as $case) {
-            self::assertSame(
-                $case->getId(),
-                $case->getIndex(),
-                "getId() and getIndex() differ for {$case->name}"
-            );
+            self::assertSame($case->getId(), $case->getIndex(), "getId() and getIndex() differ for {$case->name}");
         }
     }
 

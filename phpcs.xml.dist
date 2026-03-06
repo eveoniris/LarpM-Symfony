@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<?xml version="1.0"?>
 <ruleset name="Project">
 
     <description>PSR-12 check — PHP 8.4</description>
@@ -22,6 +23,8 @@
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
         <!-- Les longueurs de ligne sont gérées par PHP CS Fixer -->
         <exclude name="Generic.Files.LineLength"/>
+        <!-- mago formatter supprime les espaces autour de | dans les union types (catch Foo|Bar) -->
+        <exclude name="PSR12.Operators.OperatorSpacing"/>
     </rule>
 
     <rule ref="Generic.PHP.RequireStrictTypes"/>

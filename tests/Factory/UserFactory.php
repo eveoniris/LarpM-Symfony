@@ -37,8 +37,6 @@ final class UserFactory extends PersistentObjectFactory
         // User has addRole()/removeRole() that PropertyAccessor picks up over setRoles(),
         // causing factory role overrides to modify $rights instead of $roles.
         // alwaysForce('roles') bypasses PropertyAccessor for this field.
-        return $this->instantiateWith(
-            Instantiator::withConstructor()->alwaysForce('roles')
-        );
+        return $this->instantiateWith(Instantiator::withConstructor()->alwaysForce('roles'));
     }
 }

@@ -162,7 +162,11 @@ class StatistiqueController extends AbstractController
                 if ($row['bateaux'] > 1) {
                     // Ensure emplacement format
                     $replace = ';' . \PHP_EOL;
-                    $row['emplacement'] = str_replace([' - ', ', ', "\r\n", '<br>', '<br />', '<br/>'], [$replace, $replace, $replace, $replace, $replace, $replace, $replace], $row['emplacement'] ?? '');
+                    $row['emplacement'] = str_replace(
+                        [' - ', ', ', "\r\n", '<br>', '<br />', '<br/>'],
+                        [$replace, $replace, $replace, $replace, $replace, $replace, $replace],
+                        $row['emplacement'] ?? '',
+                    );
 
                     // Keep from first one
                     if (1 === $i) {

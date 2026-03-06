@@ -64,9 +64,7 @@ class PersonnageAnomalieTest extends TestCase
         $competence = $this->createStub(Competence::class);
         $competence->method('getCompetenceFamily')->willReturn($family);
         $competence->method('getLevel')->willReturn($level);
-        $competence->method('getAttributeValue')->willReturnCallback(
-            static fn (string $key): mixed => $attributes[$key] ?? null
-        );
+        $competence->method('getAttributeValue')->willReturnCallback(static fn (string $key): mixed => $attributes[$key] ?? null);
 
         return $competence;
     }

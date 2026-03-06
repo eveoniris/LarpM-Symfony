@@ -44,12 +44,10 @@ class TerritoireRepository extends BaseRepository
      */
     public function findRegions(): array
     {
-        return $this->getEntityManager()->createQuery(
-            'SELECT t FROM App\Entity\Territoire t
+        return $this->getEntityManager()->createQuery('SELECT t FROM App\Entity\Territoire t
              WHERE t.territoire IS NOT NULL
              AND EXISTS (SELECT 1 FROM App\Entity\Territoire child WHERE child.territoire = t)
-             ORDER BY t.nom ASC'
-        )->getResult();
+             ORDER BY t.nom ASC')->getResult();
     }
 
     /**
@@ -59,12 +57,10 @@ class TerritoireRepository extends BaseRepository
      */
     public function findFiefs(): array
     {
-        return $this->getEntityManager()->createQuery(
-            'SELECT t FROM App\Entity\Territoire t
+        return $this->getEntityManager()->createQuery('SELECT t FROM App\Entity\Territoire t
              WHERE t.territoire IS NOT NULL
              AND NOT EXISTS (SELECT 1 FROM App\Entity\Territoire child WHERE child.territoire = t)
-             ORDER BY t.nom ASC'
-        )->getResult();
+             ORDER BY t.nom ASC')->getResult();
     }
 
     /**

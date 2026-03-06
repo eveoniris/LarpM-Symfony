@@ -66,9 +66,11 @@ class CompetenceAchatTest extends WebTestCase
 
         // The form field name is "form[id]" (built via createFormBuilder with name "form")
         // The choice value for a competence is its ID
-        $form = $crawler->selectButton('Ajouter la compétence')->form([
-            'form[id]' => (string) $competence->getId(),
-        ]);
+        $form = $crawler
+            ->selectButton('Ajouter la compétence')
+            ->form([
+                'form[id]' => (string) $competence->getId(),
+            ]);
         $client->submit($form);
 
         // On success the controller redirects to the personnage detail page
@@ -97,9 +99,11 @@ class CompetenceAchatTest extends WebTestCase
         $crawler = $client->request('GET', '/personnage/' . $personnage->getId() . '/competence/add');
         self::assertResponseIsSuccessful();
 
-        $form = $crawler->selectButton('Ajouter la compétence')->form([
-            'form[id]' => (string) $competence->getId(),
-        ]);
+        $form = $crawler
+            ->selectButton('Ajouter la compétence')
+            ->form([
+                'form[id]' => (string) $competence->getId(),
+            ]);
         $client->submit($form);
 
         // Controller re-renders the form (200) without deducting XP on failure

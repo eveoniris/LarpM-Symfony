@@ -41,15 +41,14 @@ class ReligionTest extends WebTestCase
         self::assertResponseIsSuccessful();
 
         // Pick the first available religion option value from the rendered select
-        $firstOptionValue = $crawler
-            ->filter('select[name="personnage_religion[religion]"] option')
-            ->first()
-            ->attr('value');
+        $firstOptionValue = $crawler->filter('select[name="personnage_religion[religion]"] option')->first()->attr('value');
 
-        $form = $crawler->selectButton('Valider votre religion')->form([
-            'personnage_religion[religion]'      => $firstOptionValue,
-            'personnage_religion[religionLevel]' => (string) $pratiquantLevel->getId(),
-        ]);
+        $form = $crawler
+            ->selectButton('Valider votre religion')
+            ->form([
+                'personnage_religion[religion]' => $firstOptionValue,
+                'personnage_religion[religionLevel]' => (string) $pratiquantLevel->getId(),
+            ]);
         $client->submit($form);
 
         self::assertResponseRedirects();
@@ -107,16 +106,15 @@ class ReligionTest extends WebTestCase
         $crawler = $client->request('GET', '/personnage/' . $personnage->getId() . '/addReligion');
         self::assertResponseIsSuccessful();
 
-        $firstOptionValue = $crawler
-            ->filter('select[name="personnage_religion[religion]"] option')
-            ->first()
-            ->attr('value');
+        $firstOptionValue = $crawler->filter('select[name="personnage_religion[religion]"] option')->first()->attr('value');
 
         // Try to add religion2 as fervent
-        $form = $crawler->selectButton('Valider votre religion')->form([
-            'personnage_religion[religion]'      => $firstOptionValue,
-            'personnage_religion[religionLevel]' => (string) $ferventLevel->getId(),
-        ]);
+        $form = $crawler
+            ->selectButton('Valider votre religion')
+            ->form([
+                'personnage_religion[religion]' => $firstOptionValue,
+                'personnage_religion[religionLevel]' => (string) $ferventLevel->getId(),
+            ]);
         $client->submit($form);
 
         // Controller redirects with error: already fervent of another religion

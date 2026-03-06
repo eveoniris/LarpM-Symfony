@@ -20,12 +20,10 @@ class CompetenceFamilyRepository extends BaseRepository
     /** @return array<int, \App\Entity\CompetenceFamily> */
     public function findAllOrderedByLabel(): array
     {
-        return $this->getEntityManager()->createQuery(
-            'SELECT cf, c, l FROM App\Entity\CompetenceFamily cf
+        return $this->getEntityManager()->createQuery('SELECT cf, c, l FROM App\Entity\CompetenceFamily cf
              LEFT JOIN cf.competences c
              LEFT JOIN c.level l
-             ORDER BY cf.label ASC'
-        )->getResult();
+             ORDER BY cf.label ASC')->getResult();
     }
 
     /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */

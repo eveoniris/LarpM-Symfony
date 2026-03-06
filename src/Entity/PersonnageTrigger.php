@@ -20,7 +20,7 @@ class PersonnageTrigger extends BasePersonnageTrigger
     {
         return [
             'personnage_id' => $this->personnage->getId(),
-            'TAG' => ($this->getTag() instanceof TriggerType) ? $this->getTag()->value : $this->getTag(),
+            'TAG' => $this->getTag() instanceof TriggerType ? $this->getTag()->value : $this->getTag(),
         ];
     }
 }
