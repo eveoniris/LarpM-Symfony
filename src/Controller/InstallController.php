@@ -28,14 +28,14 @@ class InstallController extends AbstractController
     {
         $sql = file_get_contents($dir . 'mysql.sql');
         $statement = $connection->prepare($sql);
-        $statement->execute();
+        $statement->executeQuery();
     }
 
     private function loadLarpManagerTables(\Doctrine\DBAL\Connection $connection, string $dir): void
     {
         $sql = file_get_contents($dir . 'create_or_update.sql');
         $statement = $connection->prepare($sql);
-        $statement->execute();
+        $statement->executeQuery();
     }
 
     #[Route('/install/create', name: 'install.create')]
