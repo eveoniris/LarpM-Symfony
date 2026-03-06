@@ -152,7 +152,7 @@ abstract class BasePersonnage
     protected Collection $postulants;
 
     /** @var Collection<int, RenommeHistory> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: RenommeHistory::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: RenommeHistory::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $renommeHistories;
 
