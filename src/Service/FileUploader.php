@@ -118,7 +118,7 @@ final class FileUploader
             return $originalFilename;
         }
 
-        $this->fileName = $this->slugger->slug($originalFilename);
+        $this->fileName = (string) $this->slugger->slug($originalFilename);
 
         return $this->fileName;
     }
