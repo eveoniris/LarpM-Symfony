@@ -25,7 +25,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class CompetenceServiceTest extends KernelTestCase
 {
-
     private CompetenceService $competenceService;
     private EntityManagerInterface $entityManager;
 

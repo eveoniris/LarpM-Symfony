@@ -20,7 +20,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class GroupeServiceTest extends KernelTestCase
 {
-
     private GroupeService $groupeService;
     private EntityManagerInterface $entityManager;
 

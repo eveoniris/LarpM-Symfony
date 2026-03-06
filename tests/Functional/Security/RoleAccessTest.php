@@ -17,7 +17,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class RoleAccessTest extends WebTestCase
 {
-
     // -------------------------------------------------------------------------
     // Anonymous access
     // -------------------------------------------------------------------------

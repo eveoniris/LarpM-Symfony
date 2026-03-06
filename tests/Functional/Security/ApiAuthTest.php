@@ -17,7 +17,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class ApiAuthTest extends WebTestCase
 {
-
     // -------------------------------------------------------------------------
     // Login check
     // -------------------------------------------------------------------------

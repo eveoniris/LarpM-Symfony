@@ -299,7 +299,7 @@ class ReligionController extends AbstractController
     {
         return $this->sendCsv(title: 'eveoniris_religion_personnage_' . (new AsciiSlugger())->slug($religion->getLabel()) . '_' . date('Ymd'), content: static function () use ($religion): void {
             $output = fopen('php://output', 'w');
-        assert($output !== false);
+            \assert(false !== $output);
 
             fputcsv(
                 $output,

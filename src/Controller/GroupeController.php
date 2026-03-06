@@ -595,7 +595,7 @@ class GroupeController extends AbstractController
         header('Expires: 0');
 
         $output = fopen('php://output', 'w');
-        assert($output !== false);
+        \assert(false !== $output);
 
         // header
         fputcsv(
@@ -985,7 +985,7 @@ class GroupeController extends AbstractController
             header('Expires: 0');
 
             $output = fopen('php://output', 'w');
-        assert($output !== false);
+            \assert(false !== $output);
 
             fputcsv($output, $header, ';');
 

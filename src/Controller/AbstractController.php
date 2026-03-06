@@ -666,7 +666,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if (null === $content) {
             $content = static function () use ($repository, $header, $query, $dataProvider): void {
                 $output = fopen('php://output', 'w');
-        assert($output !== false);
+                \assert(false !== $output);
                 // fwrite($output, chr(255).chr(254)); // Excel BOM do a chinese chars
                 fprintf($output, \chr(0xEF) . \chr(0xBB) . \chr(0xBF));
 
