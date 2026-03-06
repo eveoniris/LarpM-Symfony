@@ -32,9 +32,18 @@ class NoblesseService extends CompetenceService
     protected function remove(): void
     {
         $level = $this->getCompetence()->getLevel();
-        $value = $level?->getId() + 1;
 
-        if ($level && $value > 1 && $value < 7) {
+        $valuesMap = [
+            1 => 2,
+            2 => 3,
+            3 => 2,
+            4 => 5,
+            5 => 6,
+        ];
+
+        $value = $valuesMap[$level?->getId()] ?? 0;
+
+        if ($level && $value > 0) {
             $this->removeRenomme($value, \sprintf('[Retrait] %s niveau %s', $this->getCompetence()->getCompetenceFamily()?->getLabel(), $level->getLabel()));
         }
     }
