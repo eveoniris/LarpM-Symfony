@@ -61,7 +61,7 @@ class ItemRepository extends BaseRepository
         ];
     }
 
-    public function createQueryBuilder($alias, $indexBy = null): QueryBuilder
+    public function createQueryBuilder(string $alias, ?string $indexBy = null): QueryBuilder
     {
         return parent::createQueryBuilder($alias, $indexBy)->join($alias . '.quality', 'quality');
     }
