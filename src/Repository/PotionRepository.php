@@ -35,7 +35,7 @@ class PotionRepository extends BaseRepository
         $qb = $this->getQueryBuilder($type, $value);
         $qb->select($qb->expr()->count('p'));
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     protected function getQueryBuilder(?string $type, mixed $value): QueryBuilder
@@ -126,7 +126,7 @@ class PotionRepository extends BaseRepository
         return $query->setParameter('value', $secret);
     }
 
-    /** @return array<string, array<string, mixed>> */
+    /** @return array<int|string, string|array<string, mixed>|null> */
     public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();

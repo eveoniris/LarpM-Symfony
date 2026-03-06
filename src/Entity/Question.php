@@ -17,7 +17,7 @@ class Question extends BaseQuestion
      */
     public function getReponse(string $hash): string|bool
     {
-        foreach (preg_split('/[;]+/', $this->getChoix()) as $reponse) {
+        foreach (preg_split('/[;]+/', $this->getChoix()) ?: [] as $reponse) {
             if (sha1($reponse) === $hash) {
                 return $reponse;
             }

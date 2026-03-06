@@ -50,6 +50,11 @@ class GnLockGiveRenomme extends Command
         }
 
         $gn ??= $gnRepository->findNext();
+        if (!$gn instanceof Gn) {
+            $io->error('GN not found');
+
+            return Command::INVALID;
+        }
 
         $total = $participantRepository->countAllByCompentenceFamilyLevel($gn, CompetenceFamilyType::NOBILITY, LevelType::EXPERT);
         $progressBar = new ProgressBar($output, $total);

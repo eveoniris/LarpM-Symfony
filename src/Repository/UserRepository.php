@@ -38,9 +38,10 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         return !empty($result->getScalarResult());
     }
 
-    /** @return list<User> */
+    /** @return array<int, User> */
     public function findAll(): array
     {
+        /** @var array<int, User> */
         return $this->findBy([], ['username' => 'ASC']);
     }
 

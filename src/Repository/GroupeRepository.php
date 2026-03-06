@@ -14,9 +14,10 @@ class GroupeRepository extends BaseRepository
     /**
      * Trouve tous les groupes classé par ordre alphabétique.
      */
-    /** @return list<Groupe> */
+    /** @return array<int, Groupe> */
     public function findAll(): array
     {
+        /** @var array<int, Groupe> */
         return $this->findBy([], ['nom' => 'ASC']);
     }
 
@@ -88,7 +89,7 @@ class GroupeRepository extends BaseRepository
             }
         }
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     /**
@@ -154,7 +155,7 @@ class GroupeRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
-    /** @return array<string, array<string, mixed>> */
+    /** @return array<int|string, string|array<string, mixed>|null> */
     public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();

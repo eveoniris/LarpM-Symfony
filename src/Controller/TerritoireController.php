@@ -111,7 +111,7 @@ class TerritoireController extends AbstractController
             }
         }
 
-        $response = new Response(file_get_contents($filename));
+        $response = new Response((string) file_get_contents($filename));
         $response->headers->set('Content-Type', 'image/png');
 
         return $response;

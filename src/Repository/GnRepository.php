@@ -25,9 +25,10 @@ class GnRepository extends BaseRepository
     /**
      * Classe les gn par date (du plus proche au plus lointain).
      */
-    /** @return list<Gn> */
+    /** @return array<int, Gn> */
     public function findAll(): array
     {
+        /** @var array<int, Gn> */
         return $this->findBy([], ['date_debut' => 'DESC']);
     }
 

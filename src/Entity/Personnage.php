@@ -206,7 +206,7 @@ class Personnage extends BasePersonnage implements Stringable
      */
     public function addPugilat(int $pugilat): static
     {
-        $this->setPugilat($this->getPugilat() + (int) $pugilat);
+        $this->setPugilat((int) ($this->getPugilat() + $pugilat));
 
         return $this;
     }
@@ -220,7 +220,7 @@ class Personnage extends BasePersonnage implements Stringable
             return $this->pugilat;
         }
 
-        $this->pugilat =
+        $this->pugilat = (int) (
             1
             + $this->getCompetencePugilat(CompetenceFamilyType::AGILITY)
             + $this->getCompetencePugilat(CompetenceFamilyType::RANGED_WEAPONS)
@@ -233,7 +233,8 @@ class Personnage extends BasePersonnage implements Stringable
             + $this->getCompetencePugilat(CompetenceFamilyType::RESISTANCE)
             + $this->getCompetencePugilat(CompetenceFamilyType::SAVAGERY)
             + $this->getCompetencePugilat(CompetenceFamilyType::STRATEGY)
-            + $this->getCompetencePugilat(CompetenceFamilyType::SURVIVAL);
+            + $this->getCompetencePugilat(CompetenceFamilyType::SURVIVAL)
+        );
 
         // Forge au niveau Initié ajoute 5 points
         if ($this->getCompetenceNiveau(CompetenceFamilyType::FORGE) >= 2) {
@@ -489,9 +490,9 @@ class Personnage extends BasePersonnage implements Stringable
             if ($competenceLevel >= $level) {
                 $pugilatHistory = new PugilatHistory();
                 if (\is_callable($value)) {
-                    $pugilatHistory->setPugilat($value($competenceLevel, $competencePugilat));
+                    $pugilatHistory->setPugilat((int) $value($competenceLevel, (int) $competencePugilat));
                 } else {
-                    $pugilatHistory->setPugilat($value ?? $competencePugilat);
+                    $pugilatHistory->setPugilat((int) ($value ?? $competencePugilat));
                 }
                 $pugilatHistory->setExplication(\sprintf('Compétence %s niveau %d', strtolower($family->getLabel()), $competenceLevel));
                 $pugilatHistories[] = $pugilatHistory;
@@ -579,7 +580,7 @@ class Personnage extends BasePersonnage implements Stringable
     public function getFirstParticipant(): ?Participant
     {
         if (!$this->getParticipants()->isEmpty()) {
-            return $this->getParticipants()->first();
+            return $this->getParticipants()->first() ?: null;
         }
 
         return null;
@@ -703,7 +704,7 @@ class Personnage extends BasePersonnage implements Stringable
     public function getLastParticipant(): ?Participant
     {
         if (!$this->getParticipants()->isEmpty()) {
-            return $this->getParticipants()->last();
+            return $this->getParticipants()->last() ?: null;
         }
 
         return null;
@@ -1005,13 +1006,14 @@ class Personnage extends BasePersonnage implements Stringable
     {
         /** @var PersonnageTrigger $personnageTrigger */
         foreach ($this->getPersonnageTriggers() as $personnageTrigger) {
+            $triggerTag = $personnageTrigger->getTag();
             if (\is_string($tag)) {
-                if ($personnageTrigger->getTag()?->value === $tag) {
+                if ($triggerTag instanceof TriggerType && $triggerTag->value === $tag) {
                     return $personnageTrigger;
                 }
                 continue;
             }
-            if ($personnageTrigger->getTag()->value === $tag->value) {
+            if ($triggerTag instanceof TriggerType && $triggerTag->value === $tag->value) {
                 return $personnageTrigger;
             }
         }
@@ -1360,14 +1362,15 @@ class Personnage extends BasePersonnage implements Stringable
     {
         /** @var PersonnageTrigger $personnageTrigger */
         foreach ($this->getPersonnageTriggers() as $personnageTrigger) {
+            $triggerTag = $personnageTrigger->getTag();
             if ($tag instanceof TriggerType) {
-                if ($personnageTrigger->getTag()->value === $tag->value) {
+                if ($triggerTag instanceof TriggerType && $triggerTag->value === $tag->value) {
                     return true;
                 }
                 continue;
             }
 
-            if ($personnageTrigger->getTag()?->value === $tag) {
+            if ($triggerTag instanceof TriggerType && $triggerTag->value === $tag) {
                 return true;
             }
         }

@@ -154,7 +154,7 @@ abstract class BaseIngredient
      */
     public function addGroupeHasIngredient(GroupeHasIngredient $groupeHasIngredient): static
     {
-        $this->groupeHasIngredients[] = $groupeHasIngredient;
+        $this->groupeHasIngredients?->add($groupeHasIngredient);
 
         return $this;
     }
@@ -184,7 +184,7 @@ abstract class BaseIngredient
      */
     public function addPersonnageIngredient(PersonnageIngredient $personnageIngredient): static
     {
-        $this->personnageIngredients[] = $personnageIngredient;
+        $this->personnageIngredients?->add($personnageIngredient);
 
         return $this;
     }

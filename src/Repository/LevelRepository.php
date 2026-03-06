@@ -8,7 +8,7 @@ use App\Service\OrderBy;
 
 class LevelRepository extends BaseRepository
 {
-    /** @return array<string, array<string, mixed>> */
+    /** @return array<int|string, string|array<string, mixed>|null> */
     public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();

@@ -168,7 +168,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     public function getLastParticipant(): ?Participant
     {
         if (!$this->getParticipants()->isEmpty()) {
-            return $this->getParticipants()->last();
+            return $this->getParticipants()->last() ?: null;
         }
 
         return null;

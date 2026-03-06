@@ -222,7 +222,7 @@ class StockObjetController extends AbstractController
 
         $orderBy = $this->getRequestOrder(defOrderBy: 'nom', alias: $alias, allowedFields: $objetRepository->getFieldNames());
 
-        $query = $objetRepository->createQueryBuilder($alias)->orderBy(key($orderBy), current($orderBy));
+        $query = $objetRepository->createQueryBuilder($alias)->orderBy((string) key($orderBy), current($orderBy) ?: null);
 
         $objetRepository->addTagCriteriaToQueryBuilder($tag, $query);
         $objetRepository->addRangementCriteriaToQueryBuilder($rangement, $query);

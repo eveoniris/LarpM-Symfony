@@ -85,6 +85,7 @@ class RuleController extends AbstractController
 
         $breadcrumb = [['route' => $this->generateUrl('rule.list'), 'name' => 'Liste des règles']];
 
+        /** @var Rule $entity */
         if ($entity->getId()) {
             $breadcrumb[] = [
                 'route' => $this->generateUrl('rule.detail', ['rule' => $entity->getId()]),

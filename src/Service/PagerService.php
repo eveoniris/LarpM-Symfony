@@ -201,6 +201,7 @@ final class PagerService
             }
         }
         $data ??= new ListSearch();
+        assert($data instanceof ListSearch);
         if (empty($options)) {
             $typeChoicesOverride = $data->getTypeChoices();
 
@@ -213,11 +214,19 @@ final class PagerService
                 ];
 
                 foreach ($this->getRepository()->searchAttributes() as $searchKey => $searchAttribute) {
+                    if (!is_string($searchAttribute)) {
+                        continue;
+                    }
+
                     $attribute = $searchKey;
                     $label = $searchAttribute;
                     if (\is_int($searchKey)) {
                         $label = $this->getRepository()->translateAttribute($searchAttribute);
                         $attribute = $searchAttribute;
+                    }
+
+                    if (!is_string($attribute)) {
+                        continue;
                     }
 
                     $typeChoicesOverride['type_choices']['choices'][$label] = $this->getRepository()->getAttributeWhereName($attribute);
@@ -286,7 +295,7 @@ final class PagerService
 
     public function isInOrder(string $field): bool
     {
-        return $this->orderBy->getOrders()[$field] ?? false;
+        return isset($this->orderBy->getOrders()[$field]);
     }
 
     public function setDefaultOrderBy(string $orderBy): self

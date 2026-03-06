@@ -83,7 +83,7 @@ class Document extends BaseDocument implements Stringable
 
     public function getPrintLabel(): ?string
     {
-        return (new AsciiSlugger())->slug($this->getLabel() ?: $this->getFilename() ?: $this->getCode() ?: time())->toString();
+        return (new AsciiSlugger())->slug((string) ($this->getLabel() ?: $this->getFilename() ?: $this->getCode() ?: time()))->toString();
 
         // return preg_replace('/[^a-z0-9]+/', '_', strtolower($this->filename ?: $this->getCode()));
     }

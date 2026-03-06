@@ -82,6 +82,6 @@ class LigneeRepository extends BaseRepository
             }
         }
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 }

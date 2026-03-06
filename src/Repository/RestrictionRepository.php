@@ -9,6 +9,7 @@ class RestrictionRepository extends BaseRepository
     /** @return array<int, \App\Entity\Restriction> */
     public function findAllOrderedByLabel(): array
     {
+        /** @var array<int, \App\Entity\Restriction> */
         return $this->findBy([], ['label' => 'ASC']);
     }
 }

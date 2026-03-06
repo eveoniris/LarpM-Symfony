@@ -22,6 +22,7 @@ class PersonnageRepository extends BaseRepository
      */
     public function findAll(): array
     {
+        /** @var array<int, Personnage> */
         return $this->findBy([], ['nom' => 'ASC']);
     }
 
@@ -118,7 +119,7 @@ class PersonnageRepository extends BaseRepository
         $qb->select($qb->expr()->count('distinct p'));
         $this->buildSearchFromJoinWhereQuery($qb, $criteria);
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     /** @param array<string, mixed> $criteria */

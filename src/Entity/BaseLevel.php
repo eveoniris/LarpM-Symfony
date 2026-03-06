@@ -164,7 +164,7 @@ abstract class BaseLevel
      */
     public function addCompetence(Competence $competence): static
     {
-        $this->competences[] = $competence;
+        $this->competences?->add($competence);
 
         return $this;
     }

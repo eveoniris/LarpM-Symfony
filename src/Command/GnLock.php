@@ -41,6 +41,12 @@ class GnLock extends Command
         }
 
         $gn ??= $gnRepository->findNext();
+        if (!$gn instanceof Gn) {
+            $io->error('GN not found');
+
+            return Command::INVALID;
+        }
+
         $gnRepository->lockAllGroup($gn);
         $io->success('Terminé');
 

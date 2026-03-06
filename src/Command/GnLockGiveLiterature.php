@@ -50,6 +50,11 @@ class GnLockGiveLiterature extends Command
         }
 
         $gn ??= $gnRepository->findNext();
+        if (!$gn instanceof Gn) {
+            $io->error('GN not found');
+
+            return Command::INVALID;
+        }
 
         $total = 0;
         $total += $participantRepository->countAllByCompentenceFamilyLevel($gn, CompetenceFamilyType::LITERATURE, LevelType::INITIATED);

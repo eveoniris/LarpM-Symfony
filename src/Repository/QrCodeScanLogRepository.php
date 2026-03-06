@@ -12,6 +12,7 @@ class QrCodeScanLogRepository extends BaseRepository
     /** @return array<int, \App\Entity\QrCodeScanLog> */
     public function findAll(): array
     {
+        /** @var array<int, \App\Entity\QrCodeScanLog> */
         return $this->findBy([], ['date' => 'DESC']);
     }
 

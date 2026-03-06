@@ -34,7 +34,7 @@ class StringHelper
             return '';
         }
 
-        if (\is_array($content[$key])) {
+        if (\is_array($content) && isset($content[$key]) && \is_array($content[$key])) {
             $content = $content[$key];
         } elseif (!\is_array($content)) {
             $content = [$content];

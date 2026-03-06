@@ -45,6 +45,7 @@ class GroupeGnController extends AbstractController
         // Si ce groupe a déjà une participation à un jeu, reprendre le code/jeuStrategique/jeuMaritime/placeAvailable
         if ($groupe->getGroupeGns()->count() > 0) {
             $jeu = $groupe->getGroupeGns()->last();
+            assert($jeu instanceof GroupeGn);
             $groupeGn->setCode($jeu->getCode());
             $groupeGn->setPlaceAvailable($jeu->getPlaceAvailable());
             $groupeGn->setJeuStrategique($jeu->getJeuStrategique());

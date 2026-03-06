@@ -324,16 +324,12 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
             $this->addFlash('success', $successMsg);
 
+            $redirectStr = \is_array($redirect) ? (string) ($redirect['route'] ?? '') : $redirect;
+            $redirectParams = \is_array($redirect) ? (array) ($redirect['params'] ?? []) : [];
             try {
-                $redirectParams = [];
-                if (\is_array($redirect)) {
-                    $redirectParams = $redirect['params'];
-                    $redirect = $redirect['route'];
-                }
-
-                return $this->redirectToRoute($redirect, $redirectParams, 303);
+                return $this->redirectToRoute($redirectStr, $redirectParams, 303);
             } catch (Exception $e) {
-                return $this->redirect($redirect, 303);
+                return $this->redirect($redirectStr, 303);
             }
         }
 
@@ -444,6 +440,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             throw new RuntimeException('Entity must be a doctrine entity and have a repository');
         }
 
+        /** @phpstan-ignore argument.type */
         $form = $this->createForm($formClass, $entity);
         $isNew = !$this->entityManager->getUnitOfWork()->isInIdentityMap($entity);
 
@@ -487,7 +484,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 $label = method_exists($entity, 'getLabel') ? $entity->getLabel() : $msg['entity'];
                 $breadcrumb[] = [
                     'name' => $label,
-                    'route' => $this->generateUrl($routes['detail'], [$routes['entityAlias'] => $entity->getId()]),
+                    'route' => $this->generateUrl($routes['detail'], [$routes['entityAlias'] => method_exists($entity, 'getId') ? $entity->getId() : null]),
                 ];
             }
             $breadcrumb[] = ['name' => $msg['title']];
@@ -598,7 +595,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $logAction->setUser($this->getUser());
         $logAction->setType($type);
 
-        if (!\is_array($entity) && method_exists($entity, 'toLog')) {
+        if (!\is_array($entity) && \is_object($entity) && method_exists($entity, 'toLog')) {
             $entityValue = $entity->toLog();
         } else {
             $entityValue = (array) $entity;
@@ -669,6 +666,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         if (null === $content) {
             $content = static function () use ($repository, $header, $query, $dataProvider): void {
                 $output = fopen('php://output', 'w');
+        assert($output !== false);
                 // fwrite($output, chr(255).chr(254)); // Excel BOM do a chinese chars
                 fprintf($output, \chr(0xEF) . \chr(0xBB) . \chr(0xBF));
 

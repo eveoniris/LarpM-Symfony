@@ -87,7 +87,7 @@ class StatistiqueController extends AbstractController
         string $_route,
         Request $request,
     ): Response|JsonResponse|StreamedResponse {
-        $dataQuery = $this->statsService->getWhosWho($gn, $request->query->get('renomme', 20));
+        $dataQuery = $this->statsService->getWhosWho($gn, (int) $request->query->get('renomme', 20));
 
         return match ($_route) {
             'api.whoswho.gn', 'stats.whoswho.gn.json' => new JsonResponse($dataQuery->getResult()),

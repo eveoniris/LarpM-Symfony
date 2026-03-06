@@ -313,7 +313,7 @@ abstract class BaseTerritoire
      */
     public function addGroupe(Groupe $groupe): static
     {
-        $this->groupes[] = $groupe;
+        $this->groupes?->add($groupe);
 
         return $this;
     }

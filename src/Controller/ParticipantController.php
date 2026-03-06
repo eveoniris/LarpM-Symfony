@@ -340,8 +340,8 @@ class ParticipantController extends AbstractController
         $form->handleRequest($request);
 
         if ('POST' == $request->getMethod()) {
-            $newXps = $request->request->get('xp');
-            $explanation = $request->request->get('explanation');
+            $newXps = (int) $request->request->get('xp');
+            $explanation = $request->request->getString('explanation');
 
             $personnage = $participant->getPersonnage();
             if ($personnage->getXp() != $newXps) {

@@ -266,13 +266,13 @@ class UserController extends AbstractController
         $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
 
         if ($request->isMethod('POST')) {
-            $user->setEmail($request->request->get('email'));
-            $user->setEmailContact($request->request->get('email_contact'));
+            $user->setEmail((string) $request->request->getString('email'));
+            $user->setEmailContact($request->request->getString('email_contact') ?: null);
             if ($request->request->has('username')) {
-                $user->setUsername($request->request->get('username'));
+                $user->setUsername((string) $request->request->getString('username'));
             }
 
-            $password = $request->request->get('password');
+            $password = $request->request->getString('password');
             if ($password) {
                 $hashedPassword = $passwordHasher->hashPassword($user, $password);
 
@@ -449,9 +449,9 @@ class UserController extends AbstractController
 
                 $email = (new TemplatedEmail())
                     ->to($user->getEmail())
-                    ->subject($subject->getContent())
+                    ->subject((string) $subject->getContent())
                     // TODo ->locale($user->getLocal())
-                    ->text($textBody->getContent())
+                    ->text((string) $textBody->getContent())
                     ->htmlTemplate('user/email/forgotPassword.twig')
                     ->context($context);
                 $mailer->send($email);

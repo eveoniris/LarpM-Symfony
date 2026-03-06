@@ -24,7 +24,7 @@ class Chronologie extends BaseChronologie implements JsonSerializable
         ];
     }
 
-    public function jsonUnserialize(object $payload): void
+    public function jsonUnserialize(\stdClass $payload): void
     {
         $this->setYear($payload->year);
         $this->setMonth($payload->month);

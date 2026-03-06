@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\TriggerType;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity]
@@ -19,7 +20,7 @@ class PersonnageTrigger extends BasePersonnageTrigger
     {
         return [
             'personnage_id' => $this->personnage->getId(),
-            'TAG' => $this->getTag()?->value,
+            'TAG' => ($this->getTag() instanceof TriggerType) ? $this->getTag()->value : $this->getTag(),
         ];
     }
 }

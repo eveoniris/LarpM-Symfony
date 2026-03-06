@@ -236,7 +236,7 @@ class Groupe extends BaseGroupe implements Stringable
     /**
      * Fourni la liste des toutes les alliances de ce groupe.
      *
-     * @return Collection<int, object>
+     * @return Collection<int, GroupeAllie>
      */
     public function getAlliances(): Collection
     {
@@ -278,7 +278,7 @@ class Groupe extends BaseGroupe implements Stringable
     /**
      * Fourni la liste de toutes les alliances en cours de négotiation.
      *
-     * @return Collection<int, object>
+     * @return Collection<int, GroupeAllie>
      */
     public function getWaitingAlliances(): Collection
     {
@@ -320,7 +320,7 @@ class Groupe extends BaseGroupe implements Stringable
     /**
      * Fourni tous les ennemis du groupe.
      *
-     * @return Collection<int, object>
+     * @return Collection<int, GroupeEnemy>
      */
     public function getEnnemies(): Collection
     {
@@ -362,7 +362,7 @@ class Groupe extends BaseGroupe implements Stringable
     /**
      * Fournie toutes les negociation de paix en cours.
      *
-     * @return Collection<int, object>
+     * @return Collection<int, GroupeEnemy>
      */
     public function getWaitingPeace(): Collection
     {

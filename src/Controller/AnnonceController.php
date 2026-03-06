@@ -103,7 +103,7 @@ class AnnonceController extends AbstractController
     {
         $orderBy = $this->getRequestOrder(alias: 'a', allowedFields: $repository->getFieldNames());
 
-        $query = $repository->createQueryBuilder('a')->orderBy(key($orderBy), current($orderBy));
+        $query = $repository->createQueryBuilder('a')->orderBy((string) key($orderBy), current($orderBy) ?: null);
 
         $paginator = $repository->findPaginatedQuery($query->getQuery(), $this->getRequestLimit(), $this->getRequestPage());
 

@@ -45,7 +45,7 @@ class AgeRepository extends BaseRepository
         return $query->andWhere($query->getRootAliases()[0] . '.enableCreation = :enable')->setParameter('enable', $enable);
     }
 
-    /** @return array<string, array<string, mixed>> */
+    /** @return array<int|string, string|array<string, mixed>|null> */
     public function searchAttributes(?string $alias = null, bool $withAlias = true): array
     {
         $alias ??= static::getEntityAlias();

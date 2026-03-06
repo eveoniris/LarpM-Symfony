@@ -326,16 +326,18 @@ final class PersonnageManager
         // $sortByFunctionName = 'PersonnageManager::'.$sortByFunctionName;
 
         $index = 0;
-        foreach ($personnages as &$item) {
-            $item = [$index++, $item];
+        /** @var array<int, array{0: int, 1: Personnage}> $indexed */
+        $indexed = [];
+        foreach ($personnages as $k => $p) {
+            $indexed[$k] = [$index++, $p];
         }
-        $result = uasort($personnages, static function ($a, $b) use ($sortByFunctionName) {
+        $result = uasort($indexed, static function (array $a, array $b) use ($sortByFunctionName) {
             $result = \call_user_func(__NAMESPACE__ . '\PersonnageManager::' . $sortByFunctionName, $a[1], $b[1]);
 
-            return 0 == $result ? $a[0] - $b[0] : $result;
+            return 0 == $result ? $a[0] - $b[0] : (int) $result;
         });
-        foreach ($personnages as &$item) {
-            $item = $item[1];
+        foreach ($indexed as $k => $item) {
+            $personnages[$k] = $item[1];
         }
 
         return $result;

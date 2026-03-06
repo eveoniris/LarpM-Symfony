@@ -31,7 +31,7 @@ class BilletController extends AbstractController
     {
         $orderBy = $this->getRequestOrder(alias: 'b', allowedFields: $billetRepository->getFieldNames());
 
-        $query = $billetRepository->createQueryBuilder('b')->orderBy(key($orderBy), current($orderBy));
+        $query = $billetRepository->createQueryBuilder('b')->orderBy((string) key($orderBy), current($orderBy) ?: null);
 
         $paginator = $billetRepository->findPaginatedQuery($query->getQuery(), $this->getRequestLimit(), $this->getRequestPage());
 
