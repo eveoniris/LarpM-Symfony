@@ -28,6 +28,3 @@ space-around-assignment-in-declare = false
 preserve-breaking-conditional-expression = true
 space-before-arrow-function-parameter-list-parenthesis = true
 parentheses-in-exit-and-die = false
-# Preserve (new Foo())->method() — removing parens changes precedence in PHP < 8.4
-# TODO: once all patterns are tested, set to false and refactor to new Foo()->method()
-parentheses-around-new-in-member-access = true
