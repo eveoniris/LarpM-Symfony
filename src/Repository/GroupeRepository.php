@@ -147,8 +147,8 @@ class GroupeRepository extends BaseRepository
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias . '.userRelatedByScenaristeId', 'scenariste')->addSelect('scenariste');
-        $query->join('scenariste.etatCivil', 'etatCivil')->addSelect('etatCivil');
+        $query->join($alias . '.userRelatedByScenaristeId', 'scenariste');
+        $query->join('scenariste.etatCivil', 'etatCivil');
         $query->leftJoin($alias . '.groupeGns', 'groupeGn')->addSelect('groupeGn');
         $query->leftJoin('groupeGn.gn', 'gn')->addSelect('gn');
 
