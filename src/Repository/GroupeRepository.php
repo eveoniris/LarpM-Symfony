@@ -146,8 +146,10 @@ class GroupeRepository extends BaseRepository
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias . '.userRelatedByScenaristeId', 'scenariste');
-        $query->join('scenariste.etatCivil', 'etatCivil');
+        $query->join($alias . '.userRelatedByScenaristeId', 'scenariste')->addSelect('scenariste');
+        $query->join('scenariste.etatCivil', 'etatCivil')->addSelect('etatCivil');
+        $query->leftJoin($alias . '.groupeGns', 'groupeGn')->addSelect('groupeGn');
+        $query->leftJoin('groupeGn.gn', 'gn')->addSelect('gn');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
