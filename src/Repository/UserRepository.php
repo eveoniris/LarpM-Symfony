@@ -31,10 +31,8 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         $result = $qb
             ->where($qb->expr()->eq('u.' . $property, ':' . $property))
             ->andWhere($qb->expr()->notIn('u.id', ':id'))
-            ->setParameters([
-                ':' . $property => $user->{'get' . ucfirst($property)}(),
-                ':id' => $user->getId(),
-            ])
+            ->setParameter($property, $user->{'get' . ucfirst($property)}())
+            ->setParameter('id', $user->getId())
             ->getQuery();
 
         return !empty($result->getScalarResult());
