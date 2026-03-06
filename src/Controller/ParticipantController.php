@@ -1583,7 +1583,7 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $niveau = $request->query->get('niveau');
+        $niveau = (int) $request->query->get('niveau');
 
         if ($participant->getPersonnage()?->getCompetenceNiveau(CompetenceFamilyType::ALCHEMY) < LevelType::getTypeId(LevelType::APPRENTICE)) {
             $this->addFlash('error', 'Seul un alchimiste peu avoir des potions de départ');
