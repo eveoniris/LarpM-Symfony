@@ -133,7 +133,7 @@ abstract class BaseRepository extends ServiceEntityRepository
 
                 $byAlias = $by;
                 // Handle aliased select
-                if (!str_contains($by, '.') && ($byAlias = $this->sortAttributes($alias)[$by][$sort] ?? null)) {
+                if (!str_contains($by, '.') && $sort !== null && ($byAlias = $this->sortAttributes($alias)[$by][$sort] ?? null)) {
                     $byAlias = key($byAlias);
                     // handle alias for field
                     $asAttributes = $this->searchAttributesAs($alias);

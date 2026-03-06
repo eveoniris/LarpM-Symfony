@@ -118,7 +118,11 @@ class AdminController extends AbstractController
     private function foldersize(string $path): int|float
     {
         $total_size = 0;
-        $files = scandir($path);
+        $files = is_dir($path) ? scandir($path) : false;
+        if ($files === false) {
+            return 0;
+        }
+
         $cleanPath = rtrim($path, '/') . '/';
 
         foreach ($files as $t) {
