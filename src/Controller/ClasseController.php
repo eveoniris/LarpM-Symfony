@@ -143,7 +143,7 @@ class ClasseController extends AbstractController
 
         return $this->render('classe/list.twig', [
             'pagerService' => $pagerService,
-            'paginator' => $classeRepository->searchPaginated($pagerService, $queryBuilder),
+            'paginator' => $classeRepository->searchPaginated($pagerService, $queryBuilder, true),
         ]);
     }
 

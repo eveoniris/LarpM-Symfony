@@ -55,7 +55,7 @@ abstract class BaseClasse
     /**
      * @var Collection<int, Personnage>|Personnage[]
      */
-    #[OneToMany(mappedBy: 'classe', targetEntity: Personnage::class, cascade: ['persist', 'remove'])]
+    #[OneToMany(mappedBy: 'classe', targetEntity: Personnage::class, cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY')]
     #[JoinColumn(name: 'id', referencedColumnName: 'classe_id', nullable: false)]
     protected Collection $personnages;
 

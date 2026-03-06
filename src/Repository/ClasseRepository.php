@@ -35,6 +35,11 @@ class ClasseRepository extends BaseRepository
             return $this->creation($query, filter_var($search, \FILTER_VALIDATE_BOOLEAN));
         }
 
+        $query ??= $this->createQueryBuilder($alias);
+        $query->leftJoin($alias . '.competenceFamilyFavorites', 'cfv')->addSelect('cfv');
+        $query->leftJoin($alias . '.competenceFamilyNormales', 'cfn')->addSelect('cfn');
+        $query->leftJoin($alias . '.competenceFamilyCreations', 'cfc')->addSelect('cfc');
+
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
