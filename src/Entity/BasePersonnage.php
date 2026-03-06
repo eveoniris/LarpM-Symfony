@@ -81,27 +81,27 @@ abstract class BasePersonnage
     protected ?bool $bracelet = null;
 
     /** @var Collection<int, ExperienceGain> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceGain::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceGain::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $experienceGains;
 
     /** @var Collection<int, ExperienceUsage> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceUsage::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: ExperienceUsage::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $experienceUsages;
 
     /** @var Collection<int, Trigger> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: Trigger::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: Trigger::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: true)]
     protected Collection $triggers;
 
     /** @var Collection<int, HeroismeHistory> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: HeroismeHistory::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: HeroismeHistory::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $heroismeHistories;
 
     /** @var Collection<int, Membre> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: Membre::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: Membre::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $membres;
 
@@ -111,12 +111,12 @@ abstract class BasePersonnage
     protected Collection $participants;
 
     /** @var Collection<int, PersonnageBackground> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageBackground::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageBackground::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageBackgrounds;
 
     /** @var Collection<int, PersonnageHasToken> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageHasToken::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageHasToken::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageHasTokens;
 
@@ -126,7 +126,7 @@ abstract class BasePersonnage
     protected Collection $personnageIngredients;
 
     /** @var Collection<int, PersonnageLangues> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLangues::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLangues::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     #[OrderBy(['langue' => 'ASC'])]
     protected Collection $personnageLangues;
@@ -137,17 +137,17 @@ abstract class BasePersonnage
     protected Collection $personnageRessources;
 
     /** @var Collection<int, PersonnageTrigger> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageTrigger::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageTrigger::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageTriggers;
 
     /** @var Collection<int, PersonnagesReligions> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnagesReligions::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnagesReligions::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnagesReligions;
 
     /** @var Collection<int, Postulant> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: Postulant::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: Postulant::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $postulants;
 
@@ -191,7 +191,7 @@ abstract class BasePersonnage
     protected ?User $user = null;
 
     /** @var Collection<int, PersonnageHasQuestion> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageHasQuestion::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageHasQuestion::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageHasQuestions;
 
@@ -269,28 +269,28 @@ abstract class BasePersonnage
     protected Collection $connaissances;
 
     /** @var Collection<int, PugilatHistory> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PugilatHistory::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PugilatHistory::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $pugilatHistories;
 
     /** @var Collection<int, PersonnageChronologie> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageChronologie::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageChronologie::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     #[OrderBy(['annee' => 'ASC', 'id' => 'ASC'])]
     protected Collection $personnageChronologie;
 
     /** @var Collection<int, PersonnageLignee> */
-    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLignee::class)]
+    #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageLignee::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
     protected Collection $personnageLignee;
 
     /** @var Collection<int, PersonnageLignee> */
-    #[OneToMany(mappedBy: 'parent1', targetEntity: PersonnageLignee::class)]
+    #[OneToMany(mappedBy: 'parent1', targetEntity: PersonnageLignee::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'parent1_id', nullable: false)]
     protected Collection $PersonnageLigneeParent1;
 
     /** @var Collection<int, PersonnageLignee> */
-    #[OneToMany(mappedBy: 'parent2', targetEntity: PersonnageLignee::class)]
+    #[OneToMany(mappedBy: 'parent2', targetEntity: PersonnageLignee::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'parent2_id', nullable: false)]
     protected Collection $PersonnageLigneeParent2;
 
@@ -597,9 +597,11 @@ abstract class BasePersonnage
      */
     public function addPotion(Potion $potion): static
     {
-        /* @phpstan-ignore argument.type */
-        $potion->addPersonnage($this);
-        $this->potions[] = $potion;
+        if (!$this->potions->contains($potion)) {
+            /* @phpstan-ignore argument.type */
+            $potion->addPersonnage($this);
+            $this->potions->add($potion);
+        }
 
         return $this;
     }

@@ -30,7 +30,7 @@ abstract class BaseRestauration
     protected ?string $description = null;
 
     /** @var Collection<int, ParticipantHasRestauration> */
-    #[OneToMany(mappedBy: 'restauration', targetEntity: ParticipantHasRestauration::class)]
+    #[OneToMany(mappedBy: 'restauration', targetEntity: ParticipantHasRestauration::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'restauration_id', nullable: false)]
     protected Collection $participantHasRestaurations;
 
