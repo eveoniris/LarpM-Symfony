@@ -54,7 +54,7 @@ abstract class BaseGroupeGn
     protected int $initiative = 0;
 
     /** @var Collection<int, Participant> */
-    #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: Participant::class)]
+    #[ORM\OneToMany(mappedBy: 'groupeGn', targetEntity: Participant::class, fetch: 'EXTRA_LAZY')]
     #[JoinColumn(name: 'id', referencedColumnName: 'groupe_gn_id', nullable: false)]
     #[ORM\OrderBy(['subscription_date' => 'ASC'])]
     protected Collection $participants;

@@ -33,7 +33,7 @@ class CompetenceFamilyController extends AbstractController
 
         return $this->render('competenceFamily/index.twig', [
             'pagerService' => $pagerService,
-            'paginator' => $competenceFamilyRepository->searchPaginated($pagerService),
+            'paginator' => $competenceFamilyRepository->searchPaginated($pagerService, null, true),
         ]);
     }
 
