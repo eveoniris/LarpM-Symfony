@@ -21,7 +21,7 @@ final class ReligionFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         return [
-            'label'  => self::faker()->unique()->words(2, true),
+            'label' => self::faker()->unique()->words(2, true),
             'secret' => false,
         ];
     }

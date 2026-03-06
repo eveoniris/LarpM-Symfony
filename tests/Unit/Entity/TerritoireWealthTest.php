@@ -78,7 +78,7 @@ class TerritoireWealthTest extends TestCase
     public function testRichesseUnstableAccumulatesMultipleConstructions(): void
     {
         $t = $this->makeTerritoire(50, TerritoireStatut::INSTABLE);
-        $t->addConstruction($this->makeConstruction(6));  // +5
+        $t->addConstruction($this->makeConstruction(6)); // +5
         $t->addConstruction($this->makeConstruction(23)); // +10
         $t->addConstruction($this->makeConstruction(10)); // +5
 

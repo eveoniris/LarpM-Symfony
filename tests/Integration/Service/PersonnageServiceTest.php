@@ -94,22 +94,16 @@ class PersonnageServiceTest extends KernelTestCase
         $territoire = TerritoireFactory::createOne();
         $user = UserFactory::createOne();
 
-        $personnage = $this->personnageService->createNewPersonnage(
-            null,
-            $user,
-            null,
-            $gn,
-            static function (Personnage $p) use ($age, $classe, $genre, $groupe, $territoire): void {
-                $p->setNom('Test Personnage');
-                $p->setVivant(true);
-                $p->setBracelet(false);
-                $p->setAge($age);
-                $p->setClasse($classe);
-                $p->setGenre($genre);
-                $p->setGroupe($groupe);
-                $p->setTerritoire($territoire);
-            },
-        );
+        $personnage = $this->personnageService->createNewPersonnage(null, $user, null, $gn, static function (Personnage $p) use ($age, $classe, $genre, $groupe, $territoire): void {
+            $p->setNom('Test Personnage');
+            $p->setVivant(true);
+            $p->setBracelet(false);
+            $p->setAge($age);
+            $p->setClasse($classe);
+            $p->setGenre($genre);
+            $p->setGroupe($groupe);
+            $p->setTerritoire($territoire);
+        });
 
         // Age.bonus is null by default → xp = gn.xpCreation only
         self::assertSame(30, $personnage->getXp());
@@ -125,22 +119,16 @@ class PersonnageServiceTest extends KernelTestCase
         $territoire = TerritoireFactory::createOne();
         $user = UserFactory::createOne();
 
-        $personnage = $this->personnageService->createNewPersonnage(
-            null,
-            $user,
-            null,
-            $gn,
-            static function (Personnage $p) use ($age, $classe, $genre, $groupe, $territoire): void {
-                $p->setNom('Aged Personnage');
-                $p->setVivant(true);
-                $p->setBracelet(false);
-                $p->setAge($age);
-                $p->setClasse($classe);
-                $p->setGenre($genre);
-                $p->setGroupe($groupe);
-                $p->setTerritoire($territoire);
-            },
-        );
+        $personnage = $this->personnageService->createNewPersonnage(null, $user, null, $gn, static function (Personnage $p) use ($age, $classe, $genre, $groupe, $territoire): void {
+            $p->setNom('Aged Personnage');
+            $p->setVivant(true);
+            $p->setBracelet(false);
+            $p->setAge($age);
+            $p->setClasse($classe);
+            $p->setGenre($genre);
+            $p->setGroupe($groupe);
+            $p->setTerritoire($territoire);
+        });
 
         // xp = gn.xpCreation (20) + age.bonus (10) = 30
         self::assertSame(30, $personnage->getXp());
@@ -156,22 +144,16 @@ class PersonnageServiceTest extends KernelTestCase
         $territoire = TerritoireFactory::createOne();
         $user = UserFactory::createOne();
 
-        $personnage = $this->personnageService->createNewPersonnage(
-            null,
-            $user,
-            null,
-            $gn,
-            static function (Personnage $p) use ($age, $classe, $genre, $groupe, $territoire): void {
-                $p->setNom('Persisted Personnage');
-                $p->setVivant(true);
-                $p->setBracelet(false);
-                $p->setAge($age);
-                $p->setClasse($classe);
-                $p->setGenre($genre);
-                $p->setGroupe($groupe);
-                $p->setTerritoire($territoire);
-            },
-        );
+        $personnage = $this->personnageService->createNewPersonnage(null, $user, null, $gn, static function (Personnage $p) use ($age, $classe, $genre, $groupe, $territoire): void {
+            $p->setNom('Persisted Personnage');
+            $p->setVivant(true);
+            $p->setBracelet(false);
+            $p->setAge($age);
+            $p->setClasse($classe);
+            $p->setGenre($genre);
+            $p->setGroupe($groupe);
+            $p->setTerritoire($territoire);
+        });
 
         self::assertNotNull($personnage->getId(), 'Personnage should have been persisted with an ID');
     }

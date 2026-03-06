@@ -830,10 +830,12 @@ readonly class GroupeService
         $criteria = new Criteria();
         $criteria->where(Criteria::expr()->lt('date_fin', Carbon::now()))->orderBy(['date_fin' => 'DESC']);
 
-        return $this->entityManager
-            ->getRepository(Gn::class)
-            ->matching($criteria)
-            ->first() ?: null;
+        return (
+            $this->entityManager
+                ->getRepository(Gn::class)
+                ->matching($criteria)
+                ->first() ?: null
+        );
     }
 
     public function getStatutTerritoire(Territoire $territoire): TerritoireStatut

@@ -27,18 +27,11 @@ class ApiAuthTest extends WebTestCase
         $hashedPassword = password_hash('test123', \PASSWORD_BCRYPT);
         UserFactory::createOne([
             'email' => 'apitest@example.com',
-            'pwd'   => $hashedPassword,
+            'pwd' => $hashedPassword,
             'roles' => ['ROLE_USER'],
         ]);
 
-        $client->request(
-            'POST',
-            '/api/login_check',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            (string) json_encode(['username' => 'apitest@example.com', 'password' => 'test123']),
-        );
+        $client->request('POST', '/api/login_check', [], [], ['CONTENT_TYPE' => 'application/json'], (string) json_encode(['username' => 'apitest@example.com', 'password' => 'test123']));
 
         self::assertResponseIsSuccessful();
         /** @var array<string, mixed> $data */
@@ -53,17 +46,10 @@ class ApiAuthTest extends WebTestCase
         $hashedPassword = password_hash('test123', \PASSWORD_BCRYPT);
         UserFactory::createOne([
             'email' => 'apifail@example.com',
-            'pwd'   => $hashedPassword,
+            'pwd' => $hashedPassword,
         ]);
 
-        $client->request(
-            'POST',
-            '/api/login_check',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            (string) json_encode(['username' => 'apifail@example.com', 'password' => 'wrongpassword']),
-        );
+        $client->request('POST', '/api/login_check', [], [], ['CONTENT_TYPE' => 'application/json'], (string) json_encode(['username' => 'apifail@example.com', 'password' => 'wrongpassword']));
 
         self::assertSame(401, $client->getResponse()->getStatusCode());
     }
@@ -72,14 +58,7 @@ class ApiAuthTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request(
-            'POST',
-            '/api/login_check',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            (string) json_encode(['username' => 'nobody@example.com', 'password' => 'any']),
-        );
+        $client->request('POST', '/api/login_check', [], [], ['CONTENT_TYPE' => 'application/json'], (string) json_encode(['username' => 'nobody@example.com', 'password' => 'any']));
 
         self::assertSame(401, $client->getResponse()->getStatusCode());
     }
@@ -105,27 +84,26 @@ class ApiAuthTest extends WebTestCase
         $hashedPassword = password_hash('test123', \PASSWORD_BCRYPT);
         UserFactory::createOne([
             'email' => 'apiok@example.com',
-            'pwd'   => $hashedPassword,
+            'pwd' => $hashedPassword,
             'roles' => ['ROLE_USER'],
         ]);
 
         // Obtain a valid JWT token
-        $client->request(
-            'POST',
-            '/api/login_check',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            (string) json_encode(['username' => 'apiok@example.com', 'password' => 'test123']),
-        );
+        $client->request('POST', '/api/login_check', [], [], ['CONTENT_TYPE' => 'application/json'], (string) json_encode(['username' => 'apiok@example.com', 'password' => 'test123']));
         /** @var array<string, string> $tokenData */
         $tokenData = json_decode((string) $client->getResponse()->getContent(), true);
         $token = $tokenData['token'];
 
         $gn = GnFactory::createOne();
-        $client->request('GET', '/api/competences/' . $gn->getId(), [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
-        ]);
+        $client->request(
+            'GET',
+            '/api/competences/' . $gn->getId(),
+            [],
+            [],
+            [
+                'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+            ],
+        );
 
         self::assertNotSame(401, $client->getResponse()->getStatusCode());
     }
@@ -135,9 +113,15 @@ class ApiAuthTest extends WebTestCase
         $client = static::createClient();
         $gn = GnFactory::createOne();
 
-        $client->request('GET', '/api/competences/' . $gn->getId(), [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer this.is.not.a.valid.jwt',
-        ]);
+        $client->request(
+            'GET',
+            '/api/competences/' . $gn->getId(),
+            [],
+            [],
+            [
+                'HTTP_AUTHORIZATION' => 'Bearer this.is.not.a.valid.jwt',
+            ],
+        );
 
         self::assertSame(401, $client->getResponse()->getStatusCode());
     }

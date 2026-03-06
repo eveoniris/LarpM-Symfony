@@ -69,9 +69,7 @@ class SanctuaireEffectTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne();
         $religion = ReligionFactory::createOne();
 
-        self::assertFalse(
-            $this->personnageService->knownReligion($personnage, $religion),
-        );
+        self::assertFalse($this->personnageService->knownReligion($personnage, $religion));
     }
 
     public function testKnownReligionReturnsTrueAfterAssignment(): void
@@ -81,9 +79,7 @@ class SanctuaireEffectTest extends KernelTestCase
 
         $this->assignReligionAtLevel($personnage, $religion, 1);
 
-        self::assertTrue(
-            $this->personnageService->knownReligion($personnage, $religion),
-        );
+        self::assertTrue($this->personnageService->knownReligion($personnage, $religion));
     }
 
     public function testKnownReligionReturnsFalseForDifferentReligion(): void
@@ -94,9 +90,7 @@ class SanctuaireEffectTest extends KernelTestCase
 
         $this->assignReligionAtLevel($personnage, $religion, 1);
 
-        self::assertFalse(
-            $this->personnageService->knownReligion($personnage, $otherReligion),
-        );
+        self::assertFalse($this->personnageService->knownReligion($personnage, $otherReligion));
     }
 
     // -------------------------------------------------------------------------
@@ -152,19 +146,13 @@ class SanctuaireEffectTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne(['vivant' => true]);
         $religion = ReligionFactory::createOne();
 
-        self::assertFalse(
-            $this->personnageService->knownReligion($personnage, $religion),
-            'Personnage should not know religion before assignment',
-        );
+        self::assertFalse($this->personnageService->knownReligion($personnage, $religion), 'Personnage should not know religion before assignment');
         self::assertFalse($personnage->isFanatique());
 
         // Simulate what lockGnGiveSanctuaireGnEffect() does for eligible personnages
         $this->assignReligionAtLevel($personnage, $religion, 1);
 
-        self::assertTrue(
-            $this->personnageService->knownReligion($personnage, $religion),
-            'Personnage should know religion after assignment',
-        );
+        self::assertTrue($this->personnageService->knownReligion($personnage, $religion), 'Personnage should know religion after assignment');
     }
 
     public function testDuplicateAssignmentPreventedByKnownReligionGuard(): void
@@ -175,10 +163,7 @@ class SanctuaireEffectTest extends KernelTestCase
         $this->assignReligionAtLevel($personnage, $religion, 1);
 
         // knownReligion() returns true → the sanctuaire effect would skip this personnage
-        self::assertTrue(
-            $this->personnageService->knownReligion($personnage, $religion),
-            'knownReligion must return true to prevent duplicate assignment',
-        );
+        self::assertTrue($this->personnageService->knownReligion($personnage, $religion), 'knownReligion must return true to prevent duplicate assignment');
     }
 
     public function testDeistPersonnageIsExcludedByKnownReligionGuard(): void
@@ -191,14 +176,9 @@ class SanctuaireEffectTest extends KernelTestCase
         $this->assignReligionAtLevel($personnage, $deiste, 1);
 
         // The sanctuaire effect checks: if ($deiste && $this->knownReligion($personnage, $deiste)) → skip
-        self::assertTrue(
-            $this->personnageService->knownReligion($personnage, $deiste),
-            'knownReligion must return true for deiste personnage to trigger the exclusion guard',
-        );
+        self::assertTrue($this->personnageService->knownReligion($personnage, $deiste), 'knownReligion must return true for deiste personnage to trigger the exclusion guard');
 
         // Such a personnage would not receive the other religion
-        self::assertFalse(
-            $this->personnageService->knownReligion($personnage, $otherReligion),
-        );
+        self::assertFalse($this->personnageService->knownReligion($personnage, $otherReligion));
     }
 }

@@ -45,7 +45,6 @@ jobs:
 
       - name: Mago — check formatting
         run: mago format --dry-run
-        continue-on-error: true   # remove once formatter is aligned
 
       - name: Mago — lint
         run: mago lint --reporting-format=github

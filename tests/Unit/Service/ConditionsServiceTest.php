@@ -281,8 +281,7 @@ class ConditionsServiceTest extends TestCase
     {
         // OR(  AND(classe=21, religion=12), AND(classe=21, religion=5) )
         $personnage = $this->makePersonnageWithClasse(21);
-        $personnage->method('hasReligionId')
-            ->willReturnCallback(static fn (int $id): bool => 5 === $id);
+        $personnage->method('hasReligionId')->willReturnCallback(static fn (int $id): bool => 5 === $id);
 
         $conditions = [
             'OR',

@@ -47,9 +47,9 @@ class GroupeServiceTest extends KernelTestCase
         $groupe = GroupeFactory::createOne();
         // Territoire owned by groupe — stable, tresor=100 → 100 × 3 = 300
         TerritoireFactory::createOne([
-            'tresor'  => 100,
-            'statut'  => TerritoireStatut::STABLE,
-            'groupe'  => $groupe,
+            'tresor' => 100,
+            'statut' => TerritoireStatut::STABLE,
+            'groupe' => $groupe,
         ]);
 
         self::assertSame(300, $this->groupeService->getAllRichesse($groupe));
@@ -60,9 +60,9 @@ class GroupeServiceTest extends KernelTestCase
         $groupe = GroupeFactory::createOne();
         // Territoire owned by groupe — instable, tresor=100 → ceil(100 × 3 × 0.5) = 150
         TerritoireFactory::createOne([
-            'tresor'  => 100,
-            'statut'  => TerritoireStatut::INSTABLE,
-            'groupe'  => $groupe,
+            'tresor' => 100,
+            'statut' => TerritoireStatut::INSTABLE,
+            'groupe' => $groupe,
         ]);
 
         self::assertSame(150, $this->groupeService->getAllRichesse($groupe));
@@ -73,15 +73,15 @@ class GroupeServiceTest extends KernelTestCase
         $groupe = GroupeFactory::createOne();
         // Stable tresor=100 → 300
         TerritoireFactory::createOne([
-            'tresor'  => 100,
-            'statut'  => TerritoireStatut::STABLE,
-            'groupe'  => $groupe,
+            'tresor' => 100,
+            'statut' => TerritoireStatut::STABLE,
+            'groupe' => $groupe,
         ]);
         // Instable tresor=50 → ceil(50 × 3 × 0.5) = 75
         TerritoireFactory::createOne([
-            'tresor'  => 50,
-            'statut'  => TerritoireStatut::INSTABLE,
-            'groupe'  => $groupe,
+            'tresor' => 50,
+            'statut' => TerritoireStatut::INSTABLE,
+            'groupe' => $groupe,
         ]);
 
         self::assertSame(375, $this->groupeService->getAllRichesse($groupe));
