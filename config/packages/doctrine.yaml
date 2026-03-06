@@ -18,8 +18,8 @@ doctrine:
                 prefix: 'App\Entity'
                 alias: App
                 type: attribute
-        controller_resolver:
-            auto_mapping: false
+        #controller_resolver: disabled on 260306 after doctrine update, may trouble some FORM/LIST (to be checked)
+            #auto_mapping: false
 
 when@test:
     doctrine:
