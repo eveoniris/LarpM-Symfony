@@ -135,24 +135,47 @@ class GnRepository extends BaseRepository
         $connection = $this->entityManager->getConnection();
 
         $text = \sprintf('+ %d XP PARTICIPATION %s PAR GESTION', $xp, $gn->getLabel());
-        $sql = <<<SQL
-             INSERT into experience_gain (personnage_id, explanation, operation_date, xp_gain, discr)
-                SELECT p.personnage_id, ':text1', ':date', :xpgain, 'extended'
+        $now = Carbon::now()->format('Y-m-d H:i:s');
+
+        // Update personnage.xp for participants who haven't received this XP yet
+        $sqlUpdate = <<<SQL
+            UPDATE personnage pn
+            INNER JOIN (
+                SELECT p.personnage_id
                 FROM participant p
-                where p.gn_id = :gnid
-                  and personnage_id is not null
-                  and personnage_id not in
-                      (select personnage_id from experience_gain where explanation = ':text2')
+                WHERE p.gn_id = :gnid
+                  AND p.personnage_id IS NOT NULL
+                  AND p.personnage_id NOT IN (
+                      SELECT eg.personnage_id FROM experience_gain eg WHERE eg.explanation = :text
+                  )
+            ) eligible ON eligible.personnage_id = pn.id
+            SET pn.xp = pn.xp + :xpgain
             SQL;
 
-        // TODO FIX binding error + add 2xp to personnage.xp !
-        $statement = $connection->prepare($sql);
-        $statement->bindValue('text1', $text);
-        $statement->bindValue('text2', $text);
-        $statement->bindValue('xpgain', $xp);
-        $statement->bindValue('gnid', $gn->getId());
-        $statement->bindValue('date', Carbon::now()->format('Y-m-d H:i:s'));
+        $stmtUpdate = $connection->prepare($sqlUpdate);
+        $stmtUpdate->bindValue('gnid', $gn->getId());
+        $stmtUpdate->bindValue('text', $text);
+        $stmtUpdate->bindValue('xpgain', $xp);
+        $stmtUpdate->executeQuery();
 
-        return $statement->executeQuery();
+        // Insert XP gain log for those same participants
+        $sqlInsert = <<<SQL
+            INSERT INTO experience_gain (personnage_id, explanation, operation_date, xp_gain, discr)
+                SELECT p.personnage_id, :text, :date, :xpgain, 'extended'
+                FROM participant p
+                WHERE p.gn_id = :gnid
+                  AND p.personnage_id IS NOT NULL
+                  AND p.personnage_id NOT IN (
+                      SELECT eg.personnage_id FROM experience_gain eg WHERE eg.explanation = :text
+                  )
+            SQL;
+
+        $stmtInsert = $connection->prepare($sqlInsert);
+        $stmtInsert->bindValue('text', $text);
+        $stmtInsert->bindValue('date', $now);
+        $stmtInsert->bindValue('xpgain', $xp);
+        $stmtInsert->bindValue('gnid', $gn->getId());
+
+        return $stmtInsert->executeQuery();
     }
 }
