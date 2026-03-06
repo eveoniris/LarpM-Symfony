@@ -165,6 +165,9 @@ jobs:
           # Build schema from entities directly — migrations are not designed for fresh-DB runs.
           php bin/console doctrine:schema:create --env=test
 
+      - name: Create required private directories
+        run: mkdir -p private/doc private/img private/stock private/rule private/documents
+
       - name: Run PHPUnit
         env:
           APP_ENV: test

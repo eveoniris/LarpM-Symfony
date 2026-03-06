@@ -27,7 +27,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 abstract class BaseRepository extends ServiceEntityRepository
 {
     public const SEARCH_ALL = '*';
-    public const SEARCH_NOONE = null;
+    public const SEARCH_NOONE = '';
 
     public const ITERATE_EXPORT = 'export';
     public const ITERATE_EXPORT_HEADER = 'export_header';
@@ -517,6 +517,7 @@ abstract class BaseRepository extends ServiceEntityRepository
         ?string $alias = null,
         ?QueryBuilder $query = null,
     ): QueryBuilder {
+        $attributes ??= self::SEARCH_NOONE;
         $orderBy ??= $this->orderBy;
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
