@@ -21,7 +21,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class ReligionTest extends WebTestCase
 {
-
     // -------------------------------------------------------------------------
     // Add religion
     // -------------------------------------------------------------------------

@@ -29,7 +29,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class PersonnageServiceTest extends KernelTestCase
 {
-
     private PersonnageService $personnageService;
     private EntityManagerInterface $entityManager;
 

@@ -21,7 +21,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class CompetenceAchatTest extends WebTestCase
 {
-
     // -------------------------------------------------------------------------
     // Document access
     // -------------------------------------------------------------------------
