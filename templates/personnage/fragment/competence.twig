@@ -58,7 +58,12 @@
 
             <h6 class="__{{ competence.competenceFamily.id }}__{{ currentFamillyId }} mt-2"
                 id="comp_{{ competence.id }}">
-                <a href="{{ path('competence.detail', {"competence":competence.id}) }}">{{ competence.level.label }}</a>
+                {% if competence.id %}
+                    <a href="{{ path('competence.detail', {"competence":competence.id}) }}">{{ competence.level.label }}</a>
+                {% else %}
+                    {{ competence.level.label }}
+                {% endif %}
+
             </h6>
             <div class="list-group-item-text border-top mt-1">{{ competence.description|markdown_to_html }}</div>
                 {% if competence.documentUrl %}
