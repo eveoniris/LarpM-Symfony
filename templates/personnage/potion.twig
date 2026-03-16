@@ -7,8 +7,7 @@
 
 	{% include '_partials/breadcrumb.twig' with {'items' :
 		[
-			{'route' : path('gn.detail', {'gn':  participant.gn.id}), 'name' : participant.gn.label},
-			{'route' : path('personnage.detail', {'personnage':  participant.personnage.id}), 'name' : participant.personnage.nom},
+			{'route' : path('personnage.detail', {'personnage':  personnage.id}), 'name' : personnage.nom},
 			{'name' : "Choix d'une nouvelle potion"}
 		]
 	} %}
@@ -24,7 +23,7 @@
 
 			{{ form(form) }}
 	</div>
-		
+
 	{% for potion in potions %}
 		<div class="well well-sm">
 			<div class="header">
