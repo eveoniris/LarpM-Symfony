@@ -3220,7 +3220,7 @@ class PersonnageController extends AbstractController
                 return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
             }
 
-            $endDate = $nextGn->getDateJeu();
+            $endDate = $nextGn->getDateJeu() ?? $lastGn->getDateJeu();
             $startDate = $lastGn ? $lastGn->getDateJeu() : $endDate - 5;
             $dateChoices = range($startDate, $endDate);
 
