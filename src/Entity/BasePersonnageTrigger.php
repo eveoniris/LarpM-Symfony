@@ -93,7 +93,7 @@ abstract class BasePersonnageTrigger
      */
     public function getTag(): string|TriggerType|null
     {
-        return TriggerType::tryFrom($this->tag);
+        return $this->tag ? TriggerType::tryFrom($this->tag) : null;
     }
 
     /**
