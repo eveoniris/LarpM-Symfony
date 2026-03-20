@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Security;
 
 use App\Tests\Factory\UserFactory;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
@@ -12,9 +13,8 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  *
  * Uses Symfony's WebTestCase and loginUser() — no password hashing needed.
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.
- *
- * @group functional
  */
+#[Group('functional')]
 class RoleAccessTest extends WebTestCase
 {
     // -------------------------------------------------------------------------

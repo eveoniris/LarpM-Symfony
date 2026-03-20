@@ -10,15 +10,15 @@ use App\Tests\Factory\ReligionFactory;
 use App\Tests\Factory\ReligionLevelFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Functional tests for religion addition restrictions.
  *
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.
- *
- * @group functional
  */
+#[Group('functional')]
 class ReligionTest extends WebTestCase
 {
     // -------------------------------------------------------------------------
