@@ -1000,6 +1000,7 @@ class UserController extends AbstractController
      * Affiche le détail de l'utilisateur courant.
      */
     #[Route('/self', name: 'user.self')]
+    #[IsGranted('ROLE_USER', message: 'You are not allowed to access to this.')]
     public function viewSelfAction(): Response|RedirectResponse
     {
         /** @var User $user */
