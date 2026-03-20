@@ -4250,6 +4250,26 @@ class PersonnageController extends AbstractController
         ]);
     }
 
+    #[Route('/{personnage}/secondaire/delete', name: 'secondaire.delete', methods: ['GET'])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
+    public function secondaireDeleteAction(#[MapEntity] Personnage $personnage): RedirectResponse
+    {
+        $user = $personnage->getUser();
+        if (!$user || !$user->getPersonnageSecondaire()) {
+            $this->addFlash('warning', 'Ce personnage n\'a pas de personnage secondaire défini.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        $user->setPersonnageSecondaire(null);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Le personnage secondaire a été supprimé.');
+
+        return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+    }
+
     /**
      * Dé-Selection du personnage courant.
      */
