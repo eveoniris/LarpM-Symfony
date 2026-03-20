@@ -1933,6 +1933,7 @@ class PersonnageController extends AbstractController
         $file = new File($filename);
 
         $printLabel = $competence->getPrintLabel();
+
         return $this->file($file, (is_array($printLabel) ? implode(' ', $printLabel) : (string) $printLabel) . '.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
     }
 

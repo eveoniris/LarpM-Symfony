@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Repository\ChronologieRepository;
 use Doctrine\ORM\Mapping\Entity;
 use JsonSerializable;
+use stdClass;
 
 #[Entity(repositoryClass: ChronologieRepository::class)]
 class Chronologie extends BaseChronologie implements JsonSerializable
@@ -24,7 +25,7 @@ class Chronologie extends BaseChronologie implements JsonSerializable
         ];
     }
 
-    public function jsonUnserialize(\stdClass $payload): void
+    public function jsonUnserialize(stdClass $payload): void
     {
         $this->setYear($payload->year);
         $this->setMonth($payload->month);

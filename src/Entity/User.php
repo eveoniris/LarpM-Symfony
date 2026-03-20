@@ -124,17 +124,6 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     {
     }
 
-    /**
-     * Removes sensitive data from the User.
-     *
-     * This is a no-op, since we never store the plain text credentials in this object.
-     * It's required by UserInterface.
-     */
-    #[\Deprecated]
-    public function eraseCredentials(): void
-    {
-    }
-
     public function generateToken(): string
     {
         return bin2hex(random_bytes(18));

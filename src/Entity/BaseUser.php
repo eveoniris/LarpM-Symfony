@@ -501,16 +501,6 @@ abstract class BaseUser
     }
 
     /**
-     * @see UserInterface
-     */
-    #[\Deprecated]
-    public function eraseCredentials(): void
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
-
-    /**
      * Get Background entity collection (one to many).
      *
      * @return Collection<int, Background>

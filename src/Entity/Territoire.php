@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 use JsonSerializable;
+use stdClass;
 use Stringable;
 
 /**
@@ -420,7 +421,7 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
     /**
      * Unserializer.
      */
-    public function jsonUnserialize(\stdClass $payload): void
+    public function jsonUnserialize(stdClass $payload): void
     {
         $this->setNom($payload->nom);
         $this->setDescription($payload->description);

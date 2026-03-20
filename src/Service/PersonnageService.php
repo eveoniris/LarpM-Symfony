@@ -479,7 +479,8 @@ class PersonnageService
         $q = $this->entityManager->getRepository(Competence::class)->getPersonnages($competence, $gn);
 
         if ($count) {
-            assert($q instanceof \Doctrine\ORM\QueryBuilder);
+            assert($q instanceof QueryBuilder);
+
             return (int) (clone $q)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
         }
 
