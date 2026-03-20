@@ -96,7 +96,7 @@ class GroupeGnType extends AbstractType
         // Les titres sont uniquement possible s'il y a un territoire
         /** @var GroupeGn $groupeGn */
         $groupeGn = $builder->getData();
-        if (null === $groupeGn->getGroupe()->getTerritoire()) {
+        if (null === $groupeGn->getGroupe()->getTerritoire() && count($groupeGn->getGroupe()->getTerritoires()) <= 0) {
             return;
         }
 
@@ -104,6 +104,7 @@ class GroupeGnType extends AbstractType
         /** @var User $user */
         $user = $this->security->getUser();
         $suzerain = $groupeGn->getSuzerain(false);
+
         if (!$this->security->isGranted(Role::WARGAME->value) && $suzerain->getId() !== $user->getPersonnage()?->getId()) {
             // TODO : TEMP !
             $allow = false;

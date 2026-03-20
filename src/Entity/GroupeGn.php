@@ -107,8 +107,12 @@ class GroupeGn extends BaseGroupeGn
         return $this->getParticipant()?->getPersonnage()?->getId() === $personnage->getId();
     }
 
-    public function isSuzerain(Personnage|Participant $personnage): bool
+    public function isSuzerain(Personnage|Participant|null $personnage): bool
     {
+        if (null === $personnage) {
+            return false;
+        }
+
         if ($personnage instanceof Participant) {
             $personnage = $personnage->getPersonnage();
         }
