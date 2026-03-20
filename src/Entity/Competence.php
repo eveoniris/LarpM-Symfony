@@ -178,7 +178,7 @@ class Competence extends BaseCompetence implements Stringable
                     $attr->setCompetence($this);
                     $attr->setCompetenceId($this->id);
                     $attr->setAttributeTypeId($typeId);
-                    /** @var \App\Entity\AttributeType|null $attributeType */
+                    /** @var AttributeType|null $attributeType */
                     $attributeType = $attributeRepos->find($typeId);
                     $attr->setAttributeType($attributeType);
                     $this->addCompetenceAttribute($attr);
