@@ -744,6 +744,21 @@ class PersonnageService
         return $this->groupeService->getGroupeBonus($groupe, $type, $withDisabled, $periode, $all);
     }
 
+    public function getPotionsNiveaux(Personnage $personnage): array
+    {
+        $max = $personnage->getCompetenceNiveau(CompetenceFamilyType::ALCHEMY);
+
+        if ($max < 1) {
+            return [];
+        }
+
+        if ($max === 1) {
+            return [1];
+        }
+
+        return range(Level::NIVEAU_1, $max, 1);
+    }
+
     /**
      * @param Collection<int, Bonus>|null $all
      * @param array<int, mixed>           $application
