@@ -10,15 +10,15 @@ use App\Tests\Factory\LevelFactory;
 use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Functional tests for competence purchase and document access.
  *
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.
- *
- * @group functional
  */
+#[Group('functional')]
 class CompetenceAchatTest extends WebTestCase
 {
     // -------------------------------------------------------------------------

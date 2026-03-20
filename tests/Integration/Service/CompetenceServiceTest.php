@@ -13,6 +13,7 @@ use App\Tests\Factory\CompetenceFamilyFactory;
 use App\Tests\Factory\LevelFactory;
 use App\Tests\Factory\PersonnageFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -21,8 +22,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  * DAMA bundle (configured in phpunit.dist.xml) wraps each test in a DB transaction
  * and rolls back automatically — no need for the Foundry ResetDatabase trait.
  *
- * @group integration
  */
+#[Group('integration')]
 class CompetenceServiceTest extends KernelTestCase
 {
     private CompetenceService $competenceService;

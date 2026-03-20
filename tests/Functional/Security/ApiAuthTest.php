@@ -6,15 +6,15 @@ namespace App\Tests\Functional\Security;
 
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\UserFactory;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Functional tests for JWT API authentication.
  *
  * Requires config/jwt/private.pem and public.pem (generated via lexik:jwt:generate-keypair).
- *
- * @group functional
  */
+#[Group('functional')]
 class ApiAuthTest extends WebTestCase
 {
     // -------------------------------------------------------------------------
