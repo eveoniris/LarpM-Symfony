@@ -10,6 +10,7 @@ use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\ReligionFactory;
 use App\Tests\Factory\ReligionLevelFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -25,8 +26,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  *
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.
  *
- * @group integration
  */
+#[Group('integration')]
 class SanctuaireEffectTest extends KernelTestCase
 {
     private PersonnageService $personnageService;

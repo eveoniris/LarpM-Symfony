@@ -9,6 +9,7 @@ use App\Service\GroupeService;
 use App\Tests\Factory\GroupeFactory;
 use App\Tests\Factory\TerritoireFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -16,8 +17,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  *
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.
  *
- * @group integration
  */
+#[Group('integration')]
 class GroupeServiceTest extends KernelTestCase
 {
     private GroupeService $groupeService;
