@@ -73,6 +73,11 @@
                                    href="{{ path('personnage.domaine', {'personnage': personnage.id}) }}">
                                Choisir un domaine de magie</a></li>
                    {% endif %}
+                   {% if  trigger.tag and trigger.tag.isMagieExpert %}
+                       <li class="list-group-item"><a
+                                   href="{{ path('personnage.domaine', {'personnage': personnage.id}) }}">
+                               Choisir un domaine de magie supplémentaire (Expert)</a></li>
+                   {% endif %}
                    {% if  trigger.tag and trigger.tag.isSortApprenti %}
                        <li class="list-group-item"><a
                                    href="{{ path('personnage.sort.choose', {'personnage': personnage.id, 'sort' : 1}) }}">

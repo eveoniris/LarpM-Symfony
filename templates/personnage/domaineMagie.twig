@@ -8,8 +8,7 @@
 
         {% include '_partials/breadcrumb.twig' with {'items' :
             [
-                {'name' : participant.gn.label, 'route': path('gn.detail', {'gn' : participant.gn.id}) },
-                {'name' : participant.personnage.nom, 'route': path('gn.personnage', {'gn' : participant.gn.id}) },
+                {'name' : personnage.nom, 'route': path('personnage.detail', {'personnage' : personnage.id}) },
                 {'name' : "Choix d'un domaine de magie" }
             ]
         } %}

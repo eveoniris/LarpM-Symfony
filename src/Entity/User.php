@@ -572,8 +572,8 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         return null;
     }
 
+    #[\Deprecated]
     public function eraseCredentials(): void
     {
-        // TODO: Implement eraseCredentials() method.
     }
 }

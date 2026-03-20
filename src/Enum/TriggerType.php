@@ -42,6 +42,7 @@ enum TriggerType: string
             self::PRETRISE_INITIE->value => 'permet de choisir trois descriptifs de religion',
             self::TECHNOLOGIE->value => 'permet de choisir une technologie',
             self::DOMAINE_MAGIE->value => 'permet de choisir un domaine de magie',
+            self::MAGIE_EXPERT->value => 'permet de choisir un domaine de magie supplémentaire (niveau Expert)',
             self::LANGUE_COURANTE->value => 'permet de choisir une langue commune',
             self::LANGUE_ANCIENNE->value => 'permet de choisir une langue ancienne',
             default => throw new Exception('Unexpected match value ' . $this->value),
@@ -71,6 +72,11 @@ enum TriggerType: string
     public function isDomaineMagie(): bool
     {
         return $this->value === self::DOMAINE_MAGIE->value;
+    }
+
+    public function isMagieExpert(): bool
+    {
+        return $this->value === self::MAGIE_EXPERT->value;
     }
 
     public function isLangueAncienne(): bool
