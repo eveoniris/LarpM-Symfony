@@ -1340,8 +1340,7 @@ class ParticipantController extends AbstractController
             $participant->setPersonnage($personnage);
 
             if (!$user->getPersonnage()) {
-                /* @phpstan-ignore argument.type */
-                $user->setPersonnage($user);
+                $user->setPersonnage($personnage);
                 $this->entityManager->persist($user);
             }
 
@@ -1356,6 +1355,9 @@ class ParticipantController extends AbstractController
                     $this->entityManager->persist($personnageLangue);
                 }
             }
+
+            // Ensure any missing langue (ORIGINE/fallback) is added
+            $this->personnageService->addDefaultLangue($personnage);
 
             // Chronologie : Participation au GN courant
             $hasGnDate = false;
