@@ -116,26 +116,36 @@ class ConditionsServiceTest extends TestCase
         self::assertFalse($this->service->isValidConditions($personnage, $conditions));
     }
 
-    /**
-     * Known bug: COMPETENCE condition by type string value is broken.
-     * getConditionValue() uppercases the value ('ALCHEMY'), but CompetenceFamilyType::tryFrom()
-     * requires exact case ('Alchemy') → tryFrom(null) is passed to hasCompetenceLevel.
-     *
-     * @todo Fix: use case-insensitive lookup (tryFromOlder or strtolower normalization).
-     *
-     * In the meantime, numeric ID matching (testCompetenceConditionMatchesByNumericId) works correctly.
-     */
-    public function testCompetenceConditionByFamilyTypeValueIsKnownBroken(): void
+    public function testCompetenceConditionByFamilyTypeValueMatchesWhenOwned(): void
     {
-        // getConditionValue() returns strtoupper('Alchemy') = 'ALCHEMY'
-        // CompetenceFamilyType::tryFrom('ALCHEMY') = null → hasCompetenceLevel(null, null)
-        // Personnage::hasCompetenceLevel(null, …) returns false → condition fails
         $personnage = $this->createStub(Personnage::class);
-        // No hasCompetenceLevel configuration → default bool return = false
+        $personnage->method('hasCompetenceLevel')->willReturn(true);
+
+        // 'Alchemy' is the enum value — getFromLabel() resolves it correctly
+        $conditions = [['TYPE' => 'COMPETENCE', 'VALUE' => CompetenceFamilyType::ALCHEMY->value]];
+
+        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+    }
+
+    public function testCompetenceConditionByFamilyTypeValueFailsWhenNotOwned(): void
+    {
+        $personnage = $this->createStub(Personnage::class);
+        $personnage->method('hasCompetenceLevel')->willReturn(false);
 
         $conditions = [['TYPE' => 'COMPETENCE', 'VALUE' => CompetenceFamilyType::ALCHEMY->value]];
 
         self::assertFalse($this->service->isValidConditions($personnage, $conditions));
+    }
+
+    public function testCompetenceConditionByFrenchLabelMatchesWhenOwned(): void
+    {
+        $personnage = $this->createStub(Personnage::class);
+        $personnage->method('hasCompetenceLevel')->willReturn(true);
+
+        // French label via tryFromOlder()
+        $conditions = [['TYPE' => 'COMPETENCE', 'VALUE' => 'Alchimie']];
+
+        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
     // ── Single ORIGINE condition ──────────────────────────────────────────────
