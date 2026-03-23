@@ -137,7 +137,12 @@ class ConditionsService
                 $condition = ['type' => $key, 'value' => $condition];
             }
 
-            if ($this->isValidCondition($entity, $condition, $service)) {
+            // Nested conditions array (e.g. AND([...], [...]) inside OR) — recurse
+            $isValid = $this->isKey('type', $condition)
+                ? $this->isValidCondition($entity, $condition, $service)
+                : null !== $this->getValidConditions($entity, $condition, $service);
+
+            if ($isValid) {
                 // First OR mean TRUE
                 if ('OR' === $mode) {
                     return $conditions;
@@ -148,7 +153,7 @@ class ConditionsService
             }
         }
 
-        return $conditions;
+        return 'OR' === $mode ? null : $conditions;
     }
 
     /** Return the current data as a whole condition or the condition key of the dataset */
@@ -234,7 +239,8 @@ class ConditionsService
                 return $entity->hasCompetenceId((int) $this->getConditionValue($condition));
             }
 
-            return $entity->hasCompetenceLevel(CompetenceFamilyType::tryFrom($this->getConditionValue($condition)), LevelType::tryFrom((string) ($this->getKeyValue('level', $condition) ?? '')));
+            $rawValue = (string) ($this->getKeyValue('value', $condition) ?? '');
+            return $entity->hasCompetenceLevel(CompetenceFamilyType::getFromLabel($rawValue), LevelType::tryFrom((string) ($this->getKeyValue('level', $condition) ?? '')));
         }
 
         // Parmi les familles de competence du personnage
