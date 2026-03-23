@@ -71,6 +71,17 @@
         {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : messageSensible} %}
     {% endif %}
 
+    {% if personnage.age is defined and personnage.age and personnage.age.minimumValue >= 55 and personnage.age.minimumValue < 500 %}
+        {% set hasSurvie = personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::SURVIVAL')) %}
+        {% set messageVieux %}
+            Ce personnage a au moins 55 ans. Sa <strong>vitalité est de 0</strong>.
+            {% if not hasSurvie %}
+                Il est également en état de <strong>blessé permanent</strong>.
+            {% endif %}
+        {% endset %}
+        {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : messageVieux} %}
+    {% endif %}
+
     {% set especeHtml %}
         <div class="d-flex justify-content-between">
             {% for espece in personnage.especes %}

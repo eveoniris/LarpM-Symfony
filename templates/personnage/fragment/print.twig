@@ -319,7 +319,14 @@
             <tr>
                 <td>
                     <strong>Numéro du personnage :</strong> #{{ personnage.id }}<br/>
-                    <strong>Valeur :</strong> {{ personnage.energievitale }}
+                    {% if personnage.age is defined and personnage.age and personnage.age.minimumValue >= 55 and personnage.age.minimumValue < 500 %}
+                        <strong>Valeur :</strong> 0 <em>(âge au minimum de {{ personnage.age.minimumValue }} ans)</em><br/>
+                        {% if not personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::SURVIVAL')) %}
+                            <strong>État : BLESSÉ PERMANENT</strong> <em>(âge au minimum de {{ personnage.age.minimumValue }} ans)</em>
+                        {% endif %}
+                    {% else %}
+                        <strong>Valeur :</strong> {{ personnage.energievitale }}
+                    {% endif %}
                 </td>
             </tr>
         </table>
