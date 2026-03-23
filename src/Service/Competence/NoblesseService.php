@@ -22,7 +22,7 @@ class NoblesseService extends CompetenceService
             5 => 6,
         ];
 
-        $value = $valuesMap[$level?->getId()] ?? 0;
+        $value = $valuesMap[$level?->getIndex()] ?? 0;
 
         if ($level && $value > 0) {
             $this->addRenomme($value, \sprintf('Compétence %s niveau %s', $this->getCompetence()->getCompetenceFamily()?->getLabel(), $level->getLabel()));
@@ -41,7 +41,7 @@ class NoblesseService extends CompetenceService
             5 => 6,
         ];
 
-        $value = $valuesMap[$level?->getId()] ?? 0;
+        $value = $valuesMap[$level?->getIndex()] ?? 0;
 
         if ($level && $value > 0) {
             $this->removeRenomme($value, \sprintf('[Retrait] %s niveau %s', $this->getCompetence()->getCompetenceFamily()?->getLabel(), $level->getLabel()));

@@ -157,7 +157,7 @@ abstract class BaseTerritoire
 
     #[ORM\ManyToOne(targetEntity: Territoire::class, inversedBy: 'territoires')]
     #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
-    protected ?Territoire $territoire;
+    protected ?Territoire $territoire = null;
 
     #[ORM\OneToOne(inversedBy: 'territoire', targetEntity: TerritoireGuerre::class)]
     protected TerritoireGuerre $territoireGuerre;
@@ -168,11 +168,11 @@ abstract class BaseTerritoire
 
     #[ORM\ManyToOne(targetEntity: Langue::class, inversedBy: 'territoires')]
     #[JoinColumn(name: 'langue_id', referencedColumnName: 'id')]
-    protected ?Langue $langue;
+    protected ?Langue $langue = null;
 
     #[ORM\ManyToOne(targetEntity: Religion::class, inversedBy: 'territoires')]
     #[JoinColumn(name: 'religion_id', referencedColumnName: 'id')]
-    protected ?Religion $religion;
+    protected ?Religion $religion = null;
 
     /** @var Collection<int, Territoire> */
     #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'territoireStarts')]

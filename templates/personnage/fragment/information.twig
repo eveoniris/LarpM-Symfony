@@ -128,7 +128,11 @@
     {% if personnage.user %}
         {% set joueurHtml %}
             <a href="{{ path('user.view',{'user': personnage.user.id}) }}">
-                {{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}
+                {% if personnage.user.etatCivil %}
+                    {{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}
+                {% else %}
+                    {{ personnage.user.username }}
+                {% endif %}
             </a>
         {% endset %}
     {% endif %}
