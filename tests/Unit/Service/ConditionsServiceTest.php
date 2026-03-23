@@ -251,15 +251,7 @@ class ConditionsServiceTest extends TestCase
         self::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
-    /**
-     * Known limitation: ConditionsService OR mode does not correctly return false
-     * when ALL OR-conditions fail. The loop falls through and returns the conditions
-     * array (truthy) instead of null. This test documents the current (buggy) behavior.
-     *
-     * @todo Fix getValidConditions() to return null when all OR conditions fail:
-     *       change `return $conditions;` → `return 'OR' === $mode ? null : $conditions;`
-     */
-    public function testOrModeWithAllConditionsFailingReturnsTrueDueToKnownBug(): void
+    public function testOrModeWithAllConditionsFailingReturnsFalse(): void
     {
         $personnage = $this->createStub(Personnage::class);
         $personnage->method('hasCompetenceId')->willReturn(false);
@@ -271,8 +263,7 @@ class ConditionsServiceTest extends TestCase
             ['TYPE' => 'RELIGION', 'VALUE' => 2],
         ];
 
-        // BUG: should be assertFalse — all OR conditions fail but service returns true
-        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+        self::assertFalse($this->service->isValidConditions($personnage, $conditions));
     }
 
     // ── Nested conditions ─────────────────────────────────────────────────────
