@@ -1501,13 +1501,13 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $potion = $form->getData()['potion'] ?? null;
 
-            foreach ($potions as $potion) {
-                if (!$personnage->isKnownPotion($potion)) {
-                    continue;
-                }
+            if (!$potion) {
+                $this->addFlash('danger', 'Veuillez sélectionner une potion.');
 
-                $form->get('id')->addError(new FormError('Vous connaissez déjà cette potion.'));
+                return $this->redirectToRoute('personnage.potion', ['niveau' => $niveau, 'personnage' => $personnage->getId()], 303);
+            }
 
+            if ($personnage->isKnownPotion($potion)) {
                 $this->addFlash('danger', 'Vous connaissez déjà cette potion.');
 
                 return $this->redirectToRoute('personnage.potion', ['niveau' => $niveau, 'personnage' => $personnage->getId()], 303);
