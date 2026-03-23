@@ -1946,7 +1946,7 @@ class PersonnageService
         $hasOne = false;
 
         // On force les personnages sans langue à avoir Aquillonien
-        $baseLangue = $langueRepository->findOneBy(['id' => 2]); // Aquillonien
+        $baseLangue = $langueRepository->findOneBy(['label' => 'Aquillonien']);
 
         // Ajout des langues en fonction de l'origine du personnage
         $langue = $personnage->getOrigine()?->getLangue();
