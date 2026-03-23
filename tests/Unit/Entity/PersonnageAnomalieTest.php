@@ -190,6 +190,46 @@ class PersonnageAnomalieTest extends TestCase
         self::assertStringNotContainsString('en trop à vérifier,', $msg); // courante is balanced
     }
 
+    // ── isKnownPotion() ───────────────────────────────────────────────────────
+
+    public function testIsKnownPotionReturnsTrueWhenPotionAlreadyOwned(): void
+    {
+        $personnage = $this->makePersonnage();
+
+        $existing = $this->makePotion(1);
+        $existing->setNumero('001');
+        $personnage->addPotion($existing);
+
+        $candidate = $this->makePotion(1);
+        $candidate->setNumero('001');
+
+        self::assertTrue($personnage->isKnownPotion($candidate));
+    }
+
+    public function testIsKnownPotionReturnsFalseWhenPotionNotOwned(): void
+    {
+        $personnage = $this->makePersonnage();
+
+        $existing = $this->makePotion(1);
+        $existing->setNumero('001');
+        $personnage->addPotion($existing);
+
+        $candidate = $this->makePotion(1);
+        $candidate->setNumero('002');
+
+        self::assertFalse($personnage->isKnownPotion($candidate));
+    }
+
+    public function testIsKnownPotionReturnsFalseForEmptyPersonnage(): void
+    {
+        $personnage = $this->makePersonnage();
+
+        $candidate = $this->makePotion(1);
+        $candidate->setNumero('001');
+
+        self::assertFalse($personnage->isKnownPotion($candidate));
+    }
+
     // ── getPotionAnomalieMessage() ────────────────────────────────────────────
 
     public function testNoPotionAnomalieWhenEmpty(): void
