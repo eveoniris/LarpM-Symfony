@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'trigger')]
+#[ORM\Table(name: '`trigger`')]
 #[ORM\Index(columns: ['personnage_id'], name: 'fk_trigger_idx')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
