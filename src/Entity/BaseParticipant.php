@@ -44,7 +44,7 @@ class BaseParticipant
     #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: false)]
     protected Collection $participantHasRestaurations;
     /** @var Collection<int, Reponse> */
-    #[OneToMany(mappedBy: 'participant', targetEntity: Reponse::class)]
+    #[OneToMany(mappedBy: 'participant', targetEntity: Reponse::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'participant_id', nullable: false)]
     protected Collection $reponses;
     #[ManyToOne(targetEntity: Gn::class, cascade: ['persist'], inversedBy: 'participants')]
@@ -77,7 +77,7 @@ class BaseParticipant
     #[Column(type: Types::TEXT, nullable: true)]
     private ?string $special = null;
     /** @var Collection<int, QrCodeScanLog> */
-    #[OneToMany(mappedBy: 'participant', targetEntity: QrCodeScanLog::class)]
+    #[OneToMany(mappedBy: 'participant', targetEntity: QrCodeScanLog::class, cascade: ['remove'])]
     private Collection $qrCodeScanLogs;
 
     public function __construct()
