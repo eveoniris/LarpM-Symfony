@@ -41,14 +41,14 @@
         <thead>
         <tr>
             <th>
-                {% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'id' %}
+                {% if app.request.query.get('order_dir') == 'ASC' and app.request.query.get('order_by') == 'id' %}
                     <a href="{{ path('lignee.list', {'order_by': 'id', 'order_dir': 'DESC'}) }}">
                 {%  else %}
                     <a href="{{ path('lignee.list', {'order_by': 'id', 'order_dir': 'ASC'}) }}">
                 {% endif %}
                         ID
-                {% if app.request.get('order_by') == 'id'  %}
-                    {% if app.request.get('order_dir') == 'ASC' %}
+                {% if app.request.query.get('order_by') == 'id'  %}
+                    {% if app.request.query.get('order_dir') == 'ASC' %}
                         <span class="caret"></span>
                     {%else%}
                         <span class="dropup">
@@ -61,14 +61,14 @@
             </th>
 
             <th>
-                {% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'nom' %}
+                {% if app.request.query.get('order_dir') == 'ASC' and app.request.query.get('order_by') == 'nom' %}
                 <a href="{{ path('lignee.list', {'order_by': 'nom', 'order_dir': 'DESC'}) }}">
                     {%  else %}
                     <a href="{{ path('lignee.list', {'order_by': 'nom', 'order_dir': 'ASC'}) }}">
                         {% endif %}
                         Nom
-                        {% if app.request.get('order_by') == 'nom'  %}
-                            {% if app.request.get('order_dir') == 'ASC' %}
+                        {% if app.request.query.get('order_by') == 'nom'  %}
+                            {% if app.request.query.get('order_dir') == 'ASC' %}
                                 <span class="caret"></span>
                             {%else%}
                                 <span class="dropup">

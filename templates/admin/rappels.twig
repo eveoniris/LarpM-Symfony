@@ -23,7 +23,7 @@
             <th class="col-sm-1">
                 <a href="{{ path('admin.rappels', {'order_by': 'id', 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')}) }}">
                     Id
-                    {% if app.request.get('order_by') == 'id' %}
+                    {% if app.request.query.get('order_by') == 'id' %}
                         <i class="fa-solid fa-caret-{{ orderDir == 'ASC' ? 'down' : 'up' }}"></i>
                     {% endif %}
                 </a>
@@ -32,7 +32,7 @@
             <th class="col-sm-5">
                 <a href="{{ path('admin.rappels', {'order_by': 'email', 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')}) }}">
                     Email
-                    {% if app.request.get('order_by') == 'email' %}
+                    {% if app.request.query.get('order_by') == 'email' %}
                         <i class="fa-solid fa-caret-{{ orderDir == 'ASC' ? 'down' : 'up' }}"></i>
                     {% endif %}
                 </a>
@@ -41,7 +41,7 @@
             <th class="col-sm-5">
                 <a href="{{ path('admin.rappels', {'order_by': 'username', 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')}) }}">
                     Pseudo
-                    {% if app.request.get('order_by') == 'username' %}
+                    {% if app.request.query.get('order_by') == 'username' %}
                         <i class="fa-solid fa-caret-{{ orderDir == 'ASC' ? 'down' : 'up' }}"></i>
                     {% endif %}
                 </a>

@@ -351,11 +351,11 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $request = $this->requestStack->getCurrentRequest();
         if ($this->isGranted('ROLE_ADMIN') && $this->container->get('twig')->getLoader()->exists('admin/' . $view)) {
             $currentParameters = $request?->attributes->get('_route_params');
-            $currentParameters['playerView'] = !$request?->get('playerView');
+            $currentParameters['playerView'] = !$request?->query->get('playerView');
 
             $parameters['playerViewToggleUrl'] = $this->generateUrl($request?->attributes->get('_route'), $currentParameters);
 
-            if (false !== (bool) $request?->get('playerView')) {
+            if (false !== (bool) $request?->query->get('playerView')) {
                 return parent::render('admin/' . $view, $parameters, $response);
             }
         }

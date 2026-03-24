@@ -16,7 +16,7 @@
             max-width: 200px;
         }
     </style>
-    <style media="{% if app.request.get('print') == 1 %}all{% else %}print{% endif %}">
+    <style media="{% if app.request.query.get('print') == 1 %}all{% else %}print{% endif %}">
         #menu, nav, .noprint, #footer {
             display: none;
         }

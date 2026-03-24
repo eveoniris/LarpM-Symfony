@@ -26,14 +26,14 @@
 			<thead>
 				<tr>
 					<th>
-						{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'id' %}
+						{% if app.request.query.get('order_dir') == 'ASC' and app.request.query.get('order_by') == 'id' %}
 						<a href="{{ path('billet.list', {'order_by': 'id', 'order_dir': 'DESC'}) }}">
 							{%  else %}
 							<a href="{{ path('billet.list', {'order_by': 'id', 'order_dir': 'ASC'}) }}">
 								{% endif %}
 								#
-								{% if app.request.get('order_by') == 'id'  %}
-									{% if app.request.get('order_dir') == 'ASC' %}
+								{% if app.request.query.get('order_by') == 'id'  %}
+									{% if app.request.query.get('order_dir') == 'ASC' %}
 										<i class="fa-solid fa-caret-down"></i>
 									{%else%}
     									<i class="fa-solid fa-caret-up"></i>
@@ -44,14 +44,14 @@
 					<th>Nom</th>
 					<th>Description</th>
 					<th>
-						{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'gn' %}
+						{% if app.request.query.get('order_dir') == 'ASC' and app.request.query.get('order_by') == 'gn' %}
 							<a href="{{ path('billet.list', {'order_by': 'gn', 'order_dir': 'DESC'}) }}">
 						{%  else %}
 							<a href="{{ path('billet.list', {'order_by': 'gn', 'order_dir': 'ASC'}) }}">
 						{% endif %}
 							GN	
-						{% if app.request.get('order_by') == 'gn'  %}
-							{% if app.request.get('order_dir') == 'ASC' %}
+						{% if app.request.query.get('order_by') == 'gn'  %}
+							{% if app.request.query.get('order_dir') == 'ASC' %}
 								<i class="fa-solid fa-caret-down"></i>
 							{%else%}
 								<i class="fa-solid fa-caret-up"></i>

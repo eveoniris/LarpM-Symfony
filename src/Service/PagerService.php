@@ -176,8 +176,8 @@ final class PagerService
         }
 
         // handle Get search
-        $this->searchValue = $this->getRequest()?->get('search') ?? $this->getRequest()?->get('q');
-        $this->searchType = $this->getRequest()?->get('searchType') ?? $this->getRequest()?->get('t');
+        $this->searchValue = $this->getRequest()?->query->get('search') ?? $this->getRequest()?->query->get('q');
+        $this->searchType = $this->getRequest()?->query->get('searchType') ?? $this->getRequest()?->query->get('t');
 
         if ($form->isSubmitted() && $form->isValid() && ($data = $form->getData())) {
             /* @var ListSearch $data */
@@ -237,12 +237,12 @@ final class PagerService
         }
 
         // may from GET
-        if (empty($data->getValue()) && ($search = $this->getRequest()?->get('search') ?? $this->getRequest()?->get('q'))) {
+        if (empty($data->getValue()) && ($search = $this->getRequest()?->query->get('search') ?? $this->getRequest()?->query->get('q'))) {
             $data->setValue($search);
             $this->searchValue = $search;
         }
 
-        if (empty($data->getType()) && ($type = $this->getRequest()?->get('searchType') ?? $this->getRequest()?->get('t'))) {
+        if (empty($data->getType()) && ($type = $this->getRequest()?->query->get('searchType') ?? $this->getRequest()?->query->get('t'))) {
             $data->setType($type);
             $this->searchType = $type;
         }
