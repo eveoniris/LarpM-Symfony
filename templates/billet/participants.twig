@@ -24,14 +24,14 @@
 		<thead>
 			<tr>
 				<th>
-					{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'nom' %}
+					{% if app.request.query.get('order_dir') == 'ASC' and app.request.query.get('order_by') == 'nom' %}
 						<a href="{{ path('billet.participants', {'billet': billet.id, 'order_by': 'nom', 'order_dir': 'DESC'}) }}">
 					{%  else %}
 						<a href="{{ path('billet.participants', {'billet': billet.id, 'order_by': 'nom', 'order_dir': 'ASC'}) }}">
 					{% endif %}
 						Nom	
-					{% if app.request.get('order_by') == 'nom'  %}
-						{% if app.request.get('order_dir') == 'ASC' %}
+					{% if app.request.query.get('order_by') == 'nom'  %}
+						{% if app.request.query.get('order_dir') == 'ASC' %}
 							<i class="fa-solid fa-caret-down"></i>
 						{%else%}
 							<i class="fa-solid fa-caret-up"></i>
@@ -40,14 +40,14 @@
 					</a>
 				</th>
 				<th>
-					{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'prenom' %}
+					{% if app.request.query.get('order_dir') == 'ASC' and app.request.query.get('order_by') == 'prenom' %}
 						<a href="{{ path('billet.participants', {'billet': billet.id, 'order_by': 'prenom', 'order_dir': 'DESC'}) }}">
 					{%  else %}
 						<a href="{{ path('billet.participants', {'billet': billet.id, 'order_by': 'prenom', 'order_dir': 'ASC'}) }}">
 					{% endif %}
 						Prénom	
-					{% if app.request.get('order_by') == 'prenom'  %}
-						{% if app.request.get('order_dir') == 'ASC' %}
+					{% if app.request.query.get('order_by') == 'prenom'  %}
+						{% if app.request.query.get('order_dir') == 'ASC' %}
 							<i class="fa-solid fa-caret-down"></i>
 						{%else%}
 							<i class="fa-solid fa-caret-up"></i>
@@ -56,14 +56,14 @@
 					</a>
 				</th>
 				<th>
-					{% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'email' %}
+					{% if app.request.query.get('order_dir') == 'ASC' and app.request.query.get('order_by') == 'email' %}
 						<a href="{{ path('billet.participants', {'billet': billet.id, 'order_by': 'email', 'order_dir': 'DESC'}) }}">
 					{%  else %}
 						<a href="{{ path('billet.participants', {'billet': billet.id, 'order_by': 'email', 'order_dir': 'ASC'}) }}">
 					{% endif %}
 						Email	
-					{% if app.request.get('order_by') == 'email'  %}
-						{% if app.request.get('order_dir') == 'ASC' %}
+					{% if app.request.query.get('order_by') == 'email'  %}
+						{% if app.request.query.get('order_dir') == 'ASC' %}
 							<i class="fa-solid fa-caret-down"></i>
 						{%else%}
 							<i class="fa-solid fa-caret-up"></i>

@@ -1,6 +1,6 @@
 {% macro getCaret(app,type) %}
-    {% if app.request.get('order_by') == type %}
-        {% if app.request.get('order_dir') == 'ASC' %}
+    {% if app.request.query.get('order_by') == type %}
+        {% if app.request.query.get('order_dir') == 'ASC' %}
             <i class="fa-solid fa-caret-down"></i>
         {% else %}
             <i class="fa-solid fa-caret-up"></i>
@@ -9,7 +9,7 @@
 {% endmacro %}
 
 {% macro getDirection(app,type) %}
-    {% if app.request.get('order_by') == type and app.request.get('order_dir') == 'ASC' %}
+    {% if app.request.query.get('order_by') == type and app.request.query.get('order_dir') == 'ASC' %}
         {{ 'DESC' }}
     {% else %}
         {{ 'ASC' }}
@@ -24,7 +24,7 @@
         {% if pagerService is defined %}
             {% set orderDir = pagerService.getOrderBy.getSort() %}
             {% set routeOptions = {'order_by': field, 'order_dir': (orderDir == 'ASC' ? 'DESC' : 'ASC')} %}
-        {% elseif app.request.get('order_dir') == 'DESC' %}
+        {% elseif app.request.query.get('order_dir') == 'DESC' %}
             {% set orderDir = 'DESC' %}
         {% else %}
             {% set orderDir = 'ASC' %}
@@ -47,7 +47,7 @@
 
     <a href="{{ path }}">
         {{ name }}
-        {% if app.request.get('order_by') == field %}
+        {% if app.request.query.get('order_by') == field %}
             <i class="fa-solid fa-caret-{{ orderDir == 'ASC' ? 'down' : 'up' }}"></i>
         {% endif %}
     </a>

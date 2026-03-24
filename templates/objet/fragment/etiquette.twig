@@ -4,11 +4,11 @@
 {% endif %}
 
 {% set useQrCode = false %}
-{% if app.request.get('qrCode') == 1 or app.request.get('qrcode') == 1 %}
+{% if app.request.query.get('qrCode') == 1 or app.request.query.get('qrcode') == 1 %}
     {% set useQrCode = true %}
 {% endif %}
 {% set useDot = false %}
-{% if app.request.get('dot') == 1 or app.request.get('dot') == 1 %}
+{% if app.request.query.get('dot') == 1 or app.request.query.get('dot') == 1 %}
     {% set useDot = true %}
 {% endif %}
 

@@ -56,14 +56,14 @@
         <thead>
         <tr>
             <th>
-                {% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'id' %}
+                {% if app.request.query.get('order_dir') == 'ASC' and app.request.query.get('order_by') == 'id' %}
                 <a href="{{ path('background.list', {'order_by': 'id', 'order_dir': 'DESC'}) }}">
                     {% else %}
                     <a href="{{ path('background.list', {'order_by': 'id', 'order_dir': 'ASC'}) }}">
                         {% endif %}
                         #
-                        {% if app.request.get('order_by') == 'id' %}
-                            {% if app.request.get('order_dir') == 'ASC' %}
+                        {% if app.request.query.get('order_by') == 'id' %}
+                            {% if app.request.query.get('order_dir') == 'ASC' %}
                                 <span class="caret"></span>
                             {% else %}
                                 <span class="dropup">
@@ -74,14 +74,14 @@
                     </a>
             </th>
             <th>
-                {% if app.request.get('order_dir') == 'ASC' and app.request.get('order_by') == 'titre' %}
+                {% if app.request.query.get('order_dir') == 'ASC' and app.request.query.get('order_by') == 'titre' %}
                 <a href="{{ path('background.list', {'order_by': 'titre', 'order_dir': 'DESC'}) }}">
                     {% else %}
                     <a href="{{ path('background.list', {'order_by': 'titre', 'order_dir': 'ASC'}) }}">
                         {% endif %}
                         Titre
-                        {% if app.request.get('order_by') == 'titre' %}
-                            {% if app.request.get('order_dir') == 'ASC' %}
+                        {% if app.request.query.get('order_by') == 'titre' %}
+                            {% if app.request.query.get('order_dir') == 'ASC' %}
                                 <span class="caret"></span>
                             {% else %}
                                 <span class="dropup">
