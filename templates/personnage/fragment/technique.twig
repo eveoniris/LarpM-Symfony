@@ -64,7 +64,7 @@
                             <div>{{ trigger.tag|default('-') }}</div>
                         {% endif %}
                         {% if isAdmin %}
-                            <div>
+                             <div>
                                 <a class="btn btn-sm btn-secondary"
                                    href="{{ path('personnage.trigger.delete', {'personnage': personnage.id, 'trigger': trigger.id}) }}">Supprimer</a>
                             </div>
