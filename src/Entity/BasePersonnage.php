@@ -167,7 +167,7 @@ abstract class BasePersonnage
     protected Collection $users;
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'personnages')]
-    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: true)]
     protected ?Groupe $groupe;
 
     #[ManyToOne(targetEntity: Classe::class, inversedBy: 'personnages')]
@@ -183,11 +183,11 @@ abstract class BasePersonnage
     protected Genre $genre;
 
     #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'personnages')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: true)]
     protected Territoire $territoire;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'personnages')]
-    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
     protected ?User $user = null;
 
     /** @var Collection<int, PersonnageHasQuestion> */

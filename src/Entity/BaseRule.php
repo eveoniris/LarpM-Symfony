@@ -29,7 +29,7 @@ abstract class BaseRule
     /**
      * @Column(type="text", nullable=true)
      */
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = '';
 
     /**

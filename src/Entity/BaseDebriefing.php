@@ -54,7 +54,7 @@ class BaseDebriefing
     protected User $user;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'playerDebriefings')]
-    #[ORM\JoinColumn(name: 'player_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'player_id', referencedColumnName: 'id', nullable: true)]
     protected ?User $player;
 
     #[ORM\ManyToOne(targetEntity: Gn::class, inversedBy: 'debriefings')]

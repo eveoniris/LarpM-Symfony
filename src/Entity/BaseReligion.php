@@ -31,22 +31,22 @@ abstract class BaseReligion
     #[Assert\NotNull]
     protected string $label = '';
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $blason = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description_orga = null;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description_fervent;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description_pratiquant;
 
-    #[Column(type: Types::STRING, nullable: true)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description_fanatique;
 
     #[Column(type: Types::BOOLEAN, nullable: true, options: ['default' => 0])]

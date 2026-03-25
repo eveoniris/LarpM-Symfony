@@ -29,7 +29,7 @@ abstract class BaseReligionLevel
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER, name: '`index`')]
     protected int $index = 0;
 
-    #[Column(type: \Doctrine\DBAL\Types\Types::STRING, nullable: true)]
+    #[Column(type: \Doctrine\DBAL\Types\Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
     /** @var Collection<int, PersonnagesReligions> */

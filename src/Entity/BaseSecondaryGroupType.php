@@ -27,7 +27,7 @@ abstract class BaseSecondaryGroupType
     #[Column(type: Types::STRING, length: 45)]
     protected string $label = '';
 
-    #[Column(type: Types::TEXT)]
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
     /** @var Collection<int, SecondaryGroup> */
