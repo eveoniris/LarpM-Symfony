@@ -138,7 +138,7 @@ class BaseGroupe
     protected ?User $userRelatedByResponsableId = null;
 
     #[ManyToOne(targetEntity: Territoire::class, inversedBy: 'groupes')]
-    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'territoire_id', referencedColumnName: 'id', nullable: true)]
     protected ?Territoire $territoire;
 
     /** @var Collection<int, Document> */

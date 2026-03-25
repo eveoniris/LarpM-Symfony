@@ -38,7 +38,7 @@ abstract class BaseGroupeGn
     #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $jeu_strategique = false;
 
-    #[Column(type: Types::INTEGER)]
+    #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $place_available = 0;
 
     #[Column(type: Types::INTEGER)]
@@ -74,7 +74,7 @@ abstract class BaseGroupeGn
     protected Gn $gn;
 
     #[ORM\ManyToOne(targetEntity: Participant::class, inversedBy: 'groupeGns')]
-    #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: true)]
     protected ?Participant $participant;
 
     #[Column(length: 255, nullable: true)]

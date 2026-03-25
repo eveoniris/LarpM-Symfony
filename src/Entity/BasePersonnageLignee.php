@@ -23,7 +23,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\DiscriminatorMap(['base' => 'BasePersonnageLignee', 'extended' => 'PersonnageLignee'])]
 abstract class BasePersonnageLignee
 {
-    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageLignee')]
@@ -31,15 +31,15 @@ abstract class BasePersonnageLignee
     protected Personnage $personnage;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'PersonnageLigneeParent1')]
-    #[JoinColumn(name: 'parent1_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'parent1_id', referencedColumnName: 'id', nullable: true)]
     protected ?Personnage $parent1;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'PersonnageLigneeParent2')]
-    #[JoinColumn(name: 'parent2_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'parent2_id', referencedColumnName: 'id', nullable: true)]
     protected ?Personnage $parent2;
 
     #[ManyToOne(targetEntity: Lignee::class, inversedBy: 'personnageLignees')]
-    #[JoinColumn(name: 'lignee_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'lignee_id', referencedColumnName: 'id', nullable: true)]
     protected ?Lignee $lignee;
 
     /**

@@ -27,7 +27,7 @@ abstract class BaseObjetCarac
     #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $poid = null;
 
-    #[Column(type: Types::STRING, length: 6, nullable: true)]
+    #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $couleur = null;
 
     #[ORM\OneToOne(inversedBy: 'objetCarac', targetEntity: Objet::class, cascade: [

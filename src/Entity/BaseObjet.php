@@ -38,7 +38,7 @@ abstract class BaseObjet
     #[Assert\NotNull]
     protected string $nom = '';
 
-    #[Column(type: Types::STRING, length: 45, nullable: true)]
+    #[Column(type: Types::STRING, length: 450, nullable: true)]
     protected ?string $description = null;
 
     #[Column(type: Types::INTEGER, nullable: true)]
@@ -69,11 +69,11 @@ abstract class BaseObjet
     protected ?Etat $etat = null;
 
     #[ManyToOne(targetEntity: Proprietaire::class, inversedBy: 'objets')]
-    #[JoinColumn(name: 'proprietaire_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'proprietaire_id', referencedColumnName: 'id', nullable: true)]
     protected ?Proprietaire $proprietaire = null;
 
     #[ManyToOne(targetEntity: User::class, inversedBy: 'objets')]
-    #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: true)]
     protected ?User $user = null;
 
     #[ManyToOne(

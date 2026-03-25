@@ -24,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['base' => 'BaseItem', 'extended' => 'Item'])]
 abstract class BaseItem
 {
-    #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Id, Column(type: Types::INTEGER, options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45, nullable: true)]
@@ -56,10 +56,10 @@ abstract class BaseItem
     #[Column(type: Types::INTEGER)]
     protected int $quantite = 0;
     #[ORM\ManyToOne(targetEntity: Quality::class, inversedBy: 'items')]
-    #[ORM\JoinColumn(name: 'quality_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'quality_id', referencedColumnName: 'id', nullable: true)]
     protected Quality $quality;
     #[ORM\ManyToOne(targetEntity: Statut::class, inversedBy: 'items')]
-    #[ORM\JoinColumn(name: 'statut_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'statut_id', referencedColumnName: 'id', nullable: true)]
     protected Statut $statut;
     #[ORM\ManyToOne(targetEntity: Objet::class, inversedBy: 'items')]
     #[ORM\JoinColumn(name: 'objet_id', referencedColumnName: 'id', nullable: false)]
