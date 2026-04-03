@@ -13,6 +13,8 @@ class InterJeu extends BaseInterJeu
 {
     public function canGenereteChronologie(): bool
     {
-        return $this->isDateReelPassed() && $this->getEtat() === InterJeuEtat::TERMINE;
+        return $this->isDateReelPassed()
+            && $this->getEtat() === InterJeuEtat::TERMINE
+            && !$this->isChronologieGeneree();
     }
 }

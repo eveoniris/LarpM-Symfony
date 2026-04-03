@@ -42,6 +42,9 @@ abstract class BaseInterJeu
     #[Column(name: 'information_complementaire', type: Types::TEXT, nullable: true)]
     protected ?string $informationComplementaire = null;
 
+    #[Column(name: 'chronologie_generee', type: Types::BOOLEAN, options: ['default' => false])]
+    protected bool $chronologieGeneree = false;
+
     /** @var Collection<int, Personnage> */
     #[ManyToMany(targetEntity: Personnage::class)]
     #[JoinTable(name: 'inter_jeu_personnage')]
@@ -145,5 +148,17 @@ abstract class BaseInterJeu
     public function isDateReelPassed(): bool
     {
         return $this->dateReel <= new \DateTime('today');
+    }
+
+    public function isChronologieGeneree(): bool
+    {
+        return $this->chronologieGeneree;
+    }
+
+    public function setChronologieGeneree(bool $chronologieGeneree): static
+    {
+        $this->chronologieGeneree = $chronologieGeneree;
+
+        return $this;
     }
 }
