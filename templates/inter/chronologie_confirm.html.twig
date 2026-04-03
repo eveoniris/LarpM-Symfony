@@ -1,0 +1,56 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Générer chronologie - {{ interJeu.nom }}{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': 'Liste des inter-jeux', 'route': path('inter.list')},
+        {'name': interJeu.nom, 'route': path('inter.detail', {'inter': interJeu.id})},
+        {'name': 'Générer chronologie joueur'}
+    ]} %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Générer chronologie joueur</h5>
+        </div>
+
+        <div class="alert alert-warning">
+            <strong>Attention !</strong> L'action suivante va ajouter l'entrée de chronologie suivante
+            à chaque personnage participant :
+        </div>
+
+        <blockquote class="blockquote border-start ps-3 my-3">
+            <p class="mb-0">
+                <strong>{{ interJeu.anneeJeu }}</strong> : Participation à {{ interJeu.nom }}
+            </p>
+            <footer class="blockquote-footer">
+                Date réelle : {{ interJeu.dateReel|date('d/m/Y') }}
+            </footer>
+        </blockquote>
+
+        <p>
+            Vérifiez bien que c'est le cas pour tous.
+            Cette action sera appliquée à <strong>{{ interJeu.personnages|length }} personnage(s)</strong> :
+        </p>
+
+        {% if interJeu.personnages|length > 0 %}
+            <ul class="list-group mb-3">
+                {% for personnage in interJeu.personnages %}
+                    <li class="list-group-item">
+                        <a href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">#{{ personnage.id }} {{ personnage.nom }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="alert alert-info">Aucun participant dans cet inter-jeu.</div>
+        {% endif %}
+
+        {{ form(form) }}
+
+        <a class="btn btn-outline-secondary mt-2" href="{{ path('inter.detail', {'inter': interJeu.id}) }}">
+            Annuler
+        </a>
+    </div>
+
+{% endblock body %}

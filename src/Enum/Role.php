@@ -23,6 +23,7 @@ enum Role: string
     case STOCK = 'ROLE_STOCK';
     case USER = 'ROLE_USER';
     case ROLE_GROUPE_TRANSVERSE = 'ROLE_GROUPE_TRANSVERSE';
+    case INTER_JEU = 'ROLE_INTER_JEU';
 
     public function getLabel(): string
     {
@@ -47,6 +48,7 @@ enum Role: string
             self::WARGAME->value => 'Jeu de domaine de larpManager',
             self::ROLE_GROUPE_TRANSVERSE->value => 'Gestion groupe transverse',
             self::TERRITOIRE->value => 'Gestion des territoires',
+            self::INTER_JEU->value => 'Gestion des inter-jeux',
         ];
     }
 }

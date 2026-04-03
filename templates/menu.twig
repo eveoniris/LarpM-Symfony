@@ -236,6 +236,21 @@
                     </li>
                 {% endif %}
 
+                {% if is_granted('ROLE_INTER_JEU', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Inter-jeu
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ path('inter.list') }}">Liste</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                {% endif %}
+
                 {% if is_granted('ROLE_ADMIN', app.user) %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
