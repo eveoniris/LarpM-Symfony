@@ -1,0 +1,62 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Participants — {{ interJeu.nom }}{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': 'Liste des inter-jeux', 'route': path('inter.list')},
+        {'name': interJeu.nom, 'route': path('inter.detail', {'inter': interJeu.id})},
+        {'name': 'Participants'}
+    ]} %}
+
+    <div class="well well-sm">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5>Participants à {{ interJeu.nom }} <small>({{ interJeu.personnages|length }})</small></h5>
+            <div class="btn-group" role="group">
+                <a class="btn btn-sm btn-secondary" href="{{ path('inter.personnage.add', {'inter': interJeu.id}) }}">
+                    <i class="fa fa-user-plus"></i> Ajouter un participant
+                </a>
+                <a class="btn btn-sm btn-secondary" href="{{ path('inter.personnages.import', {'inter': interJeu.id}) }}">
+                    <i class="fa fa-users"></i> Importer plusieurs
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-striped table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th class="text-center">#</th>
+                <th>Nom</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for personnage in interJeu.personnages %}
+            <tr>
+                <td class="text-center">{{ personnage.id }}</td>
+                <td>
+                    <a href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">
+                        {{ personnage.nom }}
+                    </a>
+                </td>
+                <td class="text-center">
+                    <form method="post"
+                          action="{{ path('inter.personnage.remove', {'inter': interJeu.id, 'personnage': personnage.id}) }}"
+                          onsubmit="return confirm('Retirer {{ personnage.nom }} de l\'inter-jeu ?')">
+                        <input type="hidden" name="_token" value="{{ csrf_token('remove_personnage_' ~ personnage.id) }}">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Retirer">
+                            <i class="fa fa-minus-circle"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="3" class="text-center">Aucun participant.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock body %}

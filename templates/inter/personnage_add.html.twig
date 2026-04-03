@@ -1,0 +1,31 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Ajouter un participant — {{ interJeu.nom }}{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': 'Liste des inter-jeux', 'route': path('inter.list')},
+        {'name': interJeu.nom, 'route': path('inter.detail', {'inter': interJeu.id})},
+        {'name': 'Participants', 'route': path('inter.personnages', {'inter': interJeu.id})},
+        {'name': 'Ajouter un participant'}
+    ]} %}
+
+    <div class="well well-sm bs-component">
+        <div class="header">
+            <h5>Ajouter un participant à {{ interJeu.nom }}</h5>
+        </div>
+        {{ form_start(form) }}
+        {{ form_row(form.personnage) }}
+        <div class="mt-3">
+            <button type="submit" class="btn btn-secondary">
+                <i class="fa fa-plus"></i> Ajouter
+            </button>
+            <a class="btn btn-outline-secondary ms-2" href="{{ path('inter.personnages', {'inter': interJeu.id}) }}">
+                Annuler
+            </a>
+        </div>
+        {{ form_end(form) }}
+    </div>
+
+{% endblock body %}

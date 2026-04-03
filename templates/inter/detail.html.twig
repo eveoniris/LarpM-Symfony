@@ -1,0 +1,78 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Inter-jeu — {{ interJeu.nom }}{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': 'Liste des inter-jeux', 'route': path('inter.list')},
+        {'name': interJeu.nom}
+    ]} %}
+
+    <div class="well well-sm">
+        <div class="d-flex justify-content-between">
+            <h4>{{ interJeu.nom }}</h4>
+
+            <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Participants"
+                       href="{{ path('inter.personnages', {'inter': interJeu.id}) }}">
+                        <i class="fa fa-users"></i> Participants {{ interJeu.personnages|length }}
+                    </a>
+                    <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Modifier"
+                       href="{{ path('inter.update', {'inter': interJeu.id}) }}">
+                        <i class="fa fa-pencil"></i> Modifier
+                    </a>
+                    <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Supprimer"
+                       href="{{ path('inter.delete', {'inter': interJeu.id}) }}">
+                        <i class="fa fa-eraser"></i> Supprimer
+                    </a>
+                    {% if chronologieDisponible %}
+                        <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Générer chronologie joueur"
+                           href="{{ path('inter.chronologie', {'inter': interJeu.id}) }}">
+                            <i class="fa fa-clock"></i> Générer chronologie joueur
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="list-group">
+                <div class="list-group-item">
+                    <div class="list-group-item-heading fw-bold mb-1">Nom</div>
+                    <div class="list-group-item-text ps-1">{{ interJeu.nom }}</div>
+                </div>
+                <div class="list-group-item">
+                    <div class="list-group-item-heading fw-bold mb-1">Année en jeu</div>
+                    <div class="list-group-item-text ps-1">{{ interJeu.anneeJeu }}</div>
+                </div>
+                <div class="list-group-item">
+                    <div class="list-group-item-heading fw-bold mb-1">Date réelle</div>
+                    <div class="list-group-item-text ps-1">{{ interJeu.dateReel|date('d/m/Y') }}</div>
+                </div>
+                <div class="list-group-item">
+                    <div class="list-group-item-heading fw-bold mb-1">État</div>
+                    <div class="list-group-item-text ps-1">{{ interJeu.etat.label }}</div>
+                </div>
+                <div class="list-group-item">
+                    <div class="list-group-item-heading fw-bold mb-1">Nombre de participants</div>
+                    <div class="list-group-item-text ps-1">{{ interJeu.personnages|length }}</div>
+                </div>
+                {% if interJeu.informationComplementaire %}
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Informations complémentaires</div>
+                        <div class="list-group-item-text ps-1">{{ interJeu.informationComplementaire|raw }}</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}

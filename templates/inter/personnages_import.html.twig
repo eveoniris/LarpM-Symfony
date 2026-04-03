@@ -1,0 +1,36 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Importer des participants — {{ interJeu.nom }}{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': 'Liste des inter-jeux', 'route': path('inter.list')},
+        {'name': interJeu.nom, 'route': path('inter.detail', {'inter': interJeu.id})},
+        {'name': 'Participants', 'route': path('inter.personnages', {'inter': interJeu.id})},
+        {'name': 'Importer plusieurs participants'}
+    ]} %}
+
+    <div class="well well-sm bs-component">
+        <div class="header">
+            <h5>Importer des participants dans {{ interJeu.nom }}</h5>
+        </div>
+        <div class="mb-3 text-muted">
+            Saisissez une liste d'identifiants de personnages séparés par des virgules,
+            ou chargez un fichier CSV (une colonne d'identifiants, sans en-tête).
+        </div>
+        {{ form_start(form) }}
+        {{ form_row(form.ids) }}
+        {{ form_row(form.fichier) }}
+        <div class="mt-3">
+            <button type="submit" class="btn btn-secondary">
+                <i class="fa fa-upload"></i> Importer
+            </button>
+            <a class="btn btn-outline-secondary ms-2" href="{{ path('inter.personnages', {'inter': interJeu.id}) }}">
+                Annuler
+            </a>
+        </div>
+        {{ form_end(form) }}
+    </div>
+
+{% endblock body %}
