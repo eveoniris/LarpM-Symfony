@@ -217,8 +217,10 @@ class InterController extends AbstractController
     #[Route('/{inter}/chronologie', name: 'chronologie', requirements: ['inter' => Requirement::DIGITS])]
     public function chronologieAction(Request $request, InterJeu $inter): RedirectResponse|Response
     {
-        if (!$inter->isDateReelPassed()) {
-            $this->addFlash('error', 'L\'inter-jeu n\'est pas encore terminé.');
+        if (!$inter->canGenereteChronologie()) {
+            $this->addFlash('error', $inter->isChronologieGeneree()
+                ? 'La chronologie a déjà été générée pour cet inter-jeu.'
+                : 'L\'inter-jeu n\'est pas encore terminé.');
 
             return $this->redirectToRoute('inter.detail', ['inter' => $inter->getId()], 303);
         }
@@ -233,14 +235,20 @@ class InterController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $batchSize = 50;
+            $i = 0;
             foreach ($inter->getPersonnages() as $personnage) {
                 $chronologie = new PersonnageChronologie();
                 $chronologie->setPersonnage($personnage);
                 $chronologie->setAnnee($inter->getAnneeJeu());
                 $chronologie->setEvenement(sprintf('Participation à %s', $inter->getNom()));
                 $this->entityManager->persist($chronologie);
+                if (++$i % $batchSize === 0) {
+                    $this->entityManager->flush();
+                }
             }
 
+            $inter->setChronologieGeneree(true);
             $this->entityManager->flush();
             $this->addFlash('success', 'La chronologie a été générée pour tous les participants.');
 
