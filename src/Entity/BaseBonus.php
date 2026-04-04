@@ -115,7 +115,7 @@ abstract class BaseBonus
 
     public function getApplication(): ?BonusApplication
     {
-        return BonusApplication::tryFrom($this->application);
+        return $this->application ? BonusApplication::tryFrom($this->application) : null;
     }
 
     public function setApplication(string|BonusApplication|null $application): static
