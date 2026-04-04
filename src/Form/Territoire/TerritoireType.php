@@ -16,6 +16,7 @@ use App\Repository\RessourceRepository;
 use App\Repository\TerritoireRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -204,6 +205,11 @@ class TerritoireType extends AbstractType
                 'empty_data' => null,
                 'mapped' => true,
                 'query_builder' => static fn (TerritoireRepository $tr) => $tr->createQueryBuilder('tr')->orderBy('tr.nom', 'ASC'),
+            ])
+            ->add('allowed_in_character_creation', ChoiceType::class, [
+                'required' => false,
+                'label' => 'Autorisé en création de personnage',
+                'choices' => ['Oui' => true, 'Non' => false],
             ]);
 
         /* Merveille are added from MerveilleForm
