@@ -255,6 +255,9 @@ abstract class BaseTerritoire
     #[OneToMany(mappedBy: 'territoire', targetEntity: Merveille::class)]
     private Collection $merveilles;
 
+    #[ORM\Column(options: ['default' => true])]
+    private bool $allowed_in_character_creation = true;
+
     public function __construct()
     {
         $this->chronologies = new ArrayCollection();
@@ -1304,6 +1307,18 @@ abstract class BaseTerritoire
     public function setGroupeNull(): static
     {
         $this->groupe = null;
+
+        return $this;
+    }
+
+    public function isAllowedInCharacterCreation(): bool
+    {
+        return $this->allowed_in_character_creation;
+    }
+
+    public function setAllowedInCharacterCreation(bool $allowed_in_character_creation): static
+    {
+        $this->allowed_in_character_creation = $allowed_in_character_creation;
 
         return $this;
     }

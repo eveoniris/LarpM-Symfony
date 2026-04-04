@@ -76,7 +76,7 @@ class PersonnageType extends AbstractType
                 'choice_label' => 'nom',
                 'query_builder' => static function (TerritoireRepository $er) {
                     $qb = $er->createQueryBuilder('t');
-                    $qb->andWhere('t.territoire IS NULL');
+                    $qb->andWhere('t.territoire IS NULL AND t.allowed_in_character_creation = true');
                     $qb->orderBy('t.nom', 'ASC');
 
                     return $qb;
