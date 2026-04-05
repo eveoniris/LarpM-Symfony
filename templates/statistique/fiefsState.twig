@@ -102,9 +102,13 @@
                         </a>
                     </td>
                     <td class="text-center">
+                        {% if fiefsState.groupe_id is defined and fiefsState.groupe_id %}
                         <a href="{{ path('groupe.detail', {'groupe': fiefsState.groupe_id} ) }}">
                             {{ fiefsState.groupe }}
                         </a>
+                        {% else %}
+                            -
+                        {% endif %}
                     </td>
                     <td class="text-center">
                         {{ fiefsState.religion }}

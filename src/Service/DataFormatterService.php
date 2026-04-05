@@ -46,7 +46,7 @@ class DataFormatterService
 
             $codeKey = $key;
             $displayKey = $key;
-            if (str_ends_with($codeKey, '_id')) {
+            if (is_string($key) && str_ends_with($codeKey, '_id')) {
                 $codeKey = str_replace('_id', '', $codeKey);
                 $displayKey = $codeKey;
 
