@@ -113,7 +113,7 @@ class StatsService
                 INNER JOIN `user` u ON u.id = pt.user_id
                 INNER JOIN etat_civil ec ON u.etat_civil_id = ec.id
                 WHERE p.renomme >= :renomme and pt.gn_id = :gnid and p.vivant = 1
-                GROUP BY p.id
+                GROUP BY p.id, u.id, g.id
                 SQL, $rsm)
             ->setParameter('gnid', $gn->getId())
             ->setParameter(':renomme', $renomme);
@@ -232,7 +232,7 @@ class StatsService
         $rsm->addScalarResult('technologies', 'technologies', 'string');
         $rsm->addScalarResult('exportations', 'exportations', 'string');
         $rsm->addScalarResult('ingredients', 'ingredients', 'string');
-        $rsm->addScalarResult('ressource', 'ingredients', 'string');
+        $rsm->addScalarResult('ressource', 'ressource', 'string');
         $rsm->addScalarResult('@export', '@export', 'string');
 
         /* @noinspection SqlNoDataSourceInspection */
@@ -344,7 +344,7 @@ class StatsService
             left join personnage as groupe_leader ON ggn.responsable_id = groupe_leader.id
             WHERE a.territoire_id is not null
               and a.tresor is not null
-            group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
+            group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, p.label
             order by b.nom, a.id;
             SQL, $rsm);
     }
@@ -361,7 +361,7 @@ class StatsService
              SELECT c.label as batiment, group_concat(t.nom) as fiefs, c.description FROM territoire_has_construction hhc
                 INNER JOIN construction c ON hhc.construction_id = c.id
                 INNER JOIN territoire t ON hhc.territoire_id = t.id
-            GROUP BY c.label;
+            GROUP BY c.label, c.description;
             SQL, $rsm);
     }
 
@@ -423,8 +423,7 @@ class StatsService
                     WHERE
                     p.gn_id = :gnid
                         AND date_naissance is not null
-                      and date_naissance > '0000-00-00 00:00:00'
-                      and date_naissance >= DATE_SUB(IF(':gnDate' = '',  ':gnDate' , CURRENT_DATE()), INTERVAL 18 YEAR);
+                      AND date_naissance >= DATE_SUB(IF(':gnDate' = '',  ':gnDate' , CURRENT_DATE()), INTERVAL 18 YEAR);
                 SQL, $rsm)
             ->setParameter('gnid', $gn->getId())
             ->setParameter('gndate', (string) $gn->getDateInstallationJoueur()?->format('Y-m-d'));
@@ -580,14 +579,14 @@ class StatsService
         /* @noinspection SqlNoDataSourceInspection */
         return $this->entityManager
             ->createNativeQuery(<<<SQL
-                     SELECT DISTINCT perso.id as personnage_id, perso.nom as personnage_nom, xp as xp_restant, sum(xp_gain) as total, g.id as groupe_id, g.nom as groupe_nom
+                     SELECT DISTINCT perso.id as personnage_id, perso.nom as personnage_nom, xp as xp_restant, sum(xp_gain) as total, g.id as groupe_id, g.nom as groupe_nom, ggn.id as groupe_gn_id
                     FROM participant p
                              INNER JOIN personnage perso ON p.personnage_id = perso.id
                     INNER JOIN experience_gain eg ON perso.id = eg.personnage_id
                     INNER JOIN groupe_gn ggn ON p.groupe_gn_id = ggn.id
                     INNER JOIN groupe g ON ggn.groupe_id = g.id
                     WHERE p.gn_id = 7 and explanation NOT LIKE 'Suppression de la compétence %'
-                    GROUP BY perso.id, perso.nom
+                    GROUP BY perso.id, perso.nom, g.id, ggn.id
                     HAVING sum(xp_gain) >= 50
                     ORDER BY total DESC
                 SQL, $rsm)
@@ -613,7 +612,7 @@ class StatsService
                          INNER JOIN groupe g ON ggn.groupe_id = g.id
                 WHERE pt.gn_id = 7
                   AND classe_id = :classe_id
-                GROUP BY g.id
+                GROUP BY g.id, pt.groupe_gn_id, g.id, g.nom
                 ORDER BY total DESC
                 SQL, $rsm)
             ->setParameter('gnid', $gn->getId())
@@ -642,7 +641,7 @@ class StatsService
                      INNER JOIN groupe g ON ggn.groupe_id = g.id
             WHERE pt.gn_id = 7
               {$equalOrUpperParam}
-            GROUP BY g.id
+            GROUP BY g.id, pt.groupe_gn_id, g.id, g.nom
             ORDER BY total DESC
             SQL, $rsm)->setParameter('gnid', $gn->getId());
     }

@@ -271,7 +271,6 @@ class StatistiqueController extends AbstractController
     public function fiefsState(string $_route): Response|JsonResponse|StreamedResponse
     {
         $dataQuery = $this->statsService->getFiefsState();
-
         return match ($_route) {
             'api.fiefsState', 'stats.fiefsState.json' => new JsonResponse($dataQuery->getResult()),
             'stats.fiefsState.csv' => $this->sendCsv(title: 'eveoniris_fiefsState_' . date('Ymd'), query: $dataQuery, header: [
