@@ -36,6 +36,8 @@ class ListFindType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
+            'method' => 'GET',
+            'csrf_protection' => false,
             'type_choices' => [
                 'required' => true,
                 'choices' => [
