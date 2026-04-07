@@ -118,6 +118,7 @@ class InterJeuCrudTest extends WebTestCase
         $user = UserFactory::createOne(['roles' => ['ROLE_INTER_JEU']]);
         $interJeu = InterJeuFactory::createOne([
             'dateReel' => new DateTime('-1 day'),
+            'etat' => InterJeuEtat::TERMINE,
         ]);
 
         $client->loginUser($user);
@@ -135,6 +136,7 @@ class InterJeuCrudTest extends WebTestCase
             'dateReel' => new DateTime('-1 day'),
             'nom' => 'Test Inter',
             'anneeJeu' => 1050,
+            'etat' => InterJeuEtat::TERMINE,
         ]);
 
         $em = static::getContainer()->get(EntityManagerInterface::class);
