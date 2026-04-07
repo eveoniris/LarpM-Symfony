@@ -16,7 +16,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  * Integration tests for GroupeService wealth calculation.
  *
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.
- *
  */
 #[Group('integration')]
 class GroupeServiceTest extends KernelTestCase

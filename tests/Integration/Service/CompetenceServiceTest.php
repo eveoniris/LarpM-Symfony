@@ -21,7 +21,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  *
  * DAMA bundle (configured in phpunit.dist.xml) wraps each test in a DB transaction
  * and rolls back automatically — no need for the Foundry ResetDatabase trait.
- *
  */
 #[Group('integration')]
 class CompetenceServiceTest extends KernelTestCase

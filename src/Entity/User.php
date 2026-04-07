@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Enum\Role;
 use App\Repository\UserRepository;
 use DateTime;
+use Deprecated;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -572,7 +573,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         return null;
     }
 
-    #[\Deprecated]
+    #[Deprecated]
     public function eraseCredentials(): void
     {
     }

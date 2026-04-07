@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Enum\InterJeuEtat;
+use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -55,7 +56,7 @@ abstract class BaseInterJeu
     public function __construct()
     {
         $this->personnages = new ArrayCollection();
-        $this->dateReel = new \DateTime();
+        $this->dateReel = new DateTime();
     }
 
     public function getId(): ?int
@@ -147,7 +148,7 @@ abstract class BaseInterJeu
 
     public function isDateReelPassed(): bool
     {
-        return $this->dateReel <= new \DateTime('today');
+        return $this->dateReel <= new DateTime('today');
     }
 
     public function isChronologieGeneree(): bool

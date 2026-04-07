@@ -255,7 +255,7 @@ abstract class BaseTerritoire
     #[OneToMany(mappedBy: 'territoire', targetEntity: Merveille::class)]
     private Collection $merveilles;
 
-    #[ORM\Column(options: ['default' => true])]
+    #[Column(options: ['default' => true])]
     private bool $allowed_in_character_creation = true;
 
     public function __construct()

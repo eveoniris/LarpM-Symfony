@@ -25,7 +25,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  *   - The PersonnagesReligions assignment path itself works end-to-end
  *
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.
- *
  */
 #[Group('integration')]
 class SanctuaireEffectTest extends KernelTestCase

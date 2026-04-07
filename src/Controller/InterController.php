@@ -7,7 +7,6 @@ namespace App\Controller;
 use App\Entity\InterJeu;
 use App\Entity\Personnage;
 use App\Entity\PersonnageChronologie;
-use App\Enum\InterJeuEtat;
 use App\Enum\Role;
 use App\Form\InterJeuPersonnageAddType;
 use App\Form\InterJeuPersonnagesImportType;
@@ -17,6 +16,7 @@ use App\Repository\InterJeuRepository;
 use App\Repository\PersonnageRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
+use DateTime;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,7 +50,7 @@ class InterController extends AbstractController
 
         $lastGn = $gnRepository->createQueryBuilder('g')
             ->where('g.date_debut <= :today')
-            ->setParameter('today', new \DateTime('today'))
+            ->setParameter('today', new DateTime('today'))
             ->orderBy('g.date_debut', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
@@ -107,7 +107,7 @@ class InterController extends AbstractController
     {
         return $this->render('inter/detail.html.twig', [
             'interJeu' => $inter,
-            'chronologieDisponible' => $inter->canGenereteChronologie()
+            'chronologieDisponible' => $inter->canGenereteChronologie(),
         ]);
     }
 
