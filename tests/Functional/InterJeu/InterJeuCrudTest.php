@@ -10,6 +10,7 @@ use App\Enum\InterJeuEtat;
 use App\Tests\Factory\InterJeuFactory;
 use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\UserFactory;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -85,7 +86,7 @@ class InterJeuCrudTest extends WebTestCase
         $client = static::createClient();
         $user = UserFactory::createOne(['roles' => ['ROLE_INTER_JEU']]);
         $interJeu = InterJeuFactory::createOne([
-            'dateReel' => new \DateTime('-1 day'),
+            'dateReel' => new DateTime('-1 day'),
             'etat' => InterJeuEtat::TERMINE,
         ]);
 
@@ -101,7 +102,7 @@ class InterJeuCrudTest extends WebTestCase
         $client = static::createClient();
         $user = UserFactory::createOne(['roles' => ['ROLE_INTER_JEU']]);
         $interJeu = InterJeuFactory::createOne([
-            'dateReel' => new \DateTime('+30 days'),
+            'dateReel' => new DateTime('+30 days'),
         ]);
 
         $client->loginUser($user);
@@ -116,7 +117,7 @@ class InterJeuCrudTest extends WebTestCase
         $client = static::createClient();
         $user = UserFactory::createOne(['roles' => ['ROLE_INTER_JEU']]);
         $interJeu = InterJeuFactory::createOne([
-            'dateReel' => new \DateTime('-1 day'),
+            'dateReel' => new DateTime('-1 day'),
         ]);
 
         $client->loginUser($user);
@@ -131,7 +132,7 @@ class InterJeuCrudTest extends WebTestCase
         $user = UserFactory::createOne(['roles' => ['ROLE_INTER_JEU']]);
         $personnage = PersonnageFactory::createOne();
         $interJeu = InterJeuFactory::createOne([
-            'dateReel' => new \DateTime('-1 day'),
+            'dateReel' => new DateTime('-1 day'),
             'nom' => 'Test Inter',
             'anneeJeu' => 1050,
         ]);

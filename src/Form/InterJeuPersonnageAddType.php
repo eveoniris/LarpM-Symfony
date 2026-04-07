@@ -11,6 +11,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/** @extends AbstractType<mixed> */
 class InterJeuPersonnageAddType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -20,7 +21,7 @@ class InterJeuPersonnageAddType extends AbstractType
             'required' => true,
             'class' => Personnage::class,
             'autocomplete' => true,
-            'choice_label' => fn (Personnage $p) => sprintf('#%d %s', $p->getId(), $p->getNom()),
+            'choice_label' => static fn (Personnage $p) => sprintf('#%d %s', $p->getId(), $p->getNom()),
             'query_builder' => static fn (PersonnageRepository $r) => $r->createQueryBuilder('p')->orderBy('p.nom', 'ASC'),
             'placeholder' => 'Rechercher par nom ou id…',
         ]);

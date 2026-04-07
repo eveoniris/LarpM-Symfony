@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 
+/** @extends AbstractType<mixed> */
 class InterJeuPersonnagesImportType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

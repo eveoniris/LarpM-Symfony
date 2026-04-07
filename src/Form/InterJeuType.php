@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/** @extends AbstractType<mixed> */
 class InterJeuType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -37,7 +38,7 @@ class InterJeuType extends AbstractType
                 'label' => 'État',
                 'required' => true,
                 'class' => InterJeuEtat::class,
-                'choice_label' => fn (InterJeuEtat $e) => $e->getLabel(),
+                'choice_label' => static fn (InterJeuEtat $e) => $e->getLabel(),
             ])
             ->add('informationComplementaire', TextareaType::class, [
                 'label' => 'Informations complémentaires',

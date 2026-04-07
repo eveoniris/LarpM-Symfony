@@ -240,6 +240,7 @@ class ConditionsService
             }
 
             $rawValue = (string) ($this->getKeyValue('value', $condition) ?? '');
+
             return $entity->hasCompetenceLevel(CompetenceFamilyType::getFromLabel($rawValue), LevelType::tryFrom((string) ($this->getKeyValue('level', $condition) ?? '')));
         }
 

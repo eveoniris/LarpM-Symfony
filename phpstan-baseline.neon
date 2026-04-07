@@ -2424,6 +2424,30 @@ parameters:
 			count: 1
 			path: tests/bootstrap.php
 
+		-
+			message: '#^Call to function is_subclass_of\(\) with .* and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/EnumTraits.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with .* and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/EnumTraits.php
+
+		-
+			message: '#^Strict comparison using \!\== between string and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: '#^PHPDoc tag @extends contains generic type App\\Repository\\BaseRepository<App\\Entity\\InterJeu> but class App\\Repository\\BaseRepository is not generic\.$#'
+			identifier: generics.notGeneric
+			count: 1
+			path: src/Repository/InterJeuRepository.php
+
 
 
 

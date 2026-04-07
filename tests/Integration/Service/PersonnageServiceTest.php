@@ -25,7 +25,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  * Integration tests for PersonnageService.
  *
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.
- *
  */
 #[Group('integration')]
 class PersonnageServiceTest extends KernelTestCase
