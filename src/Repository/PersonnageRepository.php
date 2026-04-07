@@ -146,7 +146,7 @@ LEFT JOIN p2.participants pa2
             $qb->join('p.competences', 'cmp');
         }
 
-        if (\array_key_exists('groupe', $criteria) || null !== $orderBy && '' !== $orderBy && 'groupe' == $orderBy) {
+        if (\array_key_exists('groupe', $criteria) || \array_key_exists('scenariste', $criteria) || null !== $orderBy && '' !== $orderBy && 'groupe' == $orderBy) {
             // on rajoute la jointure sur le groupeGn -> groupe à partir du dernier participant
             $qb->join('pa.groupeGn', 'grgn');
             $qb->join('grgn.groupe', 'gr');
@@ -163,6 +163,10 @@ LEFT JOIN p2.participants pa2
 
         if (\array_key_exists('groupe', $criteria)) {
             $qb->andWhere('gr.id = :groupeId')->setParameter('groupeId', $criteria['groupe']);
+        }
+
+        if (\array_key_exists('scenariste', $criteria)) {
+            $qb->andWhere('gr.userRelatedByScenaristeId = :scenaristeId')->setParameter('scenaristeId', $criteria['scenariste']);
         }
 
         if (\array_key_exists('religion', $criteria)) {

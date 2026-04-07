@@ -3737,7 +3737,7 @@ class PersonnageController extends AbstractController
         $offset = ($page - 1) * $limit;
         $criteria = [];
 
-        $formData = $request->query->all('personnage_find_form');
+        $formData = $request->query->all('personnage_find');
         $religion = isset($formData['religion'])
             ? $this->entityManager->find('App\Entity\Religion', $formData['religion'])
             : null;
@@ -3750,6 +3750,9 @@ class PersonnageController extends AbstractController
         $groupe = isset($formData['groupe'])
             ? $this->entityManager->find('App\Entity\Groupe', $formData['groupe'])
             : null;
+        $scenariste = isset($formData['scenariste'])
+            ? $this->entityManager->find('App\Entity\User', $formData['scenariste'])
+            : null;
         $optionalParameters = '';
 
         // construit le formulaire contenant les filtres de recherche
@@ -3759,6 +3762,7 @@ class PersonnageController extends AbstractController
                 'classe' => $classe,
                 'competence' => $competence,
                 'groupe' => $groupe,
+                'scenariste' => $scenariste,
             ],
             'method' => 'get',
             'csrf_protection' => false,
@@ -3788,6 +3792,9 @@ class PersonnageController extends AbstractController
         if ($groupe) {
             $criteria['groupe'] = $groupe->getId();
             $optionalParameters .= "&personnageFind[groupe]={$groupe->getId()}";
+        }
+        if ($scenariste) {
+            $criteria['scenariste'] = $scenariste->getId();
         }
 
         $repo = $this->entityManager->getRepository(Personnage::class);

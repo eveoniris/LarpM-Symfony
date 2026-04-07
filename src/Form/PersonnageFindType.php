@@ -8,10 +8,12 @@ use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\Groupe;
 use App\Entity\Religion;
+use App\Entity\User;
 use App\Repository\ClasseRepository;
 use App\Repository\CompetenceRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\ReligionRepository;
+use App\Repository\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -82,6 +84,16 @@ class PersonnageFindType extends AbstractType
                 'class' => Groupe::class,
                 'choice_label' => 'nom',
                 'query_builder' => static fn (GroupeRepository $gr) => $gr->createQueryBuilder('gr')->orderBy('gr.nom', 'ASC'),
+            ])
+            ->add('scenariste', EntityType::class, [
+                'required' => false,
+                'label' => 'Par scénariste : ',
+                'placeholder' => 'Filtrer par scénariste',
+                'class' => User::class,
+                'choice_label' => 'identity',
+                'query_builder' => static fn (UserRepository $ur) => $ur->createQueryBuilder('u')
+                    ->join('u.groupeRelatedByScenaristeIds', 'g')
+                    ->orderBy('u.username', 'ASC'),
             ]);
     }
 
