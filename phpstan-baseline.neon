@@ -69,7 +69,7 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$type of method Symfony\\Component\\Form\\FormBuilderInterface\<mixed\>\:\:add\(\) expects class\-string\<Symfony\\Component\\Form\\FormTypeInterface\>\|null, string given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 1
 			path: src/Controller/GroupeController.php
 
 		-
@@ -461,6 +461,18 @@ parameters:
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Enum/EspeceType.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\InterJeuEtat'' and ''BackedEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/InterJeuEtat.php
+
+		-
+			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\InterJeuEtat'' and ''UnitEnum'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Enum/InterJeuEtat.php
 
 		-
 			message: '#^Call to function is_subclass_of\(\) with ''App\\\\Enum\\\\LevelType'' and ''BackedEnum'' will always evaluate to true\.$#'
@@ -2227,16 +2239,22 @@ parameters:
 			path: src/Manager/PersonnageManager.php
 
 		-
-			message: '#^Parameter &\$personnages by\-ref type of method App\\Manager\\PersonnageManager\:\:sort\(\) expects array\<int, App\\Entity\\Personnage\>, array\<int, App\\Entity\\Personnage\|list\<App\\Entity\\Personnage\|int\>\> given\.$#'
-			identifier: parameterByRef.type
-			count: 1
-			path: src/Manager/PersonnageManager.php
-
-		-
 			message: '#^Loose comparison using \!\= between '''' and non\-falsy\-string will always evaluate to true\.$#'
 			identifier: notEqual.alwaysTrue
 			count: 1
 			path: src/Repository/BaseRepository.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Repository/BaseRepository.php
+
+		-
+			message: '#^PHPDoc tag @extends contains generic type App\\Repository\\BaseRepository\<App\\Entity\\InterJeu\> but class App\\Repository\\BaseRepository is not generic\.$#'
+			identifier: generics.notGeneric
+			count: 1
+			path: src/Repository/InterJeuRepository.php
 
 		-
 			message: '#^Method App\\Repository\\PersonnageRepository\:\:translateAttributes\(\) should return array\<string, string\> but returns array\<int\|string, string\>\.$#'
@@ -2311,16 +2329,10 @@ parameters:
 			path: src/Service/ConditionsService.php
 
 		-
-			message: '#^Unable to resolve the template type T in call to method Doctrine\\ORM\\EntityManagerInterface\:\:getRepository\(\)$#'
-			identifier: argument.templateType
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Service/DataFormatterService.php
-
-		-
-			message: '#^Property App\\Service\\FileUploader\:\:\$fileName \(string\) does not accept Symfony\\Component\\String\\AbstractUnicodeString\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Service/FileUploader.php
 
 		-
 			message: '#^Call to function is_numeric\(\) with int will always evaluate to true\.$#'
@@ -2389,12 +2401,6 @@ parameters:
 			path: src/Twig/HighlightTwigExtension.php
 
 		-
-			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) with 1 and array\<string, string\> will always evaluate to false\.$#'
-			identifier: staticMethod.impossibleType
-			count: 1
-			path: tests/Integration/Service/CompetenceServiceTest.php
-
-		-
 			message: '#^Property App\\Tests\\Integration\\Service\\GroupeServiceTest\:\:\$entityManager is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
@@ -2413,40 +2419,10 @@ parameters:
 			path: tests/Unit/Service/ConditionsServiceTest.php
 
 		-
-			message: '#^Call to an undefined method PHPUnit\\Framework\\MockObject\\Builder\\InvocationStubber\:\:with\(\)\.$#'
-			identifier: method.notFound
-			count: 8
-			path: tests/Unit/Service/ConditionsServiceTest.php
-
-		-
 			message: '#^Call to function method_exists\(\) with ''Symfony\\\\Component\\\\Dotenv\\\\Dotenv'' and ''bootEnv'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: tests/bootstrap.php
-
-		-
-			message: '#^Call to function is_subclass_of\(\) with .* and ''UnitEnum'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Enum/EnumTraits.php
-
-		-
-			message: '#^Call to function is_subclass_of\(\) with .* and ''BackedEnum'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Enum/EnumTraits.php
-
-		-
-			message: '#^Strict comparison using \!\== between string and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: src/Repository/BaseRepository.php
-
-		-
-			message: '#^PHPDoc tag @extends contains generic type App\\Repository\\BaseRepository<App\\Entity\\InterJeu> but class App\\Repository\\BaseRepository is not generic\.$#'
-			identifier: generics.notGeneric
-			count: 1
-			path: src/Repository/InterJeuRepository.php
 
 
 

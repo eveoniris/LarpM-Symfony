@@ -2,6 +2,11 @@
     <h5>Vos groupes à scénariser</h5>
 </div>
 
+<a href="{{ path('personnage.list', {'personnage_find_form': {'scenariste': app.user.id}}) }}"
+   class="btn btn-sm btn-secondary mb-2">
+    <i class="fa fa-users"></i> Voir les personnages de mes joueurs
+</a>
+
 {% if user.groupeScenariste|length > 0 %}
     <ul class="list-group">
         {% for groupe in app.user.groupeScenariste %}
