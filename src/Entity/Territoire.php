@@ -8,6 +8,7 @@ use App\Enum\TerritoireStatut;
 use App\Repository\TerritoireRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use JsonSerializable;
 use stdClass;
@@ -24,6 +25,13 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
     /** @var ArrayCollection<int, OrigineBonus> */
     private ArrayCollection $valideOrigineBonus;
 
+    /** @var Collection<int, Territoire> */
+    #[ORM\ManyToMany(targetEntity: Territoire::class)]
+    #[ORM\JoinTable(name: 'territoire_frontalier_culturel')]
+    #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'territoire_frontalier_id', referencedColumnName: 'id')]
+    private Collection $frontaliersCulturels;
+
     /**
      * Constructeur.
      */
@@ -31,6 +39,7 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
     {
         $this->setOrdreSocial(3);
         $this->valideOrigineBonus = new ArrayCollection();
+        $this->frontaliersCulturels = new ArrayCollection();
         parent::__construct();
     }
 
@@ -488,5 +497,27 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
         }
 
         return $count;
+    }
+
+    /** @return Collection<int, Territoire> */
+    public function getFrontaliersCulturels(): Collection
+    {
+        return $this->frontaliersCulturels;
+    }
+
+    public function addFrontalierCulturel(Territoire $territoire): static
+    {
+        if (!$this->frontaliersCulturels->contains($territoire)) {
+            $this->frontaliersCulturels->add($territoire);
+        }
+
+        return $this;
+    }
+
+    public function removeFrontalierCulturel(Territoire $territoire): static
+    {
+        $this->frontaliersCulturels->removeElement($territoire);
+
+        return $this;
     }
 }

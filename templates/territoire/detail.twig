@@ -611,6 +611,35 @@
                 </div>
             {% endif %}
 
+            {% if isAdmin %}
+                <div class="col-sm-6">
+                    <div class="card mb-2">
+                        <div class="card-header d-flex justify-content-between">
+                            <h5 class="align-content-center">Fiefs frontaliers culturels</h5>
+
+                            <a class="btn btn-sm btn-outline-gamemaster"
+                               data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="Gérer les fiefs frontaliers culturels"
+                               href="{{ path('territoire.frontaliersCulturels', {'territoire': territoire.id}) }}">
+                                <i class="fa-solid fa-feather"></i>
+                            </a>
+
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                {% for t in territoire.frontaliersCulturels %}
+                                    <li class="list-group-item">
+                                        <a href="{{ path('territoire.detail', {'territoire': t.id}) }}">{{ t.nom }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="list-group-item text-muted">Aucun fief frontalier défini.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
         </div>
 
         <div class="row">

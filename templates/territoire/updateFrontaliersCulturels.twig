@@ -1,0 +1,359 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('territoire.list') }}">Liste des territoires</a></li>
+        <li><a href="{{ path('territoire.detail', {'territoire': territoire.id}) }}">{{ territoire.nom }}</a></li>
+        <li class="active">Fiefs frontaliers culturels</li>
+    </ol>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 col-md-10">
+                <div class="well bs-component">
+                    <div class="header">
+                        <h5>Fiefs frontaliers culturels {{ territoire.nom }}</h5>
+                    </div>
+
+                    <p class="text-muted">
+                        Ces territoires sont considérés comme frontaliers pour la propagation des effets culturels,
+                        même s'ils ne sont pas strictement adjacents géographiquement.
+                    </p>
+
+                    {% if not canEdit %}
+                        <div class="alert alert-info">
+                            Vous n'avez pas les droits pour modifier cette liste (réservé aux administrateurs).
+                        </div>
+
+                        <ul class="list-group">
+                            {% for t in territoire.frontaliersCulturels %}
+                                <li class="list-group-item">
+                                    <a href="{{ path('territoire.detail', {'territoire': t.id}) }}">{{ t.nom }}</a>
+                                </li>
+                            {% else %}
+                                <li class="list-group-item text-muted">Aucun fief frontalier défini.</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+
+                        {# Zone messages inline (succès, erreur, avertissement) #}
+                        <div id="frontaliers-messages" class="mb-2"></div>
+
+                        {# Boutons d'action #}
+                        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                            <button type="button" id="btn-vider" class="btn btn-outline-danger btn-sm">
+                                <i class="fa-solid fa-trash"></i> Vider la liste
+                            </button>
+                            <button type="button" id="btn-pregenerer" class="btn btn-outline-info btn-sm">
+                                <i class="fa-solid fa-map-location-dot"></i> Pré-générer depuis GeoJSON
+                            </button>
+                            <span class="d-flex align-items-center gap-1">
+                                Distance max :
+                                <input type="number" id="max-distance" value="10" min="0.1" max="100" step="0.1"
+                                       class="form-control form-control-sm" style="width: 80px"> km
+                            </span>
+                            <span id="pregenerer-status" class="d-none text-info">
+                                <span class="spinner-border spinner-border-sm" role="status"></span> Calcul en cours…
+                            </span>
+                        </div>
+
+                        {# Liste visible des fiefs sélectionnés (rendu serveur) #}
+                        <ul class="list-group mb-3" id="frontaliers-list"
+                            data-detail-url="{{ path('territoire.detail', {'territoire': 0}) }}"
+                            data-pregen-url="{{ path('territoire.computeVoisinsGeo', {'territoire': territoire.id}) }}">
+                            {% for t in territoire.frontaliersCulturels %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center"
+                                    data-id="{{ t.id }}" data-nom="{{ t.nom|e('html_attr') }}">
+                                    <a href="{{ path('territoire.detail', {'territoire': t.id}) }}">{{ t.nom }}</a>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger btn-remove-frontalier"
+                                            data-id="{{ t.id }}"
+                                            data-nom="{{ t.nom|e('html_attr') }}">
+                                        <i class="fa-solid fa-times"></i>
+                                    </button>
+                                </li>
+                            {% else %}
+                                <li class="list-group-item text-muted" id="frontaliers-empty">
+                                    Aucun fief frontalier défini.
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                        {{ form_start(form, {'attr': {'action': path('territoire.frontaliersCulturels', {'territoire': territoire.id})}}) }}
+
+                        {# Champ multiple mappé : caché, gère la soumission du formulaire #}
+                        <div id="frontaliers-hidden-field" style="display:none" aria-hidden="true">
+                            {{ form_widget(form.frontaliersCulturels) }}
+                        </div>
+
+                        {# Zone d'ajout : autocomplete single toujours visible (évite les problèmes d'init TomSelect en conteneur caché) #}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Ajouter un territoire :
+                            </label>
+                            {{ form_widget(form.searchFrontalier) }}
+                        </div>
+
+                        {{ form_row(form.update) }}
+                        {{ form_end(form) }}
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% if canEdit %}
+<script>
+(function () {
+    'use strict';
+
+    var detailBaseUrl;
+    var pregenUrl;
+
+    function getHiddenSelect() {
+        return document.querySelector('#frontaliers-hidden-field select');
+    }
+
+    function showMessage(type, parts) {
+        // parts : tableau de {text, bold?} ou simple chaîne
+        var icons = {
+            success: 'fa-circle-check',
+            danger:  'fa-circle-exclamation',
+            warning: 'fa-triangle-exclamation',
+            info:    'fa-circle-info'
+        };
+        var container = document.getElementById('frontaliers-messages');
+        while (container.firstChild) { container.removeChild(container.firstChild); }
+
+        var div = document.createElement('div');
+        div.className = 'alert alert-' + type + ' d-flex align-items-center alert-dismissible';
+        div.setAttribute('role', 'alert');
+
+        var inner = document.createElement('div');
+        inner.className = 'p-2 flex-grow-1';
+
+        var icon = document.createElement('i');
+        icon.className = 'fa-solid ' + (icons[type] || 'fa-circle-info');
+        inner.appendChild(icon);
+        inner.appendChild(document.createTextNode('\u00a0'));
+
+        if (typeof parts === 'string') {
+            inner.appendChild(document.createTextNode(parts));
+        } else {
+            parts.forEach(function (p) {
+                if (p.bold) {
+                    var strong = document.createElement('strong');
+                    strong.textContent = p.text;
+                    inner.appendChild(strong);
+                } else {
+                    inner.appendChild(document.createTextNode(p.text));
+                }
+            });
+        }
+
+        var closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'btn-close p-2';
+        closeBtn.setAttribute('data-bs-dismiss', 'alert');
+        closeBtn.setAttribute('aria-label', 'Close');
+
+        div.appendChild(inner);
+        div.appendChild(closeBtn);
+        container.appendChild(div);
+    }
+
+    function syncAdd(id, nom) {
+        var select = getHiddenSelect();
+        if (!select) { return; }
+        var existing = select.querySelector('option[value="' + id + '"]');
+        if (existing) {
+            existing.selected = true;
+        } else {
+            var opt = document.createElement('option');
+            opt.value = id;
+            opt.textContent = nom;
+            opt.selected = true;
+            select.appendChild(opt);
+        }
+    }
+
+    function syncRemove(id) {
+        var select = getHiddenSelect();
+        if (!select) { return; }
+        var opt = select.querySelector('option[value="' + id + '"]');
+        if (opt) { opt.selected = false; }
+    }
+
+    function addItemToList(id, nom) {
+        var sid = String(id);
+        if (document.querySelector('#frontaliers-list [data-id="' + sid + '"]')) { return false; }
+
+        var emptyEl = document.getElementById('frontaliers-empty');
+        if (emptyEl) { emptyEl.remove(); }
+
+        var li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.dataset.id  = sid;
+        li.dataset.nom = nom;
+
+        var link = document.createElement('a');
+        link.href = detailBaseUrl.replace('/0', '/' + sid);
+        link.textContent = nom;
+        li.appendChild(link);
+
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-sm btn-outline-danger btn-remove-frontalier';
+        btn.dataset.id  = sid;
+        btn.dataset.nom = nom;
+        var btnIcon = document.createElement('i');
+        btnIcon.className = 'fa-solid fa-times';
+        btn.appendChild(btnIcon);
+        btn.addEventListener('click', onRemoveClick);
+        li.appendChild(btn);
+
+        document.getElementById('frontaliers-list').appendChild(li);
+        syncAdd(sid, nom);
+        return true;
+    }
+
+    function removeItemFromList(id) {
+        var sid = String(id);
+        var li = document.querySelector('#frontaliers-list [data-id="' + sid + '"]');
+        if (!li) { return; }
+        li.remove();
+
+        if (!document.querySelector('#frontaliers-list [data-id]')) {
+            var empty = document.createElement('li');
+            empty.id = 'frontaliers-empty';
+            empty.className = 'list-group-item text-muted';
+            empty.textContent = 'Aucun fief frontalier défini.';
+            document.getElementById('frontaliers-list').appendChild(empty);
+        }
+
+        syncRemove(sid);
+    }
+
+    function onRemoveClick(e) {
+        removeItemFromList(e.currentTarget.dataset.id);
+    }
+
+    function clearAll() {
+        document.querySelectorAll('#frontaliers-list [data-id]').forEach(function (li) { li.remove(); });
+
+        if (!document.getElementById('frontaliers-empty')) {
+            var empty = document.createElement('li');
+            empty.id = 'frontaliers-empty';
+            empty.className = 'list-group-item text-muted';
+            empty.textContent = 'Aucun fief frontalier défini.';
+            document.getElementById('frontaliers-list').appendChild(empty);
+        }
+
+        var select = getHiddenSelect();
+        if (select) {
+            Array.from(select.options).forEach(function (opt) { opt.selected = false; });
+        }
+    }
+
+    function initSearchField() {
+        var el = document.querySelector('[data-search-field="frontaliers"]');
+        if (!el) { return; }
+
+        function tryBind() {
+            if (!el.tomselect) { setTimeout(tryBind, 100); return; }
+            el.tomselect.on('change', function (value) {
+                if (!value) { return; }
+                var option = el.tomselect.options[value];
+                var nom = option ? option.text : String(value);
+                var added = addItemToList(value, nom);
+                if (!added) {
+                    showMessage('warning', [
+                        {text: nom, bold: true},
+                        {text: ' est déjà dans la liste.'}
+                    ]);
+                }
+                el.tomselect.clear(true);
+                el.tomselect.clearOptions();
+            });
+        }
+        tryBind();
+    }
+
+    function preGenerate() {
+        var maxDist = parseFloat(document.getElementById('max-distance').value) || 10.0;
+        var status  = document.getElementById('pregenerer-status');
+        status.classList.remove('d-none');
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', pregenUrl);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+        xhr.onload = function () {
+            status.classList.add('d-none');
+            var data;
+            try { data = JSON.parse(xhr.responseText); }
+            catch (e) { showMessage('danger', 'Réponse invalide du serveur.'); return; }
+
+            if (data.error) { showMessage('danger', data.error); return; }
+
+            if (!data.voisins || !data.voisins.length) {
+                showMessage('info', 'Aucun voisin géographique trouvé dans un rayon de ' + maxDist + ' km.');
+                return;
+            }
+
+            var added = 0;
+            var skipped = 0;
+            data.voisins.forEach(function (v) {
+                if (addItemToList(String(v.id), v.nom)) { added++; } else { skipped++; }
+            });
+
+            var parts = [{text: String(added) + ' voisin(s) ajouté(s)'}];
+            if (skipped > 0) {
+                parts.push({text: ', ' + skipped + ' déjà présent(s) ignoré(s)'});
+            }
+            parts.push({text: '. Cliquez sur '});
+            parts.push({text: 'Sauvegarder', bold: true});
+            parts.push({text: ' pour valider.'});
+            showMessage('success', parts);
+        };
+
+        xhr.onerror = function () {
+            status.classList.add('d-none');
+            showMessage('danger', 'Erreur réseau. Veuillez réessayer.');
+        };
+
+        xhr.send('max_distance=' + encodeURIComponent(maxDist));
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var listEl = document.getElementById('frontaliers-list');
+        detailBaseUrl = listEl.dataset.detailUrl;
+        pregenUrl     = listEl.dataset.pregenUrl;
+
+        listEl.querySelectorAll('.btn-remove-frontalier').forEach(function (btn) {
+            btn.addEventListener('click', onRemoveClick);
+        });
+
+        document.getElementById('btn-vider').addEventListener('click', function () {
+            clearAll();
+            showMessage('info', [
+                {text: 'Liste vidée. Cliquez sur '},
+                {text: 'Sauvegarder', bold: true},
+                {text: ' pour valider.'}
+            ]);
+        });
+
+        document.getElementById('btn-pregenerer').addEventListener('click', preGenerate);
+
+        initSearchField();
+    });
+
+}());
+</script>
+{% endif %}
+
+{% endblock body %}

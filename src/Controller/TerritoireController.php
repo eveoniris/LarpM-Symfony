@@ -28,6 +28,7 @@ use App\Form\Territoire\TerritoireIngredientsType;
 use App\Form\Territoire\TerritoireLoiType;
 use App\Form\Territoire\TerritoireStatutType;
 use App\Form\Territoire\TerritoireStrategieType;
+use App\Form\Territoire\TerritoireFrontaliersCulturelType;
 use App\Form\Territoire\TerritoireType;
 use App\Repository\BonusRepository;
 use App\Repository\TerritoireRepository;
@@ -39,6 +40,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -533,6 +535,108 @@ class TerritoireController extends AbstractController
         $territoires = $entityManager->getRepository('\\' . Territoire::class)->findFiefs();
 
         return $this->render('territoire/quete.twig', ['territoires' => $territoires]);
+    }
+
+    /**
+     * Page de gestion des fiefs frontaliers culturels d'un territoire.
+     */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[Route(
+        '/territoire/{territoire}/frontaliers-culturels',
+        name: 'territoire.frontaliersCulturels',
+        requirements: ['territoire' => Requirement::DIGITS]
+    )]
+    public function updateFrontaliersCulturelAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity] Territoire $territoire,
+    ): RedirectResponse|Response {
+        $canEdit = $this->isGranted(Role::ADMIN->value);
+
+        $form = $this->createForm(TerritoireFrontaliersCulturelType::class, $territoire, [
+            'disabled' => !$canEdit,
+        ])->add('update', SubmitType::class, ['label' => 'Sauvegarder',  'attr' => ['class' => 'btn btn-secondary']]);
+
+        $form->handleRequest($request);
+
+        if ($canEdit && $form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+            $this->addFlash('success', 'Les fiefs frontaliers culturels ont été mis à jour.');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/updateFrontaliersCulturels.twig', [
+            'territoire' => $territoire,
+            'form'       => $form->createView(),
+            'canEdit'    => $canEdit,
+        ]);
+    }
+
+    /**
+     * Calcule automatiquement les voisins géographiques d'un territoire via son GeoJSON.
+     */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[Route(
+        '/territoire/{territoire}/compute-voisins-geo',
+        name: 'territoire.computeVoisinsGeo',
+        methods: ['POST'],
+        requirements: ['territoire' => Requirement::DIGITS]
+    )]
+    public function computeVoisinsGeoAction(
+        Request $request,
+        GeoJson $geoJson,
+        TerritoireRepository $territoireRepository,
+        #[MapEntity] Territoire $territoire,
+    ): JsonResponse {
+        if (!$this->isGranted(Role::ADMIN->value)) {
+            return new JsonResponse(['error' => 'Accès refusé.'], 403);
+        }
+
+        $rawGeoJson = $territoire->getGeojson();
+        if (!$rawGeoJson) {
+            return new JsonResponse(['error' => "Ce territoire n'a pas de GeoJSON défini."], 422);
+        }
+
+        $geoData = json_decode($rawGeoJson, true);
+        if (\JSON_ERROR_NONE !== json_last_error()) {
+            return new JsonResponse(['error' => 'GeoJSON invalide.'], 422);
+        }
+
+        $maxDistance = (float) $request->request->get('max_distance', 10.0);
+        $maxDistance = max(0.1, min(100.0, $maxDistance));
+
+        $comparator = $geoJson->setMaxDistance($maxDistance);
+        $candidats = $territoireRepository->findWithGeoJson($territoire->getId());
+
+        $voisins = [];
+        foreach ($candidats as $candidat) {
+            $candidatGeo = json_decode($candidat->getGeojson(), true);
+            if (!$candidatGeo) {
+                continue;
+            }
+
+            $points = $comparator->comparePoints($geoData, $candidatGeo);
+            if (0 === \count($points)) {
+                continue;
+            }
+
+            $distances = array_column($points, 'distance');
+            $voisins[] = [
+                'id'           => $candidat->getId(),
+                'nom'          => $candidat->getNom(),
+                'nb_points'    => \count($points),
+                'min_distance' => min($distances),
+            ];
+        }
+
+        usort($voisins, static fn ($a, $b) => $a['min_distance'] <=> $b['min_distance']);
+
+        return new JsonResponse([
+            'voisins'      => $voisins,
+            'max_distance' => $maxDistance,
+        ]);
     }
 
     #[Route('/territoire/geoJsonTest', name: 'territoire.geojson.test')]
