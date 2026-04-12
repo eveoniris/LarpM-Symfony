@@ -1703,11 +1703,13 @@ class PersonnageService
 
     public function lockGnGiveSanctuaireGnEffect(bool $asGenerator = false): Generator
     {
-        // All player in groupe get the first level of religion if his not FANATICAL or DEISTE
+        // All players in groups attached to territories with a sanctuaire get the first level
+        // of that sanctuaire's religion (and so do players in culturally adjacent territories).
+        // Excluded: dead personnages, those already knowing the religion, deistes, fanatiques.
 
         $deisteId = 36;
         $deiste = $this->entityManager->getRepository(Religion::class)->find($deisteId);
-        $config = [
+        /* old configuration until lh8 $config = [
             // Zath
             // aucun
             // Anu
@@ -1798,45 +1800,63 @@ class PersonnageService
             18 => [89, 132],
             // Ereshkigal
             28 => [40, 130],
-        ];
+        ];*/
 
         $religionLevel = $this->entityManager->getRepository(ReligionLevel::class)->findOneBy(['index' => 1]);
 
+        /** @var Territoire[] $territoires */
+        $territoires = $this->entityManager->getRepository(Territoire::class)
+            ->createQueryBuilder('t')
+            ->join('t.constructions', 'c')
+            ->where('t.sanctuaireReligion IS NOT NULL')
+            ->andWhere('LOWER(c.label) = :label')
+            ->setParameter('label', 'sanctuaire')
+            ->getQuery()
+            ->getResult();
+
         $i = 0;
-        foreach ($config as $religionId => $groupeNumbers) {
-            $religion = $this->entityManager->getRepository(Religion::class)->find($religionId);
+        foreach ($territoires as $territoire) {
+            $religion = $territoire->getSanctuaireReligion();
 
             if (!$religion) {
-                $this->logger->warning(\sprintf('Religion %d not found', $religionId));
                 continue;
             }
 
-            $this->logger->info(\sprintf('Adding first level of %s religion to personnage', $religion->getLabel()));
-
-            foreach ($groupeNumbers as $groupeNumber) {
-                $groupe = $this->entityManager->getRepository(Groupe::class)->findOneBy(['numero' => $groupeNumber]);
-
-                if (!$groupe) {
-                    $this->logger->warning(\sprintf('Groupe with number %d not found', $groupeNumber));
-                    continue;
+            // Collect the territory's own groupe + groupes of cultural border territories
+            $groupes = [];
+            if ($territoire->getGroupe()) {
+                $groupes[] = $territoire->getGroupe();
+            }
+            foreach ($territoire->getFrontaliersCulturels() as $frontalier) {
+                if ($frontalier->getGroupe()) {
+                    $groupes[] = $frontalier->getGroupe();
                 }
+            }
+
+            foreach ($groupes as $groupe) {
+                $this->logger->info(\sprintf(
+                    'Adding first level of %s religion to groupe %s (sanctuaire on %s)',
+                    $religion->getLabel(),
+                    $groupe->getNom(),
+                    $territoire->getNom(),
+                ));
 
                 /** @var Personnage $personnage */
                 foreach ($groupe->getPersonnages() as $personnage) {
                     if (!$personnage->getVivant()) {
-                        $this->logger->info(\sprintf('Personnage %d is dead, dead is not affacted', $personnage->getId()));
+                        $this->logger->info(\sprintf('Personnage %d is dead, skipped', $personnage->getId()));
                         continue;
                     }
                     if ($this->knownReligion($personnage, $religion)) {
-                        $this->logger->info(\sprintf('Personnage %d already know this religion', $personnage->getId()));
+                        $this->logger->info(\sprintf('Personnage %d already knows this religion', $personnage->getId()));
                         continue;
                     }
                     if ($deiste && $this->knownReligion($personnage, $deiste)) {
-                        $this->logger->info(\sprintf('Personnage %d is deiste and not affected', $personnage->getId()));
+                        $this->logger->info(\sprintf('Personnage %d is deiste, skipped', $personnage->getId()));
                         continue;
                     }
                     if ($personnage->isFanatique()) {
-                        $this->logger->info(\sprintf('Personnage %d is a fanatic and not affected', $personnage->getId()));
+                        $this->logger->info(\sprintf('Personnage %d is fanatique, skipped', $personnage->getId()));
                         continue;
                     }
 
