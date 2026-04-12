@@ -24,7 +24,7 @@ final class Version20260407110432 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // territoire_quete used MyISAM (no FK support) — convert to InnoDB first
+        // territoire_quete used MyISAM (no FK support) - convert to InnoDB first
         $this->addSql('ALTER TABLE territoire_quete ENGINE=InnoDB');
 
         if (!$this->fkExists('territoire_quete', 'FK_63718DCD0F97A8')) {

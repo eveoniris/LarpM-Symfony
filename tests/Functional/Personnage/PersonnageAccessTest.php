@@ -40,7 +40,7 @@ class PersonnageAccessTest extends WebTestCase
         $viewer = UserFactory::createOne();
         $personnage = PersonnageFactory::createOne(['user' => $owner]);
 
-        // hasAccess() restricts to owner or SCENARISTE/ORGA — other players get redirected
+        // hasAccess() restricts to owner or SCENARISTE/ORGA - other players get redirected
         $client->loginUser($viewer);
         $client->request('GET', '/personnage/' . $personnage->getId());
 

@@ -67,7 +67,7 @@ class PersonnageListTest extends WebTestCase
     }
 
     // -------------------------------------------------------------------------
-    // Scenariste filter — form rendering & query safety
+    // Scenariste filter - form rendering & query safety
     // -------------------------------------------------------------------------
 
     public function testScenaristeFilterRendersFormField(): void

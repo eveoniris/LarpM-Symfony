@@ -48,7 +48,7 @@ class PersonnageServiceTest extends KernelTestCase
     {
         $user = UserFactory::createOne();
 
-        // 2 vivant personnages — below MAX_PER_USER (3)
+        // 2 vivant personnages - below MAX_PER_USER (3)
         PersonnageFactory::createMany(2, ['user' => $user, 'vivant' => true]);
 
         self::assertTrue($this->personnageService->canCreatePersonnage($user));
@@ -58,7 +58,7 @@ class PersonnageServiceTest extends KernelTestCase
     {
         $user = UserFactory::createOne();
 
-        // 3 vivant personnages — equal to MAX_PER_USER (3)
+        // 3 vivant personnages - equal to MAX_PER_USER (3)
         PersonnageFactory::createMany(3, ['user' => $user, 'vivant' => true]);
 
         self::assertFalse($this->personnageService->canCreatePersonnage($user));
@@ -81,7 +81,7 @@ class PersonnageServiceTest extends KernelTestCase
     }
 
     // -------------------------------------------------------------------------
-    // createNewPersonnage — XP from GN
+    // createNewPersonnage - XP from GN
     // -------------------------------------------------------------------------
 
     public function testCreateNewPersonnageSetXpFromGn(): void

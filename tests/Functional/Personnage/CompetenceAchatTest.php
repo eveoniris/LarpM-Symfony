@@ -56,7 +56,7 @@ class CompetenceAchatTest extends WebTestCase
         $family = CompetenceFamilyFactory::createOne();
         $level = LevelFactory::createOne(['index' => 1, 'cout' => 5, 'cout_favori' => 3, 'cout_meconu' => 8]);
         $competence = CompetenceFactory::createOne(['competenceFamily' => $family, 'level' => $level]);
-        // Personnage has 1000 XP — enough for any cost tier
+        // Personnage has 1000 XP - enough for any cost tier
         $personnage = PersonnageFactory::createOne(['user' => $user, 'xp' => 1000]);
 
         $client->loginUser($user);
@@ -76,7 +76,7 @@ class CompetenceAchatTest extends WebTestCase
         // On success the controller redirects to the personnage detail page
         self::assertResponseRedirects();
 
-        // XP should have been deducted — use find() after clear() to get fresh DB state
+        // XP should have been deducted - use find() after clear() to get fresh DB state
         $personnageId = $personnage->getId();
         $em->clear();
         $fresh = $em->find(\App\Entity\Personnage::class, $personnageId);
@@ -91,7 +91,7 @@ class CompetenceAchatTest extends WebTestCase
         $family = CompetenceFamilyFactory::createOne();
         $level = LevelFactory::createOne(['index' => 1, 'cout' => 50, 'cout_favori' => 30, 'cout_meconu' => 80]);
         $competence = CompetenceFactory::createOne(['competenceFamily' => $family, 'level' => $level]);
-        // Personnage has 0 XP — cannot afford any non-free competence
+        // Personnage has 0 XP - cannot afford any non-free competence
         $personnage = PersonnageFactory::createOne(['user' => $user, 'xp' => 0]);
 
         $client->loginUser($user);
@@ -109,7 +109,7 @@ class CompetenceAchatTest extends WebTestCase
         // Controller re-renders the form (200) without deducting XP on failure
         self::assertResponseIsSuccessful();
 
-        // XP must remain at 0 — no deduction on failure
+        // XP must remain at 0 - no deduction on failure
         $personnageId = $personnage->getId();
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $em->clear();

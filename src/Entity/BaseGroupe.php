@@ -629,7 +629,7 @@ class BaseGroupe
         return $this;
     }
 
-    // TODO: setFree() should be on GroupeGn, not Groupe — needs schema migration
+    // TODO: setFree() should be on GroupeGn, not Groupe - needs schema migration
     public function setFree(bool $free): static
     {
         return $this;

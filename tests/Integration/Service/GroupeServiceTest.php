@@ -45,7 +45,7 @@ class GroupeServiceTest extends KernelTestCase
     public function testGetAllRichesseWithStableTerritoire(): void
     {
         $groupe = GroupeFactory::createOne();
-        // Territoire owned by groupe — stable, tresor=100 → 100 × 3 = 300
+        // Territoire owned by groupe - stable, tresor=100 → 100 × 3 = 300
         TerritoireFactory::createOne([
             'tresor' => 100,
             'statut' => TerritoireStatut::STABLE,
@@ -58,7 +58,7 @@ class GroupeServiceTest extends KernelTestCase
     public function testGetAllRichesseWithInstableTerritoire(): void
     {
         $groupe = GroupeFactory::createOne();
-        // Territoire owned by groupe — instable, tresor=100 → ceil(100 × 3 × 0.5) = 150
+        // Territoire owned by groupe - instable, tresor=100 → ceil(100 × 3 × 0.5) = 150
         TerritoireFactory::createOne([
             'tresor' => 100,
             'statut' => TerritoireStatut::INSTABLE,

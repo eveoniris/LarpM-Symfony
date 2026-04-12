@@ -66,7 +66,7 @@ class ParticipantCascadeDeleteTest extends KernelTestCase
         $this->em->clear();
         $fresh = $this->em->find(Participant::class, $participantId);
 
-        // Delete the participant — cascade must remove the log automatically
+        // Delete the participant - cascade must remove the log automatically
         $this->em->remove($fresh);
         $this->em->flush();
 
