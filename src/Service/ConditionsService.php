@@ -137,7 +137,7 @@ class ConditionsService
                 $condition = ['type' => $key, 'value' => $condition];
             }
 
-            // Nested conditions array (e.g. AND([...], [...]) inside OR) — recurse
+            // Nested conditions array (e.g. AND([...], [...]) inside OR) - recurse
             $isValid = $this->isKey('type', $condition)
                 ? $this->isValidCondition($entity, $condition, $service)
                 : null !== $this->getValidConditions($entity, $condition, $service);

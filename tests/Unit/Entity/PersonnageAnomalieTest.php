@@ -387,7 +387,7 @@ class PersonnageAnomalieTest extends TestCase
             AttributeType::$PRIERES[1] => 1, // niveau 2
         ]);
         $personnage->addCompetence($competence);
-        $personnage->addPriere($this->makePriere(1)); // wrong level — surplus at niveau 1
+        $personnage->addPriere($this->makePriere(1)); // wrong level - surplus at niveau 1
 
         // niveau 1: expected=0, count=1 → en trop
         self::assertStringContainsString('niveau 1', $personnage->getPrieresAnomalieMessage());

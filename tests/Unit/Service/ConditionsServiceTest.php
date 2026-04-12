@@ -121,7 +121,7 @@ class ConditionsServiceTest extends TestCase
         $personnage = $this->createStub(Personnage::class);
         $personnage->method('hasCompetenceLevel')->willReturn(true);
 
-        // 'Alchemy' is the enum value — getFromLabel() resolves it correctly
+        // 'Alchemy' is the enum value - getFromLabel() resolves it correctly
         $conditions = [['TYPE' => 'COMPETENCE', 'VALUE' => CompetenceFamilyType::ALCHEMY->value]];
 
         self::assertTrue($this->service->isValidConditions($personnage, $conditions));

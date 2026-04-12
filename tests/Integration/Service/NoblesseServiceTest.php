@@ -19,13 +19,13 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  * Regression tests for NoblesseService give/remove renomme amounts.
  *
  * Bug history: NoblesseService used $level->getId() (DB primary key) instead of
- * $level->getIndex() (conceptual 1–5) for the valuesMap lookup — causing wrong
+ * $level->getIndex() (conceptual 1–5) for the valuesMap lookup - causing wrong
  * renomme amounts when level IDs don't match their indices.
  *
  * Note: Personnage::getRenomme() is history-based (sums RenommeHistory entries).
  * Both give() and remove() persist a RenommeHistory with the used amount.
  * These tests verify the correct amount (valuesMap[level.getIndex()]) is recorded
- * for each level — if the old bug were present, getId() would return a high DB
+ * for each level - if the old bug were present, getId() would return a high DB
  * auto-increment ID not in the map, and the amount would default to 0.
  *
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.

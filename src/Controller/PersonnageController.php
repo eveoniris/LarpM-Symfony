@@ -4310,7 +4310,7 @@ class PersonnageController extends AbstractController
                 'label' => 'Participation active sans personnage',
                 'help' => 'Seules les participations au GN en cours ou à venir, sans personnage associé, sont listées.',
                 'class' => Participant::class,
-                'choice_label' => static fn (Participant $p) => $p->getGn()->getLabel() . ' — ' . ($p->getUser()?->getFullName() ?? $p->getUser()?->getUsername()),
+                'choice_label' => static fn (Participant $p) => $p->getGn()->getLabel() . ' - ' . ($p->getUser()?->getFullName() ?? $p->getUser()?->getUsername()),
                 'query_builder' => static fn (ParticipantRepository $pr) => $pr
                     ->createQueryBuilder('prt')
                     ->select('prt')
@@ -4340,7 +4340,7 @@ class PersonnageController extends AbstractController
                 'label' => 'Utilisateur',
                 'help' => 'Rattache le personnage à cet utilisateur sans toucher aux participations.',
                 'class' => User::class,
-                'choice_label' => static fn (User $u) => $u->getUsername() . ' — ' . $u->getEmail(),
+                'choice_label' => static fn (User $u) => $u->getUsername() . ' - ' . $u->getEmail(),
                 'query_builder' => static fn (\App\Repository\UserRepository $ur) => $ur
                     ->createQueryBuilder('u')
                     ->orderBy('u.username', 'ASC'),

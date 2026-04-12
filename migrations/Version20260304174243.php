@@ -308,7 +308,7 @@ final class Version20260304174243 extends AbstractMigration
         $this->dropFk('technologie', 'FK_technologie_competence_family');
         // technologie.description LONGTEXT→TEXT may truncate values >65535 chars
         $this->safeAlter('technologie', 'ALTER TABLE technologie CHANGE description description TEXT NOT NULL');
-        // FK_AD813674F7EB2017 already added by Version20260303150041 — do not re-add
+        // FK_AD813674F7EB2017 already added by Version20260303150041 - do not re-add
         $this->renameIndex('technologie', 'fk_technologie_competence_family', 'IDX_AD813674F7EB2017');
         $this->dropFk('technologies_ressources', 'FK_B15E3D68261A27D2');
         $this->connection->executeStatement('ALTER TABLE technologies_ressources CHANGE technologie_id technologie_id INT UNSIGNED DEFAULT NULL, CHANGE ressource_id ressource_id INT DEFAULT NULL');
@@ -450,7 +450,7 @@ final class Version20260304174243 extends AbstractMigration
         $this->connection->executeStatement('ALTER TABLE secondary_group_type CHANGE description description LONGTEXT DEFAULT NULL');
         $this->connection->executeStatement('ALTER TABLE sort CHANGE description description LONGTEXT DEFAULT NULL');
         $this->connection->executeStatement('ALTER TABLE sorts CHANGE description description LONGTEXT DEFAULT NULL');
-        // FK_AD813674F7EB2017 was added by Version20260303150041, not this migration — do not drop it here
+        // FK_AD813674F7EB2017 was added by Version20260303150041, not this migration - do not drop it here
         $this->connection->executeStatement('ALTER TABLE technologie CHANGE description description LONGTEXT NOT NULL');
         $this->addFk('technologie', 'FK_technologie_competence_family', 'ALTER TABLE technologie ADD CONSTRAINT FK_technologie_competence_family FOREIGN KEY (competence_family_id) REFERENCES competence_family (id) ON DELETE SET NULL');
         $this->renameIndex('technologie', 'IDX_AD813674F7EB2017', 'FK_technologie_competence_family');
@@ -464,7 +464,7 @@ final class Version20260304174243 extends AbstractMigration
         $this->addFk('territoire', 'FK_B8655F54B108249D', 'ALTER TABLE territoire ADD CONSTRAINT FK_B8655F54B108249D FOREIGN KEY (culture_id) REFERENCES culture (id)');
         $this->renameIndex('territoire', 'fk_territoire_territoire1_idx', 'fk_zone_politique_zone_politique1_idx');
         $this->connection->executeStatement('ALTER TABLE territoire_has_loi CHANGE loi_id loi_id INT UNSIGNED NOT NULL');
-        // territoire_quete FKs added by Version20260303150041, not this migration — do not drop them here
+        // territoire_quete FKs added by Version20260303150041, not this migration - do not drop them here
         $this->connection->executeStatement('ALTER TABLE token CHANGE description description LONGTEXT DEFAULT NULL');
         $this->dropFk('user', 'FK_8D93D649E6917FB3');
         // ADD is_enabled only if it doesn't already exist

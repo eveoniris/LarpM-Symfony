@@ -48,10 +48,10 @@ return new Config()
         'get_class_to_class_keyword' => true,
 
         // ── Overrides Symfony si besoin ───────────────────────────────
-        // Keep /** @var */ syntax — mago and PHPStan rely on it; phpdoc_to_comment
+        // Keep /** @var */ syntax - mago and PHPStan rely on it; phpdoc_to_comment
         // from @Symfony converts it to /* @var */ which loses type info.
         'phpdoc_to_comment' => false,
-        // Yoda-style comparisons are off — natural order is more readable.
+        // Yoda-style comparisons are off - natural order is more readable.
         'yoda_style' => false,
         // Native function backslash prefixes (\assert, \is_string…) are too noisy.
         'native_function_invocation' => false,

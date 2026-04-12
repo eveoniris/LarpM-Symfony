@@ -29,7 +29,7 @@ class LevelTypeTest extends TestCase
 
     /**
      * Documents that getId() and getIndex() return identical values for all cases.
-     * This is intentional but potentially confusing — see CLAUDE.md known tech debt #9.
+     * This is intentional but potentially confusing - see CLAUDE.md known tech debt #9.
      */
     public function testGetIdAndGetIndexAreIdenticalForAllCases(): void
     {

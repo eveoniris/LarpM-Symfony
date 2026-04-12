@@ -40,7 +40,7 @@ class GroupeListTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/groupe');
 
-        // ROLE_SCENARISTE required — app redirects to /access_denied
+        // ROLE_SCENARISTE required - app redirects to /access_denied
         self::assertResponseRedirects('/access_denied');
     }
 

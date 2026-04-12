@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 /**
  * Functional tests for role-based access control.
  *
- * Uses Symfony's WebTestCase and loginUser() — no password hashing needed.
+ * Uses Symfony's WebTestCase and loginUser() - no password hashing needed.
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.
  */
 #[Group('functional')]
@@ -27,7 +27,7 @@ class RoleAccessTest extends WebTestCase
         $client->request('GET', '/admin');
 
         // AccessDeniedListener intercepts all AccessDeniedException (even for anonymous)
-        // and redirects to /access_denied — not /login.
+        // and redirects to /access_denied - not /login.
         self::assertResponseRedirects();
     }
 
@@ -40,7 +40,7 @@ class RoleAccessTest extends WebTestCase
     }
 
     // -------------------------------------------------------------------------
-    // ROLE_USER — should be forbidden from admin
+    // ROLE_USER - should be forbidden from admin
     // -------------------------------------------------------------------------
 
     public function testRoleUserCannotAccessAdmin(): void
@@ -51,12 +51,12 @@ class RoleAccessTest extends WebTestCase
 
         $client->request('GET', '/admin');
 
-        // Must NOT be 200 — either redirect (302) or forbidden (403)
+        // Must NOT be 200 - either redirect (302) or forbidden (403)
         self::assertNotSame(200, $client->getResponse()->getStatusCode());
     }
 
     // -------------------------------------------------------------------------
-    // ROLE_ADMIN — should access /admin
+    // ROLE_ADMIN - should access /admin
     // -------------------------------------------------------------------------
 
     public function testRoleAdminCanAccessAdmin(): void
@@ -71,7 +71,7 @@ class RoleAccessTest extends WebTestCase
     }
 
     // -------------------------------------------------------------------------
-    // ROLE_SCENARISTE — should access /intrigue but not /admin
+    // ROLE_SCENARISTE - should access /intrigue but not /admin
     // -------------------------------------------------------------------------
 
     public function testRoleScenaristeCanAccessIntrigue(): void
@@ -97,7 +97,7 @@ class RoleAccessTest extends WebTestCase
     }
 
     // -------------------------------------------------------------------------
-    // ROLE_TERRITOIRE — should access territory routes
+    // ROLE_TERRITOIRE - should access territory routes
     // -------------------------------------------------------------------------
 
     public function testRoleTerritoireCanAccessTerritoireList(): void
