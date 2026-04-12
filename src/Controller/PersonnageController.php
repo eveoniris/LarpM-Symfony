@@ -12,6 +12,7 @@ use App\Entity\Document;
 use App\Entity\Domaine;
 use App\Entity\Espece;
 use App\Entity\ExperienceGain;
+use App\Entity\ExperienceUsage;
 use App\Entity\Gn;
 use App\Entity\HeroismeHistory;
 use App\Entity\Ingredient;
@@ -984,6 +985,127 @@ class PersonnageController extends AbstractController
         return $this->render('personnage/delete.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
+        ]);
+    }
+
+    /**
+     * Duplique un personnage (copie classe, compétences, religions, origines, langues, XP, scénariste).
+     * Sans rattacher de joueur ni de trombine. Accessible à l'admin et au scénariste.
+     */
+    #[Route('/{personnage}/duplicate', name: 'duplicate', requirements: ['personnage' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
+    public function duplicateAction(
+        Request $request,
+        #[MapEntity]
+        Personnage $personnage,
+    ): RedirectResponse|Response {
+        $defaultName = 'Copie de ' . $personnage->getNom();
+
+        if ($request->isMethod('POST')) {
+            $nom = trim((string) $request->request->get('nom', $defaultName));
+            if ('' === $nom) {
+                $nom = $defaultName;
+            }
+
+            $newPersonnage = new Personnage();
+            $newPersonnage->setNom($nom);
+            $newPersonnage->setSurnom($personnage->getSurnom());
+            $newPersonnage->setClasse($personnage->getClasse());
+            $newPersonnage->setAge($personnage->getAge());
+            $newPersonnage->setGenre($personnage->getGenre());
+            $newPersonnage->setIntrigue($personnage->getIntrigue());
+            $newPersonnage->setXp($personnage->getXp());
+            $newPersonnage->setVivant(true);
+            $newPersonnage->setScenariste($this->getUser());
+            if ($personnage->getTerritoire()) {
+                $newPersonnage->setTerritoire($personnage->getTerritoire());
+            }
+
+            $this->entityManager->persist($newPersonnage);
+
+            // Compétences : Competence est le côté propriétaire du ManyToMany,
+            // il faut passer par Competence::addPersonnage() pour persister la relation.
+            foreach ($personnage->getCompetences() as $competence) {
+                $competence->addPersonnage($newPersonnage);
+            }
+
+            // Religions (OneToMany via PersonnagesReligions)
+            foreach ($personnage->getPersonnagesReligions() as $pr) {
+                $newPr = new PersonnagesReligions();
+                $newPr->setPersonnage($newPersonnage);
+                $newPr->setReligion($pr->getReligion());
+                $newPr->setReligionLevel($pr->getReligionLevel());
+                $this->entityManager->persist($newPr);
+                $newPersonnage->addPersonnagesReligions($newPr);
+            }
+
+            // Langues (OneToMany via PersonnageLangues)
+            foreach ($personnage->getPersonnageLangues() as $pl) {
+                $newPl = new PersonnageLangues();
+                $newPl->setPersonnage($newPersonnage);
+                $newPl->setLangue($pl->getLangue());
+                $newPl->setSource($pl->getSource());
+                $this->entityManager->persist($newPl);
+                $newPersonnage->addPersonnageLangues($newPl);
+            }
+
+            // Données d'enveloppe : sorts, potions, prières, technologies, connaissances, domaines
+            foreach ($personnage->getSorts() as $sort) {
+                $newPersonnage->addSort($sort);
+            }
+            foreach ($personnage->getPotions() as $potion) {
+                $newPersonnage->addPotion($potion);
+            }
+            foreach ($personnage->getPrieres() as $priere) {
+                $newPersonnage->addPriere($priere);
+            }
+            foreach ($personnage->getTechnologies() as $technologie) {
+                $newPersonnage->addTechnologie($technologie);
+            }
+            foreach ($personnage->getConnaissances() as $connaissance) {
+                $newPersonnage->addConnaissance($connaissance);
+            }
+            foreach ($personnage->getDomaines() as $domaine) {
+                $newPersonnage->addDomaine($domaine);
+            }
+
+            // Gains XP
+            foreach ($personnage->getExperienceGains() as $gain) {
+                $newGain = new ExperienceGain();
+                $newGain->setPersonnage($newPersonnage);
+                $newGain->setXpGain($gain->getXpGain());
+                $newGain->setExplanation($gain->getExplanation());
+                $newGain->setOperationDate($gain->getOperationDate());
+                $this->entityManager->persist($newGain);
+                $newPersonnage->addExperienceGain($newGain);
+            }
+
+            // Usages XP
+            foreach ($personnage->getExperienceUsages() as $usage) {
+                $newUsage = new ExperienceUsage();
+                $newUsage->setPersonnage($newPersonnage);
+                $newUsage->setXpUse($usage->getXpUse());
+                $newUsage->setCompetence($usage->getCompetence());
+                $newUsage->setOperationDate($usage->getOperationDate());
+                $this->entityManager->persist($newUsage);
+                $newPersonnage->addExperienceUsage($newUsage);
+            }
+
+            $this->entityManager->flush();
+
+            $this->log([
+                'personnage_source_id' => $personnage->getId(),
+                'personnage_copie_id' => $newPersonnage->getId(),
+            ], LogActionType::DUPLICATE_PERSONNAGE);
+
+            $this->addFlash('success', 'Le personnage « ' . $newPersonnage->getNom() . ' » a été créé par duplication.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $newPersonnage->getId()], 303);
+        }
+
+        return $this->render('personnage/personnageDuplicate.twig', [
+            'personnage' => $personnage,
+            'defaultName' => $defaultName,
         ]);
     }
 
@@ -3753,6 +3875,10 @@ class PersonnageController extends AbstractController
         $scenariste = isset($formData['scenariste'])
             ? $this->entityManager->find('App\Entity\User', $formData['scenariste'])
             : null;
+        $scenaristeDirect = $request->query->get('scenariste_direct')
+            ? $this->entityManager->find('App\Entity\User', (int) $request->query->get('scenariste_direct'))
+            : null;
+        $sansJoueur = (bool) $request->query->get('sans_joueur');
         $optionalParameters = '';
 
         // construit le formulaire contenant les filtres de recherche
@@ -3795,6 +3921,12 @@ class PersonnageController extends AbstractController
         }
         if ($scenariste) {
             $criteria['scenariste'] = $scenariste->getId();
+        }
+        if ($scenaristeDirect) {
+            $criteria['scenariste_direct'] = $scenaristeDirect->getId();
+        }
+        if ($sansJoueur) {
+            $criteria['sans_joueur'] = true;
         }
 
         $repo = $this->entityManager->getRepository(Personnage::class);

@@ -190,6 +190,10 @@ abstract class BasePersonnage
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
     protected ?User $user = null;
 
+    #[ManyToOne(targetEntity: User::class)]
+    #[JoinColumn(name: 'scenariste_id', referencedColumnName: 'id', nullable: true)]
+    protected ?User $scenariste = null;
+
     /** @var Collection<int, PersonnageHasQuestion> */
     #[OneToMany(mappedBy: 'personnage', targetEntity: PersonnageHasQuestion::class, cascade: ['remove'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_id', nullable: false)]
@@ -1390,6 +1394,18 @@ abstract class BasePersonnage
     public function setUser(?User $user = null): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getScenariste(): ?User
+    {
+        return $this->scenariste;
+    }
+
+    public function setScenariste(?User $scenariste): static
+    {
+        $this->scenariste = $scenariste;
 
         return $this;
     }

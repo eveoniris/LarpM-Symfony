@@ -180,6 +180,14 @@ LEFT JOIN p2.participants pa2
         if (\array_key_exists('nom', $criteria)) {
             $qb->andWhere('p.nom LIKE :nom OR p.surnom LIKE :nom')->setParameter('nom', '%' . $criteria['nom'] . '%');
         }
+
+        if (\array_key_exists('scenariste_direct', $criteria)) {
+            $qb->andWhere('p.scenariste = :scenaristeDirectId')->setParameter('scenaristeDirectId', $criteria['scenariste_direct']);
+        }
+
+        if (\array_key_exists('sans_joueur', $criteria) && $criteria['sans_joueur']) {
+            $qb->andWhere('p.user IS NULL');
+        }
     }
 
     /**
