@@ -90,6 +90,7 @@ use App\Repository\PriereRepository;
 use App\Repository\SortRepository;
 use App\Repository\TechnologieRepository;
 use App\Repository\TerritoireRepository;
+use App\Repository\UserRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\CompetenceService;
 use App\Service\PagerService;
@@ -4288,74 +4289,76 @@ class PersonnageController extends AbstractController
 
     /**
      * Transfert d'un personnage à un autre utilisateur.
+     * Deux modes : via une participation au GN actif, ou rattachement direct à un utilisateur.
      */
     #[Route('/{personnage}/transfert', name: 'transfert')]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function transfertAction(Request $request, #[MapEntity] Personnage $personnage): RedirectResponse|Response
     {
-        /*
-         * if (!$oldParticipant = $personnage->getLastParticipant()) {
-         * $this->addFlash(
-         * 'error',
-         * 'Désolé, le personnage ne dispose pas encore de participation et ne peut donc pas encore être transféré'
-         * );
-         *
-         * return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
-         * }*/
-
         $participant = $this->getParticipant($personnage, $request);
         if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
             return $r;
         }
 
-        $form = $this
-            ->createFormBuilder()
+        // Formulaire 1 : transfert via participation au GN actif
+        $formParticipant = $this
+            ->createFormBuilder(null, ['attr' => ['id' => 'form-participant']])
             ->add('participant', EntityType::class, [
                 'required' => true,
-                // 'expanded' => true,
                 'multiple' => false,
                 'autocomplete' => true,
-                'label' => 'Nouveau propriétaire',
-                'help' => 'Il doit avoir une participation, et ne pas avoir de personnage associé à celle-ci',
+                'label' => 'Participation active sans personnage',
+                'help' => 'Seules les participations au GN en cours ou à venir, sans personnage associé, sont listées.',
                 'class' => Participant::class,
-                'choice_label' => static fn (Participant $participant) => $participant->getGn()->getLabel() . ' - ' . $participant->getUser()?->getFullname(),
+                'choice_label' => static fn (Participant $p) => $p->getGn()->getLabel() . ' — ' . ($p->getUser()?->getFullName() ?? $p->getUser()?->getUsername()),
                 'query_builder' => static fn (ParticipantRepository $pr) => $pr
                     ->createQueryBuilder('prt')
                     ->select('prt')
                     ->innerJoin('prt.user', 'u')
                     ->innerJoin('prt.gn', 'gn')
-                    ->innerJoin('u.etatCivil', 'ec')
-                    ->andWhere('prt.personnage IS NULL AND prt.user IS NOT NULL')
+                    ->leftJoin('u.etatCivil', 'ec')
+                    ->andWhere('prt.personnage IS NULL')
+                    ->andWhere('prt.user IS NOT NULL')
+                    ->andWhere('gn.actif = true')
                     ->orderBy('gn.id', 'DESC')
                     ->addOrderBy('ec.nom', 'ASC')
                     ->addOrderBy('ec.prenom_usage', 'ASC'),
             ])
-            ->add('transfert', SubmitType::class, [
-                'label' => 'Transferer',
+            ->add('transfert_participant', SubmitType::class, [
+                'label' => 'Transférer via participation',
+                'attr' => ['class' => 'btn btn-primary'],
+            ])
+            ->getForm();
+
+        // Formulaire 2 : rattachement direct à un utilisateur (sans participation)
+        $formUser = $this
+            ->createFormBuilder(null, ['attr' => ['id' => 'form-user']])
+            ->add('user', EntityType::class, [
+                'required' => true,
+                'multiple' => false,
+                'autocomplete' => true,
+                'label' => 'Utilisateur',
+                'help' => 'Rattache le personnage à cet utilisateur sans toucher aux participations.',
+                'class' => User::class,
+                'choice_label' => static fn (User $u) => $u->getUsername() . ' — ' . $u->getEmail(),
+                'query_builder' => static fn (\App\Repository\UserRepository $ur) => $ur
+                    ->createQueryBuilder('u')
+                    ->orderBy('u.username', 'ASC'),
+            ])
+            ->add('transfert_user', SubmitType::class, [
+                'label' => 'Rattacher à cet utilisateur',
                 'attr' => ['class' => 'btn btn-secondary'],
             ])
             ->getForm();
 
-        $form->handleRequest($request);
+        $formParticipant->handleRequest($request);
+        $formUser->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $newParticipant = $data['participant'];
+        // Cas 1 : transfert via participation
+        if ($formParticipant->isSubmitted() && $formParticipant->isValid()) {
+            $newParticipant = $formParticipant->getData()['participant'];
 
-            $personnage->setUser($newParticipant?->getUser());
-
-            // gestion de l'ancien personnage
-            if ($newParticipant->getPersonnage()) {
-                $oldPersonnage = $newParticipant->getPersonnage();
-                $oldPersonnage->removeParticipant($newParticipant);
-                $oldPersonnage->setGroupeNull();
-            }
-
-            // le personnage doit rejoindre le groupe de l'utilisateur
-            if ($newParticipant->getGroupeGn()?->getGroupe()) {
-                $personnage->setGroupe($newParticipant->getGroupeGn()->getGroupe());
-            }
-
+            // Libère l'ancien participant si existant
             if ($oldParticipant = $personnage->getLastParticipant()) {
                 $oldParticipant->setPersonnageNull();
                 if ($oldParticipant->getUser()?->getPersonnage()?->getId() === $personnage->getId()) {
@@ -4364,12 +4367,23 @@ class PersonnageController extends AbstractController
                 $this->entityManager->persist($oldParticipant);
             }
 
+            // Libère l'ancien personnage du nouveau participant si nécessaire
+            if ($newParticipant->getPersonnage()) {
+                $oldPersonnage = $newParticipant->getPersonnage();
+                $oldPersonnage->removeParticipant($newParticipant);
+                $oldPersonnage->setGroupeNull();
+            }
+
+            // Rattache au groupe du participant
+            if ($newParticipant->getGroupeGn()?->getGroupe()) {
+                $personnage->setGroupe($newParticipant->getGroupeGn()->getGroupe());
+            }
+
             $newParticipant->setPersonnage($personnage);
             $newParticipant->getUser()?->setPersonnage($personnage);
             $personnage->addParticipant($newParticipant);
             $personnage->setUser($newParticipant->getUser());
 
-            // Check que le groupe de destination n'est pas lock aussi
             if ($r = $this->checkPersonnageGroupeLock($personnage, $newParticipant)) {
                 return $r;
             }
@@ -4378,14 +4392,30 @@ class PersonnageController extends AbstractController
             $this->entityManager->persist($personnage);
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Le personnage a été transféré');
+            $this->addFlash('success', 'Le personnage a été transféré via la participation.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        // Cas 2 : rattachement direct à un utilisateur
+        if ($formUser->isSubmitted() && $formUser->isValid()) {
+            $newUser = $formUser->getData()['user'];
+
+            $personnage->setUser($newUser);
+            $personnage->setScenariste(null);
+
+            $this->entityManager->persist($personnage);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le personnage a été rattaché à l\'utilisateur ' . $newUser->getUsername() . '.');
 
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/transfert.twig', [
             'personnage' => $personnage,
-            'form' => $form->createView(),
+            'formParticipant' => $formParticipant->createView(),
+            'formUser' => $formUser->createView(),
         ]);
     }
 

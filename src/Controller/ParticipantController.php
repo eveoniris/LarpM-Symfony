@@ -1316,6 +1316,8 @@ class ParticipantController extends AbstractController
             $default = $lastPersonnage;
         }
 
+        $canFreeParticipation = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::ADMIN->value);
+
         $form = $this
             ->createFormBuilder()
             ->add('personnage', EntityType::class, [
@@ -1324,6 +1326,8 @@ class ParticipantController extends AbstractController
                 'class' => Personnage::class,
                 'choices' => array_unique($participant->getUser()?->getPersonnagesAvailableToParticipation()),
                 'data' => $default,
+                'required' => false,
+                'placeholder' => $canFreeParticipation ? '- Aucun personnage (libérer la participation)' : null,
             ])
             ->add('save', SubmitType::class, ['label' => 'Valider'])
             ->getForm();
@@ -1334,8 +1338,20 @@ class ParticipantController extends AbstractController
             $data = $form->getData();
             /** @var User $user */
             $user = $participant->getUser();
-            /** @var Personnage $personnage */
+            /** @var Personnage|null $personnage */
             $personnage = $data['personnage'];
+
+            // Cas "libérer la participation" (aucun personnage sélectionné)
+            if (null === $personnage) {
+                $participant->setPersonnageNull();
+                $this->entityManager->persist($participant);
+                $this->entityManager->flush();
+
+                $this->addFlash('success', 'La participation a été libérée (aucun personnage associé).');
+
+                return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
+            }
+
             $personnage->setUser($user);
             $participant->setPersonnage($personnage);
 
