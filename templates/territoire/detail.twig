@@ -454,7 +454,24 @@
                             <tbody>
                             {% for construction in territoire.constructions %}
                                 <tr>
-                                    <td>{{ construction.label }}</td>
+                                    <td>
+                                        {{ construction.label }}
+                                        {% if 'sanctuaire' == construction.label|lower %}
+                                            —
+                                            {% if territoire.sanctuaireReligion %}
+                                                <strong>{{ territoire.sanctuaireReligion.label }}</strong>
+                                            {% else %}
+                                                <em class="text-muted">Aucune religion définie</em>
+                                            {% endif %}
+                                            {% if isAdmin %}
+                                                <a href="{{ path('territoire.sanctuaireReligionEdit', {'territoire': territoire.id}) }}"
+                                                   class="btn btn-xs btn-outline-gamemaster ms-1"
+                                                   data-bs-toggle="tooltip" title="Modifier la religion du sanctuaire">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
                                     <td class="text-center">{{ construction.defense }}</td>
                                     {% if isAdmin %}
                                         <td class="text-center">

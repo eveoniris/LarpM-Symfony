@@ -29,6 +29,7 @@ use App\Form\Territoire\TerritoireLoiType;
 use App\Form\Territoire\TerritoireStatutType;
 use App\Form\Territoire\TerritoireStrategieType;
 use App\Form\Territoire\TerritoireFrontaliersCulturelType;
+use App\Form\Territoire\TerritoireSanctuaireReligionType;
 use App\Form\Territoire\TerritoireType;
 use App\Repository\BonusRepository;
 use App\Repository\TerritoireRepository;
@@ -164,6 +165,32 @@ class TerritoireController extends AbstractController
             'territoire' => $territoire,
             'form' => $form->createView(),
             'isMappingInitiated' => $isMappingInitiated,
+        ]);
+    }
+
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[Route('/territoire/{territoire}/sanctuaireReligionEdit', name: 'territoire.sanctuaireReligionEdit')]
+    public function sanctuaireReligionEditAction(
+        Request $request,
+        #[MapEntity]
+        Territoire $territoire,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(TerritoireSanctuaireReligionType::class, $territoire)
+            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($territoire);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'La religion du sanctuaire a été mise à jour.');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/editSanctuaireReligion.twig', [
+            'territoire' => $territoire,
+            'form'       => $form->createView(),
         ]);
     }
 

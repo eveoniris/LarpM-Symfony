@@ -174,6 +174,10 @@ abstract class BaseTerritoire
     #[JoinColumn(name: 'religion_id', referencedColumnName: 'id')]
     protected ?Religion $religion = null;
 
+    #[ORM\ManyToOne(targetEntity: Religion::class)]
+    #[JoinColumn(name: 'sanctuaire_religion_id', referencedColumnName: 'id', nullable: true)]
+    protected ?Religion $sanctuaireReligion = null;
+
     /** @var Collection<int, Territoire> */
     #[ORM\ManyToMany(targetEntity: Territoire::class, inversedBy: 'territoireStarts')]
     #[ORM\JoinTable(name: 'territoire_quete')]
@@ -910,6 +914,18 @@ abstract class BaseTerritoire
     public function setReligion(?Religion $religion = null): static
     {
         $this->religion = $religion;
+
+        return $this;
+    }
+
+    public function getSanctuaireReligion(): ?Religion
+    {
+        return $this->sanctuaireReligion;
+    }
+
+    public function setSanctuaireReligion(?Religion $religion): static
+    {
+        $this->sanctuaireReligion = $religion;
 
         return $this;
     }
