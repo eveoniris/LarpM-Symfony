@@ -1,22 +1,55 @@
 <div class="header">
-    <h5>Vos groupes à scénariser</h5>
+    <h5>Mes personnages scénarisés</h5>
 </div>
 
-<a href="{{ path('personnage.list', {'personnage_find_form': {'scenariste': app.user.id}}) }}"
+<a href="{{ path('personnage.list', {'scenariste_direct': app.user.id, 'sans_joueur': 1}) }}"
    class="btn btn-sm btn-secondary mb-2">
-    <i class="fa fa-users"></i> Voir les personnages de mes joueurs
+<i class="fa fa-users"></i> Voir mes personnages sans joueur
 </a>
+
+<hr/>
+
+<div class="header">
+    <h5>Vos groupes à scénariser</h5>
+</div>
 
 {% if user.groupeScenariste|length > 0 %}
     <ul class="list-group">
         {% for groupe in app.user.groupeScenariste %}
-            <li class="list-group-item"><a
-                        href="{{ path('groupe.detail', {'groupe': groupe.id}) }}">{{ groupe.nom }}</a></li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{{ path('groupe.detail', {'groupe': groupe.id}) }}">{{ groupe.nom }}</a>
+                <a href="{{ path('personnage.list', {'personnage_find': {'groupe': groupe.id}}) }}"
+                   class="btn btn-sm btn-secondary ms-2">
+                    <i class="fa fa-users"></i> Personnages
+                </a>
+            </li>
         {% endfor %}
     </ul>
 {% else %}
     Aucun groupe ne vous a été alloué. Rapprochez vous d'un membre du pentagone si vous pensez que la situation
     doit être corrigée.
+{% endif %}
+
+<hr/>
+
+<div class="header">
+    <h5>Vos groupes transverses à scénariser</h5>
+</div>
+
+{% if app.user.secondaryGroups|length > 0 %}
+    <ul class="list-group">
+        {% for groupe in app.user.secondaryGroups %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{{ path('groupeSecondaire.detail', {'groupeSecondaire': groupe.id}) }}">{{ groupe.label }}</a>
+                <a href="{{ path('personnage.list', {'personnage_find': {'scenariste': app.user.id}}) }}"
+                   class="btn btn-sm btn-secondary ms-2">
+                    <i class="fa fa-users"></i> Personnages
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    Aucun groupe transverse ne vous a été alloué.
 {% endif %}
 
 <hr/>

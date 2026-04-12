@@ -30,4 +30,5 @@ enum LogActionType: string
     case DELETE_POTION_DEPART = 'delete_potion_depart';
     case ENTITY = 'entity';
     case OTHER = 'autre';
+    case DUPLICATE_PERSONNAGE = 'duplicate_personnage';
 }
