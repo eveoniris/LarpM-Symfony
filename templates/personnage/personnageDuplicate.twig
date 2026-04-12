@@ -1,0 +1,83 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Dupliquer {{ personnage.nom }}{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('personnage.list') }}">Liste des personnages</a></li>
+        <li><a href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">{{ personnage.publicName }}</a></li>
+        <li class="active">Dupliquer</li>
+    </ol>
+
+    <div class="well bs-component">
+        <fieldset>
+            <legend>Dupliquer le personnage {{ personnage.publicName }}</legend>
+
+            <p>Vous êtes sur le point de créer une copie du personnage <strong>{{ personnage.publicName }}</strong>.</p>
+
+            <p>La copie reprendra :</p>
+            <ul>
+                <li>Classe : <strong>{{ personnage.classeName }}</strong></li>
+                <li>Compétences ({{ personnage.competences|length }})</li>
+                <li>Religions ({{ personnage.personnagesReligions|length }})</li>
+                <li>Langues ({{ personnage.personnageLangues|length }})</li>
+                <li>Sorts ({{ personnage.sorts|length }}), Potions ({{ personnage.potions|length }}), Prières ({{ personnage.prieres|length }})</li>
+                <li>Technologies ({{ personnage.technologies|length }}), Connaissances ({{ personnage.connaissances|length }}), Domaines ({{ personnage.domaines|length }})</li>
+                <li>Origine : {{ personnage.territoire ?? 'non définie' }}</li>
+                <li>Expérience : {{ personnage.xp|default(0) }} XP (avec historique gains/usages)</li>
+            </ul>
+
+            <p class="text-warning">
+                <i class="fa fa-exclamation-triangle"></i>
+                Le personnage dupliqué ne sera rattaché à aucun joueur. Vous serez indiqué comme scénariste responsable.
+            </p>
+
+            <form method="post" action="{{ path('personnage.duplicate', {'personnage': personnage.id}) }}">
+                <div class="mb-3">
+                    <label for="nom" class="form-label fw-bold">Nom du personnage dupliqué</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="nom" name="nom"
+                               value="{{ defaultName }}" maxlength="100" required>
+                        <button type="button" class="btn btn-outline-secondary" id="btn-random-name"
+                                title="Générer un nom aléatoire">
+                            <i class="fa fa-random"></i> Nom aléatoire
+                        </button>
+                    </div>
+                </div>
+
+                <a href="{{ path('personnage.detail', {'personnage': personnage.id}) }}" class="btn btn-secondary">
+                    <i class="fa fa-times"></i> Annuler
+                </a>
+                <button type="submit" class="btn btn-primary ms-2">
+                    <i class="fa fa-copy"></i> Confirmer la duplication
+                </button>
+            </form>
+        </fieldset>
+    </div>
+
+    <script>
+        (function () {
+            var prefixes = [
+                'Arak','Bel','Conan','Dagon','Erlik','Fafnir','Gaul','Hakon','Imhotep','Juma',
+                'Koth','Lexa','Mitra','Nakia','Osric','Pelias','Qar','Rotath','Set','Thoth',
+                'Ulric','Valerius','Wulfere','Xaltotun','Yag','Zarathus','Amra','Bori','Crom',
+                'Divna','Elia','Falko','Ghar','Heka','Isit','Jad','Kara','Liana','Mira','Nena',
+                'Orin','Pala','Rona','Sona','Tara','Urit','Vana','Wena','Xena','Yara','Zora'
+            ];
+            var suffixes = [
+                'ath','an','ar','ek','el','em','en','eon','er','es','ia','in','ir','is','ix',
+                'la','na','ne','on','or','os','ra','re','rin','rn','sa','se','sha','ta','te',
+                'thos','ul','um','un','ur','us','va','ve','vur','xa','xon','ya','yor','za'
+            ];
+
+            document.getElementById('btn-random-name').addEventListener('click', function () {
+                var prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                var suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+                document.getElementById('nom').value = prefix + suffix;
+            });
+        })();
+    </script>
+
+{% endblock body %}
