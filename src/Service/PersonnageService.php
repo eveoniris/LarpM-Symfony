@@ -334,7 +334,7 @@ class PersonnageService
         }
 
         // Ajout des langues secondaires lié à l'origine du personnage
-        foreach ($personnage->getOrigine()?->getLangues() as $langue) {
+        foreach ((array) $personnage->getOrigine()?->getLangues() as $langue) {
             if ($personnage->isKnownLanguage($langue)) {
                 continue;
             }
