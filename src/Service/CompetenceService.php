@@ -176,7 +176,7 @@ class CompetenceService
         $count = 0;
 
         // On ne prend que les bonus encore actif
-        foreach ((array) $this->getPersonnage()->getOrigine()?->getValideOrigineBonus() as $origineBonus) {
+        foreach ($this->getPersonnage()->getOrigine()?->getValideOrigineBonus() ?? [] as $origineBonus) {
             $bonus = $origineBonus->getBonus();
             // Dans ce service, nous ne traitons que les bonus de type XP
             // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
