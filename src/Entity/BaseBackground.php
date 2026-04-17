@@ -159,7 +159,7 @@ class BaseBackground
 
     public function getVisibility(): VisibilityType
     {
-        return VisibilityType::tryFrom($this->visibility) ?? VisibilityType::PUBLIC;
+        return VisibilityType::tryFrom($this->visibility ?? VisibilityType::PUBLIC->value) ?? VisibilityType::PUBLIC;
     }
 
     public function setVisibility(string|VisibilityType|null $visibility): self
