@@ -993,6 +993,14 @@ class UserController extends AbstractController
             throw new NotFoundHttpException('That User is disabled (pending email confirmation).');
         }
 
+        $this->setCan(self::CAN_READ_SECRET, $this->isGranted(Role::SCENARISTE->value));
+        $this->setCan(
+            self::CAN_MANAGE,
+            $this->isGranted(Role::ADMIN->value)
+            || $this->isGranted(Role::ORGA->value)
+            || $user->getId() === $this->getUser()?->getId()
+        );
+
         return $this->render('user/detail.twig', ['user' => $user]);
     }
 

@@ -1722,4 +1722,26 @@ class Personnage extends BasePersonnage implements Stringable
 
         return $this;
     }
+
+    public function getBaseUser(): ?BaseUser
+    {
+        return $this->baseUser;
+    }
+
+    public function setBaseUser(?BaseUser $baseUser): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($baseUser === null && $this->baseUser !== null) {
+            $this->baseUser->setPersonnageSecondary(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($baseUser !== null && $baseUser->getPersonnageSecondary() !== $this) {
+            $baseUser->setPersonnageSecondary($this);
+        }
+
+        $this->baseUser = $baseUser;
+
+        return $this;
+    }
 }
