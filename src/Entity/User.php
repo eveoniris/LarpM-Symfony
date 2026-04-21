@@ -198,7 +198,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
      */
     public function getFullName(): string
     {
-        return $this->getEtatCivil()->getFullName();
+        return $this->getEtatCivil()?->getFullName() ?? '';
     }
 
     /**
