@@ -326,7 +326,7 @@ final class Version20260304174243 extends AbstractMigration
         // DROP is_enabled only if it still exists; password/pwd nullable→NOT NULL
         $dropIsEnabled = $this->columnExists('user', 'is_enabled') ? 'DROP is_enabled, ' : '';
         $this->safeAlter('user', "ALTER TABLE user {$dropIsEnabled}CHANGE password password VARCHAR(255) NOT NULL, CHANGE creation_date creation_date DATETIME DEFAULT NULL, CHANGE username username VARCHAR(100) NOT NULL, CHANGE timePasswordResetRequested timePasswordResetRequested INT DEFAULT NULL, CHANGE pwd pwd VARCHAR(255) NOT NULL");
-        $this->addFk('user', 'FK_8D93D649E6917FB3', 'ALTER TABLE user ADD CONSTRAINT FK_8D93D649E6917FB3 FOREIGN KEY (personnage_secondaire_id) REFERENCES personnage_secondaire (id)');
+        $this->addFk('user', 'FK_8D93D649E6917FB3', 'ALTER TABLE user ADD CONSTRAINT FK_8D93D649E6917FB3 FOREIGN KEY (personnage_secondaire_id) REFERENCES personnage (id)');
         $this->connection->executeStatement("ALTER TABLE messenger_messages CHANGE created_at created_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)', CHANGE available_at available_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)', CHANGE delivered_at delivered_at DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)'");
     }
 
