@@ -8,8 +8,10 @@ use App\Entity\Age;
 use App\Entity\Genre;
 use App\Entity\Personnage;
 use App\Entity\Territoire;
+use App\Entity\User;
 use App\Enum\Role;
 use App\Repository\TerritoireRepository;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
@@ -96,6 +98,28 @@ class PersonnageUpdateType extends AbstractType
             'label' => $braceletIcon . 'Possédez-vous votre bracelet de langue ?',
             'help' => 'Si vous cochez Oui. Vous ne recevrez pas de bracelet de langue dans votre enveloppe personnage ',
         ]);
+
+
+        if ($this->security->isGranted(Role::SCENARISTE->value) || $this->security->isGranted(Role::ORGA->value)) {
+            $builder->add('scenariste', EntityType::class, [
+                'label' => 'Scénariste',
+                'required' => false,
+                'class' => User::class,
+                'choice_label' => static fn (User $user) => \sprintf('%s - %s', $user->getName(), $user->getEtatCivil()?->getFullName() ?? ''),
+                'autocomplete' => true,
+                'query_builder' => static function (EntityRepository $er) {
+                    $qb = $er->createQueryBuilder('u');
+                    $qb->where($qb->expr()->orX(
+                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
+                        $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')),
+                        $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%')),
+                    ));
+
+                    return $qb;
+                },
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void

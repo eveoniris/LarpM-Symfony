@@ -722,7 +722,7 @@ class UserController extends AbstractController
         PagerService $pagerService,
         PersonnageRepository $personnageRepository,
     ): Response {
-        $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
+        $this->hasAccess($user, [Role::ORGA, Role::ADMIN, Role::SCENARISTE]);
         $this->setCan(static::CAN_WRITE, true);
 
         $pagerService->setRequest($request)->setLimit(25)->setRepository($personnageRepository);
