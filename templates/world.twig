@@ -536,6 +536,7 @@
                     L.DrawToolbar.include({
                         getModeHandlers: function (map) {
                             return [
+                                {% if is_granted('ROLE_ORGA', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
                                 {
                                     enabled: true,
                                     handler: new L.Draw.Territoire(map),
@@ -551,6 +552,7 @@
                                     handler: new L.Draw.Fief(map),
                                     title: 'Tracer un fief'
                                 },
+                                {% endif %}
                                 {
                                     enabled: true,
                                     handler: new L.Draw.Itineraire(map, {
@@ -563,6 +565,7 @@
                                     }),
                                     title: 'Calculer un itineraire'
                                 },
+                                {% if is_granted('ROLE_ORGA', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
                                 {
                                     enabled: true,
                                     handler: new L.Draw.Route(map),
@@ -572,7 +575,8 @@
                                     enabled: true,
                                     handler: new L.Draw.Fortification(map, {icon: new FortificationMarker}),
                                     title: 'Placer une fortification'
-                                }
+                                },
+                                {% endif %}
                             ];
                         }
                     });
@@ -1279,7 +1283,7 @@
 
                     //this.languagePattern.addTo(this.map);
 
-                    {% if is_granted('ROLE_ORGA', app.user) %}
+                    {% if is_granted('ROLE_USER', app.user) %}
                     this.map.addControl(this.drawControl);
                     {% endif %}
 
