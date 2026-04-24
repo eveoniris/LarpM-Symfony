@@ -122,6 +122,49 @@
                                                 ({{ gn.groupeGns|length }})</a></li>
                                     </ul>
                                 </div>
+                                <div class="col-md-12 mt-2">
+                                    <ul class="list-group">
+                                        <li class="list-group-item header bg-body-secondary rounded-bottom-0">
+                                            Emails (exports CSV)
+                                        </li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.emails.all', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-envelope"></i>
+                                                Tous inscrits</a></li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.emails.valides', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-envelope-circle-check"></i>
+                                                Inscrits valides</a></li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.emails.responsables', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-user-tie"></i>
+                                                Responsables</a></li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.emails.suzerains', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-crown"></i>
+                                                Suzerains</a></li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.emails.connetables', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-chess-knight"></i>
+                                                Stratèges</a></li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.emails.camarilla', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-user-secret"></i>
+                                                Éminences grises</a></li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.emails.navigateurs', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-compass"></i>
+                                                Navigateurs</a></li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.emails.intendants', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-coins"></i>
+                                                Intendants</a></li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.emails.diplomates', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-handshake"></i>
+                                                Diplomates</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
