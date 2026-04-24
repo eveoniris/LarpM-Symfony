@@ -162,6 +162,48 @@ class ParticipantRepository extends BaseRepository
         return $query->setParameter('gnId', $gn->getId());
     }
 
+    public function getEmailsAll(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('prenom', 'prenom', 'string');
+        $rsm->addScalarResult('nom', 'nom', 'string');
+        $rsm->addScalarResult('email', 'email', 'string');
+        $rsm->addScalarResult('groupe_nom', 'groupe_nom', 'string');
+
+        return $this->entityManager->createNativeQuery(<<<SQL
+            SELECT ec.prenom, ec.nom, u.email, g.nom AS groupe_nom
+            FROM participant p
+            JOIN `user` u ON u.id = p.user_id
+            LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
+            LEFT JOIN groupe_gn gg ON gg.id = p.groupe_gn_id
+            LEFT JOIN groupe g ON g.id = gg.groupe_id
+            WHERE p.gn_id = :gnId
+            ORDER BY ec.nom, ec.prenom
+            SQL, $rsm)->setParameter('gnId', $gn->getId());
+    }
+
+    public function getEmailsValides(Gn $gn): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('prenom', 'prenom', 'string');
+        $rsm->addScalarResult('nom', 'nom', 'string');
+        $rsm->addScalarResult('email', 'email', 'string');
+        $rsm->addScalarResult('groupe_nom', 'groupe_nom', 'string');
+
+        return $this->entityManager->createNativeQuery(<<<SQL
+            SELECT ec.prenom, ec.nom, u.email, g.nom AS groupe_nom
+            FROM participant p
+            JOIN `user` u ON u.id = p.user_id
+            LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
+            JOIN groupe_gn gg ON gg.id = p.groupe_gn_id
+            JOIN groupe g ON g.id = gg.groupe_id
+            WHERE p.gn_id = :gnId
+              AND p.billet_id IS NOT NULL
+              AND p.personnage_id IS NOT NULL
+            ORDER BY ec.nom, ec.prenom
+            SQL, $rsm)->setParameter('gnId', $gn->getId());
+    }
+
     public function getParticipantsGn(Gn $gn): NativeQuery
     {
         $rsm = new ResultSetMapping();

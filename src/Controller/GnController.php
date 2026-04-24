@@ -16,6 +16,7 @@ use App\Manager\GroupeManager;
 use App\Repository\ClasseRepository;
 use App\Repository\GnRepository;
 use App\Repository\LangueRepository;
+use App\Repository\GroupeGnRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageRepository;
 use App\Repository\PersonnageSecondaireRepository;
@@ -453,6 +454,105 @@ class GnController extends AbstractController
             'Restauration',
             'Groupe',
         ]);
+    }
+
+    #[Route('/{gn}/emails/all.csv', name: 'emails.all')]
+    #[IsGranted('ROLE_ORGA')]
+    public function emailsAllAction(#[MapEntity] Gn $gn, ParticipantRepository $participantRepository): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'emails_tous_inscrits_gn_' . $gn->getId() . '_' . date('Ymd'),
+            query: $participantRepository->getEmailsAll($gn),
+            header: ['Prénom', 'Nom', 'Email', 'Groupe'],
+        );
+    }
+
+    #[Route('/{gn}/emails/valides.csv', name: 'emails.valides')]
+    #[IsGranted('ROLE_ORGA')]
+    public function emailsValidesAction(#[MapEntity] Gn $gn, ParticipantRepository $participantRepository): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'emails_inscrits_valides_gn_' . $gn->getId() . '_' . date('Ymd'),
+            query: $participantRepository->getEmailsValides($gn),
+            header: ['Prénom', 'Nom', 'Email', 'Groupe'],
+        );
+    }
+
+    #[Route('/{gn}/emails/responsables.csv', name: 'emails.responsables')]
+    #[IsGranted('ROLE_ORGA')]
+    public function emailsResponsablesAction(#[MapEntity] Gn $gn, GroupeGnRepository $groupeGnRepository): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'emails_responsables_gn_' . $gn->getId() . '_' . date('Ymd'),
+            query: $groupeGnRepository->getEmailsResponsables($gn),
+            header: ['Prénom', 'Nom', 'Email', 'Groupe'],
+        );
+    }
+
+    #[Route('/{gn}/emails/suzerains.csv', name: 'emails.suzerains')]
+    #[IsGranted('ROLE_ORGA')]
+    public function emailsSuzerainsAction(#[MapEntity] Gn $gn, GroupeGnRepository $groupeGnRepository): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'emails_suzerains_gn_' . $gn->getId() . '_' . date('Ymd'),
+            query: $groupeGnRepository->getEmailsSuzerains($gn),
+            header: ['Prénom', 'Nom', 'Email', 'Groupe'],
+        );
+    }
+
+    #[Route('/{gn}/emails/connetables.csv', name: 'emails.connetables')]
+    #[IsGranted('ROLE_ORGA')]
+    public function emailsConnetablesAction(#[MapEntity] Gn $gn, GroupeGnRepository $groupeGnRepository): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'emails_strategies_gn_' . $gn->getId() . '_' . date('Ymd'),
+            query: $groupeGnRepository->getEmailsByRole($gn, 'connetable_id'),
+            header: ['Prénom', 'Nom', 'Email', 'Groupe'],
+        );
+    }
+
+    #[Route('/{gn}/emails/camarilla.csv', name: 'emails.camarilla')]
+    #[IsGranted('ROLE_ORGA')]
+    public function emailsCamarillaAction(#[MapEntity] Gn $gn, GroupeGnRepository $groupeGnRepository): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'emails_eminences_grises_gn_' . $gn->getId() . '_' . date('Ymd'),
+            query: $groupeGnRepository->getEmailsByRole($gn, 'camarilla_id'),
+            header: ['Prénom', 'Nom', 'Email', 'Groupe'],
+        );
+    }
+
+    #[Route('/{gn}/emails/navigateurs.csv', name: 'emails.navigateurs')]
+    #[IsGranted('ROLE_ORGA')]
+    public function emailsNavigateursAction(#[MapEntity] Gn $gn, GroupeGnRepository $groupeGnRepository): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'emails_navigateurs_gn_' . $gn->getId() . '_' . date('Ymd'),
+            query: $groupeGnRepository->getEmailsByRole($gn, 'navigateur_id'),
+            header: ['Prénom', 'Nom', 'Email', 'Groupe'],
+        );
+    }
+
+    #[Route('/{gn}/emails/intendants.csv', name: 'emails.intendants')]
+    #[IsGranted('ROLE_ORGA')]
+    public function emailsIntendantsAction(#[MapEntity] Gn $gn, GroupeGnRepository $groupeGnRepository): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'emails_intendants_gn_' . $gn->getId() . '_' . date('Ymd'),
+            query: $groupeGnRepository->getEmailsByRole($gn, 'intendant_id'),
+            header: ['Prénom', 'Nom', 'Email', 'Groupe'],
+        );
+    }
+
+    #[Route('/{gn}/emails/diplomates.csv', name: 'emails.diplomates')]
+    #[IsGranted('ROLE_ORGA')]
+    public function emailsDiplomatesAction(#[MapEntity] Gn $gn, GroupeGnRepository $groupeGnRepository): StreamedResponse
+    {
+        return $this->sendCsv(
+            title: 'emails_diplomates_gn_' . $gn->getId() . '_' . date('Ymd'),
+            query: $groupeGnRepository->getEmailsByRole($gn, 'diplomate_id'),
+            header: ['Prénom', 'Nom', 'Email', 'Groupe'],
+        );
     }
 
     /**
