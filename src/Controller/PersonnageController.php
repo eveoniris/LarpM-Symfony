@@ -822,6 +822,13 @@ class PersonnageController extends AbstractController
             $this->entityManager->persist($personnageReligion);
             $this->entityManager->flush();
 
+            // Si la religion est au niveau fervent (2) ou fanatique (3), donner les prières
+            // manquantes au cas où la prêtrise avait été obtenue via la classe sans religion.
+            if (($personnageReligion->getReligionLevel()?->getIndex() ?? 0) >= 2) {
+                $personnageService->giveMissingPretrisePreieres($personnage);
+                $this->entityManager->flush();
+            }
+
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);

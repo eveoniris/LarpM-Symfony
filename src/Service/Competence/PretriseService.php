@@ -30,7 +30,7 @@ class PretriseService extends CompetenceService
             $competenceIndex = $this->getCompetence()->getLevel()?->getIndex();
             /** @var Priere $priere */
             foreach ($sphere->getPrieres() as $priere) {
-                if (!(!$this->getPersonnage()->hasPriere($priere) && $priere->getNiveau() === $competenceIndex)) {
+                if (!(!$this->getPersonnage()->hasPriere($priere) && $priere->getNiveau() <= $competenceIndex)) {
                     continue;
                 }
 
