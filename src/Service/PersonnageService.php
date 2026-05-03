@@ -211,6 +211,40 @@ class PersonnageService
         return $this->getCompetenceHandler($personnage, $competence)->addCompetence($gratuite ? CompetenceService::COUT_GRATUIT : $this->getCompetenceCout($personnage, $competence));
     }
 
+    /**
+     * Attribue les prières manquantes à un prêtre dont la religion vient d'être définie.
+     * Couvre le cas où la prêtrise a été obtenue via la classe (sans religion à ce moment-là).
+     */
+    public function giveMissingPretrisePreieres(Personnage $personnage): void
+    {
+        $religion = $personnage->getMainReligion();
+        if (!$religion) {
+            return;
+        }
+
+        $maxPriereLevel = 0;
+        foreach ($personnage->getCompetences() as $competence) {
+            if (CompetenceFamilyType::PRIESTHOOD->value !== $competence->getCompetenceFamily()?->getCompetenceFamilyType()?->value) {
+                continue;
+            }
+            $maxPriereLevel = max($maxPriereLevel, $competence->getLevel()?->getIndex() ?? 0);
+        }
+
+        if (0 === $maxPriereLevel) {
+            return;
+        }
+
+        foreach ($religion->getSpheres() as $sphere) {
+            foreach ($sphere->getPrieres() as $priere) {
+                if ($personnage->hasPriere($priere) || $priere->getNiveau() > $maxPriereLevel) {
+                    continue;
+                }
+                $priere->addPersonnage($personnage);
+                $personnage->addPriere($priere);
+            }
+        }
+    }
+
     public function hasPersonnages(?User $user = null): bool
     {
         $user ??= $this->security->getUser();
