@@ -10,7 +10,7 @@ trait BonusTrait
 {
     public function getStatus(): Status
     {
-        return Status::tryFrom($this->status) ?? Status::ERROR;
+        return $this->status ? Status::tryFrom($this->status) ?? Status::ERROR : Status::ERROR;
     }
 
     public function setStatus(string|Status|null $status): static
