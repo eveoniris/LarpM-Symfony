@@ -65,6 +65,6 @@ UPDATE secondary_group SET description = @LOREM WHERE secret = 1;
 UPDATE technologie SET label = concat('Label_', id), description = @LOREM, documentURL = NULL WHERE id > 0;
 UPDATE territoire SET nom = concat('Nom_', id), description_secrete = null WHERE id > 0;
 UPDATE topic SET title = concat('Title_', id), description = @LOREM WHERE id > 0;
-UPDATE user SET roles = '["ROLE_USER"]', email = concat('email_', id, '@noreply.com'), password = '\$2y\$13\$EpRnVPQP6sj/JiCDoiyhxOpYRdWuchOxSw30446I9xiIIJfOAp8SO', pwd = '\$2y\$13\$EpRnVPQP6sj/JiCDoiyhxOpYRdWuchOxSw30446I9xiIIJfOAp8SO', salt ='5um2fz77pbkswo0osswocog4wswc0g', username = concat('user_', id) WHERE id > 0;
+UPDATE user SET roles = '["ROLE_USER"]', email = concat('email_', id, '@noreply.com'), email_contact = concat('email_', id, '@noreply.com'), password = '\$2y\$13\$EpRnVPQP6sj/JiCDoiyhxOpYRdWuchOxSw30446I9xiIIJfOAp8SO', pwd = '\$2y\$13\$EpRnVPQP6sj/JiCDoiyhxOpYRdWuchOxSw30446I9xiIIJfOAp8SO', salt ='5um2fz77pbkswo0osswocog4wswc0g', username = concat('user_', id) WHERE id > 0;
 
 
