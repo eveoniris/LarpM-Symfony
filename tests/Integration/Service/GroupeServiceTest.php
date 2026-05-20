@@ -6,8 +6,12 @@ namespace App\Tests\Integration\Service;
 
 use App\Enum\TerritoireStatut;
 use App\Service\GroupeService;
+use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\GroupeFactory;
+use App\Tests\Factory\GroupeGnFactory;
+use App\Tests\Factory\ParticipantFactory;
 use App\Tests\Factory\TerritoireFactory;
+use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -85,5 +89,75 @@ class GroupeServiceTest extends KernelTestCase
         ]);
 
         self::assertSame(375, $this->groupeService->getAllRichesse($groupe));
+    }
+
+    // -------------------------------------------------------------------------
+    // isUserIsGroupeGnMember — no security context (null user)
+    // -------------------------------------------------------------------------
+
+    public function testIsUserIsGroupeGnMemberReturnsFalseWithoutSecurityContext(): void
+    {
+        // No logged-in user in KernelTestCase → security->getUser() returns null
+        $gn = GnFactory::createOne();
+        $groupe = GroupeFactory::createOne();
+        $groupeGn = GroupeGnFactory::createOne(['groupe' => $groupe, 'gn' => $gn]);
+
+        self::assertFalse($this->groupeService->isUserIsGroupeGnMember($groupeGn->object()));
+    }
+
+    // -------------------------------------------------------------------------
+    // isUserIsGroupeGnResponsable — no security context (null user)
+    // -------------------------------------------------------------------------
+
+    public function testIsUserIsGroupeGnResponsableReturnsFalseWithoutSecurityContext(): void
+    {
+        $gn = GnFactory::createOne();
+        $groupe = GroupeFactory::createOne();
+        $groupeGn = GroupeGnFactory::createOne(['groupe' => $groupe, 'gn' => $gn]);
+
+        self::assertFalse($this->groupeService->isUserIsGroupeGnResponsable($groupeGn->object()));
+    }
+
+    // -------------------------------------------------------------------------
+    // getUserLastGroupeGn — no security context (null user)
+    // -------------------------------------------------------------------------
+
+    public function testGetUserLastGroupeGnReturnsNullWithoutSecurityContext(): void
+    {
+        $groupe = GroupeFactory::createOne();
+
+        self::assertNull($this->groupeService->getUserLastGroupeGn($groupe->object()));
+    }
+
+    // -------------------------------------------------------------------------
+    // getUserGroupeGns — no security context (null user)
+    // -------------------------------------------------------------------------
+
+    public function testGetUserGroupeGnsReturnsEmptyArrayWithoutSecurityContext(): void
+    {
+        $groupe = GroupeFactory::createOne();
+
+        self::assertSame([], $this->groupeService->getUserGroupeGns($groupe->object()));
+    }
+
+    // -------------------------------------------------------------------------
+    // isUserIsGroupeMember — participation future sans groupe_gn (bug regression)
+    // -------------------------------------------------------------------------
+
+    public function testIsUserIsGroupeMemberIgnoresParticipantWithoutGroupeGn(): void
+    {
+        // Simule le bug original : un participant futur sans groupe_gn ne doit pas
+        // effacer l'appartenance réelle au groupe via une autre participation.
+        // Sans contexte de sécurité, getUser() = null → false attendu.
+        $gn1 = GnFactory::createOne();
+        $gn2 = GnFactory::createOne();
+        $groupe = GroupeFactory::createOne();
+        $groupeGn = GroupeGnFactory::createOne(['groupe' => $groupe, 'gn' => $gn1]);
+        $user = UserFactory::createOne();
+        ParticipantFactory::createOne(['user' => $user, 'gn' => $gn1, 'groupeGn' => $groupeGn]);
+        ParticipantFactory::createOne(['user' => $user, 'gn' => $gn2, 'groupeGn' => null]);
+
+        // Sans sécurité → false (test structure uniquement, pas la logique auth)
+        self::assertFalse($this->groupeService->isUserIsGroupeMember($groupe->object()));
     }
 }

@@ -938,7 +938,13 @@ readonly class GroupeService
             return false;
         }
 
-        return $user->getLastParticipant()?->getGroupe()?->getId() === $groupe->getId();
+        foreach ($user->getParticipants() as $participant) {
+            if ($participant->getGroupe()?->getId() === $groupe->getId()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function isUserIsGroupeResponsable(Groupe $groupe): bool
@@ -955,5 +961,75 @@ readonly class GroupeService
         }
 
         return ($groupeGn->getParticipant()?->getUser()?->getId() ?? $groupe->getUserRelatedByResponsableId()?->getId()) === $user->getId();
+    }
+
+    public function isUserIsGroupeGnMember(GroupeGn $groupeGn): bool
+    {
+        /** @var User|null $user */
+        $user = $this->security->getUser();
+        if (!$user) {
+            return false;
+        }
+
+        foreach ($user->getParticipants() as $participant) {
+            if ($participant->getGroupeGn()?->getId() === $groupeGn->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isUserIsGroupeGnResponsable(GroupeGn $groupeGn): bool
+    {
+        /** @var User|null $user */
+        $user = $this->security->getUser();
+        if (!$user) {
+            return false;
+        }
+
+        return $groupeGn->getParticipant()?->getUser()?->getId() === $user->getId();
+    }
+
+    public function getUserLastGroupeGn(Groupe $groupe): ?GroupeGn
+    {
+        /** @var User|null $user */
+        $user = $this->security->getUser();
+        if (!$user) {
+            return null;
+        }
+
+        $lastGroupeGn = null;
+        $lastId = 0;
+
+        foreach ($user->getParticipants() as $participant) {
+            $ggn = $participant->getGroupeGn();
+            if ($ggn && $ggn->getGroupe()->getId() === $groupe->getId() && $ggn->getId() > $lastId) {
+                $lastGroupeGn = $ggn;
+                $lastId = $ggn->getId();
+            }
+        }
+
+        return $lastGroupeGn;
+    }
+
+    /** @return array<int, GroupeGn> */
+    public function getUserGroupeGns(Groupe $groupe): array
+    {
+        /** @var User|null $user */
+        $user = $this->security->getUser();
+        if (!$user) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($user->getParticipants() as $participant) {
+            $ggn = $participant->getGroupeGn();
+            if ($ggn && $ggn->getGroupe()->getId() === $groupe->getId()) {
+                $result[$ggn->getId()] = $ggn;
+            }
+        }
+
+        return array_values($result);
     }
 }
