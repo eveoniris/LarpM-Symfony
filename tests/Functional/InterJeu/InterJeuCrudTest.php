@@ -46,9 +46,11 @@ class InterJeuCrudTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
 
-        $form = $crawler->selectButton('Ajouter')->form([
-            'inter_jeu_personnage_add[personnage]' => $personnage->getId(),
-        ]);
+        $form = $crawler
+            ->selectButton('Ajouter')
+            ->form([
+                'inter_jeu_personnage_add[personnage]' => $personnage->getId(),
+            ]);
         $client->submit($form);
 
         self::assertResponseRedirects('/inter-jeu/' . $interJeu->getId() . '/personnages');
@@ -73,10 +75,7 @@ class InterJeuCrudTest extends WebTestCase
         $em->flush();
 
         $client->loginUser($user);
-        $client->request(
-            'POST',
-            '/inter-jeu/' . $interJeu->getId() . '/personnage/' . $personnage->getId() . '/remove',
-        );
+        $client->request('POST', '/inter-jeu/' . $interJeu->getId() . '/personnage/' . $personnage->getId() . '/remove');
 
         self::assertResponseRedirects('/inter-jeu/' . $interJeu->getId() . '/personnages');
     }

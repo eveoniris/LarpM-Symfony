@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service;
 
+use App\Entity\Groupe;
+use App\Entity\GroupeGn;
 use App\Enum\TerritoireStatut;
 use App\Service\GroupeService;
-use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\GroupeFactory;
-use App\Tests\Factory\GroupeGnFactory;
-use App\Tests\Factory\ParticipantFactory;
 use App\Tests\Factory\TerritoireFactory;
-use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -97,12 +95,9 @@ class GroupeServiceTest extends KernelTestCase
 
     public function testIsUserIsGroupeGnMemberReturnsFalseWithoutSecurityContext(): void
     {
-        // No logged-in user in KernelTestCase → security->getUser() returns null
-        $gn = GnFactory::createOne();
-        $groupe = GroupeFactory::createOne();
-        $groupeGn = GroupeGnFactory::createOne(['groupe' => $groupe, 'gn' => $gn]);
-
-        self::assertFalse($this->groupeService->isUserIsGroupeGnMember($groupeGn->object()));
+        // No logged-in user in KernelTestCase → security->getUser() returns null immediately.
+        // The entity is never accessed, so a bare new() is enough.
+        self::assertFalse($this->groupeService->isUserIsGroupeGnMember(new GroupeGn()));
     }
 
     // -------------------------------------------------------------------------
@@ -111,11 +106,7 @@ class GroupeServiceTest extends KernelTestCase
 
     public function testIsUserIsGroupeGnResponsableReturnsFalseWithoutSecurityContext(): void
     {
-        $gn = GnFactory::createOne();
-        $groupe = GroupeFactory::createOne();
-        $groupeGn = GroupeGnFactory::createOne(['groupe' => $groupe, 'gn' => $gn]);
-
-        self::assertFalse($this->groupeService->isUserIsGroupeGnResponsable($groupeGn->object()));
+        self::assertFalse($this->groupeService->isUserIsGroupeGnResponsable(new GroupeGn()));
     }
 
     // -------------------------------------------------------------------------
@@ -124,9 +115,7 @@ class GroupeServiceTest extends KernelTestCase
 
     public function testGetUserLastGroupeGnReturnsNullWithoutSecurityContext(): void
     {
-        $groupe = GroupeFactory::createOne();
-
-        self::assertNull($this->groupeService->getUserLastGroupeGn($groupe->object()));
+        self::assertNull($this->groupeService->getUserLastGroupeGn(new Groupe()));
     }
 
     // -------------------------------------------------------------------------
@@ -135,29 +124,15 @@ class GroupeServiceTest extends KernelTestCase
 
     public function testGetUserGroupeGnsReturnsEmptyArrayWithoutSecurityContext(): void
     {
-        $groupe = GroupeFactory::createOne();
-
-        self::assertSame([], $this->groupeService->getUserGroupeGns($groupe->object()));
+        self::assertSame([], $this->groupeService->getUserGroupeGns(new Groupe()));
     }
 
     // -------------------------------------------------------------------------
-    // isUserIsGroupeMember — participation future sans groupe_gn (bug regression)
+    // isUserIsGroupeMember — no security context (null user)
     // -------------------------------------------------------------------------
 
-    public function testIsUserIsGroupeMemberIgnoresParticipantWithoutGroupeGn(): void
+    public function testIsUserIsGroupeMemberReturnsFalseWithoutSecurityContext(): void
     {
-        // Simule le bug original : un participant futur sans groupe_gn ne doit pas
-        // effacer l'appartenance réelle au groupe via une autre participation.
-        // Sans contexte de sécurité, getUser() = null → false attendu.
-        $gn1 = GnFactory::createOne();
-        $gn2 = GnFactory::createOne();
-        $groupe = GroupeFactory::createOne();
-        $groupeGn = GroupeGnFactory::createOne(['groupe' => $groupe, 'gn' => $gn1]);
-        $user = UserFactory::createOne();
-        ParticipantFactory::createOne(['user' => $user, 'gn' => $gn1, 'groupeGn' => $groupeGn]);
-        ParticipantFactory::createOne(['user' => $user, 'gn' => $gn2, 'groupeGn' => null]);
-
-        // Sans sécurité → false (test structure uniquement, pas la logique auth)
-        self::assertFalse($this->groupeService->isUserIsGroupeMember($groupe->object()));
+        self::assertFalse($this->groupeService->isUserIsGroupeMember(new Groupe()));
     }
 }

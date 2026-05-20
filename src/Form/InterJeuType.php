@@ -20,34 +20,29 @@ class InterJeuType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('nom', TextType::class, [
-                'label' => 'Nom',
-                'required' => true,
-            ])
-            ->add('anneeJeu', IntegerType::class, [
-                'label' => 'Année en jeu',
-                'required' => true,
-            ])
-            ->add('dateReel', DateType::class, [
-                'label' => 'Date réelle',
-                'required' => true,
-                'widget' => 'single_text',
-            ])
-            ->add('etat', EnumType::class, [
-                'label' => 'État',
-                'required' => true,
-                'class' => InterJeuEtat::class,
-                'choice_label' => static fn (InterJeuEtat $e) => $e->getLabel(),
-            ])
-            ->add('informationComplementaire', TextareaType::class, [
-                'label' => 'Informations complémentaires',
-                'required' => false,
-                'attr' => [
-                    'class' => 'tinymce',
-                    'rows' => 9,
-                ],
-            ]);
+        $builder->add('nom', TextType::class, [
+            'label' => 'Nom',
+            'required' => true,
+        ])->add('anneeJeu', IntegerType::class, [
+            'label' => 'Année en jeu',
+            'required' => true,
+        ])->add('dateReel', DateType::class, [
+            'label' => 'Date réelle',
+            'required' => true,
+            'widget' => 'single_text',
+        ])->add('etat', EnumType::class, [
+            'label' => 'État',
+            'required' => true,
+            'class' => InterJeuEtat::class,
+            'choice_label' => static fn (InterJeuEtat $e) => $e->getLabel(),
+        ])->add('informationComplementaire', TextareaType::class, [
+            'label' => 'Informations complémentaires',
+            'required' => false,
+            'attr' => [
+                'class' => 'tinymce',
+                'rows' => 9,
+            ],
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

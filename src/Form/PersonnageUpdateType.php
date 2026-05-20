@@ -99,7 +99,6 @@ class PersonnageUpdateType extends AbstractType
             'help' => 'Si vous cochez Oui. Vous ne recevrez pas de bracelet de langue dans votre enveloppe personnage ',
         ]);
 
-
         if ($this->security->isGranted(Role::SCENARISTE->value) || $this->security->isGranted(Role::ORGA->value)) {
             $builder->add('scenariste', EntityType::class, [
                 'label' => 'Scénariste',

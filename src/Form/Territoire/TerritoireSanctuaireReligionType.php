@@ -17,12 +17,12 @@ class TerritoireSanctuaireReligionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('sanctuaireReligion', EntityType::class, [
-            'required'      => false,
-            'label'         => 'Religion du sanctuaire',
-            'class'         => Religion::class,
-            'choice_label'  => 'label',
-            'placeholder'   => 'Aucune religion',
-            'autocomplete'  => true,
+            'required' => false,
+            'label' => 'Religion du sanctuaire',
+            'class' => Religion::class,
+            'choice_label' => 'label',
+            'placeholder' => 'Aucune religion',
+            'autocomplete' => true,
             'query_builder' => static fn (ReligionRepository $rr) => $rr->createQueryBuilder('r')->orderBy('r.label', 'ASC'),
         ]);
     }
