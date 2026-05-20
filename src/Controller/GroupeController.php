@@ -497,30 +497,29 @@ class GroupeController extends AbstractController
     /** @param array<int, Role> $roles */
     protected function hasAccess(Groupe $groupe, ?Gn $gn = null, ?GroupeGn $groupeGn = null, array $roles = []): void
     {
-        if ($isResponsable = $this->groupeService->isUserIsGroupeResponsable($groupe)) {
-            $isMembre = true;
+        // Résoudre le GroupeGn effectif : URL ou dernier GN de l'user dans ce groupe.
+        // Pas de fallback permissif : supprimer le groupeGn de l'URL ne donne pas plus d'accès.
+        $effectiveGroupeGn = $groupeGn ?? $this->groupeService->getUserLastGroupeGn($groupe);
+
+        if ($effectiveGroupeGn) {
+            $isResponsable = $this->groupeService->isUserIsGroupeGnResponsable($effectiveGroupeGn);
+            $isMembre = $isResponsable || $this->groupeService->isUserIsGroupeGnMember($effectiveGroupeGn);
         } else {
-            $isMembre = $this->groupeService->isUserIsGroupeMember($groupe);
+            $isResponsable = false;
+            $isMembre = false;
         }
 
-        /*
-         * $groupeGn ??= $groupe->getGroupeGns()->last();
-         * if (!$groupeGn && $gn) {
-         * foreach ($groupe->getGroupeGns() as $grpGn) {
-         * if ($grpGn?->getGn()?->getId() === $gn->getId()) {
-         * $groupeGn = $grpGn;
-         * }
-         * }
-         * }*/
+        // CAN_READ = accès à la page = a participé à au moins un GN de ce groupe
+        $isAnyMembre = $isMembre || $this->groupeService->isUserIsGroupeMember($groupe);
 
         // TODO check if membre can read secret
         // TODO limit WARGAME to .. WARGAME ... ADD a GROUPE_ROLE
         $this->setCan(self::IS_ADMIN, $this->isGranted(Role::WARGAME->value));
         $this->setCan(self::CAN_MANAGE, $isResponsable);
-        $this->setCan(self::CAN_READ_PRIVATE, $isResponsable || $isMembre);
+        $this->setCan(self::CAN_READ_PRIVATE, $isMembre);
         $this->setCan(self::CAN_READ_SECRET, $isResponsable);
         $this->setCan(self::CAN_WRITE, $isResponsable);
-        $this->setCan(self::CAN_READ, $isMembre);
+        $this->setCan(self::CAN_READ, $isAnyMembre);
 
         $this->checkHasAccess($roles, fn () => $this->can(self::CAN_READ));
     }
@@ -1546,6 +1545,7 @@ class GroupeController extends AbstractController
             'gn' => $gn,
             'groupeGn' => $groupeGn,
             'tab' => $tab,
+            'userGroupeGns' => $this->groupeService->getUserGroupeGns($groupe),
         ]);
     }
 }
