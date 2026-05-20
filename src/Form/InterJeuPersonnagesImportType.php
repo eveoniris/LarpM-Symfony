@@ -16,22 +16,20 @@ class InterJeuPersonnagesImportType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('ids', TextareaType::class, [
-                'label' => 'Liste d\'identifiants (séparés par des virgules)',
-                'required' => false,
-                'attr' => [
-                    'rows' => 4,
-                    'placeholder' => '1, 42, 107, …',
-                ],
-            ])
-            ->add('fichier', FileType::class, [
-                'label' => 'Ou importer un fichier CSV (une colonne d\'identifiants)',
-                'required' => false,
-                'constraints' => [
-                    new File(mimeTypes: ['text/csv', 'text/plain', 'application/csv']),
-                ],
-            ]);
+        $builder->add('ids', TextareaType::class, [
+            'label' => 'Liste d\'identifiants (séparés par des virgules)',
+            'required' => false,
+            'attr' => [
+                'rows' => 4,
+                'placeholder' => '1, 42, 107, …',
+            ],
+        ])->add('fichier', FileType::class, [
+            'label' => 'Ou importer un fichier CSV (une colonne d\'identifiants)',
+            'required' => false,
+            'constraints' => [
+                new File(mimeTypes: ['text/csv', 'text/plain', 'application/csv']),
+            ],
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

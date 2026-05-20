@@ -175,8 +175,7 @@ class TerritoireController extends AbstractController
         #[MapEntity]
         Territoire $territoire,
     ): RedirectResponse|Response {
-        $form = $this->createForm(TerritoireSanctuaireReligionType::class, $territoire)
-            ->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
+        $form = $this->createForm(TerritoireSanctuaireReligionType::class, $territoire)->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
@@ -190,7 +189,7 @@ class TerritoireController extends AbstractController
 
         return $this->render('territoire/editSanctuaireReligion.twig', [
             'territoire' => $territoire,
-            'form'       => $form->createView(),
+            'form' => $form->createView(),
         ]);
     }
 
@@ -568,21 +567,18 @@ class TerritoireController extends AbstractController
      * Page de gestion des fiefs frontaliers culturels d'un territoire.
      */
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
-    #[Route(
-        '/territoire/{territoire}/frontaliers-culturels',
-        name: 'territoire.frontaliersCulturels',
-        requirements: ['territoire' => Requirement::DIGITS]
-    )]
+    #[Route('/territoire/{territoire}/frontaliers-culturels', name: 'territoire.frontaliersCulturels', requirements: ['territoire' => Requirement::DIGITS])]
     public function updateFrontaliersCulturelAction(
         Request $request,
         EntityManagerInterface $entityManager,
-        #[MapEntity] Territoire $territoire,
+        #[MapEntity]
+        Territoire $territoire,
     ): RedirectResponse|Response {
         $canEdit = $this->isGranted(Role::ADMIN->value);
 
         $form = $this->createForm(TerritoireFrontaliersCulturelType::class, $territoire, [
             'disabled' => !$canEdit,
-        ])->add('update', SubmitType::class, ['label' => 'Sauvegarder',  'attr' => ['class' => 'btn btn-secondary']]);
+        ])->add('update', SubmitType::class, ['label' => 'Sauvegarder', 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
 
@@ -596,8 +592,8 @@ class TerritoireController extends AbstractController
 
         return $this->render('territoire/updateFrontaliersCulturels.twig', [
             'territoire' => $territoire,
-            'form'       => $form->createView(),
-            'canEdit'    => $canEdit,
+            'form' => $form->createView(),
+            'canEdit' => $canEdit,
         ]);
     }
 
@@ -605,17 +601,13 @@ class TerritoireController extends AbstractController
      * Calcule automatiquement les voisins géographiques d'un territoire via son GeoJSON.
      */
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
-    #[Route(
-        '/territoire/{territoire}/compute-voisins-geo',
-        name: 'territoire.computeVoisinsGeo',
-        methods: ['POST'],
-        requirements: ['territoire' => Requirement::DIGITS]
-    )]
+    #[Route('/territoire/{territoire}/compute-voisins-geo', name: 'territoire.computeVoisinsGeo', methods: ['POST'], requirements: ['territoire' => Requirement::DIGITS])]
     public function computeVoisinsGeoAction(
         Request $request,
         GeoJson $geoJson,
         TerritoireRepository $territoireRepository,
-        #[MapEntity] Territoire $territoire,
+        #[MapEntity]
+        Territoire $territoire,
     ): JsonResponse {
         if (!$this->isGranted(Role::ADMIN->value)) {
             return new JsonResponse(['error' => 'Accès refusé.'], 403);
@@ -651,9 +643,9 @@ class TerritoireController extends AbstractController
 
             $distances = array_column($points, 'distance');
             $voisins[] = [
-                'id'           => $candidat->getId(),
-                'nom'          => $candidat->getNom(),
-                'nb_points'    => \count($points),
+                'id' => $candidat->getId(),
+                'nom' => $candidat->getNom(),
+                'nb_points' => \count($points),
                 'min_distance' => min($distances),
             ];
         }
@@ -661,7 +653,7 @@ class TerritoireController extends AbstractController
         usort($voisins, static fn ($a, $b) => $a['min_distance'] <=> $b['min_distance']);
 
         return new JsonResponse([
-            'voisins'      => $voisins,
+            'voisins' => $voisins,
             'max_distance' => $maxDistance,
         ]);
     }

@@ -1744,102 +1744,103 @@ class PersonnageService
         $deisteId = 36;
         $deiste = $this->entityManager->getRepository(Religion::class)->find($deisteId);
         /* old configuration until lh8 $config = [
-            // Zath
-            // aucun
-            // Anu
-            3 => [
-                23,
-                38,
-                56,
-                105,
-            ],
-            // Bel
-            5 => [66],
-            // Bori
-            6 => [
-                17,
-                27,
-                28,
-                99,
-                108,
-                137,
-                139,
-            ],
-
-            // Crom
-            7 => [
-                17,
-                26,
-                27,
-                28,
-            ],
-            // Culte ancêtre
-            8 => [
-                23,
-                26,
-                29,
-                30,
-                52,
-                116,
-                124,
-                145,
-            ],
-            // Erlik
-            10 => [
-                1,
-                40,
-                45,
-                72,
-                80,
-                82,
-                126,
-                133,
-            ],
-            // Isthar
-            12 => [
-                21,
-                48,
-                49,
-                52,
-                61,
-                62,
-                125,
-            ],
-            // Mitra
-            14 => [
-                4,
-                5,
-                9,
-                11,
-                13,
-                14,
-                21,
-                55,
-                56,
-                57,
-                58,
-                59,
-                107,
-                137,
-                146,
-            ],
-
-            // Set
-            15 => [52, 61, 62],
-
-            // Yun
-            19 => [40, 45, 82, 126],
-
-            // Ymir
-            18 => [89, 132],
-            // Ereshkigal
-            28 => [40, 130],
-        ];*/
+         * // Zath
+         * // aucun
+         * // Anu
+         * 3 => [
+         * 23,
+         * 38,
+         * 56,
+         * 105,
+         * ],
+         * // Bel
+         * 5 => [66],
+         * // Bori
+         * 6 => [
+         * 17,
+         * 27,
+         * 28,
+         * 99,
+         * 108,
+         * 137,
+         * 139,
+         * ],
+         *
+         * // Crom
+         * 7 => [
+         * 17,
+         * 26,
+         * 27,
+         * 28,
+         * ],
+         * // Culte ancêtre
+         * 8 => [
+         * 23,
+         * 26,
+         * 29,
+         * 30,
+         * 52,
+         * 116,
+         * 124,
+         * 145,
+         * ],
+         * // Erlik
+         * 10 => [
+         * 1,
+         * 40,
+         * 45,
+         * 72,
+         * 80,
+         * 82,
+         * 126,
+         * 133,
+         * ],
+         * // Isthar
+         * 12 => [
+         * 21,
+         * 48,
+         * 49,
+         * 52,
+         * 61,
+         * 62,
+         * 125,
+         * ],
+         * // Mitra
+         * 14 => [
+         * 4,
+         * 5,
+         * 9,
+         * 11,
+         * 13,
+         * 14,
+         * 21,
+         * 55,
+         * 56,
+         * 57,
+         * 58,
+         * 59,
+         * 107,
+         * 137,
+         * 146,
+         * ],
+         *
+         * // Set
+         * 15 => [52, 61, 62],
+         *
+         * // Yun
+         * 19 => [40, 45, 82, 126],
+         *
+         * // Ymir
+         * 18 => [89, 132],
+         * // Ereshkigal
+         * 28 => [40, 130],
+         * ];*/
 
         $religionLevel = $this->entityManager->getRepository(ReligionLevel::class)->findOneBy(['index' => 1]);
 
         /** @var Territoire[] $territoires */
-        $territoires = $this->entityManager->getRepository(Territoire::class)
+        $territoires = $this->entityManager
+            ->getRepository(Territoire::class)
             ->createQueryBuilder('t')
             ->join('t.constructions', 'c')
             ->where('t.sanctuaireReligion IS NOT NULL')
@@ -1868,12 +1869,7 @@ class PersonnageService
             }
 
             foreach ($groupes as $groupe) {
-                $this->logger->info(\sprintf(
-                    'Adding first level of %s religion to groupe %s (sanctuaire on %s)',
-                    $religion->getLabel(),
-                    $groupe->getNom(),
-                    $territoire->getNom(),
-                ));
+                $this->logger->info(\sprintf('Adding first level of %s religion to groupe %s (sanctuaire on %s)', $religion->getLabel(), $groupe->getNom(), $territoire->getNom()));
 
                 /** @var Personnage $personnage */
                 foreach ($groupe->getPersonnages() as $personnage) {

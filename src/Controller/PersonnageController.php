@@ -4348,9 +4348,7 @@ class PersonnageController extends AbstractController
                 'help' => 'Rattache le personnage à cet utilisateur sans toucher aux participations.',
                 'class' => User::class,
                 'choice_label' => static fn (User $u) => $u->getUsername() . ' - ' . $u->getEmail(),
-                'query_builder' => static fn (\App\Repository\UserRepository $ur) => $ur
-                    ->createQueryBuilder('u')
-                    ->orderBy('u.username', 'ASC'),
+                'query_builder' => static fn (\App\Repository\UserRepository $ur) => $ur->createQueryBuilder('u')->orderBy('u.username', 'ASC'),
             ])
             ->add('transfert_user', SubmitType::class, [
                 'label' => 'Rattacher à cet utilisateur',

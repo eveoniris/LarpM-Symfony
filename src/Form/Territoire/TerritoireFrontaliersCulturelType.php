@@ -15,30 +15,28 @@ class TerritoireFrontaliersCulturelType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('frontaliersCulturels', EntityType::class, [
-                'required'      => false,
-                'label'         => false,
-                'class'         => Territoire::class,
-                'multiple'      => true,
-                'expanded'      => false,
-                'mapped'        => true,
-                'autocomplete'  => true,
-                'choice_label'  => 'nom',
-                'query_builder' => static fn (TerritoireRepository $tr) => $tr->createQueryBuilder('t')->orderBy('t.nom', 'ASC'),
-            ])
-            ->add('searchFrontalier', EntityType::class, [
-                'mapped'        => false,
-                'required'      => false,
-                'label'         => false,
-                'class'         => Territoire::class,
-                'multiple'      => false,
-                'autocomplete'  => true,
-                'choice_label'  => 'nom',
-                'placeholder'   => 'Tapez un nom de territoire…',
-                'query_builder' => static fn (TerritoireRepository $tr) => $tr->createQueryBuilder('t')->orderBy('t.nom', 'ASC'),
-                'attr'          => ['data-search-field' => 'frontaliers'],
-            ]);
+        $builder->add('frontaliersCulturels', EntityType::class, [
+            'required' => false,
+            'label' => false,
+            'class' => Territoire::class,
+            'multiple' => true,
+            'expanded' => false,
+            'mapped' => true,
+            'autocomplete' => true,
+            'choice_label' => 'nom',
+            'query_builder' => static fn (TerritoireRepository $tr) => $tr->createQueryBuilder('t')->orderBy('t.nom', 'ASC'),
+        ])->add('searchFrontalier', EntityType::class, [
+            'mapped' => false,
+            'required' => false,
+            'label' => false,
+            'class' => Territoire::class,
+            'multiple' => false,
+            'autocomplete' => true,
+            'choice_label' => 'nom',
+            'placeholder' => 'Tapez un nom de territoire…',
+            'query_builder' => static fn (TerritoireRepository $tr) => $tr->createQueryBuilder('t')->orderBy('t.nom', 'ASC'),
+            'attr' => ['data-search-field' => 'frontaliers'],
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

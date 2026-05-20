@@ -48,7 +48,8 @@ class InterController extends AbstractController
     {
         $interJeu = new InterJeu();
 
-        $lastGn = $gnRepository->createQueryBuilder('g')
+        $lastGn = $gnRepository
+            ->createQueryBuilder('g')
             ->where('g.date_debut <= :today')
             ->setParameter('today', new DateTime('today'))
             ->orderBy('g.date_debut', 'DESC')
@@ -86,20 +87,14 @@ class InterController extends AbstractController
     #[Route('/{inter}/delete', name: 'delete', requirements: ['inter' => Requirement::DIGITS])]
     public function deleteAction(InterJeu $inter): RedirectResponse|Response
     {
-        return $this->genericDelete(
-            $inter,
-            'Supprimer un inter-jeu',
-            'L\'inter-jeu a été supprimé',
-            'inter.list',
+        return $this->genericDelete($inter, 'Supprimer un inter-jeu', 'L\'inter-jeu a été supprimé', 'inter.list', [
+            ['route' => $this->generateUrl('inter.list'), 'name' => 'Liste des inter-jeux'],
             [
-                ['route' => $this->generateUrl('inter.list'), 'name' => 'Liste des inter-jeux'],
-                [
-                    'route' => $this->generateUrl('inter.detail', ['inter' => $inter->getId()]),
-                    'name' => $inter->getNom(),
-                ],
-                ['name' => 'Supprimer l\'inter-jeu'],
+                'route' => $this->generateUrl('inter.detail', ['inter' => $inter->getId()]),
+                'name' => $inter->getNom(),
             ],
-        );
+            ['name' => 'Supprimer l\'inter-jeu'],
+        ]);
     }
 
     #[Route('/{inter}', name: 'detail', requirements: ['inter' => Requirement::DIGITS])]
@@ -199,12 +194,7 @@ class InterController extends AbstractController
         ]);
     }
 
-    #[Route(
-        '/{inter}/personnage/{personnage}/remove',
-        name: 'personnage.remove',
-        requirements: ['inter' => Requirement::DIGITS, 'personnage' => Requirement::DIGITS],
-        methods: ['POST'],
-    )]
+    #[Route('/{inter}/personnage/{personnage}/remove', name: 'personnage.remove', requirements: ['inter' => Requirement::DIGITS, 'personnage' => Requirement::DIGITS], methods: ['POST'])]
     public function personnageRemoveAction(InterJeu $inter, Personnage $personnage): RedirectResponse
     {
         $inter->removePersonnage($personnage);
@@ -218,14 +208,18 @@ class InterController extends AbstractController
     public function chronologieAction(Request $request, InterJeu $inter): RedirectResponse|Response
     {
         if (!$inter->canGenereteChronologie()) {
-            $this->addFlash('error', $inter->isChronologieGeneree()
-                ? 'La chronologie a déjà été générée pour cet inter-jeu.'
-                : 'L\'inter-jeu n\'est pas encore terminé.');
+            $this->addFlash(
+                'error',
+                $inter->isChronologieGeneree()
+                    ? 'La chronologie a déjà été générée pour cet inter-jeu.'
+                    : 'L\'inter-jeu n\'est pas encore terminé.',
+            );
 
             return $this->redirectToRoute('inter.detail', ['inter' => $inter->getId()], 303);
         }
 
-        $form = $this->createFormBuilder()
+        $form = $this
+            ->createFormBuilder()
             ->add('confirm', SubmitType::class, [
                 'label' => 'Confirmer la génération',
                 'attr' => ['class' => 'btn btn-danger'],
@@ -243,7 +237,7 @@ class InterController extends AbstractController
                 $chronologie->setAnnee($inter->getAnneeJeu());
                 $chronologie->setEvenement(sprintf('Participation à %s', $inter->getNom()));
                 $this->entityManager->persist($chronologie);
-                if (++$i % $batchSize === 0) {
+                if ((++$i % $batchSize) === 0) {
                     $this->entityManager->flush();
                 }
             }

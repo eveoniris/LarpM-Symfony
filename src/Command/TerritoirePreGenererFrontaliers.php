@@ -35,10 +35,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * - Skip les fiefs qui ont déjà des frontaliers, sauf avec --force
  * - Réutilise exactement le même service GeoJson et la même logique que le bouton web
  */
-#[AsCommand(
-    name: 'app:territoire-pre-generer-frontaliers',
-    description: 'Pré-génère les frontaliers culturels par GeoJSON pour tous les fiefs'
-)]
+#[AsCommand(name: 'app:territoire-pre-generer-frontaliers', description: 'Pré-génère les frontaliers culturels par GeoJSON pour tous les fiefs')]
 class TerritoirePreGenererFrontaliers extends Command
 {
     public function __construct(
@@ -65,12 +62,7 @@ class TerritoirePreGenererFrontaliers extends Command
         $force = (bool) $input->getOption('force');
         $dryRun = (bool) $input->getOption('dry-run');
 
-        $io->writeln(\sprintf(
-            'Distance max : %.1f km | Force : %s | Dry-run : %s',
-            $maxDistance,
-            $force ? 'oui' : 'non',
-            $dryRun ? 'oui' : 'non',
-        ));
+        $io->writeln(\sprintf('Distance max : %.1f km | Force : %s | Dry-run : %s', $maxDistance, $force ? 'oui' : 'non', $dryRun ? 'oui' : 'non'));
 
         /** @var TerritoireRepository $repo */
         $repo = $this->entityManager->getRepository(Territoire::class);

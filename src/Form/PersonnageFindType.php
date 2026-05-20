@@ -91,9 +91,7 @@ class PersonnageFindType extends AbstractType
                 'placeholder' => 'Filtrer par scénariste',
                 'class' => User::class,
                 'choice_label' => 'identity',
-                'query_builder' => static fn (UserRepository $ur) => $ur->createQueryBuilder('u')
-                    ->join('u.groupeRelatedByScenaristeIds', 'g')
-                    ->orderBy('u.username', 'ASC'),
+                'query_builder' => static fn (UserRepository $ur) => $ur->createQueryBuilder('u')->join('u.groupeRelatedByScenaristeIds', 'g')->orderBy('u.username', 'ASC'),
             ]);
     }
 
