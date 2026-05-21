@@ -1,12 +1,10 @@
 {% extends 'base.html.twig' %}
 
 
-{% block title %}Statistique{% endblock title %}
+{% block title %}Statistiques{% if selectedGn %} - {{ selectedGn.label }}{% endif %}{% endblock title %}
 
 
 {% block body %}
-
-    {% set gn = groupeService.nextSessionGn %}
 
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
@@ -18,6 +16,26 @@
         <div class="header">
             <h5>Statistiques</h5>
         </div>
+
+        {% if allGns is defined and allGns|length > 0 %}
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <form action="{{ path('stats.list') }}" method="get" class="form-inline">
+                    <div class="form-group">
+                        <label for="gn-selector"><strong>Sélectionner un GN :</strong></label>
+                        <select id="gn-selector" name="gn" class="form-control">
+                            {% for allGn in allGns %}
+                                <option value="{{ allGn.id }}"{% if selectedGnId == allGn.id %} selected{% endif %}>
+                                    {{ allGn.label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Afficher</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
 
         <div class="row">
 
@@ -35,12 +53,14 @@
                                        href="{{ path('stats.users.roles') }}">Répartition
                                         des rôles utilisateurs</a>
                                 </div>
+                                {% if selectedGn %}
                                 <div class="list-group-item">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.xpGap.gn', {'gn':gn.id, 'gap':50}) }}">Personnage avec un
+                                       href="{{ path('stats.xpGap.gn', {'gn': selectedGn.id, 'gap':50}) }}">Personnage avec un
                                         gap XP de 50
-                                        sur {{ gn.label }}</a>
+                                        sur {{ selectedGn.label }}</a>
                                 </div>
+                                {% endif %}
                                 <div class="list-group-item">
                                     <a class="link-underline link-underline-opacity-0"
                                        href="{{ path('stats.fiefsState') }}">Etat des fiefs</a>
@@ -68,115 +88,119 @@
                         </div>
                         <div class="card-body">
                             <div class="list-group link-offset-hover">
+                                {% if selectedGn %}
                                 <div class="list-group-item">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.mineurs.gn', {'gn':gn.id}) }}">
-                                        Listes des mineurs présents au {{ gn.label }}
-                                    </a>
-                                </div>
-                                <div class="list-group-item">
-                                    <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.sensible.gn', {'gn':gn.id}) }}">
-                                        Listes des personnages sensible présents au {{ gn.label }}
+                                       href="{{ path('stats.mineurs.gn', {'gn': selectedGn.id}) }}">
+                                        Listes des mineurs présents au {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.alchimieHerboriste.gn', {'gn':gn.id}) }}">
-                                        Listes des Alchimistes & Herboriste présent au {{ gn.label }}
+                                       href="{{ path('stats.sensible.gn', {'gn': selectedGn.id}) }}">
+                                        Listes des personnages sensible présents au {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.potionsDepart.gn', {'gn':groupeService.nextSessionGn.id}) }}">
-                                        Potions de départ choisies sur {{ gn.label }}
+                                       href="{{ path('stats.alchimieHerboriste.gn', {'gn': selectedGn.id}) }}">
+                                        Listes des Alchimistes & Herboriste présent au {{ selectedGn.label }}
+                                    </a>
+                                </div>
+                                <div class="list-group-item">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.potionsDepart.gn', {'gn': selectedGn.id}) }}">
+                                        Potions de départ choisies sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::MAGIC').id}) }}">
-                                        Répartition des sorciers/magicien sur {{ gn.label }}
+                                       href="{{ path('stats.competenceFamily.gn', {'gn': selectedGn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::MAGIC').id}) }}">
+                                        Répartition des sorciers/magicien sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::CRAFTSMANSHIP').id}) }}">
-                                        Répartition des artisants sur {{ gn.label }}
+                                       href="{{ path('stats.competenceFamily.gn', {'gn': selectedGn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::CRAFTSMANSHIP').id}) }}">
+                                        Répartition des artisants sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::THEFT').id}) }}">
-                                        Répartition des voleurs sur {{ gn.label }}
+                                       href="{{ path('stats.competenceFamily.gn', {'gn': selectedGn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::THEFT').id}) }}">
+                                        Répartition des voleurs sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::MAPPING').id}) }}">
-                                        Répartition des cartographes sur {{ gn.label }}
+                                       href="{{ path('stats.competenceFamily.gn', {'gn': selectedGn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::MAPPING').id}) }}">
+                                        Répartition des cartographes sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::ALCHEMY').id}) }}">
-                                        Répartition des alchimistes sur {{ gn.label }}
+                                       href="{{ path('stats.competenceFamily.gn', {'gn': selectedGn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::ALCHEMY').id}) }}">
+                                        Répartition des alchimistes sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.competenceFamily.gn', {'gn':gn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::WEALTH').id}) }}">
-                                        Répartition des riches sur {{ gn.label }}
+                                       href="{{ path('stats.competenceFamily.gn', {'gn': selectedGn.id, 'competenceFamily':constant('App\\Enum\\CompetenceFamilyType::WEALTH').id}) }}">
+                                        Répartition des riches sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.renomme.gn', {'gn': gn.id}) }}">
-                                        Besoins en distinctions de renommé {{ gn.label }}
+                                       href="{{ path('stats.renomme.gn', {'gn': selectedGn.id}) }}">
+                                        Besoins en distinctions de renommé {{ selectedGn.label }}
                                     </a>
                                 </div>
+                                {% endif %}
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
                                        href="{{ path('stats.gameItemWithoutPersonnage') }}">
                                         Objet de jeu sans personnage
                                     </a>
                                 </div>
+                                {% if selectedGn %}
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.renommeGroupe.gn', {'gn': gn.id}) }}">
+                                       href="{{ path('stats.renommeGroupe.gn', {'gn': selectedGn.id}) }}">
                                         Nombre de personnage par groupe ayant une renommé égale ou suppérieur à 10
-                                        sur {{ gn.label }}
+                                        sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.nbClasseGroupe.gn', {'gn': gn.id, 'classe':15}) }}">
-                                        Nombre de personnage de la classe Tacticien par groupe sur {{ gn.label }}
+                                       href="{{ path('stats.nbClasseGroupe.gn', {'gn': selectedGn.id, 'classe':15}) }}">
+                                        Nombre de personnage de la classe Tacticien par groupe sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.nbClasseGroupe.gn', {'gn': gn.id, 'classe':12}) }}">
-                                        Nombre de personnage de la classe Chevalier par groupe sur {{ gn.label }}
+                                       href="{{ path('stats.nbClasseGroupe.gn', {'gn': selectedGn.id, 'classe':12}) }}">
+                                        Nombre de personnage de la classe Chevalier par groupe sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.nbClasseGroupe.gn', {'gn': gn.id, 'classe':14}) }}">
-                                        Nombre de personnage de la classe Soldat par groupe sur {{ gn.label }}
+                                       href="{{ path('stats.nbClasseGroupe.gn', {'gn': selectedGn.id, 'classe':14}) }}">
+                                        Nombre de personnage de la classe Soldat par groupe sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.sumAll.gn', {'gn': gn.id}) }}">
-                                        Sommes des revenus par groupe sur {{ gn.label }}
+                                       href="{{ path('stats.sumAll.gn', {'gn': selectedGn.id}) }}">
+                                        Sommes des revenus par groupe sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.list.arrivee.gn', {'gn': gn.id}) }}">
-                                        Liste d'arrivée sur {{ gn.label }}
+                                       href="{{ path('stats.list.arrivee.gn', {'gn': selectedGn.id}) }}">
+                                        Liste d'arrivée sur {{ selectedGn.label }}
                                     </a>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -193,24 +217,26 @@
                         </div>
                         <div class="card-body">
                             <div class="list-group">
+                                {% if selectedGn %}
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.competences.gn', {'gn':gn.id}) }}">
-                                        Répartition des compétences {{ gn.label }}
+                                       href="{{ path('stats.competences.gn', {'gn': selectedGn.id}) }}">
+                                        Répartition des compétences {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.classes.gn', {'gn':gn.id}) }}">
-                                        Répartition des classes {{ gn.label }}
+                                       href="{{ path('stats.classes.gn', {'gn': selectedGn.id}) }}">
+                                        Répartition des classes {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.religions.gn', {'gn':gn.id}) }}">
-                                        Répartition du nombre d'adeptes religieux sur {{ gn.label }}
+                                       href="{{ path('stats.religions.gn', {'gn': selectedGn.id}) }}">
+                                        Répartition du nombre d'adeptes religieux sur {{ selectedGn.label }}
                                     </a>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -239,22 +265,24 @@
                                         Répartition des constructions sur les fiefs
                                     </a>
                                 </div>
+                                {% if selectedGn %}
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.bateaux.gn', {'gn':gn.id}) }}">
-                                        Totaux des bateaux par groupe sur {{ gn.label }}
+                                       href="{{ path('stats.bateaux.gn', {'gn': selectedGn.id}) }}">
+                                        Totaux des bateaux par groupe sur {{ selectedGn.label }}
                                     </a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.bateaux-ordre.gn', {'gn':gn.id}) }}">
-                                        Liste pour ordres de navigation sur {{ gn.label }}</a>
+                                       href="{{ path('stats.bateaux-ordre.gn', {'gn': selectedGn.id}) }}">
+                                        Liste pour ordres de navigation sur {{ selectedGn.label }}</a>
                                 </div>
                                 <div class="list-group-item link-offset-hover">
                                     <a class="link-underline link-underline-opacity-0"
-                                       href="{{ path('stats.whoswho.gn', {'gn':gn.id, 'renomme': 20}) }}">
-                                        Who's who {{ gn.label }}</a>
+                                       href="{{ path('stats.whoswho.gn', {'gn': selectedGn.id, 'renomme': 20}) }}">
+                                        Who's who {{ selectedGn.label }}</a>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
