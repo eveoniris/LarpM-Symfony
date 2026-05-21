@@ -231,7 +231,7 @@ final class RandomColor
             return $options['prng']($bounds[0], $bounds[1]);
         }
 
-        return random_int($bounds[0], $bounds[1]);
+        return random_int((int) $bounds[0], (int) $bounds[1]);
     }
 
     public static function hsv2hex($hsv)
@@ -240,7 +240,7 @@ final class RandomColor
         $hex = '#';
 
         foreach ($rgb as $c) {
-            $hex .= str_pad(dechex($c), 2, '0', \STR_PAD_LEFT);
+            $hex .= str_pad(dechex((int) $c), 2, '0', \STR_PAD_LEFT);
         }
 
         return $hex;

@@ -1,13 +1,36 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Statistique{% endblock title %}
+{% block title %}Statistique{% if gn is defined and gn %} - {{ gn.label }}{% endif %}{% endblock title %}
 
 {% block body %}
 
 	<ol class="breadcrumb">
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
-		<li class="active">Statistique</li>
+		<li class="active">Statistique{% if gn %} - {{ gn.label }}{% endif %}</li>
 	</ol>
+
+	{% if allGns is defined and allGns|length > 0 %}
+	<div class="well well-sm">
+		<div class="row">
+			<div class="col-sm-8">
+				<form action="{{ path('statistique') }}" method="get" class="form-inline">
+					<div class="form-group">
+						<label for="gn-selector"><strong>Sélectionner un GN :</strong></label>
+						<select id="gn-selector" name="gn" class="form-control">
+							<option value="">-- Toutes statistiques --</option>
+							{% for allGn in allGns %}
+								<option value="{{ allGn.id }}"{% if gn is defined and gn and gn.id == allGn.id %} selected{% endif %}>
+									{{ allGn.label }}
+								</option>
+							{% endfor %}
+						</select>
+					</div>
+					<button type="submit" class="btn btn-primary">Afficher</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	{% endif %}
 	
 	<div class="panel panel-default">
 		<div class="panel-body">
@@ -30,6 +53,7 @@
 				</tbody>
 			</table>
 			
+			{% if places > 0 %}
 			{% set ratio = (personnageCount * 100) / places %}
 			<h4>Pourcentage de personnages créé (personages/places ouverte)</h4>
 			<div class="progress">
@@ -37,7 +61,9 @@
 		    		{{ ratio }}%
 		  		</div>
 			</div>
+			{% endif %}
 			
+			{% if userCount > 0 %}
 			{% set ratio = (participantCount * 100) / userCount %}
 			<h4>Pourcentage d'état civil rempli (etat civil/utilisateurs)</h4>
 			<div class="progress">
@@ -53,6 +79,7 @@
 		    		{{ ratio }}%
 		  		</div>
 			</div>
+			{% endif %}
 		</div>
 	</div>
 	

@@ -574,121 +574,239 @@ class StatistiqueController extends AbstractController
      * @throws JsonException
      */
     #[Route('/statistique', name: 'statistique')]
+    #[Route('/statistique/{gn}', name: 'statistique.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access the admin dashboard.')]
-    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function indexAction(?Gn $gn, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $repo = $entityManager->getRepository(Langue::class);
-        $langues = $repo->findAll();
+        if (!$gn && $request->query->get('gn')) {
+            $gn = $entityManager->getRepository(Gn::class)->find($request->query->get('gn'));
+        }
+        $gn = $gn ?? $entityManager->getRepository(Gn::class)->findNext();
+        $allGns = $entityManager->getRepository(Gn::class)->findAll();
+
+        if ($gn) {
+            $languesStats = $entityManager->createQueryBuilder()
+                ->select('l.id', 'l.label', 'COUNT(t.id) AS nb_territoires')
+                ->from(Langue::class, 'l')
+                ->leftJoin('l.territoires', 't')
+                ->leftJoin('t.groupe', 'g')
+                ->leftJoin('g.groupeGns', 'ggn')
+                ->where('ggn.gn = :gn')
+                ->orWhere('t.groupe IS NULL')
+                ->groupBy('l.id', 'l.label')
+                ->orderBy('l.label')
+                ->setParameter('gn', $gn)
+                ->getQuery()
+                ->getArrayResult();
+
+            $personnageCount = (int) $entityManager->createQueryBuilder()
+                ->select('COUNT(p.id)')
+                ->from(Personnage::class, 'p')
+                ->innerJoin('p.participants', 'part')
+                ->where('part.gn = :gn')
+                ->setParameter('gn', $gn)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            $participantCount = $entityManager->getRepository(Participant::class)->createQueryBuilder('part')
+                ->select('COUNT(part.id)')
+                ->where('part.gn = :gn')
+                ->setParameter('gn', $gn)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            $placesResult = $entityManager->createQueryBuilder()
+                ->select('SUM(g.classe_open) AS total_places')
+                ->from(Groupe::class, 'g')
+                ->innerJoin('g.groupeGns', 'ggn')
+                ->where('ggn.gn = :gn')
+                ->setParameter('gn', $gn)
+                ->getQuery()
+                ->getSingleScalarResult();
+            $places = (int) ($placesResult ?? 0);
+
+            $userCount = max((int) $entityManager->createQueryBuilder()
+                ->select('COUNT(DISTINCT part.user)')
+                ->from(Participant::class, 'part')
+                ->where('part.gn = :gn')
+                ->setParameter('gn', $gn)
+                ->getQuery()
+                ->getSingleScalarResult(), 1);
+
+            $classesStats = $entityManager->getRepository(Classe::class)->getQueryBuilderFindAllOrderedByLabel()
+                ->select('c.id', 'c.label_masculin AS label', 'COUNT(p.id) AS value')
+                ->leftJoin('c.personnages', 'p')
+                ->innerJoin('p.participants', 'part')
+                ->where('part.gn = :gn')
+                ->groupBy('c.id', 'c.label_masculin')
+                ->setParameter('gn', $gn)
+                ->getQuery()
+                ->getArrayResult();
+
+            $competencesStats = $entityManager->getRepository(Competence::class)->getQueryBuilderFindAllOrderedByLabel()
+                ->select('c.id', 'cf.label AS family_label', 'l.index AS level_index', 'l.label AS level_label', 'COUNT(p.id) AS value')
+                ->leftJoin('c.personnages', 'p')
+                ->innerJoin('p.participants', 'part')
+                ->where('part.gn = :gn')
+                ->groupBy('c.id', 'cf.label', 'l.index', 'l.label')
+                ->setParameter('gn', $gn)
+                ->getQuery()
+                ->getArrayResult();
+
+            $genresStats = $entityManager->createQueryBuilder()
+                ->select('g.id', 'g.label', 'COUNT(p.id) AS value')
+                ->from(Genre::class, 'g')
+                ->leftJoin('g.personnages', 'p')
+                ->innerJoin('p.participants', 'part')
+                ->where('part.gn = :gn')
+                ->groupBy('g.id', 'g.label')
+                ->orderBy('g.label')
+                ->setParameter('gn', $gn)
+                ->getQuery()
+                ->getArrayResult();
+
+            $constructionsStats = $entityManager->createQueryBuilder()
+                ->select('t.id', 't.nom', 'COUNT(con.id) AS value')
+                ->from('App\\Entity\\Territoire', 't')
+                ->leftJoin('t.constructions', 'con')
+                ->leftJoin('t.groupe', 'g')
+                ->leftJoin('g.groupeGns', 'ggn')
+                ->where('ggn.gn = :gn')
+                ->orWhere('t.groupe IS NULL')
+                ->groupBy('t.id', 't.nom')
+                ->orderBy('t.nom')
+                ->setParameter('gn', $gn)
+                ->getQuery()
+                ->getArrayResult();
+        } else {
+            $languesStats = $entityManager->createQueryBuilder()
+                ->select('l.id', 'l.label', 'COUNT(t.id) AS nb_territoires')
+                ->from(Langue::class, 'l')
+                ->leftJoin('l.territoires', 't')
+                ->groupBy('l.id', 'l.label')
+                ->orderBy('l.label')
+                ->getQuery()
+                ->getArrayResult();
+
+            $personnageCount = $entityManager->getRepository(Personnage::class)->count([]);
+            $userCount = max($entityManager->getRepository(User::class)->count([]), 1);
+            $participantCount = $entityManager->getRepository(Participant::class)->count([]);
+
+            $placesResult = $entityManager->getRepository(Groupe::class)->createQueryBuilder('g')
+                ->select('SUM(g.classe_open) AS total_places')
+                ->getQuery()
+                ->getSingleScalarResult();
+            $places = (int) ($placesResult ?? 0);
+
+            $classesStats = $entityManager->getRepository(Classe::class)->getQueryBuilderFindAllOrderedByLabel()
+                ->select('c.id', 'c.label_masculin AS label', 'COUNT(p.id) AS value')
+                ->leftJoin('c.personnages', 'p')
+                ->groupBy('c.id', 'c.label_masculin')
+                ->getQuery()
+                ->getArrayResult();
+
+            $competencesStats = $entityManager->getRepository(Competence::class)->getQueryBuilderFindAllOrderedByLabel()
+                ->select('c.id', 'cf.label AS family_label', 'l.index AS level_index', 'l.label AS level_label', 'COUNT(p.id) AS value')
+                ->leftJoin('c.personnages', 'p')
+                ->groupBy('c.id', 'cf.label', 'l.index', 'l.label')
+                ->getQuery()
+                ->getArrayResult();
+
+            $genresStats = $entityManager->createQueryBuilder()
+                ->select('g.id', 'g.label', 'COUNT(p.id) AS value')
+                ->from(Genre::class, 'g')
+                ->leftJoin('g.personnages', 'p')
+                ->groupBy('g.id', 'g.label')
+                ->orderBy('g.label')
+                ->getQuery()
+                ->getArrayResult();
+
+            $constructionsStats = [];
+        }
         $stats = [];
-        foreach ($langues as $langue) {
+        foreach ($languesStats as $langue) {
             $colors = RandomColor::many(2, [
                 'luminosity' => ['light', 'bright'],
                 'hue' => 'random',
             ]);
 
             $stats[] = [
-                'value' => $langue->getTerritoires()->count(),
+                'value' => (int) $langue['nb_territoires'],
                 'color' => $colors[0],
                 'highlight' => $colors[1],
-                'label' => $langue->getLabel(),
+                'label' => $langue['label'],
             ];
         }
 
-        $repo = $this->entityManager->getRepository(Classe::class);
-        $classes = $repo->findAll();
         $statClasses = [];
-        foreach ($classes as $classe) {
+        foreach ($classesStats as $classe) {
             $colors = RandomColor::many(2, [
                 'luminosity' => ['light', 'bright'],
                 'hue' => 'random',
             ]);
             $statClasses[] = [
-                'value' => $classe->getPersonnages()->count(),
+                'value' => (int) $classe['value'],
                 'color' => $colors[0],
                 'highlight' => $colors[1],
-                'label' => $classe->getLabel(),
+                'label' => $classe['label'],
             ];
         }
 
-        /**
-         * TODO:
-         * $repo = $entityManager->getRepository(Construction::class);
-         * $constructions = $repo->findAll();
-         * $statConstructions = [];
-         * foreach ($constructions as $construction) {
-         * $colors = RandomColor::many(2, [
-         * 'luminosity' => ['light', 'bright'],
-         * 'hue' => 'random',
-         * ]);
-         * $statConstructions[] = [
-         * 'value' => $construction->getTerritoires()->count(),
-         * 'color' => $colors[0],
-         * 'highlight' => $colors[1],
-         * 'label' => $construction->getLabel(),
-         * ];
-         * }
-         * */
-        $repo = $this->entityManager->getRepository(Competence::class);
-        $competences = $repo->findAllOrderedByLabel();
         $statCompetences = [];
         $statCompetencesFamily = [];
         $valueFamily = 0;
         $previousFamily = '';
-        foreach ($competences as $competence) {
+        foreach ($competencesStats as $competence) {
             $colors = RandomColor::many(2, [
                 'luminosity' => ['light', 'bright'],
                 'hue' => 'random',
             ]);
             $statCompetences[] = [
-                'value' => $competence->getPersonnages()->count(),
+                'value' => (int) $competence['value'],
                 'color' => $colors[0],
                 'highlight' => $colors[1],
-                'label' => $competence->getCompetenceFamily()->getLabel() . ' - ' . $competence->getLevel()->getLabel(),
+                'label' => $competence['family_label'] . ' - ' . $competence['level_label'],
             ];
 
-            if ($previousFamily !== $competence->getCompetenceFamily()->getLabel()) {
+            if ($previousFamily !== $competence['family_label']) {
                 $statCompetencesFamily[] = [
                     'value' => $valueFamily,
                     'color' => $colors[0],
                     'highlight' => $colors[1],
                     'label' => $previousFamily,
                 ];
-                $valueFamily = $competence->getPersonnages()->count();
-                $previousFamily = $competence->getCompetenceFamily()->getLabel();
+                $valueFamily = (int) $competence['value'];
+                $previousFamily = $competence['family_label'];
             } else {
-                $valueFamily += $competence->getPersonnages()->count();
+                $valueFamily += (int) $competence['value'];
             }
         }
 
-        $repo = $entityManager->getRepository(Personnage::class);
-        $personnages = $repo->findAll();
-
-        $repo = $entityManager->getRepository(User::class);
-        $users = $repo->findAll();
-
-        $repo = $entityManager->getRepository(Participant::class);
-        $participants = $repo->findAll();
-
-        $repo = $entityManager->getRepository(Groupe::class);
-        $groupes = $repo->findAll();
-        $places = 0;
-        foreach ($groupes as $groupe) {
-            $places += $groupe->getClasseOpen();
-        }
-
-        $repo = $entityManager->getRepository(Genre::class);
-        $genres = $repo->findAll();
         $statGenres = [];
-        foreach ($genres as $genre) {
+        foreach ($genresStats as $genre) {
             $colors = RandomColor::many(2, [
                 'luminosity' => ['light', 'bright'],
                 'hue' => 'random',
             ]);
             $statGenres[] = [
-                'value' => $genre->getPersonnages()->count(),
+                'value' => (int) $genre['value'],
                 'color' => $colors[0],
                 'highlight' => $colors[1],
-                'label' => $genre->getLabel(),
+                'label' => $genre['label'],
+            ];
+        }
+
+        $statConstructions = [];
+        foreach ($constructionsStats as $construction) {
+            $colors = RandomColor::many(2, [
+                'luminosity' => ['light', 'bright'],
+                'hue' => 'random',
+            ]);
+            $statConstructions[] = [
+                'value' => (int) $construction['value'],
+                'color' => $colors[0],
+                'highlight' => $colors[1],
+                'label' => $construction['nom'],
             ];
         }
 
@@ -698,11 +816,13 @@ class StatistiqueController extends AbstractController
             'genres' => json_encode($statGenres, \JSON_THROW_ON_ERROR),
             'competences' => json_encode($statCompetences, \JSON_THROW_ON_ERROR),
             'competencesFamily' => json_encode($statCompetencesFamily, \JSON_THROW_ON_ERROR),
-            'constructions' => [], // TODO json_encode($statConstructions, JSON_THROW_ON_ERROR),
-            'personnageCount' => \count($personnages),
-            'userCount' => max(\count($users), 1),
-            'participantCount' => \count($participants),
+            'constructions' => json_encode($statConstructions, \JSON_THROW_ON_ERROR),
+            'personnageCount' => $personnageCount,
+            'userCount' => $userCount,
+            'participantCount' => $participantCount,
             'places' => $places,
+            'gn' => $gn,
+            'allGns' => $allGns,
         ]);
     }
 
@@ -1022,9 +1142,17 @@ class StatistiqueController extends AbstractController
     #[Route('/stats', name: 'stats')]
     #[Route('/stats/list', name: 'stats.list')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE, Role::ADMIN, Role::WARGAME))]
-    public function statsAction(): Response
+    public function statsAction(Request $request, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('statistique/list.twig');
+        $allGns = $entityManager->getRepository(Gn::class)->findAll();
+        $selectedGnId = $request->query->get('gn', $allGns[0]?->getId());
+        $selectedGn = $entityManager->getRepository(Gn::class)->find($selectedGnId);
+
+        return $this->render('statistique/list.twig', [
+            'allGns' => $allGns,
+            'selectedGnId' => $selectedGnId,
+            'selectedGn' => $selectedGn,
+        ]);
     }
 
     #[Route('/stats/users/roles', name: 'stats.users.roles')]
