@@ -57,7 +57,7 @@
     "twig/extra-bundle": "*",
     "twig/intl-extra": "^3.21",
     "twig/markdown-extra": "*",
-    "twig/twig": "^3.21"
+    "twig/twig": "^3.26"
   },
   "config": {
     "allow-plugins": {
