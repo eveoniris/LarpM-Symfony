@@ -1,7 +1,5 @@
 controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+    resource: ../src/Controller/
     type: attribute
 api_login_check:
     path: /api/login_check

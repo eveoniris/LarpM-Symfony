@@ -151,6 +151,12 @@ parameters:
 			path: src/Controller/RumeurController.php
 
 		-
+			message: '#^Using nullsafe method call on non\-nullable type App\\Entity\\Gn\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Controller/StatistiqueController.php
+
+		-
 			message: '#^Method App\\Controller\\StockObjetController\:\:handleObjetPost\(\) has parameter \$form with generic interface Symfony\\Component\\Form\\FormInterface but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -175,6 +181,18 @@ parameters:
 			path: src/Controller/UserController.php
 
 		-
+			message: '#^Property App\\Entity\\BaseAge\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseAge.php
+
+		-
+			message: '#^Property App\\Entity\\BaseAppelation\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseAppelation.php
+
+		-
 			message: '#^PHPDoc tag @var for property App\\Entity\\BaseAttributeType\:\:\$competenceAttributes with type array\<App\\Entity\\CompetenceAttribute\>\|Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\CompetenceAttribute\> is not subtype of native type Doctrine\\Common\\Collections\\Collection\.$#'
 			identifier: property.phpDocType
 			count: 1
@@ -187,8 +205,20 @@ parameters:
 			path: src/Entity/BaseAttributeType.php
 
 		-
+			message: '#^Property App\\Entity\\BaseAttributeType\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseAttributeType.php
+
+		-
 			message: '#^PHPDoc tag @var for property App\\Entity\\BaseBillet\:\:\$participants with type array\<App\\Entity\\Participant\>\|Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\Participant\> is not subtype of native type Doctrine\\Common\\Collections\\Collection\|null\.$#'
 			identifier: property.phpDocType
+			count: 1
+			path: src/Entity/BaseBillet.php
+
+		-
+			message: '#^Property App\\Entity\\BaseBillet\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
 			count: 1
 			path: src/Entity/BaseBillet.php
 
@@ -271,10 +301,70 @@ parameters:
 			path: src/Entity/BaseCompetence.php
 
 		-
+			message: '#^Property App\\Entity\\BaseConnaissance\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseConnaissance.php
+
+		-
+			message: '#^Property App\\Entity\\BaseDomaine\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseDomaine.php
+
+		-
+			message: '#^Property App\\Entity\\BaseGn\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseGn.php
+
+		-
 			message: '#^Property App\\Entity\\BaseGroupe\:\:\$groupeBonus \(Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\GroupeBonus\>\|null\) is never assigned null so it can be removed from the property type\.$#'
 			identifier: property.unusedType
 			count: 1
 			path: src/Entity/BaseGroupe.php
+
+		-
+			message: '#^Property App\\Entity\\BaseIngredient\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseIngredient.php
+
+		-
+			message: '#^Property App\\Entity\\BaseIntrigue\:\:\$description \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseIntrigue.php
+
+		-
+			message: '#^Property App\\Entity\\BaseIntrigue\:\:\$text \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseIntrigue.php
+
+		-
+			message: '#^Property App\\Entity\\BaseIntrigue\:\:\$titre \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseIntrigue.php
+
+		-
+			message: '#^Property App\\Entity\\BaseLangue\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseLangue.php
+
+		-
+			message: '#^Property App\\Entity\\BaseObjet\:\:\$nom \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseObjet.php
+
+		-
+			message: '#^Property App\\Entity\\BaseObjet\:\:\$numero \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseObjet.php
 
 		-
 			message: '#^Property App\\Entity\\BasePersonnage\:\:\$apprentissageEnseignants \(Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\PersonnageApprentissage\>\|null\) is never assigned null so it can be removed from the property type\.$#'
@@ -295,10 +385,136 @@ parameters:
 			path: src/Entity/BasePersonnage.php
 
 		-
+			message: '#^Property App\\Entity\\BasePersonnageLangues\:\:\$source \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BasePersonnageLangues.php
+
+		-
+			message: '#^Property App\\Entity\\BasePhoto\:\:\$extension \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BasePhoto.php
+
+		-
+			message: '#^Property App\\Entity\\BasePhoto\:\:\$filename \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BasePhoto.php
+
+		-
+			message: '#^Property App\\Entity\\BasePhoto\:\:\$real_name \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BasePhoto.php
+
+		-
+			message: '#^Property App\\Entity\\BasePotion\:\:\$numero \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BasePotion.php
+
+		-
+			message: '#^Property App\\Entity\\BaseQuality\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseQuality.php
+
+		-
+			message: '#^Property App\\Entity\\BaseQuestion\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseQuestion.php
+
+		-
+			message: '#^Property App\\Entity\\BaseRarete\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseRarete.php
+
+		-
+			message: '#^Property App\\Entity\\BaseRelecture\:\:\$remarque \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseRelecture.php
+
+		-
+			message: '#^Property App\\Entity\\BaseReligion\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseReligion.php
+
+		-
+			message: '#^Property App\\Entity\\BaseReligionLevel\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseReligionLevel.php
+
+		-
+			message: '#^Property App\\Entity\\BaseRule\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseRule.php
+
+		-
+			message: '#^Property App\\Entity\\BaseRule\:\:\$url \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseRule.php
+
+		-
+			message: '#^Property App\\Entity\\BaseRumeur\:\:\$text \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseRumeur.php
+
+		-
+			message: '#^Property App\\Entity\\BaseRumeur\:\:\$visibility \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseRumeur.php
+
+		-
+			message: '#^Property App\\Entity\\BaseSecondaryGroupType\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseSecondaryGroupType.php
+
+		-
+			message: '#^Property App\\Entity\\BaseSort\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseSort.php
+
+		-
+			message: '#^Property App\\Entity\\BaseSorts\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseSorts.php
+
+		-
+			message: '#^Property App\\Entity\\BaseTerritoire\:\:\$nom \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseTerritoire.php
+
+		-
 			message: '#^Property App\\Entity\\BaseTerritoire\:\:\$originesBonus \(Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\OrigineBonus\>\|null\) is never assigned null so it can be removed from the property type\.$#'
 			identifier: property.unusedType
 			count: 1
 			path: src/Entity/BaseTerritoire.php
+
+		-
+			message: '#^Property App\\Entity\\BaseTitreTerritoire\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseTitreTerritoire.php
+
+		-
+			message: '#^Property App\\Entity\\BaseToken\:\:\$label \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/BaseToken.php
 
 		-
 			message: '#^Instanceof between App\\Enum\\BonusPeriode and App\\Enum\\BonusPeriode will always evaluate to true\.$#'
@@ -331,6 +547,30 @@ parameters:
 			path: src/Entity/Gn.php
 
 		-
+			message: '#^Property App\\Entity\\BaseGroupeGn\:\:\$agents \(int\) on left side of \?\?\= is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/GroupeGn.php
+
+		-
+			message: '#^Property App\\Entity\\BaseGroupeGn\:\:\$bateaux \(int\) on left side of \?\?\= is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/GroupeGn.php
+
+		-
+			message: '#^Property App\\Entity\\BaseGroupeGn\:\:\$initiative \(int\) on left side of \?\?\= is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/GroupeGn.php
+
+		-
+			message: '#^Property App\\Entity\\BaseGroupeGn\:\:\$sieges \(int\) on left side of \?\?\= is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: src/Entity/GroupeGn.php
+
+		-
 			message: '#^Method App\\Entity\\Loi\:\:getPrintLabel\(\) should return string\|null but returns Symfony\\Component\\String\\AbstractUnicodeString\.$#'
 			identifier: return.type
 			count: 1
@@ -347,6 +587,24 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: src/Entity/Objet.php
+
+		-
+			message: '#^Access to an undefined property App\\Entity\\Personnage\:\:\$baseUser\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Entity/Personnage.php
+
+		-
+			message: '#^Call to an undefined method App\\Entity\\BaseUser\:\:getPersonnageSecondary\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Entity/Personnage.php
+
+		-
+			message: '#^Call to an undefined method App\\Entity\\BaseUser\:\:setPersonnageSecondary\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Entity/Personnage.php
 
 		-
 			message: '#^Method App\\Entity\\Personnage\:\:getPrintLabel\(\) should return string\|null but returns Symfony\\Component\\String\\AbstractUnicodeString\.$#'
@@ -371,6 +629,12 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: src/Entity/PersonnageBackground.php
+
+		-
+			message: '#^Doctrine\\Common\\Collections\\ArrayCollection\<\*NEVER\*, \*NEVER\*\> does not accept array\<string, App\\Entity\\Restriction\|int\>\.$#'
+			identifier: offsetAssign.valueType
+			count: 1
+			path: src/Entity/Restauration.php
 
 		-
 			message: '#^Property App\\Entity\\Territoire\:\:\$valideOrigineBonus in isset\(\) is not nullable nor uninitialized\.$#'
@@ -685,6 +949,24 @@ parameters:
 			path: src/Form/Classe/ClasseType.php
 
 		-
+			message: '#^Parameter \#1 \$exactly of class Symfony\\Component\\Validator\\Constraints\\Length constructor expects int\<1, max\>\|null, array\{max\: 450\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/Classe/ClasseType.php
+
+		-
+			message: '#^Parameter \#1 \$exactly of class Symfony\\Component\\Validator\\Constraints\\Length constructor expects int\<1, max\>\|null, array\{max\: 45\} given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/Classe/ClasseType.php
+
+		-
+			message: '#^Parameter \#1 \$exactly of class Symfony\\Component\\Validator\\Constraints\\Length constructor expects int\<1, max\>\|null, array\{max\: 90\} given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Form/Classe/ClasseType.php
+
+		-
 			message: '#^Class App\\Form\\ClasseType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -699,6 +981,18 @@ parameters:
 		-
 			message: '#^Class App\\Form\\CompetenceFamilyType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
+			count: 1
+			path: src/Form/CompetenceFamilyType.php
+
+		-
+			message: '#^Parameter \#1 \$exactly of class Symfony\\Component\\Validator\\Constraints\\Length constructor expects int\<1, max\>\|null, array\{max\: 450\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Form/CompetenceFamilyType.php
+
+		-
+			message: '#^Parameter \#1 \$exactly of class Symfony\\Component\\Validator\\Constraints\\Length constructor expects int\<1, max\>\|null, array\{max\: 45\} given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Form/CompetenceFamilyType.php
 
@@ -765,6 +1059,12 @@ parameters:
 		-
 			message: '#^Class App\\Form\\Debriefing\\DebriefingType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
+			count: 1
+			path: src/Form/Debriefing/DebriefingType.php
+
+		-
+			message: '#^Parameter \#1 \$exactly of class Symfony\\Component\\Validator\\Constraints\\Length constructor expects int\<1, max\>\|null, array\{max\: 45\} given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Form/Debriefing/DebriefingType.php
 
@@ -928,6 +1228,12 @@ parameters:
 			message: '#^Class App\\Form\\Groupe\\GroupeLangueType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
+			path: src/Form/Groupe/GroupeLangueType.php
+
+		-
+			message: '#^Parameter \#1 \$exactly of class Symfony\\Component\\Validator\\Constraints\\Length constructor expects int\<1, max\>\|null, array\{max\: 45\} given\.$#'
+			identifier: argument.type
+			count: 2
 			path: src/Form/Groupe/GroupeLangueType.php
 
 		-
@@ -1113,6 +1419,12 @@ parameters:
 		-
 			message: '#^Class App\\Form\\LieuType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
+			count: 1
+			path: src/Form/LieuType.php
+
+		-
+			message: '#^Parameter \#1 \$exactly of class Symfony\\Component\\Validator\\Constraints\\Length constructor expects int\<1, max\>\|null, array\{max\: 45\} given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Form/LieuType.php
 
@@ -1455,6 +1767,12 @@ parameters:
 		-
 			message: '#^Class App\\Form\\PersonnageXpType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
+			count: 1
+			path: src/Form/PersonnageXpType.php
+
+		-
+			message: '#^Parameter \#1 \$exactly of class Symfony\\Component\\Validator\\Constraints\\Length constructor expects int\<1, max\>\|null, array\{max\: 100\} given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Form/PersonnageXpType.php
 
@@ -1813,6 +2131,12 @@ parameters:
 			path: src/Form/Territoire/TerritoireDeleteType.php
 
 		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireFrontaliersCulturelType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireFrontaliersCulturelType.php
+
+		-
 			message: '#^Class App\\Form\\Territoire\\TerritoireIngredientsType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -1823,6 +2147,12 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Form/Territoire/TerritoireLoiType.php
+
+		-
+			message: '#^Class App\\Form\\Territoire\\TerritoireSanctuaireReligionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Territoire/TerritoireSanctuaireReligionType.php
 
 		-
 			message: '#^Class App\\Form\\Territoire\\TerritoireStatutType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
@@ -2317,6 +2647,18 @@ parameters:
 			path: src/Repository/UserRepository01.php
 
 		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: src/Service/CompetenceService.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type App\\Entity\\OrigineBonus\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Service/CompetenceService.php
+
+		-
 			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -2333,6 +2675,12 @@ parameters:
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Service/DataFormatterService.php
+
+		-
+			message: '#^Binary operation "\+\=" between array\<''''\|int, array\{nb\: int, label\: string\}\>\|int\|string and int results in an error\.$#'
+			identifier: assignOp.invalid
+			count: 1
+			path: src/Service/GroupeService.php
 
 		-
 			message: '#^Call to function is_numeric\(\) with int will always evaluate to true\.$#'

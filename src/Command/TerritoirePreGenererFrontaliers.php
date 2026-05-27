@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * # Test sans écrire en base
- * docker compose exec frankenphp php bin/console app:territoire-pre-generer-frontaliers --dry-run
+ * docker compose exec frankenphp php bin/console app:territoire-pre-generer-frontaliers --dry-run.
  *
  * # Lancement réel (10 km par défaut)
  * docker compose exec frankenphp php bin/console app:territoire-pre-generer-frontaliers
