@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -581,7 +581,7 @@ class StatistiqueController extends AbstractController
         if (!$gn && $request->query->get('gn')) {
             $gn = $entityManager->getRepository(Gn::class)->find($request->query->get('gn'));
         }
-        $gn = $gn ?? $entityManager->getRepository(Gn::class)->findNext();
+        $gn ??= $entityManager->getRepository(Gn::class)->findNext();
         $allGns = $entityManager->getRepository(Gn::class)->findAll();
 
         if ($gn) {
