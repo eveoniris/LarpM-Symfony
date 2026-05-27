@@ -280,7 +280,7 @@ class CompetenceService
                         if (($bonusJsonData['id'] ?? null) === $family->getId()) {
                             $canApply = true;
                         }
-                        if (strtoupper($bonusJsonData['type'] ?? '') === strtoupper($family->getCompetenceFamilyType()?->value ?? '')) {
+                        if (strtoupper($bonusJsonData['type'] ?? '') === strtoupper($family->getCompetenceFamilyType()->value ?? '')) {
                             $canApply = true;
                         }
 
@@ -518,9 +518,7 @@ class CompetenceService
     public function getService(string $class): self
     {
         /** @var self $service */
-        $service = new $class($this->entityManager, $this->urlGenerator, $this->security, $this->conditionService);
-
-        return $service;
+        return new $class($this->entityManager, $this->urlGenerator, $this->security, $this->conditionService);
     }
 
     /** @return array<int|string, string> */

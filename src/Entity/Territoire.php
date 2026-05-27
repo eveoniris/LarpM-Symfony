@@ -26,7 +26,7 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
     private ArrayCollection $valideOrigineBonus;
 
     /** @var Collection<int, Territoire> */
-    #[ORM\ManyToMany(targetEntity: Territoire::class)]
+    #[ORM\ManyToMany(targetEntity: self::class)]
     #[ORM\JoinTable(name: 'territoire_frontalier_culturel')]
     #[ORM\JoinColumn(name: 'territoire_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'territoire_frontalier_id', referencedColumnName: 'id')]
@@ -318,7 +318,7 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
 
     public function isStable(): bool
     {
-        return TerritoireStatut::STABLE->value === strtolower($this->getStatut()?->value ?? '');
+        return TerritoireStatut::STABLE->value === strtolower($this->getStatut()->value ?? '');
     }
 
     /**
@@ -505,7 +505,7 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
         return $this->frontaliersCulturels;
     }
 
-    public function addFrontalierCulturel(Territoire $territoire): static
+    public function addFrontalierCulturel(self $territoire): static
     {
         if (!$this->frontaliersCulturels->contains($territoire)) {
             $this->frontaliersCulturels->add($territoire);
@@ -514,7 +514,7 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
         return $this;
     }
 
-    public function removeFrontalierCulturel(Territoire $territoire): static
+    public function removeFrontalierCulturel(self $territoire): static
     {
         $this->frontaliersCulturels->removeElement($territoire);
 

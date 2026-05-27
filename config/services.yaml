@@ -34,6 +34,10 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    # Register endroid QR code controller manually (route_enabled: false in config)
+    Endroid\QrCodeBundle\Controller\GenerateController:
+        tags: ['controller.service_arguments']
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     App\Service\FileUploader:

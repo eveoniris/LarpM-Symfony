@@ -15,8 +15,8 @@ use App\Form\Gn\GnType;
 use App\Manager\GroupeManager;
 use App\Repository\ClasseRepository;
 use App\Repository\GnRepository;
-use App\Repository\LangueRepository;
 use App\Repository\GroupeGnRepository;
+use App\Repository\LangueRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageRepository;
 use App\Repository\PersonnageSecondaireRepository;
@@ -34,7 +34,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Twig\Environment;
 
