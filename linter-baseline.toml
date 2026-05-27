@@ -9,13 +9,7 @@ count = 1
 [[issues]]
 file = "src/Command/GnGiveLearning.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Command/GnGiveLearning.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
@@ -44,9 +38,21 @@ count = 1
 
 [[issues]]
 file = "src/Command/GnUnLock.php"
+code = "assert-description"
+message = "Missing description in assert function."
+count = 1
+
+[[issues]]
+file = "src/Command/GnUnLock.php"
 code = "no-assign-in-condition"
 message = "Avoid assignments in conditions."
 count = 1
+
+[[issues]]
+file = "src/Command/TerritoirePreGenererFrontaliers.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 2
 
 [[issues]]
 file = "src/Command/VieillirPersonnages.php"
@@ -58,7 +64,7 @@ count = 1
 file = "src/Controller/AbstractController.php"
 code = "assert-description"
 message = "Missing description in assert function."
-count = 1
+count = 2
 
 [[issues]]
 file = "src/Controller/AbstractController.php"
@@ -76,18 +82,18 @@ count = 4
 file = "src/Controller/AbstractController.php"
 code = "halstead"
 message = "Method has a high halstead effort"
-count = 2
+count = 1
 
 [[issues]]
 file = "src/Controller/AbstractController.php"
 code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
 file = "src/Controller/AbstractController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (5.760000000000001)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -247,6 +253,12 @@ message = "Controller classes should be declared as `final`."
 count = 1
 
 [[issues]]
+file = "src/Controller/AnnonceController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 1
+
+[[issues]]
 file = "src/Controller/AppelationController.php"
 code = "cyclomatic-complexity"
 message = "Class has high complexity."
@@ -322,6 +334,12 @@ count = 3
 file = "src/Controller/BilletController.php"
 code = "final-controller"
 message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/BilletController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
 count = 1
 
 [[issues]]
@@ -488,6 +506,12 @@ count = 1
 
 [[issues]]
 file = "src/Controller/DocumentController.php"
+code = "assert-description"
+message = "Missing description in assert function."
+count = 1
+
+[[issues]]
+file = "src/Controller/DocumentController.php"
 code = "excessive-parameter-list"
 message = "Parameter list is too long."
 count = 1
@@ -524,6 +548,12 @@ count = 3
 
 [[issues]]
 file = "src/Controller/EconomieController.php"
+code = "assert-description"
+message = "Missing description in assert function."
+count = 1
+
+[[issues]]
+file = "src/Controller/EconomieController.php"
 code = "cyclomatic-complexity"
 message = "Class has high complexity."
 count = 1
@@ -537,25 +567,13 @@ count = 1
 [[issues]]
 file = "src/Controller/EconomieController.php"
 code = "halstead"
-message = "Method has a high halstead difficulty"
-count = 1
-
-[[issues]]
-file = "src/Controller/EconomieController.php"
-code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Controller/EconomieController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume, difficulty, and effort"
 count = 1
 
 [[issues]]
 file = "src/Controller/EconomieController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.87)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -620,6 +638,12 @@ count = 1
 
 [[issues]]
 file = "src/Controller/GnController.php"
+code = "assert-description"
+message = "Missing description in assert function."
+count = 4
+
+[[issues]]
+file = "src/Controller/GnController.php"
 code = "cyclomatic-complexity"
 message = "Class has high complexity."
 count = 1
@@ -639,7 +663,7 @@ count = 1
 [[issues]]
 file = "src/Controller/GnController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.23)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -680,6 +704,12 @@ count = 1
 
 [[issues]]
 file = "src/Controller/GroupeController.php"
+code = "assert-description"
+message = "Missing description in assert function."
+count = 2
+
+[[issues]]
+file = "src/Controller/GroupeController.php"
 code = "cyclomatic-complexity"
 message = "Class has high complexity."
 count = 1
@@ -706,7 +736,7 @@ count = 1
 file = "src/Controller/GroupeController.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 2
+count = 1
 
 [[issues]]
 file = "src/Controller/GroupeController.php"
@@ -717,7 +747,7 @@ count = 5
 [[issues]]
 file = "src/Controller/GroupeController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (11.450000000000001)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -754,7 +784,7 @@ count = 3
 file = "src/Controller/GroupeController.php"
 code = "no-assign-in-condition"
 message = "Avoid assignments in conditions."
-count = 11
+count = 10
 
 [[issues]]
 file = "src/Controller/GroupeController.php"
@@ -778,12 +808,18 @@ count = 1
 file = "src/Controller/GroupeController.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
-count = 9
+count = 7
 
 [[issues]]
 file = "src/Controller/GroupeController.php"
 code = "too-many-methods"
 message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "assert-description"
+message = "Missing description in assert function."
 count = 1
 
 [[issues]]
@@ -807,7 +843,7 @@ count = 1
 [[issues]]
 file = "src/Controller/GroupeGnController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.5700000000000003)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -861,7 +897,7 @@ count = 1
 [[issues]]
 file = "src/Controller/GroupeSecondaireController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (3.5)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -939,7 +975,7 @@ count = 3
 [[issues]]
 file = "src/Controller/HomepageController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.59)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -968,6 +1004,12 @@ count = 1
 
 [[issues]]
 file = "src/Controller/InstallController.php"
+code = "assert-description"
+message = "Missing description in assert function."
+count = 2
+
+[[issues]]
+file = "src/Controller/InstallController.php"
 code = "final-controller"
 message = "Controller classes should be declared as `final`."
 count = 1
@@ -975,13 +1017,31 @@ count = 1
 [[issues]]
 file = "src/Controller/InstallController.php"
 code = "halstead"
-message = "Method has a high halstead effort"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
-file = "src/Controller/InstallController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+file = "src/Controller/InterController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/InterController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/InterController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score."
+count = 1
+
+[[issues]]
+file = "src/Controller/InterController.php"
+code = "literal-named-argument"
+message = "Literal argument `'r'` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
@@ -999,13 +1059,7 @@ count = 1
 [[issues]]
 file = "src/Controller/IntrigueController.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Controller/IntrigueController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
@@ -1017,7 +1071,7 @@ count = 1
 [[issues]]
 file = "src/Controller/IntrigueController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (8.01)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1102,6 +1156,12 @@ count = 1
 file = "src/Controller/LevelController.php"
 code = "final-controller"
 message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/LieuController.php"
+code = "assert-description"
+message = "Missing description in assert function."
 count = 1
 
 [[issues]]
@@ -1293,13 +1353,7 @@ count = 1
 [[issues]]
 file = "src/Controller/ParticipantController.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 3
-
-[[issues]]
-file = "src/Controller/ParticipantController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 3
 
 [[issues]]
@@ -1317,7 +1371,7 @@ count = 2
 [[issues]]
 file = "src/Controller/ParticipantController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (10.090000000000002)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1390,13 +1444,13 @@ count = 1
 file = "src/Controller/PersonnageController.php"
 code = "halstead"
 message = "Method has a high halstead effort"
-count = 4
+count = 3
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "halstead"
-message = "Method has a high halstead volume"
-count = 2
+message = "Method has a high halstead volume and effort"
+count = 3
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -1413,7 +1467,7 @@ count = 3
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (29.440000000000005)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1468,7 +1522,7 @@ count = 3
 file = "src/Controller/PersonnageController.php"
 code = "no-isset"
 message = "Use of the `isset` construct."
-count = 4
+count = 5
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -1544,6 +1598,12 @@ count = 1
 
 [[issues]]
 file = "src/Controller/ReligionController.php"
+code = "assert-description"
+message = "Missing description in assert function."
+count = 1
+
+[[issues]]
+file = "src/Controller/ReligionController.php"
 code = "cyclomatic-complexity"
 message = "Class has high complexity."
 count = 1
@@ -1569,7 +1629,7 @@ count = 2
 [[issues]]
 file = "src/Controller/ReligionController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.72)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1622,6 +1682,12 @@ count = 2
 
 [[issues]]
 file = "src/Controller/RestaurationController.php"
+code = "assert-description"
+message = "Missing description in assert function."
+count = 2
+
+[[issues]]
+file = "src/Controller/RestaurationController.php"
 code = "final-controller"
 message = "Controller classes should be declared as `final`."
 count = 1
@@ -1649,6 +1715,12 @@ file = "src/Controller/RestaurationController.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
 count = 2
+
+[[issues]]
+file = "src/Controller/RestrictionController.php"
+code = "assert-description"
+message = "Missing description in assert function."
+count = 1
 
 [[issues]]
 file = "src/Controller/RestrictionController.php"
@@ -1737,13 +1809,7 @@ count = 1
 [[issues]]
 file = "src/Controller/StatistiqueController.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 2
-
-[[issues]]
-file = "src/Controller/StatistiqueController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 2
 
 [[issues]]
@@ -1755,14 +1821,14 @@ count = 2
 [[issues]]
 file = "src/Controller/StatistiqueController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (6.5600000000000005)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
 file = "src/Controller/StatistiqueController.php"
 code = "no-else-clause"
 message = "Avoid `else` clauses."
-count = 1
+count = 2
 
 [[issues]]
 file = "src/Controller/StatistiqueController.php"
@@ -1786,7 +1852,7 @@ count = 1
 file = "src/Controller/StatistiqueController.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
-count = 3
+count = 1
 
 [[issues]]
 file = "src/Controller/StatistiqueController.php"
@@ -1838,8 +1904,14 @@ count = 1
 
 [[issues]]
 file = "src/Controller/StockObjetController.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Controller/StockObjetController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (1.92)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1859,6 +1931,12 @@ file = "src/Controller/StockObjetController.php"
 code = "no-empty"
 message = "Use of the `empty` construct."
 count = 2
+
+[[issues]]
+file = "src/Controller/StockObjetController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 1
 
 [[issues]]
 file = "src/Controller/StockObjetController.php"
@@ -1906,6 +1984,12 @@ count = 1
 file = "src/Controller/StockTagController.php"
 code = "no-else-clause"
 message = "Avoid `elseif` clauses."
+count = 1
+
+[[issues]]
+file = "src/Controller/StrategieController.php"
+code = "assert-description"
+message = "Missing description in assert function."
 count = 1
 
 [[issues]]
@@ -1965,26 +2049,20 @@ count = 1
 [[issues]]
 file = "src/Controller/TerritoireController.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Controller/TerritoireController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
 file = "src/Controller/TerritoireController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (4.01)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
 file = "src/Controller/TerritoireController.php"
 code = "literal-named-argument"
 message = "Literal argument `true` should be passed as a named argument for clarity."
-count = 2
+count = 4
 
 [[issues]]
 file = "src/Controller/TerritoireController.php"
@@ -2078,8 +2156,14 @@ count = 1
 
 [[issues]]
 file = "src/Controller/UserController.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Controller/UserController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (4.9)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2134,7 +2218,7 @@ count = 1
 file = "src/Controller/UserController.php"
 code = "no-shorthand-ternary"
 message = "Use of the shorthand ternary operator."
-count = 1
+count = 2
 
 [[issues]]
 file = "src/Controller/UserController.php"
@@ -2323,6 +2407,12 @@ message = "Class has too many properties."
 count = 1
 
 [[issues]]
+file = "src/Entity/BaseInterJeu.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
 file = "src/Entity/BaseIntrigue.php"
 code = "too-many-methods"
 message = "Class has too many methods."
@@ -2421,7 +2511,7 @@ count = 1
 [[issues]]
 file = "src/Entity/BasePersonnage.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (3.0200000000000005)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2534,6 +2624,12 @@ count = 1
 
 [[issues]]
 file = "src/Entity/BaseTerritoire.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseTerritoire.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
@@ -2589,7 +2685,7 @@ count = 1
 [[issues]]
 file = "src/Entity/Bonus.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.93)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2643,7 +2739,7 @@ count = 1
 [[issues]]
 file = "src/Entity/Competence.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.8500000000000005)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2745,7 +2841,7 @@ count = 3
 [[issues]]
 file = "src/Entity/Gn.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (4.44)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2793,7 +2889,7 @@ count = 1
 [[issues]]
 file = "src/Entity/Groupe.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (9.330000000000002)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2853,7 +2949,7 @@ count = 2
 [[issues]]
 file = "src/Entity/Participant.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.81)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2877,6 +2973,12 @@ count = 1
 [[issues]]
 file = "src/Entity/Personnage.php"
 code = "halstead"
+message = "Method has a high halstead difficulty"
+count = 1
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "halstead"
 message = "Method has a high halstead effort"
 count = 1
 
@@ -2895,7 +2997,7 @@ count = 11
 [[issues]]
 file = "src/Entity/Personnage.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (22.61)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2956,7 +3058,7 @@ count = 3
 file = "src/Entity/Personnage.php"
 code = "no-shorthand-ternary"
 message = "Use of the shorthand ternary operator."
-count = 1
+count = 3
 
 [[issues]]
 file = "src/Entity/Personnage.php"
@@ -3019,6 +3121,12 @@ message = "Use identity inequality `!==` instead of inequality comparison `!=`."
 count = 2
 
 [[issues]]
+file = "src/Entity/Question.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 1
+
+[[issues]]
 file = "src/Entity/Religion.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
@@ -3026,14 +3134,14 @@ count = 1
 
 [[issues]]
 file = "src/Entity/Restauration.php"
-code = "block-statement"
-message = "`if` statement should use a block body."
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
 count = 1
 
 [[issues]]
 file = "src/Entity/Restauration.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (1.7000000000000002)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3087,7 +3195,7 @@ count = 2
 [[issues]]
 file = "src/Entity/Territoire.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (4.44)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3141,7 +3249,7 @@ count = 1
 [[issues]]
 file = "src/Entity/User.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (3.9000000000000004)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3202,7 +3310,7 @@ count = 2
 file = "src/Entity/User.php"
 code = "no-shorthand-ternary"
 message = "Use of the shorthand ternary operator."
-count = 4
+count = 5
 
 [[issues]]
 file = "src/Entity/User.php"
@@ -3259,109 +3367,103 @@ message = "TODO should be tagged with (@username) or (#issue)."
 count = 1
 
 [[issues]]
-file = "src/Form/Bonus/BonusForm.php"
+file = "src/Form/Bonus/BonusType.php"
 code = "literal-named-argument"
 message = "Literal argument `512` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
-file = "src/Form/Bonus/BonusForm.php"
+file = "src/Form/Bonus/BonusType.php"
 code = "literal-named-argument"
 message = "Literal argument `true` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
-file = "src/Form/DeleteForm.php"
+file = "src/Form/DeleteType.php"
 code = "no-isset"
 message = "Use of the `isset` construct."
 count = 1
 
 [[issues]]
-file = "src/Form/DocumentForm.php"
+file = "src/Form/DocumentType.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
 count = 1
 
 [[issues]]
-file = "src/Form/Espece/EspeceForm.php"
+file = "src/Form/Espece/EspeceType.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
 count = 1
 
 [[issues]]
-file = "src/Form/EtatCivilForm.php"
+file = "src/Form/EtatCivilType.php"
 code = "literal-named-argument"
 message = "Literal argument `2020` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
-file = "src/Form/GroupeGn/GroupeGnForm.php"
+file = "src/Form/GroupeGn/GroupeGnType.php"
 code = "cyclomatic-complexity"
 message = "Class has high complexity."
 count = 1
 
 [[issues]]
-file = "src/Form/GroupeGn/GroupeGnForm.php"
+file = "src/Form/GroupeGn/GroupeGnType.php"
 code = "halstead"
-message = "Method has a high halstead effort"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
-file = "src/Form/GroupeGn/GroupeGnForm.php"
-code = "halstead"
-message = "Method has a high halstead volume"
-count = 1
-
-[[issues]]
-file = "src/Form/GroupeGn/GroupeGnForm.php"
+file = "src/Form/GroupeGn/GroupeGnType.php"
 code = "no-empty"
 message = "Use of the `empty` construct."
 count = 2
 
 [[issues]]
-file = "src/Form/GroupeGn/GroupeGnForm.php"
+file = "src/Form/GroupeGn/GroupeGnType.php"
 code = "prefer-arrow-function"
 message = "This closure can be simplified to a more concise arrow function."
 count = 1
 
 [[issues]]
-file = "src/Form/GroupeGn/GroupeGnForm.php"
+file = "src/Form/GroupeGn/GroupeGnType.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
 count = 4
 
 [[issues]]
-file = "src/Form/GroupeSecondaire/GroupeSecondaireForm.php"
+file = "src/Form/GroupeSecondaire/GroupeSecondaireType.php"
 code = "no-empty"
 message = "Use of the `empty` construct."
 count = 1
 
 [[issues]]
-file = "src/Form/Item/ItemForm.php"
+file = "src/Form/Item/ItemType.php"
 code = "halstead"
 message = "Method has a high halstead volume"
 count = 1
 
 [[issues]]
-file = "src/Form/PriereForm.php"
+file = "src/Form/PriereType.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
 count = 1
 
 [[issues]]
-file = "src/Form/Territoire/TerritoireForm.php"
+file = "src/Form/Territoire/TerritoireType.php"
 code = "halstead"
 message = "Method has a high halstead volume"
 count = 1
 
 [[issues]]
-file = "src/Form/TerritoireForm.php"
+file = "src/Form/TerritoireType.php"
 code = "halstead"
 message = "Method has a high halstead volume"
 count = 1
 
 [[issues]]
-file = "src/Form/UserFindForm.php"
+file = "src/Form/UserFindType.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
 count = 1
@@ -3388,6 +3490,12 @@ count = 1
 file = "src/Helper/StringHelper.php"
 code = "no-empty"
 message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Helper/StringHelper.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
 count = 1
 
 [[issues]]
@@ -3447,7 +3555,7 @@ count = 1
 [[issues]]
 file = "src/Manager/PersonnageManager.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (4.53)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3495,7 +3603,7 @@ count = 1
 [[issues]]
 file = "src/Manager/RandomColor.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.7)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3585,13 +3693,7 @@ count = 1
 [[issues]]
 file = "src/Repository/BaseRepository.php"
 code = "halstead"
-message = "Method has a high halstead difficulty"
-count = 1
-
-[[issues]]
-file = "src/Repository/BaseRepository.php"
-code = "halstead"
-message = "Method has a high halstead effort"
+message = "Method has a high halstead difficulty and effort"
 count = 1
 
 [[issues]]
@@ -3603,7 +3705,7 @@ count = 1
 [[issues]]
 file = "src/Repository/BaseRepository.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (5.800000000000001)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3652,7 +3754,7 @@ count = 6
 file = "src/Repository/BaseRepository.php"
 code = "no-shorthand-ternary"
 message = "Use of the shorthand ternary operator."
-count = 1
+count = 2
 
 [[issues]]
 file = "src/Repository/BaseRepository.php"
@@ -3764,12 +3866,6 @@ count = 1
 
 [[issues]]
 file = "src/Repository/GnRepository.php"
-code = "tagged-todo"
-message = "TODO should be tagged with (@username) or (#issue)."
-count = 1
-
-[[issues]]
-file = "src/Repository/GnRepository.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
@@ -3778,7 +3874,7 @@ count = 1
 file = "src/Repository/GroupeGnRepository.php"
 code = "no-shorthand-ternary"
 message = "Use of the shorthand ternary operator."
-count = 2
+count = 1
 
 [[issues]]
 file = "src/Repository/GroupeRepository.php"
@@ -3790,6 +3886,12 @@ count = 1
 file = "src/Repository/GroupeRepository.php"
 code = "too-many-methods"
 message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Repository/InterJeuRepository.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -3861,13 +3963,7 @@ count = 1
 [[issues]]
 file = "src/Repository/ParticipantRepository.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Repository/ParticipantRepository.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
@@ -3893,6 +3989,12 @@ file = "src/Repository/PersonnageRepository.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
 count = 2
+
+[[issues]]
+file = "src/Repository/PersonnageRepository.php"
+code = "kan-defect"
+message = "Class has a high kan defect score."
+count = 1
 
 [[issues]]
 file = "src/Repository/PersonnageRepository.php"
@@ -4046,18 +4148,6 @@ count = 1
 
 [[issues]]
 file = "src/Repository/TerritoireRepository.php"
-code = "identity-comparison"
-message = "Use identity inequality `!==` instead of inequality comparison `!=`."
-count = 1
-
-[[issues]]
-file = "src/Repository/TerritoireRepository.php"
-code = "kan-defect"
-message = "Class has a high kan defect score (1.78)."
-count = 1
-
-[[issues]]
-file = "src/Repository/TerritoireRepository.php"
 code = "literal-named-argument"
 message = "Literal argument `''` should be passed as a named argument for clarity."
 count = 2
@@ -4167,7 +4257,7 @@ count = 1
 [[issues]]
 file = "src/Service/CompetenceService.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (5.11)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -4215,19 +4305,13 @@ count = 1
 [[issues]]
 file = "src/Service/ConditionsService.php"
 code = "halstead"
-message = "Method has a high halstead difficulty"
-count = 1
-
-[[issues]]
-file = "src/Service/ConditionsService.php"
-code = "halstead"
-message = "Method has a high halstead effort"
+message = "Method has a high halstead difficulty and effort"
 count = 1
 
 [[issues]]
 file = "src/Service/ConditionsService.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (4.07)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -4365,7 +4449,7 @@ count = 4
 [[issues]]
 file = "src/Service/GroupeService.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (14.770000000000001)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -4384,7 +4468,7 @@ count = 13
 file = "src/Service/GroupeService.php"
 code = "no-shorthand-ternary"
 message = "Use of the shorthand ternary operator."
-count = 3
+count = 4
 
 [[issues]]
 file = "src/Service/GroupeService.php"
@@ -4462,12 +4546,18 @@ count = 1
 file = "src/Service/OrderBy.php"
 code = "no-shorthand-ternary"
 message = "Use of the shorthand ternary operator."
-count = 3
+count = 2
 
 [[issues]]
 file = "src/Service/OrderBy.php"
 code = "too-many-methods"
 message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Service/PagerService.php"
+code = "assert-description"
+message = "Missing description in assert function."
 count = 1
 
 [[issues]]
@@ -4479,7 +4569,7 @@ count = 1
 [[issues]]
 file = "src/Service/PagerService.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.15)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -4504,12 +4594,18 @@ count = 5
 file = "src/Service/PagerService.php"
 code = "no-isset"
 message = "Use of the `isset` construct."
-count = 6
+count = 7
 
 [[issues]]
 file = "src/Service/PagerService.php"
 code = "too-many-methods"
 message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "assert-description"
+message = "Missing description in assert function."
 count = 1
 
 [[issues]]
@@ -4528,13 +4624,13 @@ count = 3
 file = "src/Service/PersonnageService.php"
 code = "halstead"
 message = "Method has a high halstead effort"
-count = 5
+count = 4
 
 [[issues]]
 file = "src/Service/PersonnageService.php"
 code = "halstead"
-message = "Method has a high halstead volume"
-count = 2
+message = "Method has a high halstead volume and effort"
+count = 1
 
 [[issues]]
 file = "src/Service/PersonnageService.php"
@@ -4545,7 +4641,13 @@ count = 1
 [[issues]]
 file = "src/Service/PersonnageService.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (23.760000000000005)."
+message = "Class has a high kan defect score."
+count = 1
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "literal-named-argument"
+message = "Literal argument `1` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
@@ -4657,10 +4759,34 @@ message = "Trait has too many methods."
 count = 1
 
 [[issues]]
-file = "src/Entity/Restauration.php"
-code = "cyclomatic-complexity"
-message = "Class has high complexity."
+file = "tests/Factory/UserFactory.php"
+code = "no-literal-password"
+message = "Literal passwords or sensitive data should not be stored in code."
 count = 1
+
+[[issues]]
+file = "tests/Functional/InterJeu/InterJeuCrudTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 3
+
+[[issues]]
+file = "tests/Functional/Personnage/CompetenceAchatTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 2
+
+[[issues]]
+file = "tests/Functional/Security/ApiAuthTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 7
+
+[[issues]]
+file = "tests/Functional/Security/ApiAuthTest.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 2
 
 [[issues]]
 file = "tests/Functional/Security/ApiAuthTest.php"
@@ -4669,16 +4795,52 @@ message = "Literal passwords or sensitive data should not be stored in code."
 count = 4
 
 [[issues]]
-file = "tests/Unit/Entity/PersonnageAnomalieTest.php"
+file = "tests/Functional/Security/RoleAccessTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 2
+
+[[issues]]
+file = "tests/Integration/Entity/ParticipantCascadeDeleteTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 2
+
+[[issues]]
+file = "tests/Integration/Service/CompetenceServiceTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 21
+
+[[issues]]
+file = "tests/Integration/Service/CompetenceServiceTest.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
 
 [[issues]]
-file = "tests/Unit/Service/ConditionsServiceTest.php"
-code = "too-many-methods"
-message = "Class has too many methods."
-count = 1
+file = "tests/Integration/Service/GroupeServiceTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 9
+
+[[issues]]
+file = "tests/Integration/Service/NoblesseServiceTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 2
+
+[[issues]]
+file = "tests/Integration/Service/PersonnageServiceTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 9
+
+[[issues]]
+file = "tests/Integration/Service/SanctuaireEffectTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 13
 
 [[issues]]
 file = "tests/Integration/Service/SanctuaireEffectTest.php"
@@ -4687,7 +4849,49 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
+file = "tests/Unit/Entity/PersonnageAnomalieTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 27
+
+[[issues]]
+file = "tests/Unit/Entity/PersonnageAnomalieTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
 file = "tests/Unit/Entity/TerritoireWealthTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 13
+
+[[issues]]
+file = "tests/Unit/Entity/TerritoireWealthTest.php"
+code = "strict-assertions"
+message = "Use strict assertions in PHPUnit tests."
+count = 4
+
+[[issues]]
+file = "tests/Unit/Entity/TerritoireWealthTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Unit/Enum/LevelTypeTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 29
+
+[[issues]]
+file = "tests/Unit/Service/ConditionsServiceTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 23
+
+[[issues]]
+file = "tests/Unit/Service/ConditionsServiceTest.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1

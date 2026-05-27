@@ -104,7 +104,7 @@ class PersonnageListTest extends WebTestCase
 
         $client->loginUser($user);
         $client->request('GET', '/personnage/list', [
-            'personnage_find' => ['scenariste' => 999999],
+            'personnage_find' => ['scenariste' => 999_999],
         ]);
 
         // entityManager->find returns null → criteria not set → no crash
