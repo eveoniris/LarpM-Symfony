@@ -62,12 +62,13 @@
             </div>
         {% endif %}
 
+        <div class="table-responsive">
         <table class="table table-striped table-bordered table-condensed table-hover">
             {% include '_partials/thead.twig' with  { 'route': 'user.personnage.list', 'rows': [
                 {'name' : '#', 'field' : 'personnage.id', 'css' : 'text-center'},
                 {'name' : 'S', 'css' : 'text-center'},
                 {'name' : 'nom', 'field' : 'personnage.nom', 'css' : 'text-center'},
-                {'name' : 'surnom', 'field' : 'personnage.surnom', 'css' : 'text-center'},
+                {'name' : 'surnom', 'field' : 'personnage.surnom', 'css' : 'text-center d-none d-md-table-cell'},
                 {'name' : 'classe', 'field' : 'personnage.classe', 'css' : 'text-center'},
                 {'name' : 'Participations', 'css' : 'text-center'},
             ]} %}
@@ -95,7 +96,7 @@
                     <td>
                         <a href="{{ path('personnage.detail', {"personnage" : personnage.id}) }}">{{ personnage.nom }}</a>
                     </td>
-                    <td>
+                    <td class="d-none d-md-table-cell">
                         {% if personnage.surnom %}
                             <a href="{{ path('personnage.detail', {"personnage" : personnage.id}) }}">{{ personnage.surnom }}</a>
                         {% else %}
@@ -124,6 +125,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>{# /table-responsive #}
     </div>
 
     {% include '_partials/pagination.html.twig' %}
