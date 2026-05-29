@@ -41,10 +41,10 @@
     {% if canSeeDetail %}
         <div class="text-center">
             {% if personnage.genre == 'Masculin' %}
-                <img width="216" alt="{{ personnage.classe.labelMasculin }}"
+                <img class="img-fluid" style="max-width: 216px" alt="{{ personnage.classe.labelMasculin }}"
                      src="{{ path('classe.image', {'classe' : personnage.classe.id, 'sexe' : 'M' }) }}"/>
             {% else %}
-                <img width="216" alt="{{ personnage.classe.labelFeminin }}"
+                <img class="img-fluid" style="max-width: 216px" alt="{{ personnage.classe.labelFeminin }}"
                      src="{{ path('classe.image', {'classe' : personnage.classe.id, 'sexe' : 'F' }) }}"/>
             {% endif %}
         </div>

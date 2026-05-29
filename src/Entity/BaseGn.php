@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Contracts\Service\Attribute\Required;
 
 #[Entity]
@@ -26,12 +27,14 @@ use Symfony\Contracts\Service\Attribute\Required;
 class BaseGn
 {
     #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['api:joueur:read'])]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Required]
+    #[Groups(['api:joueur:read'])]
     protected string $label = '';
 
     #[Column(type: Types::INTEGER, nullable: true)]
@@ -46,9 +49,11 @@ class BaseGn
     protected ?string $description = '';
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?DateTime $date_debut = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?DateTime $date_fin = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -61,6 +66,7 @@ class BaseGn
     protected ?string $adresse = null;
 
     #[Column(type: Types::BOOLEAN)]
+    #[Groups(['api:joueur:read'])]
     protected bool $actif;
 
     #[Column(type: Types::TEXT, nullable: true)]

@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[Entity]
 #[ORM\Table(name: 'groupe')]
@@ -28,15 +29,18 @@ use Doctrine\ORM\Mapping\OrderBy;
 class BaseGroupe
 {
     #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['api:joueur:read'])]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 100, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?string $nom = null;
 
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
     #[Column(type: Types::INTEGER)]
+    #[Groups(['api:joueur:read'])]
     protected int $numero;
 
     #[Column(type: Types::STRING, length: 10, nullable: true)]

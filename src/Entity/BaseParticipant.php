@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'participant')]
@@ -25,9 +26,11 @@ use Doctrine\ORM\Mapping\OneToMany;
 class BaseParticipant
 {
     #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['api:joueur:read'])]
     protected int $id;
 
     #[Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['api:joueur:read'])]
     protected ?DateTimeInterface $subscription_date = null;
 
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -49,6 +52,7 @@ class BaseParticipant
     protected Collection $reponses;
     #[ManyToOne(targetEntity: Gn::class, cascade: ['persist'], inversedBy: 'participants')]
     #[JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: false)]
+    #[Groups(['api:joueur:read'])]
     protected Gn $gn;
     #[ManyToOne(targetEntity: User::class, inversedBy: 'participants')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
@@ -73,6 +77,7 @@ class BaseParticipant
     #[ORM\OrderBy(['label' => 'ASC', 'niveau' => 'ASC'])]
     protected Collection $potions_depart;
     #[Column(length: 32, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     private ?string $couchage = null;
     #[Column(type: Types::TEXT, nullable: true)]
     private ?string $special = null;

@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
@@ -27,10 +28,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 class BaseCompetenceFamily
 {
     #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['api:joueur:read'])]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
     #[Assert\NotBlank]
+    #[Groups(['api:joueur:read'])]
     protected ?string $label = null;
 
     #[Column(type: Types::STRING, length: 450, nullable: true)]
