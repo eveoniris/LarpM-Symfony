@@ -1,12 +1,18 @@
 <nav class="navbar navbar-expand-lg bg-dark-subtle" data-turbo="false">
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ path('homepage') }}">LarpManager</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvas"
+                aria-controls="navbarOffcanvas" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="navbarOffcanvas"
+             aria-labelledby="navbarOffcanvasLabel">
+            <div class="offcanvas-header d-lg-none">
+                <span class="offcanvas-title fw-bold" id="navbarOffcanvasLabel">LarpManager</span>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle active" aria-current="page" href="#" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
@@ -338,6 +344,7 @@
                 <input class="form-control me-2" type="search" placeholder="Rechercher" aria-label="Rechercher">
                 <button type="submit" class="btn btn-outline-secondary" data-toggle="tooltup" data-placement="top" title="Lancer la recherche"><i class="fa fa-search"></i></button>
             </form -->
-        </div>
-    </div>
+        </div>{# /offcanvas-body #}
+        </div>{# /offcanvas #}
+    </div>{# /container-fluid #}
 </nav>

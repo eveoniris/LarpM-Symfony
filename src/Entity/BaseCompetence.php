@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use SensitiveParameter;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'competence')]
@@ -29,6 +30,7 @@ use SensitiveParameter;
 class BaseCompetence
 {
     #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['api:joueur:read'])]
     protected ?int $id = null;
 
     #[Column(type: Types::TEXT, nullable: true)]
@@ -77,10 +79,12 @@ class BaseCompetence
     #[ManyToOne(targetEntity: CompetenceFamily::class, cascade: ['persist'], inversedBy: 'competences')]
     #[JoinColumn(name: 'competence_family_id', referencedColumnName: 'id', nullable: false)]
     #[OrderBy(['competence_family_label' => Criteria::ASC])]
+    #[Groups(['api:joueur:read'])]
     protected CompetenceFamily $competenceFamily;
 
     #[ManyToOne(targetEntity: Level::class, cascade: ['persist'], inversedBy: 'competences')]
     #[JoinColumn(name: 'level_id', referencedColumnName: 'id')]
+    #[Groups(['api:joueur:read'])]
     protected ?Level $level = null;
 
     /** @var Collection<int, Personnage> */

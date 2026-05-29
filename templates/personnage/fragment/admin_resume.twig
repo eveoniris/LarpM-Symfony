@@ -13,23 +13,31 @@
 
 
          {% if isAdmin %}
-             {% include '_partials/dropDown.twig' with {
-                 'title' : 'Action',
-                 'actions' :
-                 [
-                     {'path' : path('personnage.update.renomme', {'personnage': personnage.id}), 'label': 'Modifier la Renomée' },
-                     {'path' : path('personnage.update.heroisme', {'personnage': personnage.id}), 'label': 'Modifier l\'Héroïsme' },
-                     {'path' : path('personnage.update.pugilat', {'personnage': personnage.id}), 'label': 'Modifier le Pugilat' },
-                     {'path' : path('personnage.update.domaine', {'personnage': personnage.id}), 'label': 'Modifier la liste des domaines de magie' },
-                     {'path' : path('personnage.religion.add', {'personnage': personnage.id}), 'label': 'Ajouter une religion' },
-                     {'path' : path('personnage.update.origine', {'personnage': personnage.id}), 'label': 'Modifier l\'origine' },
-                     {'path' : path('personnage.update.langue', {'personnage': personnage.id}), 'label': 'Modifier les langages' },
-                     {'path' : path('personnage.update.sort', {'personnage': personnage.id}), 'label': 'Modifier la liste des sorts' },
-                     {'path' : path('personnage.update.potion', {'personnage': personnage.id}), 'label': 'Modifier la liste des potions' },
-                     {'path' : path('personnage.update.priere', {'personnage': personnage.id}), 'label': 'Modifier la liste des prieres' },
-                     {'path' : path('personnage.update.technologie', {'personnage': personnage.id}), 'label': 'Modifier la liste des technologies' },
-                     {'path' : path('personnage.update.connaissance', {'personnage': personnage.id}), 'label': 'Modifier la liste des connaissances' },
-                     {'path' : path('personnage.duplicate', {'personnage': personnage.id}), 'label': 'Dupliquer' },
+             {% include '_partials/offcanvasActions.twig' with {
+                 'offcanvasId': 'offcanvasAdminResume',
+                 'title': 'Actions',
+                 'groups': [
+                     {'label': 'Magie', 'actions': [
+                         {'path': path('personnage.update.domaine', {'personnage': personnage.id}), 'label': 'Modifier la liste des domaines de magie'},
+                         {'path': path('personnage.update.sort', {'personnage': personnage.id}), 'label': 'Modifier la liste des sorts'},
+                         {'path': path('personnage.update.potion', {'personnage': personnage.id}), 'label': 'Modifier la liste des potions'},
+                         {'path': path('personnage.update.priere', {'personnage': personnage.id}), 'label': 'Modifier la liste des prières'},
+                         {'path': path('personnage.update.technologie', {'personnage': personnage.id}), 'label': 'Modifier la liste des technologies'},
+                         {'path': path('personnage.update.connaissance', {'personnage': personnage.id}), 'label': 'Modifier la liste des connaissances'},
+                     ]},
+                     {'label': 'Identité', 'actions': [
+                         {'path': path('personnage.religion.add', {'personnage': personnage.id}), 'label': 'Ajouter une religion'},
+                         {'path': path('personnage.update.origine', {'personnage': personnage.id}), 'label': 'Modifier l\'origine'},
+                         {'path': path('personnage.update.langue', {'personnage': personnage.id}), 'label': 'Modifier les langages'},
+                     ]},
+                     {'label': 'Stats', 'actions': [
+                         {'path': path('personnage.update.renomme', {'personnage': personnage.id}), 'label': 'Modifier la Renomée'},
+                         {'path': path('personnage.update.heroisme', {'personnage': personnage.id}), 'label': 'Modifier l\'Héroïsme'},
+                         {'path': path('personnage.update.pugilat', {'personnage': personnage.id}), 'label': 'Modifier le Pugilat'},
+                     ]},
+                     {'label': 'Administration', 'actions': [
+                         {'path': path('personnage.duplicate', {'personnage': personnage.id}), 'label': 'Dupliquer'},
+                     ]},
                  ]
              } %}
          {% endif %}

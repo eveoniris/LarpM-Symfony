@@ -518,7 +518,9 @@ class CompetenceService
     public function getService(string $class): self
     {
         /** @var self $service */
-        return new $class($this->entityManager, $this->urlGenerator, $this->security, $this->conditionService);
+        $service = new $class($this->entityManager, $this->urlGenerator, $this->security, $this->conditionService);
+
+        return $service;
     }
 
     /** @return array<int|string, string> */

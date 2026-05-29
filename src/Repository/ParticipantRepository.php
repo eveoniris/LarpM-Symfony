@@ -245,7 +245,9 @@ class ParticipantRepository extends BaseRepository
         $query = $this->searchByGn($gnid, $pageRequest->getSearchValue(), $pageRequest->getSearchType(), $pageRequest->getOrderBy(), $this->getAlias())->getQuery();
 
         /** @var Paginator<Participant> $paginator */
-        return $this->findPaginatedQuery($query, $pageRequest->getLimit(), $pageRequest->getPage());
+        $paginator = $this->findPaginatedQuery($query, $pageRequest->getLimit(), $pageRequest->getPage());
+
+        return $paginator;
     }
 
     /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */

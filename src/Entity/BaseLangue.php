@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use SensitiveParameter;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'langue')]
@@ -25,9 +26,11 @@ use SensitiveParameter;
 abstract class BaseLangue
 {
     #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['api:joueur:read'])]
     protected ?int $id = null;
 
     #[Column(name: 'label', type: Types::STRING, length: 100)]
+    #[Groups(['api:joueur:read'])]
     protected string $label = '';
 
     #[Column(type: Types::STRING, length: 450, nullable: true)]

@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'classe')]
@@ -25,12 +26,15 @@ use Doctrine\ORM\Mapping\OneToMany;
 abstract class BaseClasse
 {
     #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['api:joueur:read'])]
     protected ?int $id = null;
 
     #[Column(name: 'label_masculin', type: Types::STRING, length: 45, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?string $label_masculin = null;
 
     #[Column(name: 'label_feminin', type: Types::STRING, length: 45, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?string $label_feminin = null;
 
     #[Column(name: 'description', type: Types::STRING, length: 450, nullable: true)]

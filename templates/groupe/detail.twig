@@ -7,6 +7,7 @@
         {% set tab = 'detail' %}
     {% endif %}
     {% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
+    {% set groupeGnId = groupeGn is not null ? groupeGn.id : app.request.query.all['groupeGn']|default(null) %}
 
     {% set breadcrumb = [] %}
     {% if isAdmin %}
@@ -89,10 +90,64 @@
         <div class="row" style="min-height:300px;">
             <div class="col-md-12">
                 <div>
-                    <ul class="nav nav-tabs">
+                    {# Navigation mobile par offcanvas (visible uniquement sur xs/sm) #}
+                    {% set groupeTabLabels = {'detail': 'Détail', 'membres': 'Membres', 'domaine': 'Jeu de domaine', 'backgrounds': 'Backgrounds', 'debriefings': 'Debriefings', 'enveloppe': 'Enveloppe'} %}
+                    {% set membresItems = [] %}
+                    {% for session in groupe.groupeGns|reverse %}
+                        {% set membresItems = membresItems|merge([{
+                            'path': path('groupe.detail.tab', app.request.query.all|merge({'groupe': groupe.id, 'tab': 'membres', 'gn': session.gn.id, 'groupeGn': session.id})),
+                            'label': session.gn.label,
+                            'active': tab == 'membres' and groupeGnId is not null and groupeGnId == session.id
+                        }]) %}
+                    {% endfor %}
+                    {% if membresItems|length == 0 %}
+                        {% set membresItems = [{'path': path('groupeGn.add', {'groupe': groupe.id}), 'label': 'Ajouter une session', 'active': false}] %}
+                    {% endif %}
+                    {% set domaineItems = [] %}
+                    {% for session in groupe.groupeGns|reverse %}
+                        {% set domaineItems = domaineItems|merge([{
+                            'path': path('groupe.detail.groupeGn', app.request.query.all|merge({'groupe': groupe.id, 'tab': 'domaine', 'gn': session.gn.id, 'groupeGn': session.id})),
+                            'label': session.gn.label,
+                            'active': tab == 'domaine' and groupeGnId is not null and groupeGnId == session.id
+                        }]) %}
+                    {% endfor %}
+                    {% if domaineItems|length == 0 %}
+                        {% set domaineItems = [{'path': '#', 'label': 'Aucune session', 'disabled': true}] %}
+                    {% endif %}
+                    {% set tabGroups = [
+                        {'items': [
+                            {'path': path('groupe.detail.tab', app.request.query.all|merge({'groupe': groupe.id, 'tab': 'detail', 'groupeGn': groupeGnId|default()})), 'label': 'Détail', 'active': tab == 'detail'}
+                        ]},
+                        {'label': 'Membres', 'items': membresItems},
+                    ] %}
+                    {% if canRead %}
+                        {% set tabGroups = tabGroups|merge([
+                            {'label': 'Jeu de domaine', 'items': domaineItems},
+                            {'items': [
+                                {'path': path('groupe.detail.tab', app.request.query.all|merge({'groupe': groupe.id, 'tab': 'backgrounds', 'groupeGn': groupeGnId|default()})), 'label': 'Backgrounds', 'active': tab == 'backgrounds'},
+                                {'path': path('groupe.detail.tab', app.request.query.all|merge({'groupe': groupe.id, 'tab': 'debriefings', 'groupeGn': groupeGnId|default()})), 'label': 'Debriefings', 'active': tab == 'debriefings'},
+                            ]},
+                        ]) %}
+                        {% if isAdmin %}
+                            {% set tabGroups = tabGroups|merge([
+                                {'items': [
+                                    {'path': path('groupe.detail.tab', app.request.query.all|merge({'groupe': groupe.id, 'tab': 'enveloppe', 'groupeGn': groupeGnId|default()})), 'label': 'Enveloppe', 'active': tab == 'enveloppe'},
+                                ]},
+                            ]) %}
+                        {% endif %}
+                    {% endif %}
+                    {% include '_partials/offcanvasTabs.twig' with {
+                        'offcanvasId': 'offcanvasGroupeTabs',
+                        'title': 'Navigation',
+                        'triggerLabel': groupeTabLabels[tab]|default('Navigation'),
+                        'groups': tabGroups
+                    } %}
+
+                    {# Onglets desktop (cachés sur mobile) #}
+                    <ul class="nav nav-tabs d-none d-md-flex">
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'detail' %} active{% endif %}"
-                               href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'detail', 'groupeGn': groupeGn.id|default()})) }}"
+                               href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'detail', 'groupeGn': groupeGnId|default()})) }}"
                             >Détail</a>
                         </li>
 
@@ -140,13 +195,13 @@
 
                             <li class="nav-item">
                                 <a class="nav-link{% if tab == 'backgrounds' %} active{% endif %}"
-                                   href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'backgrounds', 'groupeGn': groupeGn.id|default()})) }}"
+                                   href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'backgrounds', 'groupeGn': groupeGnId|default()})) }}"
                                 >Backgrounds</a>
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link{% if tab == 'debriefings' %} active{% endif %}"
-                                   href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'debriefings', 'groupeGn': groupeGn.id|default()})) }}"
+                                   href="{{ path('groupe.detail.tab',  app.request.query.all|merge({'groupe': groupe.id,'tab': 'debriefings', 'groupeGn': groupeGnId|default()})) }}"
                                 >Debriefings</a>
                             </li>
 
