@@ -13,13 +13,13 @@
             <h5>Fiche de personnage</h5>
         </div>
 
-        <div class="d-flex justify-content-between">
+        <div class="d-flex flex-column flex-sm-row justify-content-sm-between gap-1">
 
-            <h3>
+            <h3 class="mb-0">
                 {% if isAdmin and personnage.isPnj() %}🎭 PNJ - {% endif %}
                 {{ personnage.nom }}{% if personnage.surnom %} <small>({{ personnage.surnom }})</small>{% endif %}
             </h3>
-            <div class="fs-3">
+            <div class="fs-5 d-flex align-items-center gap-2 flex-wrap">
                 {% if personnage.genre == 'Masculin' %}
                     <i class="fa fa-mars" aria-hidden="true"></i>
                 {% elseif personnage.genre == 'Feminin' %}
@@ -32,9 +32,8 @@
 
                 {% if personnage.vivant %}<span class="text-success">Vivant</span>{% else %}<span
                         class="text-danger">💀 Mort</span>{% endif %}
-
             </div>
-            <div class="fs-3">
+            <div class="fs-5">
                 {{ personnage.classeName }}
             </div>
         </div>
@@ -42,9 +41,9 @@
         <div class="row">
             <div class="col-md-12">
                 <div>
-                    <div class="pull-right">
-                        <div class="btn-toolbar" role="toolbar" aria-label="...">
-                            <div class="btn-group" role="group" aria-label="...">
+                    <div class="personnage-actions">
+                        <div class="btn-toolbar justify-content-end" role="toolbar" aria-label="Actions personnage">
+                            <div class="btn-group" role="group" aria-label="Actions principales">
                                 {% if personnage %}
                                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                        title="Choisir une nouvelle religion"
@@ -86,25 +85,44 @@
                             </div>
                         </div>
                     </div>
-                    <ul class="nav nav-tabs" data-turbo="false">
+                    {# Navigation mobile par offcanvas (visible uniquement sur xs/sm) #}
+                    {% set tabLabels = {'general': 'Générale', 'competences': 'Compétences', 'religions': 'Religions', 'biographie': 'Biographie', 'groupes': 'Groupes', 'enveloppe': 'Enveloppe'} %}
+                    {% set personnageTabItems = [
+                        {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'general'})), 'label': 'Générale', 'active': tab == 'general'},
+                        {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'competences'})), 'label': 'Compétences', 'active': tab == 'competences'},
+                        {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'religions'})), 'label': 'Religions', 'active': tab == 'religions'},
+                        {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'biographie'})), 'label': 'Biographie', 'active': tab == 'biographie'},
+                        {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'groupes'})), 'label': 'Groupes', 'active': tab == 'groupes'},
+                    ] %}
+                    {% if isAdmin %}
+                        {% set personnageTabItems = personnageTabItems|merge([
+                            {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'enveloppe'})), 'label': 'Enveloppe', 'active': tab == 'enveloppe'},
+                        ]) %}
+                    {% endif %}
+                    {% include '_partials/offcanvasTabs.twig' with {
+                        'offcanvasId': 'offcanvasPersonnageTabs',
+                        'title': 'Navigation',
+                        'triggerLabel': tabLabels[tab]|default('Navigation'),
+                        'groups': [{'items': personnageTabItems}]
+                    } %}
+
+                    {# Onglets desktop (cachés sur mobile) #}
+                    <ul class="nav nav-tabs d-none d-md-flex" data-turbo="false">
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'general' %} active{% endif %}"
                                href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'general'})) }}"
                             >Générale</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'competences' %} active{% endif %}"
                                href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'competences'})) }}"
                             >Compétences</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'religions' %} active{% endif %}"
                                href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'religions'})) }}"
                             >Religions</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link{% if tab == 'biographie' %} active{% endif %}"
                                href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'biographie'})) }}"
@@ -115,7 +133,6 @@
                                href="{{ path('personnage.detail.tab',  app.request.query.all|merge({'personnage': personnage.id,'tab': 'groupes'})) }}"
                             >Groupes</a>
                         </li>
-
                         {% if isAdmin %}
                             <li class="nav-item">
                                 <a class="nav-link {% if tab == 'enveloppe' %} active{% endif %}"
@@ -123,7 +140,6 @@
                                 >Enveloppe</a>
                             </li>
                         {% endif %}
-
                     </ul>
 
                 </div>

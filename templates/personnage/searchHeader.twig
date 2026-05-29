@@ -30,7 +30,7 @@
                         {{ form_start(form, {"action": path(formPath, formParams)}) }}
 
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="d-flex flex-wrap gap-2 align-items-center">
                                 {{ form_widget(form.value) }}
                                 {{ form_widget(form.type) }}
                                 {{ form_widget(form.religion) }}
@@ -38,7 +38,7 @@
                                 {{ form_widget(form.classe) }}
                                 {{ form_widget(form.groupe) }}
                                 {{ form_widget(form.scenariste) }}
-                                <div class="input-group-btn btn-search">
+                                <div class="d-flex gap-1 btn-search">
                                     <button type="submit" class="btn btn-default" data-toggle="tooltup"
                                             data-placement="top" title="Lancer la recherche"><i
                                                 class="fa fa-search"></i></button>

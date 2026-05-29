@@ -1,0 +1,55 @@
+{% if title is not defined %}
+    {% set title = 'Navigation' %}
+{% endif %}
+{% if triggerLabel is not defined %}
+    {% set triggerLabel = title %}
+{% endif %}
+
+{# Bouton déclencheur — mobile uniquement #}
+<div class="d-md-none mb-2">
+    <button class="btn btn-dark w-100 d-flex align-items-center gap-2"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#{{ offcanvasId }}"
+            aria-controls="{{ offcanvasId }}">
+        <span class="d-flex align-items-center gap-1">
+            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            <i class="fa fa-bars" aria-hidden="true"></i>
+        </span>
+        <span class="flex-grow-1 text-start">{{ triggerLabel }}</span>
+    </button>
+</div>
+
+{# Panneau offcanvas — toujours dans le DOM, s'ouvre depuis la gauche #}
+<div class="offcanvas offcanvas-start" tabindex="-1"
+     id="{{ offcanvasId }}"
+     aria-labelledby="{{ offcanvasId }}Label">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title d-flex align-items-center gap-2" id="{{ offcanvasId }}Label">
+            <i class="fa fa-bars" aria-hidden="true"></i>{{ title }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"></button>
+    </div>
+    <div class="offcanvas-body p-2">
+        {% for group in groups %}
+            {% if group.label is defined and group.label %}
+                <h6 class="text-muted text-uppercase small px-2 mb-1 mt-3">{{ group.label }}</h6>
+            {% endif %}
+            <div class="list-group list-group-flush mb-1">
+                {% for item in group.items %}
+                    {% if item.visible is not defined or item.visible %}
+                        {% if item.disabled is defined and item.disabled %}
+                            <span class="list-group-item list-group-item-secondary text-muted small">{{ item.label }}</span>
+                        {% else %}
+                            <a href="{{ item.path }}"
+                               class="list-group-item list-group-item-action{% if item.active is defined and item.active %} active{% endif %}"
+                               data-bs-dismiss="offcanvas">
+                                {{ item.label }}
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
