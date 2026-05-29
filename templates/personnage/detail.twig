@@ -85,24 +85,26 @@
                             </div>
                         </div>
                     </div>
-                    {# Sélecteur mobile (visible uniquement sur xs/sm) #}
-                    <select class="form-select d-md-none mb-2"
-                            onchange="window.location.href=this.value">
-                        <option value="{{ path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id,'tab': 'general'})) }}"
-                            {% if tab == 'general' %}selected{% endif %}>Générale</option>
-                        <option value="{{ path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id,'tab': 'competences'})) }}"
-                            {% if tab == 'competences' %}selected{% endif %}>Compétences</option>
-                        <option value="{{ path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id,'tab': 'religions'})) }}"
-                            {% if tab == 'religions' %}selected{% endif %}>Religions</option>
-                        <option value="{{ path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id,'tab': 'biographie'})) }}"
-                            {% if tab == 'biographie' %}selected{% endif %}>Biographie</option>
-                        <option value="{{ path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id,'tab': 'groupes'})) }}"
-                            {% if tab == 'groupes' %}selected{% endif %}>Groupes</option>
-                        {% if isAdmin %}
-                            <option value="{{ path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id,'tab': 'enveloppe'})) }}"
-                                {% if tab == 'enveloppe' %}selected{% endif %}>Enveloppe</option>
-                        {% endif %}
-                    </select>
+                    {# Navigation mobile par offcanvas (visible uniquement sur xs/sm) #}
+                    {% set tabLabels = {'general': 'Générale', 'competences': 'Compétences', 'religions': 'Religions', 'biographie': 'Biographie', 'groupes': 'Groupes', 'enveloppe': 'Enveloppe'} %}
+                    {% set personnageTabItems = [
+                        {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'general'})), 'label': 'Générale', 'active': tab == 'general'},
+                        {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'competences'})), 'label': 'Compétences', 'active': tab == 'competences'},
+                        {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'religions'})), 'label': 'Religions', 'active': tab == 'religions'},
+                        {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'biographie'})), 'label': 'Biographie', 'active': tab == 'biographie'},
+                        {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'groupes'})), 'label': 'Groupes', 'active': tab == 'groupes'},
+                    ] %}
+                    {% if isAdmin %}
+                        {% set personnageTabItems = personnageTabItems|merge([
+                            {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'enveloppe'})), 'label': 'Enveloppe', 'active': tab == 'enveloppe'},
+                        ]) %}
+                    {% endif %}
+                    {% include '_partials/offcanvasTabs.twig' with {
+                        'offcanvasId': 'offcanvasPersonnageTabs',
+                        'title': 'Navigation',
+                        'triggerLabel': tabLabels[tab]|default('Navigation'),
+                        'groups': [{'items': personnageTabItems}]
+                    } %}
 
                     {# Onglets desktop (cachés sur mobile) #}
                     <ul class="nav nav-tabs d-none d-md-flex" data-turbo="false">
