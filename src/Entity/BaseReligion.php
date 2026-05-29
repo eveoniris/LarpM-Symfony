@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use SensitiveParameter;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
@@ -24,11 +25,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 abstract class BaseReligion
 {
     #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['api:joueur:read'])]
     protected ?int $id = null;
 
     #[Column(type: Types::STRING, length: 45)]
     #[Assert\NotBlank]
     #[Assert\NotNull]
+    #[Groups(['api:joueur:read'])]
     protected string $label = '';
 
     #[Column(type: Types::TEXT, nullable: true)]

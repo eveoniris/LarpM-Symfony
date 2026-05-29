@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Exception;
 use SensitiveParameter;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[Entity(repositoryClass: PersonnageRepository::class)]
 #[ORM\Table(name: 'personnage')]
@@ -36,42 +37,51 @@ abstract class BasePersonnage
     protected int $pugilat;
 
     #[ORM\Id, Column(type: Types::INTEGER), ORM\GeneratedValue]
+    #[Groups(['api:joueur:read'])]
     protected int $id;
 
     #[Column(type: Types::STRING, length: 100)]
+    #[Groups(['api:joueur:read'])]
     protected string $nom;
 
     #[Column(type: Types::STRING, length: 100, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?string $surnom = null;
 
     #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $intrigue = null;
 
     #[Column(type: Types::INTEGER, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?int $renomme;
 
     #[Column(type: Types::STRING, length: 100, nullable: true)]
     protected ?string $photo = null;
 
     #[Column(type: Types::INTEGER, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?int $xp;
 
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $materiel = null;
 
     #[Column(type: Types::BOOLEAN)]
+    #[Groups(['api:joueur:read'])]
     protected bool $vivant = true;
 
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $age_reel = null;
 
     #[Column(name: 'trombineUrl', type: Types::STRING, length: 45, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?string $trombineUrl = null;
 
     #[Column(type: Types::INTEGER, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?int $richesse = null;
 
     #[Column(type: Types::INTEGER, nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?int $heroisme = null;
 
     #[Column(type: Types::BOOLEAN, nullable: true)]
@@ -168,10 +178,12 @@ abstract class BasePersonnage
 
     #[ManyToOne(targetEntity: Groupe::class, inversedBy: 'personnages')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: true)]
+    #[Groups(['api:joueur:read'])]
     protected ?Groupe $groupe;
 
     #[ManyToOne(targetEntity: Classe::class, inversedBy: 'personnages')]
     #[JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: false)]
+    #[Groups(['api:joueur:read'])]
     protected Classe $classe;
 
     #[ManyToOne(targetEntity: Age::class, inversedBy: 'personnages')]

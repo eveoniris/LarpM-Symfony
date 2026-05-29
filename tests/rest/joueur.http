@@ -1,0 +1,131 @@
+### Authentification JWT — récupérer le token
+# Exécuter d'abord pour obtenir auth_token dans client.global
+POST {{host}}/api/login_check
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{pwd}}"
+}
+
+> {%
+    client.global.set("auth_token", response.body.token);
+    client.log("Token: " + response.body.token);
+%}
+
+###
+
+### GET /api/joueur/me — Profil + liste des personnages
+GET {{host}}/api/joueur/me
+Authorization: Bearer {{auth_token}}
+
+> {%
+    client.test("Status 200", function () {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+    });
+    client.test("JSON content-type", function () {
+        client.assert(response.contentType.mimeType === "application/json");
+    });
+    client.test("Has personnages array", function () {
+        client.assert(Array.isArray(response.body.personnages), "personnages should be an array");
+    });
+    if (response.body.personnages.length > 0) {
+        client.global.set("personnage_id", response.body.personnages[0].id);
+        client.log("Premier personnage ID: " + response.body.personnages[0].id);
+    }
+    client.log(JSON.stringify(response.body, null, 2));
+%}
+
+###
+
+### GET /api/joueur/personnage/{id} — Fiche complète du personnage
+GET {{host}}/api/joueur/personnage/{{personnage_id}}
+Authorization: Bearer {{auth_token}}
+
+> {%
+    client.test("Status 200", function () {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+    });
+    client.test("Has competences", function () {
+        client.assert(Array.isArray(response.body.competences));
+    });
+    client.test("Has langues", function () {
+        client.assert(Array.isArray(response.body.langues));
+    });
+    client.test("Has religions", function () {
+        client.assert(Array.isArray(response.body.religions));
+    });
+    client.log(JSON.stringify(response.body, null, 2));
+%}
+
+###
+
+### GET /api/joueur/gn — Liste des GN
+GET {{host}}/api/joueur/gn
+Authorization: Bearer {{auth_token}}
+
+> {%
+    client.test("Status 200", function () {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+    });
+    client.test("Is array", function () {
+        client.assert(Array.isArray(response.body));
+    });
+    if (response.body.length > 0) {
+        client.global.set("gn_id", response.body[0].id);
+        client.log("Premier GN ID: " + response.body[0].id + " — " + response.body[0].label);
+    }
+    client.log(JSON.stringify(response.body, null, 2));
+%}
+
+###
+
+### GET /api/joueur/participation/{gnId} — Participation du joueur à un GN
+GET {{host}}/api/joueur/participation/{{gn_id}}
+Authorization: Bearer {{auth_token}}
+
+> {%
+    client.test("Status 200 ou 404", function () {
+        client.assert(response.status === 200 || response.status === 404, "Expected 200 or 404");
+    });
+    client.log(JSON.stringify(response.body, null, 2));
+%}
+
+###
+
+### GET /api/joueur/competences/{personnageId} — Compétences du personnage
+GET {{host}}/api/joueur/competences/{{personnage_id}}
+Authorization: Bearer {{auth_token}}
+
+> {%
+    client.test("Status 200", function () {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+    });
+    client.test("Is array", function () {
+        client.assert(Array.isArray(response.body));
+    });
+    client.log(JSON.stringify(response.body, null, 2));
+%}
+
+###
+
+### Test accès refusé — personnage d'un autre joueur (remplacer 9999 par un ID existant)
+GET {{host}}/api/joueur/personnage/9999
+Authorization: Bearer {{auth_token}}
+
+> {%
+    client.test("Status 403 ou 404", function () {
+        client.assert(response.status === 403 || response.status === 404, "Expected 403 or 404");
+    });
+%}
+
+###
+
+### Test sans token — doit retourner 401
+GET {{host}}/api/joueur/me
+
+> {%
+    client.test("Status 401", function () {
+        client.assert(response.status === 401, "Expected 401, got " + response.status);
+    });
+%}

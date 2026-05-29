@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToMany;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'level')]
@@ -24,12 +25,15 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 abstract class BaseLevel
 {
     #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['api:joueur:read'])]
     protected ?int $id = null;
 
     #[Column(name: '`index', type: Types::INTEGER, unique: true)]
+    #[Groups(['api:joueur:read'])]
     protected int $index;
 
     #[Column(type: Types::STRING, length: 45)]
+    #[Groups(['api:joueur:read'])]
     protected ?string $label;
 
     #[Column(type: Types::INTEGER, nullable: true)]
