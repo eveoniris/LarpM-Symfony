@@ -982,6 +982,12 @@ class PersonnageController extends AbstractController
                 $this->entityManager->persist($participant);
             }
 
+            // inter_jeu_personnage est une jonction unidirectionnelle non gérée par Doctrine
+            $this->entityManager->getConnection()->executeStatement(
+                'DELETE FROM inter_jeu_personnage WHERE personnage_id = :id',
+                ['id' => $personnage->getId()]
+            );
+
             $this->entityManager->remove($personnage);
             $this->entityManager->flush();
 

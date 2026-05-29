@@ -259,6 +259,30 @@ message = "Use of the shorthand ternary operator."
 count = 1
 
 [[issues]]
+file = "src/Controller/ApiJoueurController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/ApiJoueurController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/ApiJoueurController.php"
+code = "kan-defect"
+message = "Class has a high kan defect score."
+count = 1
+
+[[issues]]
+file = "src/Controller/ApiJoueurController.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
 file = "src/Controller/AppelationController.php"
 code = "cyclomatic-complexity"
 message = "Class has high complexity."
@@ -3968,6 +3992,12 @@ count = 1
 
 [[issues]]
 file = "src/Repository/ParticipantRepository.php"
+code = "inline-variable-return"
+message = "Variable assignment can be inlined into the return statement."
+count = 1
+
+[[issues]]
+file = "src/Repository/ParticipantRepository.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
 count = 1
@@ -4252,6 +4282,12 @@ count = 3
 file = "src/Service/CompetenceService.php"
 code = "cyclomatic-complexity"
 message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/CompetenceService.php"
+code = "inline-variable-return"
+message = "Variable assignment can be inlined into the return statement."
 count = 1
 
 [[issues]]

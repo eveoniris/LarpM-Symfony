@@ -32,7 +32,7 @@ abstract class BasePriere
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $annonce = null;
 
-    #[Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
+    #[Column(name: 'documentUrl', type: Types::STRING, length: 255, nullable: true)]
     protected ?string $documentUrl = null;
 
     #[Column(type: Types::INTEGER)]

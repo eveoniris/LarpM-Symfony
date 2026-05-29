@@ -61,7 +61,7 @@ abstract class BaseLangue
     #[Column(type: Types::BOOLEAN, nullable: false, options: ['default' => 0])]
     protected bool $secret = false;
 
-    #[Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
+    #[Column(name: 'documentUrl', type: Types::STRING, length: 255, nullable: true)]
     protected ?string $documentUrl = null;
 
     /** @var Collection<int, Territoire> */
