@@ -1,5 +1,5 @@
 <div class="row d-flex justify-content-center" data-turbo="false">
-    <div class="card p-0 mb-2 col-sm-4">
+    <div class="card p-0 mb-2 col-12 col-sm-10 col-md-6 col-lg-4 mx-auto">
 
         <div class="header">
             <h5 class="m-0">Connexion</h5>
@@ -18,25 +18,25 @@
                 </div>
             {% endif %}
 
-            <label for="inputUsername">Email</label>
+            <label class="form-label mb-1 mt-2" for="inputUsername">Email</label>
             <input type="text" value="{{ last_username|default() }}" name="username" id="inputUsername"
                    class="form-control"
                    autocomplete="email" required autofocus>
-            <label for="inputPassword">Mot de passe</label>
+            <label class="form-label mb-1 mt-2" for="inputPassword">Mot de passe</label>
             <input type="password" name="password" id="inputPassword" class="form-control"
                    autocomplete="current-password" required>
-            <label>
+            <label class="mt-2">
                 <input type="checkbox" name="_remember_me" value="true" checked>
                 Se rappeler de moi sur cet ordinateur
             </label>
 
             <input type="hidden" name="_csrf_token"
                    value="{{ csrf_token('authenticate') }}">
-            <div class="d-flex justify-content-center mt-2">
+            <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
                 <button class="btn btn-primary" type="submit">
                     Se connecter
                 </button>
-                <a href="{{ path('user.forgot-password') }}" class="btn btn-secondary ms-2">Mot de passe oublié</a>
+                <a href="{{ path('user.forgot-password') }}" class="btn btn-secondary">Mot de passe oublié</a>
             </div>
         </form>
 
