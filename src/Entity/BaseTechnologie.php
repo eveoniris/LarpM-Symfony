@@ -31,7 +31,7 @@ abstract class BaseTechnologie
     #[ORM\Column(type: Types::TEXT, length: 450)]
     protected ?string $description = null;
 
-    #[ORM\Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
+    #[ORM\Column(name: 'documentUrl', type: Types::STRING, length: 255, nullable: true)]
     protected ?string $documentUrl = null;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: false, options: ['default' => 0])]

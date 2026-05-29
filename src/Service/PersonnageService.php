@@ -1863,9 +1863,11 @@ class PersonnageService
                 $groupes[] = $territoire->getGroupe();
             }
             foreach ($territoire->getFrontaliersCulturels() as $frontalier) {
-                if (!($frontalier->getGroupe())) { continue; }
+                if (!($frontalier->getGroupe())) {
+                    continue;
+                }
 
-$groupes[] = $frontalier->getGroupe();
+                $groupes[] = $frontalier->getGroupe();
             }
 
             foreach ($groupes as $groupe) {

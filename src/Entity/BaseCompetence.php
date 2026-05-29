@@ -36,7 +36,7 @@ class BaseCompetence
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(name: 'documentUrl', type: Types::TEXT, length: 45, nullable: true)]
+    #[Column(name: 'documentUrl', type: Types::TEXT, nullable: true)]
     protected ?string $documentUrl = null;
 
     #[Column(type: Types::TEXT, nullable: true)]

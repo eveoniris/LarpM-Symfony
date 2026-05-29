@@ -36,7 +36,7 @@ abstract class BaseConnaissance
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $contraintes = null;
 
-    #[Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
+    #[Column(name: 'documentUrl', type: Types::STRING, length: 255, nullable: true)]
     protected ?string $documentUrl;
 
     #[Column(type: Types::INTEGER)]

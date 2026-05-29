@@ -25,7 +25,7 @@ abstract class BaseLoi
     #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $label = null;
 
-    #[Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
+    #[Column(name: 'documentUrl', type: Types::STRING, length: 255, nullable: true)]
     protected ?string $documentUrl = null;
 
     #[Column(type: Types::TEXT, nullable: true)]

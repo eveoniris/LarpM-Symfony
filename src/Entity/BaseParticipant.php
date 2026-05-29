@@ -61,7 +61,7 @@ class BaseParticipant
     #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id', nullable: true)]
     protected ?PersonnageSecondaire $personnageSecondaire;
     #[ManyToOne(targetEntity: Personnage::class, cascade: ['persist'], inversedBy: 'participants')]
-    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: true)]
     protected ?Personnage $personnage;
     #[ManyToOne(targetEntity: Billet::class, inversedBy: 'participants')]
     #[JoinColumn(name: 'billet_id', referencedColumnName: 'id')]

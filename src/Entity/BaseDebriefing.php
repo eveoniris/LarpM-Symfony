@@ -42,7 +42,7 @@ class BaseDebriefing
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?DateTime $update_date = null;
 
-    #[ORM\Column(name: 'documentUrl', type: Types::STRING, length: 45, nullable: true)]
+    #[ORM\Column(name: 'documentUrl', type: Types::STRING, length: 255, nullable: true)]
     protected ?string $documentUrl = null;
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'debriefings')]

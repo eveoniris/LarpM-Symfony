@@ -41,7 +41,7 @@ abstract class BaseDocument
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $description = null;
 
-    #[Column(name: 'documentUrl', type: Types::STRING, length: 45)]
+    #[Column(name: 'documentUrl', type: Types::STRING, length: 255)]
     protected string $documentUrl = '';
 
     #[Column(type: Types::BOOLEAN)]
