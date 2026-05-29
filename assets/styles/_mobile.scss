@@ -1,0 +1,76 @@
+// Mobile-first responsive utilities — LarpManager
+
+// Fix héritage legacy : overflow:hidden sur .row masque les tables en scroll horizontal
+.row {
+    overflow: visible;
+}
+
+// Tables : scroll horizontal sur mobile au lieu de débordement masqué
+.table-responsive-auto {
+    @media (max-width: 767.98px) {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+
+        table {
+            min-width: 480px;
+        }
+    }
+}
+
+// Onglets personnage : sélecteur natif sur mobile, tabs Bootstrap sur desktop
+.nav-tabs-mobile-select {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .nav-tabs-mobile-select {
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    .nav-tabs-desktop {
+        display: none !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .nav-tabs-desktop {
+        display: flex !important;
+    }
+}
+
+// Boutons d'action : min touch target 44px (WCAG)
+.btn {
+    min-height: 36px;
+}
+
+.btn-toolbar .btn,
+.btn-toolbar .btn-group {
+    @media (max-width: 575.98px) {
+        margin: 3px;
+    }
+}
+
+// Images responsive
+.img-classe {
+    max-width: 216px;
+    width: 100%;
+    height: auto;
+}
+
+// Footer : ne pas rester en position absolute sur mobile (écrase le contenu)
+@media (max-width: 767.98px) {
+    footer {
+        position: relative;
+        margin-top: 2rem;
+    }
+
+    #content {
+        margin-bottom: 20px;
+    }
+}
+
+// Navigation offcanvas : forcer largeur raisonnable
+.offcanvas.offcanvas-start {
+    width: min(300px, 85vw);
+}
