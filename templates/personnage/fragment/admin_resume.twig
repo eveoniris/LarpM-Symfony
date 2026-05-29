@@ -15,7 +15,7 @@
          {% if isAdmin %}
              {% include '_partials/offcanvasActions.twig' with {
                  'offcanvasId': 'offcanvasAdminResume',
-                 'title': 'Action',
+                 'title': 'Actions',
                  'groups': [
                      {'label': 'Magie', 'actions': [
                          {'path': path('personnage.update.domaine', {'personnage': personnage.id}), 'label': 'Modifier la liste des domaines de magie'},
