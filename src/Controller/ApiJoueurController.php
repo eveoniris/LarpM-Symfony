@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Gn;
 use App\Entity\Personnage;
 use App\Repository\GnRepository;
-use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -127,7 +125,7 @@ class ApiJoueurController extends AbstractController
 
         return $this->json([
             'id' => $participant->getId(),
-            'subscription_date' => $participant->getSubscriptionDate()?->format('Y-m-d'),
+            'subscription_date' => $participant->getSubscriptionDate()->format('Y-m-d'),
             'couchage' => $participant->getCouchage(),
             'billet' => $billet ? ['id' => $billet->getId(), 'label' => $billet->getLabel()] : null,
             'groupe' => $groupeGn?->getGroupe() ? [
@@ -164,7 +162,7 @@ class ApiJoueurController extends AbstractController
             ];
         }
 
-        usort($competences, fn ($a, $b) => [$a['famille'], $a['niveau_index']] <=> [$b['famille'], $b['niveau_index']]);
+        usort($competences, static fn ($a, $b) => [$a['famille'], $a['niveau_index']] <=> [$b['famille'], $b['niveau_index']]);
 
         return $this->json($competences);
     }
