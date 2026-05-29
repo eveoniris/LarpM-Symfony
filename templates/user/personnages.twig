@@ -68,7 +68,7 @@
                 {'name' : '#', 'field' : 'personnage.id', 'css' : 'text-center'},
                 {'name' : 'S', 'css' : 'text-center'},
                 {'name' : 'nom', 'field' : 'personnage.nom', 'css' : 'text-center'},
-                {'name' : 'surnom', 'field' : 'personnage.surnom', 'css' : 'text-center d-none d-md-table-cell'},
+                {'name' : 'surnom', 'field' : 'personnage.surnom', 'css' : 'text-center'},
                 {'name' : 'classe', 'field' : 'personnage.classe', 'css' : 'text-center'},
                 {'name' : 'Participations', 'css' : 'text-center'},
             ]} %}
@@ -96,7 +96,7 @@
                     <td>
                         <a href="{{ path('personnage.detail', {"personnage" : personnage.id}) }}">{{ personnage.nom }}</a>
                     </td>
-                    <td class="d-none d-md-table-cell">
+                    <td>
                         {% if personnage.surnom %}
                             <a href="{{ path('personnage.detail', {"personnage" : personnage.id}) }}">{{ personnage.surnom }}</a>
                         {% else %}
