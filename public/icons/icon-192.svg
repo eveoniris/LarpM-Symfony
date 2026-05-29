@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="24" fill="#1a1a1a"/>
+  <rect x="8" y="8" width="176" height="176" rx="18" fill="none" stroke="#c0622a" stroke-width="4"/>
+  <text x="96" y="72" font-family="serif" font-size="44" font-weight="bold" fill="#c0622a" text-anchor="middle">LM</text>
+  <text x="96" y="118" font-family="serif" font-size="16" fill="#aaaaaa" text-anchor="middle">Hyborian Age</text>
+  <line x1="32" y1="130" x2="160" y2="130" stroke="#c0622a" stroke-width="2" opacity="0.6"/>
+  <text x="96" y="156" font-family="serif" font-size="13" fill="#888888" text-anchor="middle">LarpManager</text>
+</svg>
