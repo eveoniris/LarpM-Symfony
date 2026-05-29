@@ -75,6 +75,21 @@
     width: min(300px, 85vw);
 }
 
+// Dropdowns : scroll vertical sur mobile si menu trop long + touch targets 44px
+@media (max-width: 767.98px) {
+    .dropdown-menu {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .dropdown-menu .btn,
+    .dropdown-menu .dropdown-item {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+}
+
 // Barre d'actions personnage : centrée et touch-friendly sur mobile
 .personnage-actions {
     @media (max-width: 767.98px) {

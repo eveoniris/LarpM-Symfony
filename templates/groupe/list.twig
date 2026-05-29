@@ -30,6 +30,7 @@
 
 	{% include '_partials/pagination.html.twig' %}
 
+	<div class="table-responsive">
 	<table class="table table-striped table-bordered table-condensed">
 		{% include '_partials/thead.twig' with  { 'route': 'groupe.list', 'rows': [
 			{'name' : 'Type', 'field' : 'secret', 'css' : 'text-center'},
@@ -73,6 +74,7 @@
 		{% endfor %}
 		</tbody>
 	</table>
+	</div>{# /table-responsive #}
 
 	{% include '_partials/pagination.html.twig' %}
 
