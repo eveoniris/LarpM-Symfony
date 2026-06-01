@@ -348,6 +348,7 @@ class GnController extends AbstractController
             'paginator' => $paginator,
             'limit' => $limit,
             'page' => $page,
+            'isAdmin' => $this->isGranted('ROLE_ORGA') || $this->isGranted('ROLE_ADMIN'),
         ]);
     }
 
@@ -364,6 +365,7 @@ class GnController extends AbstractController
             'paginator' => $paginator,
             'limit' => $limit,
             'page' => $page,
+            'isAdmin' => $this->isGranted('ROLE_ORGA') || $this->isGranted('ROLE_ADMIN'),
         ]);
     }
 
