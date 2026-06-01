@@ -27,7 +27,7 @@ class PersonnageXpType extends AbstractType
             'label' => 'Explication',
             'required' => true,
             'constraints' => [
-                new Length(['max' => 100]),
+                new Length(max: 100),
                 new NotBlank(),
             ],
         ]);
