@@ -100,6 +100,11 @@ class GroupeGnType extends AbstractType
             return;
         }
 
+        // not on new session creation
+        if (null === $groupeGn->getGn()?->getId()) {
+            return;
+        }
+
         // Seul le Suzerain OU un admin peut éditer cela
         /** @var User $user */
         $user = $this->security->getUser();
@@ -143,13 +148,13 @@ class GroupeGnType extends AbstractType
                 ->innerjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn')
                 ->where('p.vivant = :vivant AND parti.gn = :gnid AND parti.groupeGn = :groupe_gn_id')
                 ->setParameter('vivant', true)
-                ->setParameter('gnid', $groupeGn->getGn()->getId())
+                ->setParameter('gnid', $groupeGn->getGn()?->getId())
                 ->setParameter('groupe_gn_id', $builder->getData()->getId())
                 ->orderBy('p.nom', 'ASC'), // TODO? and PID not IN groupeGn titres
             'constraints' => [
                 /* @phpstan-ignore argument.type */
-                new Assert\Callback([
-                    'callback' => function (?Personnage $personnage, ExecutionContextInterface $context) use ($groupeGn): void {
+                new Assert\Callback(
+                    function (?Personnage $personnage, ExecutionContextInterface $context) use ($groupeGn): void {
                         if (!$personnage) {
                             return;
                         }
@@ -183,7 +188,7 @@ class GroupeGnType extends AbstractType
                                 ->addViolation();
                         }
                     },
-                ]),
+                ),
             ],
         ]);
 
@@ -197,19 +202,19 @@ class GroupeGnType extends AbstractType
                 'empty_data' => null,
                 // On veut tous les personnages vivant du GN (pas que ceux du groupe)
                 'query_builder' => static fn (PersonnageRepository $personnageRepository) => $personnageRepository // TODO? and PID not IN groupeGn titres
-                    ->createQueryBuilder('p')
+                ->createQueryBuilder('p')
                     ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
                     // ->leftjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn') // AND titre_id is null
                     ->where('p.vivant = :vivant AND parti.gn = :gnid')
                     // ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
                     ->setParameter('vivant', true)
-                    ->setParameter('gnid', $groupeGn->getGn()->getId())
+                    ->setParameter('gnid', $groupeGn->getGn()?->getId())
                     // ->setParameter('groupe_gn_id', $builder->getData()->getId())
                     ->orderBy('p.nom', 'ASC'),
                 'constraints' => [
                     /* @phpstan-ignore argument.type */
-                    new Assert\Callback([
-                        'callback' => function (?Personnage $personnage, ExecutionContextInterface $context) use ($child, $groupeGn): void {
+                    new Assert\Callback(
+                        function (?Personnage $personnage, ExecutionContextInterface $context) use ($child, $groupeGn): void {
                             if (!$personnage) {
                                 return;
                             }
@@ -243,7 +248,7 @@ class GroupeGnType extends AbstractType
                                     ->addViolation();
                             }
                         },
-                    ]),
+                    ),
                 ],
             ];
         };

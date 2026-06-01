@@ -75,7 +75,7 @@ abstract class BaseGroupeGn
 
     #[ORM\ManyToOne(targetEntity: Participant::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'responsable_id', referencedColumnName: 'id', nullable: true)]
-    protected ?Participant $participant;
+    protected ?Participant $participant = null;
 
     #[Column(length: 255, nullable: true)]
     private ?string $bateaux_localisation = null;
@@ -286,9 +286,9 @@ abstract class BaseGroupeGn
     /**
      * Get Gn entity (many to one).
      */
-    public function getGn(): Gn
+    public function getGn(): ?Gn
     {
-        return $this->gn;
+        return $this->gn ?? null;
     }
 
     /**
@@ -332,9 +332,9 @@ abstract class BaseGroupeGn
     /**
      * Get the value of id.
      */
-    public function getId(): int
+    public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     /**
