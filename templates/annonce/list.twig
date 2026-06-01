@@ -29,7 +29,8 @@
 
     {% include '_partials/pagination.html.twig' %}
 
-    <table class="table table-striped table-bordered table-condensed table-hover">
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered table-sm table-hover">
         <thead>
         <tr>
             <th>
@@ -109,7 +110,7 @@
                 <td>{% if annonce.archive %}Archivé{% else %}<span class="text-success">Publié</span>{% endif %}</td>
                 <td>{% if annonce.gn %}{{ annonce.gn.label }}{% else %}Aucun{% endif %}</td>
                 <td>
-                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                    <div class="btn-toolbar float-end" role="toolbar" aria-label="...">
                         <div class="btn-group" role="group" aria-label="...">
                             <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier"
                                href="{{ path('annonce.update',{'annonce':annonce.id}) }}"><i class="fa fa-pencil"
@@ -127,6 +128,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% include '_partials/pagination.html.twig' %}
 

@@ -5,7 +5,7 @@
 	<li class="list-group-item"{% if step > 0 %} style="padding-left: {{ step * 50 }}px"{% endif %}>
 		<h4 class="list-group-item-heading">
 			{{ appelation.label }} 
-			<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+			<div class="btn-toolbar float-end" role="toolbar" aria-label="...">
 				<div class="btn-group" role="group" aria-label="...">
 					<a class="btn btn-secondary" title="Détail" href="{{ path('appelation.detail', {'appelation':appelation.id}) }}"><i class="fa fa-eye"></i></a>
 					<a class="btn btn-secondary" title="Modifier" href="{{ path('appelation.update', {'appelation':appelation.id}) }}"><i class="fa fa-pencil"></i></a>

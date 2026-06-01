@@ -23,7 +23,8 @@
 
 	{% include '_partials/pagination.html.twig' %}
 	
-		<table class="table table-condensed table-striped table-bordered table-hover">
+		<div class="table-responsive">
+		<table class="table table-sm table-striped table-bordered table-hover">
 			<thead>
 				<tr>
 					<th>Nom</th>
@@ -43,7 +44,7 @@
 					<td>{{ restriction.auteur.name }}</td>
 					<td>{{ restriction.users|length }}</td>
 					<td>
-						<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+						<div class="btn-toolbar float-end" role="toolbar" aria-label="...">
 							<div class="btn-group" role="group" aria-label="...">
 								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('restriction.update',{'id':restriction.id}) }}"><i class="fa fa-pencil"></i></a>
 								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('restriction.detail', {'id':restriction.id}) }}"><i class="fa fa-eye"></i></a>
@@ -55,6 +56,7 @@
 				{% endfor %}
 			</tbody>
 		</table>
+		</div>
 
 	{% include '_partials/pagination.html.twig' %}
 	

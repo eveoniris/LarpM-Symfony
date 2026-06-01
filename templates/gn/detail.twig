@@ -176,7 +176,7 @@
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
-                                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                                <table class="table table-sm table-striped table-bordered m-0 rounded-2">
                                     <thead>
                                     <tr>
                                         <th>Billet</th>
@@ -303,7 +303,7 @@
                 <div class="header"><h5>Les annonces</h5></div>
                 <div class="card-body">
                     {% for  annonce in gn.annonces %}
-                        <div class="pull-right">
+                        <div class="float-end">
                             <small>publié le {{ annonce.updateDate|date('Y-m-d') }}</small>
                         </div>
                         <strong>{{ annonce.title }}</strong>
@@ -348,7 +348,7 @@
                         <div class="panel-body">
                             {{ reponse.question.text|markdown_to_html }}
                             <strong>{{ reponse.question.reponse(reponse.reponse) }}</strong>
-                            <div class="pull-right">
+                            <div class="float-end">
                                 <a class="btn btn-danger"
                                    href="{{ path('participant.reponse.delete', {'participant':participant.id,'reponse': reponse.id}) }}">Supprimer
                                     ma réponse</a>

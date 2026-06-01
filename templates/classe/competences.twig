@@ -13,7 +13,8 @@
             <h5>Coût des compétences</h5>
         </div>
 
-        <table class="table table-striped table-bordered table-condensed table-hover">
+        <div class="table-responsive">
+        <table class="table table-striped table-bordered table-sm table-hover">
             {% set th = [{'name': 'Compétence', 'css': 'text-center'}] %}
             {% for classe in classes %}
                 {% set th = th|merge([{'name': classe.label, 'style': 'writing-mode: sideways-lr;', 'css': 'text-center align-center align-middle'}]) %}
@@ -54,6 +55,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
 
     </div>
 {% endblock %}

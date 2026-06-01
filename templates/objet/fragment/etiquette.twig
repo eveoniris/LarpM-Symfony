@@ -13,9 +13,11 @@
 {% endif %}
 
 <div class="item {{ type }}">
+    <div class="table-responsive">
     <table>
         <tr>
             <td class="recto">
+                <div class="table-responsive">
                 <table class="item_left">
                     <tr>
                         <td class="w33"><strong>{{ item.numero }}</strong>
@@ -52,6 +54,7 @@
                         {% endif %}
                     </tr>
                 </table>
+                </div>
                 {% if useDot %}<span class="dot"></span>{% endif %}
             </td>
             <td class="verso">
@@ -60,4 +63,5 @@
             </td>
         </tr>
     </table>
+    </div>
 </div>

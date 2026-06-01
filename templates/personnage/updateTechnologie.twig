@@ -22,7 +22,8 @@
     {% endif %}
 
     {% if errorLevel != 1 %}
-        <table class="table table-condensed table-striped table-bordered table-hover">
+        <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered table-hover">
             {% include '_partials/thead.twig' with  { 'route': 'personnage.update.technologie', 'routeOptions': {'personnage': personnage.id}, 'rows': [
                 {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
                 {'name' : 'Secret', 'field' : 'secret', 'css' : 'text-center'},
@@ -68,6 +69,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
     {% endif %}
 
     {% include '_partials/pagination.html.twig' %}

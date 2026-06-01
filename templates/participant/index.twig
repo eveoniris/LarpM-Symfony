@@ -153,7 +153,7 @@
                                 n'avez pas de billet. Vous devez impérativement avoir un Billet pour pouvoir participer
                                 à {{ participant.gn.label }}.</p>
                             <div class="clearfix">
-                                <div class="pull-right">
+                                <div class="float-end">
                                     <a class="btn btn-primary btn-lg"
                                        href="{{ path('gn.billetterie', {'gn': participant.gn.id}) }}">Billetterie</a>
                                 </div>
@@ -219,7 +219,7 @@
                     <div class="panel-body">
                         {{ reponse.question.text|markdown_to_html }}
                         <strong>{{ reponse.question.reponse(reponse.reponse) }}</strong>
-                        <div class="pull-right">
+                        <div class="float-end">
                             <a class="btn btn-danger"
                                href="{{ path('participant.reponse.delete', {'participant':participant.id,'reponse': reponse.id}) }}">Supprimer
                                 ma réponse</a>

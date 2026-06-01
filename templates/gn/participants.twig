@@ -39,7 +39,8 @@
 
     {% include '_partials/pagination.html.twig' %}
 
-    <table class="table table-condensed table-striped table-bordered">
+    <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered">
         {% include '_partials/thead.twig' with  { 'route': 'gn.participants', 'routeOptions': {'gn': gn.id}, 'rows': [
             {'name' : 'Participant', 'field' : 'nomPrenom', 'css' : 'text-center'},
             {'name' : 'Email', 'field' : 'user.email', 'css' : 'text-center'},
@@ -91,7 +92,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                    <div class="btn-toolbar float-end" role="toolbar" aria-label="...">
                         <div class="btn-group" role="group" aria-label="...">
                             <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
                                title="Voir"
@@ -150,6 +151,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% include '_partials/pagination.html.twig' %}
 

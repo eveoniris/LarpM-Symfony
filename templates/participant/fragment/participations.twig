@@ -10,7 +10,7 @@
     {% set showPersonnage = not showUser %}
 {% endif %}
 <div class="table-responsive">
-<table class="table table-condensed table-striped table-bordered table-hover">
+<table class="table table-sm table-striped table-bordered table-hover">
     {% include '_partials/thead.twig' with  { 'route': 'connaissance.list', 'rows': [
         {'name' : 'GN', 'css' : 'text-center'},
         {'name' : 'Statut', 'css' : 'text-center'},

@@ -22,7 +22,8 @@
 
     {% include '_partials/pagination.html.twig' %}
 
-    <table class="table table-condensed table-striped table-bordered table-hover">
+    <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'rumeur.list', 'rows': [
             {'name' : 'Contenu', 'field' : 'text'},
             {'name' : 'Territoire', 'field' : 'territoire', 'css' : 'text-center'},
@@ -44,7 +45,7 @@
                 <td>{{ rumeur.creationDate|date('Y-m-d') }}</td>
                 <td>{{ rumeur.updateDate|date('Y-m-d') }}</td>
                 <td>
-                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                    <div class="btn-toolbar float-end" role="toolbar" aria-label="...">
                         <div class="btn-group" role="group" aria-label="...">
                             <a class="btn btn-secondary" href="{{ path('rumeur.detail', {'rumeur':rumeur.id}) }}"><i
                                         class="fa fa-eye"></i></a>
@@ -57,6 +58,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% include '_partials/pagination.html.twig' %}
 

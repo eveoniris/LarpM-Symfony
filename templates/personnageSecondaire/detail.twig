@@ -16,14 +16,17 @@
             <h5>Détail d'un personnage secondaire</h5>
         </div>
 
-        <table class="table table-striped table-bordered table-condensed table-hover">
+        <div class="table-responsive">
+        <table class="table table-striped table-bordered table-sm table-hover">
             <tr>
                 <th>Libellé</th>
                 <td>{{ personnageSecondaire.label }}</td>
             </tr>
         </table>
+        </div>
         <h3>Competences</h3>
-        <table class="table table-striped table-bordered table-condensed table-hover">
+        <div class="table-responsive">
+        <table class="table table-striped table-bordered table-sm table-hover">
             {# Todo all level of each competence ? #}
             {% for competenceFamily in personnageSecondaire.competences %}
             <tr>
@@ -38,6 +41,7 @@
             </tr>
             {% endfor %}
         </table>
+        </div>
 
         <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
             <div class="btn-group" role="group">

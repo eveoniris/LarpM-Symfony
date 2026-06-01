@@ -21,8 +21,8 @@
         <div class="w-auto mb-2 p-0">
             {% if is_granted('ROLE_SCENARISTE', app.user) %}
                 <div class="d-flex justify-content-end">
-                    <div class="btn-toolbar d-flex justify-content-between m-0 p-0" role="toolbar">
-                        <div class="btn-group m-0 p-0" role="group">
+                    <div class="btn-toolbar d-flex flex-wrap justify-content-end gap-2 mb-2 p-0" role="toolbar">
+                        <div class="btn-group flex-wrap" role="group">
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Modifier"
                                href="{{ path('groupe.add') }}"><i

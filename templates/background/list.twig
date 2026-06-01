@@ -29,7 +29,7 @@
                                         title="Lancer la recherche"><i class="fa fa-search"></i></button>
                                 <a class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Reset"
                                    href="{{ path('background.list') }}"><i class="fa fa-refresh"></i></a>
-                                <div class="btn-group pull-right" role="group" aria-label="...">
+                                <div class="btn-group float-end" role="group" aria-label="...">
                                     <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                        title="Imprimer tous les backgrounds de groupe"
                                        href="{{ path('background.print') }}"><i class="fa fa-print"></i> Imprimer tous
@@ -52,7 +52,8 @@
 
     {% include '_partials/pagination.html.twig' %}
 
-    <table class="table table-striped table-bordered table-condensed table-hover">
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered table-sm table-hover">
         <thead>
         <tr>
             <th>
@@ -123,6 +124,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% include '_partials/pagination.html.twig' %}
 

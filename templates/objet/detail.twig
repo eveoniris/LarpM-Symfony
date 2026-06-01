@@ -41,7 +41,7 @@
         <div class="page-header">
             <h3>
                 Détail de {{ item.label }}
-                <div class="pull-right">
+                <div class="float-end">
                     <a href="{{ path('item.update', {'item': item.id}) }}" class="btn btn-primary" role="button">Modifier</a>
                     <a href="{{ path('item.delete', {'item': item.id}) }}" class="btn btn-danger" role="button">Supprimer</a>
                 </div>
@@ -53,7 +53,7 @@
                 <div class="item {% if item.couleur == 'bleu' %}item-bleu{% else %}item-orange{% endif %}">
                     <div class="item-header">
                         {{ item.numero }}
-                        <span class="pull-right">{{ item.quality.numero }}{{ item.identification }}</span>
+                        <span class="float-end">{{ item.quality.numero }}{{ item.identification }}</span>
                     </div>
                     <div class="item-text">
                         {{ item.description|markdown_to_html }}

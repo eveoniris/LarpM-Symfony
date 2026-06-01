@@ -55,7 +55,7 @@
                                 ({% if territoire.appelation %}{{ territoire.appelation.label }}{% else %}<span
                                     class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %}
                                 )
-                                <div class="btn-group pull-right" role="group" aria-label="...">
+                                <div class="btn-group float-end" role="group" aria-label="...">
                                     <a href="{{ path('territoire.detail', {'territoire': territoire.id}) }}"
                                        class="btn btn-primary" role="button">Détail</a>
                                     {% if isAdmin %}
@@ -89,7 +89,7 @@
                                     <span class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %}
                                     )
                                     {% if isAdmin %}
-                                        <div class="btn-group pull-right" role="group" aria-label="...">
+                                        <div class="btn-group float-end" role="group" aria-label="...">
                                             <a href="{{ path('territoire.detail', {'territoire': region.id}) }}"
                                                class="btn btn-primary" role="button">Détail</a>
                                             <a href="{{ path('territoire.update', {'territoire': region.id}) }}"
@@ -120,7 +120,7 @@
                                         {{ fief.nom }} ({% if fief.appelation %}{{ fief.appelation.label }}{% else %}
                                         <span class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %}
                                         )
-                                        <div class="btn-group pull-right" role="group" aria-label="...">
+                                        <div class="btn-group float-end" role="group" aria-label="...">
                                             <a href="{{ path('territoire.detail', {'territoire': fief.id}) }}"
                                                class="btn btn-primary" role="button">Détail</a>
                                             {% if isAdmin %}

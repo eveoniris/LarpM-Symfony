@@ -17,7 +17,8 @@
 
     {% include '_partials/pagination.html.twig' %}
 
-    <table class="table table-condensed table-striped table-bordered table-hover">
+    <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'personnage.update.potion', 'routeOptions': {'personnage': personnage.id}, 'rows': [
             {'name' : 'Numero', 'field' : 'numero', 'css' : 'text-center'},
             {'name' : 'Nom', 'field' : 'label', 'css' : 'text-center'},
@@ -57,6 +58,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% include '_partials/pagination.html.twig' %}
 

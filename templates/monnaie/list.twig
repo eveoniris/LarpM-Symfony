@@ -18,6 +18,7 @@
 		</div>
 	</div>	
 	
+	<div class="table-responsive">
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
@@ -32,7 +33,7 @@
 				<td>{{ monnaie.label }}</td>
 				<td>{{ monnaie.description|markdown_to_html }}</td>
 				<td>
-					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+					<div class="btn-toolbar float-end" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
 							<a class="btn btn-secondary" title="Détail" href="{{ path('monnaie.detail',{'monnaie':monnaie.id}) }}"><i class="fa fa-eye"></i></a>
 							<a class="btn btn-secondary" title="Modifier" href="{{ path('monnaie.update',{'monnaie':monnaie.id}) }}"><i class="fa fa-pencil"></i></a>
@@ -44,5 +45,6 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	</div>
 	
 {% endblock %}

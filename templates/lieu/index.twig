@@ -25,7 +25,8 @@
 
 	{% include '_partials/pagination.html.twig' %}
 	
-	<table class="table table-condensed table-striped table-bordered">
+	<div class="table-responsive">
+	<table class="table table-sm table-striped table-bordered">
 		<thead>
 			<tr>
 				<th>Nom</th>
@@ -41,7 +42,7 @@
 				<td>{{ lieu.description|markdown_to_html }}</td>
 				<td>{% if lieu.documents|length > 0 %}{{ lieu.documents|join(', ') }}{% else %}Aucun document entreposé{% endif %}</td>
 				<td>
-					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+					<div class="btn-toolbar float-end" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
 							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier les documents" href="{{ path('lieu.documents', {'lieu': lieu.id}) }}"><i class="fa-solid fa-file-pen"></i></a>
 							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('lieu.update',{'lieu':lieu.id}) }}"><i class="fa fa-pencil"></i></a>
@@ -54,6 +55,7 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	</div>
 
 	{% include '_partials/pagination.html.twig' %}
 	

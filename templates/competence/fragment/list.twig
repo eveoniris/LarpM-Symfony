@@ -10,7 +10,7 @@
 		<h4 class="list-group-item-heading">
 			{{ competence.competenceFamily.label }} - <small>Niveau {{ competence.level.label }}
 			 / ( <a href="{{ path('competence.perso', {'competence': competence.id}) }}">{{ competence.personnagesGn(app['larp.manager'].getGnActif.id)|length }} personnages</a>)</small>
-			<div class="pull-right btn-group" role="group" aria-label="...">
+			<div class="float-end btn-group" role="group" aria-label="...">
 				<a href="{{ path('competence.detail', {'competence': competence.id}) }}" class="btn btn-primary" role="button">Voir</a>
 			    <a href="{{ path('competence.update', {'competence': competence.id}) }}" class="btn btn-default" role="button">Modifier</a>
 			</div>

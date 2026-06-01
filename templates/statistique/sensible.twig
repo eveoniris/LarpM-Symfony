@@ -32,7 +32,8 @@
             <h5>Personne sensible sur {{ gn.label }}</h5>
         </div>
 
-        <table class="table table-striped table-bordered table-condensed table-hover">
+        <div class="table-responsive">
+        <table class="table table-striped table-bordered table-sm table-hover">
             {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
                 {'name' : 'nom'},
                 {'name' : 'prenom_usage'},
@@ -62,6 +63,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
 
     </div>
 

@@ -36,7 +36,7 @@
         {% for regle in regles %}
             <div class="list-group-item">
                 <h5 class="list-group-item-heading">{{ regle.label }}
-                    <div class="pull-right">
+                    <div class="float-end">
                         <small><a target="_blank" href="{{ path('rules.get',{'rule': regle.url}) }}"><i
                                         class="fa fa-download"></i> Téléchargez le fichier</a></small>
                     </div>
@@ -58,7 +58,7 @@
             {% for regle in regles %}
                 <div class="list-group-item">
                     <h5 class="list-group-item-heading">{{ regle.label }}
-                        <div class="pull-right">
+                        <div class="float-end">
                             <small><a target="_blank" href="{{ path('rules.get',{'rule': regle.url}) }}"><i
                                             class="fa fa-download"></i> Téléchargez le fichier</a></small>
                         </div>

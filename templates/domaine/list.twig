@@ -26,7 +26,8 @@
 
     {% include '_partials/pagination.html.twig' %}
 
-    <table class="table table-condensed table-striped table-bordered table-hover">
+    <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'magie.sort.list', 'rows': [
             {'name' : 'Libellé', 'field' : 'label', 'css': 'text-center'},
             {'name' : 'Description', 'css': 'text-center'},
@@ -62,6 +63,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% include '_partials/pagination.html.twig' %}
 
