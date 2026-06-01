@@ -171,8 +171,8 @@ function openEventDataModal(elmt, withAjaxCall) {
 }
 
 $(document).ready(function () {
-    $("[data-toggle='tooltip']").tooltip();
-    $("[data-bs-toggle='tooltip']").tooltip();
+    $("[data-toggle='tooltip']").tooltip({ trigger: 'hover focus click' });
+    $("[data-bs-toggle='tooltip']").tooltip({ trigger: 'hover focus click' });
 
     // Editeur de text TinyMCE
     let tinyMCEPlugins =
