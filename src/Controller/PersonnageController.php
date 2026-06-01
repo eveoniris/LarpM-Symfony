@@ -677,6 +677,12 @@ class PersonnageController extends AbstractController
 
         $nomPotion = $potion->getLabel();
 
+        if ($personnage->isKnownPotion($potion)) {
+            $this->addFlash('warning', $nomPotion . ' est déjà connue par ce personnage.');
+
+            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
         $personnage->addPotion($potion);
 
         $this->log([

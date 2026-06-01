@@ -185,7 +185,9 @@ abstract class BasePotion
      */
     public function addPersonnage(Personnage $personnage): static
     {
-        $this->personnages[] = $personnage;
+        if (!$this->personnages->contains($personnage)) {
+            $this->personnages[] = $personnage;
+        }
 
         return $this;
     }

@@ -28,11 +28,11 @@ abstract class BaseParticipantHasRestauration
     #[Column(type: Types::DATETIME_MUTABLE)]
     protected DateTime $date;
 
-    #[ManyToOne(targetEntity: Participant::class, inversedBy: 'participantHasRestaurations', cascade: ['persist', 'remove'])]
+    #[ManyToOne(targetEntity: Participant::class, inversedBy: 'participantHasRestaurations')]
     #[JoinColumn(name: 'participant_id', referencedColumnName: 'id', nullable: false)]
     protected Participant $participant;
 
-    #[ManyToOne(targetEntity: Restauration::class, inversedBy: 'participantHasRestaurations', cascade: ['persist', 'remove'])]
+    #[ManyToOne(targetEntity: Restauration::class, inversedBy: 'participantHasRestaurations')]
     #[JoinColumn(name: 'restauration_id', referencedColumnName: 'id', nullable: false)]
     protected Restauration $restauration;
 
