@@ -3,7 +3,7 @@
 	<li class="list-group-item">
 		<h4 class="list-group-item-heading">
 			{{ genre.label }}
-			<div class="pull-right btn-group" role="group">
+			<div class="float-end btn-group" role="group">
 				<a href="{{ path('genre.detail', {genre: genre.id}) }}" class="btn btn-secondary" role="button"><i class="fa fa-eye"></i></a>
 			    <a href="{{ path('genre.update', {genre: genre.id}) }}" class="btn btn-secondary" role="button"><i class="fa fa-pencil"></i></a>
 			</div>

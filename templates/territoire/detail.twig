@@ -445,7 +445,8 @@
                         {% endif %}
                     </div>
                     <div class="card-body">
-                        <table class="table table-condensed table-striped table-bordered table-hover">
+                        <div class="table-responsive">
+                        <table class="table table-sm table-striped table-bordered table-hover">
                             {% include '_partials/thead.twig' with  { 'route': 'connaissance.list', 'rows': [
                                 {'name' : 'Nom', 'css' : 'text-center'},
                                 {'name' : 'Défense', 'css' : 'text-center'},
@@ -489,6 +490,7 @@
                             {% endfor %}
                             </tbody>
                         </table>
+                        </div>
 
                     </div>
                 </div>

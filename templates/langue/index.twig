@@ -18,7 +18,8 @@
 		</div>
 	</div>
 
-	<table class="table table-striped table-bordered table-condensed table-hover">
+	<div class="table-responsive">
+	<table class="table table-striped table-bordered table-sm table-hover">
 		{% include '_partials/thead.twig' with  { 'route': 'langue.index', 'rows': [
             {'name' : 'Titre'},
             {'name' : 'Couleur'},
@@ -30,7 +31,7 @@
 				<td>{{ groupeLangue.label }}</td>
 				<td>{{ groupeLangue.couleur }}</td>
 				<td>
-					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+					<div class="btn-toolbar float-end" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
 							<a class="btn btn-secondary" href="{{ path('langue.detailGroup', {groupeLangue: groupeLangue.id}) }}"><i class="fa fa-eye"></i></a>
 							<a class="btn btn-secondary" href="{{ path('langue.updateGroup', {groupeLangue: groupeLangue.id}) }}"><i class="fa fa-pencil"></i></a>
@@ -40,6 +41,7 @@
 		{% endfor %}
 	 	</tbody>
 	</table>
+	</div>
 
 
 
@@ -107,7 +109,7 @@
 					</p>
 				</div>
 				<div class="col-md-4">
-					<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+					<div class="btn-toolbar float-end" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
 							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('langue.detail',{'langue':langue.id}) }}"><i class="fa fa-eye"></i></a>
 							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('langue.update',{'langue':langue.id}) }}"><i class="fa fa-pencil"></i></a>

@@ -17,7 +17,7 @@
 
                             {% if isAdmin %}
                                 <a href="{{ path('debriefing.detail', {'debriefing': debriefing.id}) }}">{{ debriefing.titre|default('Pas de titre') }}</a>
-                                <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                                <div class="btn-toolbar float-end" role="toolbar" aria-label="...">
                                     <div class="btn-group" role="group" aria-label="...">
                                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                            title="Modifier"

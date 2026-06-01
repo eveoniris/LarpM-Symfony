@@ -5,7 +5,7 @@
 		
 		<h4 class="list-group-item-heading">
 			{{ personnage.publicName }}
-			<div class="pull-right btn-group" role="group" aria-label="...">
+			<div class="float-end btn-group" role="group" aria-label="...">
 				<a href="{{ path('joueur.detail.orga', {index: personnage.id}) }}" class="btn btn-primary" role="button">Voir</a>
 			    <a href="{{ path('joueur.update', {index: personnage.id}) }}" class="btn btn-default" role="button">Modifier</a>
 			</div>

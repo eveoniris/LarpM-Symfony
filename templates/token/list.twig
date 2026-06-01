@@ -32,7 +32,8 @@
     </div>
 
     {% include '_partials/pagination.html.twig' %}
-    <table class="table table-striped table-bordered table-condensed table-hover">
+    <div class="table-responsive">
+    <table class="table table-striped table-bordered table-sm table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'level.list', 'rows': [
             {'name' : 'Id', 'field' : 'id'},
             {'name' : 'Libellé', 'field' : 'label'},
@@ -63,6 +64,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
     {% include '_partials/pagination.html.twig' %}
 
 

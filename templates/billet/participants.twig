@@ -20,7 +20,8 @@
 	{% include '_partials/pagination.html.twig' %}
 	
 	<div class="well well-sm">
-	<table class="table table-condensed table-striped table-bordered">
+	<div class="table-responsive">
+	<table class="table table-sm table-striped table-bordered">
 		<thead>
 			<tr>
 				<th>
@@ -83,6 +84,7 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	</div>
 	</div>
 
 	{% include '_partials/pagination.html.twig' %}

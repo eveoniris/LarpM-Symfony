@@ -23,7 +23,8 @@
 		
 	{% include '_partials/pagination.html.twig' %}
 	
-	<table class="table table-striped table-bordered table-condensed table-hover">
+	<div class="table-responsive">
+	<table class="table table-striped table-bordered table-sm table-hover">
 		<thead>
 			<tr>
 				<th>ID</th>
@@ -43,7 +44,7 @@
 					<td>{{ chrono.visibilite }}</td>
 					<td>{{ chrono.description|markdown_to_html }}</td>
 					<td>
-						<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+						<div class="btn-toolbar float-end" role="toolbar" aria-label="...">
 							<div class="btn-group" role="group" aria-label="...">
 								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('chronologie.update',{'chronologie':chrono.id}) }}"><i class="fa fa-pencil"></i></a>
 								<a class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Supprimer" href="{{ path('chronologie.remove',{'chronologie':chrono.id}) }}"><i class="fa fa-eraser"></i></a>
@@ -54,6 +55,7 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	</div>
 
 	{% include '_partials/pagination.html.twig' %}
 	

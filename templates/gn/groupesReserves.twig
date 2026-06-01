@@ -16,7 +16,8 @@
             <h5>Liste des groupes réservés pour {{ gn.label }} ({{ groupes|length }})</h5>
         </div>
 
-        <table class="table table-condensed table-striped table-bordered">
+        <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered">
             <thead>
             <tr>
                 <th>Groupe</th>
@@ -49,6 +50,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
     </div>
 
 {% endblock %}

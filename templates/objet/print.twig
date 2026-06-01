@@ -28,7 +28,7 @@
             text-align: center;
         }
 
-        .pull-right {
+        .float-end {
             float: right !important;
         }
 
@@ -67,13 +67,14 @@
     {% for i in 1..item.quantite %}
 
         <div class="item {% if item.couleur == 'bleu' %}item-bleu{% else %}item-orange{% endif %}">
+            <div class="table-responsive">
             <table>
                 <tr>
                     <td>
 
                         <div class="item-header">
                             <bold>{{ item.numero }}</bold>
-                            <span class="pull-right"><bold>{{ item.quality.numero }}{{ item.identification }}</bold></span>
+                            <span class="float-end"><bold>{{ item.quality.numero }}{{ item.identification }}</bold></span>
                         </div>
                         <div class="item-text">
                             {{ item.label }}
@@ -87,6 +88,7 @@
                     </td>
                 </tr>
             </table>
+            </div>
 
 
         </div>

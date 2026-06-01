@@ -259,7 +259,8 @@
             <div class="list-group">
                 <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
                     Gains</h6>
-                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                <div class="table-responsive">
+                <table class="table table-sm table-striped table-bordered m-0 rounded-2">
                     <thead>
                     <tr>
                         <th class="col-md-3">Date</th>
@@ -285,10 +286,12 @@
                     </tr>
                     </tbody>
                 </table>
+                </div>
 
                 <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
                     Usages</h6>
-                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                <div class="table-responsive">
+                <table class="table table-sm table-striped table-bordered m-0 rounded-2">
                     <thead>
                     <tr>
                         <th class="col-md-3">Date</th>
@@ -315,6 +318,7 @@
                     </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         {% endset %}
         {% set experienceCollapse = {'id':'experienceHistory1', 'icon': 'fa-history', 'text': experienceCollapseHtml} %}
@@ -325,7 +329,8 @@
     {% if canSeeDetail and pugilat >= 0 %}
         {% set pugilatCollapseHtml %}
             <div class="list-group">
-                <table class="table table-condensed table-striped table-bordered m-0 rounded-2">
+                <div class="table-responsive">
+                <table class="table table-sm table-striped table-bordered m-0 rounded-2">
                     <thead>
                     <tr>
                         <th class="col-md-3">Date</th>
@@ -345,6 +350,7 @@
                     {% endfor %}
                     </tbody>
                 </table>
+                </div>
             </div>
         {% endset %}
         {% set pugilatCollapse = {'id':'pugilatHistory1', 'icon': 'fa-history', 'text': pugilatCollapseHtml} %}

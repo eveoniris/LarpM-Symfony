@@ -28,7 +28,8 @@
         </div>
 
     </div>
-    <table class="table table-condensed table-striped table-bordered table-hover">
+    <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'gn.participants.withoutperso', 'routeOptions': {'gn': gn.id}, 'rows': [
             {'name' : 'Participant', 'field' : 'user.etatCivil.nom'},
             {'name' : 'Email', 'field' : 'user.email'},
@@ -87,6 +88,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
 
 

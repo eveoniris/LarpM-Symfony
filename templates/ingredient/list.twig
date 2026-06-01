@@ -20,6 +20,7 @@
 
 	{% include '_partials/pagination.html.twig' %}
 	
+	<div class="table-responsive">
 	<table class="table table-bordered table-striped">
 		{% include '_partials/thead.twig' with  { 'route': 'ingredient.list', 'rows': [
             {'name' : 'Nom', 'field' : 'label'},
@@ -44,7 +45,7 @@
 				{% endif %}
 			</th>
 			<th>
-				<div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+				<div class="btn-toolbar float-end" role="toolbar" aria-label="...">
 					<div class="btn-group" role="group" aria-label="...">
 						<a class="btn btn-secondary" href="{{ path('ingredient.detail',{'ingredient':ingredient.id}) }}"><i class="fa fa-eye"></i></a>
 						<a class="btn btn-secondary" href="{{ path('ingredient.update',{'ingredient':ingredient.id}) }}"><i class="fa fa-pencil"></i></a>
@@ -55,6 +56,7 @@
 		{% endfor %}
 		</tbody>
 	</table>
+	</div>
 
 	{% include '_partials/pagination.html.twig' %}
 	

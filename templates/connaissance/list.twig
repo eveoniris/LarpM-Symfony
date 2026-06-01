@@ -21,7 +21,8 @@
 
     {% include '_partials/pagination.html.twig' %}
 
-    <table class="table table-condensed table-striped table-bordered table-hover">
+    <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'connaissance.list', 'rows': [
             {'name' : 'Secrète', 'field' : 'secret', 'css' : 'text-center'},
             {'name' : 'Libellé', 'field' : 'label', 'css' : 'text-center'},
@@ -43,7 +44,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    <div class="btn-toolbar pull-right" role="toolbar">
+                    <div class="btn-toolbar float-end" role="toolbar">
                         <div class="btn-group-vertical" role="group">
                             {% if connaissance.documentUrl %}
                                 <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
@@ -75,6 +76,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% include '_partials/pagination.html.twig' %}
 

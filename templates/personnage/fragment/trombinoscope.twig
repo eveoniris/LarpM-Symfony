@@ -12,16 +12,6 @@
         <h5>Trombinoscope</h5>
     </div>
 
-    {% if isAdmin or personnage.user.getId() == app.user.id %}
-        {% include '_partials/dropDown.twig' with {
-            'title' : 'Action',
-            'actions' :
-            [
-                {'path' : path('personnage.trombine.update', {'personnage': personnage.id}), 'label': 'Modifier la trombine' },
-            ]
-        } %}
-    {% endif %}
-
     <div class="thumbnail d-flex justify-content-center" data-turbo="false">
         {% if personnage.trombineUrl %}
             <a href="{{ path('personnage.trombine', {'personnage' : personnage.id }) }}">

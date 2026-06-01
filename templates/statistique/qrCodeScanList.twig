@@ -75,7 +75,8 @@
         {% include '_partials/pagination.html.twig' %}
 
         {# stats table is disable by a 2 until we fix conflit with pagerservice order and datatable order #}
-        <table class="table table-condensed table-striped table-bordered table-hover" id="stats-table2">
+        <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered table-hover" id="stats-table2">
             {% include '_partials/thead.twig' with  { 'route': 'admin.action.logs', 'rows': [
                 {'name' : 'Id', 'field' : 'id', 'css' : 'text-center'},
                 {'name' : 'Quand', 'field' : 'date', 'css' : 'text-center'},
@@ -117,6 +118,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
 
         {% include '_partials/pagination.html.twig' %}
     </div>

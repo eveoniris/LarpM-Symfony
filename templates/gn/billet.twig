@@ -28,7 +28,8 @@
 
     </div>
 
-    <table class="table table-condensed table-striped table-bordered table-hover">
+    <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'gn.participants.withoutbillet', 'routeOptions': {'gn': gn.id}, 'rows': [
             {'name' : 'Billet'},
             {'name' : 'Quantité'},
@@ -40,7 +41,7 @@
                 <td>{{ billet.label }}</td>
                 <td>{{ billet.participants|length }}</td>
                 <td>
-                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                    <div class="btn-toolbar float-end" role="toolbar" aria-label="...">
                         <div class="btn-group" role="group" aria-label="...">
                             <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Liste"
                                href="{{ path('billet.participants', {'billet': billet.id}) }}"><i class="fa fa-users"
@@ -58,6 +59,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
 
 

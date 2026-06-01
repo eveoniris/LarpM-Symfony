@@ -32,7 +32,8 @@
         </div>
     </div>
 
-    <table class="table table-condensed table-striped table-bordered table-hover">
+    <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'gn.pnjs', 'routeOptions': {'gn': gn.id}, 'rows': [
             {'name' : 'Nom prénom', 'field' : 'user.etatCivil.nom'},
             {'name' : 'Email', 'field' : 'user.email'},
@@ -65,5 +66,6 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
 {% endblock body %}

@@ -27,7 +27,8 @@
         </div>
     </div>
 
-    <table class="table table-condensed table-striped table-bordered table-hover">
+    <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered table-hover">
         {% include '_partials/thead.twig' with  { 'route': 'gn.participants.withoutgroup', 'routeOptions': {'gn': gn.id}, 'rows': [
             {'name' : 'Participant', 'field' : 'user.etatCivil.nom'},
             {'name' : 'Email', 'field' : 'user.email'},
@@ -47,7 +48,7 @@
                 <td>{{ participant.user.email }}</td>
                 <td>{{ participant.billet }}</td>
                 <td>
-                    <div class="btn-toolbar pull-right" role="toolbar" aria-label="...">
+                    <div class="btn-toolbar float-end" role="toolbar" aria-label="...">
                         <div class="btn-group" role="group" aria-label="...">
                             <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
                                title="Ajouter à un groupe"
@@ -62,6 +63,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
 
 
