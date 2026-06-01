@@ -933,12 +933,12 @@ class ParticipantController extends AbstractController
     /**
      * Création d'un nouveau participant.
      */
-    #[Route('/participant/new', name: 'participant.new')]
-    public function newAction(Request $request): RedirectResponse|Response
+    #[Route('/participant/new/{user}', name: 'participant.new')]
+    public function newAction(Request $request, #[MapEntity] User $user): RedirectResponse|Response
     {
         $participant = new Participant();
         $userRepository = $this->entityManager->getRepository(User::class);
-        $user = $userRepository->find($request->query->get('user'));
+        //$user = $userRepository->find($request->query->get('user'));
 
         if ($user) {
             $participant->setUser($user);
