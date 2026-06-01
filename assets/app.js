@@ -199,6 +199,8 @@ $(document).ready(function () {
         'preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | ' +
         'showcomments addcomment';
 
+    let tinyMCEMobile = { toolbar: 'bold italic | bullist numlist | link | undo redo' };
+
     let tinyMCEThemeDark = {
         selector: 'textarea.tinymce',
         license_key: 'gpl',
@@ -207,7 +209,8 @@ $(document).ready(function () {
         link_assume_external_targets: true,
         skin: "oxide-dark",
         entity_encoding: 'raw',
-        content_css: "dark"
+        content_css: "dark",
+        mobile: tinyMCEMobile
     };
     let tinyMCEThemeLight = {
         selector: 'textarea.tinymce',
@@ -217,7 +220,8 @@ $(document).ready(function () {
         link_assume_external_targets: true,
         skin: "oxide",
         entity_encoding: 'raw',
-        content_css: ""
+        content_css: "",
+        mobile: tinyMCEMobile
     };
     let tinyMCEThemeDarkFull = {
         selector: 'textarea.tinymce-full',
@@ -226,7 +230,8 @@ $(document).ready(function () {
         link_assume_external_targets: true,
         skin: "oxide-dark",
         entity_encoding: 'raw',
-        content_css: "dark"
+        content_css: "dark",
+        mobile: tinyMCEMobile
     };
     let tinyMCEThemeLightFull = {
         selector: 'textarea.tinymce-full',
@@ -235,7 +240,8 @@ $(document).ready(function () {
         link_assume_external_targets: true,
         skin: "oxide",
         entity_encoding: 'raw',
-        content_css: ""
+        content_css: "",
+        mobile: tinyMCEMobile
     };
 
     function toggleTinyMCE(mode) {
