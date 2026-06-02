@@ -267,7 +267,12 @@ class ConditionsService
                 return true;
             }
 
-            if (strtoupper($entity->getCompetenceFamilyType()->value ?? '') === $this->getConditionValue($condition)) {
+            $conditionValue = strtoupper($this->getConditionValue($condition));
+            if (strtoupper($entity->getCompetenceFamilyType()->value ?? '') === $conditionValue) {
+                return true;
+            }
+
+            if ($entity->getCompetenceFamilyType()?->name === $conditionValue) {
                 return true;
             }
 
@@ -276,7 +281,8 @@ class ConditionsService
                     return true;
                 }
 
-                if (strtoupper($service->getCompetence()->getCompetenceFamily()?->getCompetenceFamilyType()->value ?? '') === $this->getConditionValue($condition)) {
+                $serviceFamily = $service->getCompetence()->getCompetenceFamily()?->getCompetenceFamilyType();
+                if (strtoupper($serviceFamily?->value ?? '') === $conditionValue || ($serviceFamily?->name === $conditionValue)) {
                     return true;
                 }
             }

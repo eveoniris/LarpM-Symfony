@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Bonus;
 use App\Entity\Chronologie;
 use App\Entity\Construction;
 use App\Entity\Groupe;
@@ -509,10 +510,10 @@ class TerritoireController extends AbstractController
     #[Route('/territoire', name: 'territoire.list')]
     public function listAction(PagerService $pagerService, TerritoireRepository $territoireRepository): Response
     {
-        $pagerService->setDefaultOrdersBy(['name' => OrderBy::ASC]);
         $pagerService->setRepository($territoireRepository);
 
         $alias = $territoireRepository->getAlias();
+        $pagerService->setDefaultOrdersBy([$alias . '.nom' => OrderBy::ASC]);
 
         // Got only main territory
         $queryBuilder = $territoireRepository->root($territoireRepository->createQueryBuilder($alias), true);
@@ -788,6 +789,7 @@ class TerritoireController extends AbstractController
                 'expanded' => true,
                 'choices' => $bonusChoices,
                 'choice_label' => 'titre',
+                'choice_value' => fn (?Bonus $bonus) => (string) $bonus?->getId(),
                 'data' => $currentBonus,
             ])
             ->add('save', SubmitType::class, ['label' => 'Valider '])
@@ -798,16 +800,15 @@ class TerritoireController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $bonus = $form->getData()['bonus'] ?? null;
 
-            $origineBonus = new OrigineBonus();
-            $origineBonus->setBonus($bonus);
-            $origineBonus->setTerritoire($territoire);
-
-            foreach ($territoire->getOriginesBonus() as $currentOriginesBonus) {
+            foreach ($territoire->getOriginesBonus()->toArray() as $currentOriginesBonus) {
+                $territoire->removeOrigineBonus($currentOriginesBonus);
                 $this->entityManager->remove($currentOriginesBonus);
             }
 
+            $origineBonus = new OrigineBonus();
+            $origineBonus->setBonus($bonus);
+            $territoire->addOrigineBonus($origineBonus);
             $this->entityManager->persist($origineBonus);
-            $this->entityManager->persist($territoire);
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Le territoire a été mis à jour');
