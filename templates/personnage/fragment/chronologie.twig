@@ -9,11 +9,14 @@
     </div>
 
     {% if isAdmin %}
-        {% include '_partials/dropDown.twig' with {
-            'title' : 'Action',
-            'actions' :
-            [
-                {'path' : path('personnage.add.chronologie', {'personnage': personnage.id}), 'label': 'Ajouter un évènement' },
+        {% include '_partials/offcanvasActions.twig' with {
+            'offcanvasId': 'offcanvasChronologie',
+            'isAdmin': true,
+            'title': 'Actions',
+            'groups': [
+                {'label': 'Chronologie', 'actions': [
+                    {'path': path('personnage.add.chronologie', {'personnage': personnage.id}), 'label': 'Ajouter un évènement'},
+                ]},
             ]
         } %}
     {% endif %}

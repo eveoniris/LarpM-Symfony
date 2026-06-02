@@ -16,6 +16,7 @@ use App\Repository\ReligionLevelRepository;
 use App\Repository\ReligionRepository;
 use App\Security\MultiRolesExpression;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -148,22 +149,34 @@ class ReligionController extends AbstractController
     {
         $page = $request->query->getInt('page', 1);
         $orderBy = $request->query->getString('order_by', 'label');
-        $orderDir = $request->query->getString('order_dir', 'ASC');
+        $orderDir = 'DESC' === $request->query->getString('order_dir') ? 'DESC' : 'ASC';
+        $search = trim($request->query->getString('search', ''));
         $limit = 10;
 
-        if ($this->isGranted(Role::REGLE->value)) {
-            $where = '1=1';
-        } else {
-            $where = 'religion.secret = 0';
+        $canSeeSecret = $this->isGranted(Role::REGLE->value) || $this->isGranted(Role::SCENARISTE->value);
+
+        $qb = $religionRepository->createQueryBuilder('religion')
+            ->orderBy('religion.' . $orderBy, $orderDir)
+            ->setMaxResults($limit)
+            ->setFirstResult(($page - 1) * $limit);
+
+        if (!$canSeeSecret) {
+            $qb->andWhere('religion.secret = 0');
+        }
+        if ($search !== '') {
+            $qb->andWhere('religion.label LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
         }
 
-        $paginator = $religionRepository->findPaginated($page, $limit, $orderBy, $orderDir, $where);
+        $paginator = new Paginator($qb->getQuery());
 
         return $this->render('religion\list.twig', [
             'paginator' => $paginator,
             'limit' => $limit,
             'page' => $page,
-            'isAdmin' => $this->isGranted(Role::SCENARISTE->value),
+            'search' => $search,
+            'isAdmin' => $this->isGranted(Role::REGLE->value) || $this->isGranted(Role::ORGA->value),
+            'canViewAdmin' => $this->isGranted(Role::SCENARISTE->value),
         ]);
     }
 

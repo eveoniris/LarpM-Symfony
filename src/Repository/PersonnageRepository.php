@@ -152,6 +152,10 @@ LEFT JOIN p2.participants pa2
             $qb->join('grgn.groupe', 'gr');
         }
 
+        if (\array_key_exists('pseudo', $criteria) || \array_key_exists('all', $criteria)) {
+            $qb->leftJoin('p.user', 'u');
+        }
+
         // ajoute les conditions
         if (\array_key_exists('classe', $criteria)) {
             $qb->andWhere('cl.id = :classeId')->setParameter('classeId', $criteria['classe']);
@@ -179,6 +183,24 @@ LEFT JOIN p2.participants pa2
 
         if (\array_key_exists('nom', $criteria)) {
             $qb->andWhere('p.nom LIKE :nom OR p.surnom LIKE :nom')->setParameter('nom', '%' . $criteria['nom'] . '%');
+        }
+
+        if (\array_key_exists('pseudo', $criteria)) {
+            $qb->andWhere('u.username LIKE :pseudo')->setParameter('pseudo', '%' . $criteria['pseudo'] . '%');
+        }
+
+        if (\array_key_exists('all', $criteria)) {
+            $allVal = '%' . $criteria['all'] . '%';
+            $orConditions = $qb->expr()->orX(
+                $qb->expr()->like('p.nom', ':allVal'),
+                $qb->expr()->like('p.surnom', ':allVal'),
+                $qb->expr()->like('u.username', ':allVal'),
+            );
+            if (is_numeric($criteria['all'])) {
+                $orConditions->add($qb->expr()->eq('p.id', ':allId'));
+                $qb->setParameter('allId', (int) $criteria['all']);
+            }
+            $qb->andWhere($orConditions)->setParameter('allVal', $allVal);
         }
 
         if (\array_key_exists('scenariste_direct', $criteria)) {

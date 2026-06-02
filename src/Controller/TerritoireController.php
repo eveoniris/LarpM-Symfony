@@ -509,9 +509,8 @@ class TerritoireController extends AbstractController
     #[Route('/territoire', name: 'territoire.list')]
     public function listAction(PagerService $pagerService, TerritoireRepository $territoireRepository): Response
     {
-        // Set order by nom by default
-        // $pagerService->setOrdersBy(['name' => OrderBy::ASC]);
         $pagerService->setDefaultOrdersBy(['name' => OrderBy::ASC]);
+        $pagerService->setRepository($territoireRepository);
 
         $alias = $territoireRepository->getAlias();
 

@@ -9,21 +9,22 @@
         </div>
 
         {# TODO : fragment for enveloppe -> to also use it on groupe #}
-        {% if isAdmin %}
-            {% include '_partials/dropDown.twig' with {
-                'title' : 'Action',
-                'actions' :
-                [
-                    {'path' : path('personnage.documents', {'personnage': personnage.id}), 'label': 'Modifier la liste des documents' },
-                    {'path' : path('personnage.items', {'personnage': personnage.id}), 'label': 'Modifier la liste des objets' },
-                    {'path' : path('personnage.update.ingredient', {'personnage': personnage.id}), 'label': 'Modifier la liste des ingrédients' },
-                    {'path' : path('personnage.update.ressource', {'personnage': personnage.id}), 'label': 'Modifier la liste des ressources' },
-                    {'path' : path('personnage.update.richesse', {'personnage': personnage.id}), 'label': 'Modifier la richesse' },
-                    {'path' : path('personnage.update.materiel', {'personnage': personnage.id}), 'label': 'Modifier le materiel' },
-                    {'path' : path('personnage.enveloppe.print', {'personnage': personnage.id}), 'label': "Imprimer l'enveloppe" },
-                ]
-            } %}
-        {% endif %}
+        {% include '_partials/offcanvasActions.twig' with {
+            'offcanvasId': 'offcanvasEnveloppe',
+            'isAdmin': true,
+            'title': 'Actions',
+            'groups': [
+                {'label': 'Enveloppe', 'actions': [
+                    {'path': path('personnage.documents', {'personnage': personnage.id}), 'label': 'Modifier la liste des documents'},
+                    {'path': path('personnage.items', {'personnage': personnage.id}), 'label': 'Modifier la liste des objets'},
+                    {'path': path('personnage.update.ingredient', {'personnage': personnage.id}), 'label': 'Modifier la liste des ingrédients'},
+                    {'path': path('personnage.update.ressource', {'personnage': personnage.id}), 'label': 'Modifier la liste des ressources'},
+                    {'path': path('personnage.update.richesse', {'personnage': personnage.id}), 'label': 'Modifier la richesse'},
+                    {'path': path('personnage.update.materiel', {'personnage': personnage.id}), 'label': 'Modifier le matériel'},
+                    {'path': path('personnage.enveloppe.print', {'personnage': personnage.id}), 'label': "Imprimer l'enveloppe"},
+                ]},
+            ]
+        } %}
 
         <div class="panel-body">
             <div class="list-group">

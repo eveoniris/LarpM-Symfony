@@ -3331,7 +3331,7 @@ class PersonnageController extends AbstractController
 
         /** @var GnRepository $gnRepository */
         $gnRepository = $this->entityManager->getRepository(Gn::class);
-        $gns = $gnRepository->findAll(); // ordered by date_debut
+        $gns = $gnRepository->findAll(); // ordered by date_debut DESC
 
         if (empty($gns)) {
             $formBuilder->add('annee', IntegerType::class, [
@@ -3339,47 +3339,63 @@ class PersonnageController extends AbstractController
                 'label' => "Année de l'apprentissage",
             ]);
         } else {
-            /** @var Gn $nextGn */
-            $nextGn = array_shift($gns);
+            // nextGn = dernier GN actif (prochain opus), lastGn = dernier GN joué et fermé
+            /** @var ?Gn $nextGn */
+            $nextGn = null;
             /** @var ?Gn $lastGn */
             $lastGn = null;
-            if (!empty($gns)) {
-                /** @var Gn $gn * */
-                foreach ($gns as $gn) {
-                    if ($gn->isInter()) {
-                        continue;
-                    }
-
+            foreach ($gns as $gn) {
+                if ($gn->isInter()) {
+                    continue;
+                }
+                if ($nextGn === null && $gn->getActif()) {
+                    $nextGn = $gn;
+                } elseif ($lastGn === null && !$gn->getActif()) {
                     $lastGn = $gn;
+                }
+                if ($nextGn !== null && $lastGn !== null) {
                     break;
                 }
             }
-
-            $hasApprentissage = $personnageApprentissageRepository->hasApprentissage($personnage, $lastGn->getDateJeu(), $nextGn->getDateJeu());
-
-            if ($hasApprentissage) {
-                $this->addFlash('error', 'Le personnage a déjà fait un apprentissage sur cette période. Il doit attendre le prochain opus pour en faire un nouveau.');
-
-                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            // Fallbacks si un seul GN existe ou si aucun actif/inactif trouvé
+            if ($nextGn === null) {
+                $nextGn = $gns[0];
+            }
+            if ($lastGn === null) {
+                foreach ($gns as $gn) {
+                    if (!$gn->isInter() && $gn !== $nextGn) {
+                        $lastGn = $gn;
+                        break;
+                    }
+                }
             }
 
-            $endDate = $nextGn->getDateJeu() ?? $lastGn->getDateJeu();
-            $startDate = $lastGn ? $lastGn->getDateJeu() : $endDate - 5;
-            $dateChoices = range($startDate, $endDate);
+            if ($lastGn !== null) {
+                $hasApprentissage = $personnageApprentissageRepository->hasApprentissage($personnage, $lastGn->getDateJeu(), $nextGn->getDateJeu());
 
-            foreach ($dateChoices as $k => $date) {
-                $valueLabel = $date;
+                if ($hasApprentissage) {
+                    $this->addFlash('error', 'Le personnage a déjà fait un apprentissage sur cette période. Il doit attendre le prochain opus pour en faire un nouveau.');
 
-                if ($startDate && $date === $startDate) {
-                    $valueLabel = $startDate . ' - ' . $lastGn->getLabel();
-                } elseif ($endDate && $date === $endDate) {
-                    $valueLabel = $endDate . ' - ' . $nextGn->getLabel();
+                    return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
                 }
+            }
 
-                if ($valueLabel !== $k) {
-                    unset($dateChoices[$k]);
-                    $dateChoices[$valueLabel] = $date;
+            $endDate = $nextGn->getDateJeu() ?? ($lastGn?->getDateJeu() ?? (int) date('Y'));
+            $startDate = $lastGn?->getDateJeu() ?? ($endDate - 5);
+
+            // Construire les choix avec les années comme clés et valeurs, puis appliquer les labels
+            $years = range($startDate, $endDate);
+            $dateChoices = [];
+            foreach ($years as $year) {
+                if ($year === $startDate && $lastGn !== null) {
+                    $label = $startDate . ' - ' . $lastGn->getLabel();
+                } elseif ($year === $endDate) {
+                    $gnLabel = $nextGn->getLabel() ?: 'prochain opus';
+                    $label = $endDate . ' - ' . $gnLabel;
+                } else {
+                    $label = (string) $year;
                 }
+                $dateChoices[$label] = $year;
             }
 
             $formBuilder->add('annee', ChoiceType::class, [
@@ -3921,7 +3937,13 @@ class PersonnageController extends AbstractController
             $data = $form->getData();
             $type = $data['type'];
             $value = $data['value'];
-            $criteria[$type] = $value;
+            if ($value !== null && $value !== '') {
+                if (empty($type)) {
+                    $criteria['all'] = $value;
+                } else {
+                    $criteria[$type] = $value;
+                }
+            }
         }
         if ($religion) {
             $criteria['religion'] = $religion->getId();

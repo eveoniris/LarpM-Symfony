@@ -7,16 +7,17 @@
             <h5>Technique</h5>
         </div>
 
-        {% if isAdmin %}
-            {% include '_partials/dropDown.twig' with {
-                'title' : 'Action',
-                'actions' :
-                [
-                    {'path' : path('personnage.trigger.add', {'personnage': personnage.id}), 'label': 'Ajouter un déclencheur de compétence' },
-                    {'path' : path('personnage.apprentissage', {'personnage': personnage.id}), 'label': 'Ajouter un apprentissage de compétence' },
-                ]
-            } %}
-        {% endif %}
+        {% include '_partials/offcanvasActions.twig' with {
+            'offcanvasId': 'offcanvasTechnique',
+            'isAdmin': true,
+            'title': 'Actions',
+            'groups': [
+                {'label': 'Technique', 'actions': [
+                    {'path': path('personnage.trigger.add', {'personnage': personnage.id}), 'label': 'Ajouter un déclencheur de compétence'},
+                    {'path': path('personnage.apprentissage', {'personnage': personnage.id}), 'label': 'Ajouter un apprentissage de compétence'},
+                ]},
+            ]
+        } %}
 
         <div class="panel-body">
             {% if isAdmin %}

@@ -10,11 +10,14 @@
         </div>
 
         {% if isAdmin is defined and isAdmin %}
-            {% include '_partials/dropDown.twig' with {
-                'title' : 'Action',
-                'actions' :
-                [
-                    {'path' : path('personnage.add.lignee', {'personnage': personnage.id}), 'label': 'Ajouter une lignée' },
+            {% include '_partials/offcanvasActions.twig' with {
+                'offcanvasId': 'offcanvasLignee',
+                'isAdmin': true,
+                'title': 'Actions',
+                'groups': [
+                    {'label': 'Lignée', 'actions': [
+                        {'path': path('personnage.add.lignee', {'personnage': personnage.id}), 'label': 'Ajouter une lignée'},
+                    ]},
                 ]
             } %}
             {% if personnage.personnageLignee|length > 0 %}

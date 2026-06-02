@@ -3,7 +3,7 @@
 
         <div class="header">
             <h5>
-                {% if isAdmin %}
+                {% if isAdmin or canViewAdmin is defined and canViewAdmin %}
                     {% if religion.secret %}
                         <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
                            title="Secrète"></i> -
@@ -18,19 +18,21 @@
             </h5>
         </div>
 
-        {% if isAdmin %}
+        {% if isAdmin or canViewAdmin is defined and canViewAdmin %}
             <div class="d-flex justify-content-end">
                 <div class="btn-toolbar" role="toolbar" aria-label="...">
                     <div class="btn-group" role="group" aria-label="...">
                         <a href="{{ path('religion.detail', {'religion': religion.id}) }}" class="btn btn-secondary"
                            data-toggle="tooltip" data-placement="top" title="Détail" role="button"><i
                                     class="fa fa-eye"></i></a>
-                        <a href="{{ path('religion.update', {'religion': religion.id}) }}" class="btn btn-secondary"
-                           data-toggle="tooltip" data-placement="top" title="Modifier" role="button"><i
-                                    class="fa fa-pencil"></i></a>
-                        <a href="{{ path('religion.delete', {'religion': religion.id}) }}" class="btn btn-secondary"
-                           data-toggle="tooltip" data-placement="top" title="Supprimer" role="button"><i
-                                    class="fa fa-eraser"></i></a>
+                        {% if isAdmin %}
+                            <a href="{{ path('religion.update', {'religion': religion.id}) }}" class="btn btn-secondary"
+                               data-toggle="tooltip" data-placement="top" title="Modifier" role="button"><i
+                                        class="fa fa-pencil"></i></a>
+                            <a href="{{ path('religion.delete', {'religion': religion.id}) }}" class="btn btn-secondary"
+                               data-toggle="tooltip" data-placement="top" title="Supprimer" role="button"><i
+                                        class="fa fa-eraser"></i></a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
