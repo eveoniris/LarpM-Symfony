@@ -356,12 +356,8 @@ readonly class GroupeService
                     continue;
                 }
 
-                if ($bonus->getApplication()) {
-                    foreach ($applications as $application) {
-                        if ($bonus->getApplication() !== $application) {
-                            continue 2;
-                        }
-                    }
+                if ($bonus->getApplication() && !empty($applications) && !\in_array($bonus->getApplication(), $applications, true)) {
+                    continue;
                 }
 
                 if (!$all->containsKey($bonus->getId())) {

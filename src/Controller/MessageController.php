@@ -21,6 +21,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 class MessageController extends AbstractController
 {
+
     /**
      * Affiche la messagerie de l'utilisateur.
      */
@@ -159,6 +160,8 @@ class MessageController extends AbstractController
 
             $entityManager->persist($message);
             $entityManager->flush();
+
+            $this->mailer->notify($message);
 
             $this->addFlash('success', 'Votre message a été envoyé.');
 

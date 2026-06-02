@@ -37,7 +37,7 @@
                                 data-bs-toggle="collapse"
                                 data-bs-target="#collapse{{ loop.index }}" aria-expanded="true"
                                 aria-controls="collapse{{ loop.index }}">
-                            <span class="p-2">De {{ message.userRelatedByAuteur.userName }}</span>
+                            <span class="p-2">De {{ message.userRelatedByAuteur.personnage ? message.userRelatedByAuteur.personnage.publicName : message.userRelatedByAuteur.userName }}</span>
                             <span class="p-2 flex-grow-1"><strong>{{ message.title }}</strong></span>
                             <span class="p-2">Le {{ message.creationDate|date('Y-m-d H:i:s') }}</span>
                         </button>
