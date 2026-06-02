@@ -336,6 +336,21 @@
                 </div>
             {% endif %}
 
+            {% if app.user %}
+                {% set unreadCount = app.user.messageRelatedByDestinataires|filter(m => m.lu != 1)|length %}
+                <div class="d-flex me-2">
+                    <a class="btn btn-dark shadow position-relative" href="{{ path('messagerie') }}"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" title="Messagerie">
+                        <i class="fa fa-envelope"></i>
+                        {% if unreadCount > 0 %}
+                            <span class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-danger">
+                                {{ unreadCount }}
+                                <span class="visually-hidden">messages non lus</span>
+                            </span>
+                        {% endif %}
+                    </a>
+                </div>
+            {% endif %}
             <div class="d-flex">
                 <button class="btn btn-dark shadow" id="btnSwitch" data-bs-placement="bottom"
                         title="Changer mode sombre/claire"><i class="fa fa-toggle-on"></i></button>
