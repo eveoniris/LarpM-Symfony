@@ -210,6 +210,10 @@ LEFT JOIN p2.participants pa2
         if (\array_key_exists('sans_joueur', $criteria) && $criteria['sans_joueur']) {
             $qb->andWhere('p.user IS NULL');
         }
+
+        if (\array_key_exists('vivant', $criteria)) {
+            $qb->andWhere('p.vivant = :vivant')->setParameter('vivant', $criteria['vivant'], 'boolean');
+        }
     }
 
     /**
