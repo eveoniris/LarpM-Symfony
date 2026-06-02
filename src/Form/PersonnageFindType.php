@@ -87,6 +87,15 @@ class PersonnageFindType extends AbstractType
                 'choice_label' => 'nom',
                 'query_builder' => static fn (GroupeRepository $gr) => $gr->createQueryBuilder('gr')->orderBy('gr.nom', 'ASC'),
             ])
+            ->add('vivant', ChoiceType::class, [
+                'required' => false,
+                'label' => 'Filtrer par statut',
+                'placeholder' => 'Filtrer par statut',
+                'choices' => [
+                    'Vivants' => 'vivants',
+                    'Morts' => 'morts',
+                ],
+            ])
             ->add('scenariste', EntityType::class, [
                 'required' => false,
                 'label' => 'Par scénariste : ',

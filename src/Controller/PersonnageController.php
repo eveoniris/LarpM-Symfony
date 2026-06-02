@@ -3915,6 +3915,7 @@ class PersonnageController extends AbstractController
             ? $this->entityManager->find('App\Entity\User', (int) $request->query->get('scenariste_direct'))
             : null;
         $sansJoueur = (bool) $request->query->get('sans_joueur');
+        $vivant = $formData['vivant'] ?? null;
         $optionalParameters = '';
 
         // construit le formulaire contenant les filtres de recherche
@@ -3925,6 +3926,7 @@ class PersonnageController extends AbstractController
                 'competence' => $competence,
                 'groupe' => $groupe,
                 'scenariste' => $scenariste,
+                'vivant' => $vivant,
             ],
             'method' => 'get',
             'csrf_protection' => false,
@@ -3969,6 +3971,9 @@ class PersonnageController extends AbstractController
         }
         if ($sansJoueur) {
             $criteria['sans_joueur'] = true;
+        }
+        if ($vivant) {
+            $criteria['vivant'] = 'vivants' === $vivant;
         }
 
         $repo = $this->entityManager->getRepository(Personnage::class);
