@@ -10,11 +10,14 @@
     </div>
 
     {% if isAdmin %}
-        {% include '_partials/dropDown.twig' with {
-            'title' : 'Action',
-            'actions' :
-            [
-                {'path' : path('personnage.add.background', {'personnage': personnage.id}), 'label': 'Ajouter un background' },
+        {% include '_partials/offcanvasActions.twig' with {
+            'offcanvasId': 'offcanvasBackground',
+            'isAdmin': true,
+            'title': 'Actions',
+            'groups': [
+                {'label': 'Background', 'actions': [
+                    {'path': path('personnage.add.background', {'personnage': personnage.id}), 'label': 'Ajouter un background'},
+                ]},
             ]
         } %}
     {% endif %}

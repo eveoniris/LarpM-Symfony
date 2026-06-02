@@ -45,8 +45,10 @@ class PersonnageFindType extends AbstractType
             ->add('type', ChoiceType::class, [
                 'required' => false,
                 'choices' => [
-                    'ID' => 'id',
+                    'Tous les champs' => '',
+                    'Numéro' => 'id',
                     'Nom' => 'nom',
+                    'Pseudo' => 'pseudo',
                 ],
                 'label' => 'Type',
                 'attr' => [

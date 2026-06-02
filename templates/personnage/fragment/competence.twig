@@ -8,14 +8,18 @@
     </div>
 
     {% if isAdmin %}
-        {% include '_partials/dropDown.twig' with {
-            'title' : 'Action',
-            'actions' :
-            [
-                {'path' : path('personnage.xp', {'personnage': personnage.id}), 'label': 'Ajouter des points d\'expérience' },
-                {'path' : path('personnage.apprentissage', {'personnage': personnage.id}), 'label': 'Ajouter un apprentissage de compétence' },
-                {'path' : path('personnage.add.competence', {'personnage': personnage.id}), 'label': 'Ajouter une compétence' },
-                {'path' : path('personnage.delete.competence', {'personnage': personnage.id}), 'label': 'Retirer la dernière compétence acquise' },
+        {% set competenceActions = [
+            {'path': path('personnage.xp', {'personnage': personnage.id}), 'label': 'Ajouter des points d\'expérience'},
+            {'path': path('personnage.apprentissage', {'personnage': personnage.id}), 'label': 'Ajouter un apprentissage de compétence'},
+            {'path': path('personnage.add.competence', {'personnage': personnage.id}), 'label': 'Ajouter une compétence'},
+            {'path': path('personnage.delete.competence', {'personnage': personnage.id}), 'label': 'Retirer la dernière compétence acquise'},
+        ] %}
+        {% include '_partials/offcanvasActions.twig' with {
+            'offcanvasId': 'offcanvasCompetences',
+            'isAdmin': true,
+            'title': 'Actions',
+            'groups': [
+                {'label': 'Administration', 'actions': competenceActions},
             ]
         } %}
     {% else %}

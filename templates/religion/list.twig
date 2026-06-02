@@ -21,15 +21,21 @@
         </div>
 
         {% if isAdmin %}
-            <div class="btn-toolbar" role="toolbar" aria-label="...">
-                <div class="btn-group" role="group" aria-label="...">
-                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une religion"
-                       href="{{ path('religion.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
-                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Liste mail"
-                       href="{{ path('religion.mail') }}"><i class="fa fa-list"></i> Liste</a>
+            <div class="btn-toolbar mb-2" role="toolbar">
+                <div class="btn-group" role="group">
+                    <a class="btn btn-secondary" title="Ajouter une religion" href="{{ path('religion.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+                    <a class="btn btn-secondary" title="Liste mail" href="{{ path('religion.mail') }}"><i class="fa fa-list"></i> Liste</a>
                 </div>
             </div>
         {% endif %}
+
+        <form method="get" action="{{ path('religion.list') }}" class="d-flex gap-2 mt-2" data-turbo="false">
+            <input type="text" name="search" value="{{ search|default('') }}" class="form-control form-control-sm" placeholder="Rechercher par nom…">
+            <button type="submit" class="btn btn-sm btn-secondary"><i class="fa fa-search"></i></button>
+            {% if search|default('') %}
+                <a href="{{ path('religion.list') }}" class="btn btn-sm btn-outline-secondary"><i class="fa fa-times"></i></a>
+            {% endif %}
+        </form>
     </div>
 
     {% include '_partials/pagination.html.twig' %}

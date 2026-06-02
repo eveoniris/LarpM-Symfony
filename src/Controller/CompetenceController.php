@@ -197,7 +197,10 @@ class CompetenceController extends AbstractController
         $alias = $competenceRepository->getAlias();
         $queryBuilder = $competenceRepository->createQueryBuilder($alias)->orderBy('competenceFamily.label', 'ASC')->addOrderBy('level.index', 'ASC');
 
-        if (!$this->isGranted('ROLE_REGLE')) {
+        $isAdmin = $this->isGranted(Role::REGLE->value) || $this->isGranted(Role::ORGA->value);
+        $canViewAdmin = $this->isGranted(Role::SCENARISTE->value);
+
+        if (!$isAdmin && !$canViewAdmin) {
             $queryBuilder = $competenceRepository->level($queryBuilder, LevelType::APPRENTICE);
             $queryBuilder = $competenceRepository->secret($queryBuilder, false);
         }
@@ -205,6 +208,8 @@ class CompetenceController extends AbstractController
         return $this->render('competence/list.twig', [
             'pagerService' => $pagerService,
             'paginator' => $competenceRepository->searchPaginated($pagerService, $queryBuilder),
+            'isAdmin' => $isAdmin,
+            'canViewAdmin' => $canViewAdmin,
         ]);
     }
 

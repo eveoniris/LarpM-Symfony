@@ -1,0 +1,31 @@
+{% set step = t.stepCount %}
+{% set indent = '' %}
+{% if step == 1 %}{% set indent = 'ps-4' %}{% elseif step >= 2 %}{% set indent = 'ps-5' %}{% endif %}
+<li class="list-group-item {{ indent }}">
+    <h4 class="list-group-item-heading">
+        {{ t.nom }}
+        ({% if t.appelation %}{{ t.appelation.label }}{% else %}<span class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %})
+        <div class="btn-group float-end" role="group">
+            <a href="{{ path('territoire.detail', {'territoire': t.id}) }}" class="btn btn-primary" role="button">Détail</a>
+            {% if isAdmin %}
+                {% if step == 0 %}
+                    <a href="{{ path('territoire.updateCibles', {'territoire': t.id}) }}" class="btn btn-default" role="button">Cibles</a>
+                {% endif %}
+                <a href="{{ path('territoire.update', {'territoire': t.id}) }}" class="btn btn-default" role="button">Modifier</a>
+                <a href="{{ path('territoire.updateStrategie', {'territoire': t.id}) }}" class="btn btn-default" role="button">Stratégie</a>
+            {% endif %}
+        </div>
+    </h4>
+    <div class="list-group-item-text">
+        {% if t.description %}
+            <p class="text-default">{{ t.description|markdown_to_html }}</p>
+        {% else %}
+            <p class="text-warning">Attention, ce territoire n'a pas de description</p>
+        {% endif %}
+    </div>
+    {% if t.territoires|length > 0 %}
+        <p class="list-group-item-text small text-muted">
+            Contient : {{ t.territoires|join(', ') }}
+        </p>
+    {% endif %}
+</li>

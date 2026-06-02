@@ -48,39 +48,44 @@
                     </div>
                 </div>
 
-                {% if isAdmin %}
+                {% if isAdmin or (canViewAdmin is defined and canViewAdmin) %}
                     <div class="position-absolute bottom-0 end-0 mb-4 me-3" role="toolbar">
                         <div class="btn-group" role="group">
-                            {# TODO userhasCompetence for display doc dl ? #}
                             {% if competence.documentUrl %}
                                 <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                    title="Télécharger le document associé"
                                    href="{{ path('competence.document', {'competence': competence.id, 'document': competence.documentUrl}) }}"><i
                                         class="fa-solid fa-download"></i> </a>
                             {% endif %}
-                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Modifier"
-                               href="{{ path('competence.update',{'competence':competence.id}) }}"><i
-                                    class="fa fa-pencil"></i> </a>
+                            {% if isAdmin %}
+                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Modifier"
+                                   href="{{ path('competence.update',{'competence':competence.id}) }}"><i
+                                        class="fa fa-pencil"></i> </a>
+                            {% endif %}
                             <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Détail" href="{{ path('competence.detail',{'competence':competence.id}) }}"><i
                                     class="fa fa-eye"></i> </a>
-                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Personnages associés"
-                               href="{{ path('competence.personnages',{'competence':competence.id}) }}"><i
-                                    class="fa fa-users"></i> ({{ competence.personnages|length }})</a>
-                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Personnages associés sur {{ groupeService.nextSessionGn.label }}"
-                               href="{{ path('competence.personnages.gn',{'competence':competence.id, gn:groupeService.nextSessionGn.id}) }}"><i
-                                    class="fa fa-users"></i>
-                                (
-                                {{ personnageService.PersonnagesCompetenceGn(competence, groupeService.nextSessionGn, true) }}
-                                )
-                            </a>
-                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Supprimer"
-                               href="{{ path('competence.delete',{'competence':competence.id}) }}"><i
-                                    class="fa fa-eraser"></i> </a>
+                            {% if isAdmin %}
+                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Personnages associés"
+                                   href="{{ path('competence.personnages',{'competence':competence.id}) }}"><i
+                                        class="fa fa-users"></i> ({{ competence.personnages|length }})</a>
+                                {% if groupeService.nextSessionGn %}
+                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Personnages associés sur {{ groupeService.nextSessionGn.label }}"
+                                   href="{{ path('competence.personnages.gn',{'competence':competence.id, gn:groupeService.nextSessionGn.id}) }}"><i
+                                        class="fa fa-users"></i>
+                                    (
+                                    {{ personnageService.PersonnagesCompetenceGn(competence, groupeService.nextSessionGn, true) }}
+                                    )
+                                </a>
+                                {% endif %}
+                                <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Supprimer"
+                                   href="{{ path('competence.delete',{'competence':competence.id}) }}"><i
+                                        class="fa fa-eraser"></i> </a>
+                            {% endif %}
                         </div>
                     </div>
                 {% endif %}
