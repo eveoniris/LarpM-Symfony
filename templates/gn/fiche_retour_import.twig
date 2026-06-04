@@ -1,0 +1,73 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Import fiches retour — {{ gn.label }}{% endblock %}
+
+{% block body %}
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': 'Liste des GN', 'route': path('gn.list')},
+        {'name': gn.label, 'route': path('gn.detail', {'gn': gn.id})},
+        {'name': 'Import fiches retour'},
+    ]} %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h4>Import des fiches retour de jeu — {{ gn.label }}</h4>
+        </div>
+
+        <div class="card mb-3 border-info">
+            <div class="card-header bg-info-subtle d-flex justify-content-between align-items-center">
+                <strong>Format attendu</strong>
+                <a class="btn btn-sm btn-outline-info"
+                   href="{{ path('gn.fiche_retour.template', {'gn': gn.id}) }}">
+                    <i class="fa fa-download"></i> Télécharger le modèle CSV
+                </a>
+            </div>
+            <div class="card-body">
+                <p class="mb-1">Fichier CSV ou Excel avec les colonnes :</p>
+                <ul class="mb-1">
+                    <li><code>Submitted at</code>, <code>Groupe concerné</code> (format : <em>21 Argos</em>)</li>
+                    <li>Colonnes ressources : <em>Nb de Pièces d'argent</em>, <em>Nb de Pièces d'Or</em>, etc.</li>
+                    <li><code>Commentaire concernant l'enveloppe</code></li>
+                </ul>
+                <p class="text-muted small mb-0">
+                    Si une fiche existe déjà pour un groupe, elle sera écrasée et l'ancienne version sera conservée dans l'historique.
+                </p>
+            </div>
+        </div>
+
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+        <div class="card mb-3">
+            <div class="card-body">
+                {{ form_row(form.fichier) }}
+            </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-end mb-3">
+            <a class="btn btn-secondary" href="{{ path('gn.detail', {'gn': gn.id}) }}">Annuler</a>
+            {{ form_widget(form.importer, {'attr': {'class': 'btn btn-primary'}}) }}
+        </div>
+        {{ form_end(form) }}
+
+        {% if result is not null %}
+            <div class="card mt-3">
+                <div class="card-header bg-body-secondary"><strong>Résultat de l'import</strong></div>
+                <div class="card-body">
+                    <p>
+                        <span class="badge bg-success fs-6">{{ result.imported }} importée(s)</span>
+                        <span class="badge bg-secondary fs-6 ms-2">{{ result.skipped }} ignorée(s)</span>
+                    </p>
+
+                    {% if result.warnings|length > 0 %}
+                        <div class="alert alert-warning">
+                            <strong>Avertissements :</strong>
+                            <ul class="mb-0 mt-1">
+                                {% for warning in result.warnings %}
+                                    <li>{{ warning }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

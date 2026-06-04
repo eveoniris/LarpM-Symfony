@@ -65,6 +65,9 @@ abstract class BaseGroupeGn
     #[ORM\OrderBy(['ordre' => 'ASC'])]
     protected Collection $groupeGnOrdres;
 
+    #[ORM\OneToOne(mappedBy: 'groupeGn', targetEntity: FicheRetourGroupe::class, cascade: ['persist', 'remove'])]
+    protected ?FicheRetourGroupe $ficheRetour = null;
+
     #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'groupeGns')]
     #[JoinColumn(name: 'groupe_id', referencedColumnName: 'id', nullable: false)]
     protected Groupe $groupe;
@@ -527,5 +530,10 @@ abstract class BaseGroupeGn
         $this->participants->removeElement($participant);
 
         return $this;
+    }
+
+    public function getFicheRetour(): ?FicheRetourGroupe
+    {
+        return $this->ficheRetour;
     }
 }

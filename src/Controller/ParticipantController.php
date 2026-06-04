@@ -938,7 +938,7 @@ class ParticipantController extends AbstractController
     {
         $participant = new Participant();
         $userRepository = $this->entityManager->getRepository(User::class);
-        //$user = $userRepository->find($request->query->get('user'));
+        // $user = $userRepository->find($request->query->get('user'));
 
         if ($user) {
             $participant->setUser($user);

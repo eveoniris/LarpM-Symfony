@@ -10,6 +10,7 @@ use App\Entity\GroupeGn;
 use App\Entity\Loi;
 use App\Entity\Personnage;
 use App\Enum\Role;
+use App\Form\FicheRetourGroupe\FicheRetourGroupeImportType;
 use App\Form\Gn\GnDeleteType;
 use App\Form\Gn\GnType;
 use App\Manager\GroupeManager;
@@ -23,6 +24,7 @@ use App\Repository\PersonnageSecondaireRepository;
 use App\Repository\QuestionRepository;
 use App\Repository\RessourceRepository;
 use App\Security\MultiRolesExpression;
+use App\Service\FicheRetourGroupeImportService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use ArrayIterator;
@@ -932,6 +934,118 @@ class GnController extends AbstractController
             'personnages' => $personnages,
             'gn' => $gn,
         ]);
+    }
+
+    /**
+     * Import des fiches retour de jeu de groupe depuis un CSV ou Excel.
+     */
+    #[Route('/{gn}/fiche-retour/import', name: 'fiche_retour.import')]
+    #[IsGranted('ROLE_WARGAME')]
+    public function ficheRetourImportAction(
+        Request $request,
+        #[MapEntity]
+        Gn $gn,
+        FicheRetourGroupeImportService $importService,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(FicheRetourGroupeImportType::class)
+            ->add('importer', SubmitType::class, ['label' => 'Importer']);
+
+        $form->handleRequest($request);
+
+        $result = null;
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
+            $file = $form->get('fichier')->getData();
+            /** @var \App\Entity\User $user */
+            $user = $this->getUser();
+
+            $result = $importService->import($file, $gn, $user);
+
+            if (0 === $result['skipped'] && empty($result['warnings'])) {
+                $this->addFlash('success', sprintf('%d fiche(s) importée(s) avec succès.', $result['imported']));
+            } else {
+                $this->addFlash('warning', sprintf(
+                    '%d importée(s), %d ignorée(s). Voir les détails ci-dessous.',
+                    $result['imported'],
+                    $result['skipped']
+                ));
+            }
+        }
+
+        return $this->render('gn/fiche_retour_import.twig', [
+            'gn' => $gn,
+            'form' => $form->createView(),
+            'result' => $result,
+        ]);
+    }
+
+    #[Route('/{gn}/fiche-retour/template', name: 'fiche_retour.template')]
+    #[IsGranted('ROLE_WARGAME')]
+    public function ficheRetourTemplateAction(
+        #[MapEntity]
+        Gn $gn,
+    ): Response {
+        $columns = [
+            'Submitted at',
+            'Groupe concerné',
+            'Nb de Pièces d\'argent',
+            'Nb de Pièces d\'Or',
+            'Nb total d\'ingrédients',
+            'Nb total de potions',
+            'Armement',
+            'Chevaux',
+            'Fruits légumes',
+            'M simples',
+            'Sel',
+            'Bétail',
+            'Coton',
+            'Gemmes',
+            'Moutons',
+            'Soie',
+            'Bois',
+            'Esclaves',
+            'Ivoire',
+            'Pierre',
+            'Teinture',
+            'Céréales',
+            'Fourrures',
+            'M précieux',
+            'Poisson',
+            'Vin',
+            'Commentaire concernant l\'enveloppe',
+        ];
+
+        $rows = [
+            $columns,
+            array_merge(
+                ['2026-06-01 14:00:00', '21 Argos'],
+                array_fill(0, 24, '0'),
+                ['Exemple commentaire groupe 21']
+            ),
+            array_merge(
+                ['2026-06-01 14:00:00', '5 Koth'],
+                [10, 3, 2, 1, 0, 2, 5, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ['']
+            ),
+        ];
+
+        $response = new StreamedResponse(static function () use ($rows): void {
+            $handle = fopen('php://output', 'w');
+            if (false === $handle) {
+                return;
+            }
+            fprintf($handle, "\xEF\xBB\xBF"); // BOM UTF-8
+            foreach ($rows as $row) {
+                fputcsv($handle, $row, ',', '"');
+            }
+            fclose($handle);
+        });
+
+        $filename = sprintf('modele_fiche_retour_%s.csv', $gn->getId());
+        $response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
+        $response->headers->set('Content-Disposition', sprintf('attachment; filename="%s"', $filename));
+
+        return $response;
     }
 
     #[Route('/{gn}/update', name: 'update')]

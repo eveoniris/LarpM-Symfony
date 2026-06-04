@@ -1,0 +1,134 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Historique fiche retour — {{ groupeGn.gn }} — {{ groupe.nom }}{% endblock %}
+
+{% block body %}
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': 'Liste des groupes', 'route': path('groupe.list')},
+        {'name': groupe.label, 'route': path('groupe.detail', {'groupe': groupe.id})},
+        {'name': 'Fiche retour ' ~ groupeGn.gn.label, 'route': path('groupe.detail.groupeGn', {'groupe': groupe.id, 'tab': 'fiche_retour', 'gn': gn.id, 'groupeGn': groupeGn.id})},
+        {'name': 'Historique'},
+    ]} %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h4>Historique — {{ groupe.nom }} / {{ groupeGn.gn }}</h4>
+        </div>
+
+        {% if fiche is null %}
+            {% include '_partials/cardNotif.twig' with {'type': 'info', 'content': 'Aucune fiche retour pour cette session.'} %}
+        {% else %}
+
+            {# État initial #}
+            {% if initialState is not null %}
+                <div class="card mb-3 border-primary">
+                    <div class="card-header bg-primary-subtle">
+                        <strong>État initial ({{ initialState.actionDate|date('d/m/Y H:i') }})</strong>
+                        {% if initialState.user %}
+                            <span class="text-muted ms-2">par {{ initialState.user.username }}</span>
+                        {% endif %}
+                        {% if initialState.importOriginalFilename %}
+                            <span class="badge bg-secondary ms-2"><i class="fa fa-file-import"></i> {{ initialState.importOriginalFilename }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body p-0">
+                        {% include 'groupeGn/_fiche_retour_data_table.twig' with {'data': initialState.dataAfter} %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {# État actuel / final #}
+            <div class="card mb-3 border-success">
+                <div class="card-header bg-success-subtle">
+                    <strong>État actuel</strong>
+                    <span class="text-muted ms-2">dernière modification : {{ fiche.updatedAt|date('d/m/Y H:i') }}</span>
+                </div>
+                <div class="card-body p-0">
+                    {% include 'groupeGn/_fiche_retour_data_table.twig' with {'data': fiche.toArray()} %}
+                </div>
+            </div>
+
+            {# Journal des opérations #}
+            <div class="card mb-3">
+                <div class="card-header bg-body-secondary">
+                    <strong>Journal des opérations</strong>
+                </div>
+                <div class="card-body p-0">
+                    {% if histories|length == 0 %}
+                        {% include '_partials/cardNotif.twig' with {'type': 'info', 'content': 'Aucune entrée dans le journal.'} %}
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped m-0">
+                                <thead class="table-dark">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Motif</th>
+                                    <th>Utilisateur</th>
+                                    <th>Fichier</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for entry in histories %}
+                                    <tr>
+                                        <td class="text-nowrap">{{ entry.actionDate|date('d/m/Y H:i') }}</td>
+                                        <td>
+                                            <span class="badge {% if entry.actionType == 'CONSOMMATION' %}bg-danger{% elseif entry.actionType == 'CORRECTION' %}bg-warning text-dark{% elseif entry.actionType == 'IMPORT' %}bg-info text-dark{% elseif entry.actionType == 'CREATE' %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {{ entry.motifTypeLabel }}
+                                            </span>
+                                        </td>
+                                        <td>{{ entry.motif|default('—') }}</td>
+                                        <td>{{ entry.user ? entry.user.username : '—' }}</td>
+                                        <td>
+                                            {% if entry.importOriginalFilename %}
+                                                <span class="text-muted small"><i class="fa fa-file"></i> {{ entry.importOriginalFilename }}</span>
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-sm btn-outline-secondary"
+                                               data-bs-toggle="collapse"
+                                               href="#history-{{ entry.id }}"
+                                               role="button">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr class="collapse" id="history-{{ entry.id }}">
+                                        <td colspan="6" class="p-0">
+                                            <div class="row g-0">
+                                                {% if entry.dataBefore is not null %}
+                                                    <div class="col-md-6 border-end">
+                                                        <div class="p-2 fw-bold text-muted small">Avant</div>
+                                                        {% include 'groupeGn/_fiche_retour_data_table.twig' with {'data': entry.dataBefore} %}
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="p-2 fw-bold text-muted small">Après</div>
+                                                        {% include 'groupeGn/_fiche_retour_data_table.twig' with {'data': entry.dataAfter, 'compare': entry.dataBefore} %}
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-md-12">
+                                                        <div class="p-2 fw-bold text-muted small">Données saisies</div>
+                                                        {% include 'groupeGn/_fiche_retour_data_table.twig' with {'data': entry.dataAfter} %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <a class="btn btn-secondary"
+           href="{{ path('groupe.detail.groupeGn', {'groupe': groupe.id, 'tab': 'fiche_retour', 'gn': gn.id, 'groupeGn': groupeGn.id}) }}">
+            <i class="fa fa-arrow-left"></i> Retour
+        </a>
+    </div>
+{% endblock %}

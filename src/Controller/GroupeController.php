@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Background;
+use App\Entity\FicheRetourGroupe;
+use App\Entity\FicheRetourGroupeHistory;
 use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Entity\GroupeAllie;
@@ -19,6 +21,7 @@ use App\Entity\Ressource;
 use App\Entity\Territoire;
 use App\Enum\Role;
 use App\Form\BackgroundType;
+use App\Form\FicheRetourGroupe\FicheRetourGroupeType;
 use App\Form\Groupe\GroupeCompositionType;
 use App\Form\Groupe\GroupeDescriptionType;
 use App\Form\Groupe\GroupeDocumentType;
@@ -30,6 +33,8 @@ use App\Form\Groupe\GroupeRichesseType;
 use App\Form\Groupe\GroupeScenaristeType;
 use App\Form\Groupe\GroupeType;
 use App\Manager\GroupeManager;
+use App\Repository\FicheRetourGroupeHistoryRepository;
+use App\Repository\FicheRetourGroupeRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\RessourceRepository;
 use App\Repository\RestaurationRepository;
@@ -37,7 +42,9 @@ use App\Repository\TerritoireRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use ArrayIterator;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -1504,6 +1511,115 @@ class GroupeController extends AbstractController
     {
         return $this->render('groupe/users.twig', [
             'groupe' => $groupe,
+        ]);
+    }
+
+    /**
+     * Édition de la fiche retour de jeu d'un groupe pour une session GN.
+     */
+    #[Route('/{groupe}/detail/fiche-retour/gn/{gn}/groupeGn/{groupeGn}/edit', name: 'fiche_retour.edit')]
+    public function ficheRetourEditAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        Groupe $groupe,
+        #[MapEntity]
+        Gn $gn,
+        #[MapEntity]
+        GroupeGn $groupeGn,
+    ): RedirectResponse|Response {
+        $this->denyAccessUnlessGranted('ROLE_WARGAME');
+
+        $repo = $entityManager->getRepository(FicheRetourGroupe::class);
+        $fiche = $repo->findOneBy(['groupeGn' => $groupeGn]);
+        $isNew = null === $fiche;
+
+        if ($isNew) {
+            $fiche = new FicheRetourGroupe();
+            $fiche->setGroupeGn($groupeGn);
+        }
+
+        $form = $this->createForm(FicheRetourGroupeType::class, $fiche, ['is_new' => $isNew])
+            ->add('save', SubmitType::class, ['label' => 'Enregistrer']);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var \App\Entity\User $user */
+            $user = $this->getUser();
+            $dataBefore = $isNew ? null : $fiche->toArray();
+
+            if ($isNew) {
+                $fiche->setCreatedBy($user);
+            }
+
+            $fiche->setUpdatedBy($user);
+            $fiche->setUpdatedAt(new DateTime());
+            $entityManager->persist($fiche);
+
+            $motifType = $isNew
+                ? FicheRetourGroupeHistory::ACTION_CREATE
+                : ($form->get('motif_type')->getData() ?? FicheRetourGroupeHistory::ACTION_CORRECTION);
+
+            $history = new FicheRetourGroupeHistory();
+            $history->setFicheRetourGroupe($fiche);
+            $history->setUser($user);
+            $history->setActionType($motifType);
+            $history->setMotifType($motifType);
+            $history->setMotif($isNew ? null : $form->get('motif')->getData());
+            $history->setDataBefore($dataBefore);
+            $history->setDataAfter($fiche->toArray());
+            $entityManager->persist($history);
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'La fiche retour a été enregistrée.');
+
+            return $this->redirectToRoute('groupe.detail.groupeGn', [
+                'groupe' => $groupe->getId(),
+                'tab' => 'fiche_retour',
+                'gn' => $gn->getId(),
+                'groupeGn' => $groupeGn->getId(),
+            ]);
+        }
+
+        return $this->render('groupeGn/fiche_retour_edit.twig', [
+            'groupe' => $groupe,
+            'gn' => $gn,
+            'groupeGn' => $groupeGn,
+            'fiche' => $fiche,
+            'form' => $form->createView(),
+            'is_new' => $isNew,
+        ]);
+    }
+
+    /**
+     * Historique des modifications de la fiche retour.
+     */
+    #[Route('/{groupe}/detail/fiche-retour/gn/{gn}/groupeGn/{groupeGn}/history', name: 'fiche_retour.history')]
+    public function ficheRetourHistoryAction(
+        #[MapEntity]
+        Groupe $groupe,
+        #[MapEntity]
+        Gn $gn,
+        #[MapEntity]
+        GroupeGn $groupeGn,
+        FicheRetourGroupeRepository $ficheRepo,
+        FicheRetourGroupeHistoryRepository $historyRepo,
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_WARGAME');
+
+        $fiche = $ficheRepo->findByGroupeGn($groupeGn);
+        $histories = $fiche ? $historyRepo->findByFiche($fiche) : [];
+        $initialState = $fiche ? $historyRepo->findInitialState($fiche) : null;
+
+        return $this->render('groupeGn/fiche_retour_history.twig', [
+            'groupe' => $groupe,
+            'gn' => $gn,
+            'groupeGn' => $groupeGn,
+            'fiche' => $fiche,
+            'histories' => $histories,
+            'initialState' => $initialState,
         ]);
     }
 

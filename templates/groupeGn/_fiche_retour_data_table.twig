@@ -1,0 +1,48 @@
+{% set labels = {
+    'pieces_argent': 'Pièces d\'argent',
+    'pieces_or': 'Pièces d\'or',
+    'nb_ingredients': 'Ingrédients',
+    'nb_potions': 'Potions',
+    'armement': 'Armement',
+    'chevaux': 'Chevaux',
+    'fruits_legumes': 'Fruits & Légumes',
+    'matieres_simples': 'Matières simples',
+    'sel': 'Sel',
+    'betail': 'Bétail',
+    'coton': 'Coton',
+    'gemmes': 'Gemmes',
+    'moutons': 'Moutons',
+    'soie': 'Soie',
+    'bois': 'Bois',
+    'esclaves': 'Esclaves',
+    'ivoire': 'Ivoire',
+    'pierre': 'Pierre',
+    'teinture': 'Teinture',
+    'cereales': 'Céréales',
+    'fourrures': 'Fourrures',
+    'matieres_precieux': 'Matières précieux',
+    'poisson': 'Poisson',
+    'vin': 'Vin',
+} %}
+<table class="table table-sm table-striped m-0">
+    <tbody>
+    {% for key, label in labels %}
+        {% set val = data[key]|default(0) %}
+        {% set changed = compare is defined and compare[key]|default(0) != val %}
+        <tr {% if changed %}class="table-warning"{% endif %}>
+            <td>{{ label }}</td>
+            <td class="text-end fw-bold">
+                {{ val }}
+                {% if changed %}
+                    <small class="text-muted ms-1">(était {{ compare[key]|default(0) }})</small>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    {% if data.commentaire is defined and data.commentaire %}
+        <tr>
+            <td colspan="2" class="text-muted small fst-italic">{{ data.commentaire }}</td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>
