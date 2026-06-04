@@ -304,13 +304,15 @@ class ParticipantController extends AbstractController
 
             // Chronologie : Participation au GN courant
             $anneeGN2 = $participant->getGn()->getDateJeu();
-            $evenement2 = 'Participation ' . $participant->getGn()->getLabel();
-            $personnageChronologie2 = new PersonnageChronologie();
-            $personnageChronologie2->setAnnee($anneeGN2);
-            $personnageChronologie2->setEvenement($evenement2);
-            $personnageChronologie2->setPersonnage($personnage);
+            if (null !== $anneeGN2) {
+                $evenement2 = 'Participation ' . $participant->getGn()->getLabel();
+                $personnageChronologie2 = new PersonnageChronologie();
+                $personnageChronologie2->setAnnee($anneeGN2);
+                $personnageChronologie2->setEvenement($evenement2);
+                $personnageChronologie2->setPersonnage($personnage);
+                $this->entityManager->persist($personnageChronologie2);
+            }
 
-            $this->entityManager->persist($personnageChronologie2);
             $this->entityManager->persist($participant);
             $this->entityManager->flush();
 
@@ -1156,12 +1158,14 @@ class ParticipantController extends AbstractController
 
             // Chronologie : Participation au GN courant
             $anneeGN2 = $participant->getGn()->getDateJeu();
-            $evenement2 = 'Participation ' . $participant->getGn()->getLabel();
-            $personnageChronologie2 = new PersonnageChronologie();
-            $personnageChronologie2->setAnnee($anneeGN2);
-            $personnageChronologie2->setEvenement($evenement2);
-            $personnageChronologie2->setPersonnage($personnage);
-            $this->entityManager->persist($personnageChronologie2);
+            if (null !== $anneeGN2) {
+                $evenement2 = 'Participation ' . $participant->getGn()->getLabel();
+                $personnageChronologie2 = new PersonnageChronologie();
+                $personnageChronologie2->setAnnee($anneeGN2);
+                $personnageChronologie2->setEvenement($evenement2);
+                $personnageChronologie2->setPersonnage($personnage);
+                $this->entityManager->persist($personnageChronologie2);
+            }
 
             // historique
             $historique = new ExperienceGain();
@@ -1376,23 +1380,25 @@ class ParticipantController extends AbstractController
             $this->personnageService->addDefaultLangue($personnage);
 
             // Chronologie : Participation au GN courant
-            $hasGnDate = false;
             $anneeGN2 = $participant->getGn()->getDateJeu();
-            /** @var PersonnageChronologie $chronologie */
-            foreach ($personnage->getPersonnageChronologie() as $chronologie) {
-                if ($chronologie->getAnnee() !== $anneeGN2) {
-                    continue;
-                }
+            if (null !== $anneeGN2) {
+                $hasGnDate = false;
+                /** @var PersonnageChronologie $chronologie */
+                foreach ($personnage->getPersonnageChronologie() as $chronologie) {
+                    if ($chronologie->getAnnee() !== $anneeGN2) {
+                        continue;
+                    }
 
-                $hasGnDate = true;
-            }
-            if (!$hasGnDate) {
-                $evenement2 = 'Participation ' . $participant->getGn()->getLabel();
-                $personnageChronologie2 = new PersonnageChronologie();
-                $personnageChronologie2->setAnnee($anneeGN2);
-                $personnageChronologie2->setEvenement($evenement2);
-                $personnageChronologie2->setPersonnage($personnage);
-                $this->entityManager->persist($personnageChronologie2);
+                    $hasGnDate = true;
+                }
+                if (!$hasGnDate) {
+                    $evenement2 = 'Participation ' . $participant->getGn()->getLabel();
+                    $personnageChronologie2 = new PersonnageChronologie();
+                    $personnageChronologie2->setAnnee($anneeGN2);
+                    $personnageChronologie2->setEvenement($evenement2);
+                    $personnageChronologie2->setPersonnage($personnage);
+                    $this->entityManager->persist($personnageChronologie2);
+                }
             }
 
             $this->entityManager->persist($participant);
