@@ -1518,19 +1518,14 @@ class GroupeController extends AbstractController
      * Édition de la fiche retour de jeu d'un groupe pour une session GN.
      */
     #[Route('/{groupe}/detail/fiche-retour/gn/{gn}/groupeGn/{groupeGn}/edit', name: 'fiche_retour.edit')]
+    #[IsGranted('ROLE_WARGAME')]
     public function ficheRetourEditAction(
         Request $request,
-        EntityManagerInterface $entityManager,
-        #[MapEntity]
-        Groupe $groupe,
-        #[MapEntity]
-        Gn $gn,
-        #[MapEntity]
-        GroupeGn $groupeGn,
+        #[MapEntity] Groupe $groupe,
+        #[MapEntity] Gn $gn,
+        #[MapEntity] GroupeGn $groupeGn,
     ): RedirectResponse|Response {
-        $this->denyAccessUnlessGranted('ROLE_WARGAME');
-
-        $repo = $entityManager->getRepository(FicheRetourGroupe::class);
+        $repo = $this->entityManager->getRepository(FicheRetourGroupe::class);
         $fiche = $repo->findOneBy(['groupeGn' => $groupeGn]);
         $isNew = null === $fiche;
 
@@ -1555,7 +1550,7 @@ class GroupeController extends AbstractController
 
             $fiche->setUpdatedBy($user);
             $fiche->setUpdatedAt(new DateTime());
-            $entityManager->persist($fiche);
+            $this->entityManager->persist($fiche);
 
             $motifType = $isNew
                 ? FicheRetourGroupeHistory::ACTION_CREATE
@@ -1569,9 +1564,9 @@ class GroupeController extends AbstractController
             $history->setMotif($isNew ? null : $form->get('motif')->getData());
             $history->setDataBefore($dataBefore);
             $history->setDataAfter($fiche->toArray());
-            $entityManager->persist($history);
+            $this->entityManager->persist($history);
 
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'La fiche retour a été enregistrée.');
 
@@ -1597,6 +1592,7 @@ class GroupeController extends AbstractController
      * Historique des modifications de la fiche retour.
      */
     #[Route('/{groupe}/detail/fiche-retour/gn/{gn}/groupeGn/{groupeGn}/history', name: 'fiche_retour.history')]
+    #[IsGranted('ROLE_USER')]
     public function ficheRetourHistoryAction(
         #[MapEntity]
         Groupe $groupe,
@@ -1607,7 +1603,6 @@ class GroupeController extends AbstractController
         FicheRetourGroupeRepository $ficheRepo,
         FicheRetourGroupeHistoryRepository $historyRepo,
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_WARGAME');
 
         $fiche = $ficheRepo->findByGroupeGn($groupeGn);
         $histories = $fiche ? $historyRepo->findByFiche($fiche) : [];
@@ -1632,12 +1627,9 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/gn/{gn}/{groupeGn}', name: 'groupeGn')]
     #[Route('/{groupe}/detail/{tab}/gn/{gn}/groupeGn/{groupeGn}', name: 'detail.groupeGn')]
     public function detailAction(
-        #[MapEntity]
-        ?Groupe $groupe,
-        #[MapEntity]
-        ?Gn $gn = null,
-        #[MapEntity]
-        ?GroupeGn $groupeGn = null,
+        #[MapEntity] ?Groupe $groupe,
+        #[MapEntity] ?Gn $gn = null,
+        #[MapEntity] ?GroupeGn $groupeGn = null,
         string $tab = 'detail',
     ): RedirectResponse|Response {
         /*
