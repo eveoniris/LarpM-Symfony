@@ -64,13 +64,14 @@ class FicheRetourGroupeImportService
      */
     public function import(UploadedFile $file, Gn $gn, User $user): array
     {
-        $archivedPath = $this->archiveFile($file, $gn);
         $rows = $this->parseFile($file);
+        $archivedPath = $this->archiveFile($file, $gn);
 
         $headers = null;
         $imported = 0;
         $skipped = 0;
         $warnings = [];
+        $ficheCache = [];
 
         foreach ($rows as $i => $row) {
             if (null === $headers) {
@@ -102,7 +103,7 @@ class FicheRetourGroupeImportService
                 continue;
             }
 
-            $this->upsertFiche($groupeGn, $data, $headers, $user, $archivedPath, $file->getClientOriginalName());
+            $this->upsertFiche($groupeGn, $data, $headers, $user, $archivedPath, $file->getClientOriginalName(), $ficheCache);
             ++$imported;
         }
 
@@ -121,7 +122,7 @@ class FicheRetourGroupeImportService
         $filename = sprintf('%s_%s', date('YmdHis'), $file->getClientOriginalName());
         $file->move($dir, $filename);
 
-        return sprintf('%s/%s/%d/%s', self::UPLOAD_DIR, $gn->getId(), $filename);
+        return sprintf('%s/%d/%s', self::UPLOAD_DIR, $gn->getId(), $filename);
     }
 
     private function parseFile(UploadedFile $file): array
@@ -229,16 +230,25 @@ class FicheRetourGroupeImportService
         User $user,
         string $archivedPath,
         string $originalFilename,
+        array &$ficheCache,
     ): void {
-        $repo = $this->entityManager->getRepository(FicheRetourGroupe::class);
-        $fiche = $repo->findOneBy(['groupeGn' => $groupeGn]);
-        $isNew = null === $fiche;
+        $cacheKey = $groupeGn->getId();
+        if (isset($ficheCache[$cacheKey])) {
+            $fiche = $ficheCache[$cacheKey];
+            $isNew = false;
+        } else {
+            $repo = $this->entityManager->getRepository(FicheRetourGroupe::class);
+            $fiche = $repo->findOneBy(['groupeGn' => $groupeGn]);
+            $isNew = null === $fiche;
+        }
 
         if ($isNew) {
             $fiche = new FicheRetourGroupe();
             $fiche->setGroupeGn($groupeGn);
             $fiche->setCreatedBy($user);
         }
+
+        $ficheCache[$cacheKey] = $fiche;
 
         $dataBefore = $isNew ? null : $fiche->toArray();
 
