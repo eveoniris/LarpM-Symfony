@@ -789,7 +789,7 @@ class TerritoireController extends AbstractController
                 'expanded' => true,
                 'choices' => $bonusChoices,
                 'choice_label' => 'titre',
-                'choice_value' => fn (?Bonus $bonus) => (string) $bonus?->getId(),
+                'choice_value' => static fn (?Bonus $bonus) => (string) $bonus?->getId(),
                 'data' => $currentBonus,
             ])
             ->add('save', SubmitType::class, ['label' => 'Valider '])

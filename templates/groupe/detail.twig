@@ -91,7 +91,7 @@
             <div class="col-md-12">
                 <div>
                     {# Navigation mobile par offcanvas (visible uniquement sur xs/sm) #}
-                    {% set groupeTabLabels = {'detail': 'Détail', 'membres': 'Membres', 'domaine': 'Jeu de domaine', 'backgrounds': 'Backgrounds', 'debriefings': 'Debriefings', 'enveloppe': 'Enveloppe'} %}
+                    {% set groupeTabLabels = {'detail': 'Détail', 'membres': 'Membres', 'domaine': 'Jeu de domaine', 'fiche_retour': 'Fiche retour', 'backgrounds': 'Backgrounds', 'debriefings': 'Debriefings', 'enveloppe': 'Enveloppe'} %}
                     {% set membresItems = [] %}
                     {% for session in groupe.groupeGns|reverse %}
                         {% set membresItems = membresItems|merge([{
@@ -114,6 +114,17 @@
                     {% if domaineItems|length == 0 %}
                         {% set domaineItems = [{'path': '#', 'label': 'Aucune session', 'disabled': true}] %}
                     {% endif %}
+                    {% set ficheRetourItems = [] %}
+                    {% for session in groupe.groupeGns|reverse %}
+                        {% set ficheRetourItems = ficheRetourItems|merge([{
+                            'path': path('groupe.detail.groupeGn', app.request.query.all|merge({'groupe': groupe.id, 'tab': 'fiche_retour', 'gn': session.gn.id, 'groupeGn': session.id})),
+                            'label': session.gn.label,
+                            'active': tab == 'fiche_retour' and groupeGnId is not null and groupeGnId == session.id
+                        }]) %}
+                    {% endfor %}
+                    {% if ficheRetourItems|length == 0 %}
+                        {% set ficheRetourItems = [{'path': '#', 'label': 'Aucune session', 'disabled': true}] %}
+                    {% endif %}
                     {% set tabGroups = [
                         {'items': [
                             {'path': path('groupe.detail.tab', app.request.query.all|merge({'groupe': groupe.id, 'tab': 'detail', 'groupeGn': groupeGnId|default()})), 'label': 'Détail', 'active': tab == 'detail'}
@@ -123,6 +134,7 @@
                     {% if canRead %}
                         {% set tabGroups = tabGroups|merge([
                             {'label': 'Jeu de domaine', 'items': domaineItems},
+                            {'label': 'Fiche retour', 'items': ficheRetourItems},
                             {'items': [
                                 {'path': path('groupe.detail.tab', app.request.query.all|merge({'groupe': groupe.id, 'tab': 'backgrounds', 'groupeGn': groupeGnId|default()})), 'label': 'Backgrounds', 'active': tab == 'backgrounds'},
                                 {'path': path('groupe.detail.tab', app.request.query.all|merge({'groupe': groupe.id, 'tab': 'debriefings', 'groupeGn': groupeGnId|default()})), 'label': 'Debriefings', 'active': tab == 'debriefings'},
@@ -190,6 +202,25 @@
                                         </li>
                                     {% endfor %}
 
+                                </ul>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle{% if tab == 'fiche_retour' %} active{% endif %}"
+                                   data-bs-toggle="dropdown" href="#" role="button"
+                                   aria-expanded="false"
+                                >Fiche retour</a>
+                                <ul class="dropdown-menu p-0 border-2 rounded-2 border-secondary">
+                                    {% for session in groupe.groupeGns|reverse %}
+                                        <li class="d-grid gap-2{% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}">
+                                            <a class="dropdown-item {% if loop.first %} rounded-top-2{% elseif loop.last %} rounded-bottom-2{% endif %}"
+                                               href="{{ path('groupe.detail.groupeGn', app.request.query.all|merge({'groupe': groupe.id, 'tab': 'fiche_retour', 'gn': session.gn.id, 'groupeGn': session.id})) }}"
+                                            >{{ session.gn }}</a></li>
+                                    {% else %}
+                                        <li class="d-grid gap-2 rounded-top-2">
+                                            <div class="dropdown-item rounded-top-2">Aucun</div>
+                                        </li>
+                                    {% endfor %}
                                 </ul>
                             </li>
 

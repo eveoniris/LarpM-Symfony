@@ -21,7 +21,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 class MessageController extends AbstractController
 {
-
     /**
      * Affiche la messagerie de l'utilisateur.
      */

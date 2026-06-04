@@ -1,0 +1,106 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Fiche retour — {{ groupeGn.gn }} — {{ groupe.nom }}{% endblock %}
+
+{% block body %}
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': 'Liste des groupes', 'route': path('groupe.list')},
+        {'name': groupe.label, 'route': path('groupe.detail', {'groupe': groupe.id})},
+        {'name': 'Fiche retour ' ~ groupeGn.gn.label, 'route': path('groupe.detail.groupeGn', {'groupe': groupe.id, 'tab': 'fiche_retour', 'gn': gn.id, 'groupeGn': groupeGn.id})},
+        {'name': is_new ? 'Créer' : 'Modifier'},
+    ]} %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h4>{{ is_new ? 'Créer la fiche retour' : 'Modifier la fiche retour' }} — {{ groupe.nom }} / {{ groupeGn.gn }}</h4>
+        </div>
+
+        {{ form_start(form) }}
+
+        {% if not is_new %}
+            <div class="card mb-3 border-warning">
+                <div class="card-header bg-warning-subtle">
+                    <strong><i class="fa fa-triangle-exclamation"></i> Type de modification</strong>
+                </div>
+                <div class="card-body row g-3">
+                    <div class="col-md-4">
+                        {{ form_row(form.motif_type) }}
+                    </div>
+                    <div class="col-md-8">
+                        {{ form_row(form.motif) }}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="card mb-3">
+            <div class="card-header bg-body-secondary">
+                <strong>Informations générales</strong>
+            </div>
+            <div class="card-body row g-3">
+                <div class="col-md-4">
+                    {{ form_row(form.submitted_at) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header bg-body-secondary">
+                <strong>Monnaie &amp; Consommables</strong>
+            </div>
+            <div class="card-body row g-3">
+                <div class="col-md-2">{{ form_row(form.pieces_argent) }}</div>
+                <div class="col-md-2">{{ form_row(form.pieces_or) }}</div>
+                <div class="col-md-2">{{ form_row(form.nb_ingredients) }}</div>
+                <div class="col-md-2">{{ form_row(form.nb_potions) }}</div>
+                <div class="col-md-2">{{ form_row(form.armement) }}</div>
+                <div class="col-md-2">{{ form_row(form.chevaux) }}</div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header bg-body-secondary">
+                <strong>Ressources</strong>
+            </div>
+            <div class="card-body row g-3">
+                <div class="col-md-2">{{ form_row(form.fruits_legumes) }}</div>
+                <div class="col-md-2">{{ form_row(form.matieres_simples) }}</div>
+                <div class="col-md-2">{{ form_row(form.sel) }}</div>
+                <div class="col-md-2">{{ form_row(form.betail) }}</div>
+                <div class="col-md-2">{{ form_row(form.coton) }}</div>
+                <div class="col-md-2">{{ form_row(form.gemmes) }}</div>
+                <div class="col-md-2">{{ form_row(form.moutons) }}</div>
+                <div class="col-md-2">{{ form_row(form.soie) }}</div>
+                <div class="col-md-2">{{ form_row(form.bois) }}</div>
+                <div class="col-md-2">{{ form_row(form.esclaves) }}</div>
+                <div class="col-md-2">{{ form_row(form.ivoire) }}</div>
+                <div class="col-md-2">{{ form_row(form.pierre) }}</div>
+                <div class="col-md-2">{{ form_row(form.teinture) }}</div>
+                <div class="col-md-2">{{ form_row(form.cereales) }}</div>
+                <div class="col-md-2">{{ form_row(form.fourrures) }}</div>
+                <div class="col-md-2">{{ form_row(form.matieres_precieux) }}</div>
+                <div class="col-md-2">{{ form_row(form.poisson) }}</div>
+                <div class="col-md-2">{{ form_row(form.vin) }}</div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header bg-body-secondary">
+                <strong>Commentaire</strong>
+            </div>
+            <div class="card-body">
+                {{ form_row(form.commentaire) }}
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 justify-content-end">
+            <a class="btn btn-secondary"
+               href="{{ path('groupe.detail.groupeGn', {'groupe': groupe.id, 'tab': 'fiche_retour', 'gn': gn.id, 'groupeGn': groupeGn.id}) }}">
+                Annuler
+            </a>
+            {{ form_widget(form.save) }}
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

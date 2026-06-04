@@ -223,6 +223,17 @@
         </div>
     {% endif %}
 
+    {% if is_granted('ROLE_WARGAME', app.user) %}
+        <div class="card mb-2 border-warning">
+            <div class="card-header"><i class="fa fa-shield-halved text-warning"></i> Jeu de domaine</div>
+            <div class="d-flex p-2 gap-2">
+                <a class="btn btn-secondary" href="{{ path('gn.fiche_retour.import', {'gn': gn.id}) }}">
+                    <i class="fa fa-file-import"></i> Import fiches retour
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
     <div class="row">
         <div class="col-md-6">
             <div class="card mb-2">

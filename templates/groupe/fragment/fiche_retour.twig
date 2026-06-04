@@ -1,0 +1,99 @@
+{% set canEditFiche = is_granted('ROLE_WARGAME', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+
+{% if groupeGn is null %}
+    {% include '_partials/cardNotif.twig' with {'type': 'warning', 'content': 'Veuillez sélectionner une session de jeu.'} %}
+{% else %}
+    {% set ficheRetour = groupeGn.ficheRetour %}
+    <div class="row mt-2">
+        <div class="col-md-12">
+            <div class="header"><h5>Fiche retour — {{ groupeGn.gn }}</h5></div>
+
+            {% if canEditFiche %}
+                <div class="d-flex justify-content-end mb-2">
+                    <div class="btn-toolbar gap-2" role="toolbar">
+                        <a class="btn btn-secondary"
+                           href="{{ path('groupe.fiche_retour.edit', {'groupe': groupe.id, 'gn': groupeGn.gn.id, 'groupeGn': groupeGn.id}) }}">
+                            <i class="fa fa-pencil"></i> {% if ficheRetour is null %}Créer la fiche{% else %}Modifier{% endif %}
+                        </a>
+                        {% if ficheRetour is not null %}
+                            <a class="btn btn-outline-secondary"
+                               href="{{ path('groupe.fiche_retour.history', {'groupe': groupe.id, 'gn': groupeGn.gn.id, 'groupeGn': groupeGn.id}) }}">
+                                <i class="fa fa-history"></i> Historique
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if ficheRetour is null %}
+                {% include '_partials/cardNotif.twig' with {'type': 'info', 'content': 'Aucune fiche retour enregistrée pour cette session.'} %}
+            {% else %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-body-secondary">
+                                <strong>Monnaie &amp; Consommables</strong>
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-sm table-striped m-0">
+                                    <tbody>
+                                    <tr><td>Pièces d'argent</td><td class="text-end fw-bold">{{ ficheRetour.piecesArgent }}</td></tr>
+                                    <tr><td>Pièces d'or</td><td class="text-end fw-bold">{{ ficheRetour.piecesOr }}</td></tr>
+                                    <tr><td>Ingrédients (total)</td><td class="text-end fw-bold">{{ ficheRetour.nbIngredients }}</td></tr>
+                                    <tr><td>Potions (total)</td><td class="text-end fw-bold">{{ ficheRetour.nbPotions }}</td></tr>
+                                    <tr><td>Armement</td><td class="text-end fw-bold">{{ ficheRetour.armement }}</td></tr>
+                                    <tr><td>Chevaux</td><td class="text-end fw-bold">{{ ficheRetour.chevaux }}</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-body-secondary">
+                                <strong>Ressources</strong>
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-sm table-striped m-0">
+                                    <tbody>
+                                    <tr><td>Fruits &amp; Légumes</td><td class="text-end fw-bold">{{ ficheRetour.fruitsLegumes }}</td></tr>
+                                    <tr><td>Matières simples</td><td class="text-end fw-bold">{{ ficheRetour.matieresSimples }}</td></tr>
+                                    <tr><td>Sel</td><td class="text-end fw-bold">{{ ficheRetour.sel }}</td></tr>
+                                    <tr><td>Bétail</td><td class="text-end fw-bold">{{ ficheRetour.betail }}</td></tr>
+                                    <tr><td>Coton</td><td class="text-end fw-bold">{{ ficheRetour.coton }}</td></tr>
+                                    <tr><td>Gemmes</td><td class="text-end fw-bold">{{ ficheRetour.gemmes }}</td></tr>
+                                    <tr><td>Moutons</td><td class="text-end fw-bold">{{ ficheRetour.moutons }}</td></tr>
+                                    <tr><td>Soie</td><td class="text-end fw-bold">{{ ficheRetour.soie }}</td></tr>
+                                    <tr><td>Bois</td><td class="text-end fw-bold">{{ ficheRetour.bois }}</td></tr>
+                                    <tr><td>Esclaves</td><td class="text-end fw-bold">{{ ficheRetour.esclaves }}</td></tr>
+                                    <tr><td>Ivoire</td><td class="text-end fw-bold">{{ ficheRetour.ivoire }}</td></tr>
+                                    <tr><td>Pierre</td><td class="text-end fw-bold">{{ ficheRetour.pierre }}</td></tr>
+                                    <tr><td>Teinture</td><td class="text-end fw-bold">{{ ficheRetour.teinture }}</td></tr>
+                                    <tr><td>Céréales</td><td class="text-end fw-bold">{{ ficheRetour.cereales }}</td></tr>
+                                    <tr><td>Fourrures</td><td class="text-end fw-bold">{{ ficheRetour.fourrures }}</td></tr>
+                                    <tr><td>Matières précieux</td><td class="text-end fw-bold">{{ ficheRetour.matieresPrecieux }}</td></tr>
+                                    <tr><td>Poisson</td><td class="text-end fw-bold">{{ ficheRetour.poisson }}</td></tr>
+                                    <tr><td>Vin</td><td class="text-end fw-bold">{{ ficheRetour.vin }}</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if ficheRetour.commentaire %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-body-secondary"><strong>Commentaire</strong></div>
+                        <div class="card-body">{{ ficheRetour.commentaire|nl2br }}</div>
+                    </div>
+                {% endif %}
+
+                <div class="text-muted small mt-1">
+                    Soumis le : {{ ficheRetour.submittedAt ? ficheRetour.submittedAt|date('d/m/Y H:i') : 'N/A' }}
+                    — Dernière modification : {{ ficheRetour.updatedAt|date('d/m/Y H:i') }}
+                    {% if ficheRetour.updatedBy %}par {{ ficheRetour.updatedBy.username }}{% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

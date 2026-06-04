@@ -3902,7 +3902,7 @@ class PersonnageController extends AbstractController
         $competence = isset($formData['competence'])
             ? $this->entityManager->find('App\Entity\Competence', $formData['competence'])
             : null;
-        $classe = isset($formData['classe'])
+        $classe = isset($formDatan['classe'])
             ? $this->entityManager->find('App\Entity\Classe', $formData['classe'])
             : null;
         $groupe = isset($formData['groupe'])
