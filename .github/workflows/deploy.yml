@@ -1,20 +1,22 @@
 name: Deploy to Production
 
 on:
-  # Auto-deploy when CI passes on main
-  push:
-    branches: [ main ]
+  # Auto-deploy when CI passes on prod branch
+  workflow_run:
+    workflows: ["CI"]
+    branches: [prod]
+    types: [completed]
 
-  # Manual trigger (e.g. to re-deploy without a code change)
+  # Manual trigger — forces deploy regardless of CI (e.g. linter failure only)
   workflow_dispatch:
     inputs:
       run_migrations:
-        description: 'Run database migrations'
+        description: 'Lancer les migrations'
         required: true
         default: 'true'
         type: boolean
       clear_cache:
-        description: 'Clear Symfony cache'
+        description: 'Vider le cache Symfony'
         required: true
         default: 'true'
         type: boolean
@@ -28,12 +30,9 @@ jobs:
   deploy:
     name: Deploy to OVH
     runs-on: ubuntu-latest
-    # Only deploy when CI passes (for auto-deploy from push)
-    # For workflow_dispatch, CI check is manual responsibility
     environment: production
-    # TODO: re-enable once SSH_PRIVATE_KEY / SSH_HOST / SSH_USER / DEPLOY_PATH
-    # secrets are configured in the repository settings.
-    if: false
+    # Auto: only when CI passed. Manual (workflow_dispatch): always.
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
 
     steps:
       - name: Checkout
@@ -57,38 +56,41 @@ jobs:
           RUN_MIGRATIONS: ${{ github.event.inputs.run_migrations || 'true' }}
           CLEAR_CACHE: ${{ github.event.inputs.clear_cache || 'true' }}
         run: |
-          ssh $SSH_USER@$SSH_HOST bash -s << 'ENDSSH'
+          ssh $SSH_USER@$SSH_HOST bash -s << ENDSSH
             set -e
 
             echo "==> Navigating to deploy path"
             cd $DEPLOY_PATH
 
-            echo "==> Pulling latest code from main"
-            git fetch origin main
-            git reset --hard origin/main
+            echo "==> Pulling latest code from prod"
+            git fetch origin prod
+            git reset --hard origin/prod
 
-            echo "==> Installing Composer dependencies (no dev)"
-            composer install \
+            echo "==> Installing Composer dependencies (no dev, no scripts)"
+            APP_ENV=prod composer install \
               --no-dev \
               --optimize-autoloader \
               --no-interaction \
-              --prefer-dist
+              --prefer-dist \
+              --no-scripts
+
+            echo "==> Dumping compiled env for production"
+            APP_ENV=prod APP_DEBUG=0 composer dump-env prod
 
             if [ "$RUN_MIGRATIONS" = "true" ]; then
               echo "==> Running database migrations"
-              php bin/console doctrine:migrations:migrate \
-                --no-interaction \
-                --env=prod
+              APP_ENV=prod php bin/console doctrine:migrations:migrate \
+                --no-interaction
             fi
 
             if [ "$CLEAR_CACHE" = "true" ]; then
               echo "==> Clearing Symfony cache"
-              php -d memory_limit=-1 bin/console cache:clear --env=prod --no-warmup
-              php bin/console cache:warmup --env=prod
+              APP_ENV=prod php -d memory_limit=-1 bin/console cache:clear --no-warmup
+              APP_ENV=prod php bin/console cache:warmup
             fi
 
             echo "==> Compiling assets"
-            php bin/console asset-map:compile --env=prod
+            APP_ENV=prod php bin/console asset-map:compile
 
             echo "==> Deployment complete"
           ENDSSH
@@ -97,7 +99,7 @@ jobs:
         if: failure()
         run: |
           echo "::error::Deployment to production FAILED. Check logs above."
-          # Optional: add Slack/Discord webhook notification here
+          # Optional: add Discord webhook notification here
           # curl -X POST "${{ secrets.DISCORD_WEBHOOK }}" \
           #   -H "Content-Type: application/json" \
-          #   -d '{"content":"⚠️ LarpManager deploy FAILED on main"}'
+          #   -d '{"content":"⚠️ LarpManager deploy FAILED on prod"}'
