@@ -91,6 +91,9 @@ jobs:
               APP_ENV=prod php bin/console cache:warmup
             fi
 
+            echo "==> Installing importmap vendor assets"
+            APP_ENV=prod php bin/console importmap:install
+
             echo "==> Compiling assets"
             APP_ENV=prod php bin/console asset-map:compile
 
