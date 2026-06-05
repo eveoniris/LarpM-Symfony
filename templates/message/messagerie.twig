@@ -30,7 +30,7 @@
         </div>
 
         <div class="accordion" id="messageList">
-            {% for message in user.messageRelatedByDestinataires|filter(message => message.lu != 1) %}
+            {% for message in user.messageRelatedByDestinataires|filter(message => not message.archived) %}
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button d-flex justify-content-between collapsed" type="button"
@@ -69,7 +69,7 @@
                     <div class="card-header"><i class="fa fa-info text-info"></i> Information</div>
                     <div class="card-body">
                         <p class="card-text">
-                            Aucun message non lu.
+                            Aucun message.
                         </p>
                     </div>
                 </div>

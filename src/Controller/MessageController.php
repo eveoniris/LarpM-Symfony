@@ -23,12 +23,24 @@ class MessageController extends AbstractController
 {
     /**
      * Affiche la messagerie de l'utilisateur.
+     * Marque automatiquement tous les messages non lus comme lus à l'ouverture.
      */
     #[Route('/messagerie', name: 'messagerie')]
-    public function messagerieAction(): Response
+    public function messagerieAction(EntityManagerInterface $entityManager): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        foreach ($user->getMessageRelatedByDestinataires() as $message) {
+            if (!$message->getLu()) {
+                $message->setLu(true);
+                $entityManager->persist($message);
+            }
+        }
+        $entityManager->flush();
+
         return $this->render('message/messagerie.twig', [
-            'user' => $this->getUser(),
+            'user' => $user,
         ]);
     }
 
@@ -92,9 +104,12 @@ class MessageController extends AbstractController
     {
         if ($message->getUserRelatedByDestinataire() !== $this->getUser()) {
             $this->addFlash('error', 'Vous ne pouvez pas archiver ce message.');
+
+            return $this->redirectToRoute('messagerie');
         }
 
         $message->setLu(true);
+        $message->setArchived(true);
         $entityManager->persist($message);
         $entityManager->flush();
 
