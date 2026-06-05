@@ -44,7 +44,6 @@ use App\Service\PagerService;
 use ArrayIterator;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -1521,9 +1520,12 @@ class GroupeController extends AbstractController
     #[IsGranted('ROLE_WARGAME')]
     public function ficheRetourEditAction(
         Request $request,
-        #[MapEntity] Groupe $groupe,
-        #[MapEntity] Gn $gn,
-        #[MapEntity] GroupeGn $groupeGn,
+        #[MapEntity]
+        Groupe $groupe,
+        #[MapEntity]
+        Gn $gn,
+        #[MapEntity]
+        GroupeGn $groupeGn,
     ): RedirectResponse|Response {
         $repo = $this->entityManager->getRepository(FicheRetourGroupe::class);
         $fiche = $repo->findOneBy(['groupeGn' => $groupeGn]);
@@ -1627,9 +1629,12 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/gn/{gn}/{groupeGn}', name: 'groupeGn')]
     #[Route('/{groupe}/detail/{tab}/gn/{gn}/groupeGn/{groupeGn}', name: 'detail.groupeGn')]
     public function detailAction(
-        #[MapEntity] ?Groupe $groupe,
-        #[MapEntity] ?Gn $gn = null,
-        #[MapEntity] ?GroupeGn $groupeGn = null,
+        #[MapEntity]
+        ?Groupe $groupe,
+        #[MapEntity]
+        ?Gn $gn = null,
+        #[MapEntity]
+        ?GroupeGn $groupeGn = null,
         string $tab = 'detail',
     ): RedirectResponse|Response {
         /*

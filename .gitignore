@@ -43,7 +43,7 @@ phpstan.neon
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 package-lock.json
-package.json
+*.bkp
 private/doc/
 docker/mailpit/
 
@@ -57,3 +57,17 @@ docker/mailpit/
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+# Node.js
+/node_modules/
+
+# Playwright
+/tests/playwright/.auth/
+/playwright-report/
+/test-results/
+/.playwright-mcp/
+.env.playwright
+
+# Screenshots de développement ad-hoc
+/*.png
+/*.jpg
