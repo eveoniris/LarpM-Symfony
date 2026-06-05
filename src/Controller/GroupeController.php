@@ -1594,7 +1594,7 @@ class GroupeController extends AbstractController
      * Historique des modifications de la fiche retour.
      */
     #[Route('/{groupe}/detail/fiche-retour/gn/{gn}/groupeGn/{groupeGn}/history', name: 'fiche_retour.history')]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted('ROLE_WARGAME')]
     public function ficheRetourHistoryAction(
         #[MapEntity]
         Groupe $groupe,

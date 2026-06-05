@@ -1134,6 +1134,84 @@ class PersonnageService
         return $all;
     }
 
+    public function isBonusEffective(Personnage $personnage, Bonus $bonus): bool
+    {
+        // Root-level conditions are a prerequisite for the whole bonus
+        $rootConditions = $bonus->getConditions();
+        if (!empty($rootConditions) && !$this->conditionsService->isValidConditions($personnage, $rootConditions, $this)) {
+            return false;
+        }
+
+        $bonusType = $bonus->getType();
+        $typeKey = $bonusType ? strtolower($bonusType->value) : '';
+        $items = $typeKey ? $bonus->getDataAsList($typeKey) : [];
+
+        if (empty($items)) {
+            return true;
+        }
+
+        // At least one item must satisfy its own embedded condition
+        foreach ($items as $item) {
+            if ($this->conditionsService->isValidConditions($personnage, $item, $this, isDataSet: true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** @return array<int, Personnage> */
+    public function getEffectivePersonnagesForBonus(Bonus $bonus): array
+    {
+        $seen = [];
+        $candidates = [];
+
+        foreach ($bonus->getGroupeBonus() as $groupeBonus) {
+            $groupe = $groupeBonus->getGroupe();
+            if (!$groupe) {
+                continue;
+            }
+            foreach ($groupe->getPersonnages() as $personnage) {
+                $id = $personnage->getId();
+                if ($id && !isset($seen[$id])) {
+                    $seen[$id] = true;
+                    $candidates[] = $personnage;
+                }
+            }
+        }
+
+        foreach ($bonus->getOrigineBonus() as $origineBonus) {
+            $territoire = $origineBonus->getTerritoire();
+            if (!$territoire) {
+                continue;
+            }
+            foreach ($territoire->getPersonnages() as $personnage) {
+                $id = $personnage->getId();
+                if ($id && !isset($seen[$id])) {
+                    $seen[$id] = true;
+                    $candidates[] = $personnage;
+                }
+            }
+        }
+
+        foreach ($bonus->getPersonnageBonus() as $personnageBonus) {
+            $personnage = $personnageBonus->getPersonnage();
+            if (!$personnage) {
+                continue;
+            }
+            $id = $personnage->getId();
+            if ($id && !isset($seen[$id])) {
+                $seen[$id] = true;
+                $candidates[] = $personnage;
+            }
+        }
+
+        return array_values(array_filter(
+            $candidates,
+            fn (Personnage $p) => $this->isBonusEffective($p, $bonus),
+        ));
+    }
+
     /** @param Collection<int, PersonnageLangues> $all */
     private function addLangueToAll(Personnage $personnage, Langue $langue, Collection $all, Bonus $bonus): void
     {
@@ -2241,7 +2319,7 @@ class PersonnageService
         $page = (int) ($request->query->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
         $criteria = [];
-        $alias = $query->getRootAliases()[0] ?? 'p';
+        $alias = $query?->getRootAliases()[0] ?? 'p';
 
         $formData = $request->query->all('personnageFind');
         $religion = isset($formData['religion'])
