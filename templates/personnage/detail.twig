@@ -42,19 +42,19 @@
             <div class="col-md-12">
                 <div>
                     <div class="personnage-actions">
-                        <div class="btn-toolbar justify-content-end" role="toolbar" aria-label="Actions personnage">
-                            <div class="btn-group" role="group" aria-label="Actions principales">
+                        <div class="btn-toolbar justify-content-end flex-wrap gap-1" role="toolbar" aria-label="Actions personnage">
+                            <div class="btn-group flex-wrap" role="group" aria-label="Actions principales">
                                 {% if personnage %}
-                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                    <a class="btn btn-secondary d-flex flex-column align-items-center" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                        title="Choisir une nouvelle religion"
                                        href="{{ path('personnage.religion.add',{'personnage': personnage.id}) }}"><i
                                             class="fa fa-cloud"
-                                            aria-hidden="true"></i></a>
-                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                            aria-hidden="true"></i><span class="d-block d-md-none" style="font-size:0.6rem;line-height:1">Religion</span></a>
+                                    <a class="btn btn-secondary d-flex flex-column align-items-center" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                        title="Acheter une compétence"
                                        href="{{ path('personnage.add.competence', {'personnage': personnage.id}) }}"><i
-                                                class="fa fa-graduation-cap" aria-hidden="true"></i></a>
-                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                class="fa fa-graduation-cap" aria-hidden="true"></i><span class="d-block d-md-none" style="font-size:0.6rem;line-height:1">Compétence</span></a>
+                                    <a class="btn btn-secondary d-flex flex-column align-items-center" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                        title="Modifier votre personnage"
                                        href="{{ path('personnage.update', {'personnage': personnage.id}) }}"><i
                                                 class="fa fa-pencil" aria-hidden="true"></i>
@@ -63,24 +63,25 @@
 									        <span class="visually-hidden">!</span>
 									    </span>
                                         {% endif %}
+                                        <span class="d-block d-md-none" style="font-size:0.6rem;line-height:1">Modifier</span>
                                     </a>
                                     {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::MAGIC')) %}
-                                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                        <a class="btn btn-secondary d-flex flex-column align-items-center" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                            title="Découvrir la magie"
                                            href="{{ path('personnage.magie', {'personnage': personnage.id}) }}"><i
                                                     class="fa fa-magic"
-                                                    aria-hidden="true"></i></a>
+                                                    aria-hidden="true"></i><span class="d-block d-md-none" style="font-size:0.6rem;line-height:1">Magie</span></a>
                                     {% endif %}
-                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                    <a class="btn btn-secondary d-flex flex-column align-items-center" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                        title="Imprimer votre personnage"
                                        href="{{ path('personnage.export', {'personnage':personnage.id}) }}"><i
                                                 class="fa fa-print"
-                                                aria-hidden="true"></i></a>
-                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                aria-hidden="true"></i><span class="d-block d-md-none" style="font-size:0.6rem;line-height:1">Imprimer</span></a>
+                                    <a class="btn btn-secondary d-flex flex-column align-items-center" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                        title="Imprimer votre personnage avec Qrcode"
                                        href="{{ path('personnage.export', {'personnage':personnage.id, 'qrCode':1}) }}"><i
                                                 class="fa fa-qrcode"
-                                                aria-hidden="true"></i></a>
+                                                aria-hidden="true"></i><span class="d-block d-md-none" style="font-size:0.6rem;line-height:1">QR Code</span></a>
                                 {% endif %}
                             </div>
                         </div>
