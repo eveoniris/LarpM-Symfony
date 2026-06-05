@@ -41,6 +41,9 @@ class BaseMessage
     #[Column(type: Types::BOOLEAN)]
     protected ?bool $lu = false;
 
+    #[Column(type: Types::BOOLEAN)]
+    protected bool $archived = false;
+
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'messageRelatedByAuteurs')]
     #[ORM\JoinColumn(name: 'auteur', referencedColumnName: 'id', nullable: false)]
     protected User $userRelatedByAuteur;
@@ -104,6 +107,18 @@ class BaseMessage
     public function setLu(bool $lu): static
     {
         $this->lu = $lu;
+
+        return $this;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->archived;
+    }
+
+    public function setArchived(bool $archived): static
+    {
+        $this->archived = $archived;
 
         return $this;
     }

@@ -31,7 +31,7 @@
 		</div>
 
 		<div class="accordion" id="messageList">
-			{% for message in user.messageRelatedByDestinataires|filter(message => message.lu == 1) %}
+			{% for message in user.messageRelatedByDestinataires|filter(message => message.archived) %}
 				<div class="accordion-item">
 					<h2 class="accordion-header">
 						<button class="accordion-button d-flex justify-content-between collapsed" type="button"
