@@ -7,7 +7,6 @@ namespace App\Controller;
 use App\Entity\Bonus;
 use App\Form\Bonus\BonusType;
 use App\Repository\BonusRepository;
-use App\Repository\PersonnageBonusRepository;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -104,19 +103,17 @@ class BonusController extends AbstractController
         #[MapEntity]
         Bonus $bonus,
         PersonnageService $personnageService,
-        BonusRepository $bonusRepository,
-        PersonnageBonusRepository $personnageBonusRepository,
     ): Response {
         $routeName = 'bonus.personnages';
         $routeParams = ['bonus' => $bonus->getId()];
         $twigFilePath = 'bonus/personnages.twig';
         $columnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
-        $personnages = new ArrayCollection(); // todo $bonus->getPersonnages();
+        $effectivePersonnages = new ArrayCollection($personnageService->getEffectivePersonnagesForBonus($bonus));
         $additionalViewParams = [
             'bonus' => $bonus,
         ];
 
-        $viewParams = $personnageService->getSearchViewParameters($request, $routeName, $routeParams, $columnKeys, $additionalViewParams, $personnages, $bonusRepository->getPersonnages($bonus));
+        $viewParams = $personnageService->getSearchViewParameters($request, $routeName, $routeParams, $columnKeys, $additionalViewParams, $effectivePersonnages);
 
         return $this->render($twigFilePath, $viewParams);
     }
