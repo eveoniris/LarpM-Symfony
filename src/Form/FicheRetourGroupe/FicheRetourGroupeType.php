@@ -72,24 +72,22 @@ class FicheRetourGroupeType extends AbstractType
             $motifChoices = array_flip(FicheRetourGroupeHistory::MOTIF_TYPES);
             unset($motifChoices['Création'], $motifChoices['Import']);
 
-            $builder
-                ->add('motif_type', ChoiceType::class, [
-                    'label' => 'Type de modification',
-                    'mapped' => false,
-                    'required' => true,
-                    'choices' => $motifChoices,
-                    'placeholder' => 'Choisir...',
-                ])
-                ->add('motif', TextareaType::class, [
-                    'label' => 'Motif / Détail',
-                    'mapped' => false,
-                    'required' => false,
-                    'attr' => [
-                        'rows' => 3,
-                        'placeholder' => 'Ex: Consommation pour construction d\'un port à Sabeaa',
-                    ],
-                    'help' => 'Obligatoire pour les consommations.',
-                ]);
+            $builder->add('motif_type', ChoiceType::class, [
+                'label' => 'Type de modification',
+                'mapped' => false,
+                'required' => true,
+                'choices' => $motifChoices,
+                'placeholder' => 'Choisir...',
+            ])->add('motif', TextareaType::class, [
+                'label' => 'Motif / Détail',
+                'mapped' => false,
+                'required' => false,
+                'attr' => [
+                    'rows' => 3,
+                    'placeholder' => 'Ex: Consommation pour construction d\'un port à Sabeaa',
+                ],
+                'help' => 'Obligatoire pour les consommations.',
+            ]);
         }
     }
 

@@ -153,8 +153,65 @@ class GroupeGnType extends AbstractType
                 ->orderBy('p.nom', 'ASC'), // TODO? and PID not IN groupeGn titres
             'constraints' => [
                 /* @phpstan-ignore argument.type */
-                new Assert\Callback(
-                    function (?Personnage $personnage, ExecutionContextInterface $context) use ($groupeGn): void {
+                new Assert\Callback(function (?Personnage $personnage, ExecutionContextInterface $context) use ($groupeGn): void {
+                    if (!$personnage) {
+                        return;
+                    }
+
+                    /** @var GroupeGnRepository $groupeGnRepository */
+                    $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
+
+                    // Has titres in other groupe
+                    $titres = $groupeGnRepository->getTitres($personnage, $groupeGn->getGn(), $groupeGn);
+
+                    if (!empty($titres)) {
+                        $context
+                            ->buildViolation($this->translator->trans('groupeGn.titre.unique', [
+                                '%personnageName%' => $personnage->getIdName(),
+                                '%titres%' => $titres,
+                            ]))
+                            ->atPath('[suzerin]')
+                            ->addViolation();
+                    }
+
+                    // has more than one title
+                    $nbTitresInGroupe = $groupeGnRepository->countTitres($personnage, $groupeGn->getGn());
+
+                    if ($nbTitresInGroupe > 1) {
+                        $context
+                            ->buildViolation($this->translator->trans('groupeGn.titre.unique', [
+                                '%personnageName%' => $personnage->getIdName(),
+                                '%titres%' => $groupeGnRepository->getTitres($personnage, $groupeGn->getGn()),
+                            ]))
+                            ->atPath('[suzerin]')
+                            ->addViolation();
+                    }
+                }),
+            ],
+        ]);
+
+        $fieldCallback = function (string $child, string $label) use ($groupeGn) {
+            return [
+                'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId() . ' - ' . $personnage->getNameSurname(),
+                'autocomplete' => true,
+                'required' => false,
+                'class' => Personnage::class,
+                'placeholder' => 'Choisissez un personnage',
+                'empty_data' => null,
+                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
+                'query_builder' => static fn (PersonnageRepository $personnageRepository) => $personnageRepository // TODO? and PID not IN groupeGn titres
+                    ->createQueryBuilder('p')
+                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
+                    // ->leftjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn') // AND titre_id is null
+                    ->where('p.vivant = :vivant AND parti.gn = :gnid')
+                    // ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
+                    ->setParameter('vivant', true)
+                    ->setParameter('gnid', $groupeGn->getGn()?->getId())
+                    // ->setParameter('groupe_gn_id', $builder->getData()->getId())
+                    ->orderBy('p.nom', 'ASC'),
+                'constraints' => [
+                    /* @phpstan-ignore argument.type */
+                    new Assert\Callback(function (?Personnage $personnage, ExecutionContextInterface $context) use ($child, $groupeGn): void {
                         if (!$personnage) {
                             return;
                         }
@@ -171,7 +228,7 @@ class GroupeGnType extends AbstractType
                                     '%personnageName%' => $personnage->getIdName(),
                                     '%titres%' => $titres,
                                 ]))
-                                ->atPath('[suzerin]')
+                                ->atPath('[' . $child . ']')
                                 ->addViolation();
                         }
 
@@ -184,71 +241,10 @@ class GroupeGnType extends AbstractType
                                     '%personnageName%' => $personnage->getIdName(),
                                     '%titres%' => $groupeGnRepository->getTitres($personnage, $groupeGn->getGn()),
                                 ]))
-                                ->atPath('[suzerin]')
+                                ->atPath('[' . $child . ']')
                                 ->addViolation();
                         }
-                    },
-                ),
-            ],
-        ]);
-
-        $fieldCallback = function (string $child, string $label) use ($groupeGn) {
-            return [
-                'choice_label' => static fn (Personnage $personnage, $key, $index) => $personnage->getId() . ' - ' . $personnage->getNameSurname(),
-                'autocomplete' => true,
-                'required' => false,
-                'class' => Personnage::class,
-                'placeholder' => 'Choisissez un personnage',
-                'empty_data' => null,
-                // On veut tous les personnages vivant du GN (pas que ceux du groupe)
-                'query_builder' => static fn (PersonnageRepository $personnageRepository) => $personnageRepository // TODO? and PID not IN groupeGn titres
-                ->createQueryBuilder('p')
-                    ->innerjoin('p.participants', 'parti', Join::WITH, 'p.id = parti.personnage')
-                    // ->leftjoin('parti.groupeGn', 'g', Join::WITH, 'g.id = parti.groupeGn') // AND titre_id is null
-                    ->where('p.vivant = :vivant AND parti.gn = :gnid')
-                    // ->where('p.vivant = :vivant AND g.id = :groupe_gn_id')
-                    ->setParameter('vivant', true)
-                    ->setParameter('gnid', $groupeGn->getGn()?->getId())
-                    // ->setParameter('groupe_gn_id', $builder->getData()->getId())
-                    ->orderBy('p.nom', 'ASC'),
-                'constraints' => [
-                    /* @phpstan-ignore argument.type */
-                    new Assert\Callback(
-                        function (?Personnage $personnage, ExecutionContextInterface $context) use ($child, $groupeGn): void {
-                            if (!$personnage) {
-                                return;
-                            }
-
-                            /** @var GroupeGnRepository $groupeGnRepository */
-                            $groupeGnRepository = $this->entityManager->getRepository(GroupeGn::class);
-
-                            // Has titres in other groupe
-                            $titres = $groupeGnRepository->getTitres($personnage, $groupeGn->getGn(), $groupeGn);
-
-                            if (!empty($titres)) {
-                                $context
-                                    ->buildViolation($this->translator->trans('groupeGn.titre.unique', [
-                                        '%personnageName%' => $personnage->getIdName(),
-                                        '%titres%' => $titres,
-                                    ]))
-                                    ->atPath('[' . $child . ']')
-                                    ->addViolation();
-                            }
-
-                            // has more than one title
-                            $nbTitresInGroupe = $groupeGnRepository->countTitres($personnage, $groupeGn->getGn());
-
-                            if ($nbTitresInGroupe > 1) {
-                                $context
-                                    ->buildViolation($this->translator->trans('groupeGn.titre.unique', [
-                                        '%personnageName%' => $personnage->getIdName(),
-                                        '%titres%' => $groupeGnRepository->getTitres($personnage, $groupeGn->getGn()),
-                                    ]))
-                                    ->atPath('[' . $child . ']')
-                                    ->addViolation();
-                            }
-                        },
-                    ),
+                    }),
                 ],
             ];
         };

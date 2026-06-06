@@ -947,8 +947,7 @@ class GnController extends AbstractController
         Gn $gn,
         FicheRetourGroupeImportService $importService,
     ): RedirectResponse|Response {
-        $form = $this->createForm(FicheRetourGroupeImportType::class)
-            ->add('importer', SubmitType::class, ['label' => 'Importer']);
+        $form = $this->createForm(FicheRetourGroupeImportType::class)->add('importer', SubmitType::class, ['label' => 'Importer']);
 
         $form->handleRequest($request);
 
@@ -964,11 +963,7 @@ class GnController extends AbstractController
             if (0 === $result['skipped'] && empty($result['warnings'])) {
                 $this->addFlash('success', sprintf('%d fiche(s) importée(s) avec succès.', $result['imported']));
             } else {
-                $this->addFlash('warning', sprintf(
-                    '%d importée(s), %d ignorée(s). Voir les détails ci-dessous.',
-                    $result['imported'],
-                    $result['skipped']
-                ));
+                $this->addFlash('warning', sprintf('%d importée(s), %d ignorée(s). Voir les détails ci-dessous.', $result['imported'], $result['skipped']));
             }
         }
 
@@ -1017,16 +1012,8 @@ class GnController extends AbstractController
 
         $rows = [
             $columns,
-            array_merge(
-                ['2026-06-01 14:00:00', '21 Argos'],
-                array_fill(0, 24, '0'),
-                ['Exemple commentaire groupe 21']
-            ),
-            array_merge(
-                ['2026-06-01 14:00:00', '5 Koth'],
-                [10, 3, 2, 1, 0, 2, 5, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                ['']
-            ),
+            array_merge(['2026-06-01 14:00:00', '21 Argos'], array_fill(0, 24, '0'), ['Exemple commentaire groupe 21']),
+            array_merge(['2026-06-01 14:00:00', '5 Koth'], [10, 3, 2, 1, 0, 2, 5, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], ['']),
         ];
 
         $response = new StreamedResponse(static function () use ($rows): void {

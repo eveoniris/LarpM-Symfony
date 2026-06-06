@@ -128,11 +128,12 @@ class ApiJoueurController extends AbstractController
             'subscription_date' => $participant->getSubscriptionDate()->format('Y-m-d'),
             'couchage' => $participant->getCouchage(),
             'billet' => $billet ? ['id' => $billet->getId(), 'label' => $billet->getLabel()] : null,
-            'groupe' => $groupeGn?->getGroupe() ? [
-                'id' => $groupeGn->getGroupe()->getId(),
-                'nom' => $groupeGn->getGroupe()->getNom(),
-                'numero' => $groupeGn->getGroupe()->getNumero(),
-            ] : null,
+            'groupe' => $groupeGn?->getGroupe()
+                ? [
+                    'id' => $groupeGn->getGroupe()->getId(),
+                    'nom' => $groupeGn->getGroupe()->getNom(),
+                    'numero' => $groupeGn->getGroupe()->getNumero(),
+                ] : null,
             'personnage' => $personnage ? $this->summarizePersonnage($personnage) : null,
         ]);
     }
@@ -185,11 +186,12 @@ class ApiJoueurController extends AbstractController
                 'label_masculin' => $p->getClasse()->getLabelMasculin(),
                 'label_feminin' => $p->getClasse()->getLabelFeminin(),
             ],
-            'groupe' => $p->getGroupe() ? [
-                'id' => $p->getGroupe()->getId(),
-                'nom' => $p->getGroupe()->getNom(),
-                'numero' => $p->getGroupe()->getNumero(),
-            ] : null,
+            'groupe' => $p->getGroupe()
+                ? [
+                    'id' => $p->getGroupe()->getId(),
+                    'nom' => $p->getGroupe()->getNom(),
+                    'numero' => $p->getGroupe()->getNumero(),
+                ] : null,
         ];
     }
 }

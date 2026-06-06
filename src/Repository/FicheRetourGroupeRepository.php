@@ -11,8 +11,6 @@ class FicheRetourGroupeRepository extends BaseRepository
 {
     public function findByGroupeGn(GroupeGn $groupeGn): ?FicheRetourGroupe
     {
-        return $this->getEntityManager()
-            ->getRepository(FicheRetourGroupe::class)
-            ->findOneBy(['groupeGn' => $groupeGn]);
+        return $this->getEntityManager()->getRepository(FicheRetourGroupe::class)->findOneBy(['groupeGn' => $groupeGn]);
     }
 }

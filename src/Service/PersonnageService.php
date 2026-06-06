@@ -1206,10 +1206,7 @@ class PersonnageService
             }
         }
 
-        return array_values(array_filter(
-            $candidates,
-            fn (Personnage $p) => $this->isBonusEffective($p, $bonus),
-        ));
+        return array_values(array_filter($candidates, fn (Personnage $p) => $this->isBonusEffective($p, $bonus)));
     }
 
     /** @param Collection<int, PersonnageLangues> $all */
@@ -1941,7 +1938,7 @@ class PersonnageService
                 $groupes[] = $territoire->getGroupe();
             }
             foreach ($territoire->getFrontaliersCulturels() as $frontalier) {
-                if (!($frontalier->getGroupe())) {
+                if (!$frontalier->getGroupe()) {
                     continue;
                 }
 

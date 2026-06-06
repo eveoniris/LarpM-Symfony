@@ -94,11 +94,7 @@ class FicheRetourGroupeImportService
 
             $groupeGn = $this->findGroupeGn($gn, $groupeNumero);
             if (null === $groupeGn) {
-                $warnings[] = sprintf(
-                    'Ligne %d : groupe numéro %d non trouvé pour ce GN (ignoré).',
-                    $i + 1,
-                    $groupeNumero
-                );
+                $warnings[] = sprintf('Ligne %d : groupe numéro %d non trouvé pour ce GN (ignoré).', $i + 1, $groupeNumero);
                 ++$skipped;
                 continue;
             }
@@ -213,11 +209,10 @@ class FicheRetourGroupeImportService
 
     private function findGroupeGn(Gn $gn, int $groupeNumero): ?GroupeGn
     {
-        return $this->entityManager->createQuery(
-            'SELECT gg FROM App\Entity\GroupeGn gg
+        return $this->entityManager
+            ->createQuery('SELECT gg FROM App\Entity\GroupeGn gg
              JOIN gg.groupe g
-             WHERE gg.gn = :gn AND g.numero = :numero'
-        )
+             WHERE gg.gn = :gn AND g.numero = :numero')
             ->setParameter('gn', $gn)
             ->setParameter('numero', $groupeNumero)
             ->getOneOrNullResult();

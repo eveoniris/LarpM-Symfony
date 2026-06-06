@@ -282,7 +282,7 @@ class ConditionsService
                 }
 
                 $serviceFamily = $service->getCompetence()->getCompetenceFamily()?->getCompetenceFamilyType();
-                if (strtoupper($serviceFamily?->value ?? '') === $conditionValue || ($serviceFamily?->name === $conditionValue)) {
+                if (strtoupper($serviceFamily?->value ?? '') === $conditionValue || $serviceFamily?->name === $conditionValue) {
                     return true;
                 }
             }

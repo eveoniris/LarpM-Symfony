@@ -585,7 +585,8 @@ class StatistiqueController extends AbstractController
         $allGns = $entityManager->getRepository(Gn::class)->findAll();
 
         if ($gn) {
-            $languesStats = $entityManager->createQueryBuilder()
+            $languesStats = $entityManager
+                ->createQueryBuilder()
                 ->select('l.id', 'l.label', 'COUNT(t.id) AS nb_territoires')
                 ->from(Langue::class, 'l')
                 ->leftJoin('l.territoires', 't')
@@ -599,7 +600,8 @@ class StatistiqueController extends AbstractController
                 ->getQuery()
                 ->getArrayResult();
 
-            $personnageCount = (int) $entityManager->createQueryBuilder()
+            $personnageCount = (int) $entityManager
+                ->createQueryBuilder()
                 ->select('COUNT(p.id)')
                 ->from(Personnage::class, 'p')
                 ->innerJoin('p.participants', 'part')
@@ -608,14 +610,17 @@ class StatistiqueController extends AbstractController
                 ->getQuery()
                 ->getSingleScalarResult();
 
-            $participantCount = $entityManager->getRepository(Participant::class)->createQueryBuilder('part')
+            $participantCount = $entityManager
+                ->getRepository(Participant::class)
+                ->createQueryBuilder('part')
                 ->select('COUNT(part.id)')
                 ->where('part.gn = :gn')
                 ->setParameter('gn', $gn)
                 ->getQuery()
                 ->getSingleScalarResult();
 
-            $placesResult = $entityManager->createQueryBuilder()
+            $placesResult = $entityManager
+                ->createQueryBuilder()
                 ->select('SUM(g.classe_open) AS total_places')
                 ->from(Groupe::class, 'g')
                 ->innerJoin('g.groupeGns', 'ggn')
@@ -625,15 +630,21 @@ class StatistiqueController extends AbstractController
                 ->getSingleScalarResult();
             $places = (int) ($placesResult ?? 0);
 
-            $userCount = max((int) $entityManager->createQueryBuilder()
-                ->select('COUNT(DISTINCT part.user)')
-                ->from(Participant::class, 'part')
-                ->where('part.gn = :gn')
-                ->setParameter('gn', $gn)
-                ->getQuery()
-                ->getSingleScalarResult(), 1);
+            $userCount = max(
+                (int) $entityManager
+                    ->createQueryBuilder()
+                    ->select('COUNT(DISTINCT part.user)')
+                    ->from(Participant::class, 'part')
+                    ->where('part.gn = :gn')
+                    ->setParameter('gn', $gn)
+                    ->getQuery()
+                    ->getSingleScalarResult(),
+                1,
+            );
 
-            $classesStats = $entityManager->getRepository(Classe::class)->getQueryBuilderFindAllOrderedByLabel()
+            $classesStats = $entityManager
+                ->getRepository(Classe::class)
+                ->getQueryBuilderFindAllOrderedByLabel()
                 ->select('c.id', 'c.label_masculin AS label', 'COUNT(p.id) AS value')
                 ->leftJoin('c.personnages', 'p')
                 ->innerJoin('p.participants', 'part')
@@ -643,7 +654,9 @@ class StatistiqueController extends AbstractController
                 ->getQuery()
                 ->getArrayResult();
 
-            $competencesStats = $entityManager->getRepository(Competence::class)->getQueryBuilderFindAllOrderedByLabel()
+            $competencesStats = $entityManager
+                ->getRepository(Competence::class)
+                ->getQueryBuilderFindAllOrderedByLabel()
                 ->select('c.id', 'cf.label AS family_label', 'l.index AS level_index', 'l.label AS level_label', 'COUNT(p.id) AS value')
                 ->leftJoin('c.personnages', 'p')
                 ->innerJoin('p.participants', 'part')
@@ -653,7 +666,8 @@ class StatistiqueController extends AbstractController
                 ->getQuery()
                 ->getArrayResult();
 
-            $genresStats = $entityManager->createQueryBuilder()
+            $genresStats = $entityManager
+                ->createQueryBuilder()
                 ->select('g.id', 'g.label', 'COUNT(p.id) AS value')
                 ->from(Genre::class, 'g')
                 ->leftJoin('g.personnages', 'p')
@@ -665,7 +679,8 @@ class StatistiqueController extends AbstractController
                 ->getQuery()
                 ->getArrayResult();
 
-            $constructionsStats = $entityManager->createQueryBuilder()
+            $constructionsStats = $entityManager
+                ->createQueryBuilder()
                 ->select('t.id', 't.nom', 'COUNT(con.id) AS value')
                 ->from('App\\Entity\\Territoire', 't')
                 ->leftJoin('t.constructions', 'con')
@@ -679,7 +694,8 @@ class StatistiqueController extends AbstractController
                 ->getQuery()
                 ->getArrayResult();
         } else {
-            $languesStats = $entityManager->createQueryBuilder()
+            $languesStats = $entityManager
+                ->createQueryBuilder()
                 ->select('l.id', 'l.label', 'COUNT(t.id) AS nb_territoires')
                 ->from(Langue::class, 'l')
                 ->leftJoin('l.territoires', 't')
@@ -692,27 +708,29 @@ class StatistiqueController extends AbstractController
             $userCount = max($entityManager->getRepository(User::class)->count([]), 1);
             $participantCount = $entityManager->getRepository(Participant::class)->count([]);
 
-            $placesResult = $entityManager->getRepository(Groupe::class)->createQueryBuilder('g')
-                ->select('SUM(g.classe_open) AS total_places')
-                ->getQuery()
-                ->getSingleScalarResult();
+            $placesResult = $entityManager->getRepository(Groupe::class)->createQueryBuilder('g')->select('SUM(g.classe_open) AS total_places')->getQuery()->getSingleScalarResult();
             $places = (int) ($placesResult ?? 0);
 
-            $classesStats = $entityManager->getRepository(Classe::class)->getQueryBuilderFindAllOrderedByLabel()
+            $classesStats = $entityManager
+                ->getRepository(Classe::class)
+                ->getQueryBuilderFindAllOrderedByLabel()
                 ->select('c.id', 'c.label_masculin AS label', 'COUNT(p.id) AS value')
                 ->leftJoin('c.personnages', 'p')
                 ->groupBy('c.id', 'c.label_masculin')
                 ->getQuery()
                 ->getArrayResult();
 
-            $competencesStats = $entityManager->getRepository(Competence::class)->getQueryBuilderFindAllOrderedByLabel()
+            $competencesStats = $entityManager
+                ->getRepository(Competence::class)
+                ->getQueryBuilderFindAllOrderedByLabel()
                 ->select('c.id', 'cf.label AS family_label', 'l.index AS level_index', 'l.label AS level_label', 'COUNT(p.id) AS value')
                 ->leftJoin('c.personnages', 'p')
                 ->groupBy('c.id', 'cf.label', 'l.index', 'l.label')
                 ->getQuery()
                 ->getArrayResult();
 
-            $genresStats = $entityManager->createQueryBuilder()
+            $genresStats = $entityManager
+                ->createQueryBuilder()
                 ->select('g.id', 'g.label', 'COUNT(p.id) AS value')
                 ->from(Genre::class, 'g')
                 ->leftJoin('g.personnages', 'p')
@@ -1259,23 +1277,19 @@ class StatistiqueController extends AbstractController
 
         return match ($_route) {
             'api.groupeOrganisation.gn', 'stats.groupeOrganisation.gn.json' => new JsonResponse($data),
-            'stats.groupeOrganisation.gn.csv' => $this->sendCsv(
-                title: 'eveoniris_groupeOrganisation_' . $gn->getId() . '_' . date('Ymd'),
-                dataProvider: $data,
-                header: [
-                    'numero',
-                    'nom',
-                    'nombre_de_place',
-                    'scenariste',
-                    'mail_scenariste',
-                    'responsable_gn_passe',
-                    'mail_responsable_gn_passe',
-                    'code_gn_passe',
-                    'responsable_gn_venir',
-                    'mail_responsable_gn_venir',
-                    'code_promo_gn_venir',
-                ],
-            ),
+            'stats.groupeOrganisation.gn.csv' => $this->sendCsv(title: 'eveoniris_groupeOrganisation_' . $gn->getId() . '_' . date('Ymd'), dataProvider: $data, header: [
+                'numero',
+                'nom',
+                'nombre_de_place',
+                'scenariste',
+                'mail_scenariste',
+                'responsable_gn_passe',
+                'mail_responsable_gn_passe',
+                'code_gn_passe',
+                'responsable_gn_venir',
+                'mail_responsable_gn_venir',
+                'code_promo_gn_venir',
+            ]),
             default => $this->render('statistique/groupeOrganisation.twig', [
                 'data' => $data,
                 'gn' => $gn,
