@@ -1536,8 +1536,7 @@ class GroupeController extends AbstractController
             $fiche->setGroupeGn($groupeGn);
         }
 
-        $form = $this->createForm(FicheRetourGroupeType::class, $fiche, ['is_new' => $isNew])
-            ->add('save', SubmitType::class, ['label' => 'Enregistrer']);
+        $form = $this->createForm(FicheRetourGroupeType::class, $fiche, ['is_new' => $isNew])->add('save', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
 
@@ -1556,7 +1555,7 @@ class GroupeController extends AbstractController
 
             $motifType = $isNew
                 ? FicheRetourGroupeHistory::ACTION_CREATE
-                : ($form->get('motif_type')->getData() ?? FicheRetourGroupeHistory::ACTION_CORRECTION);
+                : $form->get('motif_type')->getData() ?? FicheRetourGroupeHistory::ACTION_CORRECTION;
 
             $history = new FicheRetourGroupeHistory();
             $history->setFicheRetourGroupe($fiche);
@@ -1605,7 +1604,6 @@ class GroupeController extends AbstractController
         FicheRetourGroupeRepository $ficheRepo,
         FicheRetourGroupeHistoryRepository $historyRepo,
     ): Response {
-
         $fiche = $ficheRepo->findByGroupeGn($groupeGn);
         $histories = $fiche ? $historyRepo->findByFiche($fiche) : [];
         $initialState = $fiche ? $historyRepo->findInitialState($fiche) : null;

@@ -989,10 +989,7 @@ class PersonnageController extends AbstractController
             }
 
             // inter_jeu_personnage est une jonction unidirectionnelle non gérée par Doctrine
-            $this->entityManager->getConnection()->executeStatement(
-                'DELETE FROM inter_jeu_personnage WHERE personnage_id = :id',
-                ['id' => $personnage->getId()]
-            );
+            $this->entityManager->getConnection()->executeStatement('DELETE FROM inter_jeu_personnage WHERE personnage_id = :id', ['id' => $personnage->getId()]);
 
             $this->entityManager->remove($personnage);
             $this->entityManager->flush();
@@ -3380,7 +3377,7 @@ class PersonnageController extends AbstractController
                 }
             }
 
-            $endDate = $nextGn->getDateJeu() ?? ($lastGn?->getDateJeu() ?? (int) date('Y'));
+            $endDate = $nextGn->getDateJeu() ?? $lastGn?->getDateJeu() ?? (int) date('Y');
             $startDate = $lastGn?->getDateJeu() ?? ($endDate - 5);
 
             // Construire les choix avec les années comme clés et valeurs, puis appliquer les labels

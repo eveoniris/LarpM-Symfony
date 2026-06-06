@@ -155,17 +155,13 @@ class ReligionController extends AbstractController
 
         $canSeeSecret = $this->isGranted(Role::REGLE->value) || $this->isGranted(Role::SCENARISTE->value);
 
-        $qb = $religionRepository->createQueryBuilder('religion')
-            ->orderBy('religion.' . $orderBy, $orderDir)
-            ->setMaxResults($limit)
-            ->setFirstResult(($page - 1) * $limit);
+        $qb = $religionRepository->createQueryBuilder('religion')->orderBy('religion.' . $orderBy, $orderDir)->setMaxResults($limit)->setFirstResult(($page - 1) * $limit);
 
         if (!$canSeeSecret) {
             $qb->andWhere('religion.secret = 0');
         }
         if ($search !== '') {
-            $qb->andWhere('religion.label LIKE :search')
-                ->setParameter('search', '%' . $search . '%');
+            $qb->andWhere('religion.label LIKE :search')->setParameter('search', '%' . $search . '%');
         }
 
         $paginator = new Paginator($qb->getQuery());

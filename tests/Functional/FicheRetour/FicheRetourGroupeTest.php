@@ -37,12 +37,7 @@ class FicheRetourGroupeTest extends WebTestCase
         $user = UserFactory::createOne(['roles' => ['ROLE_WARGAME', 'ROLE_USER']]);
 
         $client->loginUser($user);
-        $client->request('GET', sprintf(
-            '/groupe/%d/detail/fiche_retour/gn/%d/groupeGn/%d',
-            $groupe->getId(),
-            $gn->getId(),
-            $groupeGn->getId()
-        ));
+        $client->request('GET', sprintf('/groupe/%d/detail/fiche_retour/gn/%d/groupeGn/%d', $groupe->getId(), $gn->getId(), $groupeGn->getId()));
 
         self::assertResponseIsSuccessful();
     }
@@ -57,12 +52,7 @@ class FicheRetourGroupeTest extends WebTestCase
         $user = UserFactory::createOne(['roles' => ['ROLE_USER']]);
 
         $client->loginUser($user);
-        $client->request('GET', sprintf(
-            '/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/edit',
-            $groupe->getId(),
-            $gn->getId(),
-            $groupeGn->getId()
-        ));
+        $client->request('GET', sprintf('/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/edit', $groupe->getId(), $gn->getId(), $groupeGn->getId()));
 
         // L'app redirige vers /access_denied au lieu de retourner 403 directement
         self::assertResponseRedirects('/access_denied');
@@ -82,42 +72,39 @@ class FicheRetourGroupeTest extends WebTestCase
         $user = UserFactory::createOne(['roles' => ['ROLE_WARGAME', 'ROLE_USER']]);
 
         $client->loginUser($user);
-        $url = sprintf(
-            '/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/edit',
-            $groupe->getId(),
-            $gn->getId(),
-            $groupeGn->getId()
-        );
+        $url = sprintf('/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/edit', $groupe->getId(), $gn->getId(), $groupeGn->getId());
         $crawler = $client->request('GET', $url);
         self::assertResponseIsSuccessful();
 
-        $form = $crawler->selectButton('Enregistrer')->form([
-            'fiche_retour_groupe[pieces_argent]' => 10,
-            'fiche_retour_groupe[pieces_or]' => 5,
-            'fiche_retour_groupe[nb_ingredients]' => 3,
-            'fiche_retour_groupe[nb_potions]' => 1,
-            'fiche_retour_groupe[armement]' => 0,
-            'fiche_retour_groupe[chevaux]' => 2,
-            'fiche_retour_groupe[fruits_legumes]' => 4,
-            'fiche_retour_groupe[matieres_simples]' => 0,
-            'fiche_retour_groupe[sel]' => 0,
-            'fiche_retour_groupe[betail]' => 0,
-            'fiche_retour_groupe[coton]' => 0,
-            'fiche_retour_groupe[gemmes]' => 0,
-            'fiche_retour_groupe[moutons]' => 0,
-            'fiche_retour_groupe[soie]' => 0,
-            'fiche_retour_groupe[bois]' => 0,
-            'fiche_retour_groupe[esclaves]' => 0,
-            'fiche_retour_groupe[ivoire]' => 0,
-            'fiche_retour_groupe[pierre]' => 0,
-            'fiche_retour_groupe[teinture]' => 0,
-            'fiche_retour_groupe[cereales]' => 0,
-            'fiche_retour_groupe[fourrures]' => 0,
-            'fiche_retour_groupe[matieres_precieux]' => 0,
-            'fiche_retour_groupe[poisson]' => 0,
-            'fiche_retour_groupe[vin]' => 0,
-            'fiche_retour_groupe[commentaire]' => 'Test création',
-        ]);
+        $form = $crawler
+            ->selectButton('Enregistrer')
+            ->form([
+                'fiche_retour_groupe[pieces_argent]' => 10,
+                'fiche_retour_groupe[pieces_or]' => 5,
+                'fiche_retour_groupe[nb_ingredients]' => 3,
+                'fiche_retour_groupe[nb_potions]' => 1,
+                'fiche_retour_groupe[armement]' => 0,
+                'fiche_retour_groupe[chevaux]' => 2,
+                'fiche_retour_groupe[fruits_legumes]' => 4,
+                'fiche_retour_groupe[matieres_simples]' => 0,
+                'fiche_retour_groupe[sel]' => 0,
+                'fiche_retour_groupe[betail]' => 0,
+                'fiche_retour_groupe[coton]' => 0,
+                'fiche_retour_groupe[gemmes]' => 0,
+                'fiche_retour_groupe[moutons]' => 0,
+                'fiche_retour_groupe[soie]' => 0,
+                'fiche_retour_groupe[bois]' => 0,
+                'fiche_retour_groupe[esclaves]' => 0,
+                'fiche_retour_groupe[ivoire]' => 0,
+                'fiche_retour_groupe[pierre]' => 0,
+                'fiche_retour_groupe[teinture]' => 0,
+                'fiche_retour_groupe[cereales]' => 0,
+                'fiche_retour_groupe[fourrures]' => 0,
+                'fiche_retour_groupe[matieres_precieux]' => 0,
+                'fiche_retour_groupe[poisson]' => 0,
+                'fiche_retour_groupe[vin]' => 0,
+                'fiche_retour_groupe[commentaire]' => 'Test création',
+            ]);
         $client->submit($form);
 
         self::assertResponseRedirects();
@@ -156,44 +143,41 @@ class FicheRetourGroupeTest extends WebTestCase
         ]);
 
         $client->loginUser($user);
-        $url = sprintf(
-            '/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/edit',
-            $groupe->getId(),
-            $gn->getId(),
-            $groupeGn->getId()
-        );
+        $url = sprintf('/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/edit', $groupe->getId(), $gn->getId(), $groupeGn->getId());
         $crawler = $client->request('GET', $url);
         self::assertResponseIsSuccessful();
 
-        $form = $crawler->selectButton('Enregistrer')->form([
-            'fiche_retour_groupe[pieces_argent]' => 15,
-            'fiche_retour_groupe[pieces_or]' => 0,
-            'fiche_retour_groupe[nb_ingredients]' => 0,
-            'fiche_retour_groupe[nb_potions]' => 0,
-            'fiche_retour_groupe[armement]' => 0,
-            'fiche_retour_groupe[chevaux]' => 0,
-            'fiche_retour_groupe[fruits_legumes]' => 0,
-            'fiche_retour_groupe[matieres_simples]' => 0,
-            'fiche_retour_groupe[sel]' => 0,
-            'fiche_retour_groupe[betail]' => 0,
-            'fiche_retour_groupe[coton]' => 0,
-            'fiche_retour_groupe[gemmes]' => 0,
-            'fiche_retour_groupe[moutons]' => 0,
-            'fiche_retour_groupe[soie]' => 0,
-            'fiche_retour_groupe[bois]' => 0,
-            'fiche_retour_groupe[esclaves]' => 0,
-            'fiche_retour_groupe[ivoire]' => 0,
-            'fiche_retour_groupe[pierre]' => 0,
-            'fiche_retour_groupe[teinture]' => 0,
-            'fiche_retour_groupe[cereales]' => 0,
-            'fiche_retour_groupe[fourrures]' => 0,
-            'fiche_retour_groupe[matieres_precieux]' => 0,
-            'fiche_retour_groupe[poisson]' => 0,
-            'fiche_retour_groupe[vin]' => 0,
-            'fiche_retour_groupe[commentaire]' => '',
-            'fiche_retour_groupe[motif_type]' => FicheRetourGroupeHistory::ACTION_CONSOMMATION,
-            'fiche_retour_groupe[motif]' => 'Consommation pour construction d\'un port',
-        ]);
+        $form = $crawler
+            ->selectButton('Enregistrer')
+            ->form([
+                'fiche_retour_groupe[pieces_argent]' => 15,
+                'fiche_retour_groupe[pieces_or]' => 0,
+                'fiche_retour_groupe[nb_ingredients]' => 0,
+                'fiche_retour_groupe[nb_potions]' => 0,
+                'fiche_retour_groupe[armement]' => 0,
+                'fiche_retour_groupe[chevaux]' => 0,
+                'fiche_retour_groupe[fruits_legumes]' => 0,
+                'fiche_retour_groupe[matieres_simples]' => 0,
+                'fiche_retour_groupe[sel]' => 0,
+                'fiche_retour_groupe[betail]' => 0,
+                'fiche_retour_groupe[coton]' => 0,
+                'fiche_retour_groupe[gemmes]' => 0,
+                'fiche_retour_groupe[moutons]' => 0,
+                'fiche_retour_groupe[soie]' => 0,
+                'fiche_retour_groupe[bois]' => 0,
+                'fiche_retour_groupe[esclaves]' => 0,
+                'fiche_retour_groupe[ivoire]' => 0,
+                'fiche_retour_groupe[pierre]' => 0,
+                'fiche_retour_groupe[teinture]' => 0,
+                'fiche_retour_groupe[cereales]' => 0,
+                'fiche_retour_groupe[fourrures]' => 0,
+                'fiche_retour_groupe[matieres_precieux]' => 0,
+                'fiche_retour_groupe[poisson]' => 0,
+                'fiche_retour_groupe[vin]' => 0,
+                'fiche_retour_groupe[commentaire]' => '',
+                'fiche_retour_groupe[motif_type]' => FicheRetourGroupeHistory::ACTION_CONSOMMATION,
+                'fiche_retour_groupe[motif]' => 'Consommation pour construction d\'un port',
+            ]);
         $client->submit($form);
 
         self::assertResponseRedirects();
@@ -219,12 +203,7 @@ class FicheRetourGroupeTest extends WebTestCase
         FicheRetourGroupeFactory::createOne(['groupeGn' => $groupeGn]);
 
         $client->loginUser($user);
-        $client->request('GET', sprintf(
-            '/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/history',
-            $groupe->getId(),
-            $gn->getId(),
-            $groupeGn->getId()
-        ));
+        $client->request('GET', sprintf('/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/history', $groupe->getId(), $gn->getId(), $groupeGn->getId()));
 
         self::assertResponseIsSuccessful();
     }
@@ -240,12 +219,7 @@ class FicheRetourGroupeTest extends WebTestCase
         FicheRetourGroupeFactory::createOne(['groupeGn' => $groupeGn]);
 
         $client->loginUser($user);
-        $client->request('GET', sprintf(
-            '/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/history',
-            $groupe->getId(),
-            $gn->getId(),
-            $groupeGn->getId()
-        ));
+        $client->request('GET', sprintf('/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/history', $groupe->getId(), $gn->getId(), $groupeGn->getId()));
 
         self::assertResponseRedirects('/access_denied');
     }

@@ -191,11 +191,7 @@ LEFT JOIN p2.participants pa2
 
         if (\array_key_exists('all', $criteria)) {
             $allVal = '%' . $criteria['all'] . '%';
-            $orConditions = $qb->expr()->orX(
-                $qb->expr()->like('p.nom', ':allVal'),
-                $qb->expr()->like('p.surnom', ':allVal'),
-                $qb->expr()->like('u.username', ':allVal'),
-            );
+            $orConditions = $qb->expr()->orX($qb->expr()->like('p.nom', ':allVal'), $qb->expr()->like('p.surnom', ':allVal'), $qb->expr()->like('u.username', ':allVal'));
             if (is_numeric($criteria['all'])) {
                 $orConditions->add($qb->expr()->eq('p.id', ':allId'));
                 $qb->setParameter('allId', (int) $criteria['all']);
