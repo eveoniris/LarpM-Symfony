@@ -43,7 +43,7 @@
                         {% else %}
                             <a href="{{ item.path }}"
                                class="list-group-item list-group-item-action{% if item.active is defined and item.active %} active{% endif %}"
-                               data-bs-dismiss="offcanvas">
+                               data-turbo="false">
                                 {{ item.label }}
                             </a>
                         {% endif %}
