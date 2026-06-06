@@ -1202,4 +1202,101 @@ class StatistiqueController extends AbstractController
             ]),
         };
     }
+
+    #[Route('/api/groupeOrganisation/{gn}', name: 'api.groupeOrganisation.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/groupeOrganisation/{gn}', name: 'stats.groupeOrganisation.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/groupeOrganisation/{gn}/csv', name: 'stats.groupeOrganisation.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/groupeOrganisation/{gn}/json', name: 'stats.groupeOrganisation.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    public function groupeOrganisationAction(
+        #[MapEntity]
+        Gn $gn,
+        string $_route,
+    ): Response|JsonResponse|StreamedResponse {
+        $allGns = $this->entityManager->getRepository(Gn::class)->findBy([], ['date_debut' => 'ASC']);
+        $previousGn = null;
+        foreach ($allGns as $index => $aGn) {
+            if ($aGn->getId() === $gn->getId() && $index > 0) {
+                $previousGn = $allGns[$index - 1];
+                break;
+            }
+        }
+
+        $groupeGns = $this->entityManager->getRepository(GroupeGn::class)->findBy(['gn' => $gn]);
+
+        $data = [];
+        foreach ($groupeGns as $groupeGn) {
+            $groupe = $groupeGn->getGroupe();
+            $scenarist = $groupe->getScenariste();
+
+            $previousGroupeGn = null;
+            if ($previousGn) {
+                $previousGroupeGn = $groupe->getSession($previousGn);
+            }
+
+            $currentParticipant = $groupeGn->getParticipant();
+            $currentResponsable = $currentParticipant?->getUser();
+
+            $previousParticipant = $previousGroupeGn?->getParticipant();
+            $previousResponsable = $previousParticipant?->getUser();
+
+            $data[] = [
+                'numero' => $groupe->getNumero(),
+                'nom' => $groupe->getNom(),
+                'nombre_de_place' => $groupeGn->getPlaceAvailable(),
+                'scenariste' => $scenarist ? $this->formatUserName($scenarist) : null,
+                'mail_scenariste' => $scenarist?->getEmail(),
+                'responsable_gn_passe' => $previousResponsable ? $this->formatUserName($previousResponsable) : null,
+                'mail_responsable_gn_passe' => $previousResponsable?->getEmail(),
+                'code_gn_passe' => $previousGroupeGn?->getCode(),
+                'responsable_gn_venir' => $currentResponsable ? $this->formatUserName($currentResponsable) : null,
+                'mail_responsable_gn_venir' => $currentResponsable?->getEmail(),
+                'code_promo_gn_venir' => $groupeGn->getCode(),
+            ];
+        }
+
+        usort($data, static fn (array $a, array $b): int => $a['numero'] <=> $b['numero']);
+
+        return match ($_route) {
+            'api.groupeOrganisation.gn', 'stats.groupeOrganisation.gn.json' => new JsonResponse($data),
+            'stats.groupeOrganisation.gn.csv' => $this->sendCsv(
+                title: 'eveoniris_groupeOrganisation_' . $gn->getId() . '_' . date('Ymd'),
+                dataProvider: $data,
+                header: [
+                    'numero',
+                    'nom',
+                    'nombre_de_place',
+                    'scenariste',
+                    'mail_scenariste',
+                    'responsable_gn_passe',
+                    'mail_responsable_gn_passe',
+                    'code_gn_passe',
+                    'responsable_gn_venir',
+                    'mail_responsable_gn_venir',
+                    'code_promo_gn_venir',
+                ],
+            ),
+            default => $this->render('statistique/groupeOrganisation.twig', [
+                'data' => $data,
+                'gn' => $gn,
+                'previousGn' => $previousGn,
+            ]),
+        };
+    }
+
+    private function formatUserName(User $user): string
+    {
+        $parts = [];
+        if ($user->getEtatCivil()) {
+            if ($user->getEtatCivil()->getNom()) {
+                $parts[] = $user->getEtatCivil()->getNom();
+            }
+            if ($user->getEtatCivil()->getPrenom()) {
+                $parts[] = $user->getEtatCivil()->getPrenom();
+            }
+        }
+        $parts[] = $user->getUsername();
+
+        return implode(' ', $parts);
+    }
 }

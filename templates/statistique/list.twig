@@ -200,6 +200,12 @@
                                         Liste d'arrivée sur {{ selectedGn.label }}
                                     </a>
                                 </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.groupeOrganisation.gn', {'gn': selectedGn.id}) }}">
+                                        Organisation des groupes sur {{ selectedGn.label }}
+                                    </a>
+                                </div>
                                 {% endif %}
                             </div>
                         </div>
