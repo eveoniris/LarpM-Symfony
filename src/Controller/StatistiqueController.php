@@ -10,6 +10,7 @@ use App\Entity\CompetenceFamily;
 use App\Entity\Genre;
 use App\Entity\Gn;
 use App\Entity\Groupe;
+use App\Entity\GroupeGn;
 use App\Entity\Langue;
 use App\Entity\Participant;
 use App\Entity\Personnage;
