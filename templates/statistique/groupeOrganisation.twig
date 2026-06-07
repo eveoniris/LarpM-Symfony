@@ -83,6 +83,7 @@
                 {'name' : 'Responsable (GN à venir)', 'css': 'text-center'},
                 {'name' : 'Mail responsable (GN à venir)', 'css': 'text-center'},
                 {'name' : 'Code promo (GN à venir)', 'css': 'text-center'},
+                {'name' : 'Présence', 'css': 'text-center'},
             ]} %}
             <tbody>
             {% for row in data %}
@@ -99,6 +100,15 @@
                     <td class="text-center">{{ row.responsable_gn_venir }}</td>
                     <td class="text-center">{{ row.mail_responsable_gn_venir }}</td>
                     <td class="text-center">{{ row.code_promo_gn_venir }}</td>
+                    <td class="text-center">
+                        {% if row.dans_gn_passe and row.dans_gn_venir %}
+                            <span class="badge bg-info">Les deux</span>
+                        {% elseif row.dans_gn_passe %}
+                            <span class="badge bg-warning">GN passé seulement</span>
+                        {% elseif row.dans_gn_venir %}
+                            <span class="badge bg-success">GN à venir seulement</span>
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
