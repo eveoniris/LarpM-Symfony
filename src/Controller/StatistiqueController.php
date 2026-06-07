@@ -1241,19 +1241,33 @@ class StatistiqueController extends AbstractController
             }
         }
 
-        $groupeGns = $this->entityManager->getRepository(GroupeGn::class)->findBy(['gn' => $gn]);
+        $currentGroupeGns = $this->entityManager->getRepository(GroupeGn::class)->findBy(['gn' => $gn]);
+        $previousGroupeGns = $previousGn ? $this->entityManager->getRepository(GroupeGn::class)->findBy(['gn' => $previousGn]) : [];
+
+        $groupes = [];
+        foreach ($currentGroupeGns as $ggn) {
+            $groupe = $ggn->getGroupe();
+            $groupId = $groupe->getId();
+            $groupes[$groupId] ??= ['groupe' => $groupe, 'current' => $ggn, 'previous' => null];
+        }
+        foreach ($previousGroupeGns as $ggn) {
+            $groupe = $ggn->getGroupe();
+            $groupId = $groupe->getId();
+            if (!isset($groupes[$groupId])) {
+                $groupes[$groupId] = ['groupe' => $groupe, 'current' => null, 'previous' => $ggn];
+            } else {
+                $groupes[$groupId]['previous'] = $ggn;
+            }
+        }
 
         $data = [];
-        foreach ($groupeGns as $groupeGn) {
-            $groupe = $groupeGn->getGroupe();
+        foreach ($groupes as $item) {
+            $groupe = $item['groupe'];
+            $currentGroupeGn = $item['current'];
+            $previousGroupeGn = $item['previous'];
             $scenarist = $groupe->getScenariste();
 
-            $previousGroupeGn = null;
-            if ($previousGn) {
-                $previousGroupeGn = $groupe->getSession($previousGn);
-            }
-
-            $currentParticipant = $groupeGn->getParticipant();
+            $currentParticipant = $currentGroupeGn?->getParticipant();
             $currentResponsable = $currentParticipant?->getUser();
 
             $previousParticipant = $previousGroupeGn?->getParticipant();
@@ -1262,7 +1276,8 @@ class StatistiqueController extends AbstractController
             $data[] = [
                 'numero' => $groupe->getNumero(),
                 'nom' => $groupe->getNom(),
-                'nombre_de_place' => $groupeGn->getPlaceAvailable(),
+                'places_prises' => $currentGroupeGn?->getParticipants()->count() ?? 0,
+                'places_total' => $groupe->getPlaceTotal(),
                 'scenariste' => $scenarist ? $this->formatUserName($scenarist) : null,
                 'mail_scenariste' => $scenarist?->getEmail(),
                 'responsable_gn_passe' => $previousResponsable ? $this->formatUserName($previousResponsable) : null,
@@ -1270,7 +1285,9 @@ class StatistiqueController extends AbstractController
                 'code_gn_passe' => $previousGroupeGn?->getCode(),
                 'responsable_gn_venir' => $currentResponsable ? $this->formatUserName($currentResponsable) : null,
                 'mail_responsable_gn_venir' => $currentResponsable?->getEmail(),
-                'code_promo_gn_venir' => $groupeGn->getCode(),
+                'code_promo_gn_venir' => $currentGroupeGn?->getCode(),
+                'dans_gn_passe' => null !== $previousGroupeGn,
+                'dans_gn_venir' => null !== $currentGroupeGn,
             ];
         }
 
@@ -1281,7 +1298,8 @@ class StatistiqueController extends AbstractController
             'stats.groupeOrganisation.gn.csv' => $this->sendCsv(title: 'eveoniris_groupeOrganisation_' . $gn->getId() . '_' . date('Ymd'), dataProvider: $data, header: [
                 'numero',
                 'nom',
-                'nombre_de_place',
+                'places_prises',
+                'places_total',
                 'scenariste',
                 'mail_scenariste',
                 'responsable_gn_passe',

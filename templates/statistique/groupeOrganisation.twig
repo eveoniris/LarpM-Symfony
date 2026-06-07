@@ -73,7 +73,8 @@
             {% include '_partials/thead.twig' with  { 'route': 'stats.list', 'rows': [
                 {'name' : 'N°', 'css': 'text-center'},
                 {'name' : 'Nom', 'css': 'text-center'},
-                {'name' : 'Places', 'css': 'text-center'},
+                {'name' : 'Places prises', 'css': 'text-center'},
+                {'name' : 'Places total', 'css': 'text-center'},
                 {'name' : 'Scénariste', 'css': 'text-center'},
                 {'name' : 'Mail scénariste', 'css': 'text-center'},
                 {'name' : 'Responsable (GN passé)', 'css': 'text-center'},
@@ -85,10 +86,11 @@
             ]} %}
             <tbody>
             {% for row in data %}
-                <tr>
+                <tr class="{% if row.dans_gn_passe and row.dans_gn_venir %}table-default{% elseif row.dans_gn_passe %}table-warning{% elseif row.dans_gn_venir %}table-info{% endif %}">
                     <td class="text-center">{{ row.numero }}</td>
                     <td class="text-center">{{ row.nom }}</td>
-                    <td class="text-center">{{ row.nombre_de_place }}</td>
+                    <td class="text-center">{{ row.places_prises }}</td>
+                    <td class="text-center">{{ row.places_total }}</td>
                     <td class="text-center">{{ row.scenariste }}</td>
                     <td class="text-center">{{ row.mail_scenariste }}</td>
                     <td class="text-center">{{ row.responsable_gn_passe }}</td>
