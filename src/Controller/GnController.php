@@ -20,6 +20,7 @@ use App\Repository\GroupeGnRepository;
 use App\Repository\LangueRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageRepository;
+use App\Repository\UserRepository;
 use App\Repository\PersonnageSecondaireRepository;
 use App\Repository\QuestionRepository;
 use App\Repository\RessourceRepository;
@@ -551,6 +552,18 @@ class GnController extends AbstractController
     public function emailsDiplomatesAction(#[MapEntity] Gn $gn, GroupeGnRepository $groupeGnRepository): StreamedResponse
     {
         return $this->sendCsv(title: 'emails_diplomates_gn_' . $gn->getId() . '_' . date('Ymd'), query: $groupeGnRepository->getEmailsByRole($gn, 'diplomate_id'), header: [
+            'Prénom',
+            'Nom',
+            'Email',
+            'Groupe',
+        ]);
+    }
+
+    #[Route('/{gn}/emails/scenaristes.csv', name: 'emails.scenaristes')]
+    #[IsGranted('ROLE_ORGA')]
+    public function emailsScenaristesAction(#[MapEntity] Gn $gn, UserRepository $userRepository): StreamedResponse
+    {
+        return $this->sendCsv(title: 'emails_scenaristes_gn_' . $gn->getId() . '_' . date('Ymd'), query: $userRepository->getEmailsByUserRole($gn, 'ROLE_SCENARISTE'), header: [
             'Prénom',
             'Nom',
             'Email',
