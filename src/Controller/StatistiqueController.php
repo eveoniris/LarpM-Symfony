@@ -1288,6 +1288,12 @@ class StatistiqueController extends AbstractController
                 'code_promo_gn_venir' => $currentGroupeGn?->getCode(),
                 'dans_gn_passe' => null !== $previousGroupeGn,
                 'dans_gn_venir' => null !== $currentGroupeGn,
+                'presence' => match (true) {
+                    null !== $previousGroupeGn && null !== $currentGroupeGn => 'Les deux',
+                    null !== $previousGroupeGn => 'GN passé seulement',
+                    null !== $currentGroupeGn => 'GN à venir seulement',
+                    default => '',
+                },
             ];
         }
 
@@ -1308,6 +1314,7 @@ class StatistiqueController extends AbstractController
                 'responsable_gn_venir',
                 'mail_responsable_gn_venir',
                 'code_promo_gn_venir',
+                'presence',
             ]),
             default => $this->render('statistique/groupeOrganisation.twig', [
                 'data' => $data,
