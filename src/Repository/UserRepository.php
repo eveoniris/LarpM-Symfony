@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Gn;
 use App\Entity\User;
 use App\Service\OrderBy;
+use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use SensitiveParameter;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -181,5 +184,25 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
     public function usernameExists(User $user): bool
     {
         return $this->propertyExists($user, 'username');
+    }
+
+    public function getEmailsByUserRole(Gn $gn, string $role): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('prenom', 'prenom', 'string');
+        $rsm->addScalarResult('nom', 'nom', 'string');
+        $rsm->addScalarResult('email', 'email', 'string');
+
+        return $this->getEntityManager()->createNativeQuery(<<<SQL
+            SELECT DISTINCT ec.prenom, ec.nom, u.email
+            FROM participant p
+            JOIN `user` u ON u.id = p.user_id
+            LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
+            WHERE p.gn_id = :gnId
+              AND JSON_CONTAINS(u.roles, :role)
+            ORDER BY ec.nom, ec.prenom
+            SQL, $rsm)
+            ->setParameter('gnId', $gn->getId())
+            ->setParameter('role', '"' . $role . '"');
     }
 }
