@@ -10,7 +10,10 @@ framework:
     #log: true
 
     # Note that the session will be started ONLY if you read or write from it.
-    session: true
+    session:
+        cookie_secure: auto
+        cookie_samesite: lax
+        cookie_httponly: true
 
     #esi: true
     #fragments: true

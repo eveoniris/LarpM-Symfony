@@ -38,14 +38,8 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
         $passport = new Passport(new UserBadge($username), new PasswordCredentials($request->request->getString('password')), [
             new CsrfTokenBadge('authenticate', $request->request->getString('_csrf_token')),
-            (new RememberMeBadge())->enable(),
+            new RememberMeBadge(),
         ]);
-
-        // Add _remember_me from JSON body to attributes
-        $cookie_found = $request->cookies->get('REMEMBERME');
-        $data = json_decode($request->getContent());
-        $flag = $data->_remember_me ?? '';
-        $request->attributes->set('_remember_me', $flag || $cookie_found);
 
         return $passport;
     }
