@@ -45,6 +45,7 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -73,10 +74,38 @@ class UserController extends AbstractController
     ): Response {
         $pagerService->setRequest($request)->setRepository($userRepository);
 
+        $roleFilter = $request->query->getString('role_filter');
+        $validRoles = array_column(Role::cases(), 'value');
+        $qb = null;
+        if ($roleFilter && in_array(needle: $roleFilter, haystack: $validRoles, strict: true)) {
+            $qb = $userRepository->createQueryBuilder('user')
+                ->join('user.etatCivil', 'etatCivil')
+                ->where('user.roles LIKE :role')
+                ->setParameter('role', '%' . $roleFilter . '%');
+        }
+
         return $this->render('user/list.twig', [
             'pagerService' => $pagerService,
-            'paginator' => $userRepository->searchPaginated($pagerService),
+            'paginator' => $userRepository->searchPaginated($pagerService, $qb),
+            'roles' => Role::cases(),
+            'role_filter' => $roleFilter,
         ]);
+    }
+
+    #[Route('/user/emails/{role}.csv', name: 'user.emails.role')]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
+    public function emailsByRoleAction(string $role, UserRepository $userRepository): StreamedResponse
+    {
+        $validRoles = array_column(Role::cases(), 'value');
+        if (!in_array(needle: $role, haystack: $validRoles, strict: true)) {
+            throw $this->createNotFoundException('Rôle inconnu : ' . $role);
+        }
+
+        return $this->sendCsv(
+            title: 'emails_role_' . strtolower(str_replace(search: 'ROLE_', replace: '', subject: $role)) . '_' . date('Ymd'),
+            query: $userRepository->getEmailsByRole($role),
+            header: ['Prénom', 'Nom', 'Email'],
+        );
     }
 
     public function adminListActionOld(Request $request, UserRepository $userRepository): Response

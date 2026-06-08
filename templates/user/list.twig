@@ -19,7 +19,42 @@
                 'canAdd': {'title': 'Ajouter un utilisateur', 'path': path('user.new')},
                 'actionPath' : path('user.list')
             } %}
+
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTION') %}
+        <div class="d-flex justify-content-center mt-2">
+            <form method="get" action="{{ path('user.list') }}" class="d-inline-flex align-items-center gap-2">
+                <label for="role_filter" class="mb-0 text-nowrap">Filtrer par rôle :</label>
+                <select id="role_filter" name="role_filter" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    <option value="">-- Tous --</option>
+                    {% for role in roles %}
+                        <option value="{{ role.value }}" {% if role_filter == role.value %}selected{% endif %}>
+                            {{ role.value }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        {% endif %}
     </div>
+
+    {% if is_granted('ROLE_ADMIN') %}
+    <div class="card mb-3">
+        <div class="card-header bg-body-secondary">Exports CSV emails par rôle</div>
+        <div class="card-body p-2">
+            <ul class="list-group list-group-horizontal flex-wrap">
+                {% for role in roles %}
+                    {% if role.value != 'ROLE_USER' %}
+                    <li class="list-group-item d-inline-block">
+                        <a href="{{ path('user.emails.role', {'role': role.value}) }}">
+                            <i class="fa fa-envelope"></i> {{ role.value|replace({'ROLE_': ''}) }}
+                        </a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
 
     {% include '_partials/pagination.html.twig' %}
 

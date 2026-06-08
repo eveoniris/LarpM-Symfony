@@ -205,4 +205,21 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
             ->setParameter('gnId', $gn->getId())
             ->setParameter('role', '"' . $role . '"');
     }
+
+    public function getEmailsByRole(string $role): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('prenom', 'prenom', 'string');
+        $rsm->addScalarResult('nom', 'nom', 'string');
+        $rsm->addScalarResult('email', 'email', 'string');
+
+        return $this->getEntityManager()->createNativeQuery(<<<SQL
+            SELECT ec.prenom, ec.nom, u.email
+            FROM `user` u
+            LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
+            WHERE JSON_CONTAINS(u.roles, :role)
+            ORDER BY ec.nom, ec.prenom
+            SQL, $rsm)
+            ->setParameter('role', '"' . $role . '"');
+    }
 }
