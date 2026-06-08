@@ -47,12 +47,10 @@ security:
                 # target: app_any_route
 
             remember_me:
-                #secret: '%kernel.secret%'
                 lifetime: 604800
                 path: /
-                # always_remember_me: true
-                remember_me_parameter: stay_logged_in
-                signature_properties: [ 'pwd', 'email', 'username' ]
+                remember_me_parameter: _remember_me
+                signature_properties: [ 'password' ]
             switch_user: true
 
             # Activate different ways to authenticate:
