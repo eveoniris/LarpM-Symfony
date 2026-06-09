@@ -19,6 +19,14 @@
     </style>
 </head>
 <body>
+{% macro popa(pa) %}
+    {%- set po = ((pa - pa % 10) / 10)|round -%}
+    {%- set reste = pa % 10 -%}
+    {%- if po > 0 %}{{ po }} PO{% endif %}
+    {%- if po > 0 and reste > 0 %} {% endif %}
+    {%- if reste > 0 %}{{ reste }} PA{% endif %}
+    {%- if pa == 0 %}0 PA{% endif %}
+{%- endmacro %}
 {% for groupe in groupes %}
 <div class="groupe-block">
     <h2>#{{ groupe.numero }} - {{ groupe.nom }}</h2>
@@ -28,11 +36,11 @@
             <div class="section-title">Richesse</div>
             <table>
                 {% set richesse = syntheseRichesse[groupe.id] %}
-                <tr><td>Groupe</td><td>{{ richesse.groupe }} PA</td></tr>
+                <tr><td>Groupe</td><td>{{ _self.popa(richesse.groupe) }}</td></tr>
                 {% for nom, montant in richesse.pj %}
-                <tr><td>{{ nom }}</td><td>{{ montant }} PA</td></tr>
+                <tr><td>{{ nom }}</td><td>{{ _self.popa(montant) }}</td></tr>
                 {% endfor %}
-                <tr class="total-row"><td>TOTAL</td><td>{{ richesse.total }} PA</td></tr>
+                <tr class="total-row"><td>TOTAL</td><td>{{ _self.popa(richesse.total) }}</td></tr>
             </table>
         </div>
 
