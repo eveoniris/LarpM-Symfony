@@ -1688,7 +1688,7 @@ class GroupeController extends AbstractController
     /**
      * Impression des synthèses de ressources pour tous les groupes du prochain GN.
      */
-    #[IsGranted('ROLE_SCENARISTE')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::GESTION), message: 'You are not allowed to access to this.')]
     #[Route('/syntheses-enveloppe', name: 'all.synthese.enveloppe')]
     public function allSyntheseEnveloppeAction(): Response
     {

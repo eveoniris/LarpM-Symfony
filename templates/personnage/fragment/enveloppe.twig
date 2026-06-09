@@ -1,5 +1,5 @@
 <div class="print-center">
-    <h2>#{{ personnage.id }} - {{ personnage.identity }}</h2>
+    <h2>#{{ personnage.identity }}</h2>
 </div>
 
 {# Not used anymore
@@ -26,10 +26,10 @@
     {% set previousParticipant = personnage.previousParticipant %}
     {% set previousGroupe = previousParticipant and previousParticipant.groupeGn ? previousParticipant.groupeGn.groupe : null %}
     <strong>Groupe :</strong>
-    #{{ currentGroupe.numero }} — {{ currentGroupe.nom }}<br/>
+    #{{ currentGroupe.numero }} - {{ currentGroupe.nom }}<br/>
     {% if previousGroupe and previousGroupe.id != currentGroupe.id %}
         <span class="text-warning"><strong>&#9888; Ancien groupe :</strong>
-        #{{ previousGroupe.numero }} — {{ previousGroupe.nom }}</span><br/>
+        #{{ previousGroupe.numero }} - {{ previousGroupe.nom }}</span><br/>
     {% endif %}
 {% endif %}
 
@@ -154,7 +154,7 @@
        or personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::HERBALISM')) %}
         <strong>Carte Alchimiste / Herboriste</strong>
         <ul>
-            <li>1 carte EAN-13 à inclure dans l'enveloppe</li>
+            <li>1 carte XXX2{{ '%05d'|format(personnage.id) }}XXXX à inclure dans l'enveloppe</li>
         </ul>
     {% endif %}
 
