@@ -1025,7 +1025,7 @@ readonly class GroupeService
     }
 
     /** @return array<string, int> label => quantite_totale, triés alphabétiquement */
-    public function computeSyntheseRessources(Groupe $groupe, PersonnageService $personnageService): array
+    public function computeSyntheseRessources(Groupe $groupe, PersonnageService $personnageService, ?GroupeGn $groupeGn = null): array
     {
         $totals = [];
 
@@ -1034,9 +1034,9 @@ readonly class GroupeService
             $totals[$label] = ($totals[$label] ?? 0) + $gr->getQuantite();
         }
 
-        $nextSession = $groupe->getNextSession();
-        if ($nextSession) {
-            foreach ($nextSession->getParticipants() as $participant) {
+        $session = $groupeGn ?? $groupe->getNextSession();
+        if ($session) {
+            foreach ($session->getParticipants() as $participant) {
                 if (!$participant->getPersonnage()) {
                     continue;
                 }
@@ -1053,7 +1053,7 @@ readonly class GroupeService
     }
 
     /** @return array<string, int> label => quantite_totale, triés alphabétiquement */
-    public function computeSyntheseIngredients(Groupe $groupe, PersonnageService $personnageService): array
+    public function computeSyntheseIngredients(Groupe $groupe, PersonnageService $personnageService, ?GroupeGn $groupeGn = null): array
     {
         $totals = [];
 
@@ -1062,9 +1062,9 @@ readonly class GroupeService
             $totals[$label] = ($totals[$label] ?? 0) + $gi->getQuantite();
         }
 
-        $nextSession = $groupe->getNextSession();
-        if ($nextSession) {
-            foreach ($nextSession->getParticipants() as $participant) {
+        $session = $groupeGn ?? $groupe->getNextSession();
+        if ($session) {
+            foreach ($session->getParticipants() as $participant) {
                 if (!$participant->getPersonnage()) {
                     continue;
                 }
@@ -1081,15 +1081,15 @@ readonly class GroupeService
     }
 
     /** @return array{groupe: int, pj: array<string, int>, total: int} */
-    public function computeSyntheseRichesse(Groupe $groupe, PersonnageService $personnageService): array
+    public function computeSyntheseRichesse(Groupe $groupe, PersonnageService $personnageService, ?GroupeGn $groupeGn = null): array
     {
         $groupeRichesse = $this->getAllRichesse($groupe);
         $pjRichesse = [];
         $totalPj = 0;
 
-        $nextSession = $groupe->getNextSession();
-        if ($nextSession) {
-            foreach ($nextSession->getParticipants() as $participant) {
+        $session = $groupeGn ?? $groupe->getNextSession();
+        if ($session) {
+            foreach ($session->getParticipants() as $participant) {
                 if (!$participant->getPersonnage()) {
                     continue;
                 }
