@@ -1,6 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Fiche retour — {{ groupeGn.gn }} — {{ groupe.nom }}{% endblock %}
+{% block title %}Fiche retour - {{ groupeGn.gn }} - {{ groupe.nom }}{% endblock %}
 
 {% block body %}
     {% include '_partials/breadcrumb.twig' with {'items': [
@@ -12,7 +12,7 @@
 
     <div class="well well-sm">
         <div class="header">
-            <h4>{{ is_new ? 'Créer la fiche retour' : 'Modifier la fiche retour' }} — {{ groupe.nom }} / {{ groupeGn.gn }}</h4>
+            <h4>{{ is_new ? 'Créer la fiche retour' : 'Modifier la fiche retour' }} - {{ groupe.nom }} / {{ groupeGn.gn }}</h4>
         </div>
 
         {{ form_start(form) }}

@@ -1,6 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Retour joueur — #{{ participant.id }}{% endblock %}
+{% block title %}Retour joueur - #{{ participant.id }}{% endblock %}
 
 {% block body %}
     {% include '_partials/breadcrumb.twig' with {'items': [
@@ -15,7 +15,7 @@
         {% if participant.personnage %}
             <p>
                 <strong>#{{ participant.personnage.id }}</strong>
-                — {{ participant.personnage.identity }}
+                - {{ participant.personnage.identity }}
                 {% if participant.user %}
                     ({{ participant.user.etatCivil.prenom }} {{ participant.user.etatCivil.nom }})
                 {% endif %}
