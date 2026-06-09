@@ -27,6 +27,7 @@ use App\Repository\UserRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\CarteAlchimisteService;
 use App\Service\FicheRetourGroupeImportService;
+use App\Service\GroupeService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use ArrayIterator;
@@ -870,8 +871,12 @@ class GnController extends AbstractController
 
     #[Route('/{gn}/groupes/enveloppes', name: 'groupes.enveloppes')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
-    public function printAllAction(#[MapEntity] Gn $gn, RessourceRepository $ressourceRepository): Response
-    {
+    public function printAllAction(
+        #[MapEntity] Gn $gn,
+        RessourceRepository $ressourceRepository,
+        GroupeService $groupeService,
+        PersonnageService $personnageService,
+    ): Response {
         $groupeGns = $gn->getGroupeGns();
 
         $ressourceRares = new ArrayCollection($ressourceRepository->findRare());
@@ -879,6 +884,10 @@ class GnController extends AbstractController
 
         /** @var ArrayCollection<int, array{groupe: Groupe, quete: mixed}> $groupes */
         $groupes = new ArrayCollection();
+        $syntheseRessources = [];
+        $syntheseIngredients = [];
+        $syntheseRichesse = [];
+
         foreach ($groupeGns as $groupeGn) {
             $groupe = $groupeGn->getGroupe();
             $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
@@ -886,10 +895,17 @@ class GnController extends AbstractController
                 'groupe' => $groupe,
                 'quete' => $quete,
             ]);
+            $id = $groupe->getId();
+            $syntheseRessources[$id] = $groupeService->computeSyntheseRessources($groupe, $personnageService);
+            $syntheseIngredients[$id] = $groupeService->computeSyntheseIngredients($groupe, $personnageService);
+            $syntheseRichesse[$id] = $groupeService->computeSyntheseRichesse($groupe, $personnageService);
         }
 
         return $this->render('groupe/printAll.twig', [
             'groupes' => $groupes,
+            'syntheseRessources' => $syntheseRessources,
+            'syntheseIngredients' => $syntheseIngredients,
+            'syntheseRichesse' => $syntheseRichesse,
         ]);
     }
 
