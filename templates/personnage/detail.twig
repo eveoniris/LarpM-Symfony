@@ -36,12 +36,6 @@
             <div class="fs-5">
                 {{ personnage.classeName }}
             </div>
-            {% if participant and participant.groupeGn and participant.groupeGn.groupe %}
-                <div class="fs-5 text-muted">
-                    <i class="fa fa-shield" aria-hidden="true"></i>
-                    #{{ participant.groupeGn.groupe.numero }} - {{ participant.groupeGn.groupe.nom }}
-                </div>
-            {% endif %}
         </div>
 
         <div class="row">
