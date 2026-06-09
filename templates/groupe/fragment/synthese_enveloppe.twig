@@ -16,13 +16,28 @@
                         {%- if pa == 0 %}0 PA{% endif %}
                     {%- endmacro %}
                     <tbody>
+                        {% for item in syntheseRichesse.breakdown %}
                         <tr>
-                            <td>Groupe</td>
-                            <td class="text-end"><strong>{{ _self.popa(syntheseRichesse.groupe) }}</strong></td>
+                            <td>
+                                {% if item.type == 'territoire' %}
+                                    Territoire : {{ item.source }}
+                                    {% if item.detail %}<br/><small class="text-muted">{{ item.detail }}</small>{% endif %}
+                                {% elseif item.type == 'merveille' %}
+                                    Merveille : {{ item.source }}
+                                    {% if item.detail %}<br/><small class="text-muted">{{ item.detail }}</small>{% endif %}
+                                {% elseif item.type == 'bonus' %}
+                                    Bonus : {{ item.source }}
+                                    {% if item.detail %}<br/><small class="text-muted">{{ item.detail }}</small>{% endif %}
+                                {% else %}
+                                    Richesse directe
+                                {% endif %}
+                            </td>
+                            <td class="text-end"><strong>{{ _self.popa(item.value) }}</strong></td>
                         </tr>
+                        {% endfor %}
                         {% for nom, montant in syntheseRichesse.pj %}
                         <tr>
-                            <td>{{ nom }}</td>
+                            <td>PJ {{ nom }}</td>
                             <td class="text-end">{{ _self.popa(montant) }}</td>
                         </tr>
                         {% endfor %}

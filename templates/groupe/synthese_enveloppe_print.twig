@@ -36,9 +36,25 @@
             <div class="section-title">Richesse</div>
             <table>
                 {% set richesse = syntheseRichesse[groupe.id] %}
-                <tr><td>Groupe</td><td>{{ _self.popa(richesse.groupe) }}</td></tr>
+                {% for item in richesse.breakdown %}
+                <tr>
+                    <td>
+                        {% if item.type == 'territoire' %}
+                            Territoire : {{ item.source }}
+                            {% if item.detail %}<small style="color:#666"> ({{ item.detail }})</small>{% endif %}
+                        {% elseif item.type == 'merveille' %}
+                            Merveille : {{ item.source }}
+                        {% elseif item.type == 'bonus' %}
+                            Bonus : {{ item.source }}
+                        {% else %}
+                            Richesse directe
+                        {% endif %}
+                    </td>
+                    <td>{{ _self.popa(item.value) }}</td>
+                </tr>
+                {% endfor %}
                 {% for nom, montant in richesse.pj %}
-                <tr><td>{{ nom }}</td><td>{{ _self.popa(montant) }}</td></tr>
+                <tr><td>PJ {{ nom }}</td><td>{{ _self.popa(montant) }}</td></tr>
                 {% endfor %}
                 <tr class="total-row"><td>TOTAL</td><td>{{ _self.popa(richesse.total) }}</td></tr>
             </table>
