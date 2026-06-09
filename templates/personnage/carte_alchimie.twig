@@ -35,25 +35,8 @@
 <div class="carte">
     <div class="carte-header">
         Carte Alchimiste / Herboriste<br/>
-        <span class="carte-id">#{{ personnage.id }} - {{ personnage.identity }}</span>
+        <span class="carte-id">#{{ personnage.identity }}</span>
     </div>
-
-    <div class="carte-competences">
-        {% for competence in competences %}
-            <strong>{{ competence }}</strong><br/>
-        {% endfor %}
-    </div>
-
-    {% if participant and participant.gn %}
-        <div style="font-size: 8pt;">GN : {{ participant.gn.label }}</div>
-    {% endif %}
-
-    {% if participant and participant.groupeGn and participant.groupeGn.groupe %}
-        <div style="font-size: 8pt;">
-            Groupe #{{ participant.groupeGn.groupe.numero }}
-            - {{ participant.groupeGn.groupe.nom }}
-        </div>
-    {% endif %}
 
     <div class="carte-barcode">
         {{ barcode|raw }}
