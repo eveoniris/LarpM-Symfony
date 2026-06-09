@@ -4,45 +4,55 @@
 
 {% block style %}
 <style>
-    body { font-family: sans-serif; font-size: 10pt; margin: 0; padding: 4mm; }
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; font-size: 6pt; margin: 0; padding: 0; }
     .page-title {
         text-align: center;
         font-size: 12pt;
         font-weight: bold;
-        margin-bottom: 8px;
+        padding: 4mm;
     }
+    /* Grille Avery L7654 : 4 col × 10 lignes, 45,7 × 25,4 mm */
     .grille {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4mm;
+        display: grid;
+        grid-template-columns: repeat(4, 45.7mm);
+        column-gap: 2.8mm;
+        row-gap: 0;
+        padding-top: 10.5mm;
+        padding-left: 7.3mm;
     }
     .carte {
-        width: 63mm;
-        min-height: 88mm;
-        border: 1px dashed #aaa;
-        border-radius: 3px;
-        padding: 6px;
-        box-sizing: border-box;
-        page-break-inside: avoid;
-        background: #fff;
+        width: 45.7mm;
+        height: 25.4mm;
+        overflow: hidden;
+        padding: 0.8mm 1mm;
+        border: 0.3px dashed #bbb;
     }
-    .carte-header {
-        text-align: center;
+    .carte-id {
+        font-size: 5.5pt;
         font-weight: bold;
-        font-size: 8pt;
-        border-bottom: 1px solid #ccc;
-        margin-bottom: 4px;
-        padding-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
     }
-    .carte-id { font-size: 7pt; color: #555; }
-    .carte-competences { font-size: 8pt; margin: 3px 0; }
-    .carte-info { font-size: 7pt; color: #444; margin: 2px 0; }
-    .carte-barcode { text-align: center; margin-top: 6px; }
-    .carte-ean { font-family: monospace; font-size: 7pt; color: #333; }
+    .carte-barcode svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 14mm;
+    }
+    .carte-ean {
+        font-family: monospace;
+        font-size: 5pt;
+        text-align: center;
+        line-height: 1;
+    }
     .no-cartes { text-align: center; padding: 20px; color: #666; }
     @media print {
         .page-title { display: none; }
-        body { padding: 2mm; }
+        .carte { border: none; }
+        @page { margin: 0; }
     }
 </style>
 {% endblock %}
@@ -59,40 +69,10 @@
     <div class="grille">
         {% for carte in cartes %}
             {% set personnage = carte.participant.personnage %}
-            {% set participant = carte.participant %}
             <div class="carte">
-                <div class="carte-header">
-                    Alchimiste / Herboriste<br/>
-                    <span class="carte-id">
-                        #{{ personnage.id }} - {{ personnage.nom }}
-                        {% if personnage.surnom %}({{ personnage.surnom }}){% endif %}
-                    </span>
-                </div>
-
-                <div class="carte-competences">
-                    {% for competence in carte.competences %}
-                        <strong>{{ competence }}</strong><br/>
-                    {% endfor %}
-                </div>
-
-                {% if participant.groupeGn and participant.groupeGn.groupe %}
-                    <div class="carte-info">
-                        Groupe #{{ participant.groupeGn.groupe.numero }}
-                        - {{ participant.groupeGn.groupe.nom }}
-                    </div>
-                {% endif %}
-
-                {% if personnage.user %}
-                    <div class="carte-info">
-                        {{ personnage.user.etatCivil.prenom }}
-                        {{ personnage.user.etatCivil.nom }}
-                    </div>
-                {% endif %}
-
-                <div class="carte-barcode">
-                    {{ carte.barcode|raw }}
-                    <div class="carte-ean">{{ carte.ean }}</div>
-                </div>
+                <div class="carte-id">#{{ personnage.identity }}</div>
+                <div class="carte-barcode">{{ carte.barcode|raw }}</div>
+                <div class="carte-ean">{{ carte.ean }}</div>
             </div>
         {% endfor %}
     </div>

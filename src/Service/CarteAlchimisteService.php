@@ -31,13 +31,23 @@ final class CarteAlchimisteService
     }
 
     /**
-     * Génère un SVG du code barre EAN-13.
+     * Génère un SVG du code barre EAN-13 (format carte standard).
      */
     public function generateBarcodeSvg(string $ean13): string
     {
         $generator = new BarcodeGeneratorSVG();
 
         return $generator->getBarcode($ean13, BarcodeGeneratorSVG::TYPE_EAN_13, 2, 60);
+    }
+
+    /**
+     * Génère un SVG du code barre EAN-13 compact pour étiquette 45,7×25,4 mm.
+     */
+    public function generateBarcodeSvgLabel(string $ean13): string
+    {
+        $generator = new BarcodeGeneratorSVG();
+
+        return $generator->getBarcode($ean13, BarcodeGeneratorSVG::TYPE_EAN_13, 1, 35);
     }
 
     /**
@@ -94,7 +104,7 @@ final class CarteAlchimisteService
             $cartes[] = [
                 'participant' => $participant,
                 'ean' => $ean,
-                'barcode' => $this->generateBarcodeSvg($ean),
+                'barcode' => $this->generateBarcodeSvgLabel($ean),
                 'competences' => $this->getCompetenceLabels($personnage),
             ];
             ++$numeroCarte;
