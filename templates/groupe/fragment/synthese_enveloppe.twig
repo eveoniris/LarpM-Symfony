@@ -7,20 +7,28 @@
             <div class="card-header"><strong>Richesse totale</strong></div>
             <div class="card-body p-2">
                 <table class="table table-sm mb-0">
+                    {% macro popa(pa) %}
+                        {%- set po = ((pa - pa % 10) / 10)|round -%}
+                        {%- set reste = pa % 10 -%}
+                        {%- if po > 0 %}{{ po }} PO{% endif %}
+                        {%- if po > 0 and reste > 0 %} {% endif %}
+                        {%- if reste > 0 %}{{ reste }} PA{% endif %}
+                        {%- if pa == 0 %}0 PA{% endif %}
+                    {%- endmacro %}
                     <tbody>
                         <tr>
                             <td>Groupe</td>
-                            <td class="text-end"><strong>{{ syntheseRichesse.groupe }}</strong> PA</td>
+                            <td class="text-end"><strong>{{ _self.popa(syntheseRichesse.groupe) }}</strong></td>
                         </tr>
                         {% for nom, montant in syntheseRichesse.pj %}
                         <tr>
                             <td>{{ nom }}</td>
-                            <td class="text-end">{{ montant }} PA</td>
+                            <td class="text-end">{{ _self.popa(montant) }}</td>
                         </tr>
                         {% endfor %}
                         <tr class="table-primary">
                             <td><strong>TOTAL</strong></td>
-                            <td class="text-end"><strong>{{ syntheseRichesse.total }} PA</strong></td>
+                            <td class="text-end"><strong>{{ _self.popa(syntheseRichesse.total) }}</strong></td>
                         </tr>
                     </tbody>
                 </table>
