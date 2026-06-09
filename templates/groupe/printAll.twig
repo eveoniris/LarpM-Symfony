@@ -32,14 +32,30 @@
             {% endfor %}
         </ul>
 
-        {# Richesse : synthèse depuis computeSyntheseRichesse (groupe + PJ) #}
+        {# Richesse : détail par source + PJ #}
         {% set richesse = syntheseRichesse[groupe.id] %}
         {% if richesse.total > 0 %}
             <strong>Richesse</strong>
             <ul>
-                <li>Groupe : <strong>{{ _self.popa(richesse.groupe) }}</strong></li>
+                {% for item in richesse.breakdown %}
+                    <li>
+                        <strong>{{ _self.popa(item.value) }}</strong>
+                        {% if item.type == 'territoire' %}
+                            — territoire <em>{{ item.source }}</em>
+                            <small>({{ item.detail }})</small>
+                        {% elseif item.type == 'merveille' %}
+                            — merveille <em>{{ item.source }}</em>
+                            {% if item.detail %}<small>({{ item.detail }})</small>{% endif %}
+                        {% elseif item.type == 'bonus' %}
+                            — bonus <em>{{ item.source }}</em>
+                            {% if item.detail %}<small>({{ item.detail }})</small>{% endif %}
+                        {% else %}
+                            — richesse directe du groupe
+                        {% endif %}
+                    </li>
+                {% endfor %}
                 {% for nom, montant in richesse.pj %}
-                    <li>{{ nom }} : <strong>{{ _self.popa(montant) }}</strong></li>
+                    <li><strong>{{ _self.popa(montant) }}</strong> — PJ {{ nom }}</li>
                 {% endfor %}
                 <li><strong>Total : {{ _self.popa(richesse.total) }}</strong></li>
             </ul>
