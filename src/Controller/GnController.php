@@ -897,9 +897,9 @@ class GnController extends AbstractController
                 'quete' => $quete,
             ]);
             $id = $groupe->getId();
-            $syntheseRessources[$id] = $groupeService->computeSyntheseRessources($groupe, $personnageService);
-            $syntheseIngredients[$id] = $groupeService->computeSyntheseIngredients($groupe, $personnageService);
-            $syntheseRichesse[$id] = $groupeService->computeSyntheseRichesse($groupe, $personnageService);
+            $syntheseRessources[$id] = $groupeService->computeSyntheseRessources($groupe, $personnageService, $groupeGn);
+            $syntheseIngredients[$id] = $groupeService->computeSyntheseIngredients($groupe, $personnageService, $groupeGn);
+            $syntheseRichesse[$id] = $groupeService->computeSyntheseRichesse($groupe, $personnageService, $groupeGn);
         }
 
         return $this->render('groupe/printAll.twig', [

@@ -32,65 +32,47 @@
             {% endfor %}
         </ul>
 
-        {% if groupe.hasRichesse or groupe.richesse|default(0) > 0 %}
+        {# Richesse : détail par territoire + PJ depuis la synthèse #}
+        {% set richesse = syntheseRichesse[groupe.id] %}
+        {% if richesse.total > 0 %}
             <strong>Richesse</strong>
             <ul>
                 {% if groupe.hasRichesse %}
                     {% for territoire in groupe.territoires %}
                         {% set pa = 3 * territoire.richesse %}
-                        <li><strong>{{ _self.popa(pa) }}</strong> fournies par
-                            <strong>{{ territoire.nom }}</strong></li>
+                        {% if pa > 0 %}
+                            <li><strong>{{ _self.popa(pa) }}</strong> fournies par <strong>{{ territoire.nom }}</strong></li>
+                        {% endif %}
                     {% endfor %}
                 {% endif %}
                 {% if groupe.richesse|default(0) > 0 %}
-                    <li><strong>{{ _self.popa(groupe.richesse) }}</strong> supplémentaires</li>
+                    <li><strong>{{ _self.popa(groupe.richesse) }}</strong> supplémentaires (groupe)</li>
                 {% endif %}
+                {% for nom, montant in richesse.pj %}
+                    <li><strong>{{ _self.popa(montant) }}</strong> — {{ nom }}</li>
+                {% endfor %}
+                <li><strong>Total : {{ _self.popa(richesse.total) }}</strong></li>
             </ul>
         {% endif %}
 
-        {% if groupe.hasRessource or groupe.groupeHasRessources|length > 0 %}
+        {# Ressources : synthèse agrégée groupe + PJ #}
+        {% set ressources = syntheseRessources[groupe.id] %}
+        {% if ressources is not empty %}
             <strong>Ressources</strong>
             <ul>
-                {% if groupe.hasRessource %}
-                    {% for territoire in groupe.territoires %}
-                        {% set nbRessource = 3 %}
-                        {% if territoire.statut == 'Instable' %}
-                            {% set nbRessource = 2 %}
-                        {% endif %}
-                        {% for ressource in territoire.exportations %}
-                            <li><strong>{{ nbRessource }} {{ ressource.label }}</strong> fourni(e)s par
-                                <strong>{{ territoire.nom }}</strong></li>
-                        {% endfor %}
-                    {% endfor %}
-                {% endif %}
-                {% for groupeHasRessource in groupe.groupeHasRessources %}
-                    <li><strong>{{ groupeHasRessource.quantite }} {{ groupeHasRessource.ressource.label }}</strong>
-                        supplémentaires
-                    </li>
+                {% for label, quantite in ressources %}
+                    <li><strong>{{ quantite }} {{ label }}</strong></li>
                 {% endfor %}
             </ul>
         {% endif %}
 
-        {% if groupe.hasIngredient or groupe.groupeHasIngredients|length > 0 %}
+        {# Ingrédients : synthèse agrégée groupe + PJ #}
+        {% set ingredients = syntheseIngredients[groupe.id] %}
+        {% if ingredients is not empty %}
             <strong>Ingrédients</strong>
             <ul>
-                {% if groupe.hasIngredient %}
-                    {% for territoire in groupe.territoires %}
-                        {% set nbIngredient = 5 %}
-                        {% if territoire.statut == 'Instable' %}
-                            {% set nbIngredient = 3 %}
-                        {% endif %}
-                        {% for ingredient in territoire.ingredients %}
-                            <li><strong>{{ nbIngredient }} {{ ingredient.label }}</strong> fourni(e)s par
-                                <strong>{{ territoire.nom }}</strong></li>
-                        {% endfor %}
-                    {% endfor %}
-                {% endif %}
-                {% for groupeHasIngredient in groupe.groupeHasIngredients %}
-                    <li>
-                        <strong>{{ groupeHasIngredient.quantite }} {{ groupeHasIngredient.ingredient.fullLabel }}</strong>
-                        supplémentaires
-                    </li>
+                {% for label, quantite in ingredients %}
+                    <li><strong>{{ quantite }} {{ label }}</strong></li>
                 {% endfor %}
             </ul>
         {% endif %}
@@ -126,59 +108,12 @@
                 {% endfor %}
                 <li>Lot des titres du domaine</li>
             {% endif %}
-
             {% if groupe.materielRaw %}
                 <li>{{ groupe.materielRaw }}</li>
             {% endif %}
         </ul>
 
-        {% if syntheseRessources is defined and syntheseRichesse is defined %}
-        <hr/>
-        <strong>Synthèse matériel (groupe + PJ)</strong>
-        <table style="width:100%; border-collapse:collapse; font-size:9pt; margin-top:4px;">
-            <tr>
-                <td style="width:33%; vertical-align:top; padding-right:8px;">
-                    <em>Richesse</em><br/>
-                    {% set richesse = syntheseRichesse[groupe.id] %}
-                    Groupe : {{ _self.popa(richesse.groupe) }}<br/>
-                    {% for nom, montant in richesse.pj %}
-                        {{ nom }} : {{ _self.popa(montant) }}<br/>
-                    {% endfor %}
-                    <strong>Total : {{ _self.popa(richesse.total) }}</strong>
-                </td>
-                <td style="width:33%; vertical-align:top; padding-right:8px;">
-                    <em>Ressources</em><br/>
-                    {% set ressources = syntheseRessources[groupe.id] %}
-                    {% if ressources is empty %}Aucune{% else %}
-                        {% for label, quantite in ressources %}{{ quantite }} {{ label }}<br/>{% endfor %}
-                    {% endif %}
-                </td>
-                <td style="width:33%; vertical-align:top;">
-                    <em>Ingrédients</em><br/>
-                    {% set ingredients = syntheseIngredients[groupe.id] %}
-                    {% if ingredients is empty %}Aucun{% else %}
-                        {% for label, quantite in ingredients %}{{ quantite }} {{ label }}<br/>{% endfor %}
-                    {% endif %}
-                </td>
-            </tr>
-        </table>
-        {% endif %}
-
         <hr class="print-page-break"/>
-
-        {#
-        <div>
-            <h4>Quête commerciale pour #{{ groupe.numero}} {{ groupe.nom }}</h4>
-            <p>La route commerciale doit partir de <strong>{% if groupe.territoire %}{{ groupe.territoire.nom }}{% else %}INCONNU{% endif %}</strong> et parvenir à <strong>{% if quete.cible %}{{ quete.cible.nom }}{% else %}INCONNU{% endif %}</strong></p>
-            <strong>Les ressources demandées sont :</strong>
-            <ul>
-            {% for ressource in quete.needs %}
-                <li>{{ ressource.label }}</li>
-            {% endfor %}
-            </ul>
-            <strong>Récompenses : </strong>{{ quete.recompenses|join(', ') }}
-        </div>
-        #}
         <div class="print-page-break"></div>
 
     {% endfor %}
