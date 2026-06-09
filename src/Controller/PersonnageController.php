@@ -1313,7 +1313,7 @@ class PersonnageController extends AbstractController
             'personnage' => $personnage,
             'participant' => $participant,
             'ean' => $ean,
-            'barcode' => $carteAlchimisteService->generateBarcodeSvg($ean),
+            'barcode' => $carteAlchimisteService->generateBarcodeSvgLabel($ean),
             'competences' => $carteAlchimisteService->getCompetenceLabels($personnage),
         ]);
     }
