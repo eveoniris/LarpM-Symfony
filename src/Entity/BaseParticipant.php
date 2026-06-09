@@ -81,6 +81,10 @@ class BaseParticipant
     private ?string $couchage = null;
     #[Column(type: Types::TEXT, nullable: true)]
     private ?string $special = null;
+    #[Column(type: Types::BOOLEAN, nullable: true)]
+    private ?bool $carteAlchiDansEnveloppe = null;
+    #[Column(type: Types::BOOLEAN, nullable: true)]
+    private ?bool $enveloppePrecedentGn = null;
     /** @var Collection<int, QrCodeScanLog> */
     #[OneToMany(mappedBy: 'participant', targetEntity: QrCodeScanLog::class, cascade: ['remove'])]
     private Collection $qrCodeScanLogs;
@@ -418,6 +422,30 @@ class BaseParticipant
     public function setSpecial(?string $special): static
     {
         $this->special = $special;
+
+        return $this;
+    }
+
+    public function isCarteAlchiDansEnveloppe(): ?bool
+    {
+        return $this->carteAlchiDansEnveloppe;
+    }
+
+    public function setCarteAlchiDansEnveloppe(?bool $carteAlchiDansEnveloppe): static
+    {
+        $this->carteAlchiDansEnveloppe = $carteAlchiDansEnveloppe;
+
+        return $this;
+    }
+
+    public function isEnveloppePrecedentGn(): ?bool
+    {
+        return $this->enveloppePrecedentGn;
+    }
+
+    public function setEnveloppePrecedentGn(?bool $enveloppePrecedentGn): static
+    {
+        $this->enveloppePrecedentGn = $enveloppePrecedentGn;
 
         return $this;
     }

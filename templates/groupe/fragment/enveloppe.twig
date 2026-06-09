@@ -1,3 +1,7 @@
+{% if syntheseRessources is defined and syntheseRessources is not empty or syntheseIngredients is defined and syntheseIngredients is not empty or syntheseRichesse is defined and syntheseRichesse is not empty %}
+    {% include 'groupe/fragment/synthese_enveloppe.twig' %}
+{% endif %}
+
 {% if groupe.nextSession.gn.label is defined %}
     <h5 class="mt-2">Enveloppe de groupe pour {{ groupe.nextSession.gn.label }}</h5>
 {% else %}

@@ -83,6 +83,16 @@
                         <a href="{{ path('participant.update', {'participant': participant.id}) }}"><i
                                 class="fa fa-pencil" aria-hidden="true"></i> Modifier</a>
                     </li>
+
+                    <li class="list-group-item">
+                        <a href="{{ path('participant.retour', {'participant': participant.id}) }}">
+                            <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                            Retour joueur
+                        </a>
+                        {% if participant.carteAlchiDansEnveloppe is not null or participant.enveloppePrecedentGn is not null %}
+                            <small class="text-muted"> (saisi)</small>
+                        {% endif %}
+                    </li>
                 </ul>
 
                 {#

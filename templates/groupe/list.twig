@@ -16,14 +16,17 @@
 		{% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
 			{% set canAdd = {'title': 'Ajouter un groupe', 'path': path('groupe.add')} %}
 			{% set print = {'title': 'Imprimer', 'path': path('groupe.print')} %}
+			{% set extraButtons = [{'title': 'Synthèses ressources (tous les groupes)', 'route': path('groupe.all.synthese.enveloppe'), 'icon': 'fa-boxes-stacked', 'label': 'Synthèses'}] %}
 		{% else %}
 			{% set canAdd = null %}
 			{% set print = null %}
+			{% set extraButtons = [] %}
 		{% endif %}
 		{% include '_partials/formListSearch.twig' with
 			{
 				'canAdd': canAdd,
 				'print': print,
+				'buttons': extraButtons,
 				'actionPath' : path('groupe.list')
 			} %}
 	</div>

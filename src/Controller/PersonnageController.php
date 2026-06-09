@@ -92,6 +92,7 @@ use App\Repository\TechnologieRepository;
 use App\Repository\TerritoireRepository;
 use App\Repository\UserRepository;
 use App\Security\MultiRolesExpression;
+use App\Service\CarteAlchimisteService;
 use App\Service\CompetenceService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
@@ -1285,6 +1286,36 @@ class PersonnageController extends AbstractController
     public function adminPrintAction(Request $request): void
     {
         // TODO ?
+    }
+
+    /**
+     * Carte alchimiste/herboriste individuelle (imprimable).
+     */
+    #[Route('/{personnage}/carte-alchimie', name: 'carte.alchimie')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
+    public function carteAlchimieAction(
+        #[MapEntity]
+        Personnage $personnage,
+        CarteAlchimisteService $carteAlchimisteService,
+    ): Response {
+        if (!$carteAlchimisteService->hasCarteAlchimisteCompetence($personnage)) {
+            $this->addFlash('error', 'Ce personnage n\'a pas la compétence Alchimie ou Herboristerie.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()]);
+        }
+
+        $participant = $personnage->getLastParticipant();
+        $gnId = $participant?->getGn()?->getId() ?? 0;
+        $userId = $personnage->getUser()?->getId() ?? 0;
+        $ean = $carteAlchimisteService->generateEan((int) $gnId, (int) $userId, 1);
+
+        return $this->render('personnage/carte_alchimie.twig', [
+            'personnage' => $personnage,
+            'participant' => $participant,
+            'ean' => $ean,
+            'barcode' => $carteAlchimisteService->generateBarcodeSvg($ean),
+            'competences' => $carteAlchimisteService->getCompetenceLabels($personnage),
+        ]);
     }
 
     /**

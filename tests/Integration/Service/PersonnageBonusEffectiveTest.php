@@ -13,6 +13,7 @@ use App\Tests\Factory\BonusFactory;
 use App\Tests\Factory\CompetenceFactory;
 use App\Tests\Factory\GroupeFactory;
 use App\Tests\Factory\PersonnageFactory;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -127,7 +128,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $gb = new GroupeBonus();
         $gb->setGroupe($groupe);
         $gb->setBonus($bonus);
-        $gb->setCreationDate(new \DateTime());
+        $gb->setCreationDate(new DateTime());
         $gb->setStatus('actif');
         $this->em->persist($gb);
 
@@ -140,7 +141,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $bonus = $this->em->find(Bonus::class, $bonusId);
 
         $result = $this->personnageService->getEffectivePersonnagesForBonus($bonus);
-        $ids = array_map(fn ($p) => $p->getId(), $result);
+        $ids = array_map(static fn ($p) => $p->getId(), $result);
 
         self::assertContains($p1->getId(), $ids);
         self::assertContains($p2->getId(), $ids);
@@ -162,7 +163,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $gb = new GroupeBonus();
         $gb->setGroupe($groupe);
         $gb->setBonus($bonus);
-        $gb->setCreationDate(new \DateTime());
+        $gb->setCreationDate(new DateTime());
         $gb->setStatus('actif');
         $this->em->persist($gb);
 
@@ -175,7 +176,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $bonus = $this->em->find(Bonus::class, $bonusId);
 
         $result = $this->personnageService->getEffectivePersonnagesForBonus($bonus);
-        $ids = array_map(fn ($p) => $p->getId(), $result);
+        $ids = array_map(static fn ($p) => $p->getId(), $result);
 
         self::assertContains($pWith->getId(), $ids);
         self::assertNotContains($pWithout->getId(), $ids);
@@ -201,7 +202,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $bonus = $this->em->find(Bonus::class, $bonusId);
 
         $result = $this->personnageService->getEffectivePersonnagesForBonus($bonus);
-        $ids = array_map(fn ($p) => $p->getId(), $result);
+        $ids = array_map(static fn ($p) => $p->getId(), $result);
 
         self::assertContains($personnage->getId(), $ids);
     }
@@ -218,7 +219,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $gb = new GroupeBonus();
         $gb->setGroupe($groupe);
         $gb->setBonus($bonus);
-        $gb->setCreationDate(new \DateTime());
+        $gb->setCreationDate(new DateTime());
         $gb->setStatus('actif');
         $this->em->persist($gb);
 
@@ -234,7 +235,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $bonus = $this->em->find(Bonus::class, $bonusId);
 
         $result = $this->personnageService->getEffectivePersonnagesForBonus($bonus);
-        $ids = array_map(fn ($p) => $p->getId(), $result);
+        $ids = array_map(static fn ($p) => $p->getId(), $result);
         $uniqueIds = array_unique($ids);
 
         self::assertSame(count($uniqueIds), count($ids), 'Personnage should not appear twice');

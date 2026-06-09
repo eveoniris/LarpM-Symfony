@@ -710,6 +710,17 @@ class Personnage extends BasePersonnage implements Stringable
         return null;
     }
 
+    public function getPreviousParticipant(): ?Participant
+    {
+        $participants = $this->getParticipants()->toArray();
+        $count = \count($participants);
+        if ($count >= 2) {
+            return $participants[$count - 2] instanceof Participant ? $participants[$count - 2] : null;
+        }
+
+        return null;
+    }
+
     public function getLigneeIdentity(bool $withId = true, bool $full = false): string
     {
         return $this->getIdentity($withId, $full) . ' (' . $this->getAge()->getLabel() . ')';
@@ -803,7 +814,7 @@ class Personnage extends BasePersonnage implements Stringable
 
     public function getPrintLabel(): ?string
     {
-        return (new AsciiSlugger())->slug($this->getLabel());
+        return (new AsciiSlugger())->slug($this->getLabel())->toString();
     }
 
     /**

@@ -92,7 +92,11 @@
     </thead>
     <tbody>
     <tr>
-        <td class="print-center">{{ personnageService.allRenomme(personnage)|default(0) }}</td>
+        <td class="print-center">
+            {% set renommeScore = personnageService.allRenomme(personnage)|default(0) %}
+            {{ renommeScore }}<br/>
+            <small>{{ renomme_broche(renommeScore) }}</small>
+        </td>
         <td class="print-center">{{ personnageService.allHeroisme(personnage)|default(0) }}</td>
         <td class="print-center">{{ personnageService.allPugilat(personnage)|default(0) }}</td>
         {% if personnage.domaines|length > 0 %}
@@ -343,4 +347,27 @@
         </table>
         </div>
     </div>
+</div>
+<br/>
+<hr/>
+<div class="print-avoid-break">
+    <div class="print-center">
+        <p>Fiche retour à remplir par le PC Joueur à la restitution de l'enveloppe.</p>
+        <h3>RETOUR JOUEUR</h3>
+        <strong>Numéro du personnage :</strong> #{{ personnage.id }}<br/>
+        <strong>Identité :</strong> {{ personnage.identity }}<br/>
+    </div>
+    <br/>
+    <ul style="list-style: none; padding: 0; font-size: 11pt;">
+        {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY'))
+           or personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::HERBALISM')) %}
+            <li>&#9744;&nbsp; Carte alchimiste/herboriste restée dans l'enveloppe</li>
+        {% endif %}
+        {% if personnage.previousParticipant %}
+            <li>&#9744;&nbsp; Enveloppe du GN précédent présente</li>
+        {% endif %}
+        <li>&#9744;&nbsp; Fiche de personnage restituée</li>
+        <li>&#9744;&nbsp; Bandeau blanc restitué</li>
+        <li>&#9744;&nbsp; Bandeau rougeâtre restitué</li>
+    </ul>
 </div>

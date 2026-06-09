@@ -1651,12 +1651,156 @@ class GroupeController extends AbstractController
             $this->setCan(self::CAN_WRITE, true);
         }
 
-        return $this->render('groupe/detail.twig', [
+        $templateVars = [
             'groupe' => $groupe,
             'gn' => $gn,
             'groupeGn' => $groupeGn,
             'tab' => $tab,
             'userGroupeGns' => $this->groupeService->getUserGroupeGns($groupe),
+        ];
+
+        if ('enveloppe' === $tab) {
+            $templateVars['syntheseRessources'] = $this->computeSyntheseRessources($groupe);
+            $templateVars['syntheseIngredients'] = $this->computeSyntheseIngredients($groupe);
+            $templateVars['syntheseRichesse'] = $this->computeSyntheseRichesse($groupe);
+        }
+
+        return $this->render('groupe/detail.twig', $templateVars);
+    }
+
+    /**
+     * Impression de la synthèse des ressources d'un groupe (version imprimable sans layout).
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/{groupe}/synthese-enveloppe', name: 'synthese.enveloppe')]
+    public function syntheseEnveloppeAction(
+        #[MapEntity]
+        Groupe $groupe,
+    ): Response {
+        return $this->render('groupe/synthese_enveloppe_print.twig', [
+            'groupes' => [$groupe],
+            'syntheseRessources' => [$groupe->getId() => $this->computeSyntheseRessources($groupe)],
+            'syntheseIngredients' => [$groupe->getId() => $this->computeSyntheseIngredients($groupe)],
+            'syntheseRichesse' => [$groupe->getId() => $this->computeSyntheseRichesse($groupe)],
         ]);
+    }
+
+    /**
+     * Impression des synthèses de ressources pour tous les groupes du prochain GN.
+     */
+    #[IsGranted('ROLE_SCENARISTE')]
+    #[Route('/syntheses-enveloppe', name: 'all.synthese.enveloppe')]
+    public function allSyntheseEnveloppeAction(): Response
+    {
+        $gn = $this->groupeService->getNextSessionGn();
+        $groupes = [];
+        $syntheseRessources = [];
+        $syntheseIngredients = [];
+        $syntheseRichesse = [];
+
+        if ($gn) {
+            foreach ($gn->getGroupeGns() as $groupeGn) {
+                $groupe = $groupeGn->getGroupe();
+                if (!$groupe) {
+                    continue;
+                }
+                $groupes[] = $groupe;
+                $id = $groupe->getId();
+                $syntheseRessources[$id] = $this->computeSyntheseRessources($groupe);
+                $syntheseIngredients[$id] = $this->computeSyntheseIngredients($groupe);
+                $syntheseRichesse[$id] = $this->computeSyntheseRichesse($groupe);
+            }
+        }
+
+        return $this->render('groupe/synthese_enveloppe_print.twig', [
+            'groupes' => $groupes,
+            'syntheseRessources' => $syntheseRessources,
+            'syntheseIngredients' => $syntheseIngredients,
+            'syntheseRichesse' => $syntheseRichesse,
+        ]);
+    }
+
+    /** @return array<string, int> label => quantite_totale, triés alphabétiquement */
+    private function computeSyntheseRessources(Groupe $groupe): array
+    {
+        $totals = [];
+
+        foreach ($this->groupeService->getAllRessource($groupe) as $gr) {
+            $label = strip_tags($gr->getRessource()->getLabel());
+            $totals[$label] = ($totals[$label] ?? 0) + $gr->getQuantite();
+        }
+
+        $nextSession = $groupe->getNextSession();
+        if ($nextSession) {
+            foreach ($nextSession->getParticipants() as $participant) {
+                if (!$participant->getPersonnage()) {
+                    continue;
+                }
+                foreach ($this->personnageService->getAllRessource($participant->getPersonnage()) as $pr) {
+                    $label = strip_tags($pr->getRessource()->getLabel());
+                    $totals[$label] = ($totals[$label] ?? 0) + $pr->getNombre();
+                }
+            }
+        }
+
+        ksort($totals, \SORT_STRING | \SORT_FLAG_CASE);
+
+        return $totals;
+    }
+
+    /** @return array<string, int> label => quantite_totale, triés alphabétiquement */
+    private function computeSyntheseIngredients(Groupe $groupe): array
+    {
+        $totals = [];
+
+        foreach ($this->groupeService->getAllIngredient($groupe) as $gi) {
+            $label = strip_tags($gi->getIngredient()->getLabel());
+            $totals[$label] = ($totals[$label] ?? 0) + $gi->getQuantite();
+        }
+
+        $nextSession = $groupe->getNextSession();
+        if ($nextSession) {
+            foreach ($nextSession->getParticipants() as $participant) {
+                if (!$participant->getPersonnage()) {
+                    continue;
+                }
+                foreach ($this->personnageService->getAllIngredient($participant->getPersonnage()) as $pi) {
+                    $label = strip_tags($pi->getIngredient()->getLabel());
+                    $totals[$label] = ($totals[$label] ?? 0) + $pi->getNombre();
+                }
+            }
+        }
+
+        ksort($totals, \SORT_STRING | \SORT_FLAG_CASE);
+
+        return $totals;
+    }
+
+    /** @return array{groupe: int, pj: array<string, int>, total: int} */
+    private function computeSyntheseRichesse(Groupe $groupe): array
+    {
+        $groupeRichesse = $this->groupeService->getAllRichesse($groupe);
+        $pjRichesse = [];
+        $totalPj = 0;
+
+        $nextSession = $groupe->getNextSession();
+        if ($nextSession) {
+            foreach ($nextSession->getParticipants() as $participant) {
+                if (!$participant->getPersonnage()) {
+                    continue;
+                }
+                $r = $this->personnageService->getAllRichesse($participant->getPersonnage());
+                if ($r > 0) {
+                    $pjRichesse[$participant->getPersonnage()->getNom()] = $r;
+                    $totalPj += $r;
+                }
+            }
+        }
+
+        return [
+            'groupe' => $groupeRichesse,
+            'pj' => $pjRichesse,
+            'total' => $groupeRichesse + $totalPj,
+        ];
     }
 }
