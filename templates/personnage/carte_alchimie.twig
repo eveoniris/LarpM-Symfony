@@ -4,60 +4,46 @@
 
 {% block style %}
 <style>
-    body { font-family: sans-serif; font-size: 11pt; }
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; font-size: 6pt; margin: 20mm; padding: 0; }
     .carte {
-        width: 63mm;
-        min-height: 88mm;
-        border: 2px solid #333;
-        border-radius: 4px;
-        padding: 8px;
-        display: inline-block;
-        vertical-align: top;
-        page-break-inside: avoid;
-        background: #fff;
+        width: 45.7mm;
+        height: 25.4mm;
+        overflow: hidden;
+        padding: 0.8mm 1mm;
+        border: 1px solid #333;
     }
-    .carte-header {
-        text-align: center;
+    .carte-id {
+        font-size: 5.5pt;
         font-weight: bold;
-        font-size: 10pt;
-        border-bottom: 1px solid #999;
-        margin-bottom: 6px;
-        padding-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
     }
-    .carte-id { font-size: 9pt; color: #555; }
-    .carte-competences { font-size: 9pt; margin: 4px 0; }
-    .carte-barcode { text-align: center; margin-top: 8px; }
-    .carte-ean { font-family: monospace; font-size: 8pt; color: #333; }
+    .carte-barcode svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 14mm;
+    }
+    .carte-ean {
+        font-family: monospace;
+        font-size: 5pt;
+        text-align: center;
+        line-height: 1;
+    }
+    @media print {
+        body { margin: 10mm; }
+        .carte { border: none; }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="carte">
-    <div class="carte-header">
-        Carte Alchimiste / Herboriste<br/>
-        <span class="carte-id">#{{ personnage.id }} - {{ personnage.identity }}</span>
-    </div>
-
-    <div class="carte-competences">
-        {% for competence in competences %}
-            <strong>{{ competence }}</strong><br/>
-        {% endfor %}
-    </div>
-
-    {% if participant and participant.gn %}
-        <div style="font-size: 8pt;">GN : {{ participant.gn.label }}</div>
-    {% endif %}
-
-    {% if participant and participant.groupeGn and participant.groupeGn.groupe %}
-        <div style="font-size: 8pt;">
-            Groupe #{{ participant.groupeGn.groupe.numero }}
-            - {{ participant.groupeGn.groupe.nom }}
-        </div>
-    {% endif %}
-
-    <div class="carte-barcode">
-        {{ barcode|raw }}
-        <div class="carte-ean">{{ ean }}</div>
-    </div>
+    <div class="carte-id">#{{ personnage.identity }}</div>
+    <div class="carte-barcode">{{ barcode|raw }}</div>
+    <div class="carte-ean">{{ ean }}</div>
 </div>
 {% endblock %}
