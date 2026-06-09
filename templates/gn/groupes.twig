@@ -15,22 +15,19 @@
             <h5>{{ groupes|length }} groupes recherche des membres sur {{ gn.label }}</h5>
         </div>
 
-        {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ORGA', app.user) %}
+        {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ORGA', app.user) or is_granted('ROLE_GESTION', app.user) %}
             {% set gameMasterHtml %}
-                Actions (visible uniquement par scénariste ou orga) :
+                Actions (visible uniquement par scénariste, orga ou gestion) :
                 <ul>
-                    <li><a href="{{ path('groupe.add') }}">Ajouter un groupe</a></li>
-                    <li><a href="{{ path('gn.groupes.enveloppes',{'gn': gn.id}) }}">Imprimer les enveloppes</a>
-                    </li>
-                    <li><a href="{{ path('gn.groupes.backgrounds.chefs',{'gn': gn.id}) }}">Imprimer les
-                            backgrounds des chefs
-                            de groupes</a></li>
-                    <li><a href="{{ path('gn.groupes.backgrounds.groupes',{'gn': gn.id}) }}">Imprimer les
-                            backgrounds des
-                            groupes</a></li>
-                    <li><a href="{{ path('gn.groupes.backgrounds.membres',{'gn': gn.id}) }}">Imprimer les
-                            backgrounds des
-                            membres de groupes</a></li>
+                    {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ORGA', app.user) %}
+                        <li><a href="{{ path('groupe.add') }}">Ajouter un groupe</a></li>
+                        <li><a href="{{ path('gn.groupes.enveloppes',{'gn': gn.id}) }}">Imprimer les enveloppes</a></li>
+                        <li><a href="{{ path('cartes.alchimie',{'gn': gn.id}) }}">Imprimer les cartes alchimiste / herboriste</a></li>
+                        <li><a href="{{ path('gn.groupes.backgrounds.chefs',{'gn': gn.id}) }}">Imprimer les backgrounds des chefs de groupes</a></li>
+                        <li><a href="{{ path('gn.groupes.backgrounds.groupes',{'gn': gn.id}) }}">Imprimer les backgrounds des groupes</a></li>
+                        <li><a href="{{ path('gn.groupes.backgrounds.membres',{'gn': gn.id}) }}">Imprimer les backgrounds des membres de groupes</a></li>
+                    {% endif %}
+                    <li><a href="{{ path('all.synthese.enveloppe') }}">Synthèse matériel de tous les groupes (prochain GN)</a></li>
                 </ul>
             {% endset %}
             {% include '_partials/cardNotif.twig' with {'type': 'gamemaster', 'content' : gameMasterHtml} %}
@@ -43,16 +40,22 @@
                     <div class="card-header">
                         <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
                             <h5> {{ groupe.numero }} - {{ groupe.nom }}</h5>
-                            {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ORGA', app.user) %}
+                            {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ORGA', app.user) or is_granted('ROLE_GESTION', app.user) %}
                                 <div class="btn-group" role="group">
+                                    {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ORGA', app.user) %}
+                                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                           title="Modifier"
+                                           href="{{ path('groupeGn.update', {'groupeGn': session.id}) }}"><i
+                                                class="fa fa-edit"></i> Modifier</a>
+                                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                           title="Detail"
+                                           href="{{ path('groupe.detail', {'groupe': groupe.id}) }}"><i
+                                                class="fa fa-eye"></i> Détail</a>
+                                    {% endif %}
                                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                       title="Modifier"
-                                       href="{{ path('groupeGn.update', {'groupeGn': session.id}) }}"><i
-                                            class="fa fa-edit"></i> Modifier</a>
-                                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                       title="Detail"
-                                       href="{{ path('groupe.detail', {'groupe': groupe.id}) }}"><i
-                                            class="fa fa-eye"></i> Détail</a>
+                                       title="Synthèse matériel"
+                                       href="{{ path('synthese.enveloppe', {'groupe': groupe.id}) }}"><i
+                                            class="fa fa-cubes"></i> Synthèse matériel</a>
                                 </div>
                             {% endif %}
                         </div>
