@@ -1723,84 +1723,19 @@ class GroupeController extends AbstractController
     /** @return array<string, int> label => quantite_totale, triés alphabétiquement */
     private function computeSyntheseRessources(Groupe $groupe): array
     {
-        $totals = [];
-
-        foreach ($this->groupeService->getAllRessource($groupe) as $gr) {
-            $label = strip_tags($gr->getRessource()->getLabel());
-            $totals[$label] = ($totals[$label] ?? 0) + $gr->getQuantite();
-        }
-
-        $nextSession = $groupe->getNextSession();
-        if ($nextSession) {
-            foreach ($nextSession->getParticipants() as $participant) {
-                if (!$participant->getPersonnage()) {
-                    continue;
-                }
-                foreach ($this->personnageService->getAllRessource($participant->getPersonnage()) as $pr) {
-                    $label = strip_tags($pr->getRessource()->getLabel());
-                    $totals[$label] = ($totals[$label] ?? 0) + $pr->getNombre();
-                }
-            }
-        }
-
-        ksort($totals, \SORT_STRING | \SORT_FLAG_CASE);
-
-        return $totals;
+        return $this->groupeService->computeSyntheseRessources($groupe, $this->personnageService);
     }
 
     /** @return array<string, int> label => quantite_totale, triés alphabétiquement */
     private function computeSyntheseIngredients(Groupe $groupe): array
     {
-        $totals = [];
-
-        foreach ($this->groupeService->getAllIngredient($groupe) as $gi) {
-            $label = strip_tags($gi->getIngredient()->getLabel());
-            $totals[$label] = ($totals[$label] ?? 0) + $gi->getQuantite();
-        }
-
-        $nextSession = $groupe->getNextSession();
-        if ($nextSession) {
-            foreach ($nextSession->getParticipants() as $participant) {
-                if (!$participant->getPersonnage()) {
-                    continue;
-                }
-                foreach ($this->personnageService->getAllIngredient($participant->getPersonnage()) as $pi) {
-                    $label = strip_tags($pi->getIngredient()->getLabel());
-                    $totals[$label] = ($totals[$label] ?? 0) + $pi->getNombre();
-                }
-            }
-        }
-
-        ksort($totals, \SORT_STRING | \SORT_FLAG_CASE);
-
-        return $totals;
+        return $this->groupeService->computeSyntheseIngredients($groupe, $this->personnageService);
     }
 
     /** @return array{groupe: int, pj: array<string, int>, total: int} */
     private function computeSyntheseRichesse(Groupe $groupe): array
     {
-        $groupeRichesse = $this->groupeService->getAllRichesse($groupe);
-        $pjRichesse = [];
-        $totalPj = 0;
-
-        $nextSession = $groupe->getNextSession();
-        if ($nextSession) {
-            foreach ($nextSession->getParticipants() as $participant) {
-                if (!$participant->getPersonnage()) {
-                    continue;
-                }
-                $r = $this->personnageService->getAllRichesse($participant->getPersonnage());
-                if ($r > 0) {
-                    $pjRichesse[$participant->getPersonnage()->getNom()] = $r;
-                    $totalPj += $r;
-                }
-            }
-        }
-
-        return [
-            'groupe' => $groupeRichesse,
-            'pj' => $pjRichesse,
-            'total' => $groupeRichesse + $totalPj,
-        ];
+        return $this->groupeService->computeSyntheseRichesse($groupe, $this->personnageService);
     }
+
 }

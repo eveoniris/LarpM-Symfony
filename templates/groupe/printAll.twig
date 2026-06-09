@@ -1,5 +1,14 @@
 {% extends "base.print.twig" %}
 
+{% macro popa(pa) %}
+    {%- set po = ((pa - pa % 10) / 10)|round -%}
+    {%- set reste = pa % 10 -%}
+    {%- if po > 0 %}{{ po }} PO{% endif %}
+    {%- if po > 0 and reste > 0 %} {% endif %}
+    {%- if reste > 0 %}{{ reste }} PA{% endif %}
+    {%- if pa == 0 %}0 PA{% endif %}
+{%- endmacro %}
+
 {% block content %}
 
     {% for groupe in groupes %}
@@ -28,12 +37,13 @@
             <ul>
                 {% if groupe.hasRichesse %}
                     {% for territoire in groupe.territoires %}
-                        <li><strong>{{ 3*territoire.richesse }} pièces d'argent</strong> fournies par
+                        {% set pa = 3 * territoire.richesse %}
+                        <li><strong>{{ _self.popa(pa) }}</strong> fournies par
                             <strong>{{ territoire.nom }}</strong></li>
                     {% endfor %}
                 {% endif %}
                 {% if groupe.richesse|default(0) > 0 %}
-                    <li><strong>{{ groupe.richesse|default(0) }} pièces d'argent</strong> supplémentaires</li>
+                    <li><strong>{{ _self.popa(groupe.richesse) }}</strong> supplémentaires</li>
                 {% endif %}
             </ul>
         {% endif %}
@@ -121,6 +131,38 @@
                 <li>{{ groupe.materielRaw }}</li>
             {% endif %}
         </ul>
+
+        {% if syntheseRessources is defined and syntheseRichesse is defined %}
+        <hr/>
+        <strong>Synthèse matériel (groupe + PJ)</strong>
+        <table style="width:100%; border-collapse:collapse; font-size:9pt; margin-top:4px;">
+            <tr>
+                <td style="width:33%; vertical-align:top; padding-right:8px;">
+                    <em>Richesse</em><br/>
+                    {% set richesse = syntheseRichesse[groupe.id] %}
+                    Groupe : {{ _self.popa(richesse.groupe) }}<br/>
+                    {% for nom, montant in richesse.pj %}
+                        {{ nom }} : {{ _self.popa(montant) }}<br/>
+                    {% endfor %}
+                    <strong>Total : {{ _self.popa(richesse.total) }}</strong>
+                </td>
+                <td style="width:33%; vertical-align:top; padding-right:8px;">
+                    <em>Ressources</em><br/>
+                    {% set ressources = syntheseRessources[groupe.id] %}
+                    {% if ressources is empty %}Aucune{% else %}
+                        {% for label, quantite in ressources %}{{ quantite }} {{ label }}<br/>{% endfor %}
+                    {% endif %}
+                </td>
+                <td style="width:33%; vertical-align:top;">
+                    <em>Ingrédients</em><br/>
+                    {% set ingredients = syntheseIngredients[groupe.id] %}
+                    {% if ingredients is empty %}Aucun{% else %}
+                        {% for label, quantite in ingredients %}{{ quantite }} {{ label }}<br/>{% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+        {% endif %}
 
         <hr class="print-page-break"/>
 
