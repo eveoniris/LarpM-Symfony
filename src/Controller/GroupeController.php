@@ -1288,12 +1288,9 @@ class GroupeController extends AbstractController
             return $r;
         }
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('remove', SubmitType::class, [
-                'label' => 'Retirer le territoire',
-            ])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('remove', SubmitType::class, [
+            'label' => 'Retirer le territoire',
+        ])->getForm();
 
         $form->handleRequest($request);
 
@@ -1737,5 +1734,4 @@ class GroupeController extends AbstractController
     {
         return $this->groupeService->computeSyntheseRichesse($groupe, $this->personnageService);
     }
-
 }
