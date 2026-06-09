@@ -872,7 +872,8 @@ class GnController extends AbstractController
     #[Route('/{gn}/groupes/enveloppes', name: 'groupes.enveloppes')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
     public function printAllAction(
-        #[MapEntity] Gn $gn,
+        #[MapEntity]
+        Gn $gn,
         RessourceRepository $ressourceRepository,
         GroupeService $groupeService,
         PersonnageService $personnageService,
