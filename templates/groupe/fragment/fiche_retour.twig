@@ -90,7 +90,7 @@
 
                 <div class="text-muted small mt-1">
                     Soumis le : {{ ficheRetour.submittedAt ? ficheRetour.submittedAt|date('d/m/Y H:i') : 'N/A' }}
-                    — Dernière modification : {{ ficheRetour.updatedAt|date('d/m/Y H:i') }}
+                    - Dernière modification : {{ ficheRetour.updatedAt|date('d/m/Y H:i') }}
                     {% if ficheRetour.updatedBy %}par {{ ficheRetour.updatedBy.username }}{% endif %}
                 </div>
             {% endif %}

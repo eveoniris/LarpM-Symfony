@@ -101,7 +101,7 @@ class GroupeServiceTest extends KernelTestCase
     }
 
     // -------------------------------------------------------------------------
-    // isUserIsGroupeGnResponsable — no security context (null user)
+    // isUserIsGroupeGnResponsable - no security context (null user)
     // -------------------------------------------------------------------------
 
     public function testIsUserIsGroupeGnResponsableReturnsFalseWithoutSecurityContext(): void
@@ -110,7 +110,7 @@ class GroupeServiceTest extends KernelTestCase
     }
 
     // -------------------------------------------------------------------------
-    // getUserLastGroupeGn — no security context (null user)
+    // getUserLastGroupeGn - no security context (null user)
     // -------------------------------------------------------------------------
 
     public function testGetUserLastGroupeGnReturnsNullWithoutSecurityContext(): void
@@ -119,7 +119,7 @@ class GroupeServiceTest extends KernelTestCase
     }
 
     // -------------------------------------------------------------------------
-    // getUserGroupeGns — no security context (null user)
+    // getUserGroupeGns - no security context (null user)
     // -------------------------------------------------------------------------
 
     public function testGetUserGroupeGnsReturnsEmptyArrayWithoutSecurityContext(): void
@@ -128,7 +128,7 @@ class GroupeServiceTest extends KernelTestCase
     }
 
     // -------------------------------------------------------------------------
-    // isUserIsGroupeMember — no security context (null user)
+    // isUserIsGroupeMember - no security context (null user)
     // -------------------------------------------------------------------------
 
     public function testIsUserIsGroupeMemberReturnsFalseWithoutSecurityContext(): void

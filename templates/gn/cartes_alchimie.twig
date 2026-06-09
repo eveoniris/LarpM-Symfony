@@ -49,7 +49,7 @@
 
 {% block content %}
 <div class="page-title noprint">
-    Cartes Alchimiste/Herboriste — {{ gn.label }}
+    Cartes Alchimiste/Herboriste - {{ gn.label }}
     ({{ cartes|length }} carte(s))
 </div>
 
@@ -64,7 +64,7 @@
                 <div class="carte-header">
                     Alchimiste / Herboriste<br/>
                     <span class="carte-id">
-                        #{{ personnage.id }} — {{ personnage.nom }}
+                        #{{ personnage.id }} - {{ personnage.nom }}
                         {% if personnage.surnom %}({{ personnage.surnom }}){% endif %}
                     </span>
                 </div>
@@ -78,7 +78,7 @@
                 {% if participant.groupeGn and participant.groupeGn.groupe %}
                     <div class="carte-info">
                         Groupe #{{ participant.groupeGn.groupe.numero }}
-                        — {{ participant.groupeGn.groupe.nom }}
+                        - {{ participant.groupeGn.groupe.nom }}
                     </div>
                 {% endif %}
 
