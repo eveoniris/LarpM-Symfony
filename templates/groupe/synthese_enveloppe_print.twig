@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>LarpManager — Synthèses ressources enveloppes</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; }
+        h2 { font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #333; padding-bottom: 4px; }
+        h3 { font-size: 13px; margin: 8px 0 4px; }
+        .groupe-block { page-break-after: always; margin-bottom: 20px; }
+        .groupe-block:last-child { page-break-after: auto; }
+        .cols { display: flex; gap: 20px; }
+        .col { flex: 1; }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 2px 4px; border-bottom: 1px solid #eee; }
+        td:last-child { text-align: right; font-weight: bold; }
+        .total-row td { border-top: 2px solid #333; font-weight: bold; }
+        .section-title { background: #f0f0f0; padding: 3px 6px; font-weight: bold; margin-top: 8px; }
+    </style>
+</head>
+<body>
+{% for groupe in groupes %}
+<div class="groupe-block">
+    <h2>#{{ groupe.numero }} — {{ groupe.nom }}</h2>
+
+    <div class="cols">
+        <div class="col">
+            <div class="section-title">Richesse</div>
+            <table>
+                {% set richesse = syntheseRichesse[groupe.id] %}
+                <tr><td>Groupe</td><td>{{ richesse.groupe }} PA</td></tr>
+                {% for nom, montant in richesse.pj %}
+                <tr><td>{{ nom }}</td><td>{{ montant }} PA</td></tr>
+                {% endfor %}
+                <tr class="total-row"><td>TOTAL</td><td>{{ richesse.total }} PA</td></tr>
+            </table>
+        </div>
+
+        <div class="col">
+            <div class="section-title">Ressources</div>
+            {% set ressources = syntheseRessources[groupe.id] %}
+            {% if ressources is empty %}
+                <p>Aucune</p>
+            {% else %}
+            <table>
+                {% for label, quantite in ressources %}
+                <tr><td>{{ label }}</td><td>{{ quantite }}</td></tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+        </div>
+
+        <div class="col">
+            <div class="section-title">Ingrédients</div>
+            {% set ingredients = syntheseIngredients[groupe.id] %}
+            {% if ingredients is empty %}
+                <p>Aucun</p>
+            {% else %}
+            <table>
+                {% for label, quantite in ingredients %}
+                <tr><td>{{ label }}</td><td>{{ quantite }}</td></tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% else %}
+<p>Aucun groupe inscrit pour le prochain GN.</p>
+{% endfor %}
+</body>
+</html>

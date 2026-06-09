@@ -1,0 +1,29 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Retour joueur — #{{ participant.id }}{% endblock %}
+
+{% block body %}
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': participant.gn.label, 'route': path('gn.detail', {'gn': participant.gn.id})},
+        {'name': 'Participants', 'route': path('gn.participants', {'gn': participant.gn.id, 'participant': participant.id})},
+        {'name': 'Détail', 'route': path('participant.admin.detail', {'participant': participant.id})},
+        {'name': 'Retour joueur'},
+    ]} %}
+
+    <div class="container mt-3">
+        <h2>Retour joueur</h2>
+        {% if participant.personnage %}
+            <p>
+                <strong>#{{ participant.personnage.id }}</strong>
+                — {{ participant.personnage.identity }}
+                {% if participant.user %}
+                    ({{ participant.user.etatCivil.prenom }} {{ participant.user.etatCivil.nom }})
+                {% endif %}
+            </p>
+        {% endif %}
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

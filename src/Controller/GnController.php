@@ -20,11 +20,12 @@ use App\Repository\GroupeGnRepository;
 use App\Repository\LangueRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageRepository;
-use App\Repository\UserRepository;
 use App\Repository\PersonnageSecondaireRepository;
 use App\Repository\QuestionRepository;
 use App\Repository\RessourceRepository;
+use App\Repository\UserRepository;
 use App\Security\MultiRolesExpression;
+use App\Service\CarteAlchimisteService;
 use App\Service\FicheRetourGroupeImportService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
@@ -930,6 +931,22 @@ class GnController extends AbstractController
             'gn' => $gn,
             'participants' => $participants,
             'quetes' => $quetes,
+        ]);
+    }
+
+    /**
+     * Impression batch des cartes alchimiste/herboriste pour un GN.
+     */
+    #[Route('/{gn}/cartes-alchimie', name: 'cartes.alchimie')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
+    public function cartesAlchimieAction(
+        #[MapEntity]
+        Gn $gn,
+        CarteAlchimisteService $carteAlchimisteService,
+    ): Response {
+        return $this->render('gn/cartes_alchimie.twig', [
+            'gn' => $gn,
+            'cartes' => $carteAlchimisteService->getCartesForGn($gn),
         ]);
     }
 

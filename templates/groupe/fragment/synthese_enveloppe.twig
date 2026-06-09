@@ -1,0 +1,82 @@
+<h5 class="mt-3">Synthèse des ressources — Cumul groupe + PJ</h5>
+<blockquote>Total de toutes les ressources et ingrédients à préparer pour l'enveloppe de groupe (groupe + personnages du prochain GN), triés alphabétiquement.</blockquote>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header"><strong>Richesse totale</strong></div>
+            <div class="card-body p-2">
+                <table class="table table-sm mb-0">
+                    <tbody>
+                        <tr>
+                            <td>Groupe</td>
+                            <td class="text-end"><strong>{{ syntheseRichesse.groupe }}</strong> PA</td>
+                        </tr>
+                        {% for nom, montant in syntheseRichesse.pj %}
+                        <tr>
+                            <td>{{ nom }}</td>
+                            <td class="text-end">{{ montant }} PA</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="table-primary">
+                            <td><strong>TOTAL</strong></td>
+                            <td class="text-end"><strong>{{ syntheseRichesse.total }} PA</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header"><strong>Ressources</strong> ({{ syntheseRessources|length }})</div>
+            <div class="card-body p-2">
+                {% if syntheseRessources is empty %}
+                    <p class="text-muted mb-0">Aucune ressource</p>
+                {% else %}
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            {% for label, quantite in syntheseRessources %}
+                            <tr>
+                                <td>{{ label }}</td>
+                                <td class="text-end"><strong>{{ quantite }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header"><strong>Ingrédients</strong> ({{ syntheseIngredients|length }})</div>
+            <div class="card-body p-2">
+                {% if syntheseIngredients is empty %}
+                    <p class="text-muted mb-0">Aucun ingrédient</p>
+                {% else %}
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            {% for label, quantite in syntheseIngredients %}
+                            <tr>
+                                <td>{{ label }}</td>
+                                <td class="text-end"><strong>{{ quantite }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex gap-2 mb-3">
+    <a href="{{ path('groupe.synthese.enveloppe', {'groupe': groupe.id}) }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+        <i class="fa fa-print"></i> Imprimer la synthèse
+    </a>
+</div>
+
+<hr/>

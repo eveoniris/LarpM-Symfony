@@ -20,6 +20,19 @@
     {% set participant = personnage.lastParticipant %}
 {% endif %}
 
+{# Groupe actuel et précédent #}
+{% if participant and participant.groupeGn and participant.groupeGn.groupe %}
+    {% set currentGroupe = participant.groupeGn.groupe %}
+    {% set previousParticipant = personnage.previousParticipant %}
+    {% set previousGroupe = previousParticipant and previousParticipant.groupeGn ? previousParticipant.groupeGn.groupe : null %}
+    <strong>Groupe :</strong>
+    #{{ currentGroupe.numero }} — {{ currentGroupe.nom }}<br/>
+    {% if previousGroupe and previousGroupe.id != currentGroupe.id %}
+        <span class="text-warning"><strong>&#9888; Ancien groupe :</strong>
+        #{{ previousGroupe.numero }} — {{ previousGroupe.nom }}</span><br/>
+    {% endif %}
+{% endif %}
+
 {% set participantHasRestaurations = participant.participantHasRestaurations|default({}) %}
 {% if participantHasRestaurations %}
     <strong>Restauration</strong>
@@ -36,8 +49,10 @@
     </ul>
 {% endif %}
 
-{% if personnageService.allRenomme(personnage)|default(0) > 4 %}
-    <strong>Renommée :</strong> {{ personnageService.allRenomme(personnage)|default(0) }}<br/>
+{% set renommeScore = personnageService.allRenomme(personnage)|default(0) %}
+{% if renommeScore > 0 %}
+    <strong>Renommée :</strong> {{ renommeScore }}
+    ({{ renomme_broche(renommeScore) }})<br/>
 {% endif %}
 
     {% if personnage.richesse|default(0) > 0 %}
@@ -131,6 +146,15 @@
             {% for personnageRessource in personnageService.allRessource(personnage) %}
                 <li>{{ personnageRessource.nombre }} {{ personnageRessource.ressource }}</li>
             {% endfor %}
+        </ul>
+    {% endif %}
+
+    {# Carte alchimiste / herboriste #}
+    {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::ALCHEMY'))
+       or personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::HERBALISM')) %}
+        <strong>Carte Alchimiste / Herboriste</strong>
+        <ul>
+            <li>1 carte EAN-13 à inclure dans l'enveloppe</li>
         </ul>
     {% endif %}
 

@@ -1,0 +1,100 @@
+{% extends "base.print.twig" %}
+
+{% block title %}Cartes Alchimiste/Herboriste - {{ gn.label }}{% endblock %}
+
+{% block style %}
+<style>
+    body { font-family: sans-serif; font-size: 10pt; margin: 0; padding: 4mm; }
+    .page-title {
+        text-align: center;
+        font-size: 12pt;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    .grille {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4mm;
+    }
+    .carte {
+        width: 63mm;
+        min-height: 88mm;
+        border: 1px dashed #aaa;
+        border-radius: 3px;
+        padding: 6px;
+        box-sizing: border-box;
+        page-break-inside: avoid;
+        background: #fff;
+    }
+    .carte-header {
+        text-align: center;
+        font-weight: bold;
+        font-size: 8pt;
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 4px;
+        padding-bottom: 3px;
+    }
+    .carte-id { font-size: 7pt; color: #555; }
+    .carte-competences { font-size: 8pt; margin: 3px 0; }
+    .carte-info { font-size: 7pt; color: #444; margin: 2px 0; }
+    .carte-barcode { text-align: center; margin-top: 6px; }
+    .carte-ean { font-family: monospace; font-size: 7pt; color: #333; }
+    .no-cartes { text-align: center; padding: 20px; color: #666; }
+    @media print {
+        .page-title { display: none; }
+        body { padding: 2mm; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-title noprint">
+    Cartes Alchimiste/Herboriste — {{ gn.label }}
+    ({{ cartes|length }} carte(s))
+</div>
+
+{% if cartes is empty %}
+    <div class="no-cartes">Aucun alchimiste ou herboriste inscrit à ce GN.</div>
+{% else %}
+    <div class="grille">
+        {% for carte in cartes %}
+            {% set personnage = carte.participant.personnage %}
+            {% set participant = carte.participant %}
+            <div class="carte">
+                <div class="carte-header">
+                    Alchimiste / Herboriste<br/>
+                    <span class="carte-id">
+                        #{{ personnage.id }} — {{ personnage.nom }}
+                        {% if personnage.surnom %}({{ personnage.surnom }}){% endif %}
+                    </span>
+                </div>
+
+                <div class="carte-competences">
+                    {% for competence in carte.competences %}
+                        <strong>{{ competence }}</strong><br/>
+                    {% endfor %}
+                </div>
+
+                {% if participant.groupeGn and participant.groupeGn.groupe %}
+                    <div class="carte-info">
+                        Groupe #{{ participant.groupeGn.groupe.numero }}
+                        — {{ participant.groupeGn.groupe.nom }}
+                    </div>
+                {% endif %}
+
+                {% if personnage.user %}
+                    <div class="carte-info">
+                        {{ personnage.user.etatCivil.prenom }}
+                        {{ personnage.user.etatCivil.nom }}
+                    </div>
+                {% endif %}
+
+                <div class="carte-barcode">
+                    {{ carte.barcode|raw }}
+                    <div class="carte-ean">{{ carte.ean }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

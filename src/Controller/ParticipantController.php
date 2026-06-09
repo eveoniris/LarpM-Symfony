@@ -40,6 +40,7 @@ use App\Form\MessageType;
 use App\Form\Participant\ParticipantGroupeType;
 use App\Form\Participant\ParticipantNewType;
 use App\Form\Participant\ParticipantRemoveType;
+use App\Form\Participant\ParticipantRetourType;
 use App\Form\ParticipantBilletType;
 use App\Form\ParticipantPersonnageSecondaireType;
 use App\Form\ParticipantRestaurationType;
@@ -54,6 +55,7 @@ use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageSecondaireRepository;
 use App\Repository\SecondaryGroupRepository;
 use App\Security\MultiRolesExpression;
+use App\Service\CarteAlchimisteService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use DateTime;
@@ -120,6 +122,41 @@ class ParticipantController extends AbstractController
             'participant' => $participant,
             'gn' => $participant->getGn(),
             'groupeGn' => $participant->getGroupeGn(),
+        ]);
+    }
+
+    /**
+     * Saisie du retour joueur par le PC Joueur (cases à cocher).
+     */
+    #[Route('/participant/{participant}/retour', name: 'participant.retour')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE, Role::GESTION))]
+    public function retourAction(
+        Request $request,
+        #[MapEntity]
+        Participant $participant,
+        EntityManagerInterface $entityManager,
+        CarteAlchimisteService $carteAlchimisteService,
+    ): RedirectResponse|Response {
+        $personnage = $participant->getPersonnage();
+        $hasAlchimie = $personnage && $carteAlchimisteService->hasCarteAlchimisteCompetence($personnage);
+        $hasPreviousGn = $personnage && $personnage->getPreviousParticipant() !== null;
+
+        $form = $this->createForm(ParticipantRetourType::class, $participant, [
+            'has_alchimie' => $hasAlchimie,
+            'has_previous_gn' => $hasPreviousGn,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'Retour joueur enregistré.');
+
+            return $this->redirectToRoute('participant.admin.detail', ['participant' => $participant->getId()]);
+        }
+
+        return $this->render('participant/retour.twig', [
+            'participant' => $participant,
+            'form' => $form->createView(),
         ]);
     }
 
