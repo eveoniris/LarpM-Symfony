@@ -40,7 +40,7 @@ class CompetenceAchatTest extends WebTestCase
         $client->request('GET', '/personnage/' . $personnage->getId() . '/competence/' . $competence->getId() . '/document');
 
         // Controller redirects with flash error: "Vous ne connaissez pas cette compétence !"
-        self::assertResponseRedirects('/personnage/' . $personnage->getId());
+        static::assertResponseRedirects('/personnage/' . $personnage->getId());
     }
 
     // -------------------------------------------------------------------------
@@ -62,7 +62,7 @@ class CompetenceAchatTest extends WebTestCase
         $client->loginUser($user);
 
         $crawler = $client->request('GET', '/personnage/' . $personnage->getId() . '/competence/add');
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         // The form field name is "form[id]" (built via createFormBuilder with name "form")
         // The choice value for a competence is its ID
@@ -74,13 +74,13 @@ class CompetenceAchatTest extends WebTestCase
         $client->submit($form);
 
         // On success the controller redirects to the personnage detail page
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
 
         // XP should have been deducted - use find() after clear() to get fresh DB state
         $personnageId = $personnage->getId();
         $em->clear();
         $fresh = $em->find(\App\Entity\Personnage::class, $personnageId);
-        self::assertLessThan(1000, $fresh->getXp());
+        static::assertLessThan(1000, $fresh->getXp());
     }
 
     public function testPlayerWithInsufficientXpCannotBuyCompetence(): void
@@ -97,7 +97,7 @@ class CompetenceAchatTest extends WebTestCase
         $client->loginUser($user);
 
         $crawler = $client->request('GET', '/personnage/' . $personnage->getId() . '/competence/add');
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         $form = $crawler
             ->selectButton('Ajouter la compétence')
@@ -107,13 +107,13 @@ class CompetenceAchatTest extends WebTestCase
         $client->submit($form);
 
         // Controller re-renders the form (200) without deducting XP on failure
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         // XP must remain at 0 - no deduction on failure
         $personnageId = $personnage->getId();
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $em->clear();
         $fresh = $em->find(\App\Entity\Personnage::class, $personnageId);
-        self::assertSame(0, $fresh->getXp());
+        static::assertSame(0, $fresh->getXp());
     }
 }

@@ -45,7 +45,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         ]);
         $personnage = PersonnageFactory::createOne();
 
-        self::assertTrue($this->personnageService->isBonusEffective($personnage, $bonus));
+        static::assertTrue($this->personnageService->isBonusEffective($personnage, $bonus));
     }
 
     public function testBonusWithUnmetCompetenceConditionIsNotEffective(): void
@@ -60,7 +60,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         ]);
         $personnage = PersonnageFactory::createOne();
 
-        self::assertFalse($this->personnageService->isBonusEffective($personnage, $bonus));
+        static::assertFalse($this->personnageService->isBonusEffective($personnage, $bonus));
     }
 
     public function testBonusWithMetCompetenceConditionIsEffective(): void
@@ -77,7 +77,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $competence->addPersonnage($personnage);
         $this->em->flush();
 
-        self::assertTrue($this->personnageService->isBonusEffective($personnage, $bonus));
+        static::assertTrue($this->personnageService->isBonusEffective($personnage, $bonus));
     }
 
     public function testBonusWithRootConditionNotMetIsNotEffective(): void
@@ -93,7 +93,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         ]);
         $personnage = PersonnageFactory::createOne();
 
-        self::assertFalse($this->personnageService->isBonusEffective($personnage, $bonus));
+        static::assertFalse($this->personnageService->isBonusEffective($personnage, $bonus));
     }
 
     public function testBonusWithRootConditionMetIsEffective(): void
@@ -111,7 +111,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $competence->addPersonnage($personnage);
         $this->em->flush();
 
-        self::assertTrue($this->personnageService->isBonusEffective($personnage, $bonus));
+        static::assertTrue($this->personnageService->isBonusEffective($personnage, $bonus));
     }
 
     // ── getEffectivePersonnagesForBonus ───────────────────────────────────────
@@ -143,8 +143,8 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $result = $this->personnageService->getEffectivePersonnagesForBonus($bonus);
         $ids = array_map(static fn ($p) => $p->getId(), $result);
 
-        self::assertContains($p1->getId(), $ids);
-        self::assertContains($p2->getId(), $ids);
+        static::assertContains($p1->getId(), $ids);
+        static::assertContains($p2->getId(), $ids);
     }
 
     public function testGroupeBonusWithUnmetConditionExcludesPersonnage(): void
@@ -178,8 +178,8 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $result = $this->personnageService->getEffectivePersonnagesForBonus($bonus);
         $ids = array_map(static fn ($p) => $p->getId(), $result);
 
-        self::assertContains($pWith->getId(), $ids);
-        self::assertNotContains($pWithout->getId(), $ids);
+        static::assertContains($pWith->getId(), $ids);
+        static::assertNotContains($pWithout->getId(), $ids);
     }
 
     public function testDirectPersonnageBonusIsIncluded(): void
@@ -204,7 +204,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $result = $this->personnageService->getEffectivePersonnagesForBonus($bonus);
         $ids = array_map(static fn ($p) => $p->getId(), $result);
 
-        self::assertContains($personnage->getId(), $ids);
+        static::assertContains($personnage->getId(), $ids);
     }
 
     public function testPersonnageIsNotDuplicatedWhenInMultipleSources(): void
@@ -238,7 +238,7 @@ class PersonnageBonusEffectiveTest extends KernelTestCase
         $ids = array_map(static fn ($p) => $p->getId(), $result);
         $uniqueIds = array_unique($ids);
 
-        self::assertSame(count($uniqueIds), count($ids), 'Personnage should not appear twice');
-        self::assertContains($personnage->getId(), $ids);
+        static::assertSame(count($uniqueIds), count($ids), 'Personnage should not appear twice');
+        static::assertContains($personnage->getId(), $ids);
     }
 }

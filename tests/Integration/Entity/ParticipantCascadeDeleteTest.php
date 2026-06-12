@@ -71,9 +71,9 @@ class ParticipantCascadeDeleteTest extends KernelTestCase
         $this->em->flush();
 
         // Participant is gone
-        self::assertNull($this->em->find(Participant::class, $participantId));
+        static::assertNull($this->em->find(Participant::class, $participantId));
 
         // QrCodeScanLog is gone via cascade
-        self::assertNull($this->em->find(QrCodeScanLog::class, $logId));
+        static::assertNull($this->em->find(QrCodeScanLog::class, $logId));
     }
 }

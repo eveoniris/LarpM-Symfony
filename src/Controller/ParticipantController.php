@@ -244,7 +244,7 @@ class ParticipantController extends AbstractController
             }
 
             // Ajout des langues en fonction de l'origine du personnage
-            $langue = $personnage->getOrigine()->getLangue();
+            $langue = $personnage->getOrigine()?->getLangue();
             if ($langue) {
                 $personnageLangue = new PersonnageLangues();
                 $personnageLangue->setPersonnage($personnage);
@@ -254,7 +254,7 @@ class ParticipantController extends AbstractController
             }
 
             // Ajout des langues secondaires lié à l'origine du personnage
-            foreach ($personnage->getOrigine()->getLangues() as $langue) {
+            foreach ($personnage->getOrigine()?->getLangues() ?? [] as $langue) {
                 if ($personnage->isKnownLanguage($langue)) {
                     continue;
                 }
@@ -1262,7 +1262,7 @@ class ParticipantController extends AbstractController
             }
 
             // Ajout des langues en fonction de l'origine du personnage
-            $langue = $personnage->getOrigine()->getLangue();
+            $langue = $personnage->getOrigine()?->getLangue();
             if ($langue) {
                 $personnageLangue = new PersonnageLangues();
                 $personnageLangue->setPersonnage($personnage);
@@ -1272,7 +1272,7 @@ class ParticipantController extends AbstractController
             }
 
             // Ajout des langues secondaires lié à l'origine du personnage
-            foreach ($personnage->getOrigine()->getLangues() as $langue) {
+            foreach ($personnage->getOrigine()?->getLangues() ?? [] as $langue) {
                 if ($personnage->isKnownLanguage($langue)) {
                     continue;
                 }

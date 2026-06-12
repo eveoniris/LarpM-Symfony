@@ -38,7 +38,7 @@ class ReligionTest extends WebTestCase
         $client->loginUser($user);
 
         $crawler = $client->request('GET', '/personnage/' . $personnage->getId() . '/addReligion');
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         // Pick the first available religion option value from the rendered select
         $firstOptionValue = $crawler->filter('select[name="personnage_religion[religion]"] option')->first()->attr('value');
@@ -51,7 +51,7 @@ class ReligionTest extends WebTestCase
             ]);
         $client->submit($form);
 
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 
     public function testFanatiqueCannotAddAnotherReligion(): void
@@ -77,7 +77,7 @@ class ReligionTest extends WebTestCase
         $client->request('GET', '/personnage/' . $personnage->getId() . '/addReligion');
 
         // Controller immediately redirects with error for fanatique personnage
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 
     public function testCannotAddSecondFerventReligion(): void
@@ -104,7 +104,7 @@ class ReligionTest extends WebTestCase
 
         // religion2 should appear as available (religion1 is already practiced)
         $crawler = $client->request('GET', '/personnage/' . $personnage->getId() . '/addReligion');
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         $firstOptionValue = $crawler->filter('select[name="personnage_religion[religion]"] option')->first()->attr('value');
 
@@ -118,6 +118,6 @@ class ReligionTest extends WebTestCase
         $client->submit($form);
 
         // Controller redirects with error: already fervent of another religion
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 }

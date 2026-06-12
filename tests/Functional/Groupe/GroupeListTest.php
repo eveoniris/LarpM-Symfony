@@ -29,7 +29,7 @@ class GroupeListTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/groupe');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testUserCannotAccessGroupeList(): void
@@ -41,7 +41,7 @@ class GroupeListTest extends WebTestCase
         $client->request('GET', '/groupe');
 
         // ROLE_SCENARISTE required - app redirects to /access_denied
-        self::assertResponseRedirects('/access_denied');
+        static::assertResponseRedirects('/access_denied');
     }
 
     public function testAnonymousIsRedirectedToLogin(): void
@@ -49,7 +49,7 @@ class GroupeListTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/groupe');
 
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 
     public function testGroupeListRendersWithoutHydrationError(): void
@@ -63,8 +63,8 @@ class GroupeListTest extends WebTestCase
         $client->loginUser($user);
         $crawler = $client->request('GET', '/groupe');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
         // Page must not show a Twig "Undefined array key" or similar error
-        self::assertSelectorNotExists('.alert-danger');
+        static::assertSelectorNotExists('.alert-danger');
     }
 }

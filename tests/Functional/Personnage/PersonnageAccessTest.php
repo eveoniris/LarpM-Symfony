@@ -29,7 +29,7 @@ class PersonnageAccessTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/personnage/' . $personnage->getId());
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testPlayerCannotViewAnotherPlayerPersonnage(): void
@@ -44,7 +44,7 @@ class PersonnageAccessTest extends WebTestCase
         $client->loginUser($viewer);
         $client->request('GET', '/personnage/' . $personnage->getId());
 
-        self::assertResponseRedirects('/access_denied');
+        static::assertResponseRedirects('/access_denied');
     }
 
     public function testScenaristeCanViewAnyPersonnage(): void
@@ -59,7 +59,7 @@ class PersonnageAccessTest extends WebTestCase
         $client->loginUser($scenariste);
         $client->request('GET', '/personnage/' . $personnage->getId());
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testAnonymousIsRedirectedToLogin(): void
@@ -71,7 +71,7 @@ class PersonnageAccessTest extends WebTestCase
 
         $client->request('GET', '/personnage/' . $personnage->getId());
 
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 
     public function testDetailAliasRouteWorks(): void
@@ -85,6 +85,6 @@ class PersonnageAccessTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/personnage/' . $personnage->getId() . '/detail');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 }

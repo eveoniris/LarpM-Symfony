@@ -55,8 +55,7 @@ final class CarteAlchimisteService
      */
     public function hasCarteAlchimisteCompetence(Personnage $personnage): bool
     {
-        return $personnage->hasCompetence(CompetenceFamilyType::ALCHEMY)
-            || $personnage->hasCompetence(CompetenceFamilyType::HERBALISM);
+        return $personnage->hasCompetence(CompetenceFamilyType::ALCHEMY) || $personnage->hasCompetence(CompetenceFamilyType::HERBALISM);
     }
 
     /**
@@ -118,7 +117,7 @@ final class CarteAlchimisteService
         $sum = 0;
         for ($i = 0; $i < 12; ++$i) {
             $digit = (int) $twelvedigits[$i];
-            $sum += ($i % 2 === 0) ? $digit : $digit * 3;
+            $sum += ($i % 2) === 0 ? $digit : $digit * 3;
         }
         $check = (10 - ($sum % 10)) % 10;
 

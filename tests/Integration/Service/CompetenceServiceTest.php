@@ -49,8 +49,8 @@ class CompetenceServiceTest extends KernelTestCase
 
         $service = $this->competenceService->init($personnage, $competence);
 
-        self::assertTrue($service->canLearn(5));
-        self::assertFalse($service->hasErrors());
+        static::assertTrue($service->canLearn(5));
+        static::assertFalse($service->hasErrors());
     }
 
     public function testCanLearnReturnsFalseWhenXpInsufficient(): void
@@ -62,10 +62,10 @@ class CompetenceServiceTest extends KernelTestCase
 
         $service = $this->competenceService->init($personnage, $competence);
 
-        self::assertFalse($service->canLearn(10));
-        self::assertTrue($service->hasErrors());
+        static::assertFalse($service->canLearn(10));
+        static::assertTrue($service->hasErrors());
         $errors = $service->getErrors();
-        self::assertArrayHasKey(CompetenceService::ERR_CODE_XP, $errors);
+        static::assertArrayHasKey(CompetenceService::ERR_CODE_XP, $errors);
     }
 
     public function testCanLearnTrueForCostZeroEvenWithNegativeXp(): void
@@ -77,8 +77,8 @@ class CompetenceServiceTest extends KernelTestCase
 
         $service = $this->competenceService->init($personnage, $competence);
 
-        self::assertTrue($service->canLearn(0));
-        self::assertFalse($service->hasErrors());
+        static::assertTrue($service->canLearn(0));
+        static::assertFalse($service->hasErrors());
     }
 
     public function testAddCompetenceDecrementsXp(): void
@@ -91,10 +91,10 @@ class CompetenceServiceTest extends KernelTestCase
         $service = $this->competenceService->init($personnage, $competence);
         $service->addCompetence(5);
 
-        self::assertFalse($service->hasErrors());
+        static::assertFalse($service->hasErrors());
 
         $this->entityManager->refresh($personnage);
-        self::assertSame(45, $personnage->getXp());
+        static::assertSame(45, $personnage->getXp());
     }
 
     public function testAddCompetenceCreatesExperienceUsageRecord(): void
@@ -109,8 +109,8 @@ class CompetenceServiceTest extends KernelTestCase
 
         $usages = $this->entityManager->getRepository(ExperienceUsage::class)->findBy(['personnage' => $personnage]);
 
-        self::assertCount(1, $usages);
-        self::assertSame(5, $usages[0]->getXpUse());
+        static::assertCount(1, $usages);
+        static::assertSame(5, $usages[0]->getXpUse());
     }
 
     public function testAddCompetenceLinksCompetenceToPersonnage(): void
@@ -123,10 +123,10 @@ class CompetenceServiceTest extends KernelTestCase
         $service = $this->competenceService->init($personnage, $competence);
         $service->addCompetence(5);
 
-        self::assertFalse($service->hasErrors());
+        static::assertFalse($service->hasErrors());
 
         $this->entityManager->refresh($personnage);
-        self::assertTrue($personnage->getCompetences()->contains($competence));
+        static::assertTrue($personnage->getCompetences()->contains($competence));
     }
 
     // -------------------------------------------------------------------------
@@ -151,7 +151,7 @@ class CompetenceServiceTest extends KernelTestCase
 
         $service = $this->competenceService->init($personnage, $competence);
 
-        self::assertSame(0, $service->getCompetenceCout());
+        static::assertSame(0, $service->getCompetenceCout());
     }
 
     public function testCostIsCoutFavoriForFavoriteFamily(): void
@@ -173,7 +173,7 @@ class CompetenceServiceTest extends KernelTestCase
 
         $service = $this->competenceService->init($personnage, $competence);
 
-        self::assertSame(3, $service->getCompetenceCout());
+        static::assertSame(3, $service->getCompetenceCout());
     }
 
     public function testCostIsCoutForNormaleFamily(): void
@@ -195,7 +195,7 @@ class CompetenceServiceTest extends KernelTestCase
 
         $service = $this->competenceService->init($personnage, $competence);
 
-        self::assertSame(6, $service->getCompetenceCout());
+        static::assertSame(6, $service->getCompetenceCout());
     }
 
     public function testCostIsCoutMeconnuForUnknownFamily(): void
@@ -215,7 +215,7 @@ class CompetenceServiceTest extends KernelTestCase
 
         $service = $this->competenceService->init($personnage, $competence);
 
-        self::assertSame(9, $service->getCompetenceCout());
+        static::assertSame(9, $service->getCompetenceCout());
     }
 
     public function testCostIsFlooredAtZero(): void
@@ -239,7 +239,7 @@ class CompetenceServiceTest extends KernelTestCase
 
         $service = $this->competenceService->init($personnage, $competence);
 
-        self::assertGreaterThanOrEqual(0, $service->getCompetenceCout());
+        static::assertGreaterThanOrEqual(0, $service->getCompetenceCout());
     }
 
     // -------------------------------------------------------------------------
@@ -261,7 +261,7 @@ class CompetenceServiceTest extends KernelTestCase
 
         $this->entityManager->refresh($personnage);
         // giveXP(5, ...) adds 5 to current xp: 45 + 5 = 50
-        self::assertSame(50, $personnage->getXp());
+        static::assertSame(50, $personnage->getXp());
     }
 
     public function testRemoveCompetenceCreatesExperienceGainRecord(): void
@@ -278,7 +278,7 @@ class CompetenceServiceTest extends KernelTestCase
 
         $gains = $this->entityManager->getRepository(ExperienceGain::class)->findBy(['personnage' => $personnage]);
 
-        self::assertCount(1, $gains);
-        self::assertSame(7, $gains[0]->getXpGain());
+        static::assertCount(1, $gains);
+        static::assertSame(7, $gains[0]->getXpGain());
     }
 }

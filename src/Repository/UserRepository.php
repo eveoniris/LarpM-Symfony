@@ -59,10 +59,7 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
 
-        $existingAliases = array_map(
-            static fn ($join) => $join->getAlias(),
-            array_merge(...array_values($query->getDQLPart('join') ?: [[]]))
-        );
+        $existingAliases = array_map(static fn ($join) => $join->getAlias(), array_merge(...array_values($query->getDQLPart('join') ?: [[]])));
         if (!in_array('etatCivil', $existingAliases, true)) {
             $query->join($alias . '.etatCivil', 'etatCivil');
         }
@@ -200,15 +197,17 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         $rsm->addScalarResult('nom', 'nom', 'string');
         $rsm->addScalarResult('email', 'email', 'string');
 
-        return $this->getEntityManager()->createNativeQuery(<<<SQL
-            SELECT DISTINCT ec.prenom, ec.nom, u.email
-            FROM participant p
-            JOIN `user` u ON u.id = p.user_id
-            LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
-            WHERE p.gn_id = :gnId
-              AND JSON_CONTAINS(u.roles, :role)
-            ORDER BY ec.nom, ec.prenom
-            SQL, $rsm)
+        return $this
+            ->getEntityManager()
+            ->createNativeQuery(<<<SQL
+                SELECT DISTINCT ec.prenom, ec.nom, u.email
+                FROM participant p
+                JOIN `user` u ON u.id = p.user_id
+                LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
+                WHERE p.gn_id = :gnId
+                  AND JSON_CONTAINS(u.roles, :role)
+                ORDER BY ec.nom, ec.prenom
+                SQL, $rsm)
             ->setParameter('gnId', $gn->getId())
             ->setParameter('role', '"' . $role . '"');
     }
@@ -226,7 +225,6 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
             LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
             WHERE JSON_CONTAINS(u.roles, :role)
             ORDER BY ec.nom, ec.prenom
-            SQL, $rsm)
-            ->setParameter('role', '"' . $role . '"');
+            SQL, $rsm)->setParameter('role', '"' . $role . '"');
     }
 }

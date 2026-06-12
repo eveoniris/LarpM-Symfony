@@ -147,7 +147,7 @@ class ReligionController extends AbstractController
     #[Route('/religion', name: 'religion.list')]
     public function indexAction(Request $request, ReligionRepository $religionRepository): Response
     {
-        $page = $request->query->getInt('page', 1);
+        $page = max(1, $request->query->getInt('page', 1));
         $orderBy = $request->query->getString('order_by', 'label');
         $orderDir = 'DESC' === $request->query->getString('order_dir') ? 'DESC' : 'ASC';
         $search = trim($request->query->getString('search', ''));
