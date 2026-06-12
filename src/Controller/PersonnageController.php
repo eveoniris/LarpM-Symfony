@@ -4491,22 +4491,25 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    #[Route('/{personnage}/secondaire/delete', name: 'secondaire.delete', methods: ['GET'])]
+    #[Route('/{personnage}/releve/delete', name: 'releve.delete', methods: ['GET'])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
-    public function secondaireDeleteAction(#[MapEntity] Personnage $personnage): RedirectResponse
+    public function releveDeleteAction(#[MapEntity] Personnage $personnage): RedirectResponse
     {
-        $user = $personnage->getUser();
-        if (!$user || !$user->getPersonnageSecondaire()) {
-            $this->addFlash('warning', 'Ce personnage n\'a pas de personnage secondaire défini.');
+        $participants = $this->entityManager->getRepository(Participant::class)->findBy(['personnageReleve' => $personnage]);
+
+        if ([] === $participants) {
+            $this->addFlash('warning', 'Ce personnage n\'est le personnage de relève d\'aucune participation.');
 
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
-        $user->setPersonnageSecondaire(null);
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        foreach ($participants as $participant) {
+            $participant->setPersonnageReleve(null);
+            $this->entityManager->persist($participant);
+        }
 
-        $this->addFlash('success', 'Le personnage secondaire a été supprimé.');
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Le personnage de relève a été supprimé.');
 
         return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
     }

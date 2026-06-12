@@ -18,23 +18,7 @@
 			  dans une instance à la place de l'autre</strong> (plus utile, ou toute autre raison)</p>
 		 </blockquote>
 		  
-		{% if app.user.personnageSecondaire %}
-			<h6>Personnage secondaire : 
-				<strong>{{ app.user.personnageSecondaire.classe.label }}</strong>
-			</h6>
-			<p>
-				<small>{{ app.user.personnageSecondaire.competences|join(' / ') }}</small>
-			</p>
-			
-			<p><a href="{{ path('personnageSecondaire.choice') }}">Modifier son personnage secondaire</a></p>
-		{% else %}
-			<p>Vous n'avez pas encore choisi votre personnage secondaire.</p>
-			<p>
-				<a class="btn btn-default" href="{{ path('personnageSecondaire.choice') }}">
-					Choisir son personnage secondaire
-				</a>
-			</p>
-		{% endif %}
+		<p><a class="btn btn-default" href="{{ path('personnageSecondaire.choice') }}">Choisir / modifier son archétype secondaire</a></p>
 	</div>
 	
 {% endblock body %}

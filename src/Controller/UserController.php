@@ -21,7 +21,6 @@ use App\Form\User\UserForgotPasswordType;
 use App\Form\User\UserNewPasswordType;
 use App\Form\User\UserNewType;
 use App\Form\User\UserPersonnageDefaultType;
-use App\Form\User\UserPersonnageSecondaireType;
 use App\Form\UserFindType;
 use App\Form\UserRegisterType;
 use App\Form\UserRestrictionType;
@@ -678,7 +677,6 @@ class UserController extends AbstractController
         $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
         $form = $this->createForm(UserPersonnageDefaultType::class, $user, [
             'user_id' => $user->getId(),
-            'secondaire_id' => (int) $user->getPersonnageSecondaire()?->getId(),
         ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -694,47 +692,6 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/personnageDefault.twig', [
-            'form' => $form->createView(),
-            'User' => $user,
-        ]);
-    }
-
-    #[Route('/user/{user}/personage/secondaire', name: 'user.personnageSecondaire')]
-    public function personnageSecondaireAction(Request $request, #[MapEntity] User $user): RedirectResponse|Response
-    {
-        $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
-
-        if ($user->getPersonnageSecondaire() && !$this->can(self::IS_ADMIN)) {
-            $this->addFlash('error', 'Vous avez déjà un personnage secondaire');
-
-            return $this->redirectToRoute('user.detail', ['user' => $user->getId()], 303);
-        }
-
-        $principalIds = null;
-        foreach ($user->getParticipants() as $participant) {
-            if (!($persoId = $participant->getPersonnage()?->getId())) {
-                continue;
-            }
-
-            $principalIds[] = $persoId;
-        }
-
-        $form = $this->createForm(UserPersonnageSecondaireType::class, $user, [
-            'user_id' => $user->getId(),
-            'principal_ids' => $principalIds,
-        ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $user = $form->getData();
-
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
-            $this->addFlash('success', 'Vos informations ont été enregistrées.');
-        }
-
-        return $this->render('user/personnageSecondary.twig', [
             'form' => $form->createView(),
             'User' => $user,
         ]);
