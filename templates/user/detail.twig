@@ -95,7 +95,6 @@
 
                     <div class="list-group">
                         {% set hasDefaultPersonnage = false %}
-                        {% set hasSecondaryPersonnage = user.personnageSecondaire %}
                         {% for participant in user.participants %}
                             <div class="list-group-item">
                                 <div>
@@ -129,10 +128,6 @@
                                             {% set hasDefaultPersonnage = true %}
                                             <span class="badge rounded-pill text-bg-secondary">Actif</span>
                                         {% endif %}
-                                        {% if participant.user.personnage_secondaire is defined and participant.personnage.id == participant.user.personnage_secondaire.id %}
-                                            {% set hasSecondaryPersonnage = true %}
-                                            <span class="badge rounded-pill text-bg-secondary">Secondaire</span>
-                                        {% endif %}
                                     </div>
                                 {% endif %}
                             </div>
@@ -140,11 +135,6 @@
                         {% if not hasDefaultPersonnage and canManage %}
                             <div class="mt-2">
                                 {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : "Vous n'avez pas de personnage actif"} %}
-                            </div>
-                        {% endif %}
-                        {% if not hasSecondaryPersonnage and canManage %}
-                            <div class="mt-2">
-                                {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : "Vous n'avez pas de personnage secondaire"} %}
                             </div>
                         {% endif %}
                     </div>
@@ -161,12 +151,6 @@
                                href="{{ path('user.personnageDefault', {'user': user.id}) }}"><span
                                     class="fa fa-users" style="margin-right: 5px;"></span>
                                 Choisir le personnage actif</a>
-                            {% if not hasSecondaryPersonnage %}
-                                <a class="btn btn-secondary"
-                                   href="{{ path('user.personnageSecondaire', {'user': user.id}) }}"><span
-                                        class="fa fa-mask" style="margin-right: 5px;"></span>
-                                    personnage secondaire</a>
-                            {% endif %}
                         </div>
                     {% endif %}
 

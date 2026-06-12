@@ -15,16 +15,7 @@
 			 est un monde violent dans lequel les pires choses sont possibles) ou <strong>si vous souhaitez l'utiliser
 			  dans une instance à la place de l'autre</strong> (plus utile, ou toute autre raison)</p>
 								  
-		{% if app.user.personnageSecondaire %}
-			<h6>Personnage secondaire : 
-				<small>{{ app.user.personnageSecondaire.classe.label }}
-					{{ app.user.personnageSecondaire.competences|join(' / ') }}</small>
-			</h6>
-			<p><a href="{{ path('personnageSecondaire.choice') }}">Modifier son personnage secondaire</a></p>
-		{% else %}
-			<p>Vous n'avez pas encore choisi votre personnage secondaire.</p>
-			<p><a href="{{ path('personnageSecondaire.choice') }}">Choisir son personnage secondaire</a></p>
-		{% endif %}
+		<p><a href="{{ path('personnageSecondaire.choice') }}">Choisir / modifier son archétype secondaire</a></p>
 
 	</div>
 	

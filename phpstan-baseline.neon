@@ -1519,6 +1519,12 @@ parameters:
 			path: src/Form/Participant/ParticipantNewType.php
 
 		-
+			message: '#^Class App\\Form\\Participant\\ParticipantPersonnageReleveType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Participant/ParticipantPersonnageReleveType.php
+
+		-
 			message: '#^Class App\\Form\\Participant\\ParticipantRemoveType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
