@@ -58,12 +58,8 @@ class StringHelper
 
     public static function splitTag(string $from, string $to, string $txt, bool $outterHtml = true): ?string
     {
-        return preg_replace_callback(
-            '#((?:(?!<[/a-z]).)*)([^>]*>|$)#si',
-            static fn ($capture) => $outterHtml
-                ? str_ireplace($from, $to, $capture[1]) . $capture[2]
-                : $capture[1] . str_ireplace($from, $to, $capture[2]),
-            $txt,
-        );
+        return preg_replace_callback('#((?:(?!<[/a-z]).)*)([^>]*>|$)#si', static fn ($capture) => $outterHtml
+            ? str_ireplace($from, $to, $capture[1]) . $capture[2]
+            : $capture[1] . str_ireplace($from, $to, $capture[2]), $txt);
     }
 }

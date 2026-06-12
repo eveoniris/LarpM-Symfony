@@ -33,11 +33,11 @@ class ApiAuthTest extends WebTestCase
 
         $client->request('POST', '/api/login_check', [], [], ['CONTENT_TYPE' => 'application/json'], (string) json_encode(['username' => 'apitest@example.com', 'password' => 'test123']));
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
         /** @var array<string, mixed> $data */
         $data = json_decode((string) $client->getResponse()->getContent(), true);
-        self::assertArrayHasKey('token', $data);
-        self::assertNotEmpty($data['token']);
+        static::assertArrayHasKey('token', $data);
+        static::assertNotEmpty($data['token']);
     }
 
     public function testInvalidPasswordReturns401(): void
@@ -51,7 +51,7 @@ class ApiAuthTest extends WebTestCase
 
         $client->request('POST', '/api/login_check', [], [], ['CONTENT_TYPE' => 'application/json'], (string) json_encode(['username' => 'apifail@example.com', 'password' => 'wrongpassword']));
 
-        self::assertSame(401, $client->getResponse()->getStatusCode());
+        static::assertSame(401, $client->getResponse()->getStatusCode());
     }
 
     public function testUnknownUserReturns401(): void
@@ -60,7 +60,7 @@ class ApiAuthTest extends WebTestCase
 
         $client->request('POST', '/api/login_check', [], [], ['CONTENT_TYPE' => 'application/json'], (string) json_encode(['username' => 'nobody@example.com', 'password' => 'any']));
 
-        self::assertSame(401, $client->getResponse()->getStatusCode());
+        static::assertSame(401, $client->getResponse()->getStatusCode());
     }
 
     // -------------------------------------------------------------------------
@@ -75,7 +75,7 @@ class ApiAuthTest extends WebTestCase
 
         $client->request('GET', '/api/competences/' . $gn->getId());
 
-        self::assertSame(401, $client->getResponse()->getStatusCode());
+        static::assertSame(401, $client->getResponse()->getStatusCode());
     }
 
     public function testProtectedEndpointWithValidTokenSucceeds(): void
@@ -105,7 +105,7 @@ class ApiAuthTest extends WebTestCase
             ],
         );
 
-        self::assertNotSame(401, $client->getResponse()->getStatusCode());
+        static::assertNotSame(401, $client->getResponse()->getStatusCode());
     }
 
     public function testProtectedEndpointWithInvalidTokenReturns401(): void
@@ -123,6 +123,6 @@ class ApiAuthTest extends WebTestCase
             ],
         );
 
-        self::assertSame(401, $client->getResponse()->getStatusCode());
+        static::assertSame(401, $client->getResponse()->getStatusCode());
     }
 }
