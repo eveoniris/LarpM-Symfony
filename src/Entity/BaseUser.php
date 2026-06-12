@@ -1024,7 +1024,7 @@ abstract class BaseUser
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->username;
+        return (string) $this->email;
     }
 
     public function removeBackground(Background $background): static
