@@ -30,8 +30,8 @@ class InterJeuCrudTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/inter-jeu/' . $interJeu->getId());
 
-        self::assertResponseIsSuccessful();
-        self::assertSelectorExists('a[href*="personnages"]');
+        static::assertResponseIsSuccessful();
+        static::assertSelectorExists('a[href*="personnages"]');
     }
 
     public function testAddPersonnageToInterJeu(): void
@@ -44,7 +44,7 @@ class InterJeuCrudTest extends WebTestCase
         $client->loginUser($user);
         $crawler = $client->request('GET', '/inter-jeu/' . $interJeu->getId() . '/personnage/add');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         $form = $crawler
             ->selectButton('Ajouter')
@@ -53,11 +53,11 @@ class InterJeuCrudTest extends WebTestCase
             ]);
         $client->submit($form);
 
-        self::assertResponseRedirects('/inter-jeu/' . $interJeu->getId() . '/personnages');
+        static::assertResponseRedirects('/inter-jeu/' . $interJeu->getId() . '/personnages');
 
         $client->followRedirect();
-        self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('table', (string) $personnage->getNom());
+        static::assertResponseIsSuccessful();
+        static::assertSelectorTextContains('table', (string) $personnage->getNom());
     }
 
     public function testRemovePersonnageFromInterJeu(): void
@@ -77,7 +77,7 @@ class InterJeuCrudTest extends WebTestCase
         $client->loginUser($user);
         $client->request('POST', '/inter-jeu/' . $interJeu->getId() . '/personnage/' . $personnage->getId() . '/remove');
 
-        self::assertResponseRedirects('/inter-jeu/' . $interJeu->getId() . '/personnages');
+        static::assertResponseRedirects('/inter-jeu/' . $interJeu->getId() . '/personnages');
     }
 
     public function testChronologieButtonAppearsWhenDatePassed(): void
@@ -92,8 +92,8 @@ class InterJeuCrudTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/inter-jeu/' . $interJeu->getId());
 
-        self::assertResponseIsSuccessful();
-        self::assertSelectorExists('a[href*="chronologie"]');
+        static::assertResponseIsSuccessful();
+        static::assertSelectorExists('a[href*="chronologie"]');
     }
 
     public function testChronologieButtonAbsentWhenDateFuture(): void
@@ -107,8 +107,8 @@ class InterJeuCrudTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/inter-jeu/' . $interJeu->getId());
 
-        self::assertResponseIsSuccessful();
-        self::assertSelectorNotExists('a[href*="chronologie"]');
+        static::assertResponseIsSuccessful();
+        static::assertSelectorNotExists('a[href*="chronologie"]');
     }
 
     public function testChronologieConfirmPageIsAccessible(): void
@@ -123,7 +123,7 @@ class InterJeuCrudTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/inter-jeu/' . $interJeu->getId() . '/chronologie');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testChronologieConfirmCreatesEntries(): void
@@ -146,20 +146,20 @@ class InterJeuCrudTest extends WebTestCase
 
         $client->loginUser($user);
         $crawler = $client->request('GET', '/inter-jeu/' . $interJeu->getId() . '/chronologie');
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         $form = $crawler->selectButton('Confirmer la génération')->form();
         $client->submit($form);
 
-        self::assertResponseRedirects('/inter-jeu/' . $interJeu->getId());
+        static::assertResponseRedirects('/inter-jeu/' . $interJeu->getId());
 
         $em->clear();
         $entries = $em->getRepository(PersonnageChronologie::class)->findBy([
             'personnage' => $personnage->getId(),
         ]);
 
-        self::assertNotEmpty($entries);
-        self::assertSame('Participation à Test Inter', $entries[0]->getEvenement());
-        self::assertSame(1050, $entries[0]->getAnnee());
+        static::assertNotEmpty($entries);
+        static::assertSame('Participation à Test Inter', $entries[0]->getEvenement());
+        static::assertSame(1050, $entries[0]->getAnnee());
     }
 }

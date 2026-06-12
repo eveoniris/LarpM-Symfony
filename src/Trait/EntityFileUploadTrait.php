@@ -232,6 +232,19 @@ trait EntityFileUploadTrait
         return $this;
     }
 
+    public function __serialize(): array
+    {
+        return array_filter(get_object_vars($this), fn (string $key) => $key !== 'file', ARRAY_FILTER_USE_KEY);
+    }
+
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
+        $this->file = null;
+    }
+
     protected function afterUpload(FileUploader $fileUploader): FileUploader
     {
         return $fileUploader;

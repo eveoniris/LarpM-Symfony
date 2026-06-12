@@ -78,10 +78,7 @@ class UserController extends AbstractController
         $validRoles = array_column(Role::cases(), 'value');
         $qb = null;
         if ($roleFilter && in_array(needle: $roleFilter, haystack: $validRoles, strict: true)) {
-            $qb = $userRepository->createQueryBuilder('user')
-                ->join('user.etatCivil', 'etatCivil')
-                ->where('user.roles LIKE :role')
-                ->setParameter('role', '%' . $roleFilter . '%');
+            $qb = $userRepository->createQueryBuilder('user')->join('user.etatCivil', 'etatCivil')->where('user.roles LIKE :role')->setParameter('role', '%' . $roleFilter . '%');
         }
 
         return $this->render('user/list.twig', [

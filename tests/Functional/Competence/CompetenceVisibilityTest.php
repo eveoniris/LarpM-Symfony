@@ -30,7 +30,7 @@ class CompetenceVisibilityTest extends WebTestCase
 
         $client->request('GET', '/competence');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testScenaristeCanAccessCompetenceList(): void
@@ -42,7 +42,7 @@ class CompetenceVisibilityTest extends WebTestCase
 
         $client->request('GET', '/competence');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testScenaristeCannotSeeModifierButton(): void
@@ -58,9 +58,9 @@ class CompetenceVisibilityTest extends WebTestCase
 
         $crawler = $client->request('GET', '/competence');
 
-        self::assertResponseIsSuccessful();
-        self::assertCount(0, $crawler->filter('a[title="Modifier"]'));
-        self::assertCount(0, $crawler->filter('a[title="Supprimer"]'));
+        static::assertResponseIsSuccessful();
+        static::assertCount(0, $crawler->filter('a[title="Modifier"]'));
+        static::assertCount(0, $crawler->filter('a[title="Supprimer"]'));
     }
 
     public function testScenaristeCanSeeDetailButton(): void
@@ -76,8 +76,8 @@ class CompetenceVisibilityTest extends WebTestCase
 
         $crawler = $client->request('GET', '/competence');
 
-        self::assertResponseIsSuccessful();
-        self::assertGreaterThan(0, $crawler->filter('a[title="Détail"]')->count());
+        static::assertResponseIsSuccessful();
+        static::assertGreaterThan(0, $crawler->filter('a[title="Détail"]')->count());
     }
 
     public function testAdminCanSeeModifierButton(): void
@@ -93,8 +93,8 @@ class CompetenceVisibilityTest extends WebTestCase
 
         $crawler = $client->request('GET', '/competence');
 
-        self::assertResponseIsSuccessful();
-        self::assertGreaterThan(0, $crawler->filter('a[title="Modifier"]')->count());
+        static::assertResponseIsSuccessful();
+        static::assertGreaterThan(0, $crawler->filter('a[title="Modifier"]')->count());
     }
 
     public function testUserCannotSeeAnyAdminButton(): void
@@ -110,9 +110,9 @@ class CompetenceVisibilityTest extends WebTestCase
 
         $crawler = $client->request('GET', '/competence');
 
-        self::assertResponseIsSuccessful();
-        self::assertCount(0, $crawler->filter('a[title="Modifier"]'));
-        self::assertCount(0, $crawler->filter('a[title="Supprimer"]'));
-        self::assertCount(0, $crawler->filter('a[title="Détail"]'));
+        static::assertResponseIsSuccessful();
+        static::assertCount(0, $crawler->filter('a[title="Modifier"]'));
+        static::assertCount(0, $crawler->filter('a[title="Supprimer"]'));
+        static::assertCount(0, $crawler->filter('a[title="Détail"]'));
     }
 }

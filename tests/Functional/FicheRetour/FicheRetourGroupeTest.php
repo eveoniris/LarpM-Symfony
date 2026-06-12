@@ -39,7 +39,7 @@ class FicheRetourGroupeTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', sprintf('/groupe/%d/detail/fiche_retour/gn/%d/groupeGn/%d', $groupe->getId(), $gn->getId(), $groupeGn->getId()));
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testUserWithoutRoleCannotAccessFicheRetourEdit(): void
@@ -55,7 +55,7 @@ class FicheRetourGroupeTest extends WebTestCase
         $client->request('GET', sprintf('/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/edit', $groupe->getId(), $gn->getId(), $groupeGn->getId()));
 
         // L'app redirige vers /access_denied au lieu de retourner 403 directement
-        self::assertResponseRedirects('/access_denied');
+        static::assertResponseRedirects('/access_denied');
     }
 
     // -------------------------------------------------------------------------
@@ -74,7 +74,7 @@ class FicheRetourGroupeTest extends WebTestCase
         $client->loginUser($user);
         $url = sprintf('/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/edit', $groupe->getId(), $gn->getId(), $groupeGn->getId());
         $crawler = $client->request('GET', $url);
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         $form = $crawler
             ->selectButton('Enregistrer')
@@ -107,20 +107,20 @@ class FicheRetourGroupeTest extends WebTestCase
             ]);
         $client->submit($form);
 
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
 
         // Vérifie l'historique CREATE
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $fiche = $em->getRepository(\App\Entity\FicheRetourGroupe::class)->findOneBy(['groupeGn' => $groupeGn]);
-        self::assertNotNull($fiche);
-        self::assertSame(10, $fiche->getPiecesArgent());
-        self::assertSame(5, $fiche->getPiecesOr());
+        static::assertNotNull($fiche);
+        static::assertSame(10, $fiche->getPiecesArgent());
+        static::assertSame(5, $fiche->getPiecesOr());
 
         // Vérifie l'historique via requête directe (évite le cache EM)
         $historyRepo = $em->getRepository(FicheRetourGroupeHistory::class);
         $histories = $historyRepo->findBy(['ficheRetourGroupe' => $fiche]);
-        self::assertCount(1, $histories);
-        self::assertSame(FicheRetourGroupeHistory::ACTION_CREATE, $histories[0]->getActionType());
+        static::assertCount(1, $histories);
+        static::assertSame(FicheRetourGroupeHistory::ACTION_CREATE, $histories[0]->getActionType());
     }
 
     // -------------------------------------------------------------------------
@@ -145,7 +145,7 @@ class FicheRetourGroupeTest extends WebTestCase
         $client->loginUser($user);
         $url = sprintf('/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/edit', $groupe->getId(), $gn->getId(), $groupeGn->getId());
         $crawler = $client->request('GET', $url);
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         $form = $crawler
             ->selectButton('Enregistrer')
@@ -180,12 +180,12 @@ class FicheRetourGroupeTest extends WebTestCase
             ]);
         $client->submit($form);
 
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
 
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $fiche = $em->getRepository(\App\Entity\FicheRetourGroupe::class)->findOneBy(['groupeGn' => $groupeGn]);
-        self::assertNotNull($fiche);
-        self::assertSame(15, $fiche->getPiecesArgent());
+        static::assertNotNull($fiche);
+        static::assertSame(15, $fiche->getPiecesArgent());
     }
 
     // -------------------------------------------------------------------------
@@ -205,7 +205,7 @@ class FicheRetourGroupeTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', sprintf('/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/history', $groupe->getId(), $gn->getId(), $groupeGn->getId()));
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testUserWithoutRoleCannotAccessHistory(): void
@@ -221,7 +221,7 @@ class FicheRetourGroupeTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', sprintf('/groupe/%d/detail/fiche-retour/gn/%d/groupeGn/%d/history', $groupe->getId(), $gn->getId(), $groupeGn->getId()));
 
-        self::assertResponseRedirects('/access_denied');
+        static::assertResponseRedirects('/access_denied');
     }
 
     // -------------------------------------------------------------------------
@@ -238,7 +238,7 @@ class FicheRetourGroupeTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', sprintf('/gn/%d/fiche-retour/import', $gn->getId()));
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testUserWithoutRoleCannotAccessImportPage(): void
@@ -251,6 +251,6 @@ class FicheRetourGroupeTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', sprintf('/gn/%d/fiche-retour/import', $gn->getId()));
 
-        self::assertResponseRedirects('/access_denied');
+        static::assertResponseRedirects('/access_denied');
     }
 }

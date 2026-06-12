@@ -32,7 +32,7 @@ class PersonnageListTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/personnage/list');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testListIsAccessibleToOrga(): void
@@ -43,7 +43,7 @@ class PersonnageListTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/personnage/list');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testListDeniedToPlainUser(): void
@@ -54,7 +54,7 @@ class PersonnageListTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/personnage/list');
 
-        self::assertResponseRedirects('/access_denied');
+        static::assertResponseRedirects('/access_denied');
     }
 
     public function testListRedirectsAnonymous(): void
@@ -63,7 +63,7 @@ class PersonnageListTest extends WebTestCase
 
         $client->request('GET', '/personnage/list');
 
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 
     // -------------------------------------------------------------------------
@@ -78,9 +78,9 @@ class PersonnageListTest extends WebTestCase
         $client->loginUser($user);
         $crawler = $client->request('GET', '/personnage/list');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
         // The form field for scenariste must be present in the rendered page
-        self::assertSelectorExists('select[name="personnage_find[scenariste]"]');
+        static::assertSelectorExists('select[name="personnage_find[scenariste]"]');
     }
 
     public function testScenaristeFilterWithValidIdReturns200(): void
@@ -94,7 +94,7 @@ class PersonnageListTest extends WebTestCase
         ]);
 
         // Must not throw a SQL/DQL error even though no personnages match
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testScenaristeFilterWithNonExistentIdReturns200(): void
@@ -108,7 +108,7 @@ class PersonnageListTest extends WebTestCase
         ]);
 
         // entityManager->find returns null → criteria not set → no crash
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testScenaristeFilterShowsNoResultsForUserWithNoGroupe(): void
@@ -123,8 +123,8 @@ class PersonnageListTest extends WebTestCase
             'personnage_find' => ['scenariste' => $scenariste->getId()],
         ]);
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
         // Page renders but the table body has no data rows for this scenariste
-        self::assertSelectorNotExists('table tbody tr td a[href*="/personnage/"]');
+        static::assertSelectorNotExists('table tbody tr td a[href*="/personnage/"]');
     }
 }

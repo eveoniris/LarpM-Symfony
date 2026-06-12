@@ -323,7 +323,7 @@ class PersonnageController extends AbstractController
         }
 
         $isPersonnage = false;
-        foreach ($this->getUser()?->getPersonnages() as $personnageUser) {
+        foreach ($this->getUser()?->getPersonnages() ?? [] as $personnageUser) {
             if ($personnageUser->getId() !== $personnage->getId()) {
                 continue;
             }

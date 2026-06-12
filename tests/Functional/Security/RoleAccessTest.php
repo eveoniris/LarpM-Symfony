@@ -28,7 +28,7 @@ class RoleAccessTest extends WebTestCase
 
         // AccessDeniedListener intercepts all AccessDeniedException (even for anonymous)
         // and redirects to /access_denied - not /login.
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 
     public function testAnonymousCannotAccessPersonnageList(): void
@@ -36,7 +36,7 @@ class RoleAccessTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/personnage/list');
 
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 
     // -------------------------------------------------------------------------
@@ -52,7 +52,7 @@ class RoleAccessTest extends WebTestCase
         $client->request('GET', '/admin');
 
         // Must NOT be 200 - either redirect (302) or forbidden (403)
-        self::assertNotSame(200, $client->getResponse()->getStatusCode());
+        static::assertNotSame(200, $client->getResponse()->getStatusCode());
     }
 
     // -------------------------------------------------------------------------
@@ -67,7 +67,7 @@ class RoleAccessTest extends WebTestCase
 
         $client->request('GET', '/admin');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     // -------------------------------------------------------------------------
@@ -82,7 +82,7 @@ class RoleAccessTest extends WebTestCase
 
         $client->request('GET', '/intrigue');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testRoleScenaristeCannotAccessAdmin(): void
@@ -93,7 +93,7 @@ class RoleAccessTest extends WebTestCase
 
         $client->request('GET', '/admin');
 
-        self::assertNotSame(200, $client->getResponse()->getStatusCode());
+        static::assertNotSame(200, $client->getResponse()->getStatusCode());
     }
 
     // -------------------------------------------------------------------------
@@ -108,7 +108,7 @@ class RoleAccessTest extends WebTestCase
 
         $client->request('GET', '/territoire');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     // -------------------------------------------------------------------------
@@ -120,6 +120,6 @@ class RoleAccessTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/login');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 }

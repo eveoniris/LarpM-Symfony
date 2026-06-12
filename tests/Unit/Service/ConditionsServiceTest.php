@@ -44,14 +44,14 @@ class ConditionsServiceTest extends TestCase
     {
         $personnage = $this->createStub(Personnage::class);
 
-        self::assertTrue($this->service->isValidConditions($personnage, []));
+        static::assertTrue($this->service->isValidConditions($personnage, []));
     }
 
     public function testEmptyListIsAllValid(): void
     {
         $personnage = $this->createStub(Personnage::class);
 
-        self::assertTrue($this->service->isAllConditionsValid($personnage, []));
+        static::assertTrue($this->service->isAllConditionsValid($personnage, []));
     }
 
     // ── Single CLASSE condition ───────────────────────────────────────────────
@@ -61,7 +61,7 @@ class ConditionsServiceTest extends TestCase
         $personnage = $this->makePersonnageWithClasse(21);
         $conditions = [['TYPE' => 'CLASSE', 'VALUE' => 21]];
 
-        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+        static::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
     public function testClasseConditionDoesNotMatchWrongId(): void
@@ -69,7 +69,7 @@ class ConditionsServiceTest extends TestCase
         $personnage = $this->makePersonnageWithClasse(5);
         $conditions = [['TYPE' => 'CLASSE', 'VALUE' => 21]];
 
-        self::assertFalse($this->service->isValidConditions($personnage, $conditions));
+        static::assertFalse($this->service->isValidConditions($personnage, $conditions));
     }
 
     // ── Single RELIGION condition ─────────────────────────────────────────────
@@ -81,7 +81,7 @@ class ConditionsServiceTest extends TestCase
 
         $conditions = [['TYPE' => 'RELIGION', 'VALUE' => 12]];
 
-        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+        static::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
     public function testReligionConditionDoesNotMatchWrongId(): void
@@ -91,7 +91,7 @@ class ConditionsServiceTest extends TestCase
 
         $conditions = [['TYPE' => 'RELIGION', 'VALUE' => 12]];
 
-        self::assertFalse($this->service->isValidConditions($personnage, $conditions));
+        static::assertFalse($this->service->isValidConditions($personnage, $conditions));
     }
 
     // ── Single COMPETENCE condition ───────────────────────────────────────────
@@ -103,7 +103,7 @@ class ConditionsServiceTest extends TestCase
 
         $conditions = [['TYPE' => 'COMPETENCE', 'VALUE' => 7]];
 
-        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+        static::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
     public function testCompetenceConditionDoesNotMatchWhenNotOwned(): void
@@ -113,7 +113,7 @@ class ConditionsServiceTest extends TestCase
 
         $conditions = [['TYPE' => 'COMPETENCE', 'VALUE' => 7]];
 
-        self::assertFalse($this->service->isValidConditions($personnage, $conditions));
+        static::assertFalse($this->service->isValidConditions($personnage, $conditions));
     }
 
     public function testCompetenceConditionByFamilyTypeValueMatchesWhenOwned(): void
@@ -124,7 +124,7 @@ class ConditionsServiceTest extends TestCase
         // 'Alchemy' is the enum value - getFromLabel() resolves it correctly
         $conditions = [['TYPE' => 'COMPETENCE', 'VALUE' => CompetenceFamilyType::ALCHEMY->value]];
 
-        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+        static::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
     public function testCompetenceConditionByFamilyTypeValueFailsWhenNotOwned(): void
@@ -134,7 +134,7 @@ class ConditionsServiceTest extends TestCase
 
         $conditions = [['TYPE' => 'COMPETENCE', 'VALUE' => CompetenceFamilyType::ALCHEMY->value]];
 
-        self::assertFalse($this->service->isValidConditions($personnage, $conditions));
+        static::assertFalse($this->service->isValidConditions($personnage, $conditions));
     }
 
     public function testCompetenceConditionByFrenchLabelMatchesWhenOwned(): void
@@ -145,7 +145,7 @@ class ConditionsServiceTest extends TestCase
         // French label via tryFromOlder()
         $conditions = [['TYPE' => 'COMPETENCE', 'VALUE' => 'Alchimie']];
 
-        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+        static::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
     // ── Single ORIGINE condition ──────────────────────────────────────────────
@@ -160,7 +160,7 @@ class ConditionsServiceTest extends TestCase
 
         $conditions = [['TYPE' => 'ORIGINE', 'VALUE' => 5]];
 
-        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+        static::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
     public function testOrigineConditionDoesNotMatchDifferentId(): void
@@ -173,7 +173,7 @@ class ConditionsServiceTest extends TestCase
 
         $conditions = [['TYPE' => 'ORIGINE', 'VALUE' => 5]];
 
-        self::assertFalse($this->service->isValidConditions($personnage, $conditions));
+        static::assertFalse($this->service->isValidConditions($personnage, $conditions));
     }
 
     // ── Single LANGUE condition ───────────────────────────────────────────────
@@ -192,7 +192,7 @@ class ConditionsServiceTest extends TestCase
 
         $conditions = [['TYPE' => 'LANGUE', 'VALUE' => 3]];
 
-        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+        static::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
     public function testLangueConditionDoesNotMatchWhenPersonnageDoesNotKnowIt(): void
@@ -209,7 +209,7 @@ class ConditionsServiceTest extends TestCase
 
         $conditions = [['TYPE' => 'LANGUE', 'VALUE' => 3]];
 
-        self::assertFalse($this->service->isValidConditions($personnage, $conditions));
+        static::assertFalse($this->service->isValidConditions($personnage, $conditions));
     }
 
     // ── AND mode ──────────────────────────────────────────────────────────────
@@ -226,7 +226,7 @@ class ConditionsServiceTest extends TestCase
             ['TYPE' => 'RELIGION', 'VALUE' => 2],
         ];
 
-        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+        static::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
     public function testAndModeFailsIfOneConditionFails(): void
@@ -241,7 +241,7 @@ class ConditionsServiceTest extends TestCase
             ['TYPE' => 'RELIGION', 'VALUE' => 2],
         ];
 
-        self::assertFalse($this->service->isValidConditions($personnage, $conditions));
+        static::assertFalse($this->service->isValidConditions($personnage, $conditions));
     }
 
     // ── OR mode ───────────────────────────────────────────────────────────────
@@ -258,7 +258,7 @@ class ConditionsServiceTest extends TestCase
             ['TYPE' => 'RELIGION', 'VALUE' => 2],
         ];
 
-        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+        static::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
     public function testOrModeWithAllConditionsFailingReturnsFalse(): void
@@ -273,7 +273,7 @@ class ConditionsServiceTest extends TestCase
             ['TYPE' => 'RELIGION', 'VALUE' => 2],
         ];
 
-        self::assertFalse($this->service->isValidConditions($personnage, $conditions));
+        static::assertFalse($this->service->isValidConditions($personnage, $conditions));
     }
 
     // ── Nested conditions ─────────────────────────────────────────────────────
@@ -298,7 +298,7 @@ class ConditionsServiceTest extends TestCase
             ],
         ];
 
-        self::assertTrue($this->service->isValidConditions($personnage, $conditions));
+        static::assertTrue($this->service->isValidConditions($personnage, $conditions));
     }
 
     // ── Unknown TYPE ──────────────────────────────────────────────────────────
@@ -308,7 +308,7 @@ class ConditionsServiceTest extends TestCase
         $personnage = $this->createStub(Personnage::class);
         $conditions = [['TYPE' => 'UNKNOWN_TYPE', 'VALUE' => 1]];
 
-        self::assertFalse($this->service->isValidConditions($personnage, $conditions));
+        static::assertFalse($this->service->isValidConditions($personnage, $conditions));
     }
 
     // ── CompetenceFamily entity ───────────────────────────────────────────────
@@ -321,7 +321,7 @@ class ConditionsServiceTest extends TestCase
 
         $conditions = [['TYPE' => 'COMPETENCE_FAMILLE', 'VALUE' => 42]];
 
-        self::assertTrue($this->service->isValidConditions($family, $conditions));
+        static::assertTrue($this->service->isValidConditions($family, $conditions));
     }
 
     public function testCompetenceFamilyEntityConditionMatchesByTypeValue(): void
@@ -332,6 +332,6 @@ class ConditionsServiceTest extends TestCase
 
         $conditions = [['TYPE' => 'COMPETENCE_FAMILLE', 'VALUE' => CompetenceFamilyType::ALCHEMY->value]];
 
-        self::assertTrue($this->service->isValidConditions($family, $conditions));
+        static::assertTrue($this->service->isValidConditions($family, $conditions));
     }
 }
