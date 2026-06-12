@@ -27,7 +27,7 @@ class TerritoireTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/territoire/' . $territoire->getId());
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testAnonymousIsRedirectedToLogin(): void
@@ -37,6 +37,6 @@ class TerritoireTest extends WebTestCase
         $territoire = TerritoireFactory::createOne();
         $client->request('GET', '/territoire/' . $territoire->getId());
 
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 }

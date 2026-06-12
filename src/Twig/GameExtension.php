@@ -29,8 +29,8 @@ final class GameExtension extends AbstractExtension
         return match (true) {
             $score >= 20 => 'grande broche (légende vivante)',
             $score >= 10 => 'broche moyenne',
-            $score >= 5  => 'petite broche',
-            default      => 'illustre (pas de broche)',
+            $score >= 5 => 'petite broche',
+            default => 'illustre (pas de broche)',
         };
     }
 }

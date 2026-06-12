@@ -826,7 +826,12 @@ readonly class GroupeService
         $criteria = new Criteria();
         $criteria->where(Criteria::expr()->lt('date_fin', Carbon::now()))->orderBy(['date_fin' => 'DESC']);
 
-        return $this->entityManager->getRepository(Gn::class)->matching($criteria)->first() ?: null;
+        return (
+            $this->entityManager
+                ->getRepository(Gn::class)
+                ->matching($criteria)
+                ->first() ?: null
+        );
     }
 
     public function getStatutTerritoire(Territoire $territoire): TerritoireStatut
@@ -1024,6 +1029,90 @@ readonly class GroupeService
         return array_values($result);
     }
 
+    /**
+     * Retourne la liste détaillée des sources de richesse d'un groupe.
+     *
+     * @return list<array{type: string, source: string, value: int, detail: string}>
+     */
+    public function getAllRichesseBreakdown(Groupe $groupe): array
+    {
+        $breakdown = [];
+
+        foreach ($groupe->getTerritoires() as $territoire) {
+            $tresor = $territoire->getTresor();
+            $constructions = [];
+
+            foreach ($territoire->getConstructions() as $construction) {
+                if (6 === $construction->getId()) {
+                    $tresor += 5;
+                    $constructions[] = '+5 ' . $construction->getLabel();
+                }
+                if (23 === $construction->getId()) {
+                    $tresor += 10;
+                    $constructions[] = '+10 ' . $construction->getLabel();
+                }
+                if (10 === $construction->getId()) {
+                    $tresor += 5;
+                    $constructions[] = '+5 ' . $construction->getLabel();
+                }
+            }
+
+            $value = $tresor * 3;
+            $stable = $territoire->isStable();
+            if (!$stable) {
+                $value *= 0.5;
+            }
+            $value = (int) ceil($value);
+
+            $detail = '×3' . ($stable ? '' : ' ×0.5 (instable)');
+            if ($constructions) {
+                $detail .= ', ' . implode(', ', $constructions);
+            }
+
+            $breakdown[] = [
+                'type' => 'territoire',
+                'source' => $territoire->getNom(),
+                'value' => $value,
+                'detail' => $detail,
+            ];
+        }
+
+        foreach ($this->getAllBonus($groupe, BonusType::RICHESSE) as $bonus) {
+            if (!$bonus->isRichesse()) {
+                continue;
+            }
+            if (!$this->conditionsService->isValidConditions($groupe, $bonus->getJsonData()['condition'] ?? [])) {
+                continue;
+            }
+
+            $source = $bonus->getSourceTmp() ?? '';
+            if ($bonus->getMerveille()) {
+                $source = ($source ? $source . ' — ' : '') . $bonus->getMerveille()->getLabel();
+            }
+            if ($bonus->getOrigine()) {
+                $source = ($source ? $source . ' — ' : '') . $bonus->getOrigine()->getNom();
+            }
+
+            $breakdown[] = [
+                'type' => $bonus->getMerveille() ? 'merveille' : 'bonus',
+                'source' => $source ?: $bonus->getTitre(),
+                'value' => (int) $bonus->getValeur(),
+                'detail' => $bonus->getTitre(),
+            ];
+        }
+
+        if ($groupe->getRichesse() > 0) {
+            $breakdown[] = [
+                'type' => 'direct',
+                'source' => 'Richesse directe',
+                'value' => $groupe->getRichesse(),
+                'detail' => '',
+            ];
+        }
+
+        return $breakdown;
+    }
+
     /** @return array<string, int> label => quantite_totale, triés alphabétiquement */
     public function computeSyntheseRessources(Groupe $groupe, PersonnageService $personnageService, ?GroupeGn $groupeGn = null): array
     {
@@ -1080,7 +1169,7 @@ readonly class GroupeService
         return $totals;
     }
 
-    /** @return array{groupe: int, pj: array<string, int>, total: int} */
+    /** @return array{groupe: int, pj: array<string, int>, total: int, breakdown: list<array{type: string, source: string, value: int, detail: string}>} */
     public function computeSyntheseRichesse(Groupe $groupe, PersonnageService $personnageService, ?GroupeGn $groupeGn = null): array
     {
         $groupeRichesse = $this->getAllRichesse($groupe);
@@ -1105,6 +1194,7 @@ readonly class GroupeService
             'groupe' => $groupeRichesse,
             'pj' => $pjRichesse,
             'total' => $groupeRichesse + $totalPj,
+            'breakdown' => $this->getAllRichesseBreakdown($groupe),
         ];
     }
 }

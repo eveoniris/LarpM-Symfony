@@ -38,14 +38,14 @@ class TerritoireWealthTest extends TestCase
     {
         $t = $this->makeTerritoire(100, TerritoireStatut::STABLE);
 
-        self::assertSame(100, $t->getRichesse());
+        static::assertSame(100, $t->getRichesse());
     }
 
     public function testRichesseUnstableTerritoireIsHalved(): void
     {
         $t = $this->makeTerritoire(100, TerritoireStatut::INSTABLE);
 
-        self::assertEquals(50, $t->getRichesse());
+        static::assertSame(50.0, $t->getRichesse());
     }
 
     public function testRichesseUnstableWithOddTresorCeilsUp(): void
@@ -53,7 +53,7 @@ class TerritoireWealthTest extends TestCase
         $t = $this->makeTerritoire(101, TerritoireStatut::INSTABLE);
 
         // ceil(101 / 2) = 51
-        self::assertEquals(51, $t->getRichesse());
+        static::assertSame(51.0, $t->getRichesse());
     }
 
     public function testRichesseUnstableWithConstructionRevenueBeforeHalving(): void
@@ -63,7 +63,7 @@ class TerritoireWealthTest extends TestCase
         $t->addConstruction($this->makeConstruction(6));
 
         // (100 + 5) / 2 = 52.5 → ceil = 53
-        self::assertEquals(53, $t->getRichesse());
+        static::assertSame(53.0, $t->getRichesse());
     }
 
     public function testRichesseStableIgnoresConstructionRevenue(): void
@@ -72,7 +72,7 @@ class TerritoireWealthTest extends TestCase
         $t->addConstruction($this->makeConstruction(6)); // Comptoir +5 (ignored for stable)
 
         // Stable returns $this->tresor directly, constructions NOT added
-        self::assertSame(100, $t->getRichesse());
+        static::assertSame(100, $t->getRichesse());
     }
 
     public function testRichesseUnstableAccumulatesMultipleConstructions(): void
@@ -83,7 +83,7 @@ class TerritoireWealthTest extends TestCase
         $t->addConstruction($this->makeConstruction(10)); // +5
 
         // (50 + 5 + 10 + 5) / 2 = 35
-        self::assertEquals(35, $t->getRichesse());
+        static::assertSame(35.0, $t->getRichesse());
     }
 
     // ── getDefense() ──────────────────────────────────────────────────────────
@@ -93,7 +93,7 @@ class TerritoireWealthTest extends TestCase
         $t = $this->makeTerritoire(0);
         $t->setResistance(0);
 
-        self::assertSame(0, $t->getDefense());
+        static::assertSame(0, $t->getDefense());
     }
 
     public function testDefenseIncludesResistance(): void
@@ -101,7 +101,7 @@ class TerritoireWealthTest extends TestCase
         $t = $this->makeTerritoire(0);
         $t->setResistance(15);
 
-        self::assertSame(15, $t->getDefense());
+        static::assertSame(15, $t->getDefense());
     }
 
     public function testDefenseIncludesConstructionDefense(): void
@@ -111,7 +111,7 @@ class TerritoireWealthTest extends TestCase
         $t->addConstruction($this->makeConstruction(99, 5));
         $t->addConstruction($this->makeConstruction(100, 3));
 
-        self::assertSame(18, $t->getDefense());
+        static::assertSame(18, $t->getDefense());
     }
 
     public function testDefenseZeroResistanceNotAddedWhenItIsZero(): void
@@ -121,7 +121,7 @@ class TerritoireWealthTest extends TestCase
         $t->addConstruction($this->makeConstruction(99, 7));
 
         // 0 resistance is explicitly excluded (0 !== 0 is false → skipped)
-        self::assertSame(7, $t->getDefense());
+        static::assertSame(7, $t->getDefense());
     }
 
     // ── isStable() ────────────────────────────────────────────────────────────
@@ -130,14 +130,14 @@ class TerritoireWealthTest extends TestCase
     {
         $t = $this->makeTerritoire(0, TerritoireStatut::STABLE);
 
-        self::assertTrue($t->isStable());
+        static::assertTrue($t->isStable());
     }
 
     public function testIsStableReturnsFalseForInstableStatut(): void
     {
         $t = $this->makeTerritoire(0, TerritoireStatut::INSTABLE);
 
-        self::assertFalse($t->isStable());
+        static::assertFalse($t->isStable());
     }
 
     public function testIsStableTrueByDefaultWhenStatutIsNull(): void
@@ -147,6 +147,6 @@ class TerritoireWealthTest extends TestCase
         $t->setTresor(0);
         // No setStatut() call
 
-        self::assertTrue($t->isStable());
+        static::assertTrue($t->isStable());
     }
 }

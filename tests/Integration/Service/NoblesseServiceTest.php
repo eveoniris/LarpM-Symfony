@@ -73,7 +73,7 @@ class NoblesseServiceTest extends KernelTestCase
         $this->entityManager->clear();
         $fresh = $this->entityManager->find(Personnage::class, $personnageId);
 
-        self::assertSame($expectedRenomme, $fresh->getRenomme());
+        static::assertSame($expectedRenomme, $fresh->getRenomme());
     }
 
     #[DataProvider('noblesseRenommeProvider')]
@@ -97,6 +97,6 @@ class NoblesseServiceTest extends KernelTestCase
         $fresh = $this->entityManager->find(Personnage::class, $personnageId);
 
         // getRenomme() = sum of history entries; the single entry is the removed amount
-        self::assertSame($expectedRenomme, $fresh->getRenomme());
+        static::assertSame($expectedRenomme, $fresh->getRenomme());
     }
 }

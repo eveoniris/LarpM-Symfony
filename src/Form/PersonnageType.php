@@ -59,6 +59,7 @@ class PersonnageType extends AbstractType
                 'label' => 'Votre origine',
                 'class' => Territoire::class,
                 'choice_label' => 'nom',
+                'autocomplete' => true,
                 'query_builder' => static function (TerritoireRepository $er) {
                     $qb = $er->createQueryBuilder('t');
                     $qb->andWhere('t.territoire IS NULL');

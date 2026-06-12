@@ -99,7 +99,7 @@ class PersonnageAnomalieTest extends TestCase
     {
         $personnage = $this->makePersonnage();
 
-        self::assertFalse($personnage->hasAnomalie());
+        static::assertFalse($personnage->hasAnomalie());
     }
 
     public function testHasAnomalieReturnsTrueWhenLangueAnomalieExists(): void
@@ -109,7 +109,7 @@ class PersonnageAnomalieTest extends TestCase
         $pl = $this->makePersonnageLangue($this->makeLangue('Commun'), 'MANUAL');
         $personnage->addPersonnageLangues($pl);
 
-        self::assertTrue($personnage->hasAnomalie());
+        static::assertTrue($personnage->hasAnomalie());
     }
 
     // ── getLanguesAnomaliesMessage() ──────────────────────────────────────────
@@ -118,7 +118,7 @@ class PersonnageAnomalieTest extends TestCase
     {
         $personnage = $this->makePersonnage();
 
-        self::assertSame('', $personnage->getLanguesAnomaliesMessage());
+        static::assertSame('', $personnage->getLanguesAnomaliesMessage());
     }
 
     public function testNoLangueAnomalieWhenCountMatchesOriginSource(): void
@@ -128,7 +128,7 @@ class PersonnageAnomalieTest extends TestCase
         $pl = $this->makePersonnageLangue($this->makeLangue('Commun'), 'ORIGINE');
         $personnage->addPersonnageLangues($pl);
 
-        self::assertSame('', $personnage->getLanguesAnomaliesMessage());
+        static::assertSame('', $personnage->getLanguesAnomaliesMessage());
     }
 
     public function testLangueAnomalieWhenTooManyLangues(): void
@@ -138,7 +138,7 @@ class PersonnageAnomalieTest extends TestCase
         $personnage->addPersonnageLangues($this->makePersonnageLangue($this->makeLangue('Commun'), 'ORIGINE'));
         $personnage->addPersonnageLangues($this->makePersonnageLangue($this->makeLangue('Elfique'), 'MANUAL'));
 
-        self::assertStringContainsString('en trop', $personnage->getLanguesAnomaliesMessage());
+        static::assertStringContainsString('en trop', $personnage->getLanguesAnomaliesMessage());
     }
 
     public function testLangueAnomalieWhenMissingLangues(): void
@@ -160,7 +160,7 @@ class PersonnageAnomalieTest extends TestCase
         $personnage->addCompetence($competence);
 
         // maxLangueConnue = 1 (ORIGINE) + 1 (competence) = 2, compteLangue = 1 → 1 manquante
-        self::assertStringContainsString('manquante', $personnage->getLanguesAnomaliesMessage());
+        static::assertStringContainsString('manquante', $personnage->getLanguesAnomaliesMessage());
     }
 
     public function testLangueAncienneAnomalieWhenTooMany(): void
@@ -170,7 +170,7 @@ class PersonnageAnomalieTest extends TestCase
         $pl = $this->makePersonnageLangue($this->makeLangue('Ancien Elfique'), 'MANUAL');
         $personnage->addPersonnageLangues($pl);
 
-        self::assertStringContainsString('ancienne', $personnage->getLanguesAnomaliesMessage());
+        static::assertStringContainsString('ancienne', $personnage->getLanguesAnomaliesMessage());
     }
 
     public function testDistinguishesCouranteFromAncienne(): void
@@ -186,8 +186,8 @@ class PersonnageAnomalieTest extends TestCase
         $msg = $personnage->getLanguesAnomaliesMessage();
         // compteLangue=1 vs maxLangueConnue=1 → balanced
         // compteLangueAncienne=1 vs maxLangueAncienneConnue=0 → 1 ancienne en trop
-        self::assertStringContainsString('ancienne', $msg);
-        self::assertStringNotContainsString('en trop à vérifier,', $msg); // courante is balanced
+        static::assertStringContainsString('ancienne', $msg);
+        static::assertStringNotContainsString('en trop à vérifier,', $msg); // courante is balanced
     }
 
     // ── isKnownPotion() ───────────────────────────────────────────────────────
@@ -203,7 +203,7 @@ class PersonnageAnomalieTest extends TestCase
         $candidate = $this->makePotion(1);
         $candidate->setNumero('001');
 
-        self::assertTrue($personnage->isKnownPotion($candidate));
+        static::assertTrue($personnage->isKnownPotion($candidate));
     }
 
     public function testIsKnownPotionReturnsFalseWhenPotionNotOwned(): void
@@ -217,7 +217,7 @@ class PersonnageAnomalieTest extends TestCase
         $candidate = $this->makePotion(1);
         $candidate->setNumero('002');
 
-        self::assertFalse($personnage->isKnownPotion($candidate));
+        static::assertFalse($personnage->isKnownPotion($candidate));
     }
 
     public function testIsKnownPotionReturnsFalseForEmptyPersonnage(): void
@@ -227,7 +227,7 @@ class PersonnageAnomalieTest extends TestCase
         $candidate = $this->makePotion(1);
         $candidate->setNumero('001');
 
-        self::assertFalse($personnage->isKnownPotion($candidate));
+        static::assertFalse($personnage->isKnownPotion($candidate));
     }
 
     // ── getPotionAnomalieMessage() ────────────────────────────────────────────
@@ -236,7 +236,7 @@ class PersonnageAnomalieTest extends TestCase
     {
         $personnage = $this->makePersonnage();
 
-        self::assertSame('', $personnage->getPotionAnomalieMessage());
+        static::assertSame('', $personnage->getPotionAnomalieMessage());
     }
 
     public function testPotionAnomalieWhenTooManyPotions(): void
@@ -245,7 +245,7 @@ class PersonnageAnomalieTest extends TestCase
         // 1 potion niveau 1, 0 expected → 1 en trop
         $personnage->addPotion($this->makePotion(1));
 
-        self::assertStringContainsString('en trop', $personnage->getPotionAnomalieMessage());
+        static::assertStringContainsString('en trop', $personnage->getPotionAnomalieMessage());
     }
 
     public function testPotionAnomalieWhenMissingPotions(): void
@@ -257,7 +257,7 @@ class PersonnageAnomalieTest extends TestCase
         ]);
         $personnage->addCompetence($competence);
 
-        self::assertStringContainsString('manquante', $personnage->getPotionAnomalieMessage());
+        static::assertStringContainsString('manquante', $personnage->getPotionAnomalieMessage());
     }
 
     public function testNoPotionAnomalieWhenCountMatchesExpected(): void
@@ -271,7 +271,7 @@ class PersonnageAnomalieTest extends TestCase
         // Personnage has exactly 1 potion niveau 1
         $personnage->addPotion($this->makePotion(1));
 
-        self::assertSame('', $personnage->getPotionAnomalieMessage());
+        static::assertSame('', $personnage->getPotionAnomalieMessage());
     }
 
     public function testPotionAnomalieChecksCorrectLevel(): void
@@ -287,8 +287,8 @@ class PersonnageAnomalieTest extends TestCase
         // No potion at niveau 2
 
         // niveau 2: expected=1, count=0 → manquante
-        self::assertStringContainsString('manquante', $personnage->getPotionAnomalieMessage());
-        self::assertStringContainsString('niveau 2', $personnage->getPotionAnomalieMessage());
+        static::assertStringContainsString('manquante', $personnage->getPotionAnomalieMessage());
+        static::assertStringContainsString('niveau 2', $personnage->getPotionAnomalieMessage());
     }
 
     public function testLitteratureApprentiSuppressesTropCheck(): void
@@ -303,7 +303,7 @@ class PersonnageAnomalieTest extends TestCase
         $personnage->addPotion($this->makePotion(1));
 
         // With Littérature apprenti, no "en trop" message should appear
-        self::assertStringNotContainsString('en trop', $personnage->getPotionAnomalieMessage());
+        static::assertStringNotContainsString('en trop', $personnage->getPotionAnomalieMessage());
     }
 
     // ── getSortAnomalieMessage() ──────────────────────────────────────────────
@@ -312,7 +312,7 @@ class PersonnageAnomalieTest extends TestCase
     {
         $personnage = $this->makePersonnage();
 
-        self::assertSame('', $personnage->getSortAnomalieMessage());
+        static::assertSame('', $personnage->getSortAnomalieMessage());
     }
 
     public function testSortAnomalieWhenMissingSorts(): void
@@ -323,7 +323,7 @@ class PersonnageAnomalieTest extends TestCase
         ]);
         $personnage->addCompetence($competence);
 
-        self::assertStringContainsString('manquant', $personnage->getSortAnomalieMessage());
+        static::assertStringContainsString('manquant', $personnage->getSortAnomalieMessage());
     }
 
     public function testNoSortAnomalieWhenCountMatchesExpected(): void
@@ -335,7 +335,7 @@ class PersonnageAnomalieTest extends TestCase
         $personnage->addCompetence($competence);
         $personnage->addSort($this->makeSort(1));
 
-        self::assertSame('', $personnage->getSortAnomalieMessage());
+        static::assertSame('', $personnage->getSortAnomalieMessage());
     }
 
     // ── getPrieresAnomalieMessage() ───────────────────────────────────────────
@@ -344,7 +344,7 @@ class PersonnageAnomalieTest extends TestCase
     {
         $personnage = $this->makePersonnage();
 
-        self::assertSame('', $personnage->getPrieresAnomalieMessage());
+        static::assertSame('', $personnage->getPrieresAnomalieMessage());
     }
 
     public function testPriereAnomalieWhenTooManyPrieres(): void
@@ -353,7 +353,7 @@ class PersonnageAnomalieTest extends TestCase
         // 1 prière niveau 1, 0 expected → 1 en trop
         $personnage->addPriere($this->makePriere(1));
 
-        self::assertStringContainsString('en trop', $personnage->getPrieresAnomalieMessage());
+        static::assertStringContainsString('en trop', $personnage->getPrieresAnomalieMessage());
     }
 
     public function testPriereAnomalieWhenMissingPrieres(): void
@@ -364,7 +364,7 @@ class PersonnageAnomalieTest extends TestCase
         ]);
         $personnage->addCompetence($competence);
 
-        self::assertStringContainsString('manquant', $personnage->getPrieresAnomalieMessage());
+        static::assertStringContainsString('manquant', $personnage->getPrieresAnomalieMessage());
     }
 
     public function testNoPriereAnomalieWhenCountMatchesExpected(): void
@@ -376,7 +376,7 @@ class PersonnageAnomalieTest extends TestCase
         $personnage->addCompetence($competence);
         $personnage->addPriere($this->makePriere(1));
 
-        self::assertSame('', $personnage->getPrieresAnomalieMessage());
+        static::assertSame('', $personnage->getPrieresAnomalieMessage());
     }
 
     public function testPriereAnomaliePerLevelDetection(): void
@@ -390,6 +390,6 @@ class PersonnageAnomalieTest extends TestCase
         $personnage->addPriere($this->makePriere(1)); // wrong level - surplus at niveau 1
 
         // niveau 1: expected=0, count=1 → en trop
-        self::assertStringContainsString('niveau 1', $personnage->getPrieresAnomalieMessage());
+        static::assertStringContainsString('niveau 1', $personnage->getPrieresAnomalieMessage());
     }
 }

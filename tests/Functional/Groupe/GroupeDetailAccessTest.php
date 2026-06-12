@@ -41,7 +41,7 @@ class GroupeDetailAccessTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/groupe/' . $groupe->getId());
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testNonMemberCannotAccessGroupeDetail(): void
@@ -54,7 +54,7 @@ class GroupeDetailAccessTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/groupe/' . $groupe->getId());
 
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 
     public function testAnonymousIsRedirectedFromGroupeDetail(): void
@@ -64,7 +64,7 @@ class GroupeDetailAccessTest extends WebTestCase
 
         $client->request('GET', '/groupe/' . $groupe->getId());
 
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 
     // -------------------------------------------------------------------------
@@ -89,7 +89,7 @@ class GroupeDetailAccessTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/groupe/' . $groupe->getId());
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     // -------------------------------------------------------------------------
@@ -109,7 +109,7 @@ class GroupeDetailAccessTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/groupe/' . $groupe->getId() . '/gn/' . $gn->getId() . '/' . $groupeGn->getId());
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testNonMemberOfSpecificGroupeGnCannotAccessItEvenIfMemberOfAnotherGn(): void
@@ -129,13 +129,13 @@ class GroupeDetailAccessTest extends WebTestCase
         $client->loginUser($user);
         // Accède à la page générale du groupe → 200 (membre d'au moins un GN)
         $client->request('GET', '/groupe/' . $groupe->getId());
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         // Tente d'accéder au GN 2 via URL → la page s'affiche (CAN_READ) mais canReadPrivate=false
         // Le test vérifie que la page ne retourne pas 403 (accès lecture ok)
         // mais que le contenu privé n'est pas affiché (testé séparément si besoin)
         $client->request('GET', '/groupe/' . $groupe->getId() . '/gn/' . $gn2->getId() . '/' . $groupeGn2->getId());
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     // -------------------------------------------------------------------------
@@ -156,11 +156,11 @@ class GroupeDetailAccessTest extends WebTestCase
 
         // Avec groupeGn dans l'URL
         $client->request('GET', '/groupe/' . $groupe->getId() . '/gn/' . $gn->getId() . '/' . $groupeGn->getId());
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         // Sans groupeGn dans l'URL : getUserLastGroupeGn retrouve automatiquement le bon GroupeGn
         $client->request('GET', '/groupe/' . $groupe->getId());
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
 
         // Les deux accès donnent le même résultat (pas de bypass possible)
     }
@@ -179,6 +179,6 @@ class GroupeDetailAccessTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/groupe/' . $groupe->getId());
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 }

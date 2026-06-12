@@ -23,7 +23,7 @@ class InterJeuAccessTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/inter-jeu');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testAdminCanAccessList(): void
@@ -34,7 +34,7 @@ class InterJeuAccessTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/inter-jeu');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
     }
 
     public function testUserCannotAccessList(): void
@@ -45,7 +45,7 @@ class InterJeuAccessTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/inter-jeu');
 
-        self::assertResponseRedirects('/access_denied');
+        static::assertResponseRedirects('/access_denied');
     }
 
     public function testAnonymousIsRedirectedToLogin(): void
@@ -53,7 +53,7 @@ class InterJeuAccessTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/inter-jeu');
 
-        self::assertResponseRedirects();
+        static::assertResponseRedirects();
     }
 
     public function testListRendersWithoutError(): void
@@ -65,7 +65,7 @@ class InterJeuAccessTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', '/inter-jeu');
 
-        self::assertResponseIsSuccessful();
-        self::assertSelectorNotExists('.alert-danger');
+        static::assertResponseIsSuccessful();
+        static::assertSelectorNotExists('.alert-danger');
     }
 }

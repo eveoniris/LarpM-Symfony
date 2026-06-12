@@ -41,7 +41,7 @@ class GroupeServiceTest extends KernelTestCase
     {
         $groupe = GroupeFactory::createOne();
 
-        self::assertSame(0, $this->groupeService->getAllRichesse($groupe));
+        static::assertSame(0, $this->groupeService->getAllRichesse($groupe));
     }
 
     public function testGetAllRichesseWithStableTerritoire(): void
@@ -54,7 +54,7 @@ class GroupeServiceTest extends KernelTestCase
             'groupe' => $groupe,
         ]);
 
-        self::assertSame(300, $this->groupeService->getAllRichesse($groupe));
+        static::assertSame(300, $this->groupeService->getAllRichesse($groupe));
     }
 
     public function testGetAllRichesseWithInstableTerritoire(): void
@@ -67,7 +67,7 @@ class GroupeServiceTest extends KernelTestCase
             'groupe' => $groupe,
         ]);
 
-        self::assertSame(150, $this->groupeService->getAllRichesse($groupe));
+        static::assertSame(150, $this->groupeService->getAllRichesse($groupe));
     }
 
     public function testGetAllRichesseWithMultipleTerritoires(): void
@@ -86,7 +86,7 @@ class GroupeServiceTest extends KernelTestCase
             'groupe' => $groupe,
         ]);
 
-        self::assertSame(375, $this->groupeService->getAllRichesse($groupe));
+        static::assertSame(375, $this->groupeService->getAllRichesse($groupe));
     }
 
     // -------------------------------------------------------------------------
@@ -97,7 +97,7 @@ class GroupeServiceTest extends KernelTestCase
     {
         // No logged-in user in KernelTestCase → security->getUser() returns null immediately.
         // The entity is never accessed, so a bare new() is enough.
-        self::assertFalse($this->groupeService->isUserIsGroupeGnMember(new GroupeGn()));
+        static::assertFalse($this->groupeService->isUserIsGroupeGnMember(new GroupeGn()));
     }
 
     // -------------------------------------------------------------------------
@@ -106,7 +106,7 @@ class GroupeServiceTest extends KernelTestCase
 
     public function testIsUserIsGroupeGnResponsableReturnsFalseWithoutSecurityContext(): void
     {
-        self::assertFalse($this->groupeService->isUserIsGroupeGnResponsable(new GroupeGn()));
+        static::assertFalse($this->groupeService->isUserIsGroupeGnResponsable(new GroupeGn()));
     }
 
     // -------------------------------------------------------------------------
@@ -115,7 +115,7 @@ class GroupeServiceTest extends KernelTestCase
 
     public function testGetUserLastGroupeGnReturnsNullWithoutSecurityContext(): void
     {
-        self::assertNull($this->groupeService->getUserLastGroupeGn(new Groupe()));
+        static::assertNull($this->groupeService->getUserLastGroupeGn(new Groupe()));
     }
 
     // -------------------------------------------------------------------------
@@ -124,7 +124,7 @@ class GroupeServiceTest extends KernelTestCase
 
     public function testGetUserGroupeGnsReturnsEmptyArrayWithoutSecurityContext(): void
     {
-        self::assertSame([], $this->groupeService->getUserGroupeGns(new Groupe()));
+        static::assertSame([], $this->groupeService->getUserGroupeGns(new Groupe()));
     }
 
     // -------------------------------------------------------------------------
@@ -133,6 +133,6 @@ class GroupeServiceTest extends KernelTestCase
 
     public function testIsUserIsGroupeMemberReturnsFalseWithoutSecurityContext(): void
     {
-        self::assertFalse($this->groupeService->isUserIsGroupeMember(new Groupe()));
+        static::assertFalse($this->groupeService->isUserIsGroupeMember(new Groupe()));
     }
 }

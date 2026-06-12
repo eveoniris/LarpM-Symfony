@@ -51,7 +51,7 @@ class PersonnageServiceTest extends KernelTestCase
         // 2 vivant personnages - below MAX_PER_USER (3)
         PersonnageFactory::createMany(2, ['user' => $user, 'vivant' => true]);
 
-        self::assertTrue($this->personnageService->canCreatePersonnage($user));
+        static::assertTrue($this->personnageService->canCreatePersonnage($user));
     }
 
     public function testCanCreatePersonnageReturnsFalseWhenUserHasMaxPersonnages(): void
@@ -61,7 +61,7 @@ class PersonnageServiceTest extends KernelTestCase
         // 3 vivant personnages - equal to MAX_PER_USER (3)
         PersonnageFactory::createMany(3, ['user' => $user, 'vivant' => true]);
 
-        self::assertFalse($this->personnageService->canCreatePersonnage($user));
+        static::assertFalse($this->personnageService->canCreatePersonnage($user));
     }
 
     public function testCanCreatePersonnageIgnoresDeadPersonnages(): void
@@ -71,13 +71,13 @@ class PersonnageServiceTest extends KernelTestCase
         // 3 dead personnages do NOT count toward the limit
         PersonnageFactory::createMany(3, ['user' => $user, 'vivant' => false]);
 
-        self::assertTrue($this->personnageService->canCreatePersonnage($user));
+        static::assertTrue($this->personnageService->canCreatePersonnage($user));
     }
 
     public function testCanCreatePersonnageReturnsFalseForNullUser(): void
     {
         // No security context in integration test → null user → returns false
-        self::assertFalse($this->personnageService->canCreatePersonnage(null));
+        static::assertFalse($this->personnageService->canCreatePersonnage(null));
     }
 
     // -------------------------------------------------------------------------
@@ -106,7 +106,7 @@ class PersonnageServiceTest extends KernelTestCase
         });
 
         // Age.bonus is null by default → xp = gn.xpCreation only
-        self::assertSame(30, $personnage->getXp());
+        static::assertSame(30, $personnage->getXp());
     }
 
     public function testCreateNewPersonnageAddsAgeBonusXp(): void
@@ -131,7 +131,7 @@ class PersonnageServiceTest extends KernelTestCase
         });
 
         // xp = gn.xpCreation (20) + age.bonus (10) = 30
-        self::assertSame(30, $personnage->getXp());
+        static::assertSame(30, $personnage->getXp());
     }
 
     public function testCreateNewPersonnagePersistsToDatabase(): void
@@ -155,7 +155,7 @@ class PersonnageServiceTest extends KernelTestCase
             $p->setTerritoire($territoire);
         });
 
-        self::assertNotNull($personnage->getId(), 'Personnage should have been persisted with an ID');
+        static::assertNotNull($personnage->getId(), 'Personnage should have been persisted with an ID');
     }
 
     // -------------------------------------------------------------------------
@@ -170,7 +170,7 @@ class PersonnageServiceTest extends KernelTestCase
         $personnage = PersonnageFactory::createOne(['xp' => 100]);
 
         // Personnage does NOT have the competence
-        self::assertFalse($this->personnageService->canTeachCompetence($personnage, $competence));
+        static::assertFalse($this->personnageService->canTeachCompetence($personnage, $competence));
     }
 
     public function testCanTeachCompetenceReturnsFalseWhenCompetenceFamilyHasNoType(): void
@@ -186,6 +186,6 @@ class PersonnageServiceTest extends KernelTestCase
         $personnage->addCompetence($competence);
 
         // hasCompetenceLevel(null, ...) → false even though personnage knows the competence
-        self::assertFalse($this->personnageService->canTeachCompetence($personnage, $competence));
+        static::assertFalse($this->personnageService->canTeachCompetence($personnage, $competence));
     }
 }

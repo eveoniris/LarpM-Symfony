@@ -275,7 +275,7 @@ abstract class BaseUser
         return $this->username ?: $this->email;
     }
 
-    public function setUsername(string $username): static
+    public function setUsername(?string $username): static
     {
         $this->username = $username;
 
@@ -1024,7 +1024,7 @@ abstract class BaseUser
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->username;
+        return (string) $this->email;
     }
 
     public function removeBackground(Background $background): static

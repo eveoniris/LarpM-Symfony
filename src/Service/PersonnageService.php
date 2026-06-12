@@ -2073,8 +2073,8 @@ class PersonnageService
         $langueRepository = $this->entityManager->getRepository(Langue::class);
         $hasOne = false;
 
-        // On force les personnages sans langue à avoir Aquillonien
-        $baseLangue = $langueRepository->findOneBy(['label' => 'Aquillonien']);
+        // On force les personnages sans langue à avoir Aquilonien (id=2)
+        $baseLangue = $langueRepository->find(2);
 
         // Ajout des langues en fonction de l'origine du personnage
         $langue = $personnage->getOrigine()?->getLangue();
@@ -2088,7 +2088,7 @@ class PersonnageService
         }
 
         // Ajout des langues secondaires lié à l'origine du personnage
-        foreach ($personnage->getOrigine()?->getLangues() as $langue) {
+        foreach ($personnage->getOrigine()?->getLangues() ?? [] as $langue) {
             if ($personnage->isKnownLanguage($langue)) {
                 continue;
             }
@@ -2115,7 +2115,7 @@ class PersonnageService
             }
         }
 
-        if (!$hasOne) {
+        if (!$hasOne && $baseLangue) {
             $personnageLangue = new PersonnageLangues();
             $personnageLangue->setPersonnage($personnage);
             $personnageLangue->setLangue($baseLangue);

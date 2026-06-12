@@ -31,10 +31,10 @@ class ReligionVisibilityTest extends WebTestCase
 
         $client->request('GET', '/religion');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
         $content = (string) $client->getResponse()->getContent();
-        self::assertStringNotContainsString('Culte Interdit', $content);
-        self::assertStringContainsString('Foi du Soleil', $content);
+        static::assertStringNotContainsString('Culte Interdit', $content);
+        static::assertStringContainsString('Foi du Soleil', $content);
     }
 
     public function testScenaristeCanSeeSecretReligion(): void
@@ -48,9 +48,9 @@ class ReligionVisibilityTest extends WebTestCase
 
         $client->request('GET', '/religion');
 
-        self::assertResponseIsSuccessful();
+        static::assertResponseIsSuccessful();
         $content = (string) $client->getResponse()->getContent();
-        self::assertStringContainsString('Culte Interdit', $content);
+        static::assertStringContainsString('Culte Interdit', $content);
     }
 
     public function testScenaristeCannotSeeModifierButton(): void
@@ -64,9 +64,9 @@ class ReligionVisibilityTest extends WebTestCase
 
         $crawler = $client->request('GET', '/religion');
 
-        self::assertResponseIsSuccessful();
-        self::assertCount(0, $crawler->filter('a[title="Modifier"]'));
-        self::assertCount(0, $crawler->filter('a[title="Supprimer"]'));
+        static::assertResponseIsSuccessful();
+        static::assertCount(0, $crawler->filter('a[title="Modifier"]'));
+        static::assertCount(0, $crawler->filter('a[title="Supprimer"]'));
     }
 
     public function testScenaristeCanSeeDetailButton(): void
@@ -80,8 +80,8 @@ class ReligionVisibilityTest extends WebTestCase
 
         $crawler = $client->request('GET', '/religion');
 
-        self::assertResponseIsSuccessful();
-        self::assertGreaterThan(0, $crawler->filter('a[title="Détail"]')->count());
+        static::assertResponseIsSuccessful();
+        static::assertGreaterThan(0, $crawler->filter('a[title="Détail"]')->count());
     }
 
     public function testAdminCanSeeModifierButton(): void
@@ -95,7 +95,7 @@ class ReligionVisibilityTest extends WebTestCase
 
         $crawler = $client->request('GET', '/religion');
 
-        self::assertResponseIsSuccessful();
-        self::assertGreaterThan(0, $crawler->filter('a[title="Modifier"]')->count());
+        static::assertResponseIsSuccessful();
+        static::assertGreaterThan(0, $crawler->filter('a[title="Modifier"]')->count());
     }
 }

@@ -208,12 +208,9 @@ class InterController extends AbstractController
     public function chronologieAction(Request $request, InterJeu $inter): RedirectResponse|Response
     {
         if (!$inter->canGenereteChronologie()) {
-            $this->addFlash(
-                'error',
-                $inter->isChronologieGeneree()
-                    ? 'La chronologie a déjà été générée pour cet inter-jeu.'
-                    : 'L\'inter-jeu n\'est pas encore terminé.',
-            );
+            $this->addFlash('error', $inter->isChronologieGeneree()
+                ? 'La chronologie a déjà été générée pour cet inter-jeu.'
+                : 'L\'inter-jeu n\'est pas encore terminé.');
 
             return $this->redirectToRoute('inter.detail', ['inter' => $inter->getId()], 303);
         }

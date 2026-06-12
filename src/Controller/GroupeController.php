@@ -1288,9 +1288,12 @@ class GroupeController extends AbstractController
             return $r;
         }
 
-        $form = $this->createFormBuilder()->add('remove', SubmitType::class, [
-            'label' => 'Retirer le territoire',
-        ])->getForm();
+        $form = $this
+            ->createFormBuilder()
+            ->add('remove', SubmitType::class, [
+                'label' => 'Retirer le territoire',
+            ])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1618,11 +1621,11 @@ class GroupeController extends AbstractController
     /**
      * Affiche le détail d'un groupe.
      */
-    #[Route('/{groupe}', name: 'detail')]
-    #[Route('/{groupe}/detail/{tab}', name: 'detail.tab')]
-    #[Route('/{groupe}/gn/{gn}', name: 'detail.gn')] // TODO ne va pas pour la liste rejoindre groupe
-    #[Route('/{groupe}/gn/{gn}/{groupeGn}', name: 'groupeGn')]
-    #[Route('/{groupe}/detail/{tab}/gn/{gn}/groupeGn/{groupeGn}', name: 'detail.groupeGn')]
+    #[Route('/{groupe}', name: 'detail', requirements: ['groupe' => '\d+'])]
+    #[Route('/{groupe}/detail/{tab}', name: 'detail.tab', requirements: ['groupe' => '\d+'])]
+    #[Route('/{groupe}/gn/{gn}', name: 'detail.gn', requirements: ['groupe' => '\d+'])] // TODO ne va pas pour la liste rejoindre groupe
+    #[Route('/{groupe}/gn/{gn}/{groupeGn}', name: 'groupeGn', requirements: ['groupe' => '\d+'])]
+    #[Route('/{groupe}/detail/{tab}/gn/{gn}/groupeGn/{groupeGn}', name: 'detail.groupeGn', requirements: ['groupe' => '\d+'])]
     public function detailAction(
         #[MapEntity]
         ?Groupe $groupe,
