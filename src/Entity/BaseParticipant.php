@@ -63,6 +63,9 @@ class BaseParticipant
     #[ManyToOne(targetEntity: Personnage::class, cascade: ['persist'], inversedBy: 'participants')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: true)]
     protected ?Personnage $personnage;
+    #[ManyToOne(targetEntity: Personnage::class)]
+    #[JoinColumn(name: 'personnage_releve_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    protected ?Personnage $personnageReleve = null;
     #[ManyToOne(targetEntity: Billet::class, inversedBy: 'participants')]
     #[JoinColumn(name: 'billet_id', referencedColumnName: 'id')]
     protected ?Billet $billet = null;
@@ -332,6 +335,18 @@ class BaseParticipant
     public function setPersonnage(?Personnage $personnage = null): static
     {
         $this->personnage = $personnage;
+
+        return $this;
+    }
+
+    public function getPersonnageReleve(): ?Personnage
+    {
+        return $this->personnageReleve;
+    }
+
+    public function setPersonnageReleve(?Personnage $personnageReleve = null): static
+    {
+        $this->personnageReleve = $personnageReleve;
 
         return $this;
     }

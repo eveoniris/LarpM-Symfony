@@ -331,7 +331,7 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     {
         $available = [];
         foreach ($this->personnages as $personnage) {
-            if (!($personnage->getVivant() && $personnage->getId() !== $this->getPersonnageSecondaire()?->getId())) {
+            if (!$personnage->getVivant()) {
                 continue;
             }
 

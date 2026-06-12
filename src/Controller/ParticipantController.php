@@ -39,6 +39,7 @@ use App\Form\JoueurXpType;
 use App\Form\MessageType;
 use App\Form\Participant\ParticipantGroupeType;
 use App\Form\Participant\ParticipantNewType;
+use App\Form\Participant\ParticipantPersonnageReleveType;
 use App\Form\Participant\ParticipantRemoveType;
 use App\Form\Participant\ParticipantRetourType;
 use App\Form\ParticipantBilletType;
@@ -1532,6 +1533,50 @@ class ParticipantController extends AbstractController
         return $this->render('participant/personnageSecondaire.twig', [
             'participant' => $participant,
             'personnageSecondaires' => $repo->findAll(),
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Choix du personnage de relève par un utilisateur (une seule fois, sauf scénariste/gestion).
+     */
+    #[Route('/participant/{participant}/personnageReleve', name: 'participant.personnageReleve')]
+    #[IsGranted(Role::USER->value)]
+    public function personnageReleveAction(
+        Request $request,
+        Participant $participant,
+    ): RedirectResponse|Response {
+        $isAdmin = $this->isGranted(Role::SCENARISTE->value)
+            || $this->isGranted(Role::ORGA->value)
+            || $this->isGranted(Role::ADMIN->value);
+
+        if (!$isAdmin && $participant->getUser()?->getId() !== $this->getUser()?->getId()) {
+            throw new AccessDeniedException();
+        }
+
+        if ($participant->getPersonnageReleve() !== null && !$isAdmin) {
+            $this->addFlash('warning', 'Vous avez déjà choisi un personnage de relève. Contactez un scénariste ou la gestion pour le modifier.');
+
+            return $this->redirectToRoute('participant.index', ['participant' => $participant->getId()], 303);
+        }
+
+        $form = $this->createForm(ParticipantPersonnageReleveType::class, $participant, [
+            'user_id' => $participant->getUser()?->getId(),
+            'personnage_id' => $participant->getPersonnage()?->getId() ?? 0,
+        ])->add('choice', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($participant);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Le personnage de relève a été enregistré.');
+
+            return $this->redirectToRoute('participant.index', ['participant' => $participant->getId()], 303);
+        }
+
+        return $this->render('participant/personnageReleve.twig', [
+            'participant' => $participant,
             'form' => $form->createView(),
         ]);
     }

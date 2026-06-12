@@ -15,11 +15,9 @@
         {% set adminDangerActions = [
             {'path': path('personnage.transfert', {'personnage': personnage.id}), 'label': 'Transférer le personnage'},
         ] %}
-        {% if personnage.user is defined and personnage.user and personnage.user.personnageSecondaire is defined and personnage.user.personnageSecondaire %}
-            {% set adminDangerActions = adminDangerActions|merge([
-                {'path': path('personnage.secondaire.delete', {'personnage': personnage.id}), 'label': 'Supprimer le personnage secondaire'},
-            ]) %}
-        {% endif %}
+        {% set adminDangerActions = adminDangerActions|merge([
+            {'path': path('personnage.releve.delete', {'personnage': personnage.id}), 'label': 'Supprimer le personnage de relève'},
+        ]) %}
         {% set adminDangerActions = adminDangerActions|merge([
             {'path': path('personnage.delete', {'personnage': personnage.id}), 'label': 'Supprimer'},
         ]) %}
@@ -146,11 +144,8 @@
         {% endset %}
     {% endif %}
 
-    {# Secondaire #}
+    {# Secondaire — le personnage de relève est maintenant sur Participant, non sur User #}
     {% set canSeeSecondaire = false %}
-    {% if personnage.user.personnageSecondaire.id is defined %}
-    {% set canSeeSecondaire = personnage.user.personnageSecondaire.id == personnage.id %}
-    {% endif %}
     {% set secondaireHtml %}
         <span class="text-danger">Personnage secondaire du joueur</span>
     {% endset %}

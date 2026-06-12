@@ -31,9 +31,8 @@ class UserPersonnageDefaultType extends AbstractType
             'query_builder' => static fn (EntityRepository $er) => $er
                 ->createQueryBuilder('p')
                 ->join('p.user', 'u')
-                ->where('u.id = :userId and p.id <> :secondaireId')
-                ->setParameter('userId', $options['user_id'])
-                ->setParameter('secondaireId', $options['secondaire_id']),
+                ->where('u.id = :userId')
+                ->setParameter('userId', $options['user_id']),
         ]);
     }
 
@@ -45,7 +44,6 @@ class UserPersonnageDefaultType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'user_id' => null,
-            'secondaire_id' => null,
         ]);
     }
 

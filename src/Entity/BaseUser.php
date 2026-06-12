@@ -22,7 +22,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Entity(repositoryClass: BaseUserRepository::class)]
 #[ORM\Table(name: 'user')]
 #[ORM\Index(columns: ['etat_civil_id'], name: 'fk_user_etat_civil1_idx')]
-#[ORM\Index(columns: ['personnage_secondaire_id'], name: 'fk_user_personnage_secondaire1_idx')]
 #[ORM\Index(columns: ['personnage_id'], name: 'fk_user_personnage1_idx')]
 #[ORM\UniqueConstraint(name: 'email_UNIQUE', columns: ['email'])]
 #[ORM\UniqueConstraint(name: 'username_UNIQUE', columns: ['username'])]
@@ -190,10 +189,6 @@ abstract class BaseUser
     #[ORM\OneToOne(inversedBy: 'user', targetEntity: EtatCivil::class, cascade: ['persist', 'remove'])]
     #[JoinColumn(name: 'etat_civil_id', referencedColumnName: 'id')]
     protected ?EtatCivil $etatCivil = null;
-
-    #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
-    #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id')]
-    protected ?Personnage $personnageSecondaire = null;
 
     #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'users')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
@@ -819,24 +814,6 @@ abstract class BaseUser
     public function getPersonnageBackgrounds()
     {
         return $this->personnageBackgrounds;
-    }
-
-    /**
-     * Get PersonnageSecondaire entity (many to one).
-     */
-    public function getPersonnageSecondaire(): ?Personnage
-    {
-        return $this->personnageSecondaire;
-    }
-
-    /**
-     * Set Personnage entity (many to one).
-     */
-    public function setPersonnageSecondaire(?Personnage $personnageSecondaire = null): static
-    {
-        $this->personnageSecondaire = $personnageSecondaire;
-
-        return $this;
     }
 
     /**
