@@ -1,0 +1,61 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Personnage de relève{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : participant.gn.label, 'route': path('gn.detail', {'gn': participant.gn.id}) },
+            {'name' : 'Choix du personnage de relève' }
+        ]
+    } %}
+
+<div class="well well-sm">
+    <div class="header">
+        <h5>Choix du personnage de relève</h5>
+    </div>
+
+    {% set noticeHtml %}
+        Le personnage de relève est celui que vous jouerez si <strong>votre personnage principal venait à trépasser</strong>
+        ou si vous souhaitez l'utiliser à sa place dans une instance.
+        <strong>Ce choix est définitif</strong> : seul un scénariste ou la gestion pourra le modifier par la suite.
+    {% endset %}
+
+    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : noticeHtml} %}
+
+    {% set canModify = is_granted('ROLE_SCENARISTE') or is_granted('ROLE_ORGA') or is_granted('ROLE_ADMIN') %}
+
+    {% if participant.personnageReleve and not canModify %}
+        {% set warningHtml %}
+            Vous avez déjà choisi <strong>{{ participant.personnageReleve.identity }}</strong> comme personnage de relève.
+            Pour le modifier, contactez un scénariste ou la gestion.
+        {% endset %}
+        {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : warningHtml} %}
+    {% else %}
+        {% if participant.personnageReleve %}
+            {% set infoHtml %}
+                Personnage de relève actuel : <strong>{{ participant.personnageReleve.identity }}</strong>. Modification possible car vous avez les droits d'administration.
+            {% endset %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : infoHtml} %}
+        {% endif %}
+        <div class="row">
+            <div class="col-md-6">
+                {{ form_start(form) }}
+                <div class="card text-bg mb-3 overflow-auto">
+                    <div class="header"><h5>{{ field_label(form.personnageReleve) }}</h5></div>
+                    <div class="card-body">
+                        {{ form_errors(form) }}
+                        {{ form_widget(form.personnageReleve) }}
+                        <div class="w-100 d-flex justify-content-center m-2">
+                            {{ form_row(form.choice, { 'label': 'Enregistrer', 'attr' : {'class' : 'btn btn-secondary'} }) }}
+                        </div>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock body %}
