@@ -42,12 +42,11 @@
                         {{ participantHasRestauration.restauration.label }}<br/>
                     {% endfor %}
                     <strong>Personnage Secondaire : </strong>
-                    {% if personnage.user.personnageSecondaire %}
-                        {{ personnage.user.personnageSecondaire.printLabel }}
-                    {% endif %}
                     {% if participant.personnageSecondaire %}
                         {{ participant.personnageSecondaire.classe.label }}
-                    {% elseif not personnage.user.personnageSecondaire %}
+                    {% elseif participant.personnageReleve %}
+                        Relève : {{ participant.personnageReleve.identity }}
+                    {% else %}
                         PAS DE PERSONNAGE SECONDAIRE
                     {% endif %}
                 {% endif %}

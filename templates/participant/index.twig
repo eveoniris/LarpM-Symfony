@@ -63,6 +63,17 @@
                                 class="fa fa-pencil" aria-hidden="true"></i> Modifier</a>
                     </li>
 
+                    <li class="list-group-item">
+                        {% if participant.personnageReleve %}
+                            Personnage de relève :&nbsp;
+                            <strong>{{ participant.personnageReleve.identity }}</strong>
+                        {% else %}
+                            Vous n'avez pas encore choisi de personnage de relève.
+                        {% endif %}
+                        <a href="{{ path('participant.personnageReleve', {'participant': participant.id}) }}"><i
+                                class="fa fa-pencil" aria-hidden="true"></i> {% if participant.personnageReleve %}Modifier{% else %}Choisir{% endif %}</a>
+                    </li>
+
                     {% if participant.personnage %}
                         {% for membre in participant.personnage.membres %}
                             <li class="list-group-item"><a
