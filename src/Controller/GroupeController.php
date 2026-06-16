@@ -1322,12 +1322,12 @@ class GroupeController extends AbstractController
     #[Route('/{groupe}/unlock', name: 'unlock')]
     public function unlockAction(#[MapEntity] Groupe $groupe): RedirectResponse
     {
-        // only admin can unlock
-        if (!$this->isGranted(Role::ADMIN->value)) {
-            $this->addFlash('error', "Il n'est plus possible de déverrouiller les groupes");
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
-        }
+        // only admin can unlock : TODO lock phase from GN STEP
+        //if (!$this->isGranted(Role::ADMIN->value)) {
+        //    $this->addFlash('error', "Il n'est plus possible de déverrouiller les groupes");
+        //
+        //    return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+        //}
 
         $groupe->setLock(false);
         $this->entityManager->persist($groupe);
