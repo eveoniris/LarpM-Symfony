@@ -68,13 +68,10 @@ jobs:
             git fetch origin prod
             git reset --hard origin/prod
 
-            echo "==> Restauration des tuiles colorées (public/img/map/) si absentes"
-            if [ ! -d public/img/map ] || [ -z "\$(ls -A public/img/map 2>/dev/null)" ]; then
-              cp -r assets/img/map public/img/map
-              echo "  -> tuiles copiées depuis assets/img/map/"
-            else
-              echo "  -> tuiles déjà présentes, skip"
-            fi
+            echo "==> Restauration des tuiles colorées (public/img/map/)"
+            mkdir -p public/img/map
+            cp -rf assets/img/map/. public/img/map/
+            echo "  -> tuiles synchronisées depuis assets/img/map/"
 
             echo "==> Resolving Composer"
             if command -v composer &>/dev/null; then
