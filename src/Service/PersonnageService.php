@@ -51,6 +51,7 @@ use App\Enum\BonusType;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\LevelType;
 use App\Enum\LogActionType;
+use App\Enum\Role;
 use App\Enum\TriggerType;
 use App\Form\PersonnageFindType;
 use App\Repository\ParticipantRepository;
@@ -265,10 +266,26 @@ class PersonnageService
             return false;
         }
 
+        // Le staff (admin, orga, scénariste, gestion) n'est pas soumis à la limite par utilisateur
+        if ($this->isStaff()) {
+            return true;
+        }
+
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
         return self::MAX_PER_USER > $personnageRepository->countUser($user);
+    }
+
+    /**
+     * L'utilisateur connecté fait-il partie du staff exempté de la limite de personnages ?
+     */
+    public function isStaff(): bool
+    {
+        return $this->security->isGranted(Role::ADMIN->value)
+            || $this->security->isGranted(Role::ORGA->value)
+            || $this->security->isGranted(Role::SCENARISTE->value)
+            || $this->security->isGranted(Role::GESTION->value);
     }
 
     /**

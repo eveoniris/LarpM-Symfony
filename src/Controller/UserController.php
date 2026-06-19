@@ -726,14 +726,13 @@ class UserController extends AbstractController
         #[MapEntity]
         User $user,
         PersonnageService $personnageService,
-        PersonnageRepository $personnageRepository,
     ): RedirectResponse|Response {
         $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
 
         $form = $this->createForm(PersonnageType::class, new Personnage());
 
-        // Check if user can create new personnage, admin always can
-        if (!$this->can(self::IS_ADMIN) && PersonnageService::MAX_PER_USER <= $personnageRepository->countUser($user)) {
+        // Check if user can create new personnage; staff (admin/orga/scénariste/gestion) always can
+        if (!$personnageService->canCreatePersonnage($user)) {
             $form->addError(new FormError('Vous avez atteind le nombre maximum de personnage possible'));
             $this->addFlash('error', 'Vous avez atteind le nombre maximum de personnage possible');
 
