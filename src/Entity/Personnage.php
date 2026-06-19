@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
+use App\Enum\LangueSourceType;
 use App\Enum\LevelType;
 use App\Enum\TriggerType;
 use App\Repository\PersonnageRepository;
@@ -1095,7 +1096,11 @@ class Personnage extends BasePersonnage implements Stringable
             }
 
             $source = $personnageLangue->getSource();
-            $baseSources = ['ORIGINE', 'GROUPE', 'ORIGINE et GROUPE'];
+            $baseSources = [
+                LangueSourceType::ORIGINE->value,
+                LangueSourceType::GROUPE->value,
+                LangueSourceType::ORIGINE_ET_GROUPE->value,
+            ];
             if (\in_array($source, $baseSources)) {
                 ++$maxLangueConnue;
             }

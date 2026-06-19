@@ -97,8 +97,12 @@
                                  {% endif %}
                              </div>
                              {% if personnageLangue.id is defined and personnageLangue.id %}
-                                 <a class="btn btn-sm btn-secondary"
-                                    href="{{ path('personnage.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a>
+                                 <div class="d-flex gap-2">
+                                     <a class="btn btn-sm btn-secondary"
+                                        href="{{ path('personnage.edit.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Éditer</a>
+                                     <a class="btn btn-sm btn-secondary"
+                                        href="{{ path('personnage.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a>
+                                 </div>
                              {% endif %}
                          </div>
                      {% else %}
