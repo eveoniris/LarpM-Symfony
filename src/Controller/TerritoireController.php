@@ -27,6 +27,7 @@ use App\Form\Territoire\TerritoireCultureType;
 use App\Form\Territoire\TerritoireDeleteType;
 use App\Form\Territoire\TerritoireFrontaliersCulturelType;
 use App\Form\Territoire\TerritoireIngredientsType;
+use App\Form\Territoire\TerritoireLangueType;
 use App\Form\Territoire\TerritoireLoiType;
 use App\Form\Territoire\TerritoireSanctuaireReligionType;
 use App\Form\Territoire\TerritoireStatutType;
@@ -35,6 +36,7 @@ use App\Form\Territoire\TerritoireType;
 use App\Repository\BonusRepository;
 use App\Repository\TerritoireRepository;
 use App\Security\MultiRolesExpression;
+use App\Security\Voter\TerritoireVoter;
 use App\Service\GeoJson;
 use App\Service\OrderBy;
 use App\Service\PagerService;
@@ -880,6 +882,41 @@ class TerritoireController extends AbstractController
         }
 
         return $this->render('territoire/culture.twig', [
+            'territoire' => $territoire,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Met à jour les langues d'un territoire.
+     *
+     * Accessible aux organisateurs/cartographes et au scénariste du groupe
+     * propriétaire du territoire (voir TerritoireVoter).
+     */
+    #[IsGranted(TerritoireVoter::EDIT_LANGUE, subject: 'territoire')]
+    #[Route('/territoire/{territoire}/updateLangues', name: 'territoire.updateLangues')]
+    public function updateLanguesAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        Territoire $territoire,
+    ): RedirectResponse|Response {
+        $form = $this->createForm(TerritoireLangueType::class, $territoire)->add('update', SubmitType::class, [
+            'label' => 'Sauvegarder',
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($territoire);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le territoire a été mis à jour');
+
+            return $this->redirectToRoute('territoire.detail', ['territoire' => $territoire->getId()], 303);
+        }
+
+        return $this->render('territoire/langue.twig', [
             'territoire' => $territoire,
             'form' => $form->createView(),
         ]);

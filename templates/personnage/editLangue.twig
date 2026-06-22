@@ -1,0 +1,15 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Personnages{% endblock title %}
+
+{% block body %}
+
+    {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Modification d'une langue"} %}
+
+    <div class="well bs-component">
+    {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : "Modification de la mention de la langue <b>#{personnageLangue.langue}</b> du personnage #{personnage.publicName}"} %}
+
+        {{ form(form) }}
+    </div>
+
+{% endblock body %}

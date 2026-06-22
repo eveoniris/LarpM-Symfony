@@ -48,6 +48,7 @@ use App\Enum\ChronologyType;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
+use App\Enum\LangueSourceType;
 use App\Enum\LevelType;
 use App\Enum\LogActionType;
 use App\Enum\Role;
@@ -1607,6 +1608,57 @@ class PersonnageController extends AbstractController
         }
 
         return $this->render('personnage/removeLangue.twig', [
+            'form' => $form->createView(),
+            'personnage' => $personnage,
+            'personnageLangue' => $personnageLangue,
+        ]);
+    }
+
+    /**
+     * Modification de la mention (source) d'une langue d'un personnage.
+     */
+    #[Route('/{personnage}/editLangue/{personnageLangue}', name: 'edit.langue')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
+    public function adminEditLangueAction(
+        Request $request,
+        #[MapEntity]
+        Personnage $personnage,
+        #[MapEntity]
+        PersonnageLangues $personnageLangue,
+    ): RedirectResponse|Response {
+        $participant = $this->getParticipant($personnage, $request);
+        if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
+            return $r;
+        }
+
+        $form = $this
+            ->createFormBuilder()
+            ->add('source', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Mention (source) de la langue',
+                'choices' => array_flip(LangueSourceType::getLabels()),
+                'data' => $personnageLangue->getSource(),
+            ])
+            ->add('save', SubmitType::class, [
+                'label' => 'Valider vos modifications',
+                'attr' => ['class' => 'btn btn-secondary'],
+            ])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $personnageLangue->setSource($data['source']);
+            $this->log($personnageLangue, LogActionType::ADD_LANGUE);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le personnage a été sauvegardé.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
+        return $this->render('personnage/editLangue.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'personnageLangue' => $personnageLangue,
@@ -4730,6 +4782,12 @@ class PersonnageController extends AbstractController
                 'choice_label' => 'label',
                 'data' => $originalLanguages,
             ])
+            ->add('source', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Mention (source) à appliquer aux langues ajoutées',
+                'choices' => array_flip(LangueSourceType::getLabels()),
+                'data' => LangueSourceType::ADMIN->value,
+            ])
             ->add('save', SubmitType::class, [
                 'label' => 'Valider vos modifications',
                 'attr' => ['class' => 'btn btn-secondary'],
@@ -4741,6 +4799,7 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
             $langues = $data['langues'];
+            $source = $data['source'];
             $personnageLangue = null;
 
             // pour toutes les nouvelles langues
@@ -4752,7 +4811,7 @@ class PersonnageController extends AbstractController
                 $personnageLangue = new PersonnageLangues();
                 $personnageLangue->setPersonnage($personnage);
                 $personnageLangue->setLangue($langue);
-                $personnageLangue->setSource('ADMIN');
+                $personnageLangue->setSource($source);
                 $this->entityManager->persist($personnageLangue);
             }
 
