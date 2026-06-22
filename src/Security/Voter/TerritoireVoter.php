@@ -47,6 +47,6 @@ class TerritoireVoter extends Voter
         /** @var Territoire $subject */
         $scenariste = $subject->getGroupe()?->getScenariste();
 
-        return null !== $scenariste && $scenariste->getId() === $user->getId();
+        return null !== $scenariste && null !== $user->getId() && $scenariste->getId() === $user->getId();
     }
 }
