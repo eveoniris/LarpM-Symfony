@@ -288,6 +288,14 @@
                         <div class="card mb-2">
                             <div class="card-header d-flex justify-content-between">
                                 <h5 class="align-content-center">Autres informations</h5>
+                                {% if is_granted(constant('App\\Security\\Voter\\TerritoireVoter::EDIT_LANGUE'), territoire) %}
+                                    <a class="btn btn-sm btn-outline-gamemaster"
+                                       data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="Modifier les langues"
+                                       href="{{ path('territoire.updateLangues', {'territoire': territoire.id }) }}">
+                                        <i class="fa-solid fa-feather"></i>
+                                    </a>
+                                {% endif %}
                             </div>
                             <div class="card-body">
                                 {% include '_partials/listItems.twig'
