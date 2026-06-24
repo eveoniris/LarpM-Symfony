@@ -28,11 +28,7 @@ class UserPersonnageDefaultType extends AbstractType
             'choice_label' => 'identity',
             'placeholder' => 'Aucun',
             'empty_data' => null,
-            'query_builder' => static fn (EntityRepository $er) => $er
-                ->createQueryBuilder('p')
-                ->join('p.user', 'u')
-                ->where('u.id = :userId')
-                ->setParameter('userId', $options['user_id']),
+            'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('p')->join('p.user', 'u')->where('u.id = :userId')->setParameter('userId', $options['user_id']),
         ]);
     }
 

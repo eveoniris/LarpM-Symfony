@@ -36,9 +36,7 @@ class PersonnageServiceStaffTest extends TestCase
     private function makeService(array $grantedRoles, ?EntityManagerInterface $entityManager = null): PersonnageService
     {
         $security = $this->createStub(Security::class);
-        $security->method('isGranted')->willReturnCallback(
-            static fn (mixed $attribute): bool => \in_array($attribute, $grantedRoles, true)
-        );
+        $security->method('isGranted')->willReturnCallback(static fn (mixed $attribute): bool => \in_array($attribute, $grantedRoles, true));
 
         return new PersonnageService(
             $entityManager ?? $this->createStub(EntityManagerInterface::class),

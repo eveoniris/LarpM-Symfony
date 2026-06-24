@@ -627,12 +627,9 @@ class GroupeSecondaireController extends AbstractController
     ): RedirectResponse|Response {
         $this->canManageGroup($groupeSecondaire);
 
-        $form = $this
-            ->createFormBuilder($postulant)
-            ->add('envoyer', SubmitType::class, [
-                'label' => 'Laisser en attente',
-            ])
-            ->getForm();
+        $form = $this->createFormBuilder($postulant)->add('envoyer', SubmitType::class, [
+            'label' => 'Laisser en attente',
+        ])->getForm();
 
         $form->handleRequest($request);
 
