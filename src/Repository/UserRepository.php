@@ -61,7 +61,7 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
 
         $existingAliases = array_map(static fn ($join) => $join->getAlias(), array_merge(...array_values($query->getDQLPart('join') ?: [[]])));
         if (!in_array('etatCivil', $existingAliases, true)) {
-            $query->join($alias . '.etatCivil', 'etatCivil');
+            $query->leftJoin($alias . '.etatCivil', 'etatCivil');
         }
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);
