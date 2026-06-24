@@ -24,9 +24,7 @@ class TerritoireVoterTest extends TestCase
     private function makeVoter(array $grantedRoles = []): TerritoireVoter
     {
         $security = $this->createStub(Security::class);
-        $security->method('isGranted')->willReturnCallback(
-            static fn (mixed $attribute): bool => $grantedRoles[$attribute] ?? false
-        );
+        $security->method('isGranted')->willReturnCallback(static fn (mixed $attribute): bool => $grantedRoles[$attribute] ?? false);
 
         return new TerritoireVoter($security);
     }
@@ -65,10 +63,7 @@ class TerritoireVoterTest extends TestCase
         $territoire = $this->makeTerritoire(null);
         $token = $this->makeToken($this->makeUser(42));
 
-        static::assertSame(
-            VoterInterface::ACCESS_GRANTED,
-            $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE])
-        );
+        static::assertSame(VoterInterface::ACCESS_GRANTED, $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE]));
     }
 
     public function testCartographeIsGranted(): void
@@ -77,10 +72,7 @@ class TerritoireVoterTest extends TestCase
         $territoire = $this->makeTerritoire(null);
         $token = $this->makeToken($this->makeUser(42));
 
-        static::assertSame(
-            VoterInterface::ACCESS_GRANTED,
-            $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE])
-        );
+        static::assertSame(VoterInterface::ACCESS_GRANTED, $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE]));
     }
 
     public function testScenaristeOfOwningGroupIsGranted(): void
@@ -90,10 +82,7 @@ class TerritoireVoterTest extends TestCase
         $territoire = $this->makeTerritoire($this->makeUser(7)); // même id que l'utilisateur
         $token = $this->makeToken($user);
 
-        static::assertSame(
-            VoterInterface::ACCESS_GRANTED,
-            $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE])
-        );
+        static::assertSame(VoterInterface::ACCESS_GRANTED, $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE]));
     }
 
     public function testScenaristeOfAnotherGroupIsDenied(): void
@@ -103,10 +92,7 @@ class TerritoireVoterTest extends TestCase
         $territoire = $this->makeTerritoire($this->makeUser(99)); // scénariste d'un autre groupe
         $token = $this->makeToken($user);
 
-        static::assertSame(
-            VoterInterface::ACCESS_DENIED,
-            $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE])
-        );
+        static::assertSame(VoterInterface::ACCESS_DENIED, $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE]));
     }
 
     public function testTerritoireWithoutScenaristeIsDenied(): void
@@ -115,10 +101,7 @@ class TerritoireVoterTest extends TestCase
         $territoire = $this->makeTerritoire(null);
         $token = $this->makeToken($this->makeUser(7));
 
-        static::assertSame(
-            VoterInterface::ACCESS_DENIED,
-            $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE])
-        );
+        static::assertSame(VoterInterface::ACCESS_DENIED, $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE]));
     }
 
     public function testAbstainsOnUnsupportedAttribute(): void
@@ -127,9 +110,6 @@ class TerritoireVoterTest extends TestCase
         $territoire = $this->makeTerritoire(null);
         $token = $this->makeToken($this->makeUser(7));
 
-        static::assertSame(
-            VoterInterface::ACCESS_ABSTAIN,
-            $voter->vote($token, $territoire, ['SOME_OTHER_ATTRIBUTE'])
-        );
+        static::assertSame(VoterInterface::ACCESS_ABSTAIN, $voter->vote($token, $territoire, ['SOME_OTHER_ATTRIBUTE']));
     }
 }

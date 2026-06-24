@@ -67,11 +67,7 @@ class GroupeGnRepository extends BaseRepository
     /** @return list<GroupeGn> */
     public function findByGn(int $gnId): array
     {
-        return $this
-            ->getEntityManager()
-            ->createQuery('SELECT g FROM App\Entity\GroupeGn g JOIN g.gn gn WHERE gn.id = :gnId')
-            ->setParameter('gnId', $gnId)
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT g FROM App\Entity\GroupeGn g JOIN g.gn gn WHERE gn.id = :gnId')->setParameter('gnId', $gnId)->getResult();
     }
 
     /**
@@ -81,11 +77,7 @@ class GroupeGnRepository extends BaseRepository
      */
     public function findOneByCode($code): mixed
     {
-        $groupeGns = $this
-            ->getEntityManager()
-            ->createQuery('SELECT g FROM App\Entity\GroupeGn g WHERE g.code = :code')
-            ->setParameter('code', $code)
-            ->getResult();
+        $groupeGns = $this->getEntityManager()->createQuery('SELECT g FROM App\Entity\GroupeGn g WHERE g.code = :code')->setParameter('code', $code)->getResult();
 
         return reset($groupeGns);
     }
@@ -159,16 +151,19 @@ class GroupeGnRepository extends BaseRepository
         $rsm->addScalarResult('email', 'email', 'string');
         $rsm->addScalarResult('groupe_nom', 'groupe_nom', 'string');
 
-        return $this->getEntityManager()->createNativeQuery(<<<SQL
-            SELECT ec.prenom, ec.nom, u.email, g.nom AS groupe_nom
-            FROM groupe_gn gg
-            JOIN groupe g ON g.id = gg.groupe_id
-            JOIN personnage per ON per.id = gg.{$roleColumn}
-            JOIN `user` u ON u.id = per.user_id
-            LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
-            WHERE gg.gn_id = :gnId
-            ORDER BY ec.nom, ec.prenom
-            SQL, $rsm)->setParameter('gnId', $gn->getId());
+        return $this
+            ->getEntityManager()
+            ->createNativeQuery(<<<SQL
+                SELECT ec.prenom, ec.nom, u.email, g.nom AS groupe_nom
+                FROM groupe_gn gg
+                JOIN groupe g ON g.id = gg.groupe_id
+                JOIN personnage per ON per.id = gg.{$roleColumn}
+                JOIN `user` u ON u.id = per.user_id
+                LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
+                WHERE gg.gn_id = :gnId
+                ORDER BY ec.nom, ec.prenom
+                SQL, $rsm)
+            ->setParameter('gnId', $gn->getId());
     }
 
     /**
@@ -183,24 +178,27 @@ class GroupeGnRepository extends BaseRepository
         $rsm->addScalarResult('email', 'email', 'string');
         $rsm->addScalarResult('groupe_nom', 'groupe_nom', 'string');
 
-        return $this->getEntityManager()->createNativeQuery(<<<SQL
-            SELECT
-              COALESCE(suz_ec.prenom, resp_ec.prenom) AS prenom,
-              COALESCE(suz_ec.nom, resp_ec.nom) AS nom,
-              COALESCE(suz_u.email, resp_u.email) AS email,
-              g.nom AS groupe_nom
-            FROM groupe_gn gg
-            JOIN groupe g ON g.id = gg.groupe_id
-            LEFT JOIN personnage suz_per ON suz_per.id = gg.suzerin_id
-            LEFT JOIN `user` suz_u ON suz_u.id = suz_per.user_id
-            LEFT JOIN etat_civil suz_ec ON suz_ec.id = suz_u.etat_civil_id
-            LEFT JOIN participant resp ON resp.id = gg.responsable_id
-            LEFT JOIN `user` resp_u ON resp_u.id = resp.user_id
-            LEFT JOIN etat_civil resp_ec ON resp_ec.id = resp_u.etat_civil_id
-            WHERE gg.gn_id = :gnId
-              AND (gg.suzerin_id IS NOT NULL OR gg.responsable_id IS NOT NULL)
-            ORDER BY COALESCE(suz_ec.nom, resp_ec.nom), COALESCE(suz_ec.prenom, resp_ec.prenom)
-            SQL, $rsm)->setParameter('gnId', $gn->getId());
+        return $this
+            ->getEntityManager()
+            ->createNativeQuery(<<<SQL
+                SELECT
+                  COALESCE(suz_ec.prenom, resp_ec.prenom) AS prenom,
+                  COALESCE(suz_ec.nom, resp_ec.nom) AS nom,
+                  COALESCE(suz_u.email, resp_u.email) AS email,
+                  g.nom AS groupe_nom
+                FROM groupe_gn gg
+                JOIN groupe g ON g.id = gg.groupe_id
+                LEFT JOIN personnage suz_per ON suz_per.id = gg.suzerin_id
+                LEFT JOIN `user` suz_u ON suz_u.id = suz_per.user_id
+                LEFT JOIN etat_civil suz_ec ON suz_ec.id = suz_u.etat_civil_id
+                LEFT JOIN participant resp ON resp.id = gg.responsable_id
+                LEFT JOIN `user` resp_u ON resp_u.id = resp.user_id
+                LEFT JOIN etat_civil resp_ec ON resp_ec.id = resp_u.etat_civil_id
+                WHERE gg.gn_id = :gnId
+                  AND (gg.suzerin_id IS NOT NULL OR gg.responsable_id IS NOT NULL)
+                ORDER BY COALESCE(suz_ec.nom, resp_ec.nom), COALESCE(suz_ec.prenom, resp_ec.prenom)
+                SQL, $rsm)
+            ->setParameter('gnId', $gn->getId());
     }
 
     /**
@@ -214,16 +212,19 @@ class GroupeGnRepository extends BaseRepository
         $rsm->addScalarResult('email', 'email', 'string');
         $rsm->addScalarResult('groupe_nom', 'groupe_nom', 'string');
 
-        return $this->getEntityManager()->createNativeQuery(<<<SQL
-            SELECT ec.prenom, ec.nom, u.email, g.nom AS groupe_nom
-            FROM groupe_gn gg
-            JOIN groupe g ON g.id = gg.groupe_id
-            JOIN participant resp ON resp.id = gg.responsable_id
-            JOIN `user` u ON u.id = resp.user_id
-            LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
-            WHERE gg.gn_id = :gnId
-            ORDER BY ec.nom, ec.prenom
-            SQL, $rsm)->setParameter('gnId', $gn->getId());
+        return $this
+            ->getEntityManager()
+            ->createNativeQuery(<<<SQL
+                SELECT ec.prenom, ec.nom, u.email, g.nom AS groupe_nom
+                FROM groupe_gn gg
+                JOIN groupe g ON g.id = gg.groupe_id
+                JOIN participant resp ON resp.id = gg.responsable_id
+                JOIN `user` u ON u.id = resp.user_id
+                LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
+                WHERE gg.gn_id = :gnId
+                ORDER BY ec.nom, ec.prenom
+                SQL, $rsm)
+            ->setParameter('gnId', $gn->getId());
     }
 
     public function userIsMemberOfGroupe(User $user, GroupeGn $groupeGn): bool

@@ -282,10 +282,12 @@ class PersonnageService
      */
     public function isStaff(): bool
     {
-        return $this->security->isGranted(Role::ADMIN->value)
+        return (
+            $this->security->isGranted(Role::ADMIN->value)
             || $this->security->isGranted(Role::ORGA->value)
             || $this->security->isGranted(Role::SCENARISTE->value)
-            || $this->security->isGranted(Role::GESTION->value);
+            || $this->security->isGranted(Role::GESTION->value)
+        );
     }
 
     /**
@@ -2483,7 +2485,11 @@ class PersonnageService
         /** @var ReligionRepository $religionRepository */
         $religionRepository = $this->entityManager->getRepository(Religion::class);
         $qb = $religionRepository->createQueryBuilder('rl');
-        $religion = $qb->where($qb->expr()->eq($qb->expr()->lower('rl.label'), ':lbl'))->setParameter('lbl', 'sans')->getQuery()->getSingleResult();
+        $religion = $qb
+            ->where($qb->expr()->eq($qb->expr()->lower('rl.label'), ':lbl'))
+            ->setParameter('lbl', 'sans')
+            ->getQuery()
+            ->getSingleResult();
 
         return $religion && $this->knownReligion($personnage, $religion);
     }

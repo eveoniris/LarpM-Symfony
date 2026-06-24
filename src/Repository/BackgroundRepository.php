@@ -38,11 +38,7 @@ class BackgroundRepository extends BaseRepository
     /** @return array<int, Background> */
     public function findBackgrounds(int $gnId): array
     {
-        return $this
-            ->getEntityManager()
-            ->createQuery("SELECT b FROM App\Entity\Background b JOIN b.gn gn JOIN b.groupe g WHERE gn.id = ?1 ORDER BY g.numero ASC")
-            ->setParameter(1, $gnId)
-            ->getResult();
+        return $this->getEntityManager()->createQuery("SELECT b FROM App\Entity\Background b JOIN b.gn gn JOIN b.groupe g WHERE gn.id = ?1 ORDER BY g.numero ASC")->setParameter(1, $gnId)->getResult();
     }
 
     /** @param array<string, string> $order */
