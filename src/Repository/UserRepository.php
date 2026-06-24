@@ -134,12 +134,7 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
      */
     public function findOneByConfirmationToken(#[SensitiveParameter] string $token): ?User
     {
-        return $this
-            ->createQueryBuilder('u')
-            ->andWhere('u.confirmationToken = :val')
-            ->setParameter('val', $token)
-            ->getQuery()
-            ->getOneOrNullResult();
+        return $this->createQueryBuilder('u')->andWhere('u.confirmationToken = :val')->setParameter('val', $token)->getQuery()->getOneOrNullResult();
     }
 
     /** @return list<User> */
@@ -219,12 +214,15 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         $rsm->addScalarResult('nom', 'nom', 'string');
         $rsm->addScalarResult('email', 'email', 'string');
 
-        return $this->getEntityManager()->createNativeQuery(<<<SQL
-            SELECT ec.prenom, ec.nom, u.email
-            FROM `user` u
-            LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
-            WHERE JSON_CONTAINS(u.roles, :role)
-            ORDER BY ec.nom, ec.prenom
-            SQL, $rsm)->setParameter('role', '"' . $role . '"');
+        return $this
+            ->getEntityManager()
+            ->createNativeQuery(<<<SQL
+                SELECT ec.prenom, ec.nom, u.email
+                FROM `user` u
+                LEFT JOIN etat_civil ec ON ec.id = u.etat_civil_id
+                WHERE JSON_CONTAINS(u.roles, :role)
+                ORDER BY ec.nom, ec.prenom
+                SQL, $rsm)
+            ->setParameter('role', '"' . $role . '"');
     }
 }

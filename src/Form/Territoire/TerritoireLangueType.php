@@ -22,26 +22,24 @@ class TerritoireLangueType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('languePrincipale', EntityType::class, [
-                'required' => false,
-                'label' => 'Langue principale',
-                'class' => Langue::class,
-                'multiple' => false,
-                'mapped' => true,
-                'choice_label' => 'label',
-                'query_builder' => static fn (LangueRepository $lr) => $lr->createQueryBuilder('lr')->orderBy('lr.label', 'ASC'),
-            ])
-            ->add('langues', EntityType::class, [
-                'required' => false,
-                'label' => 'Langues parlées (selectionnez aussi la langue principale)',
-                'class' => Langue::class,
-                'multiple' => true,
-                'expanded' => true,
-                'mapped' => true,
-                'choice_label' => 'label',
-                'query_builder' => static fn (LangueRepository $lr) => $lr->createQueryBuilder('lr')->orderBy('lr.label', 'ASC'),
-            ]);
+        $builder->add('languePrincipale', EntityType::class, [
+            'required' => false,
+            'label' => 'Langue principale',
+            'class' => Langue::class,
+            'multiple' => false,
+            'mapped' => true,
+            'choice_label' => 'label',
+            'query_builder' => static fn (LangueRepository $lr) => $lr->createQueryBuilder('lr')->orderBy('lr.label', 'ASC'),
+        ])->add('langues', EntityType::class, [
+            'required' => false,
+            'label' => 'Langues parlées (selectionnez aussi la langue principale)',
+            'class' => Langue::class,
+            'multiple' => true,
+            'expanded' => true,
+            'mapped' => true,
+            'choice_label' => 'label',
+            'query_builder' => static fn (LangueRepository $lr) => $lr->createQueryBuilder('lr')->orderBy('lr.label', 'ASC'),
+        ]);
     }
 
     /**

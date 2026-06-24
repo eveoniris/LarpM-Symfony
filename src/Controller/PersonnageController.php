@@ -102,6 +102,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\IntegerType;
+use Doctrine\ORM\EntityRepository;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use RuntimeException;
@@ -1406,18 +1407,14 @@ class PersonnageController extends AbstractController
 
         $availableLangues = $this->personnageService->getAvailableLangues($personnage, 1);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('langue', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre nouvelle langue',
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $availableLangues,
-                'choice_label' => 'fullDescription',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('langue', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre nouvelle langue',
+            'multiple' => false,
+            'expanded' => true,
+            'choices' => $availableLangues,
+            'choice_label' => 'fullDescription',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1469,18 +1466,14 @@ class PersonnageController extends AbstractController
 
         $availableLangues = $this->personnageService->getAvailableLangues($personnage, 0);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('langue', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre nouvelle langue',
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $availableLangues,
-                'choice_label' => 'fullDescription',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('langue', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre nouvelle langue',
+            'multiple' => false,
+            'expanded' => true,
+            'choices' => $availableLangues,
+            'choice_label' => 'fullDescription',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1527,18 +1520,14 @@ class PersonnageController extends AbstractController
 
         $availableLangues = $this->personnageService->getAvailableLangues($personnage, 2);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('langue', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre nouvelle langue',
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $availableLangues,
-                'choice_label' => 'fullDescription',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('langue', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre nouvelle langue',
+            'multiple' => false,
+            'expanded' => true,
+            'choices' => $availableLangues,
+            'choice_label' => 'fullDescription',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1604,7 +1593,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.update.langue', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/removeLangue.twig', [
@@ -1655,7 +1644,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le personnage a été sauvegardé.');
 
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.update.langue', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/editLangue.twig', [
@@ -1704,19 +1693,15 @@ class PersonnageController extends AbstractController
             unset($potions[$k]);
         }
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('potion', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre potion',
-                'multiple' => false,
-                // 'autocomplete' => true,
-                'expanded' => true,
-                'choices' => $potions,
-                'choice_label' => 'fullLabel',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre potion'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('potion', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre potion',
+            'multiple' => false,
+            // 'autocomplete' => true,
+            'expanded' => true,
+            'choices' => $potions,
+            'choice_label' => 'fullLabel',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre potion'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1816,18 +1801,14 @@ class PersonnageController extends AbstractController
 
         $availableDomaines = $personnageService->getAvailableDomaines($personnage);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('domaine', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre domaine de magie',
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $availableDomaines,
-                'choice_label' => 'label',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre domaine de magie'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('domaine', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre domaine de magie',
+            'multiple' => false,
+            'expanded' => true,
+            'choices' => $availableDomaines,
+            'choice_label' => 'label',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre domaine de magie'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1895,19 +1876,15 @@ class PersonnageController extends AbstractController
 
         $sorts = $this->personnageService->getAvailableSorts($personnage, $niveau);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('sort', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre sort',
-                'multiple' => false,
-                'expanded' => true,
-                'autocomplete' => true,
-                'choices' => $sorts,
-                'choice_label' => 'fullLabel',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre sort'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('sort', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre sort',
+            'multiple' => false,
+            'expanded' => true,
+            'autocomplete' => true,
+            'choices' => $sorts,
+            'choice_label' => 'fullLabel',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre sort'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1985,18 +1962,14 @@ class PersonnageController extends AbstractController
 
         $technologies = $this->personnageService->getAvailableTechnologies($personnage);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('technologies', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre technologie',
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $technologies,
-                'choice_label' => 'label',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre technologie'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('technologies', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre technologie',
+            'multiple' => false,
+            'expanded' => true,
+            'choices' => $technologies,
+            'choice_label' => 'label',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre technologie'])->getForm();
 
         $form->handleRequest($request);
 
@@ -4748,7 +4721,8 @@ class PersonnageController extends AbstractController
     }
 
     /**
-     * Modifie la liste des langues.
+     * Page de gestion des langues d'un personnage : liste, ajout (avec source et tag de
+     * trigger), modification de la source et retrait par ligne.
      */
     #[Route('/{personnage}/updateLangue', name: 'update.langue')]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
@@ -4759,37 +4733,41 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $langues = $this->entityManager->getRepository(Langue::class)->findBy([], [
-            'secret' => 'ASC',
-            'diffusion' => 'DESC',
-            'label' => 'ASC',
-        ]);
-
-        $originalLanguages = [];
-        foreach ($personnage->getLanguages() as $languages) {
-            $originalLanguages[] = $languages;
+        // Tags de trigger « langue » encore disponibles sur le personnage (source LITTERATURE)
+        $langueTriggerTags = [TriggerType::LANGUE_COURANTE->value, TriggerType::LANGUE_ANCIENNE->value];
+        $triggerTagChoices = [];
+        foreach ($personnage->getPersonnageTriggers() as $personnageTrigger) {
+            $tag = $personnageTrigger->getTag();
+            $value = $tag instanceof TriggerType ? $tag->value : $tag;
+            if (\in_array($value, $langueTriggerTags, true)) {
+                $triggerTagChoices[$value] = $value;
+            }
         }
 
         $form = $this
             ->createFormBuilder()
-            ->add('langues', EntityType::class, [
+            ->add('langue', EntityType::class, [
                 'required' => true,
-                'label' => 'Choisissez les langues du personnage',
-                'multiple' => true,
-                'expanded' => true,
+                'label' => 'Langue à ajouter',
                 'class' => Langue::class,
-                'choices' => $langues,
+                'autocomplete' => true,
                 'choice_label' => 'label',
-                'data' => $originalLanguages,
+                'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('l')->addOrderBy('l.secret', 'ASC')->addOrderBy('l.diffusion', 'DESC')->addOrderBy('l.label', 'ASC'),
             ])
             ->add('source', ChoiceType::class, [
                 'required' => true,
-                'label' => 'Mention (source) à appliquer aux langues ajoutées',
+                'label' => 'Source',
                 'choices' => array_flip(LangueSourceType::getLabels()),
                 'data' => LangueSourceType::ADMIN->value,
             ])
+            ->add('triggerTag', ChoiceType::class, [
+                'required' => false,
+                'label' => 'Trigger consommé (uniquement pour la source Littérature)',
+                'placeholder' => 'Aucun',
+                'choices' => $triggerTagChoices,
+            ])
             ->add('save', SubmitType::class, [
-                'label' => 'Valider vos modifications',
+                'label' => 'Ajouter la langue',
                 'attr' => ['class' => 'btn btn-secondary'],
             ])
             ->getForm();
@@ -4798,57 +4776,39 @@ class PersonnageController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            $langues = $data['langues'];
+            $langue = $data['langue'];
             $source = $data['source'];
-            $personnageLangue = null;
+            $triggerTag = $data['triggerTag'] ?? null;
 
-            // pour toutes les nouvelles langues
-            foreach ($langues as $langue) {
-                if ($personnage->isKnownLanguage($langue)) {
-                    continue;
-                }
+            if ($personnage->isKnownLanguage($langue)) {
+                $this->addFlash('error', 'Le personnage connaît déjà cette langue.');
 
-                $personnageLangue = new PersonnageLangues();
-                $personnageLangue->setPersonnage($personnage);
-                $personnageLangue->setLangue($langue);
-                $personnageLangue->setSource($source);
-                $this->entityManager->persist($personnageLangue);
+                return $this->redirectToRoute('personnage.update.langue', ['personnage' => $personnage->getId()], 303);
             }
 
-            if (0 === \count($langues)) {
-                foreach ($personnage->getLanguages() as $langue) {
-                    $personnageLangue = $personnage->getPersonnageLangue($langue);
-                    $this->entityManager->remove($personnageLangue);
-                }
-            } else {
-                foreach ($personnage->getLanguages() as $langue) {
-                    $found = false;
-                    foreach ($langues as $l) {
-                        if ($l !== $langue) {
-                            continue;
-                        }
+            $personnageLangue = new PersonnageLangues();
+            $personnageLangue->setPersonnage($personnage);
+            $personnageLangue->setLangue($langue);
+            $personnageLangue->setSource($source);
 
-                        $found = true;
-                    }
-
-                    if (!$found) {
-                        $personnageLangue = $personnage->getPersonnageLangue($langue);
-                        $this->entityManager->remove($personnageLangue);
-                    }
+            // Pour une langue de littérature, on trace et consomme le trigger choisi
+            if (LangueSourceType::LITTERATURE->value === $source && $triggerTag) {
+                $personnageLangue->setTriggerTag($triggerTag);
+                if ($trigger = $personnage->getTrigger($triggerTag)) {
+                    $this->entityManager->remove($trigger);
                 }
             }
 
+            $this->entityManager->persist($personnageLangue);
             $this->log($personnageLangue, LogActionType::ADD_LANGUE);
-
-            $this->entityManager->persist($personnage);
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Le personnage a été sauvegardé.');
+            $this->addFlash('success', 'La langue a été ajoutée.');
 
-            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.update.langue', ['personnage' => $personnage->getId()], 303);
         }
 
-        return $this->render('personnage/update.twig', [
+        return $this->render('personnage/langues.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
         ]);
