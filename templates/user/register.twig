@@ -19,6 +19,17 @@
                 <div class="alert alert-danger">{{ error|nl2br }}</div>
             {% endif %}
 
+            {% if pendingEmail is defined and pendingEmail %}
+                <div class="alert alert-warning">
+                    Un compte existe déjà pour <strong>{{ pendingEmail }}</strong> mais n'a pas
+                    encore été confirmé.
+                    <form method="post" action="{{ path('user.register.resend') }}" class="d-inline">
+                        <input type="hidden" name="email" value="{{ pendingEmail }}">
+                        <button type="submit" class="btn btn-link p-0 align-baseline">Renvoyer l'email de confirmation</button>
+                    </form>
+                </div>
+            {% endif %}
+
             {{ form(form) }}
 
         </div>

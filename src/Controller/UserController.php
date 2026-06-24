@@ -269,6 +269,68 @@ class UserController extends AbstractController
     }
 
     /**
+     * Renvoie l'email de confirmation à un utilisateur dont le compte n'est pas encore activé.
+     *
+     * Garantit la présence d'un token de confirmation valide avant l'envoi.
+     *
+     * @return bool false si le compte est déjà confirmé (rien à renvoyer)
+     */
+    private function resendConfirmation(User $user): bool
+    {
+        if ($user->isEnabled()) {
+            return false;
+        }
+
+        if (!$user->getConfirmationToken()) {
+            $user->setConfirmationToken($user->generateToken());
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+        }
+
+        $this->mailer->sendConfirmEmail($user);
+
+        return true;
+    }
+
+    /**
+     * Renvoi de l'email de confirmation depuis la fiche utilisateur (admin/orga).
+     */
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access to this.')]
+    #[Route('/user/{user}/resend-confirmation', name: 'user.resend-confirmation', requirements: ['user' => Requirement::DIGITS])]
+    public function resendConfirmationAction(#[MapEntity] User $user): RedirectResponse
+    {
+        if ($this->resendConfirmation($user)) {
+            $this->addFlash('success', "L'email de confirmation a été renvoyé à " . $user->getEmail());
+        } else {
+            $this->addFlash('alert', 'Ce compte est déjà confirmé.');
+        }
+
+        return $this->redirectToRoute('user.detail', ['user' => $user->getId()]);
+    }
+
+    /**
+     * Renvoi de l'email de confirmation depuis l'inscription publique.
+     *
+     * Réponse neutre dans tous les cas pour ne pas divulguer plus d'information
+     * que la validation d'unicité de l'email.
+     */
+    #[Route('/user/register/resend-confirmation', name: 'user.register.resend', methods: ['POST'])]
+    public function resendRegisterConfirmationAction(Request $request): RedirectResponse
+    {
+        $email = (string) $request->request->get('email');
+        if ($email !== '') {
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+            if ($user) {
+                $this->resendConfirmation($user);
+            }
+        }
+
+        $this->addFlash('success', "Si un compte non confirmé existe pour cette adresse, un nouvel email de confirmation vient d'être envoyé.");
+
+        return $this->redirectToRoute('app_login');
+    }
+
+    /**
      * Edit User action.
      *
      * @throws NotFoundHttpException if no User is found with that ID
@@ -811,12 +873,25 @@ class UserController extends AbstractController
             }
         }
 
+        // Si l'email saisi correspond à un compte existant non confirmé, proposer le renvoi.
+        $pendingEmail = null;
+        if ($form->isSubmitted()) {
+            $submittedEmail = (string) $form->get('email')->getData();
+            if ($submittedEmail !== '') {
+                $existing = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $submittedEmail]);
+                if ($existing && !$existing->isEnabled()) {
+                    $pendingEmail = $submittedEmail;
+                }
+            }
+        }
+
         return $this->render('user/register.twig', [
             'error' => $error ?? null,
             'form' => $form,
             'name' => $request->request->get('name'),
             'email' => $request->request->get('email'),
             'username' => $request->request->get('username'),
+            'pendingEmail' => $pendingEmail,
         ]);
     }
 
