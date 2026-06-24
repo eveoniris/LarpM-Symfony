@@ -79,7 +79,7 @@ class UserController extends AbstractController
         if ($roleFilter && in_array(needle: $roleFilter, haystack: $validRoles, strict: true)) {
             $qb = $userRepository
                 ->createQueryBuilder('user')
-                ->join('user.etatCivil', 'etatCivil')
+                ->leftJoin('user.etatCivil', 'etatCivil')
                 ->where('user.roles LIKE :role')
                 ->setParameter('role', '%' . $roleFilter . '%');
         }
