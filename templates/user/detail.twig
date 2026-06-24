@@ -44,6 +44,11 @@
                             <span class="text-muted">{{ user.email }}</span>
                             <span class="text-muted"><a
                                     href="{{ path('etatCivil.detail', {'etatCivil': user.etatCivil.id}) }}">Etat-civil</a></span>
+                            <div class="m-2">
+                                <a class="btn btn-secondary btn-sm"
+                                   href="{{ path('user.resend-confirmation', {'user': user.id}) }}"><span
+                                        class="fa fa-envelope" style="margin-right: 5px;"></span>Renvoyer l'email de confirmation</a>
+                            </div>
                         </div>
 
                     {% endif %}

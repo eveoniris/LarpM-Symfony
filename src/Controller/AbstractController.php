@@ -410,10 +410,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
     protected function getRequestOrderDir(string $defOrderDir = 'ASC'): string
     {
-        return $this->pageRequest
-            ->getOrderBy()
-            ->setDefaultOrderDir($defOrderDir)
-            ->getSort();
+        return $this->pageRequest->getOrderBy()->setDefaultOrderDir($defOrderDir)->getSort();
     }
 
     protected function getRequestPage(int $defPage = 1): int
@@ -555,10 +552,12 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
             $this->entityManager->flush();
 
-            return $form->has('update')
-                ? $this->redirectToRoute($routes['list'] ?: $routes['detail'], [
-                    trim($routes['root'], '.') => $entity->getId(),
-                ]) : $this->redirectToRoute($routes['detail'], [trim($routes['root'], '.') => $entity->getId()]);
+            return (
+                $form->has('update')
+                    ? $this->redirectToRoute($routes['list'] ?: $routes['detail'], [
+                        trim($routes['root'], '.') => $entity->getId(),
+                    ]) : $this->redirectToRoute($routes['detail'], [trim($routes['root'], '.') => $entity->getId()])
+            );
         }
 
         return $this->render('_partials/addOrUpdateForm.twig', [
