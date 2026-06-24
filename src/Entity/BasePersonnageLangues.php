@@ -28,6 +28,9 @@ abstract class BasePersonnageLangues
     #[Column(name: 'source', type: Types::STRING, length: 45)]
     protected string $source = '';
 
+    #[Column(name: 'trigger_tag', type: Types::STRING, length: 45, nullable: true)]
+    protected ?string $triggerTag = null;
+
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'personnageLangues')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
@@ -105,6 +108,24 @@ abstract class BasePersonnageLangues
     public function setSource(string $source): static
     {
         $this->source = $source;
+
+        return $this;
+    }
+
+    /**
+     * Get the consumed trigger tag (for LITTERATURE source).
+     */
+    public function getTriggerTag(): ?string
+    {
+        return $this->triggerTag;
+    }
+
+    /**
+     * Set the consumed trigger tag (for LITTERATURE source).
+     */
+    public function setTriggerTag(?string $triggerTag): static
+    {
+        $this->triggerTag = $triggerTag;
 
         return $this;
     }
