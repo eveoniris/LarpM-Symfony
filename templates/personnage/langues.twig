@@ -1,0 +1,55 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Personnage{% endblock title %}
+
+{% block body %}
+
+    {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Gérer les langues"} %}
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h6>Langues connues</h6>
+        </div>
+        {% set languesAnomalie = personnage.getLanguesAnomaliesMessage() %}
+        {% if languesAnomalie != "" %}
+            {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : languesAnomalie } %}
+        {% endif %}
+        <div class="list-group border-0">
+            {% for personnageLangue in personnageService.getAllLangues(personnage) %}
+                <div class="list-group-item d-flex justify-content-between align-items-center{% if loop.first %} rounded-top-0{% endif %}">
+                    <div>
+                        {% if personnageLangue.langue.secret %}
+                            <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                               data-placement="top" title="Secret"></i> -
+                        {% endif %}
+                        {% if personnageLangue.langue.id %}
+                            <a href="{{ path('langue.detail', {'langue': personnageLangue.langue.id }) }}"><strong>{{ personnageLangue.langue }}</strong></a>
+                            ({{ personnageLangue.source }}{% if personnageLangue.triggerTag %} – {{ personnageLangue.triggerTag }}{% endif %})
+                        {% endif %}
+                    </div>
+                    {% if personnageLangue.id is defined and personnageLangue.id %}
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-sm btn-secondary"
+                               href="{{ path('personnage.edit.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Modifier la source</a>
+                            <a class="btn btn-sm btn-secondary"
+                               href="{{ path('personnage.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Retirer</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="list-group-item rounded-top-0">Aucune</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h6>Ajouter une langue</h6>
+        </div>
+        <div class="card-body">
+            <p>Le tag de trigger n'est à renseigner que pour une langue de source « Littérature ».</p>
+            {{ form(form) }}
+        </div>
+    </div>
+
+{% endblock body %}

@@ -15,6 +15,7 @@ class PersonnageLangues extends BasePersonnageLangues
         return [
             'personnage_id' => $this->personnage->getId(),
             'source' => $this->getSource(),
+            'trigger_tag' => $this->getTriggerTag(),
             'langue_id' => $this->getLangue()?->getId(),
         ];
     }

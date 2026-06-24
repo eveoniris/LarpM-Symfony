@@ -74,8 +74,10 @@
              </div>
 
              <div class="card mb-4">
-                 <div class="card-header">
-                     <h6>Langues connues</h6>
+                 <div class="card-header d-flex justify-content-between align-items-center">
+                     <h6 class="mb-0">Langues connues</h6>
+                     <a class="btn btn-sm btn-secondary"
+                        href="{{ path('personnage.update.langue', {'personnage': personnage.id }) }}">Gérer les langues</a>
                  </div>
                  {% set languesAnomalie = personnage.getLanguesAnomaliesMessage() %}
                  {% if languesAnomalie != "" %}
@@ -93,17 +95,9 @@
                                  {% endif %}
                                  {% if personnageLangue.langue.id %}
                                      <a href="{{ path('langue.detail', {'langue': personnageLangue.langue.id }) }}"><strong>{{ personnageLangue.langue }}</strong></a>
-                                     ({{ personnageLangue.source }})
+                                     ({{ personnageLangue.source }}{% if personnageLangue.triggerTag %} – {{ personnageLangue.triggerTag }}{% endif %})
                                  {% endif %}
                              </div>
-                             {% if personnageLangue.id is defined and personnageLangue.id %}
-                                 <div class="d-flex gap-2">
-                                     <a class="btn btn-sm btn-secondary"
-                                        href="{{ path('personnage.edit.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Éditer</a>
-                                     <a class="btn btn-sm btn-secondary"
-                                        href="{{ path('personnage.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Supprimer</a>
-                                 </div>
-                             {% endif %}
                          </div>
                      {% else %}
                          <div
