@@ -1793,7 +1793,8 @@ class PersonnageController extends AbstractController
     ): RedirectResponse|Response {
         $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
 
-        if (!$personnage->hasTrigger(TriggerType::DOMAINE_MAGIE)) {
+        // Le domaine de niveau 1 utilise le trigger DOMAINE_MAGIE, le domaine supplémentaire Expert utilise MAGIE_EXPERT
+        if (!$personnage->hasTrigger(TriggerType::DOMAINE_MAGIE) && !$personnage->hasTrigger(TriggerType::MAGIE_EXPERT)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de domaine de magie supplémentaire.');
 
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
@@ -1820,8 +1821,10 @@ class PersonnageController extends AbstractController
             $personnage->addDomaine($domaine);
             $this->entityManager->persist($personnage);
 
-            // suppression du trigger
-            if ($trigger = $personnage->getTrigger(TriggerType::DOMAINE_MAGIE)) {
+            // suppression du trigger consommé (DOMAINE_MAGIE niveau 1 ou MAGIE_EXPERT domaine supplémentaire)
+            $trigger = $personnage->getTrigger(TriggerType::DOMAINE_MAGIE)
+                ?? $personnage->getTrigger(TriggerType::MAGIE_EXPERT);
+            if ($trigger) {
                 $this->entityManager->remove($trigger);
             }
 
