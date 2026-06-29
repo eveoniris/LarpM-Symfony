@@ -76,42 +76,42 @@ class BaseGn
     protected ?string $conditions_inscription = null;
 
     /** @var Collection<int, Annonce> */
-    #[OneToMany(mappedBy: 'gn', targetEntity: Annonce::class)]
+    #[OneToMany(targetEntity: Annonce::class, mappedBy: 'gn')]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $annonces;
 
     /** @var Collection<int, Background> */
-    #[OneToMany(mappedBy: 'gn', targetEntity: Background::class)]
+    #[OneToMany(targetEntity: Background::class, mappedBy: 'gn')]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $backgrounds;
 
     /** @var Collection<int, Billet> */
-    #[OneToMany(mappedBy: 'gn', targetEntity: Billet::class)]
+    #[OneToMany(targetEntity: Billet::class, mappedBy: 'gn')]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $billets;
 
     /** @var Collection<int, Debriefing> */
-    #[OneToMany(mappedBy: 'gn', targetEntity: Debriefing::class)]
+    #[OneToMany(targetEntity: Debriefing::class, mappedBy: 'gn')]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $debriefings;
 
     /** @var Collection<int, GroupeGn> */
-    #[OneToMany(mappedBy: 'gn', targetEntity: GroupeGn::class)]
+    #[OneToMany(targetEntity: GroupeGn::class, mappedBy: 'gn')]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $groupeGns;
 
     /** @var Collection<int, Participant> */
-    #[OneToMany(mappedBy: 'gn', targetEntity: Participant::class, cascade: ['persist'])]
+    #[OneToMany(targetEntity: Participant::class, mappedBy: 'gn', cascade: ['persist'])]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $participants;
 
     /** @var Collection<int, PersonnageBackground> */
-    #[OneToMany(mappedBy: 'gn', targetEntity: PersonnageBackground::class)]
+    #[OneToMany(targetEntity: PersonnageBackground::class, mappedBy: 'gn')]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $personnageBackgrounds;
 
     /** @var Collection<int, Rumeur> */
-    #[OneToMany(mappedBy: 'gn', targetEntity: Rumeur::class)]
+    #[OneToMany(targetEntity: Rumeur::class, mappedBy: 'gn')]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $rumeurs;
 
