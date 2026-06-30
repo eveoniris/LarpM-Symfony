@@ -644,9 +644,12 @@ class ParticipantController extends AbstractController
         SecondaryGroup $groupeSecondaire,
         Postulant $postulant,
     ): RedirectResponse|Response {
-        $form = $this->createFormBuilder($participant)->add('envoyer', SubmitType::class, [
-            'label' => 'Accepter le postulant',
-        ])->getForm();
+        $form = $this
+            ->createFormBuilder($participant)
+            ->add('envoyer', SubmitType::class, [
+                'label' => 'Accepter le postulant',
+            ])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -822,9 +825,12 @@ class ParticipantController extends AbstractController
         SecondaryGroup $groupeSecondaire,
         Postulant $postulant,
     ): RedirectResponse|Response {
-        $form = $this->createFormBuilder($participant)->add('envoyer', SubmitType::class, [
-            'label' => 'Refuser le postulant',
-        ])->getForm();
+        $form = $this
+            ->createFormBuilder($participant)
+            ->add('envoyer', SubmitType::class, [
+                'label' => 'Refuser le postulant',
+            ])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -905,9 +911,12 @@ class ParticipantController extends AbstractController
         #[MapEntity]
         Postulant $postulant,
     ): RedirectResponse|Response {
-        $form = $this->createFormBuilder($participant)->add('envoyer', SubmitType::class, [
-            'label' => 'Laisser en attente',
-        ])->getForm();
+        $form = $this
+            ->createFormBuilder($participant)
+            ->add('envoyer', SubmitType::class, [
+                'label' => 'Laisser en attente',
+            ])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1457,9 +1466,12 @@ class ParticipantController extends AbstractController
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
 
-        $form = $this->createFormBuilder($personnage)->add('save', SubmitType::class, [
-            'label' => 'Valider',
-        ])->getForm();
+        $form = $this
+            ->createFormBuilder($personnage)
+            ->add('save', SubmitType::class, [
+                'label' => 'Valider',
+            ])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1508,11 +1520,16 @@ class ParticipantController extends AbstractController
 
             $this->addFlash('success', 'Le personnage secondaire a été enregistré.');
 
+            $personnage = $participant->getPersonnage();
+            if (null === $personnage) {
+                return $this->redirectToRoute('participant.index', ['participant' => $participant->getId()], 303);
+            }
+
             return $this->redirectToRoute(
                 'personnage.detail',
                 [
-                    'gn' => $participant->getGroupeGn()->getGn()->getId(),
-                    'personnage' => $participant->getPersonnage()->getId(),
+                    'gn' => $participant->getGn()->getId(),
+                    'personnage' => $personnage->getId(),
                 ],
                 303,
             );
@@ -1692,14 +1709,18 @@ class ParticipantController extends AbstractController
         // On veut piocher dans les potions que connait le personnage pour lui demander de choisir celle qu'il veut avoir au début
         $potions = $personnage->getPotionsNiveau($niveau); // and not $potionRepository->findByNiveau($niveau);
 
-        $form = $this->createFormBuilder()->add('potion', ChoiceType::class, [
-            'required' => true,
-            'label' => 'Choisissez votre potion de départ',
-            'multiple' => false,
-            'expanded' => true,
-            'choices' => $potions,
-            'choice_label' => 'fullLabel',
-        ])->add('save', SubmitType::class, ['label' => 'Valider votre potion de départ'])->getForm();
+        $form = $this
+            ->createFormBuilder()
+            ->add('potion', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre potion de départ',
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => $potions,
+                'choice_label' => 'fullLabel',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre potion de départ'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1976,15 +1997,19 @@ class ParticipantController extends AbstractController
 
         $availableDescriptionReligion = $personnageService->getAvailableDescriptionReligion($personnage);
 
-        $form = $this->createFormBuilder()->add('religion', 'entity', [
-            'required' => true,
-            'label' => 'Choisissez votre nouveau descriptif religion',
-            'multiple' => false,
-            'expanded' => true,
-            'class' => Religion::class,
-            'choices' => $availableDescriptionReligion,
-            'choice_label' => 'label',
-        ])->add('save', SubmitType::class, ['label' => 'Valider'])->getForm();
+        $form = $this
+            ->createFormBuilder()
+            ->add('religion', 'entity', [
+                'required' => true,
+                'label' => 'Choisissez votre nouveau descriptif religion',
+                'multiple' => false,
+                'expanded' => true,
+                'class' => Religion::class,
+                'choices' => $availableDescriptionReligion,
+                'choice_label' => 'label',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider'])
+            ->getForm();
 
         $form->handleRequest($request);
 

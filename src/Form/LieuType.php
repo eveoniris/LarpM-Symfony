@@ -24,7 +24,7 @@ class LieuType extends AbstractType
             'required' => true,
             'attr' => ['maxlength' => 45],
             'constraints' => [
-                new Length(['max' => 45]),
+                new Length(max: 45),
                 new NotBlank(),
             ],
         ])->add('description', TextareaType::class, [
