@@ -38,7 +38,7 @@ class DebriefingType extends AbstractType
                 'label' => 'Titre',
                 'attr' => ['maxlength' => 45],
                 'constraints' => [
-                    new Length(['max' => 45]),
+                    new Length(max: 45),
                     new NotBlank(),
                 ],
             ])

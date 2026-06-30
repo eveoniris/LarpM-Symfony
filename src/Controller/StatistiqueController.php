@@ -240,11 +240,7 @@ class StatistiqueController extends AbstractController
         QrCodeScanLogRepository $repository,
         PagerService $pagerService,
     ): Response|JsonResponse|StreamedResponse {
-        $pagerService
-            ->setRequest($request)
-            ->setRepository($repository)
-            ->setLimit(50)
-            ->setDefaultOrdersBy([$repository::getEntityAlias() . '.date' => OrderBy::DESC]);
+        $pagerService->setRequest($request)->setRepository($repository)->setLimit(50)->setDefaultOrdersBy([$repository::getEntityAlias() . '.date' => OrderBy::DESC]);
 
         // todo add and where > last GN start date ;
         return match ($_route) {

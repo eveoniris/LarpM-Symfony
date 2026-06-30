@@ -152,7 +152,7 @@ class BaseMessage
     /**
      * Set the value of title.
      */
-    public function setTitle(string $title): static
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
 

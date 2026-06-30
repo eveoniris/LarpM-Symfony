@@ -33,24 +33,24 @@ class ClasseType extends AbstractType
             ->add('label_masculin', TextType::class, [
                 'required' => true,
                 'attr' => ['maxlength' => 45],
-                'constraints' => [new Length(['max' => 45])],
+                'constraints' => [new Length(max: 45)],
             ])
             ->add('image_m', TextType::class, [
                 'label' => 'Adresse de l\'image utilisée pour représenter cette classe',
                 'required' => true,
                 'attr' => ['maxlength' => 90],
-                'constraints' => [new Length(['max' => 90])],
+                'constraints' => [new Length(max: 90)],
             ])
             ->add('label_feminin', TextType::class, [
                 'required' => true,
                 'attr' => ['maxlength' => 45],
-                'constraints' => [new Length(['max' => 45])],
+                'constraints' => [new Length(max: 45)],
             ])
             ->add('image_f', TextType::class, [
                 'label' => 'Adresse de l\'image utilisée pour représenter cette classe',
                 'required' => true,
                 'attr' => ['maxlength' => 90],
-                'constraints' => [new Length(['max' => 90])],
+                'constraints' => [new Length(max: 90)],
             ])
             ->add('creation', ChoiceType::class, [
                 'required' => true,
@@ -68,7 +68,7 @@ class ClasseType extends AbstractType
                     'class' => 'tinymce',
                     'maxlength' => 450,
                 ],
-                'constraints' => [new Length(['max' => 450])],
+                'constraints' => [new Length(max: 450)],
             ])
             ->add('competenceFamilyFavorites', EntityType::class, [
                 'label' => "Famille de compétences favorites (n'oubliez pas de cocher aussi la/les compétences acquises à la création)",
