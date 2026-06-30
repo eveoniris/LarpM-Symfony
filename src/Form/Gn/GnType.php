@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class GnType extends AbstractType
 {
@@ -24,6 +25,8 @@ class GnType extends AbstractType
         $builder
             ->add('label', TextType::class, [
                 'required' => true,
+                'empty_data' => '',
+                'constraints' => [new NotBlank()],
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description du GN',
