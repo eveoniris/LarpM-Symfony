@@ -37,6 +37,16 @@
                             <i class="fa fa-clock"></i> Générer chronologie joueur
                         </a>
                     {% endif %}
+                    <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Imprimer le matériel des personnages" target="_blank"
+                       href="{{ path('inter.personnages.print.materiel', {'inter': interJeu.id}) }}">
+                        <i class="fa fa-print"></i> Imprimer matériel
+                    </a>
+                    <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Imprimer les fiches des personnages" target="_blank"
+                       href="{{ path('inter.personnages.print.fiche', {'inter': interJeu.id}) }}">
+                        <i class="fa fa-print"></i> Imprimer fiches
+                    </a>
                 </div>
             </div>
         </div>

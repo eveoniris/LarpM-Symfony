@@ -20,6 +20,14 @@
                 <a class="btn btn-sm btn-secondary" href="{{ path('inter.personnages.import', {'inter': interJeu.id}) }}">
                     <i class="fa fa-users"></i> Importer plusieurs
                 </a>
+                <a class="btn btn-sm btn-secondary" target="_blank"
+                   href="{{ path('inter.personnages.print.materiel', {'inter': interJeu.id}) }}">
+                    <i class="fa fa-print"></i> Imprimer matériel
+                </a>
+                <a class="btn btn-sm btn-secondary" target="_blank"
+                   href="{{ path('inter.personnages.print.fiche', {'inter': interJeu.id}) }}">
+                    <i class="fa fa-print"></i> Imprimer fiches
+                </a>
             </div>
         </div>
     </div>
