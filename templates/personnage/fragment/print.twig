@@ -3,6 +3,14 @@
     {% set useQrCode = true %}
 {% endif %}
 
+{# Personnage potentiellement sans participation (ex. créé pour un inter-jeu) #}
+{% if participant is not defined %}
+    {% set participant = personnage.lastParticipant %}
+{% endif %}
+{% if groupe is not defined %}
+    {% set groupe = participant and participant.groupeGn ? participant.groupeGn.groupe : null %}
+{% endif %}
+
 <div class="print-center">
     <div class="table-responsive">
     <table>
@@ -24,10 +32,10 @@
                     Origine : {{ personnage.territoire|default("non définie") }}<br/>
                     {{ personnage.classeName }}, {{ personnage.genre }}, <small>{{ personnage.ageReel|default('x') }}
                         ans ({{ personnage.age }})</small><br/>
-                    {% if personnage.user %}{{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}{% else %}Ce personnage n'est pas lié à un joueur{% endif %}
+                    {% if personnage.user and personnage.user.etatCivil %}{{ personnage.user.etatCivil.nom }} {{ personnage.user.etatCivil.prenom }}{% elseif not personnage.user %}Ce personnage n'est pas lié à un joueur{% endif %}
                     .
                     {#  {% if personnage.intrigue %}participe aux intrigues{% else %}ne participe pas aux intrigues{% endif %} #}
-                    {% if participant.personnage is defined %}
+                    {% if participant and participant.personnage %}
                         <br/> <strong>Titre : </strong>
                         {{ personnageService.getTitre(participant.personnage, participant.gn)|default('-') }}
                     {% endif %}

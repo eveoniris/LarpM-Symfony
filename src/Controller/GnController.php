@@ -13,7 +13,6 @@ use App\Enum\Role;
 use App\Form\FicheRetourGroupe\FicheRetourGroupeImportType;
 use App\Form\Gn\GnDeleteType;
 use App\Form\Gn\GnType;
-use App\Manager\GroupeManager;
 use App\Repository\ClasseRepository;
 use App\Repository\GnRepository;
 use App\Repository\GroupeGnRepository;
@@ -22,8 +21,8 @@ use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageRepository;
 use App\Repository\PersonnageSecondaireRepository;
 use App\Repository\QuestionRepository;
-use App\Repository\RessourceRepository;
 use App\Repository\UserRepository;
+use App\Service\PrintService;
 use App\Security\MultiRolesExpression;
 use App\Service\CarteAlchimisteService;
 use App\Service\FicheRetourGroupeImportService;
@@ -874,40 +873,31 @@ class GnController extends AbstractController
     public function printAllAction(
         #[MapEntity]
         Gn $gn,
-        RessourceRepository $ressourceRepository,
         GroupeService $groupeService,
         PersonnageService $personnageService,
+        PrintService $printService,
     ): Response {
-        $groupeGns = $gn->getGroupeGns();
-
-        $ressourceRares = new ArrayCollection($ressourceRepository->findRare());
-        $ressourceCommunes = new ArrayCollection($ressourceRepository->findCommun());
-
-        /** @var ArrayCollection<int, array{groupe: Groupe, quete: mixed}> $groupes */
-        $groupes = new ArrayCollection();
-        $syntheseRessources = [];
-        $syntheseIngredients = [];
-        $syntheseRichesse = [];
-
-        foreach ($groupeGns as $groupeGn) {
-            $groupe = $groupeGn->getGroupe();
-            $quete = GroupeManager::generateQuete($groupe, $ressourceCommunes, $ressourceRares);
-            $groupes->add([
-                'groupe' => $groupe,
-                'quete' => $quete,
-            ]);
-            $id = $groupe->getId();
-            $syntheseRessources[$id] = $groupeService->computeSyntheseRessources($groupe, $personnageService, $groupeGn);
-            $syntheseIngredients[$id] = $groupeService->computeSyntheseIngredients($groupe, $personnageService, $groupeGn);
-            $syntheseRichesse[$id] = $groupeService->computeSyntheseRichesse($groupe, $personnageService, $groupeGn);
+        // On ne conserve que les identifiants : le rendu se fait groupe par groupe
+        // avec vidage de l'EntityManager (cf. PrintService), pour borner la mémoire
+        // (les synthèses hydratent de nombreuses entités transitoires par participant).
+        $groupeGnIds = [];
+        foreach ($gn->getGroupeGns() as $groupeGn) {
+            $groupeGnIds[] = $groupeGn->getId();
         }
 
-        return $this->render('groupe/printAll.twig', [
-            'groupes' => $groupes,
-            'syntheseRessources' => $syntheseRessources,
-            'syntheseIngredients' => $syntheseIngredients,
-            'syntheseRichesse' => $syntheseRichesse,
-        ]);
+        return $printService->streamFragments(
+            $groupeGnIds,
+            fn (int $id): ?GroupeGn => $this->entityManager->find(GroupeGn::class, $id),
+            static fn (GroupeGn $groupeGn): array => [
+                'groupe' => $groupeGn->getGroupe(),
+                'richesse' => $groupeService->computeSyntheseRichesse($groupeGn->getGroupe(), $personnageService, $groupeGn),
+                'ressources' => $groupeService->computeSyntheseRessources($groupeGn->getGroupe(), $personnageService, $groupeGn),
+                'ingredients' => $groupeService->computeSyntheseIngredients($groupeGn->getGroupe(), $personnageService, $groupeGn),
+                'extends' => false,
+            ],
+            'groupe/fragment/printAllGroupe.twig',
+            'Enveloppes groupes',
+        );
     }
 
     /**
