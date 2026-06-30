@@ -33,7 +33,7 @@
     {% endif %}
 {% endif %}
 
-{% set participantHasRestaurations = participant.participantHasRestaurations|default({}) %}
+{% set participantHasRestaurations = participant and participant.participantHasRestaurations ? participant.participantHasRestaurations : {} %}
 {% if participantHasRestaurations %}
     <strong>Restauration</strong>
     <ul>
