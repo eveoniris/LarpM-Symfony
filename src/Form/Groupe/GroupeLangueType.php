@@ -29,7 +29,7 @@ class GroupeLangueType extends AbstractType
             'required' => true,
             'attr' => ['maxlength' => 45],
             'constraints' => [
-                new Length(['max' => 45]),
+                new Length(max: 45),
                 new NotBlank(),
             ],
         ])->add('couleur', TextType::class, [
@@ -37,7 +37,7 @@ class GroupeLangueType extends AbstractType
             'required' => true,
             'attr' => ['maxlength' => 45],
             'constraints' => [
-                new Length(['max' => 45]),
+                new Length(max: 45),
                 new NotBlank(),
             ],
         ]);

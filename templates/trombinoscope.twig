@@ -60,16 +60,20 @@
         <tbody>
         {% for participant in paginator %}
             <tr>
-                <td>{{ participant.personnage.nom }}</td>
+                <td>{% if participant.personnage %}{{ participant.personnage.nom }}{% endif %}</td>
                 <td>
-                    <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id}) }}">
-                        {% if participant.personnage.trombineUrl %}
-                            <img src="{{ path('personnage.trombine', {'personnage' : participant.personnage.id }) }}"
-                                 alt="{{ participant.personnage.nom }}"/>
-                        {% else %}
-                            <img width="160" src="{{ app.request.basepath }}/img/no_trombine.png"/>
-                        {% endif %}
-                    </a>
+                    {% if participant.personnage %}
+                        <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id}) }}">
+                            {% if participant.personnage.trombineUrl %}
+                                <img src="{{ path('personnage.trombine', {'personnage' : participant.personnage.id }) }}"
+                                     alt="{{ participant.personnage.nom }}"/>
+                            {% else %}
+                                <img width="160" src="{{ app.request.basepath }}/img/no_trombine.png"/>
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <img width="160" src="{{ app.request.basepath }}/img/no_trombine.png"/>
+                    {% endif %}
                 </td>
                 <td>
                     {% if participant.groupeGn %}

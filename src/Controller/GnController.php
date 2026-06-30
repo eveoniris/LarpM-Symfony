@@ -1086,18 +1086,26 @@ class GnController extends AbstractController
     #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function updateAction(
         Request $request,
-        EntityManagerInterface $entityManager,
+        GnRepository $gnRepository,
         #[MapEntity]
         Gn $gn,
     ): RedirectResponse|Response {
+        if ($gn->getDateJeu() === null) {
+            $lastGn = $gnRepository->createQueryBuilder('g')->where('g.date_jeu is NOT NULL')->orderBy('g.date_jeu', 'DESC')->setMaxResults(1)->getQuery()->getOneOrNullResult();
+
+            if ($lastGn?->getDateJeu()) {
+                $gn->setDateJeu($lastGn->getDateJeu());
+            }
+        }
+
         $form = $this->createForm(GnType::class, $gn)->add('update', SubmitType::class, [
             'label' => 'Sauvegarder',
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $gn = $form->getData();
-            $entityManager->persist($gn);
-            $entityManager->flush();
+            $this->entityManager->persist($gn);
+            $this->entityManager->flush();
             $this->addFlash('success', 'Le gn a été mis à jour.');
 
             return $this->redirectToRoute('gn.list');

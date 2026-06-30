@@ -27,10 +27,10 @@ class CompetenceFamilyType extends AbstractType
         $builder->add('label', TextType::class, [
             'required' => true,
             'attr' => ['maxlength' => 45],
-            'constraints' => [new Length(['max' => 45])],
+            'constraints' => [new Length(max: 45)],
         ])->add('description', TextareaType::class, [
             'required' => false,
-            'constraints' => [new Length(['max' => 450])],
+            'constraints' => [new Length(max: 450)],
             'attr' => [
                 'class' => 'tinymce',
                 'row' => 9,
