@@ -1,0 +1,110 @@
+{# Synthèse imprimable d'un groupe.
+   Variables attendues : groupe (entité), richesse, ressources, ingredients. #}
+{% macro popa(pa) %}
+    {%- set po = ((pa - pa % 10) / 10)|round -%}
+    {%- set reste = pa % 10 -%}
+    {%- if po > 0 %}{{ po }} PO{% endif %}
+    {%- if po > 0 and reste > 0 %} {% endif %}
+    {%- if reste > 0 %}{{ reste }} PA{% endif %}
+    {%- if pa == 0 %}0 PA{% endif %}
+{%- endmacro %}
+
+<h2>Groupe {{ groupe.numero }} - {{ groupe.nom }}</h2>
+
+<strong>Les personnages</strong>
+<ul>
+    {% for participant in groupe.nextSession.participants %}
+        {% if participant.personnage %}
+            <li>#{{ participant.personnage.id }}
+                - {{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}</li>
+        {% else %}
+            <li>Attention le participant {{ participant.user.username }} / {{ participant.user.email }} n'a pas
+                de personnage
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+{# Richesse : détail par source + PJ #}
+{% if richesse.total > 0 %}
+    <strong>Richesse</strong>
+    <ul>
+        {% for item in richesse.breakdown %}
+            <li>
+                <strong>{{ _self.popa(item.value) }}</strong>
+                {% if item.type == 'territoire' %}
+                    — territoire <em>{{ item.source }}</em>
+                    <small>({{ item.detail }})</small>
+                {% elseif item.type == 'merveille' %}
+                    — merveille <em>{{ item.source }}</em>
+                    {% if item.detail %}<small>({{ item.detail }})</small>{% endif %}
+                {% elseif item.type == 'bonus' %}
+                    — bonus <em>{{ item.source }}</em>
+                    {% if item.detail %}<small>({{ item.detail }})</small>{% endif %}
+                {% else %}
+                    — richesse directe du groupe
+                {% endif %}
+            </li>
+        {% endfor %}
+        {% for nom, montant in richesse.pj %}
+            <li><strong>{{ _self.popa(montant) }}</strong> — PJ {{ nom }}</li>
+        {% endfor %}
+        <li><strong>Total : {{ _self.popa(richesse.total) }}</strong></li>
+    </ul>
+{% endif %}
+
+{# Ressources : synthèse agrégée groupe + PJ #}
+{% if ressources is not empty %}
+    <strong>Ressources</strong>
+    <ul>
+        {% for label, quantite in ressources %}
+            <li><strong>{{ quantite }} {{ label }}</strong></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{# Ingrédients : synthèse agrégée groupe + PJ #}
+{% if ingredients is not empty %}
+    <strong>Ingrédients</strong>
+    <ul>
+        {% for label, quantite in ingredients %}
+            <li><strong>{{ quantite }} {{ label }}</strong></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if groupe.documents|length > 0 %}
+    <strong>Documents</strong>
+    <ul>
+        {% for document in groupe.documents %}
+            <li>{{ document.code }} -- {{ document.titre }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if groupe.items|length > 0 %}
+    <strong>Objets</strong>
+    <ul>
+        {% for objet in groupe.items %}
+            <li>{{ objet.numero }} - {{ objet.label }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<strong>Matériel</strong>
+<ul>
+    <li>1 sac poubelle transparent (déchets recyclables)</li>
+    <li>1 sac poubelle noir (déchets non recyclables)</li>
+    <li>Bons douche</li>
+    <li>1 Etiquette bannière</li>
+    <li>1 Fiche retour de groupe</li>
+    {% if groupe.territoires|length > 0 %}
+        {% for territoire in groupe.territoires %}
+            <li>1 Feuille du fief <strong>{{ territoire }}</strong></li>
+        {% endfor %}
+        <li>Lot des titres du domaine</li>
+    {% endif %}
+    {% if groupe.materielRaw %}
+        <li>{{ groupe.materielRaw }}</li>
+    {% endif %}
+</ul>
