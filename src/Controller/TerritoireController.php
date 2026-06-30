@@ -209,9 +209,12 @@ class TerritoireController extends AbstractController
         #[MapEntity]
         Construction $construction,
     ): RedirectResponse|Response {
-        $form = $this->createFormBuilder($territoire)->add('save', SubmitType::class, [
-            'label' => 'Retirer la construction',
-        ])->getForm();
+        $form = $this
+            ->createFormBuilder($territoire)
+            ->add('save', SubmitType::class, [
+                'label' => 'Retirer la construction',
+            ])
+            ->getForm();
 
         $form->handleRequest($request);
 

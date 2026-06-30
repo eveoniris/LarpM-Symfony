@@ -110,7 +110,7 @@ class GroupeGnType extends AbstractType
         $user = $this->security->getUser();
         $suzerain = $groupeGn->getSuzerain(false);
 
-        if (!$this->security->isGranted(Role::WARGAME->value) && $suzerain->getId() !== $user->getPersonnage()?->getId()) {
+        if (!$this->security->isGranted(Role::WARGAME->value) && $suzerain?->getId() !== $user->getPersonnage()?->getId()) {
             // TODO : TEMP !
             $allow = false;
 

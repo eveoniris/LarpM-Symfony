@@ -37,6 +37,10 @@ class GnType extends AbstractType
                 'label' => 'Point d\'expérience à la création d\'un personnage',
                 'required' => false,
             ])
+            ->add('dateJeu', IntegerType::class, [
+                'label' => 'Année de jeu',
+                'required' => true,
+            ])
             ->add('dateDebut', DateTimeType::class, [
                 'label' => 'Date et heure de début du jeu',
                 'required' => false,

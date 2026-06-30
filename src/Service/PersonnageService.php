@@ -356,7 +356,7 @@ class PersonnageService
             );
         }
 
-        if ($gn) {
+        if ($gn && null !== $gn->getDateJeu()) {
             $this->entityManager->persist(
                 (new PersonnageChronologie())
                     ->setAnnee($gn->getDateJeu())
@@ -2485,11 +2485,7 @@ class PersonnageService
         /** @var ReligionRepository $religionRepository */
         $religionRepository = $this->entityManager->getRepository(Religion::class);
         $qb = $religionRepository->createQueryBuilder('rl');
-        $religion = $qb
-            ->where($qb->expr()->eq($qb->expr()->lower('rl.label'), ':lbl'))
-            ->setParameter('lbl', 'sans')
-            ->getQuery()
-            ->getSingleResult();
+        $religion = $qb->where($qb->expr()->eq($qb->expr()->lower('rl.label'), ':lbl'))->setParameter('lbl', 'sans')->getQuery()->getSingleResult();
 
         return $religion && $this->knownReligion($personnage, $religion);
     }
