@@ -1407,18 +1407,14 @@ class PersonnageController extends AbstractController
 
         $availableLangues = $this->personnageService->getAvailableLangues($personnage, 1);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('langue', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre nouvelle langue',
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $availableLangues,
-                'choice_label' => 'fullDescription',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('langue', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre nouvelle langue',
+            'multiple' => false,
+            'expanded' => true,
+            'choices' => $availableLangues,
+            'choice_label' => 'fullDescription',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1470,18 +1466,14 @@ class PersonnageController extends AbstractController
 
         $availableLangues = $this->personnageService->getAvailableLangues($personnage, 0);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('langue', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre nouvelle langue',
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $availableLangues,
-                'choice_label' => 'fullDescription',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('langue', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre nouvelle langue',
+            'multiple' => false,
+            'expanded' => true,
+            'choices' => $availableLangues,
+            'choice_label' => 'fullDescription',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1528,18 +1520,14 @@ class PersonnageController extends AbstractController
 
         $availableLangues = $this->personnageService->getAvailableLangues($personnage, 2);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('langue', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre nouvelle langue',
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $availableLangues,
-                'choice_label' => 'fullDescription',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('langue', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre nouvelle langue',
+            'multiple' => false,
+            'expanded' => true,
+            'choices' => $availableLangues,
+            'choice_label' => 'fullDescription',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1705,19 +1693,15 @@ class PersonnageController extends AbstractController
             unset($potions[$k]);
         }
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('potion', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre potion',
-                'multiple' => false,
-                // 'autocomplete' => true,
-                'expanded' => true,
-                'choices' => $potions,
-                'choice_label' => 'fullLabel',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre potion'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('potion', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre potion',
+            'multiple' => false,
+            // 'autocomplete' => true,
+            'expanded' => true,
+            'choices' => $potions,
+            'choice_label' => 'fullLabel',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre potion'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1818,18 +1802,14 @@ class PersonnageController extends AbstractController
 
         $availableDomaines = $personnageService->getAvailableDomaines($personnage);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('domaine', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre domaine de magie',
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $availableDomaines,
-                'choice_label' => 'label',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre domaine de magie'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('domaine', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre domaine de magie',
+            'multiple' => false,
+            'expanded' => true,
+            'choices' => $availableDomaines,
+            'choice_label' => 'label',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre domaine de magie'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1898,19 +1878,15 @@ class PersonnageController extends AbstractController
 
         $sorts = $this->personnageService->getAvailableSorts($personnage, $niveau);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('sort', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre sort',
-                'multiple' => false,
-                'expanded' => true,
-                'autocomplete' => true,
-                'choices' => $sorts,
-                'choice_label' => 'fullLabel',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre sort'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('sort', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre sort',
+            'multiple' => false,
+            'expanded' => true,
+            'autocomplete' => true,
+            'choices' => $sorts,
+            'choice_label' => 'fullLabel',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre sort'])->getForm();
 
         $form->handleRequest($request);
 
@@ -1988,18 +1964,14 @@ class PersonnageController extends AbstractController
 
         $technologies = $this->personnageService->getAvailableTechnologies($personnage);
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('technologies', ChoiceType::class, [
-                'required' => true,
-                'label' => 'Choisissez votre technologie',
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $technologies,
-                'choice_label' => 'label',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider votre technologie'])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('technologies', ChoiceType::class, [
+            'required' => true,
+            'label' => 'Choisissez votre technologie',
+            'multiple' => false,
+            'expanded' => true,
+            'choices' => $technologies,
+            'choice_label' => 'label',
+        ])->add('save', SubmitType::class, ['label' => 'Valider votre technologie'])->getForm();
 
         $form->handleRequest($request);
 

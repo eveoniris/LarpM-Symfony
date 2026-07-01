@@ -239,11 +239,7 @@ class CompetenceService
     public function getMerveilleBonusCout(): int
     {
         $count = 0;
-        $territoires = $this
-            ->getPersonnage()
-            ->getLastParticipant()
-            ?->getGroupe()
-            ?->getTerritoires() ?? new ArrayCollection();
+        $territoires = $this->getPersonnage()->getLastParticipant()?->getGroupe()?->getTerritoires() ?? new ArrayCollection();
 
         foreach ($territoires as $territoire) {
             /** @var Merveille $merveille */

@@ -102,6 +102,10 @@ jobs:
 
             if [ "$CLEAR_CACHE" = "true" ]; then
               echo "==> Clearing Symfony cache"
+              # Suppression manuelle du cache prod (et des dossiers temporaires laissés
+              # par un déploiement interrompu) pour éviter l'erreur de rename
+              # "target var/cache/prod already exists" sur l'hébergement mutualisé.
+              rm -rf var/cache/prod var/cache/prod__*
               APP_ENV=prod php -d memory_limit=-1 bin/console cache:clear --no-warmup
               APP_ENV=prod php bin/console cache:warmup
             fi
