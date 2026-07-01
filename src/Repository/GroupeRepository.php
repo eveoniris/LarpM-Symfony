@@ -108,11 +108,7 @@ class GroupeRepository extends BaseRepository
      */
     public function findOneByCode($code): mixed
     {
-        $groupes = $this
-            ->getEntityManager()
-            ->createQuery('SELECT g FROM App\Entity\Groupe g WHERE g.code = :code')
-            ->setParameter('code', $code)
-            ->getResult();
+        $groupes = $this->getEntityManager()->createQuery('SELECT g FROM App\Entity\Groupe g WHERE g.code = :code')->setParameter('code', $code)->getResult();
 
         return reset($groupes);
     }
@@ -121,11 +117,7 @@ class GroupeRepository extends BaseRepository
     public function findByGn(int $gn, ?string $type = '', ?string $value = '', ?array $order = []): \Doctrine\ORM\Query
     {
         // Liste des groupes du GN en paramètre
-        $qbGroupes = $this
-            ->getEntityManager()
-            ->createQuery('SELECT IDENTITY(g.groupe) FROM App\Entity\GroupeGn g WHERE g.gn = :code')
-            ->setParameter('code', $gn)
-            ->getResult();
+        $qbGroupes = $this->getEntityManager()->createQuery('SELECT IDENTITY(g.groupe) FROM App\Entity\GroupeGn g WHERE g.gn = :code')->setParameter('code', $gn)->getResult();
         $listeGroupes = array_column($qbGroupes, 1);
 
         $qb = $this->getEntityManager()->createQueryBuilder();

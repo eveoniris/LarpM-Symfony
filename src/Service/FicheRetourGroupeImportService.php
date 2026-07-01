@@ -209,13 +209,9 @@ class FicheRetourGroupeImportService
 
     private function findGroupeGn(Gn $gn, int $groupeNumero): ?GroupeGn
     {
-        return $this->entityManager
-            ->createQuery('SELECT gg FROM App\Entity\GroupeGn gg
+        return $this->entityManager->createQuery('SELECT gg FROM App\Entity\GroupeGn gg
              JOIN gg.groupe g
-             WHERE gg.gn = :gn AND g.numero = :numero')
-            ->setParameter('gn', $gn)
-            ->setParameter('numero', $groupeNumero)
-            ->getOneOrNullResult();
+             WHERE gg.gn = :gn AND g.numero = :numero')->setParameter('gn', $gn)->setParameter('numero', $groupeNumero)->getOneOrNullResult();
     }
 
     private function upsertFiche(

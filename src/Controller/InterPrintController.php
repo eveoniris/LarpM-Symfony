@@ -40,7 +40,10 @@ final class InterPrintController extends AbstractController
      */
     private function getPersonnageIds(InterJeu $inter): array
     {
-        $rows = $this->entityManager->createQuery('SELECT p.id FROM App\Entity\InterJeu i JOIN i.personnages p WHERE i = :inter ORDER BY p.id ASC')->setParameter('inter', $inter)->getScalarResult();
+        $rows = $this->entityManager
+            ->createQuery('SELECT p.id FROM App\Entity\InterJeu i JOIN i.personnages p WHERE i = :inter ORDER BY p.id ASC')
+            ->setParameter('inter', $inter)
+            ->getScalarResult();
 
         return array_map('intval', array_column($rows, 'id'));
     }
