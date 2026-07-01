@@ -410,10 +410,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
     protected function getRequestOrderDir(string $defOrderDir = 'ASC'): string
     {
-        return $this->pageRequest
-            ->getOrderBy()
-            ->setDefaultOrderDir($defOrderDir)
-            ->getSort();
+        return $this->pageRequest->getOrderBy()->setDefaultOrderDir($defOrderDir)->getSort();
     }
 
     protected function getRequestPage(int $defPage = 1): int

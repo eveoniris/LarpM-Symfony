@@ -17,10 +17,6 @@ class GroupeGnOrdreRepository extends BaseRepository
     /** @return array<int, \App\Entity\GroupeGnOrdre> */
     public function findByGn(int $gnId): array
     {
-        return $this
-            ->getEntityManager()
-            ->createQuery('SELECT g FROM App\Entity\GroupeGnOrdre g JOIN g.groupeGn ggn JOIN g.gn gn WHERE gn.id = :gnId')
-            ->setParameter('gnId', $gnId)
-            ->getResult();
+        return $this->getEntityManager()->createQuery('SELECT g FROM App\Entity\GroupeGnOrdre g JOIN g.groupeGn ggn JOIN g.gn gn WHERE gn.id = :gnId')->setParameter('gnId', $gnId)->getResult();
     }
 }

@@ -43,7 +43,7 @@ jobs:
       - name: Setup Mago
         uses: nhedger/setup-mago@v1
         with:
-          version: '1.13.3'
+          version: '1.42.0'
 
       - name: Mago — check formatting
         run: mago format --dry-run

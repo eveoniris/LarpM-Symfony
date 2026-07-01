@@ -1288,12 +1288,9 @@ class GroupeController extends AbstractController
             return $r;
         }
 
-        $form = $this
-            ->createFormBuilder()
-            ->add('remove', SubmitType::class, [
-                'label' => 'Retirer le territoire',
-            ])
-            ->getForm();
+        $form = $this->createFormBuilder()->add('remove', SubmitType::class, [
+            'label' => 'Retirer le territoire',
+        ])->getForm();
 
         $form->handleRequest($request);
 
@@ -1323,11 +1320,11 @@ class GroupeController extends AbstractController
     public function unlockAction(#[MapEntity] Groupe $groupe): RedirectResponse
     {
         // only admin can unlock : TODO lock phase from GN STEP
-        //if (!$this->isGranted(Role::ADMIN->value)) {
+        // if (!$this->isGranted(Role::ADMIN->value)) {
         //    $this->addFlash('error', "Il n'est plus possible de déverrouiller les groupes");
         //
         //    return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
-        //}
+        // }
 
         $groupe->setLock(false);
         $this->entityManager->persist($groupe);
