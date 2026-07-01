@@ -47,9 +47,9 @@ class PrintService
      * vidage de l'EntityManager. Le travail sur des identifiants (et non des
      * entités déjà hydratées) est ce qui permet ce clear sans effet de bord.
      *
-     * @param list<int>                              $ids
-     * @param Closure(int): ?object                  $load         recharge l'entité gérée à partir de son id
-     * @param Closure(object): array<string, mixed>  $buildContext construit le contexte Twig du fragment
+     * @param list<int>                             $ids
+     * @param Closure(int): ?object                 $load         recharge l'entité gérée à partir de son id
+     * @param Closure(object): array<string, mixed> $buildContext construit le contexte Twig du fragment
      */
     public function streamFragments(array $ids, Closure $load, Closure $buildContext, string $fragment, string $title = ''): StreamedResponse
     {

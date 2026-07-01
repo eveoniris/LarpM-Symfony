@@ -234,7 +234,7 @@ trait EntityFileUploadTrait
 
     public function __serialize(): array
     {
-        return array_filter(get_object_vars($this), fn (string $key) => $key !== 'file', ARRAY_FILTER_USE_KEY);
+        return array_filter(get_object_vars($this), static fn (string $key) => $key !== 'file', \ARRAY_FILTER_USE_KEY);
     }
 
     public function __unserialize(array $data): void

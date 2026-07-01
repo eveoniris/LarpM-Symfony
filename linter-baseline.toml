@@ -9,13 +9,7 @@ count = 1
 [[issues]]
 file = "src/Command/GnGiveLearning.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Command/GnGiveLearning.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
@@ -88,18 +82,18 @@ count = 4
 file = "src/Controller/AbstractController.php"
 code = "halstead"
 message = "Method has a high halstead effort"
-count = 2
+count = 1
 
 [[issues]]
 file = "src/Controller/AbstractController.php"
 code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
 file = "src/Controller/AbstractController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (5.69)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -142,7 +136,7 @@ count = 2
 file = "src/Controller/AbstractController.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 3
+count = 1
 
 [[issues]]
 file = "src/Controller/AbstractController.php"
@@ -279,7 +273,7 @@ count = 1
 [[issues]]
 file = "src/Controller/ApiJoueurController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.18)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -591,25 +585,13 @@ count = 1
 [[issues]]
 file = "src/Controller/EconomieController.php"
 code = "halstead"
-message = "Method has a high halstead difficulty"
-count = 1
-
-[[issues]]
-file = "src/Controller/EconomieController.php"
-code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Controller/EconomieController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume, difficulty, and effort"
 count = 1
 
 [[issues]]
 file = "src/Controller/EconomieController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.87)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -699,7 +681,7 @@ count = 1
 [[issues]]
 file = "src/Controller/GnController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.67)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -813,7 +795,7 @@ count = 5
 [[issues]]
 file = "src/Controller/GroupeController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (11.310000000000002)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -909,7 +891,7 @@ count = 1
 [[issues]]
 file = "src/Controller/GroupeGnController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.5700000000000003)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -963,7 +945,7 @@ count = 1
 [[issues]]
 file = "src/Controller/GroupeSecondaireController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (3.5)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1041,7 +1023,7 @@ count = 3
 [[issues]]
 file = "src/Controller/HomepageController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.59)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1083,13 +1065,7 @@ count = 1
 [[issues]]
 file = "src/Controller/InstallController.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Controller/InstallController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
@@ -1107,7 +1083,7 @@ count = 1
 [[issues]]
 file = "src/Controller/InterController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (1.9100000000000001)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1131,13 +1107,7 @@ count = 1
 [[issues]]
 file = "src/Controller/IntrigueController.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Controller/IntrigueController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
@@ -1149,7 +1119,7 @@ count = 1
 [[issues]]
 file = "src/Controller/IntrigueController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (8.01)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1437,13 +1407,7 @@ count = 1
 [[issues]]
 file = "src/Controller/ParticipantController.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 3
-
-[[issues]]
-file = "src/Controller/ParticipantController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 3
 
 [[issues]]
@@ -1461,7 +1425,7 @@ count = 2
 [[issues]]
 file = "src/Controller/ParticipantController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (10.370000000000001)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1534,12 +1498,12 @@ count = 1
 file = "src/Controller/PersonnageController.php"
 code = "halstead"
 message = "Method has a high halstead effort"
-count = 6
+count = 3
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 3
 
 [[issues]]
@@ -1557,7 +1521,7 @@ count = 3
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (33.46)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1582,19 +1546,19 @@ count = 1
 file = "src/Controller/PersonnageController.php"
 code = "literal-named-argument"
 message = "Literal argument `true` should be passed as a named argument for clarity."
-count = 1
+count = 2
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "no-assign-in-condition"
 message = "Avoid assignments in conditions."
-count = 53
+count = 54
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "no-else-clause"
 message = "Avoid `else` clauses."
-count = 13
+count = 12
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -1613,12 +1577,6 @@ file = "src/Controller/PersonnageController.php"
 code = "no-isset"
 message = "Use of the `isset` construct."
 count = 5
-
-[[issues]]
-file = "src/Controller/PersonnageController.php"
-code = "no-literal-password"
-message = "Literal passwords or sensitive data should not be stored in code."
-count = 1
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -1725,7 +1683,7 @@ count = 2
 [[issues]]
 file = "src/Controller/ReligionController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.79)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -1899,13 +1857,7 @@ count = 1
 [[issues]]
 file = "src/Controller/StatistiqueController.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 3
-
-[[issues]]
-file = "src/Controller/StatistiqueController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 3
 
 [[issues]]
@@ -1917,7 +1869,7 @@ count = 2
 [[issues]]
 file = "src/Controller/StatistiqueController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (8.41)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2013,7 +1965,7 @@ count = 1
 [[issues]]
 file = "src/Controller/StockObjetController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (1.92)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2151,19 +2103,13 @@ count = 1
 [[issues]]
 file = "src/Controller/TerritoireController.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Controller/TerritoireController.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
 file = "src/Controller/TerritoireController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (4.73)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2266,12 +2212,12 @@ count = 1
 file = "src/Controller/UserController.php"
 code = "halstead"
 message = "Method has a high halstead effort"
-count = 1
+count = 2
 
 [[issues]]
 file = "src/Controller/UserController.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (5.04)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2296,7 +2242,7 @@ count = 2
 file = "src/Controller/UserController.php"
 code = "no-else-clause"
 message = "Avoid `else` clauses."
-count = 4
+count = 5
 
 [[issues]]
 file = "src/Controller/UserController.php"
@@ -2341,24 +2287,6 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
-file = "src/Entity/BaseAge.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseAnnonce.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseBillet.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
 file = "src/Entity/BaseBonus.php"
 code = "too-many-methods"
 message = "Class has too many methods."
@@ -2392,12 +2320,6 @@ count = 1
 file = "src/Entity/BaseCompetence.php"
 code = "too-many-properties"
 message = "Class has too many properties."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseConnaissance.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -2405,12 +2327,6 @@ file = "src/Entity/BaseDebriefing.php"
 code = "too-many-properties"
 message = "Class has too many properties."
 count = 1
-
-[[issues]]
-file = "src/Entity/BaseDocument.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 2
 
 [[issues]]
 file = "src/Entity/BaseDocument.php"
@@ -2450,12 +2366,6 @@ count = 1
 
 [[issues]]
 file = "src/Entity/BaseGn.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseGn.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
@@ -2465,12 +2375,6 @@ file = "src/Entity/BaseGn.php"
 code = "too-many-properties"
 message = "Class has too many properties."
 count = 1
-
-[[issues]]
-file = "src/Entity/BaseGroupe.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 5
 
 [[issues]]
 file = "src/Entity/BaseGroupe.php"
@@ -2491,22 +2395,10 @@ message = "Class has too many properties."
 count = 1
 
 [[issues]]
-file = "src/Entity/BaseGroupeAllie.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 2
-
-[[issues]]
-file = "src/Entity/BaseGroupeEnemy.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 2
-
-[[issues]]
 file = "src/Entity/BaseGroupeGn.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 10
+count = 6
 
 [[issues]]
 file = "src/Entity/BaseGroupeGn.php"
@@ -2518,12 +2410,6 @@ count = 1
 file = "src/Entity/BaseGroupeGn.php"
 code = "too-many-properties"
 message = "Class has too many properties."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseInterJeu.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -2552,12 +2438,6 @@ count = 1
 
 [[issues]]
 file = "src/Entity/BaseLangue.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseLangue.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
@@ -2566,24 +2446,6 @@ count = 1
 file = "src/Entity/BaseLangue.php"
 code = "too-many-properties"
 message = "Class has too many properties."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseMembre.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseMessage.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 2
-
-[[issues]]
-file = "src/Entity/BaseObjet.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -2625,14 +2487,8 @@ count = 1
 [[issues]]
 file = "src/Entity/BasePersonnage.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (3.09)."
+message = "Class has a high kan defect score."
 count = 1
-
-[[issues]]
-file = "src/Entity/BasePersonnage.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 3
 
 [[issues]]
 file = "src/Entity/BasePersonnage.php"
@@ -2653,33 +2509,9 @@ message = "Class has too many properties."
 count = 1
 
 [[issues]]
-file = "src/Entity/BasePersonnageHasQuestion.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
 file = "src/Entity/BasePersonnageLangues.php"
 code = "no-literal-password"
 message = "Literal passwords or sensitive data should not be stored in code."
-count = 1
-
-[[issues]]
-file = "src/Entity/BasePersonnageTrigger.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Entity/BasePostulant.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Entity/BasePotion.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -2702,12 +2534,6 @@ count = 1
 
 [[issues]]
 file = "src/Entity/BaseSecondaryGroup.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseSecondaryGroup.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
@@ -2716,18 +2542,6 @@ count = 1
 file = "src/Entity/BaseSecondaryGroup.php"
 code = "too-many-properties"
 message = "Class has too many properties."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseSort.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseTechnologie.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -2738,12 +2552,6 @@ count = 1
 
 [[issues]]
 file = "src/Entity/BaseTerritoire.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseTerritoire.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
@@ -2752,18 +2560,6 @@ count = 1
 file = "src/Entity/BaseTerritoire.php"
 code = "too-many-properties"
 message = "Class has too many properties."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseTrigger.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Entity/BaseUser.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -2799,7 +2595,7 @@ count = 1
 [[issues]]
 file = "src/Entity/Bonus.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.93)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2853,7 +2649,7 @@ count = 1
 [[issues]]
 file = "src/Entity/Competence.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.8500000000000005)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -2935,12 +2731,6 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
-file = "src/Entity/Espece.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
 file = "src/Entity/FicheRetourGroupeHistory.php"
 code = "too-many-properties"
 message = "Class has too many properties."
@@ -2961,7 +2751,7 @@ count = 3
 [[issues]]
 file = "src/Entity/Gn.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (4.44)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3009,7 +2799,7 @@ count = 1
 [[issues]]
 file = "src/Entity/Groupe.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (9.330000000000002)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3069,7 +2859,7 @@ count = 2
 [[issues]]
 file = "src/Entity/Participant.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.88)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3117,7 +2907,7 @@ count = 11
 [[issues]]
 file = "src/Entity/Personnage.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (22.75)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3136,7 +2926,7 @@ count = 1
 file = "src/Entity/Personnage.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 5
+count = 2
 
 [[issues]]
 file = "src/Entity/Personnage.php"
@@ -3229,12 +3019,6 @@ message = "Literal argument `'_'` should be passed as a named argument for clari
 count = 1
 
 [[issues]]
-file = "src/Entity/QrCodeScanLog.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
 file = "src/Entity/Question.php"
 code = "identity-comparison"
 message = "Use identity inequality `!==` instead of inequality comparison `!=`."
@@ -3261,7 +3045,7 @@ count = 1
 [[issues]]
 file = "src/Entity/Restauration.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (1.7000000000000002)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3315,7 +3099,7 @@ count = 2
 [[issues]]
 file = "src/Entity/Territoire.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (4.510000000000001)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3369,7 +3153,7 @@ count = 1
 [[issues]]
 file = "src/Entity/User.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (3.9000000000000004)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3400,7 +3184,7 @@ count = 3
 file = "src/Entity/User.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 2
+count = 1
 
 [[issues]]
 file = "src/Entity/User.php"
@@ -3531,13 +3315,7 @@ count = 1
 [[issues]]
 file = "src/Form/GroupeGn/GroupeGnType.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Form/GroupeGn/GroupeGnType.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
@@ -3681,7 +3459,7 @@ count = 1
 [[issues]]
 file = "src/Manager/PersonnageManager.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (4.53)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3729,7 +3507,7 @@ count = 1
 [[issues]]
 file = "src/Manager/RandomColor.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.7)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3787,18 +3565,6 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
-file = "src/Repository/AgeRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 2
-
-[[issues]]
-file = "src/Repository/AttributeTypeRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
 file = "src/Repository/BackgroundRepository.php"
 code = "literal-named-argument"
 message = "Literal argument `''` should be passed as a named argument for clarity."
@@ -3819,13 +3585,7 @@ count = 1
 [[issues]]
 file = "src/Repository/BaseRepository.php"
 code = "halstead"
-message = "Method has a high halstead difficulty"
-count = 1
-
-[[issues]]
-file = "src/Repository/BaseRepository.php"
-code = "halstead"
-message = "Method has a high halstead effort"
+message = "Method has a high halstead difficulty and effort"
 count = 1
 
 [[issues]]
@@ -3837,7 +3597,7 @@ count = 1
 [[issues]]
 file = "src/Repository/BaseRepository.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (6.01)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -3866,12 +3626,6 @@ count = 2
 
 [[issues]]
 file = "src/Repository/BaseRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 3
-
-[[issues]]
-file = "src/Repository/BaseRepository.php"
 code = "no-empty"
 message = "Use of the `empty` construct."
 count = 9
@@ -3895,22 +3649,10 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
-file = "src/Repository/BonusRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Repository/ClasseRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
 file = "src/Repository/CompetenceRepository.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 2
+count = 1
 
 [[issues]]
 file = "src/Repository/CompetenceRepository.php"
@@ -3926,44 +3668,20 @@ count = 1
 
 [[issues]]
 file = "src/Repository/ConnaissanceRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 2
-
-[[issues]]
-file = "src/Repository/ConnaissanceRepository.php"
 code = "no-insecure-comparison"
 message = "Insecure comparison of sensitive data."
 count = 1
 
 [[issues]]
-file = "src/Repository/ConstructionRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
 file = "src/Repository/DebriefingRepository.php"
 code = "literal-named-argument"
 message = "Literal argument `''` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
-file = "src/Repository/DebriefingRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
 file = "src/Repository/DocumentRepository.php"
 code = "literal-named-argument"
 message = "Literal argument `''` should be passed as a named argument for clarity."
-count = 1
-
-[[issues]]
-file = "src/Repository/DocumentRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -3973,21 +3691,9 @@ message = "TODO should be tagged with (@username) or (#issue)."
 count = 1
 
 [[issues]]
-file = "src/Repository/DomaineRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
 file = "src/Repository/EqualExpression.php"
 code = "literal-named-argument"
 message = "Literal argument `'_'` should be passed as a named argument for clarity."
-count = 1
-
-[[issues]]
-file = "src/Repository/EspeceRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -4010,38 +3716,8 @@ count = 1
 
 [[issues]]
 file = "src/Repository/GroupeRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Repository/GroupeRepository.php"
 code = "too-many-methods"
 message = "Class has too many methods."
-count = 1
-
-[[issues]]
-file = "src/Repository/InterJeuRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Repository/IntrigueRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Repository/ItemRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Repository/LevelRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -4060,12 +3736,6 @@ count = 1
 file = "src/Repository/LogActionRepository.php"
 code = "literal-named-argument"
 message = "Literal argument `true` should be passed as a named argument for clarity."
-count = 1
-
-[[issues]]
-file = "src/Repository/LogActionRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -4095,25 +3765,13 @@ count = 1
 [[issues]]
 file = "src/Repository/ParticipantRepository.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Repository/ParticipantRepository.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
 file = "src/Repository/ParticipantRepository.php"
 code = "inline-variable-return"
 message = "Variable assignment can be inlined into the return statement."
-count = 1
-
-[[issues]]
-file = "src/Repository/ParticipantRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -4131,13 +3789,7 @@ count = 1
 [[issues]]
 file = "src/Repository/PersonnageRepository.php"
 code = "halstead"
-message = "Method has a high halstead effort"
-count = 1
-
-[[issues]]
-file = "src/Repository/PersonnageRepository.php"
-code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
@@ -4149,14 +3801,8 @@ count = 2
 [[issues]]
 file = "src/Repository/PersonnageRepository.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.0500000000000003)."
+message = "Class has a high kan defect score."
 count = 1
-
-[[issues]]
-file = "src/Repository/PersonnageRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 2
 
 [[issues]]
 file = "src/Repository/PersonnageRepository.php"
@@ -4184,12 +3830,6 @@ count = 1
 
 [[issues]]
 file = "src/Repository/PotionRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 2
-
-[[issues]]
-file = "src/Repository/PotionRepository.php"
 code = "no-insecure-comparison"
 message = "Insecure comparison of sensitive data."
 count = 1
@@ -4202,20 +3842,8 @@ count = 1
 
 [[issues]]
 file = "src/Repository/PriereRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Repository/PriereRepository.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
-count = 1
-
-[[issues]]
-file = "src/Repository/QrCodeScanLogRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -4225,16 +3853,10 @@ message = "Use of the `empty` construct."
 count = 2
 
 [[issues]]
-file = "src/Repository/RumeurRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
 file = "src/Repository/SecondaryGroupRepository.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 2
+count = 1
 
 [[issues]]
 file = "src/Repository/SecondaryGroupRepository.php"
@@ -4268,32 +3890,8 @@ count = 1
 
 [[issues]]
 file = "src/Repository/SortRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 2
-
-[[issues]]
-file = "src/Repository/SortRepository.php"
 code = "no-insecure-comparison"
 message = "Insecure comparison of sensitive data."
-count = 1
-
-[[issues]]
-file = "src/Repository/SphereRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Repository/StrategieRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Repository/TechnologieRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
@@ -4312,7 +3910,7 @@ count = 2
 file = "src/Repository/TerritoireRepository.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 2
+count = 1
 
 [[issues]]
 file = "src/Repository/TerritoireRepository.php"
@@ -4346,20 +3944,14 @@ count = 1
 
 [[issues]]
 file = "src/Repository/TokenRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
-count = 1
-
-[[issues]]
-file = "src/Repository/TokenRepository.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
 count = 1
 
 [[issues]]
 file = "src/Repository/UserRepository.php"
-code = "no-boolean-flag-parameter"
-message = "Avoid boolean flag parameters."
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
@@ -4370,14 +3962,32 @@ count = 1
 
 [[issues]]
 file = "src/Repository/UserRepository.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 1
+
+[[issues]]
+file = "src/Repository/UserRepository.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
 
 [[issues]]
 file = "src/Security/AppAuthenticator.php"
+code = "inline-variable-return"
+message = "Variable assignment can be inlined into the return statement."
+count = 1
+
+[[issues]]
+file = "src/Security/AppAuthenticator.php"
 code = "no-assign-in-condition"
 message = "Avoid assignments in conditions."
+count = 1
+
+[[issues]]
+file = "src/Security/Voter/TerritoireVoter.php"
+code = "sensitive-parameter"
+message = "Parameters that may contain sensitive information should be marked with the `#[SensitiveParameter]` attribute."
 count = 1
 
 [[issues]]
@@ -4419,7 +4029,7 @@ count = 1
 [[issues]]
 file = "src/Service/CompetenceService.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (5.180000000000001)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -4467,19 +4077,13 @@ count = 1
 [[issues]]
 file = "src/Service/ConditionsService.php"
 code = "halstead"
-message = "Method has a high halstead difficulty"
-count = 1
-
-[[issues]]
-file = "src/Service/ConditionsService.php"
-code = "halstead"
-message = "Method has a high halstead effort"
+message = "Method has a high halstead difficulty and effort"
 count = 1
 
 [[issues]]
 file = "src/Service/ConditionsService.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (4.140000000000001)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -4498,7 +4102,7 @@ count = 1
 file = "src/Service/ConditionsService.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 2
+count = 1
 
 [[issues]]
 file = "src/Service/ConditionsService.php"
@@ -4575,7 +4179,7 @@ count = 1
 [[issues]]
 file = "src/Service/FicheRetourGroupeImportService.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.88)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -4744,12 +4348,12 @@ count = 2
 file = "src/Service/GroupeService.php"
 code = "halstead"
 message = "Method has a high halstead effort"
-count = 4
+count = 5
 
 [[issues]]
 file = "src/Service/GroupeService.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (15.950000000000001)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -4762,7 +4366,7 @@ count = 1
 file = "src/Service/GroupeService.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 3
+count = 2
 
 [[issues]]
 file = "src/Service/GroupeService.php"
@@ -4780,7 +4384,7 @@ count = 13
 file = "src/Service/GroupeService.php"
 code = "no-shorthand-ternary"
 message = "Use of the shorthand ternary operator."
-count = 4
+count = 5
 
 [[issues]]
 file = "src/Service/GroupeService.php"
@@ -4881,7 +4485,7 @@ count = 1
 [[issues]]
 file = "src/Service/PagerService.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (2.29)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -4936,12 +4540,12 @@ count = 3
 file = "src/Service/PersonnageService.php"
 code = "halstead"
 message = "Method has a high halstead effort"
-count = 5
+count = 4
 
 [[issues]]
 file = "src/Service/PersonnageService.php"
 code = "halstead"
-message = "Method has a high halstead volume"
+message = "Method has a high halstead volume and effort"
 count = 1
 
 [[issues]]
@@ -4953,7 +4557,7 @@ count = 1
 [[issues]]
 file = "src/Service/PersonnageService.php"
 code = "kan-defect"
-message = "Class has a high kan defect score (27.18)."
+message = "Class has a high kan defect score."
 count = 1
 
 [[issues]]
@@ -4984,7 +4588,7 @@ count = 8
 file = "src/Service/PersonnageService.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 16
+count = 12
 
 [[issues]]
 file = "src/Service/PersonnageService.php"
@@ -5056,7 +4660,7 @@ count = 1
 file = "src/Trait/EntityFileUploadTrait.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 3
+count = 2
 
 [[issues]]
 file = "src/Trait/EntityFileUploadTrait.php"
@@ -5068,4 +4672,58 @@ count = 1
 file = "src/Trait/EntityFileUploadTrait.php"
 code = "too-many-methods"
 message = "Trait has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Factory/UserFactory.php"
+code = "no-literal-password"
+message = "Literal passwords or sensitive data should not be stored in code."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Security/ApiAuthTest.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "tests/Functional/Security/ApiAuthTest.php"
+code = "no-literal-password"
+message = "Literal passwords or sensitive data should not be stored in code."
+count = 4
+
+[[issues]]
+file = "tests/Integration/Service/CompetenceServiceTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Integration/Service/SanctuaireEffectTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Unit/Entity/PersonnageAnomalieTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Unit/Entity/TerritoireWealthTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Unit/Service/ConditionsServiceTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Unit/Service/PersonnageServiceStaffTest.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
 count = 1

@@ -193,14 +193,10 @@ class TerritoireRepository extends BaseRepository
      */
     public function findWithGeoJson(int $excludeId): array
     {
-        return $this
-            ->getEntityManager()
-            ->createQuery('SELECT t FROM App\Entity\Territoire t
+        return $this->getEntityManager()->createQuery('SELECT t FROM App\Entity\Territoire t
                  WHERE t.geojson IS NOT NULL
                  AND t.id != :excludeId
-                 ORDER BY t.nom ASC')
-            ->setParameter('excludeId', $excludeId)
-            ->getResult();
+                 ORDER BY t.nom ASC')->setParameter('excludeId', $excludeId)->getResult();
     }
 
     /**

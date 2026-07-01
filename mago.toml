@@ -3,7 +3,7 @@ php-version = "8.4"
 
 [source]
 paths        = ["src", "tests"]
-excludes     = ["vendor", "var", "public/index.php"]
+excludes     = ["var", "public/index.php"]
 includes     = ["vendor"]
 
 # ── Linter ────────────────────────────────────────────────────────────────
@@ -26,6 +26,10 @@ trailing-comma = true
 space-within-grouping-parenthesis = false
 space-around-assignment-in-declare = false
 preserve-breaking-conditional-expression = true
+# Respecte les chaînes de méthodes écrites en multi-ligne : ne les recolle pas
+# en une seule ligne même si elles tiennent dans print-width (comme les fluent
+# builders Doctrine ->createQuery()->setParameter()->getResult()).
+preserve-breaking-member-access-chain = true
 space-before-arrow-function-parameter-list-parenthesis = true
 parentheses-in-exit-and-die = false
 # Preserve (new Foo())->method() — removing parens changes precedence in PHP < 8.4
