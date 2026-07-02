@@ -30,43 +30,7 @@
             {{ form(form) }}
         </div>
 
-        <div class="well well-sm">
-            <div class="header">
-                <h5>Coût de lancement des sorts</h5>
-            </div>
-            <div class="table-responsive">
-            <table class="table table-sm table-bordered">
-                <thead>
-                <tr>
-                    <th>Niveau du sort</th>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>3</th>
-                    <th>4</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <th>Coût en Perles dans le domaine du mage</th>
-                    <td>2</td>
-                    <td>3</td>
-                    <td>4</td>
-                    <td>5</td>
-                </tr>
-                <tr>
-                    <th>Coût en Perles en dehors du domaine du mage</th>
-                    <td>3</td>
-                    <td>4</td>
-                    <td>5</td>
-                    <td>6</td>
-                </tr>
-                </tbody>
-            </table>
-            </div>
-
-            <p>Exemple : Un sort de niveau 2 coutera 3 Perles au mage connaissant le domaine de magie du sort, et 4
-                Perles au mage ne connaissant pas le domaine de magie.</p>
-        </div>
+        {% include 'personnage/fragment/coutSorts.twig' %}
 
         {% for sort in sorts %}
             <div class="well well-sm">
