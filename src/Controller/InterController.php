@@ -16,6 +16,7 @@ use App\Repository\InterJeuRepository;
 use App\Repository\PersonnageRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
+use App\Service\StatsService;
 use DateTime;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -98,11 +99,15 @@ class InterController extends AbstractController
     }
 
     #[Route('/{inter}', name: 'detail', requirements: ['inter' => Requirement::DIGITS])]
-    public function detailAction(InterJeu $inter): Response
+    public function detailAction(InterJeu $inter, StatsService $statsService): Response
     {
+        $hasParticipants = !$inter->getPersonnages()->isEmpty();
+
         return $this->render('inter/detail.html.twig', [
             'interJeu' => $inter,
             'chronologieDisponible' => $inter->canGenereteChronologie(),
+            'classes' => $hasParticipants ? $statsService->getClassesInterJeu($inter)->getResult() : [],
+            'competences' => $hasParticipants ? $statsService->getCompetenceInterJeu($inter)->getResult() : [],
         ]);
     }
 
