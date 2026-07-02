@@ -3957,7 +3957,7 @@ class PersonnageController extends AbstractController
         $competence = isset($formData['competence'])
             ? $this->entityManager->find('App\Entity\Competence', $formData['competence'])
             : null;
-        $classe = isset($formDatan['classe'])
+        $classe = isset($formData['classe'])
             ? $this->entityManager->find('App\Entity\Classe', $formData['classe'])
             : null;
         $groupe = isset($formData['groupe'])
@@ -3971,7 +3971,6 @@ class PersonnageController extends AbstractController
             : null;
         $sansJoueur = (bool) $request->query->get('sans_joueur');
         $vivant = $formData['vivant'] ?? null;
-        $optionalParameters = '';
 
         // construit le formulaire contenant les filtres de recherche
         $form = $this->createForm(PersonnageFindType::class, null, [
@@ -4004,19 +4003,15 @@ class PersonnageController extends AbstractController
         }
         if ($religion) {
             $criteria['religion'] = $religion->getId();
-            $optionalParameters .= "&personnageFind[religion]={$religion->getId()}";
         }
         if ($competence) {
             $criteria['competence'] = $competence->getId();
-            $optionalParameters .= "&personnageFind[competence]={$competence->getId()}";
         }
         if ($classe) {
             $criteria['classe'] = $classe->getId();
-            $optionalParameters .= "&personnageFind[classe]={$classe->getId()}";
         }
         if ($groupe) {
             $criteria['groupe'] = $groupe->getId();
-            $optionalParameters .= "&personnageFind[groupe]={$groupe->getId()}";
         }
         if ($scenariste) {
             $criteria['scenariste'] = $scenariste->getId();
@@ -4075,7 +4070,6 @@ class PersonnageController extends AbstractController
             'personnages' => $personnages,
             'paginator' => $paginator,
             'form' => $form->createView(),
-            'optionalParameters' => $optionalParameters,
             'columnDefinitions' => $columnDefinitions,
             'formPath' => $routeName,
         ]);

@@ -28,6 +28,11 @@
                 <li class="list-group-item">
                     <div class="btn-toolbar" role="toolbar" aria-label="..." data-turbo="false">
                         {{ form_start(form, {"action": path(formPath, formParams)}) }}
+                        {# conserve le tri courant lors d'une nouvelle recherche (la page repart à 1) #}
+                        {% if app.request.query.get('order_by') %}
+                            <input type="hidden" name="order_by" value="{{ app.request.query.get('order_by') }}">
+                            <input type="hidden" name="order_dir" value="{{ app.request.query.get('order_dir') }}">
+                        {% endif %}
 
                         <div class="form-group">
                             <div class="d-flex flex-wrap gap-2 align-items-center">

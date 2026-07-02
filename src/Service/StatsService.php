@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\Classe;
 use App\Entity\CompetenceFamily;
 use App\Entity\Gn;
+use App\Entity\InterJeu;
 use App\Enum\Role;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NativeQuery;
@@ -183,6 +184,47 @@ class StatsService
             GROUP BY cpt.id, cf.label, l.index, l.label
             ORDER BY cf.label, l.index, l.label;
             SQL, $rsm)->setParameter('gnid', $gn->getId());
+    }
+
+    public function getClassesInterJeu(InterJeu $inter): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('total', 'total', 'integer');
+        $rsm->addScalarResult('nom', 'label', 'string');
+        $rsm->addScalarResult('id', 'id', 'integer');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(<<<SQL
+            SELECT COUNT(c.id) as total, c.label_masculin as nom, c.id
+            FROM inter_jeu_personnage ijp
+                     INNER JOIN personnage pp ON ijp.personnage_id = pp.id
+                     INNER JOIN classe c ON pp.classe_id = c.id
+            WHERE ijp.inter_jeu_id = :interid
+            GROUP BY c.id, c.label_masculin
+            ORDER BY total DESC, c.label_masculin
+            SQL, $rsm)->setParameter('interid', $inter->getId());
+    }
+
+    public function getCompetenceInterJeu(InterJeu $inter): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('total', 'total', 'integer');
+        $rsm->addScalarResult('competence', 'competence', 'string');
+        $rsm->addScalarResult('niveau', 'niveau', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(<<<SQL
+            SELECT COUNT(cpt.id) as total, cf.label as competence, l.label as niveau
+            FROM inter_jeu_personnage ijp
+                     INNER JOIN personnage pp ON ijp.personnage_id = pp.id
+                     INNER JOIN personnages_competences pc ON pp.id = pc.personnage_id
+                     INNER JOIN competence cpt ON pc.competence_id = cpt.id
+                     INNER JOIN competence_family cf ON cpt.competence_family_id = cf.id
+                     INNER JOIN `level` l on cpt.level_id = l.id
+            WHERE ijp.inter_jeu_id = :interid and pp.vivant = 1
+            GROUP BY cpt.id, cf.label, l.index, l.label
+            ORDER BY cf.label, l.index, l.label
+            SQL, $rsm)->setParameter('interid', $inter->getId());
     }
 
     public function getConstructions(): NativeQuery
