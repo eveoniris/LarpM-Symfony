@@ -85,4 +85,62 @@
         </div>
     </div>
 
+    {% if interJeu.personnages|length > 0 %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="well well-sm">
+                    <div class="header">
+                        <h5>Répartition des classes</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-sm table-hover">
+                            {% include '_partials/thead.twig' with { 'rows': [
+                                {'name' : 'Total', 'css': 'text-center'},
+                                {'name' : 'Classe'},
+                            ]} %}
+                            <tbody>
+                            {% for classe in classes %}
+                                <tr>
+                                    <td class="text-center col-1">{{ classe.total }}</td>
+                                    <td>
+                                        <a href="{{ path('classe.detail', {'classe': classe.id}) }}">
+                                            {{ classe.label }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="well well-sm">
+                    <div class="header">
+                        <h5>Répartition des compétences (par niveau)</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-sm table-hover">
+                            {% include '_partials/thead.twig' with { 'rows': [
+                                {'name' : 'Total', 'css': 'text-center'},
+                                {'name' : 'Compétence'},
+                                {'name' : 'Niveau'},
+                            ]} %}
+                            <tbody>
+                            {% for competence in competences %}
+                                <tr>
+                                    <td class="text-center col-1">{{ competence.total }}</td>
+                                    <td>{{ competence.competence }}</td>
+                                    <td>{{ competence.niveau }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock body %}
