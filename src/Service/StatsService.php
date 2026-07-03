@@ -343,8 +343,8 @@ class StatsService
                     else a.resistance + case c.construction_id when 1 then 2 else 0 end + case e.construction_id when 3 then 2 else 0 end
                   end as total_defense
                 , case LOWER(a.statut)
-                    when 'instable' then CEILING((a.tresor + case h.construction_id	when 6 then 5 else 0 end + case l.construction_id when 10 then 5 else 0 end) / 2)
-                    else a.tresor + case h.construction_id	when 6 then 5 else 0 end + case l.construction_id when 10 then 5 else 0 end
+                    when 'instable' then CEILING((a.tresor + COALESCE((SELECT SUM(cr.revenu) FROM territoire_has_construction thc JOIN construction cr ON cr.id = thc.construction_id WHERE thc.territoire_id = a.id), 0)) / 2)
+                    else a.tresor + COALESCE((SELECT SUM(cr.revenu) FROM territoire_has_construction thc JOIN construction cr ON cr.id = thc.construction_id WHERE thc.territoire_id = a.id), 0)
                   end as total_revenus
                 , CASE WHEN (suzerain.nom <> '' AND suzerain.nom IS NOT NULL)
                     THEN suzerain.nom
