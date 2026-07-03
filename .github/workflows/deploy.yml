@@ -102,10 +102,16 @@ jobs:
 
             if [ "$CLEAR_CACHE" = "true" ]; then
               echo "==> Clearing Symfony cache"
-              # Suppression manuelle du cache prod (et des dossiers temporaires laissés
-              # par un déploiement interrompu) pour éviter l'erreur de rename
-              # "target var/cache/prod already exists" sur l'hébergement mutualisé.
-              rm -rf var/cache/prod var/cache/prod__*
+              # Sur l'hébergement mutualisé OVH (NFS), 'rm -rf var/cache/prod' peut échouer
+              # avec "Directory not empty" : des fichiers .nfs* sont recréés tant qu'un
+              # process garde des fichiers ouverts, ce qui empêche la suppression du dossier
+              # parent. On déplace donc le cache hors du chemin (rename atomique, insensible
+              # à ce problème) avant de le supprimer en best-effort. Cela évite aussi le
+              # conflit de rename de cache:clear ("target var/cache/prod already exists").
+              if [ -d var/cache/prod ]; then
+                mv var/cache/prod var/cache/prod.old.\$\$ || true
+              fi
+              rm -rf var/cache/prod.old.* var/cache/prod__* 2>/dev/null || true
               APP_ENV=prod php -d memory_limit=-1 bin/console cache:clear --no-warmup
               APP_ENV=prod php bin/console cache:warmup
             fi
