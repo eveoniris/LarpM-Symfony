@@ -32,6 +32,9 @@ class ConstructionType extends AbstractType
         ])->add('defense', IntegerType::class, [
             'label' => 'La valeur de défense de la construction',
             'required' => true,
+        ])->add('revenu', IntegerType::class, [
+            'label' => "Le revenu (pièces d'argent) apporté par la construction",
+            'required' => true,
         ]);
     }
 

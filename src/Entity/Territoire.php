@@ -297,19 +297,8 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
             $tresor = 0;
         }
 
-        // TODO ajouter les revenus des bâtiments.
         foreach ($this->getConstructions() as $construction) {
-            if (6 === $construction->getId()) { /* Comptoir commercial */
-                $tresor += 5;
-            }
-
-            if (23 === $construction->getId()) { /* Foyer d'orfèvre */
-                $tresor += 10;
-            }
-
-            if (10 === $construction->getId()) { /* Port */
-                $tresor += 5;
-            }
+            $tresor += $construction->getRevenu();
         }
 
         // gestion de l'état du territoire

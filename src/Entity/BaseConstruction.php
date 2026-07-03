@@ -32,6 +32,9 @@ abstract class BaseConstruction
     #[Column(type: Types::INTEGER)]
     protected int $defense;
 
+    #[Column(type: Types::INTEGER, options: ['default' => 0])]
+    protected int $revenu = 0;
+
     /** @var Collection<int, Territoire> */
     #[ORM\ManyToMany(targetEntity: Territoire::class, mappedBy: 'constructions')]
     protected Collection $territoires;
@@ -56,6 +59,18 @@ abstract class BaseConstruction
     public function setDefense(int $defense): static
     {
         $this->defense = $defense;
+
+        return $this;
+    }
+
+    public function getRevenu(): int
+    {
+        return $this->revenu;
+    }
+
+    public function setRevenu(int $revenu): static
+    {
+        $this->revenu = $revenu;
 
         return $this;
     }

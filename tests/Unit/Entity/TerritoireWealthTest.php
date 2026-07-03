@@ -22,10 +22,10 @@ class TerritoireWealthTest extends TestCase
         return $t;
     }
 
-    private function makeConstruction(int $id, int $defense = 0): Construction
+    private function makeConstruction(int $revenu = 0, int $defense = 0): Construction
     {
         $c = $this->createStub(Construction::class);
-        $c->method('getId')->willReturn($id);
+        $c->method('getRevenu')->willReturn($revenu);
         $c->method('getDefense')->willReturn($defense);
         $c->method('addTerritoire')->willReturnSelf();
 
@@ -59,17 +59,17 @@ class TerritoireWealthTest extends TestCase
     public function testRichesseUnstableWithConstructionRevenueBeforeHalving(): void
     {
         $t = $this->makeTerritoire(100, TerritoireStatut::INSTABLE);
-        // Construction id=6 = Comptoir commercial (+5)
-        $t->addConstruction($this->makeConstruction(6));
+        // Comptoir commercial : +10 de revenu
+        $t->addConstruction($this->makeConstruction(10));
 
-        // (100 + 5) / 2 = 52.5 → ceil = 53
-        static::assertSame(53.0, $t->getRichesse());
+        // (100 + 10) / 2 = 55
+        static::assertSame(55.0, $t->getRichesse());
     }
 
     public function testRichesseStableIgnoresConstructionRevenue(): void
     {
         $t = $this->makeTerritoire(100, TerritoireStatut::STABLE);
-        $t->addConstruction($this->makeConstruction(6)); // Comptoir +5 (ignored for stable)
+        $t->addConstruction($this->makeConstruction(10)); // Comptoir +10 (ignored for stable)
 
         // Stable returns $this->tresor directly, constructions NOT added
         static::assertSame(100, $t->getRichesse());
@@ -78,12 +78,12 @@ class TerritoireWealthTest extends TestCase
     public function testRichesseUnstableAccumulatesMultipleConstructions(): void
     {
         $t = $this->makeTerritoire(50, TerritoireStatut::INSTABLE);
-        $t->addConstruction($this->makeConstruction(6)); // +5
-        $t->addConstruction($this->makeConstruction(23)); // +10
-        $t->addConstruction($this->makeConstruction(10)); // +5
+        $t->addConstruction($this->makeConstruction(10)); // Comptoir +10
+        $t->addConstruction($this->makeConstruction(10)); // Foyer d'orfèvre +10
+        $t->addConstruction($this->makeConstruction(5)); // Port +5
 
-        // (50 + 5 + 10 + 5) / 2 = 35
-        static::assertSame(35.0, $t->getRichesse());
+        // (50 + 10 + 10 + 5) / 2 = 37.5 → ceil = 38
+        static::assertSame(38.0, $t->getRichesse());
     }
 
     // ── getDefense() ──────────────────────────────────────────────────────────
@@ -108,8 +108,8 @@ class TerritoireWealthTest extends TestCase
     {
         $t = $this->makeTerritoire(0);
         $t->setResistance(10);
-        $t->addConstruction($this->makeConstruction(99, 5));
-        $t->addConstruction($this->makeConstruction(100, 3));
+        $t->addConstruction($this->makeConstruction(0, 5));
+        $t->addConstruction($this->makeConstruction(0, 3));
 
         static::assertSame(18, $t->getDefense());
     }
@@ -118,7 +118,7 @@ class TerritoireWealthTest extends TestCase
     {
         $t = $this->makeTerritoire(0);
         $t->setResistance(0);
-        $t->addConstruction($this->makeConstruction(99, 7));
+        $t->addConstruction($this->makeConstruction(0, 7));
 
         // 0 resistance is explicitly excluded (0 !== 0 is false → skipped)
         static::assertSame(7, $t->getDefense());
