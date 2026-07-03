@@ -178,22 +178,10 @@ readonly class GroupeService
             $constructions = [];
 
             foreach ($territoire->getConstructions() as $construction) {
-                //  Comptoir commercial
-                if (6 === $construction->getId()) {
-                    $tresor += 5;
-                    $constructions[] = '+ 5 ' . $construction->getLabel();
-                }
-
-                // Foyer d'orfèvre
-                if (23 === $construction->getId()) {
-                    $tresor += 10;
-                    $constructions[] = '+ 10 ' . $construction->getLabel();
-                }
-
-                // Port
-                if (10 === $construction->getId()) {
-                    $tresor += 5;
-                    $constructions[] = '+ 5 ' . $construction->getLabel();
+                $revenu = $construction->getRevenu();
+                if ($revenu > 0) {
+                    $tresor += $revenu;
+                    $constructions[] = '+ ' . $revenu . ' ' . $construction->getLabel();
                 }
             }
 
@@ -1038,17 +1026,10 @@ readonly class GroupeService
             $constructions = [];
 
             foreach ($territoire->getConstructions() as $construction) {
-                if (6 === $construction->getId()) {
-                    $tresor += 5;
-                    $constructions[] = '+5 ' . $construction->getLabel();
-                }
-                if (23 === $construction->getId()) {
-                    $tresor += 10;
-                    $constructions[] = '+10 ' . $construction->getLabel();
-                }
-                if (10 === $construction->getId()) {
-                    $tresor += 5;
-                    $constructions[] = '+5 ' . $construction->getLabel();
+                $revenu = $construction->getRevenu();
+                if ($revenu > 0) {
+                    $tresor += $revenu;
+                    $constructions[] = '+' . $revenu . ' ' . $construction->getLabel();
                 }
             }
 
