@@ -330,15 +330,28 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     public function getPersonnagesAvailableToParticipation(): array
     {
         $available = [];
+
+        // Personnages rattachés directement au joueur (user_id).
         foreach ($this->personnages as $personnage) {
             if (!$personnage->getVivant()) {
                 continue;
             }
 
-            $available[] = $personnage;
+            $available[$personnage->getId()] = $personnage;
         }
 
-        return $available;
+        // Personnages joués via une participation : couvre l'historique et les
+        // personnages dont le user_id n'a pas été renseigné à la création.
+        foreach ($this->getParticipants() as $participant) {
+            $personnage = $participant->getPersonnage();
+            if (null === $personnage || !$personnage->getVivant()) {
+                continue;
+            }
+
+            $available[$personnage->getId()] = $personnage;
+        }
+
+        return array_values($available);
     }
 
     /**
