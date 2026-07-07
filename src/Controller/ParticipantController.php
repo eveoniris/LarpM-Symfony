@@ -1161,7 +1161,11 @@ class ParticipantController extends AbstractController
             // use the one attached user to the participation and not the logged (could be an admin)
             /** @var User $user */
             $user = $participant->getUser();
-            $personnage->setUser();
+            // On ne renseigne le détenteur que s'il est vide : on ne « vole »
+            // jamais un personnage à son détenteur d'origine.
+            if (null === $personnage->getUser()) {
+                $personnage->setUser($user);
+            }
             $participant->setPersonnage($personnage);
             if (!$user->getPersonnage()) {
                 $user->setPersonnage($personnage);
@@ -1385,7 +1389,11 @@ class ParticipantController extends AbstractController
                 return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
             }
 
-            $personnage->setUser($user);
+            // On ne renseigne le détenteur que s'il est vide : reprendre un
+            // personnage ne le retire pas à son détenteur d'origine.
+            if (null === $personnage->getUser()) {
+                $personnage->setUser($user);
+            }
             $participant->setPersonnage($personnage);
 
             if (!$user->getPersonnage()) {
