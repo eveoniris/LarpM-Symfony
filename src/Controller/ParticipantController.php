@@ -1361,7 +1361,7 @@ class ParticipantController extends AbstractController
                 'label' => 'Choisissez votre personnage',
                 'choice_label' => 'resumeParticipations',
                 'class' => Personnage::class,
-                'choices' => array_unique($participant->getUser()?->getPersonnagesAvailableToParticipation()),
+                'choices' => $participant->getUser()?->getPersonnagesAvailableToParticipation() ?? [],
                 'data' => $default,
                 'required' => false,
                 'placeholder' => $canFreeParticipation ? '- Aucun personnage (libérer la participation)' : null,
