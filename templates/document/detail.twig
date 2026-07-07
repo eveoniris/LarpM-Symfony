@@ -31,7 +31,7 @@
         <h5>Détail d'un document</h5>
     </div>
 
-    {% if isAdmin or participant is defined %}
+    {% if isAdmin or personnage is defined %}
         <div class="d-flex justify-content-end mb-2">
             <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
                 <div class="btn-group" role="group">
@@ -51,10 +51,10 @@
                            title="Supprimer"
                            href="{{ path('document.delete',{'document':document.id}) }}"><i
                                     class="fa fa-eraser"></i> Supprimer</a>
-                    {% elseif participant is defined %}
+                    {% elseif personnage is defined %}
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Télécharger"
                            target="_blank"
-                           href="{{ path('participant.document',{'document': document.id, 'participant': participant.id}) }}"><i
+                           href="{{ path('personnage.document',{'document': document.id, 'personnage': personnage.id}) }}"><i
                                     class="fa fa-download"></i> Télécharger</a>
 
                     {% endif %}
@@ -188,12 +188,12 @@
                     le fichier.
                 </div>
             </object>
-        {% elseif participant is defined %}
+        {% elseif personnage is defined %}
             <object type="application/pdf" width="100%" height="800px"
-                    data="{{ path('participant.document',{'document': document.id, 'participant': participant.id}) }}">
+                    data="{{ path('personnage.document',{'document': document.id, 'personnage': personnage.id}) }}">
                 <div class="well">
                     Si le PDF n'apparait pas correctement dans votre navigateur, <a
-                            href="{{ path('participant.document',{'participant': participant.id, 'document': document.id}) }}">cliquez
+                            href="{{ path('personnage.document',{'personnage': personnage.id, 'document': document.id}) }}">cliquez
                         ici</a> pour télécharger
                     le fichier.
                 </div>

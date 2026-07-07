@@ -19,14 +19,11 @@
                             - {{ document.titre }}</a>
                     </div>
 
-                    <div class="btn-group" role="group">
-                        {% if participant is defined %}
                             <a class="btn btn-sm btn-secondary"
-                                    href="{{ path('participant.document',{'document':document.id, 'participant': participant.id,'document': document.id}) }}"
+                                    href="{{ path('personnage.document',{'document':document.id, 'personnage': personnage.id,'document': document.id}) }}"
                                     >
                                 <i class="fa-solid fa-file"></i>
                             </a>
-                        {% endif %}
                     </div>
                 </div>
             {% else %}
