@@ -54,7 +54,7 @@
                     {% elseif personnage is defined %}
                         <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Télécharger"
                            target="_blank"
-                           href="{{ path('personnage.document',{'document': document.id, 'personnage': personnage.id}) }}"><i
+                           href="{{ path('personnage.document.detail',{'document': document.id, 'personnage': personnage.id}) }}"><i
                                     class="fa fa-download"></i> Télécharger</a>
 
                     {% endif %}
@@ -190,10 +190,10 @@
             </object>
         {% elseif personnage is defined %}
             <object type="application/pdf" width="100%" height="800px"
-                    data="{{ path('personnage.document',{'document': document.id, 'personnage': personnage.id}) }}">
+                    data="{{ path('personnage.document.detail',{'document': document.id, 'personnage': personnage.id}) }}">
                 <div class="well">
                     Si le PDF n'apparait pas correctement dans votre navigateur, <a
-                            href="{{ path('personnage.document',{'personnage': personnage.id, 'document': document.id}) }}">cliquez
+                            href="{{ path('personnage.document.detail',{'personnage': personnage.id, 'document': document.id}) }}">cliquez
                         ici</a> pour télécharger
                     le fichier.
                 </div>
