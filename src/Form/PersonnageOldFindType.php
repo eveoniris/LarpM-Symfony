@@ -6,7 +6,6 @@ namespace App\Form;
 
 use App\Entity\Personnage;
 use App\Repository\PersonnageRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -27,10 +26,12 @@ class PersonnageOldFindType extends AbstractType
             'class' => Personnage::class,
             'query_builder' => static fn (PersonnageRepository $personnageRepository) => $personnageRepository
                 ->createQueryBuilder('p')
-                ->innerjoin('p.user', 'u', Join::WITH, 'p.user = :uid')
+                ->leftJoin('p.participants', 'part')
                 ->where('p.vivant = :vivant')
+                ->andWhere('p.user = :uid OR part.user = :uid')
                 ->setParameter('vivant', true)
                 ->setParameter('uid', $builder->getData()->getUser()->getId())
+                ->distinct()
                 ->orderBy('p.nom', 'ASC'),
         ])->add('save', SubmitType::class, ['label' => 'Valider']);
     }
