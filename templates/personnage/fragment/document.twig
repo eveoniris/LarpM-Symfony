@@ -18,13 +18,6 @@
                         <a href="{{ path('personnage.document.detail',{'personnage': personnage.id, 'document' : document.id}) }}"><strong>{{ document.code }}</strong>
                             - {{ document.titre }}</a>
                     </div>
-
-                            <a class="btn btn-sm btn-secondary"
-                                    href="{{ path('personnage.document',{'document':document.id, 'personnage': personnage.id,'document': document.id}) }}"
-                                    >
-                                <i class="fa-solid fa-file"></i>
-                            </a>
-                    </div>
                 </div>
             {% else %}
                 {% include '_partials/noResult.twig' with {'content' : 'Aucun', 'css' : 'w-100'} %}
