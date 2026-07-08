@@ -26,6 +26,7 @@ enum LogActionType: string
     case REMOVE_POTION = 'remove_potion';
     case ADD_POTION_DEPART = 'add_potion_depart';
     case ADD_RELIGION = 'add_religion';
+    case LOCK_RELIGION = 'lock_religion';
     case ADD_RENOMME = 'add_renomme';
     case DELETE_POTION_DEPART = 'delete_potion_depart';
     case ENTITY = 'entity';
