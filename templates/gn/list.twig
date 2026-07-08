@@ -65,7 +65,7 @@
                         <ul>
                             <li>Etat : {% if gn.actif %}<span class="text-success">Actif</span>{% else %}non actif{% endif %}</li>
                             <li>Nombre de participants : {{ gn.participants|length }}</li>
-                            <li>Nombre de billets vendus : {{ gn.billetCount }}</li>
+                            <li>Nombre de billets vendus : {{ billetCounts[gn.id] ?? 0 }}</li>
                         </ul>
                     {% endset %}
                     {% include '_partials/cardNotif.twig' with {'type': 'gamemaster', 'css': 'mt-2', 'content' : gameMasterHtml} %}
