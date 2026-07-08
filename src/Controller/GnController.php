@@ -200,6 +200,7 @@ class GnController extends AbstractController
         #[MapEntity]
         Gn $gn,
         QuestionRepository $questionRepository,
+        ParticipantRepository $participantRepository,
     ): Response {
         $participant = $this->getUser()?->getParticipant($gn);
 
@@ -213,10 +214,25 @@ class GnController extends AbstractController
 
         $questions = $questionRepository->findByParticipant($participant);
 
+        // Comptages calculés en SQL (COUNT) pour éviter d'hydrater tous les participants
+        // et leurs personnages — uniquement pour les admins qui voient ces statistiques.
+        $counts = null;
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $counts = [
+                'total' => $participantRepository->countByGn($gn),
+                'billet' => $participantRepository->countWithBilletByGn($gn),
+                'pnj' => $participantRepository->countPnjByGn($gn),
+                'withoutBillet' => $participantRepository->countWithoutBilletByGn($gn),
+                'withoutGroup' => $participantRepository->countWithoutGroupByGn($gn),
+                'withoutPerso' => $participantRepository->countWithoutPersoByGn($gn),
+            ];
+        }
+
         return $this->render('gn/detail.twig', [
             'gn' => $gn,
             'participant' => $participant,
             'questions' => $questions,
+            'counts' => $counts,
         ]);
     }
 
@@ -341,18 +357,32 @@ class GnController extends AbstractController
 
     #[Route('', name: 'list')]
     #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
-    public function listAction(Request $request, GnRepository $gnRepository): Response
+    public function listAction(Request $request, GnRepository $gnRepository, ParticipantRepository $participantRepository): Response
     {
         $page = $request->query->getInt('page', 1);
         $limit = 10;
 
         $paginator = $gnRepository->findPaginated($page, $limit);
 
+        $isAdmin = $this->isGranted('ROLE_ORGA') || $this->isGranted('ROLE_ADMIN');
+
+        // Comptage des billets vendus en une seule requête SQL groupée pour les GN de la page,
+        // plutôt que d'hydrater tous les participants de chaque GN.
+        $billetCounts = [];
+        if ($isAdmin) {
+            $gnIds = [];
+            foreach ($paginator as $gn) {
+                $gnIds[] = $gn->getId();
+            }
+            $billetCounts = $participantRepository->countWithBilletByGnIds($gnIds);
+        }
+
         return $this->render('gn/list.twig', [
             'paginator' => $paginator,
             'limit' => $limit,
             'page' => $page,
-            'isAdmin' => $this->isGranted('ROLE_ORGA') || $this->isGranted('ROLE_ADMIN'),
+            'isAdmin' => $isAdmin,
+            'billetCounts' => $billetCounts,
         ]);
     }
 

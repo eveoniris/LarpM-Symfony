@@ -48,7 +48,7 @@ abstract class BaseBillet
     /**
      * @var Collection<int, Participant>|Participant[]
      */
-    #[OneToMany(mappedBy: 'billet', targetEntity: Participant::class)]
+    #[OneToMany(mappedBy: 'billet', targetEntity: Participant::class, fetch: 'EXTRA_LAZY')]
     #[JoinColumn(name: 'id', referencedColumnName: 'billet_id', nullable: false)]
     protected ?Collection $participants = null;
 

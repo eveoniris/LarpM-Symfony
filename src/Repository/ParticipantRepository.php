@@ -100,6 +100,104 @@ class ParticipantRepository extends BaseRepository
     }
 
     /**
+     * Nombre total de participants inscrits sur un GN.
+     */
+    public function countByGn(Gn $gn): int
+    {
+        return $this->countByGnWhere($gn);
+    }
+
+    /**
+     * Nombre de participants ayant un billet (= billets vendus).
+     */
+    public function countWithBilletByGn(Gn $gn): int
+    {
+        return $this->countByGnWhere($gn, 'p.billet IS NOT NULL');
+    }
+
+    /**
+     * Nombre de participants inscrits en tant que PNJ (billet dont le label contient « PNJ »).
+     *
+     * Reproduit App\Entity\Participant::isPnj() (stripos('PNJ') > 0) via LOCATE (1-indexé).
+     */
+    public function countPnjByGn(Gn $gn): int
+    {
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+                SELECT COUNT(p) FROM App\Entity\Participant p
+                INNER JOIN p.billet b
+                WHERE p.gn = :gnid AND LOCATE('PNJ', b.label) > 1
+            DQL);
+        $query->setParameter('gnid', $gn->getId());
+
+        return (int) $query->getSingleScalarResult();
+    }
+
+    /**
+     * Nombre de participants sans billet.
+     */
+    public function countWithoutBilletByGn(Gn $gn): int
+    {
+        return $this->countByGnWhere($gn, 'p.billet IS NULL');
+    }
+
+    /**
+     * Nombre de participants avec billet mais sans groupe.
+     */
+    public function countWithoutGroupByGn(Gn $gn): int
+    {
+        return $this->countByGnWhere($gn, 'p.billet IS NOT NULL AND p.groupeGn IS NULL');
+    }
+
+    /**
+     * Nombre de participants avec billet mais sans personnage.
+     */
+    public function countWithoutPersoByGn(Gn $gn): int
+    {
+        return $this->countByGnWhere($gn, 'p.billet IS NOT NULL AND p.personnage IS NULL');
+    }
+
+    /**
+     * Compte des participants d'un GN, avec une condition WHERE additionnelle optionnelle.
+     */
+    private function countByGnWhere(Gn $gn, string $extraWhere = '1 = 1'): int
+    {
+        $query = $this->getEntityManager()->createQuery(<<<DQL
+                SELECT COUNT(p) FROM App\Entity\Participant p
+                WHERE p.gn = :gnid AND {$extraWhere}
+            DQL);
+        $query->setParameter('gnid', $gn->getId());
+
+        return (int) $query->getSingleScalarResult();
+    }
+
+    /**
+     * Nombre de billets vendus (participants avec billet) pour une liste de GN.
+     *
+     * @param array<int, int> $gnIds
+     *
+     * @return array<int, int> map gnId => nombre de participants avec billet
+     */
+    public function countWithBilletByGnIds(array $gnIds): array
+    {
+        if ([] === $gnIds) {
+            return [];
+        }
+
+        $rows = $this->getEntityManager()->createQuery(<<<DQL
+                SELECT IDENTITY(p.gn) AS gnId, COUNT(p) AS cnt FROM App\Entity\Participant p
+                WHERE p.gn IN (:ids) AND p.billet IS NOT NULL
+                GROUP BY p.gn
+            DQL)->setParameter('ids', $gnIds)->getResult();
+
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row['gnId']] = (int) $row['cnt'];
+        }
+
+        return $map;
+    }
+
+    /**
      * Trouve le nombre d'utilisateurs correspondant aux critères de recherche.
      *
      * @param array<string, mixed> $criteria
