@@ -19,9 +19,9 @@
                 <div class="col">
                     <div class="card m-1">
                         <div class="card-header text-center bg-body-secondary d-flex justify-content-around">
-                            <h5><a href="{{ path('personnage.detail', {'personnage': data.personnage_id}) }}">
+                            <h5>{% if data.personnage_id %}<a href="{{ path('personnage.detail', {'personnage': data.personnage_id}) }}">
                                     {{ data.personnage_nom }}
-                                </a></h5>
+                                </a>{% else %}{{ data.personnage_nom }}{% endif %}</h5>
                         </div>
 
                         <div class="card-img text-center">
