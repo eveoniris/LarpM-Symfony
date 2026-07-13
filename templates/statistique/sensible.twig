@@ -56,8 +56,8 @@
                     <td class="col-2"><a
                             href="{{ path('groupe.detail', {'groupe': sensible.groupeId}) }}">{{ sensible.groupe }}</a>
                     </td>
-                    <td class="col-1"><a
-                            href="{{ path('personnage.detail', {'personnage': sensible.personnageId}) }}">{{ sensible.personnage }}</a>
+                    <td class="col-1">{% if sensible.personnageId %}<a
+                            href="{{ path('personnage.detail', {'personnage': sensible.personnageId}) }}">{{ sensible.personnage }}</a>{% else %}{{ sensible.personnage }}{% endif %}
                     </td>
                 </tr>
             {% endfor %}

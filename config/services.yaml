@@ -71,3 +71,16 @@ services:
         arguments: [ '@request_stack' ]
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
+
+    # Enrichit chaque enregistrement de log (dont les exceptions) avec l'URL, la méthode HTTP
+    # et la route/contrôleur courants, pour localiser l'endpoint fautif en production.
+    Symfony\Bridge\Monolog\Processor\WebProcessor:
+        autoconfigure: false
+        tags:
+            - { name: monolog.processor }
+            - { name: kernel.event_subscriber }
+    Symfony\Bridge\Monolog\Processor\RouteProcessor:
+        autoconfigure: false
+        tags:
+            - { name: monolog.processor }
+            - { name: kernel.event_subscriber }
