@@ -86,9 +86,13 @@
                         {{ xpGap.xp_restant }}
                     </td>
                     <td class="text-center col-6">
-                        <a href="{{ path('personnage.detail', {'personnage': xpGap.personnage_id, 'gn' : gn.id } ) }}">
+                        {% if xpGap.personnage_id %}
+                            <a href="{{ path('personnage.detail', {'personnage': xpGap.personnage_id, 'gn' : gn.id } ) }}">
+                                {{ xpGap.personnage_nom }}
+                            </a>
+                        {% else %}
                             {{ xpGap.personnage_nom }}
-                        </a>
+                        {% endif %}
                     </td>
                     <td class="text-center col-6">
                         <a href="{{ path('groupe.detail.groupeGn', {'groupe': xpGap.groupe_id, 'gn' : gn.id, 'groupeGn': xpGap.groupe_gn_id } ) }}">
