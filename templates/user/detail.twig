@@ -87,6 +87,62 @@
                                 ></i> Simuler sa session</a>
                         </div>
                     </div>
+
+                    {# Support : génération manuelle d'un lien temporaire à transmettre à l'utilisateur #}
+                    <div class="w-100 mt-3">
+                        <div class="card border-danger">
+                            <div class="card-header py-1">
+                                <i class="fa fa-life-ring text-danger" style="margin-right: 5px;"></i>Support — lien temporaire
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small mb-2">
+                                    À utiliser uniquement si l'utilisateur ne reçoit pas ses emails. Le lien généré est
+                                    <strong>à usage unique</strong>, <strong>invalide tout lien précédent</strong> et doit être
+                                    transmis par un canal de confiance.
+                                </p>
+
+                                {% set supportLink = app.flashes('support_link')|first %}
+                                {% set supportLinkType = app.flashes('support_link_type')|first %}
+                                {% if supportLink %}
+                                    <div class="alert alert-warning">
+                                        <div class="mb-1">
+                                            <strong>Lien {{ supportLinkType == 'confirm' ? 'de validation de compte' : 'de réinitialisation de mot de passe' }} généré</strong>
+                                            {% if supportLinkType != 'confirm' %}
+                                                <span class="text-muted">(valable 24h)</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="supportLinkInput" readonly
+                                                   value="{{ supportLink }}"
+                                                   onclick="this.select();">
+                                            <button class="btn btn-secondary" type="button"
+                                                    onclick="navigator.clipboard.writeText(document.getElementById('supportLinkInput').value); this.innerHTML='&lt;i class=&quot;fa fa-check&quot;&gt;&lt;/i&gt; Copié';">
+                                                <i class="fa fa-copy"></i> Copier
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="d-flex flex-wrap gap-2">
+                                    <form method="post" action="{{ path('user.support.reset-link', {'user': user.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('support-reset-link-' ~ user.id) }}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="fa fa-key" style="margin-right: 5px;"></i>Lien de réinitialisation du mot de passe
+                                        </button>
+                                    </form>
+
+                                    {% if not user.isEnabled %}
+                                        <form method="post" action="{{ path('user.support.confirm-link', {'user': user.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('support-confirm-link-' ~ user.id) }}">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                <i class="fa fa-user-check" style="margin-right: 5px;"></i>Lien de validation du compte
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 {% endif %}
 
             </div>
