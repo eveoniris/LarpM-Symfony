@@ -86,7 +86,7 @@ class BaseGn
     protected Collection $backgrounds;
 
     /** @var Collection<int, Billet> */
-    #[OneToMany(targetEntity: Billet::class, mappedBy: 'gn')]
+    #[OneToMany(targetEntity: Billet::class, mappedBy: 'gn', fetch: 'EXTRA_LAZY')]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $billets;
 
@@ -96,12 +96,12 @@ class BaseGn
     protected Collection $debriefings;
 
     /** @var Collection<int, GroupeGn> */
-    #[OneToMany(targetEntity: GroupeGn::class, mappedBy: 'gn')]
+    #[OneToMany(targetEntity: GroupeGn::class, mappedBy: 'gn', fetch: 'EXTRA_LAZY')]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $groupeGns;
 
     /** @var Collection<int, Participant> */
-    #[OneToMany(targetEntity: Participant::class, mappedBy: 'gn', cascade: ['persist'])]
+    #[OneToMany(targetEntity: Participant::class, mappedBy: 'gn', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
     protected Collection $participants;
 

@@ -796,8 +796,16 @@ class PersonnageController extends AbstractController
                 }
 
                 $personnagesReligions = $personnage->getPersonnagesReligions();
+                $verrouKept = false;
                 foreach ($personnagesReligions as $oldReligion) {
+                    if ($oldReligion->isVerrouille() && !$this->isGranted(Role::ADMIN->value)) {
+                        $verrouKept = true;
+                        continue;
+                    }
                     $this->entityManager->remove($oldReligion);
+                }
+                if ($verrouKept) {
+                    $this->addFlash('warning', 'Une religion verrouillée a été conservée malgré le choix « Sans religion ».');
                 }
 
                 // pas plus de Pratiquant
@@ -810,8 +818,16 @@ class PersonnageController extends AbstractController
                 // supprimer toutes les autres religions si l'utilisateur à choisi fanatique
                 if (3 === $personnageReligion->getReligionLevel()?->getIndex()) {
                     $personnagesReligions = $personnage->getPersonnagesReligions();
+                    $verrouKept = false;
                     foreach ($personnagesReligions as $oldReligion) {
+                        if ($oldReligion->isVerrouille() && !$this->isGranted(Role::ADMIN->value)) {
+                            $verrouKept = true;
+                            continue;
+                        }
                         $this->entityManager->remove($oldReligion);
+                    }
+                    if ($verrouKept) {
+                        $this->addFlash('warning', 'Une religion verrouillée a été conservée malgré le passage Fanatique.');
                     }
                 }
 
@@ -2296,6 +2312,13 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
+        // Une religion verrouillée ne peut être retirée que par un admin.
+        if ($personnageReligion->isVerrouille() && !$this->isGranted(Role::ADMIN->value)) {
+            $this->addFlash('error', 'Cette religion est verrouillée : seul un administrateur peut la retirer.');
+
+            return $this->redirectToRoute('personnage.detail.tab', ['personnage' => $personnage->getId(), 'tab' => 'religions'], 303);
+        }
+
         return $this->genericDelete(
             $personnageReligion,
             'Supprimer une religion',
@@ -2314,6 +2337,32 @@ class PersonnageController extends AbstractController
                 ['name' => 'Supprimer une religion'],
             ],
         );
+    }
+
+    /**
+     * Verrouille / déverrouille une religion d'un personnage (admin uniquement).
+     *
+     * Une religion verrouillée est protégée contre le retrait manuel et contre l'effacement
+     * automatique déclenché par le choix « Sans religion » ou le passage Fanatique.
+     */
+    #[Route('/{personnage}/religion/{personnageReligion}/lock', name: 'lock.religion')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function toggleReligionLockAction(
+        #[MapEntity]
+        Personnage $personnage,
+        #[MapEntity]
+        PersonnagesReligions $personnageReligion,
+    ): RedirectResponse {
+        $personnageReligion->setVerrouille(!$personnageReligion->isVerrouille());
+        $this->log($personnageReligion, LogActionType::LOCK_RELIGION);
+        $this->entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            $personnageReligion->isVerrouille() ? 'Religion verrouillée.' : 'Religion déverrouillée.',
+        );
+
+        return $this->redirectToRoute('personnage.detail.tab', ['personnage' => $personnage->getId(), 'tab' => 'religions'], 303);
     }
 
     /**

@@ -69,6 +69,8 @@ class SecurityController extends AbstractController
         UserRepository $userRepository,
     ): void {
         $user->setTimePasswordResetRequested(Carbon::now()->getTimestamp());
+        // TTL public par défaut : purge d'un éventuel TTL support (24h) laissé par un lien précédent.
+        $user->setPasswordResetTtl(null);
         if (!$user->getConfirmationToken()) {
             $user->setConfirmationToken($user->generateToken());
         }

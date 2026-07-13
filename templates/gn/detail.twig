@@ -85,26 +85,26 @@
                                                 href="{{ path('gn.participants', {'gn': gn.id}) }}"><i
                                                     class="fa fa-receipt"></i>
                                                 Inscrits
-                                                ({{ gn.participants|length }})</a></li>
+                                                ({{ counts.total }})</a></li>
                                         <li class="list-group-item"><a href="{{ path('gn.pnjs', {'gn': gn.id}) }}"><i
                                                     class="fa-solid fa-masks-theater"></i>
                                                 PNJs
-                                                ({{ gn.participantspnj|length }})</a></li>
+                                                ({{ counts.pnj }})</a></li>
                                         <li class="list-group-item"><a
                                                 href="{{ path('gn.participants.withoutbillet', {'gn': gn.id}) }}"><i
                                                     class="fa fa-ticket-simple"></i>
-                                                Sans billet ({{ gn.participantswithoutbillet|length }})</a>
+                                                Sans billet ({{ counts.withoutBillet }})</a>
                                         </li>
                                         <li class="list-group-item"><a
                                                 href="{{ path('gn.participants.withoutgroup', {'gn': gn.id}) }}"><i
                                                     class="fa fa-location"></i>
                                                 Sans groupe (mais avec billet)
-                                                ({{ gn.participantswithoutgroup|length }})</a>
+                                                ({{ counts.withoutGroup }})</a>
                                         </li>
                                         <li class="list-group-item"><a
                                                 href="{{ path('gn.participants.withoutperso', {'gn': gn.id}) }}"><i
                                                     class="fa fa-face-sad-tear"></i>
-                                                Sans personnage ({{ gn.participantswithoutperso|length }})</a>
+                                                Sans personnage ({{ counts.withoutPerso }})</a>
                                         </li>
                                     </ul>
                                 </div>

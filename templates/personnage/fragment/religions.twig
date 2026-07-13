@@ -30,13 +30,27 @@
                                 {{ personnageReligion.religion.label }}
                                 <span
                                     class="badge display-6 rounded-pill text-bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
+                                {% if personnageReligion.verrouille %}
+                                    <i class="fa-solid fa-lock text-warning" data-toggle="tooltip"
+                                       data-placement="top" title="Religion verrouillée"></i>
+                                {% endif %}
                             </div>
                         </div>
                         <div>
                             <div class="btn-group">
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('personnage.lock.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}"
+                                       class="btn btn-sm btn-gamemaster"
+                                       title="{{ personnageReligion.verrouille ? 'déverrouiller' : 'verrouiller' }}"
+                                       data-toggle="tooltip" data-placement="top">
+                                        <i class="fa-solid {{ personnageReligion.verrouille ? 'fa-lock-open' : 'fa-lock' }}"></i>
+                                        {{ personnageReligion.verrouille ? 'déverrouiller' : 'verrouiller' }}</a>
+                                {% endif %}
                                 {% if isAdmin %}
                                     <a href="{{ path('personnage.delete.religion', {'personnage': personnage.id, 'personnageReligion': personnageReligion.id }) }}"
-                                       class="btn btn-sm btn-gamemaster" title="supprimer" data-toggle="tooltip"
+                                       class="btn btn-sm btn-gamemaster{{ personnageReligion.verrouille and not is_granted('ROLE_ADMIN') ? ' disabled' : '' }}"
+                                       title="{{ personnageReligion.verrouille and not is_granted('ROLE_ADMIN') ? 'religion verrouillée' : 'supprimer' }}"
+                                       data-toggle="tooltip"
                                        data-placement="top"><i class="fa-solid fa-eraser"></i> supprimer</a>
                                 {% endif %}
                                 {% if personnageReligion.religion.hasStl %}
