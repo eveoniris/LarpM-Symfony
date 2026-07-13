@@ -1042,7 +1042,7 @@ abstract class BasePersonnage
     /**
      * Set the value of materiel.
      */
-    public function setMateriel(string $materiel): static
+    public function setMateriel(?string $materiel): static
     {
         $this->materiel = $materiel;
 

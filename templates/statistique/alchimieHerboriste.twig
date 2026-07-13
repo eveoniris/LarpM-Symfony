@@ -60,13 +60,21 @@
             {% for alchimieHerboriste in alchimieHerboristes %}
                 <tr>
                     <td class="text-center col-1">
-                        <a href="{{ path('personnage.detail', {'personnage': alchimieHerboriste.personnageId}) }}">
+                        {% if alchimieHerboriste.personnageId %}
+                            <a href="{{ path('personnage.detail', {'personnage': alchimieHerboriste.personnageId}) }}">
+                                {{ alchimieHerboriste.personnageId }}
+                            </a>
+                        {% else %}
                             {{ alchimieHerboriste.personnageId }}
-                        </a>
+                        {% endif %}
                     </td>
                     <td class="col-5">
-                        <a href="{{ path('personnage.detail', {'personnage': alchimieHerboriste.personnageId}) }}">
-                            {{ alchimieHerboriste.nom }}</a>
+                        {% if alchimieHerboriste.personnageId %}
+                            <a href="{{ path('personnage.detail', {'personnage': alchimieHerboriste.personnageId}) }}">
+                                {{ alchimieHerboriste.nom }}</a>
+                        {% else %}
+                            {{ alchimieHerboriste.nom }}
+                        {% endif %}
                     </td>
                     <td class="col-5">{{ alchimieHerboriste.competence }}</td>
                     <td class="col-1">{{ alchimieHerboriste.niveauMax }}</td>

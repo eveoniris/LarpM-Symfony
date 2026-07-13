@@ -87,9 +87,13 @@
                         {{ religionPersonnage.level }}
                     </td>
                     <td>
-                        <a href="{{ path('personnage.detail', {'personnage': religionPersonnage.personnageId}) }}">
+                        {% if religionPersonnage.personnageId %}
+                            <a href="{{ path('personnage.detail', {'personnage': religionPersonnage.personnageId}) }}">
+                                {{ religionPersonnage.personnage }}
+                            </a>
+                        {% else %}
                             {{ religionPersonnage.personnage }}
-                        </a>
+                        {% endif %}
                     </td>
                     <td>
                         {{ religionPersonnage.vivant }}

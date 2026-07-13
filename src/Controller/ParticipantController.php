@@ -1829,7 +1829,7 @@ class ParticipantController extends AbstractController
         if (!$participant->hasPotionsDepart($potion)) {
             $this->addFlash('error', "Le personnage n'a pas cette potion de départ");
 
-            return $this->redirectToRoute('personnage.detail', ['gn' => $participant->getGn()->getId(), 'personnage' => $participant->getPersonnage()?->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         $form = $this->createForm(DeleteType::class, $potion, ['class' => $potion::class]);
