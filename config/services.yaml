@@ -13,6 +13,8 @@ parameters:
     fromEmailAddress: "no-reply@eveoniris.com"
     fromEmailName: "Eve-oniris"
     passwordTokenTTL: 600
+    # TTL dédié aux liens de réinitialisation générés manuellement par un super-admin (support) : 24h
+    passwordTokenTTLSupport: 86400
     discord.api.key: "%env(string:DISCORD_API_KEY)%"
     discord.bot.id: "%env(string:DISCORD_BOT_ID)%"
     discord.bot.token: "%env(string:DISCORD_BOT_TOKEN)%"
