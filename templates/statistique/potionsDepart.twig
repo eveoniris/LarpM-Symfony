@@ -82,9 +82,13 @@
                         </a>
                     </td>
                     <td>
-                        <a href="{{ path('personnage.detail', {'personnage': potionsDepart.personnage_id}) }}">
+                        {% if potionsDepart.personnage_id %}
+                            <a href="{{ path('personnage.detail', {'personnage': potionsDepart.personnage_id}) }}">
+                                {{ potionsDepart.personnage }}
+                            </a>
+                        {% else %}
                             {{ potionsDepart.personnage }}
-                        </a>
+                        {% endif %}
                     </td>
                     <td>
                         {{ potionsDepart.numero }}
