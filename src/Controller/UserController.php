@@ -45,6 +45,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -313,6 +314,85 @@ class UserController extends AbstractController
     }
 
     /**
+     * Support (super-admin uniquement) : génère à la demande un lien de réinitialisation de
+     * mot de passe et l'affiche à l'écran pour transmission manuelle à l'utilisateur (canal support).
+     *
+     * Régénère systématiquement le token (invalide tout lien précédent) et applique un TTL dédié
+     * plus long (passwordTokenTTLSupport) que le flux public « mot de passe oublié ».
+     */
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'You are not allowed to access to this.')]
+    #[Route('/user/{user}/support/reset-link', name: 'user.support.reset-link', requirements: ['user' => Requirement::DIGITS], methods: ['POST'])]
+    public function generateSupportResetLinkAction(
+        Request $request,
+        #[MapEntity]
+        User $user,
+        ContainerBagInterface $params,
+    ): RedirectResponse {
+        if (!$this->isCsrfTokenValid('support-reset-link-' . (string) $user->getId(), (string) $request->request->get('_token'))) {
+            throw new AccessDeniedHttpException('Invalid CSRF token.');
+        }
+
+        $user->setConfirmationToken($user->generateToken());
+        $user->setTimePasswordResetRequested(Carbon::now()->getTimestamp());
+        $user->setPasswordResetTtl((int) $params->get('passwordTokenTTLSupport'));
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $url = $this->generateUrl('user.reset-password', ['token' => $user->getConfirmationToken()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $this->logger->info('[support-link] super-admin #{admin} a généré un lien de réinitialisation de mot de passe pour user #{user}', [
+            'admin' => $this->getUser()?->getId(),
+            'user' => $user->getId(),
+        ]);
+
+        $this->addFlash('support_link', $url);
+        $this->addFlash('support_link_type', 'reset');
+
+        return $this->redirectToRoute('user.detail', ['user' => $user->getId()]);
+    }
+
+    /**
+     * Support (super-admin uniquement) : génère à la demande un lien de validation de compte
+     * et l'affiche à l'écran pour transmission manuelle à l'utilisateur (canal support).
+     *
+     * Régénère systématiquement le token (invalide tout lien précédent). Sans objet si le
+     * compte est déjà activé.
+     */
+    #[IsGranted('ROLE_SUPER_ADMIN', message: 'You are not allowed to access to this.')]
+    #[Route('/user/{user}/support/confirm-link', name: 'user.support.confirm-link', requirements: ['user' => Requirement::DIGITS], methods: ['POST'])]
+    public function generateSupportConfirmLinkAction(
+        Request $request,
+        #[MapEntity]
+        User $user,
+    ): RedirectResponse {
+        if (!$this->isCsrfTokenValid('support-confirm-link-' . (string) $user->getId(), (string) $request->request->get('_token'))) {
+            throw new AccessDeniedHttpException('Invalid CSRF token.');
+        }
+
+        if ($user->isEnabled()) {
+            $this->addFlash('alert', 'Ce compte est déjà activé.');
+
+            return $this->redirectToRoute('user.detail', ['user' => $user->getId()]);
+        }
+
+        $user->setConfirmationToken($user->generateToken());
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $url = $this->generateUrl('user.confirm-email', ['user' => $user->getId(), 'token' => $user->getConfirmationToken()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $this->logger->info('[support-link] super-admin #{admin} a généré un lien de validation de compte pour user #{user}', [
+            'admin' => $this->getUser()?->getId(),
+            'user' => $user->getId(),
+        ]);
+
+        $this->addFlash('support_link', $url);
+        $this->addFlash('support_link_type', 'confirm');
+
+        return $this->redirectToRoute('user.detail', ['user' => $user->getId()]);
+    }
+
+    /**
      * Renvoi de l'email de confirmation depuis l'inscription publique.
      *
      * Réponse neutre dans tous les cas pour ne pas divulguer plus d'information
@@ -520,6 +600,8 @@ class UserController extends AbstractController
             if ($user) {
                 // Initialize and send the password reset request.
                 $user->setTimePasswordResetRequested(Carbon::now()->getTimestamp());
+                // TTL public par défaut : purge d'un éventuel TTL support (24h) laissé par un lien précédent.
+                $user->setPasswordResetTtl(null);
                 if (!$user->getConfirmationToken()) {
                     $user->setConfirmationToken($user->generateToken());
                 }
@@ -929,7 +1011,10 @@ class UserController extends AbstractController
 
         $user = $userRepository->findOneByConfirmationToken($token);
 
-        if (!$user || $user->isPasswordResetRequestExpired((int) $params->get('passwordTokenTTL'))) {
+        // TTL dédié si le lien a été généré par le support (super-admin), sinon TTL public par défaut.
+        $effectiveTtl = $user?->getPasswordResetTtl() ?? (int) $params->get('passwordTokenTTL');
+
+        if (!$user || $user->isPasswordResetRequestExpired($effectiveTtl)) {
             $this->addFlash('alert', 'Sorry, your password reset link has expired.');
 
             // throw new GoneHttpException('This action is expired');
@@ -972,6 +1057,7 @@ class UserController extends AbstractController
 
                 $user->setPassword($hashedPassword);
                 $user->setConfirmationToken(null);
+                $user->setPasswordResetTtl(null);
                 $user->setEnabled(true);
 
                 $this->entityManager->persist($user);

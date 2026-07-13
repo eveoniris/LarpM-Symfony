@@ -38,6 +38,9 @@ abstract class BasePersonnagesReligions
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
     protected Personnage $personnage;
 
+    #[Column(name: 'verrouille', type: Types::BOOLEAN, options: ['default' => false])]
+    protected bool $verrouille = false;
+
     /**
      * Set the value of id.
      */
@@ -108,6 +111,24 @@ abstract class BasePersonnagesReligions
     public function getPersonnage(): ?Personnage
     {
         return $this->personnage;
+    }
+
+    /**
+     * Indique si la religion est verrouillée (protégée contre le retrait).
+     */
+    public function isVerrouille(): bool
+    {
+        return $this->verrouille;
+    }
+
+    /**
+     * Définit l'état de verrouillage de la religion.
+     */
+    public function setVerrouille(bool $verrouille): static
+    {
+        $this->verrouille = $verrouille;
+
+        return $this;
     }
 
     /* public function __sleep()

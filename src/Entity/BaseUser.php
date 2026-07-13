@@ -75,6 +75,14 @@ abstract class BaseUser
     #[Column(name: 'timePasswordResetRequested', type: Types::INTEGER, nullable: true)]
     protected ?int $timePasswordResetRequested = null;
 
+    /**
+     * Durée de validité (en secondes) à appliquer au token de réinitialisation courant.
+     * Null = TTL par défaut (passwordTokenTTL). Renseigné lorsqu'un super-admin génère
+     * un lien de support avec une durée de vie dédiée (passwordTokenTTLSupport).
+     */
+    #[Column(name: 'passwordResetTtl', type: Types::INTEGER, nullable: true)]
+    protected ?int $passwordResetTtl = null;
+
     #[Column(name: 'trombineUrl', type: Types::STRING, length: 45, nullable: true)]
     protected ?string $trombineUrl = null;
 
@@ -968,6 +976,21 @@ abstract class BaseUser
     public function setTimePasswordResetRequested($timePasswordResetRequested): static
     {
         $this->timePasswordResetRequested = $timePasswordResetRequested;
+
+        return $this;
+    }
+
+    /**
+     * TTL (en secondes) à appliquer au token de réinitialisation courant, ou null pour le défaut.
+     */
+    public function getPasswordResetTtl(): ?int
+    {
+        return $this->passwordResetTtl;
+    }
+
+    public function setPasswordResetTtl(?int $passwordResetTtl): static
+    {
+        $this->passwordResetTtl = $passwordResetTtl;
 
         return $this;
     }
