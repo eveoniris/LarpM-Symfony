@@ -36,6 +36,7 @@
         {% for groupe in groupes %}
 
                 {% set session = groupe.getSession(gn) %}
+                {% set myParticipant = app.user.getParticipant(gn) %}
                 <div class="card text-bg mb-3">
                     <div class="card-header">
                         <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
@@ -119,6 +120,14 @@
                             </div>
                         </li>
 
+                        {% if myParticipant and myParticipant.billet and not myParticipant.groupeGn and session.free and session.placeAvailable > 0 %}
+                            <li class="list-group-item">
+                                <a class="btn btn-primary"
+                                   href="{{ path('participant.groupe.postuler', {'participant': myParticipant.id, 'groupeGn': session.id}) }}">
+                                    <i class="fa fa-user-plus"></i> Postuler à ce groupe
+                                </a>
+                            </li>
+                        {% endif %}
 
                     </ul>
 

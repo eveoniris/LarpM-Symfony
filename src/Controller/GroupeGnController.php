@@ -6,13 +6,16 @@ namespace App\Controller;
 
 use App\Entity\Groupe;
 use App\Entity\GroupeGn;
+use App\Entity\GroupeGnDemande;
 use App\Entity\Participant;
 use App\Entity\User;
+use App\Enum\GroupeGnDemandeType;
 use App\Enum\Role;
 use App\Form\GroupeGn\GroupeGnOrdreType;
 use App\Form\GroupeGn\GroupeGnPlaceAvailableType;
 use App\Form\GroupeGn\GroupeGnResponsableType;
 use App\Form\GroupeGn\GroupeGnType;
+use App\Repository\GroupeGnDemandeRepository;
 use App\Repository\GroupeGnRepository;
 use App\Repository\ParticipantRepository;
 use App\Security\MultiRolesExpression;
@@ -21,6 +24,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -103,6 +107,15 @@ class GroupeGnController extends AbstractController
         ]);
     }
 
+    /**
+     * Responsable d'une session : responsable de la session (groupe_gn), sinon responsable du groupe.
+     */
+    protected function getResponsableUser(?GroupeGn $groupeGn = null): ?User
+    {
+        return $groupeGn?->getResponsable()?->getUser()
+            ?? $groupeGn?->getGroupe()?->getUserRelatedByResponsableId();
+    }
+
     protected function canManageGroup(?GroupeGn $groupeGn = null, bool $throw = false): bool
     {
         // Admin
@@ -113,10 +126,8 @@ class GroupeGnController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $groupe = $groupeGn?->getGroupe();
-
-        // Est le responsable ?
-        if ($groupe && $groupe->getUserRelatedByResponsableId()?->getId() === $user->getId()) {
+        // Est le responsable de la session, sinon du groupe ?
+        if ($this->getResponsableUser($groupeGn)?->getId() === $user->getId()) {
             return true;
         }
 
@@ -177,7 +188,10 @@ class GroupeGnController extends AbstractController
     }
 
     /**
-     * Ajoute un participant à un groupe (pour les chefs de groupe).
+     * Invite un joueur à rejoindre le groupe (pour les chefs de groupe).
+     *
+     * Crée une invitation (GroupeGnDemande) que le joueur devra confirmer ; il n'est pas
+     * ajouté directement afin de garantir son consentement.
      */
     #[Route('/groupeGn/{groupeGn}/joueur/add/', name: 'groupeGn.joueur.add')]
     public function joueurAddAction(
@@ -185,48 +199,67 @@ class GroupeGnController extends AbstractController
         EntityManagerInterface $entityManager,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
+        $this->canManageGroup($groupeGn, throw: true);
+
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
         $form = $this
             ->createFormBuilder()
             ->add('participant', EntityType::class, [
-                'label' => 'Choisissez le nouveau membre de votre groupe',
-                'required' => false,
+                'label' => 'Choisissez le joueur à inviter dans votre groupe',
+                'required' => true,
                 'class' => Participant::class,
-                'choice_label' => 'user.Username',
+                'choice_label' => 'user.username',
                 'query_builder' => static function (ParticipantRepository $er) use ($groupeGn) {
                     $qb = $er->createQueryBuilder('p');
                     $qb->join('p.user', 'u');
                     $qb->join('p.gn', 'gn');
-                    $qb->join('u.etatCivil', 'ec');
                     $qb->where($qb->expr()->isNull('p.groupeGn'));
                     $qb->andWhere('gn.id = :gnId');
                     $qb->setParameter('gnId', $groupeGn->getGn()->getId());
-                    $qb->orderBy('u.Username', 'ASC');
+                    $qb->orderBy('u.username', 'ASC');
 
                     return $qb;
                 },
                 'attr' => [
-                    // //'class' => 'selectpicker',
                     'data-live-search' => 'true',
                     'placeholder' => 'Participant',
                 ],
             ])
-            ->add('submit', SubmitType::class, ['label' => 'Ajouter le joueur choisi'])
+            ->add('message', TextareaType::class, [
+                'label' => 'Message (facultatif)',
+                'required' => false,
+                'attr' => ['rows' => 4],
+            ])
+            ->add('submit', SubmitType::class, ['label' => 'Inviter le joueur choisi'])
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            if ($data['participant']) {
-                $data['participant']->setGroupeGn($groupeGn);
-                $entityManager->persist($data['participant']);
-                $entityManager->flush();
+            /** @var Participant|null $invite */
+            $invite = $data['participant'];
 
-                // NOTIFY $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
+            if ($invite) {
+                /** @var GroupeGnDemandeRepository $demandeRepository */
+                $demandeRepository = $entityManager->getRepository(GroupeGnDemande::class);
 
-                $this->addFlash('success', 'Le joueur a été ajouté à votre groupe.');
+                if ($demandeRepository->findOneByParticipantAndGroupeGn($invite, $groupeGn)) {
+                    $this->addFlash('info', 'Une demande est déjà en cours pour ce joueur.');
+                } else {
+                    $demande = (new GroupeGnDemande())
+                        ->setType(GroupeGnDemandeType::INVITATION)
+                        ->setParticipant($invite)
+                        ->setGroupeGn($groupeGn)
+                        ->setMessage($data['message'] ?: null);
+                    $entityManager->persist($demande);
+                    $entityManager->flush();
+
+                    $this->notifyInvitation($demande);
+
+                    $this->addFlash('success', 'Une invitation a été envoyée au joueur.');
+                }
             }
 
             return $this->redirectToRoute('groupe.detail', [
@@ -235,11 +268,35 @@ class GroupeGnController extends AbstractController
             ]);
         }
 
-        return $this->render('groupeGn/add.twig', [
+        return $this->render('groupeGn/invite.twig', [
             'groupeGn' => $groupeGn,
             'participant' => $participant,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * Envoie un message de messagerie au joueur invité.
+     */
+    private function notifyInvitation(GroupeGnDemande $demande): void
+    {
+        $groupeGn = $demande->getGroupeGn();
+        $destinataire = $demande->getParticipant()->getUser();
+        if (!$destinataire) {
+            return;
+        }
+
+        $texte = \sprintf(
+            'Le groupe %s vous invite à le rejoindre pour la session %s.',
+            $groupeGn->getGroupe()->getNom(),
+            $groupeGn->getGn()->getLabel(),
+        );
+        if ($demande->getMessage()) {
+            $texte .= "\n\n" . $demande->getMessage();
+        }
+        $texte .= "\n\nRendez-vous sur votre page de participation pour accepter ou refuser cette invitation.";
+
+        $this->mailer->newMessage($destinataire, $texte, 'Invitation à rejoindre un groupe', $this->getUser());
     }
 
     /**
@@ -248,16 +305,52 @@ class GroupeGnController extends AbstractController
     #[Route('/groupeGn/{groupe}/list/', name: 'groupeGn.list')]
     public function listAction(Groupe $groupe): Response
     {
+        $canManage = $this->canManageGroupe($groupe, throw: true);
+
+        /** @var GroupeGnDemandeRepository $demandeRepository */
+        $demandeRepository = $this->entityManager->getRepository(GroupeGnDemande::class);
+
+        $candidatures = [];
+        foreach ($groupe->getGroupeGns() as $groupeGn) {
+            $candidatures[$groupeGn->getId()] = $demandeRepository->findCandidaturesByGroupeGn($groupeGn);
+        }
+
         return $this->render('groupeGn/list.twig', [
             'groupe' => $groupe,
+            'canManage' => $canManage,
+            'candidatures' => $candidatures,
         ]);
+    }
+
+    /**
+     * Peut gérer le groupe : staff, responsable du groupe, ou responsable de l'une de ses sessions.
+     */
+    protected function canManageGroupe(Groupe $groupe, bool $throw = false): bool
+    {
+        if ($this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value)) {
+            return true;
+        }
+
+        $userId = $this->getUser()?->getId();
+
+        if ($groupe->getUserRelatedByResponsableId()?->getId() === $userId) {
+            return true;
+        }
+
+        foreach ($groupe->getGroupeGns() as $groupeGn) {
+            if ($groupeGn->getResponsable()?->getUser()?->getId() === $userId) {
+                return true;
+            }
+        }
+
+        return $throw ? throw new AccessDeniedException() : false;
     }
 
     /**
      * Ajoute un participant à un groupe.
      */
     #[Route('/groupeGn/{groupeGn}/participants/add/', name: 'groupeGn.participants.add')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE), message: 'You are not allowed to access to this.')]
     public function participantAddAction(Request $request, GroupeGn $groupeGn): RedirectResponse|Response
     {
         // $form = $this->createForm(GroupeGnType::class, $groupeGn)
@@ -322,6 +415,8 @@ class GroupeGnController extends AbstractController
         GroupeGn $groupeGn,
         Participant $participant,
     ): RedirectResponse|Response {
+        $this->canManageGroup($groupeGn, throw: true);
+
         $form = $this->createFormBuilder()->add('submit', SubmitType::class, ['label' => 'Retirer'])->getForm();
 
         $form->handleRequest($request);
@@ -346,6 +441,139 @@ class GroupeGnController extends AbstractController
             'participant' => $participant,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * Détermine qui peut répondre (accepter/refuser) à une demande.
+     *
+     * - Invitation (chef -> joueur) : le joueur concerné (ou le staff).
+     * - Candidature (joueur -> groupe) : le responsable du groupe (ou le staff).
+     */
+    protected function canRespondToDemande(GroupeGnDemande $demande, bool $throw = false): bool
+    {
+        if ($demande->isInvitation()) {
+            if ($this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value)) {
+                return true;
+            }
+
+            $owner = $demande->getParticipant()->getUser();
+            if ($owner && $owner->getId() === $this->getUser()?->getId()) {
+                return true;
+            }
+
+            return $throw ? throw new AccessDeniedException() : false;
+        }
+
+        return $this->canManageGroup($demande->getGroupeGn(), $throw);
+    }
+
+    /**
+     * Accepte une demande (invitation acceptée par le joueur, ou candidature acceptée par le responsable).
+     */
+    #[Route('/groupeGn/demande/{demande}/accept', name: 'groupeGn.demande.accept')]
+    public function demandeAcceptAction(EntityManagerInterface $entityManager, GroupeGnDemande $demande): RedirectResponse
+    {
+        $this->canRespondToDemande($demande, throw: true);
+
+        $participant = $demande->getParticipant();
+        $groupeGn = $demande->getGroupeGn();
+        $wasInvitation = $demande->isInvitation();
+
+        if (!$participant->getBillet()) {
+            $this->addFlash('error', "Le joueur n'a pas de billet, il ne peut pas rejoindre un groupe.");
+
+            return $this->redirectAfterDemande($demande);
+        }
+
+        if ($participant->getGroupeGn()) {
+            $this->addFlash('info', 'Le joueur appartient déjà à un groupe pour cette session.');
+            $entityManager->remove($demande);
+            $entityManager->flush();
+
+            return $this->redirectAfterDemande($demande, $groupeGn);
+        }
+
+        $participant->setGroupeGn($groupeGn);
+        $entityManager->persist($participant);
+
+        // Le joueur a désormais un groupe : on purge toutes ses autres demandes en attente.
+        /** @var GroupeGnDemandeRepository $demandeRepository */
+        $demandeRepository = $entityManager->getRepository(GroupeGnDemande::class);
+        foreach ($demandeRepository->findBy(['participant' => $participant]) as $autre) {
+            $entityManager->remove($autre);
+        }
+        $entityManager->flush();
+
+        $this->notifyDemandeResponse($participant, $groupeGn, $wasInvitation, accepted: true);
+
+        $this->addFlash('success', 'Le joueur a rejoint le groupe.');
+
+        return $this->redirectAfterDemande($demande, $groupeGn);
+    }
+
+    /**
+     * Refuse une demande (invitation déclinée par le joueur, ou candidature refusée par le responsable).
+     */
+    #[Route('/groupeGn/demande/{demande}/refuse', name: 'groupeGn.demande.refuse')]
+    public function demandeRefuseAction(EntityManagerInterface $entityManager, GroupeGnDemande $demande): RedirectResponse
+    {
+        $this->canRespondToDemande($demande, throw: true);
+
+        $participant = $demande->getParticipant();
+        $groupeGn = $demande->getGroupeGn();
+        $wasInvitation = $demande->isInvitation();
+
+        $entityManager->remove($demande);
+        $entityManager->flush();
+
+        $this->notifyDemandeResponse($participant, $groupeGn, $wasInvitation, accepted: false);
+
+        $this->addFlash('success', 'La demande a été refusée.');
+
+        return $this->redirectAfterDemande($demande, $groupeGn);
+    }
+
+    /**
+     * Redirige selon le type de demande : invitation -> page du joueur, candidature -> gestion du groupe.
+     */
+    private function redirectAfterDemande(GroupeGnDemande $demande, ?GroupeGn $groupeGn = null): RedirectResponse
+    {
+        $groupeGn ??= $demande->getGroupeGn();
+
+        if ($demande->isInvitation()) {
+            return $this->redirectToRoute('participant.index', ['participant' => $demande->getParticipant()->getId()]);
+        }
+
+        return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
+    }
+
+    /**
+     * Notifie l'autre partie du résultat de la demande via la messagerie.
+     */
+    private function notifyDemandeResponse(Participant $participant, GroupeGn $groupeGn, bool $wasInvitation, bool $accepted): void
+    {
+        $groupeNom = $groupeGn->getGroupe()->getNom();
+        $gnLabel = $groupeGn->getGn()->getLabel();
+
+        if ($wasInvitation) {
+            // Le joueur a répondu -> on prévient le responsable.
+            $destinataire = $this->getResponsableUser($groupeGn);
+            $texte = $accepted
+                ? \sprintf('%s a accepté votre invitation à rejoindre le groupe %s pour la session %s.', $participant->getUser()?->getDisplayName(), $groupeNom, $gnLabel)
+                : \sprintf('%s a décliné votre invitation à rejoindre le groupe %s pour la session %s.', $participant->getUser()?->getDisplayName(), $groupeNom, $gnLabel);
+            $sujet = 'Réponse à votre invitation';
+        } else {
+            // Le responsable a répondu -> on prévient le joueur.
+            $destinataire = $participant->getUser();
+            $texte = $accepted
+                ? \sprintf('Votre candidature pour rejoindre le groupe %s (session %s) a été acceptée.', $groupeNom, $gnLabel)
+                : \sprintf('Votre candidature pour rejoindre le groupe %s (session %s) a été refusée.', $groupeNom, $gnLabel);
+            $sujet = 'Réponse à votre candidature';
+        }
+
+        if ($destinataire) {
+            $this->mailer->newMessage($destinataire, $texte, $sujet, $this->getUser());
+        }
     }
 
     /**

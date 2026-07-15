@@ -56,7 +56,26 @@
 								<li>{{ participant.user.etatCivil }}&nbsp;<a href="{{ path('groupeGn.participants.remove', {'groupeGn': groupeGn.id, 'participant': participant.id}) }}" data-toggle="tooltip" data-placement="top" title="Retirer sa participation"><i class="fa fa-remove"></i></a></li>
 							{% endfor %}
 						</ul>
-						<a href="{{ path('groupeGn.participants.add', {'groupeGn': groupeGn.id}) }}" data-toggle="tooltip" data-placement="top" title="Ajouter un participant"><i class="fa fa-plus"></i> Ajouter un participant</a>
+						<a href="{{ path('groupeGn.joueur.add', {'groupeGn': groupeGn.id}) }}" data-toggle="tooltip" data-placement="top" title="Inviter un joueur"><i class="fa fa-envelope"></i> Inviter un joueur</a>
+						{% if is_granted('ROLE_ORGA') or is_granted('ROLE_SCENARISTE') %}
+							<br/><a href="{{ path('groupeGn.participants.add', {'groupeGn': groupeGn.id}) }}" data-toggle="tooltip" data-placement="top" title="Ajouter un participant"><i class="fa fa-plus"></i> Ajouter un participant (direct)</a>
+						{% endif %}
+
+						{% set candidats = candidatures[groupeGn.id]|default([]) %}
+						{% if candidats|length > 0 %}
+							<hr/>
+							<strong><i class="fa fa-user-plus"></i> Candidatures</strong>
+							<ul>
+								{% for demande in candidats %}
+									<li>
+										{{ demande.participant.user.etatCivil }}
+										{% if demande.message %}<em>&laquo;&nbsp;{{ demande.message }}&nbsp;&raquo;</em>{% endif %}
+										<a class="text-success" href="{{ path('groupeGn.demande.accept', {'demande': demande.id}) }}" data-toggle="tooltip" data-placement="top" title="Accepter"><i class="fa fa-check"></i></a>
+										<a class="text-danger" href="{{ path('groupeGn.demande.refuse', {'demande': demande.id}) }}" data-toggle="tooltip" data-placement="top" title="Refuser"><i class="fa fa-remove"></i></a>
+									</li>
+								{% endfor %}
+							</ul>
+						{% endif %}
 					</td>
 					<td>
 						<a href="{{ path('groupeGn.update',{'groupe': groupe.id, 'groupeGn': groupeGn.id}) }}"><i class="fa fa-pencil"></i> Modifier</a><br/>
