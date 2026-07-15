@@ -25,3 +25,11 @@ when@prod:
             headers:
                 From: '%fromEmailName% <%fromEmailAddress%>'
                 To: 'gectou4@eveoniris.com'
+
+when@test:
+    framework:
+        mailer:
+            envelope:
+                sender: '%fromEmailAddress%'
+            headers:
+                From: '%fromEmailName% <%fromEmailAddress%>'

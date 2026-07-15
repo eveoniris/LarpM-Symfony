@@ -200,6 +200,25 @@
                 </div>
             {% endif %}
 
+            {% if invitations is defined and invitations|length > 0 %}
+                <div class="panel panel-conan">
+                    <div class="panel-heading">Invitations en attente</div>
+                    <div class="panel-body">
+                        {% for demande in invitations %}
+                            <p>
+                                Le groupe <strong>{{ demande.groupeGn.groupe.nom }}</strong> vous invite à le rejoindre
+                                pour la session {{ demande.groupeGn.gn.label }}.
+                                {% if demande.message %}<br/><em>&laquo;&nbsp;{{ demande.message }}&nbsp;&raquo;</em>{% endif %}
+                            </p>
+                            <div class="clearfix mb-3">
+                                <a class="btn btn-primary" href="{{ path('groupeGn.demande.accept', {'demande': demande.id}) }}">Accepter</a>
+                                <a class="btn btn-secondary" href="{{ path('groupeGn.demande.refuse', {'demande': demande.id}) }}">Refuser</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
             {% if isAdmin %}
                 <div class="well well-sm">
                     <div class="header">
