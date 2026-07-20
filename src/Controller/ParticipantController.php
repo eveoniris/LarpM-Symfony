@@ -678,7 +678,8 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.groupesPlaces', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        $form = $this->createFormBuilder()
+        $form = $this
+            ->createFormBuilder()
             ->add('message', TextareaType::class, [
                 'label' => 'Message de motivation (facultatif)',
                 'required' => false,

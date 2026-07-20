@@ -255,10 +255,7 @@ class GroupeDemandeTest extends WebTestCase
 
         $intrus = UserFactory::createOne(['roles' => ['ROLE_USER']]);
         $client->loginUser($intrus);
-        $client->request(
-            'GET',
-            '/groupeGn/' . $ctx['groupeGn']->getId() . '/participant/remove/' . $ctx['joueurParticipant']->getId(),
-        );
+        $client->request('GET', '/groupeGn/' . $ctx['groupeGn']->getId() . '/participant/remove/' . $ctx['joueurParticipant']->getId());
 
         static::assertResponseRedirects('/access_denied');
     }

@@ -112,8 +112,7 @@ class GroupeGnController extends AbstractController
      */
     protected function getResponsableUser(?GroupeGn $groupeGn = null): ?User
     {
-        return $groupeGn?->getResponsable()?->getUser()
-            ?? $groupeGn?->getGroupe()?->getUserRelatedByResponsableId();
+        return $groupeGn?->getResponsable()?->getUser() ?? $groupeGn?->getGroupe()?->getUserRelatedByResponsableId();
     }
 
     protected function canManageGroup(?GroupeGn $groupeGn = null, bool $throw = false): bool
@@ -286,11 +285,7 @@ class GroupeGnController extends AbstractController
             return;
         }
 
-        $texte = \sprintf(
-            'Le groupe %s vous invite à le rejoindre pour la session %s.',
-            $groupeGn->getGroupe()->getNom(),
-            $groupeGn->getGn()->getLabel(),
-        );
+        $texte = \sprintf('Le groupe %s vous invite à le rejoindre pour la session %s.', $groupeGn->getGroupe()->getNom(), $groupeGn->getGn()->getLabel());
         if ($demande->getMessage()) {
             $texte .= "\n\n" . $demande->getMessage();
         }
