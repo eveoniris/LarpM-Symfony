@@ -183,11 +183,15 @@ class ParticipantRepository extends BaseRepository
             return [];
         }
 
-        $rows = $this->getEntityManager()->createQuery(<<<DQL
-                SELECT IDENTITY(p.gn) AS gnId, COUNT(p) AS cnt FROM App\Entity\Participant p
-                WHERE p.gn IN (:ids) AND p.billet IS NOT NULL
-                GROUP BY p.gn
-            DQL)->setParameter('ids', $gnIds)->getResult();
+        $rows = $this
+            ->getEntityManager()
+            ->createQuery(<<<DQL
+                    SELECT IDENTITY(p.gn) AS gnId, COUNT(p) AS cnt FROM App\Entity\Participant p
+                    WHERE p.gn IN (:ids) AND p.billet IS NOT NULL
+                    GROUP BY p.gn
+                DQL)
+            ->setParameter('ids', $gnIds)
+            ->getResult();
 
         $map = [];
         foreach ($rows as $row) {
