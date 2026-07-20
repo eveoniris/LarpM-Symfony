@@ -30,10 +30,7 @@ class GroupeGnDemandeRepository extends BaseRepository
     public function findCandidaturesByGroupeGn(GroupeGn $groupeGn): array
     {
         /** @var array<int, GroupeGnDemande> */
-        return $this->findBy(
-            ['groupeGn' => $groupeGn, 'type' => GroupeGnDemandeType::CANDIDATURE],
-            ['date' => 'ASC'],
-        );
+        return $this->findBy(['groupeGn' => $groupeGn, 'type' => GroupeGnDemandeType::CANDIDATURE], ['date' => 'ASC']);
     }
 
     /**
@@ -44,10 +41,7 @@ class GroupeGnDemandeRepository extends BaseRepository
     public function findInvitationsForParticipant(Participant $participant): array
     {
         /** @var array<int, GroupeGnDemande> */
-        return $this->findBy(
-            ['participant' => $participant, 'type' => GroupeGnDemandeType::INVITATION],
-            ['date' => 'ASC'],
-        );
+        return $this->findBy(['participant' => $participant, 'type' => GroupeGnDemandeType::INVITATION], ['date' => 'ASC']);
     }
 
     public function findOneByParticipantAndGroupeGn(Participant $participant, GroupeGn $groupeGn): ?GroupeGnDemande
