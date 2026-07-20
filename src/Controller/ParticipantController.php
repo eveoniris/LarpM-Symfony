@@ -8,6 +8,7 @@ use App\Entity\Age;
 use App\Entity\Classe;
 use App\Entity\ExperienceGain;
 use App\Entity\GroupeGn;
+use App\Entity\GroupeGnDemande;
 use App\Entity\LogAction;
 use App\Entity\Membre;
 use App\Entity\Message;
@@ -26,6 +27,7 @@ use App\Entity\SecondaryGroup;
 use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\CompetenceFamilyType;
+use App\Enum\GroupeGnDemandeType;
 use App\Enum\LevelType;
 use App\Enum\LogActionType;
 use App\Enum\Role;
@@ -52,6 +54,7 @@ use App\Form\Personnage\PersonnageType;
 use App\Form\PersonnageOldFindType;
 use App\Form\TrombineType;
 use App\Repository\GnRepository;
+use App\Repository\GroupeGnDemandeRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageSecondaireRepository;
 use App\Repository\SecondaryGroupRepository;
@@ -68,6 +71,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -635,6 +639,95 @@ class ParticipantController extends AbstractController
     }
 
     /**
+     * Postuler à un groupe ouvert au recrutement.
+     *
+     * Crée une candidature (GroupeGnDemande) que le responsable devra accepter ; le joueur
+     * n'est pas ajouté directement.
+     */
+    #[Route('/participant/{participant}/groupe/{groupeGn}/postuler', name: 'participant.groupe.postuler')]
+    public function groupePostulerAction(
+        Request $request,
+        Participant $participant,
+        GroupeGn $groupeGn,
+    ): RedirectResponse|Response {
+        $this->hasAccess($participant);
+
+        if (!$participant->getBillet()) {
+            $this->addFlash('error', 'Désolé, vous devez obtenir un billet avant de pouvoir postuler à un groupe.');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if ($participant->getGroupeGn()) {
+            $this->addFlash('error', 'Vous appartenez déjà à un groupe pour cette session.');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        if (!$groupeGn->getFree() || $groupeGn->getPlaceAvailable() <= 0) {
+            $this->addFlash('error', "Ce groupe n'est pas ouvert au recrutement.");
+
+            return $this->redirectToRoute('gn.groupesPlaces', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        /** @var GroupeGnDemandeRepository $demandeRepository */
+        $demandeRepository = $this->entityManager->getRepository(GroupeGnDemande::class);
+        if ($demandeRepository->findOneByParticipantAndGroupeGn($participant, $groupeGn)) {
+            $this->addFlash('info', 'Une demande est déjà en cours pour ce groupe.');
+
+            return $this->redirectToRoute('gn.groupesPlaces', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        $form = $this
+            ->createFormBuilder()
+            ->add('message', TextareaType::class, [
+                'label' => 'Message de motivation (facultatif)',
+                'required' => false,
+                'attr' => ['rows' => 5],
+            ])
+            ->add('submit', SubmitType::class, ['label' => 'Postuler', 'attr' => ['class' => 'btn btn-secondary']])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            $demande = (new GroupeGnDemande())
+                ->setType(GroupeGnDemandeType::CANDIDATURE)
+                ->setParticipant($participant)
+                ->setGroupeGn($groupeGn)
+                ->setMessage($data['message'] ?: null);
+            $this->entityManager->persist($demande);
+            $this->entityManager->flush();
+
+            $destinataire = $groupeGn->getResponsable()?->getUser() ?? $groupeGn->getGroupe()->getUserRelatedByResponsableId();
+            if ($destinataire) {
+                $texte = \sprintf(
+                    '%s souhaite rejoindre le groupe %s pour la session %s.',
+                    $participant->getUser()?->getDisplayName(),
+                    $groupeGn->getGroupe()->getNom(),
+                    $groupeGn->getGn()->getLabel(),
+                );
+                if ($demande->getMessage()) {
+                    $texte .= "\n\n" . $demande->getMessage();
+                }
+                $this->mailer->newMessage($destinataire, $texte, 'Nouvelle candidature à votre groupe', $this->getUser());
+            }
+
+            $this->addFlash('success', 'Votre candidature a été envoyée au responsable du groupe.');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        return $this->render('groupe/postuler.twig', [
+            'form' => $form->createView(),
+            'participant' => $participant,
+            'groupeGn' => $groupeGn,
+        ]);
+    }
+
+    /**
      * Accepter une candidature à un groupe secondaire.
      */
     #[Route('/participant/{participant}/groupeSecondaire/{groupeSecondaire}/postulant/{postulant}/accept', name: 'participant.groupeSecondaire.postulant.accept')]
@@ -953,11 +1046,16 @@ class ParticipantController extends AbstractController
         $repo = $this->entityManager->getRepository(Question::class);
         $questions = $repo->findByParticipant($participant);
 
+        /** @var GroupeGnDemandeRepository $demandeRepository */
+        $demandeRepository = $this->entityManager->getRepository(GroupeGnDemande::class);
+        $invitations = $demandeRepository->findInvitationsForParticipant($participant);
+
         return $this->render('participant/index.twig', [
             'gn' => $participant->getGn(),
             'participant' => $participant,
             'groupeGn' => $groupeGn,
             'questions' => $questions,
+            'invitations' => $invitations,
         ]);
     }
 
