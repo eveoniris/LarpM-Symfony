@@ -1,0 +1,21 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Postuler à un groupe{% endblock title %}
+
+{% block body %}
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des grandeurs nature', 'route': path('gn.list') },
+			{'name' : participant.gn.label, 'route': path('participant.index', {'participant': participant.id}) },
+			{'name' : 'Postuler à un groupe' }
+		]
+	} %}
+
+	<div class="well well-sm">
+		<div class="header">
+			<h5>Postuler au groupe {{ groupeGn.groupe.nom }}</h5>
+		</div>
+		<p>Votre candidature sera transmise au responsable du groupe, qui pourra l'accepter ou la refuser.</p>
+		{{ form(form) }}
+	</div>
+{% endblock body %}

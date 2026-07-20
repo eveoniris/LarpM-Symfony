@@ -2376,10 +2376,7 @@ class PersonnageController extends AbstractController
         $this->log($personnageReligion, LogActionType::LOCK_RELIGION);
         $this->entityManager->flush();
 
-        $this->addFlash(
-            'success',
-            $personnageReligion->isVerrouille() ? 'Religion verrouillée.' : 'Religion déverrouillée.',
-        );
+        $this->addFlash('success', $personnageReligion->isVerrouille() ? 'Religion verrouillée.' : 'Religion déverrouillée.');
 
         return $this->redirectToRoute('personnage.detail.tab', ['personnage' => $personnage->getId(), 'tab' => 'religions'], 303);
     }

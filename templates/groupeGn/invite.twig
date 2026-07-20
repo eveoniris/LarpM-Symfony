@@ -1,0 +1,22 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Inviter un joueur{% endblock title %}
+
+{% block body %}
+
+	<ol class="breadcrumb">
+		<li><a href="{{ path('homepage') }}">Accueil</a></li>
+		<li><a href="{{ path("groupe.list") }}">Liste des groupes</a></li>
+		<li><a href="{{ path("groupe.detail", {'groupe': groupeGn.groupe.id}) }}">{{ groupeGn.groupe.nom }}</a></li>
+		<li class="active">Inviter un joueur</li>
+	</ol>
+
+	<div class="well well-sm">
+		<div class="header">
+			<h5>Inviter un joueur dans {{ groupeGn.groupe.nom }} pour la session {{ groupeGn.gn.label }}</h5>
+		</div>
+		<p>Le joueur invité recevra un message et devra accepter l'invitation avant d'être ajouté au groupe.
+			Ne sont proposés que les joueurs n'étant pas encore affectés à un groupe pour cette session.</p>
+		{{ form(form) }}
+	</div>
+{% endblock %}
