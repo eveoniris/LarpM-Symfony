@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Factory;
 
 use App\Entity\User;
-use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
@@ -30,13 +29,5 @@ final class UserFactory extends PersistentObjectFactory
             'isEnabled' => true,
             'roles' => [],
         ];
-    }
-
-    protected function initialize(): static
-    {
-        // User has addRole()/removeRole() that PropertyAccessor picks up over setRoles(),
-        // causing factory role overrides to modify $rights instead of $roles.
-        // alwaysForce('roles') bypasses PropertyAccessor for this field.
-        return $this->instantiateWith(Instantiator::withConstructor()->alwaysForce('roles'));
     }
 }
