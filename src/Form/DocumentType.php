@@ -7,7 +7,6 @@ namespace App\Form;
 use App\Entity\Document;
 use App\Entity\Langue;
 use App\Repository\LangueRepository;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -102,20 +101,6 @@ class DocumentType extends AbstractType
         $resolver->setDefaults([
             'class' => Document::class,
             'searchable_fields' => ['langues'],
-            'security' => ['ROLE_ADMIN', 'ROLE_SCENARISTE', 'ROLE_ORGA', 'ROLE_REGLE'],
-            'query_builder' => static function (EntityRepository $er) {
-                $qb = $er->createQueryBuilder('u');
-                $qb->where(
-                    $qb->expr()->orX(
-                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
-                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
-                        $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ORGA%')),
-                    ),
-                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_REGLE%')),
-                );
-
-                return $qb;
-            },
             // TinyMce Hide the text field. It's break the form Submit because autovalidate can't allow it
             // Reason : the user can't fill a hidden field, so it's couldn't be "required"
             'attr' => [

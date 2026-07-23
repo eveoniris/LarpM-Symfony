@@ -81,28 +81,6 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     }
 
     /**
-     * Add the given role to the User.
-     *
-     * @param string $role
-     */
-    public function addRole($role): void
-    {
-        $role = strtoupper($role);
-
-        if ('ROLE_USER' === $role) {
-            return;
-        }
-
-        $roles = explode(',', (string) $this->rights);
-
-        if (!$this->hasRole($role)) {
-            $roles[] = $role;
-        }
-
-        $this->rights = implode(',', array_values($roles));
-    }
-
-    /**
      * Test whether the User has the given role.
      */
     public function hasRole(Role|string|null $role): bool
@@ -465,16 +443,6 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
      *
      * @param string $role
      */
-    public function removeRole($role): void
-    {
-        $roles = explode(',', (string) $this->rights);
-
-        if (false !== ($key = array_search(strtoupper($role), $roles, true))) {
-            unset($roles[$key]);
-            $this->rights = implode(',', array_values($roles));
-        }
-    }
-
     /**
      * The Symfony Security component stores a serialized User object in the session.
      * We only need it to store the User ID, because the User provider's refreshUser() method is called on each request
