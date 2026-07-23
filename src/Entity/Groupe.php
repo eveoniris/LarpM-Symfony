@@ -557,7 +557,7 @@ class Groupe extends BaseGroupe implements Stringable
      *
      * @return Groupe
      */
-    public function setScenariste(User $User)
+    public function setScenariste(?User $User = null)
     {
         return $this->setUserRelatedByScenaristeId($User);
     }

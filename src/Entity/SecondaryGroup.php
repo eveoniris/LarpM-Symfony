@@ -96,7 +96,7 @@ class SecondaryGroup extends BaseSecondaryGroup implements Stringable
     /**
      * Défini le personnage responsable du groupe.
      */
-    public function setResponsable(Personnage $personnage): static
+    public function setResponsable(?Personnage $personnage = null): static
     {
         $this->setPersonnage($personnage);
 
