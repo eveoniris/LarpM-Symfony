@@ -43,7 +43,6 @@ class PersonnageOldFindType extends AbstractType
     {
         $resolver->setDefaults([
             'class' => Personnage::class,
-            'searchable_fields' => ['nom', 'surnom', 'numero'],
         ]);
     }
 

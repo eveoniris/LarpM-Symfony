@@ -33,8 +33,6 @@ class GroupeScenaristeType extends AbstractType
             'query_builder' => static function (EntityRepository $er) {
                 $qb = $er->createQueryBuilder('u');
                 $qb->where($qb->expr()->orX(
-                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_SCENARISTE%')),
-                    $qb->expr()->like('u.rights', $qb->expr()->literal('%ROLE_ADMIN%')),
                     $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')),
                     $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%')),
                 ));
