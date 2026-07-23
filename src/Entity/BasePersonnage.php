@@ -72,7 +72,7 @@ abstract class BasePersonnage
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $age_reel = null;
 
-    #[Column(name: 'trombineUrl', type: Types::STRING, length: 45, nullable: true)]
+    #[Column(name: 'trombineUrl', type: Types::STRING, length: 255, nullable: true)]
     #[Groups(['api:joueur:read'])]
     protected ?string $trombineUrl = null;
 

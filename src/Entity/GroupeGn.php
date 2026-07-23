@@ -129,7 +129,7 @@ class GroupeGn extends BaseGroupeGn
     /**
      * Défini le responsable de cette session de jeu.
      */
-    public function setResponsable(Participant $participant): static
+    public function setResponsable(?Participant $participant = null): static
     {
         $this->setParticipant($participant);
 
