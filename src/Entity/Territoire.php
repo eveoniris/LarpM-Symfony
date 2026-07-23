@@ -463,7 +463,7 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
     /**
      * Défini la langue principale du territoire.
      */
-    public function setLanguePrincipale(Langue $langue): static
+    public function setLanguePrincipale(?Langue $langue = null): static
     {
         return $this->setLangue($langue);
     }
@@ -471,7 +471,7 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
     /**
      * Défini la religion principale d'un territoire.
      */
-    public function setReligionPrincipale(Religion $religion): static
+    public function setReligionPrincipale(?Religion $religion = null): static
     {
         return $this->setReligion($religion);
     }

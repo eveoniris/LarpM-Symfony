@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UserRegisterType extends AbstractType
 {
@@ -35,6 +36,7 @@ class UserRegisterType extends AbstractType
             ->add('pwd', PasswordType::class, [
                 'label' => 'Mot de passe',
                 'required' => true,
+                'constraints' => [new NotBlank()],
             ])
             ->add('confirm_password', PasswordType::class, [
                 'label' => 'Confirmer le mot de passe',
