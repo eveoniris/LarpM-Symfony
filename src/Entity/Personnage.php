@@ -52,8 +52,8 @@ class Personnage extends BasePersonnage implements Stringable
         return $this
             ->setDocumentType(DocumentType::Photos)
             ->setFolderType(FolderType::Trombine)
-            // DocumentUrl is set to 45 maxLength, UniqueId is 23 length, extension is 4
-            ->setFilenameMaxLength(45 - 24 - 4);
+            // DocumentUrl is set to 255 maxLength, UniqueId is 23 length, extension is 4
+            ->setFilenameMaxLength(255 - 24 - 4);
     }
 
     public function getDocumentUrl(): ?string
@@ -549,6 +549,10 @@ class Personnage extends BasePersonnage implements Stringable
         if (empty($this->file)) {
             return;
         }
+
+        // Doctrine n'appelle jamais le constructeur lors de l'hydratation d'une entité existante,
+        // donc initFile() (appelé dans __construct()) n'a pas forcément tourné pour ce Personnage.
+        $this->initFile();
 
         $fileUploader->upload($this->file, $folderType, $docType, null, $this->getFilenameMaxLength());
 

@@ -242,9 +242,9 @@ final class PagerService
             $this->searchValue = $search;
         }
 
-        if (empty($data->getType()) && ($type = $this->getRequest()?->query->get('searchType') ?? $this->getRequest()?->query->get('t'))) {
-            $data->setType($type);
-            $this->searchType = $type;
+        if (empty($data->getType()) && ($queryType = $this->getRequest()?->query->get('searchType') ?? $this->getRequest()?->query->get('t'))) {
+            $data->setType($queryType);
+            $this->searchType = $queryType;
         }
 
         $this->form = $this->formFactory->create(type: $type ?? ListFindType::class, data: $data, options: $options);

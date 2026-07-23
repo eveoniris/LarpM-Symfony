@@ -842,7 +842,7 @@ abstract class BaseUser
         return $this->pwd;
     }
 
-    public function setPwd(#[SensitiveParameter] string $password): static
+    public function setPwd(#[SensitiveParameter] ?string $password): static
     {
         $this->pwd = $password;
 

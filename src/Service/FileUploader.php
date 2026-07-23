@@ -83,7 +83,7 @@ final class FileUploader
         $filenameMaxLength ??= mb_strlen($this->getOriginalFilename($file));
 
         $uid = $useUniqueId ? str_replace('.', '-', '-' . uniqid('', true)) : '';
-        $filename ??= mb_substr($this->getOriginalFilename($file) . $uid, 0, $filenameMaxLength);
+        $filename ??= mb_substr($this->getOriginalFilename($file), 0, $filenameMaxLength) . $uid;
 
         $this->storedFileName = \sprintf('%s.%s', $filename, $this->extension);
 

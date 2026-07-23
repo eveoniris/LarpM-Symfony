@@ -39,7 +39,7 @@ class Billet extends BaseBillet implements Stringable
         return $result;
     }
 
-    public function setCreateur(User $User): self
+    public function setCreateur(?User $User = null): self
     {
         $this->setUser($User);
 
