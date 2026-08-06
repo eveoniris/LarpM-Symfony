@@ -169,7 +169,7 @@ class ParticipantController extends AbstractController
      * Where it's used ?
      * Création d'un nouveau personnage. L'utilisateur doit être dans un groupe et son billet doit être valide.
      */
-    #[Route('/participant/{participant}/personnageNew', name: 'admin.participant.personnage.new')]
+    #[Route('/participant/{participant}/personnageNew/admin', name: 'admin.participant.personnage.new')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function adminPersonnageNewAction(
         Request $request,
@@ -1204,6 +1204,12 @@ class ParticipantController extends AbstractController
         Participant $participant,
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
+        $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
+
+        if (!$isAdmin && $participant->getUser()?->getId() !== $this->getUser()?->getId()) {
+            throw new AccessDeniedException();
+        }
+
         $groupeGn = $participant->getGroupeGn();
 
         if (!$groupeGn) {
