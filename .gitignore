@@ -1,5 +1,9 @@
+# OS and IDE files
 .DS_Store
-.idea
+Thumbs.db
+.idea/
+.vscode/
+.zed/
 /object/
 
 ###> local dev
