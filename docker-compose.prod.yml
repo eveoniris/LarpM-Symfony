@@ -1,0 +1,35 @@
+include:
+    - docker-compose.yml
+
+services:
+    webserver:
+        build:
+            context: .
+            target: prod
+            dockerfile: Dockerfile
+        ports:
+            - "443:443" # HTTPS
+            - "443:443/udp" # HTTP/3
+        env_file:
+            - .env # TODO: to define
+        volumes:
+            - caddy_data:/data
+            - caddy_config:/config
+
+    database:
+        env_file:
+            - .env # TODO: to define
+        volumes:
+            - database_data:/var/lib/mysql
+
+    mailer:
+        env_file:
+            - .env # TODO: to define
+        volumes:
+            - mailer_data:/data
+
+volumes:
+    caddy_data:
+    caddy_config:
+    database_data:
+    mailer_data:

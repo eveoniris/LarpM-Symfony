@@ -1,0 +1,10 @@
+.git
+.github
+var/
+vendor/
+node_modules/
+public/bundles/
+public/assets/
+docker/db/data/
+docker/db/export/
+*.log
