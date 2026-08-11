@@ -4,27 +4,31 @@ services:
             context: .
             target: dev
             dockerfile: Dockerfile
-        environment:
-            SERVER_NAME: ":80, larpmanager.test"
+        env_file:
+            - .env.dev
+            - .env.dev.local
         volumes:
-            - ./:/app
+            - ./:/app # project files
             - ./docker/php/php.ini:/usr/local/etc/php/conf.d/zzz-app.ini:ro # custom php.ini
+        depends_on:
+            - mailer
 
     database:
-        environment:
-            MYSQL_ROOT_PASSWORD: password
-            MYSQL_DATABASE: larpm
-            MYSQL_USER: admin
-            MYSQL_PASSWORD: password
+        env_file:
+            - .env.dev
+            - .env.dev.local
         volumes:
             - ./docker/db/initData:/docker-entrypoint-initdb.d:ro # bootstrap .sql files on first start
-            - ./docker/db/data:/var/lib/mysql:rw # persistent data
+            - ./docker/db/data:/var/lib/mysql # persistent data
 
     mailer:
-        environment:
-            MP_MAX_MESSAGES: 5000
-            MP_DATA_FILE: /data/mailpit.db
-            MP_SMTP_AUTH_ACCEPT_ANY: 1
-            MP_SMTP_AUTH_ALLOW_INSECURE: 1
+        image: axllent/mailpit:v1.30
+        restart: unless-stopped
+        ports:
+            - "8025:8025"
+            - "1025:1025"
+        env_file:
+            - .env.dev
+            - .env.dev.local
         volumes:
-            - ./docker/mailpit:/data
+            - ./docker/mailpit:/data # persistent data
