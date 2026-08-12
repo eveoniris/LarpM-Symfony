@@ -1,12 +1,15 @@
 services:
     webserver:
+        image: larpm-symfony:dev
         build:
             context: .
             target: dev
             dockerfile: Dockerfile
+        pull_policy: build
         env_file:
             - .env.dev
-            - .env.dev.local
+            - path: .env.dev.local
+              required: false
         volumes:
             - ./:/app # project files
             - ./docker/php/php.ini:/usr/local/etc/php/conf.d/zzz-app.ini:ro # custom php.ini
@@ -16,7 +19,8 @@ services:
     database:
         env_file:
             - .env.dev
-            - .env.dev.local
+            - path: .env.dev.local
+              required: false
         volumes:
             - ./docker/db/initData:/docker-entrypoint-initdb.d:ro # bootstrap .sql files on first start
             - ./docker/db/data:/var/lib/mysql # persistent data
@@ -29,6 +33,7 @@ services:
             - "1025:1025"
         env_file:
             - .env.dev
-            - .env.dev.local
+            - path: .env.dev.local
+              required: false
         volumes:
             - ./docker/mailpit:/data # persistent data

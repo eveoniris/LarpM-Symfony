@@ -14,65 +14,70 @@ Vous aurez besoin de:
 - Docker : https://docs.docker.com/engine/install/
 - Docker compose : https://docs.docker.com/compose/install/
 
-### 1- Source
+Et bien sûr, du projet LarpM-Symfony, que vous pouvez cloner avec la commande suivante:
 
 ```bash
 git clone git@github.com:eveoniris/LarpM-Symfony.git larpmanager
 ```
 
-### 2- Compiler le projet
+### Mode développement (dev)
 
-Normalement inutile car gérer par le point suivant. Il pourra être parfois requis de recompiler. Voici
-donc la commande.
-
-```bash
-docker compose build
-```
-
-### 3- Lancer le projet
+#### 1- Lancer le projet
 
 ```bash
 docker compose up -d
 ```
 
-### 4- Charger une première fois les librairies externe (vendor)
+#### 2- Charger une première fois les librairies externe (vendor)
 
 ```bash
 docker compose exec webserver composer install
 ```
 
-### 5- Accéder au site
+#### 3- Accéder au site
 
 Se rendre sur [localhost/](http://localhost/)
 
-Un reverse proxy sur [larpmanager.test](http://larpmanager.test) est aussi disponible si vous avez configuré votre /etc/hosts:
+Un reverse proxy sur [larpmanager.test](http://larpmanager.test) est aussi disponible si vous avez configuré votre /etc/hosts commme suit:
 
 ```text
 127.0.0.1 larpmanager.test
 ```
 
-### 6- Connection d'un IDE à la base de donnée
+### Tester l'image de production
 
-On utilise la même version que sur le serveur de production : Mysql 8.0+
+Attention, le script suivant n'est à utiliser que pour tester l'image de production, il ne doit être utilisé ni pour le développement (voir [mode dev](#mode-développement-dev)) ni pour le déploiement en production (voir [docker-ci.yml](.github/workflows/docker-ci.yml) et [deploy.yml](.github/workflows/deploy.yml)).:
 
-```
-- host : localhost
-- port : 3306
-- user : admin
-- pass : password
-- database : larpm
+```bash
+./docker/prod-test.sh
 ```
 
-### 7- Voir les mails
+Par ailleurs, le mailpit est ici factice pour pouvoir faire démarrer le service, il ne doit pas être utilisé pour tester l'envoi de mail.
+
+## Commmandes post-installation
+
+### Connection d'un IDE à la base de donnée
+
+Configuration de la base de donnée pour un IDE (ex: DBeaver, DataGrip, TablePlus, HeidiSQL, etc.):
+
+- host: localhost
+- port: 3306
+- user: admin
+- pass: password
+- database: larpm
+
+Attention à bien utiliser la même version de MySQL que celle du container (8.4) pour éviter les soucis de compatibilité.
+
+### Voir les mails
 
 Tous les mails sont catché par mailpit et consultable sur : http://localhost:8025/
 
-### 8- Commandes Symfony CLI
+### Commandes Symfony CLI
 
-Les commandes symfony sont disponibles via:
+Les commandes Symfony sont disponibles via:
 
 ```bash
-   docker compose exec webserver symfony
+docker compose exec webserver symfony
 ```
 
 Ou via:
@@ -81,7 +86,7 @@ Ou via:
 docker compose exec webserver php bin/console
 ```
 
-## Voir les logs
+### Voir les logs
 
 ```bash
 docker compose logs
@@ -90,38 +95,35 @@ docker compose logs mailer
 docker compose logs database
 ```
 
-## Base de donnée
+## Gestion de la base de donnée
 
 Lors du docker compose up -d, est installé pour la première fois (tant que /docker/db/data est vide) les fichiers
 contenus dans docker/db/initData par ordre alphabetique
 
-Export de la base de donnée
+Export de la base de donnée:
 
 ```bash
-docker exec -it larpmanager-database-1 mysqldump -uadmin -ppassword --opt larpm > backup.sql
+docker compose exec -it database mysqldump -uadmin -ppassword --opt larpm > backup.sql
 ```
 
-Pour importer, créer un fichier puis le copier dans le container
+Pour importer, créer un fichier puis le copier dans le container:
 
 ```bash
-docker cp backup.sql larpmanager-database-1:/tmp/backup.sql
+docker compose cp backup.sql database:/tmp/backup.sql
 ```
 
-Import de la base de donnée (le fichier doit être dans le container)
+Import de la base de donnée (le fichier doit être dans le container):
 
 ```bash
-docker exec -it larpmanager-database-1 /bin/sh -c "mysql -uadmin -ppassword larpm < /tmp/backup.sql"
+docker commpose exec -it database /bin/sh -c "mysql -uadmin -ppassword larpm < /tmp/backup.sql"
 ```
 
-### Export des données uniquement
+Arguments possibles:
 
-On utilise `--no-create-info` avant d'indiquer la base
-
-### Export de la structure uniquement
-
-On utilise `--no-data` avant d'indiquer la base
-
-Noter: `--compact` pour un fichier sans commentaire, et `--no-create-db` pour éviter la partie création
+- `--no-create-info` : export uniquement les données, pas la structure (à placer avant le nom de la base)
+- `--no-data` : export uniquement la structure, pas les données (à placer avant le nom de la base)
+- `--compact` : export sans commentaire
+- `--no-create-db` : évite la partie création de la base
 
 ## Tests
 
@@ -297,7 +299,7 @@ $entites = MonEntiteFactory::createMany(5);
 - Des exemples de tests API via fichiers HTTP se trouvent dans `tests/rest/` (ex: `tests/rest/stats.http`)
   et peuvent être exécutés depuis un IDE compatible.
 
-## Commande utile
+## Commandes utiles
 
 ### Composer
 

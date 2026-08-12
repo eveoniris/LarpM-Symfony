@@ -1,12 +1,6 @@
-include:
-    - docker-compose.yml
-
 services:
     webserver:
-        build:
-            context: .
-            target: prod
-            dockerfile: Dockerfile
+        image: ${WEBSERVER_IMAGE:?WEBSERVER_IMAGE must be set}
         ports:
             - "443:443" # HTTPS
             - "443:443/udp" # HTTP/3

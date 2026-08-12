@@ -5,6 +5,8 @@ services:
             - "80:80" # HTTP
         env_file:
             - .env
+            - path: .env.local
+              required: false
         depends_on:
             database:
                 condition: service_healthy
@@ -16,6 +18,8 @@ services:
             - "30202:3306"
         env_file:
             - .env
+            - path: .env.local
+              required: false
         healthcheck:
             test:
                 [
