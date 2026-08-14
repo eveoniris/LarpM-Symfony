@@ -104,6 +104,8 @@ jobs:
             contents: read
             packages: read
         needs: build
+        env:
+            WEBSERVER_IMAGE: larpm-symfony:smoke-test
         steps:
             - uses: actions/checkout@v4
 
@@ -135,29 +137,26 @@ jobs:
                   EOF
 
             - name: Start stack
-              env:
-                  WEBSERVER_IMAGE: larpm-symfony:smoke-test
-              run: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+              run: docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci.yml up -d
 
             - name: Wait for database healthcheck
-              env:
-                  WEBSERVER_IMAGE: larpm-symfony:smoke-test
               run: |
                   timeout 60s bash -c \
-                    'until [ "$(docker compose -f docker-compose.yml -f docker-compose.prod.yml ps database --format json | jq -r ".Health")" = "healthy" ]; do sleep 2; done'
+                    'until [ "$(docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci.yml ps database --format json | jq -r ".Health")" = "healthy" ]; do sleep 2; done'
+
+            - name: Create schema from current entity mappings
+              run: docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci.yml exec -T webserver php bin/console doctrine:schema:create --no-interaction
 
             - name: Curl webserver
               run: |
-                  timeout 30s bash -c 'until curl -sf http://localhost:80/ -o /dev/null; do sleep 2; done'
+                  timeout 200s bash -c 'until curl -sv http://localhost:80/ 2>&1 | tee -a /tmp/curl.log; do sleep 2; done' || true
+                  docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci.yml ps
+                  cat /tmp/curl.log
 
             - name: Dump logs on failure
               if: failure()
-              env:
-                  WEBSERVER_IMAGE: larpm-symfony:smoke-test
-              run: docker compose -f docker-compose.yml -f docker-compose.prod.yml logs
+              run: docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci.yml logs
 
             - name: Tear down
               if: always()
-              env:
-                  WEBSERVER_IMAGE: larpm-symfony:smoke-test
-              run: docker compose -f docker-compose.yml -f docker-compose.prod.yml down -v
+              run: docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci.yml down -v

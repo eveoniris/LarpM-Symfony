@@ -59,3 +59,8 @@ ENV APP_ENV=dev \
 # Install Symfony CLI and Composer
 COPY --link --from=symfony-cli /usr/local/bin/symfony /usr/local/bin/symfony
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+COPY --chmod=755 docker/php/docker-entrypoint-dev.sh /usr/local/bin/docker-entrypoint-dev.sh
+ENTRYPOINT ["docker-entrypoint-dev.sh"]
+
+CMD ["frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile"]
