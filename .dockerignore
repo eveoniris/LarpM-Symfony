@@ -1,10 +1,64 @@
+# VCS / editor
 .git
 .github
+.editorconfig
+.gitignore
+.vscode/
+.idea/
+.zed/
+
+# Generated at build/boot time
 var/
-vendor/
-node_modules/
 public/bundles/
 public/assets/
+
+# Reinstalled from lockfiles
+vendor/
+node_modules/
+
+# Front tooling, no Node step in Dockerfile
+package.json
+package-lock.json
+yarn.lock
+playwright.config.ts
+
+# Never bake secrets into the image
+.env*.local*
+
+# Not needed in prod image (dev uses bind mount)
+tests/
+
+# Docs / non-runtime
+apidoc/
+README.md
+logs/
+*.log
+
+# Lint / static analysis, CI-only
+.php-cs-fixer.dist.php
+.phpactor.json
+phpcs.xml.dist
+phpstan.dist.neon
+phpstan-baseline.neon
+phpunit.dist.xml
+mago.toml
+rector.php
+linter-baseline.toml
+
+# Platform.sh config, unrelated to Docker
+.platform.app.yaml
+.platform/
+
+# Docker files themselves
+docker-compose.yml
+docker-compose.override.yml
+docker-compose.prod.yml
+docker-ci.yml
+Dockerfile
+.dockerignore
+
+# Dev-only bind-mounted data
 docker/db/data/
 docker/db/export/
-*.log
+docker/mailpit/
+docker/prod-test.sh
