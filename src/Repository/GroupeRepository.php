@@ -139,8 +139,8 @@ class GroupeRepository extends BaseRepository
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias . '.userRelatedByScenaristeId', 'scenariste');
-        $query->join('scenariste.etatCivil', 'etatCivil');
+        $query->leftJoin($alias . '.userRelatedByScenaristeId', 'scenariste');
+        $query->leftJoin('scenariste.etatCivil', 'etatCivil');
         $query->leftJoin($alias . '.groupeGns', 'groupeGn');
         $query->leftJoin('groupeGn.gn', 'gn');
 

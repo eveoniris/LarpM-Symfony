@@ -416,6 +416,12 @@ class GroupeController extends AbstractController
     )]
     public function deleteAction(#[MapEntity] Groupe $groupe): RedirectResponse|Response
     {
+        if (!$groupe->getGroupeGns()->isEmpty()) {
+            $this->addFlash('error', 'Ce groupe a participé à au moins un GN et ne peut pas être supprimé.');
+
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
+        }
+
         return $this->genericDelete($groupe, 'Supprimer un groupe', 'Le groupe a été supprimé', 'groupe.list', [
             ['route' => $this->generateUrl('groupe.list'), 'name' => 'Liste des groupes'],
             [
