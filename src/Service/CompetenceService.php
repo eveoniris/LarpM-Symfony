@@ -606,6 +606,9 @@ class CompetenceService
 
     public function removeRenomme(int $value, string $explication): self
     {
+        if ($value > 0) {
+            $value *= -1;
+        }
         $this->getPersonnage()->removeRenomme($value);
         $renommeHistory = new RenommeHistory();
         $renommeHistory->setDate(new DateTime('NOW'));
