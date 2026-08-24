@@ -32,10 +32,7 @@ class GroupeScenaristeType extends AbstractType
             'choice_label' => static fn (User $user) => \sprintf('%s - %s', $user->getName(), $user->getEtatCivil()?->getFullName() ?? ''),
             'query_builder' => static function (EntityRepository $er) {
                 $qb = $er->createQueryBuilder('u');
-                $qb->where($qb->expr()->orX(
-                    $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')),
-                    $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%')),
-                ));
+                $qb->where($qb->expr()->orX($qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')), $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%'))));
 
                 return $qb;
             },

@@ -63,10 +63,7 @@ class GroupeSecondaireType extends AbstractType
                     'autocomplete' => true,
                     'query_builder' => static function (EntityRepository $er) {
                         $qb = $er->createQueryBuilder('u');
-                        $qb->where($qb->expr()->orX(
-                            $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')),
-                            $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%')),
-                        ));
+                        $qb->where($qb->expr()->orX($qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_ADMIN%')), $qb->expr()->like('u.roles', $qb->expr()->literal('%ROLE_SCENARISTE%'))));
 
                         return $qb;
                     },
