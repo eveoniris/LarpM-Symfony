@@ -48,11 +48,11 @@ class NoblesseServiceTest extends KernelTestCase
     public static function noblesseRenommeProvider(): array
     {
         return [
-            'level 1 (apprenti)     → +2 renomme' => [1, 2],
-            'level 2 (initié)       → +3 renomme' => [2, 3],
-            'level 3 (expert)       → +2 renomme' => [3, 2],
-            'level 4 (maître)       → +5 renomme' => [4, 5],
-            'level 5 (grand-maître) → +6 renomme' => [5, 6],
+            'level 1 (apprenti)     > +2 renomme' => [1, 2],
+            'level 2 (initié)       > +3 renomme' => [2, 3],
+            'level 3 (expert)       > +2 renomme' => [3, 2],
+            'level 4 (maître)       > +5 renomme' => [4, 5],
+            'level 5 (grand-maître) > +6 renomme' => [5, 6],
         ];
     }
 
@@ -79,6 +79,8 @@ class NoblesseServiceTest extends KernelTestCase
     #[DataProvider('noblesseRenommeProvider')]
     public function testRemoveUsesCorrectRenommeAmount(int $levelIndex, int $expectedRenomme): void
     {
+        // as we remove we expect the negative version of the givenRenommme
+        $expectedRenomme *= -1;
         // Personnage::getRenomme() sums RenommeHistory entries (history-based).
         // removeBonus() persists one RenommeHistory with the applied amount.
         // We verify the correct amount for the level was used (not a wrong ID-based lookup).
