@@ -42,22 +42,17 @@ class PersonnageTrombineUpdateTest extends WebTestCase
         $longOriginalName = str_repeat('un-nom-de-fichier-tres-tres-long-descriptif-', 8) . '.png';
 
         $form = $crawler->selectButton('Envoyer')->form();
-        $client->request(
-            $form->getMethod(),
-            $form->getUri(),
-            $form->getPhpValues(),
-            [
-                'trombine' => [
-                    'file' => [
-                        'name' => $longOriginalName,
-                        'type' => 'image/png',
-                        'tmp_name' => $tmpPath,
-                        'error' => \UPLOAD_ERR_OK,
-                        'size' => filesize($tmpPath),
-                    ],
+        $client->request($form->getMethod(), $form->getUri(), $form->getPhpValues(), [
+            'trombine' => [
+                'file' => [
+                    'name' => $longOriginalName,
+                    'type' => 'image/png',
+                    'tmp_name' => $tmpPath,
+                    'error' => \UPLOAD_ERR_OK,
+                    'size' => filesize($tmpPath),
                 ],
             ],
-        );
+        ]);
 
         @unlink($tmpPath);
 
