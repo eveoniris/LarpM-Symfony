@@ -11,6 +11,7 @@ use App\Entity\User;
 use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\QueryBuilder;
 
 class GroupeGnRepository extends BaseRepository
 {
@@ -225,6 +226,30 @@ class GroupeGnRepository extends BaseRepository
                 ORDER BY ec.nom, ec.prenom
                 SQL, $rsm)
             ->setParameter('gnId', $gn->getId());
+    }
+
+    /**
+     * Exclut du QueryBuilder les personnages ayant déjà un titre (suzerain/connetable/intendant/navigateur/
+     * camarilla/diplomate) sur un autre groupe du GN.
+     */
+    public function excludeAlreadyTitled(QueryBuilder $qb, string $alias, Gn $gn, ?GroupeGn $excludeGroupeGn = null): QueryBuilder
+    {
+        $exists = "EXISTS (SELECT 1 FROM App\Entity\GroupeGn gg2 WHERE gg2.gn = :titre_gn_id"
+            . " AND (gg2.suzerin = {$alias} OR gg2.connetable = {$alias} OR gg2.intendant = {$alias}"
+            . " OR gg2.navigateur = {$alias} OR gg2.camarilla = {$alias} OR gg2.diplomate = {$alias})";
+
+        if ($excludeGroupeGn) {
+            $exists .= ' AND gg2.id != :titre_exclude_id';
+        }
+        $exists .= ')';
+
+        $qb->andWhere('NOT ' . $exists)->setParameter('titre_gn_id', $gn->getId());
+
+        if ($excludeGroupeGn) {
+            $qb->setParameter('titre_exclude_id', $excludeGroupeGn->getId());
+        }
+
+        return $qb;
     }
 
     public function userIsMemberOfGroupe(User $user, GroupeGn $groupeGn): bool

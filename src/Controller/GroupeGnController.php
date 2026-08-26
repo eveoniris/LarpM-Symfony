@@ -693,7 +693,7 @@ class GroupeGnController extends AbstractController
             $ids = [];
 
             $idsArray = [
-                'suzerin' => $groupeGn->getSuzerain()?->getId(),
+                'suzerain' => $groupeGn->getSuzerain()?->getId(),
                 'intendant' => $groupeGn->getIntendant()?->getId(),
                 'camarilla' => $groupeGn->getCamarilla()?->getId(),
                 'connetable' => $groupeGn->getConnetable()?->getId(),
