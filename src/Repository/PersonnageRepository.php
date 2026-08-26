@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Competence;
 use App\Entity\Gn;
+use App\Entity\GroupeGn;
 use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\PersonnageLignee;
@@ -467,6 +468,35 @@ LEFT JOIN p2.participants pa2
     public function alive(QueryBuilder $query, bool $vivant = true): QueryBuilder
     {
         return $query->andWhere($this->alias . '.vivant = :vivant')->setParameter('vivant', $vivant);
+    }
+
+    /**
+     * Personnages vivants des utilisateurs ayant une participation au GN donné (tous leurs personnages, pas
+     * seulement celui lié à cette participation).
+     */
+    public function findVivantsParticipantsAuGn(Gn $gn): QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('p')
+            ->andWhere('p.vivant = :vivant')
+            ->andWhere('EXISTS (SELECT 1 FROM App\Entity\Participant parti WHERE parti.user = p.user AND parti.gn = :gnid)')
+            ->setParameter('vivant', true)
+            ->setParameter('gnid', $gn->getId())
+            ->orderBy('p.nom', 'ASC');
+    }
+
+    /**
+     * Personnages vivants des utilisateurs participants du groupe_gn donné (tous leurs personnages).
+     */
+    public function findVivantsParticipantsAuGroupeGn(GroupeGn $groupeGn): QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('p')
+            ->andWhere('p.vivant = :vivant')
+            ->andWhere('EXISTS (SELECT 1 FROM App\Entity\Participant parti WHERE parti.user = p.user AND parti.groupeGn = :groupe_gn_id)')
+            ->setParameter('vivant', true)
+            ->setParameter('groupe_gn_id', $groupeGn->getId())
+            ->orderBy('p.nom', 'ASC');
     }
 
     public function user(QueryBuilder $query, User $user): QueryBuilder
