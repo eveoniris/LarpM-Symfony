@@ -473,6 +473,8 @@ LEFT JOIN p2.participants pa2
     /**
      * Personnages vivants des utilisateurs ayant une participation au GN donné (tous leurs personnages, pas
      * seulement celui lié à cette participation).
+     * Règle LH7
+     * Modification LH8 : on limite au groupeGn, on garde la méthode si le gameplay vient à changer ou autre usage.
      */
     public function findVivantsParticipantsAuGn(Gn $gn): QueryBuilder
     {

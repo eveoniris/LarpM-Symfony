@@ -24,7 +24,7 @@ abstract class BaseFicheRetourGroupe
     #[Id, Column(type: Types::INTEGER), GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
 
-    #[ORM\OneToOne(targetEntity: GroupeGn::class)]
+    #[ORM\OneToOne(targetEntity: GroupeGn::class, inversedBy: 'ficheRetour')]
     #[JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id', nullable: false)]
     protected GroupeGn $groupeGn;
 
