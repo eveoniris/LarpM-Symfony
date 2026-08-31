@@ -148,13 +148,7 @@ class GroupeGnType extends AbstractType
             'empty_data' => null,
             'label' => $label,
             // Personnages vivants des utilisateurs participants (tous leurs personnages), hors titres déjà attribués ailleurs
-            'query_builder' => static function (PersonnageRepository $personnageRepository) use ($groupeGnRepository, $groupeGn, $gn, $field) {
-                $qb = 'suzerain' === $field
-                    ? $personnageRepository->findVivantsParticipantsAuGroupeGn($groupeGn)
-                    : $personnageRepository->findVivantsParticipantsAuGn($gn);
-
-                return $groupeGnRepository->excludeAlreadyTitled($qb, 'p', $gn, $groupeGn);
-            },
+            'query_builder' => static fn (PersonnageRepository $personnageRepository) => $groupeGnRepository->excludeAlreadyTitled($personnageRepository->findVivantsParticipantsAuGroupeGn($groupeGn), 'p', $gn, $groupeGn),
             'constraints' => [
                 /* @phpstan-ignore argument.type */
                 new Assert\Callback(function (?Personnage $personnage, ExecutionContextInterface $context) use ($field, $groupeGn, $groupeGnRepository): void {
