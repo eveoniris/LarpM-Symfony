@@ -55,9 +55,13 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          MAILER_DSN: ${{ secrets.MAILER_DSN }}
           RUN_MIGRATIONS: ${{ github.event.inputs.run_migrations || 'true' }}
           CLEAR_CACHE: ${{ github.event.inputs.clear_cache || 'true' }}
         run: |
+          # Encode le MAILER_DSN (secret) en base64 pour le transmettre au serveur sans
+          # risque de caractères spéciaux/quoting. Vide si le secret n'est pas défini.
+          MAILER_DSN_B64=$(printf '%s' "$MAILER_DSN" | base64 | tr -d '\n')
           ssh $SSH_USER@$SSH_HOST bash -s << ENDSSH
             set -e
 
@@ -90,6 +94,15 @@ jobs:
               --no-interaction \
               --prefer-dist \
               --no-scripts
+
+            # Écrit le MAILER_DSN dans .env.prod.local (prioritaire sur .env.local pour prod,
+            # non versionné) uniquement si le secret est fourni. Sinon on ne touche à rien :
+            # la prod garde sa configuration d'envoi existante.
+            MAILER_DSN_B64='$MAILER_DSN_B64'
+            if [ -n "\$MAILER_DSN_B64" ]; then
+              echo "==> Writing MAILER_DSN to .env.prod.local"
+              printf 'MAILER_DSN=%s\n' "\$(printf '%s' "\$MAILER_DSN_B64" | base64 --decode)" > .env.prod.local
+            fi
 
             echo "==> Dumping compiled env for production"
             APP_ENV=prod APP_DEBUG=0 \$COMPOSER_CMD dump-env prod
