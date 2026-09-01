@@ -1,0 +1,31 @@
+services:
+    webserver:
+        image: ${WEBSERVER_IMAGE:?WEBSERVER_IMAGE must be set}
+        ports:
+            - "443:443" # HTTPS
+            - "443:443/udp" # HTTP/3
+        env_file:
+            - .env.prod
+            - .env.prod.local
+        read_only: true
+        tmpfs:
+            - /tmp
+        volumes:
+            - caddy_data:/data
+            - caddy_config:/config
+            - private_data:/app/private
+            - var_data:/app/var
+
+    database:
+        env_file:
+            - .env.prod
+            - .env.prod.local
+        volumes:
+            - database_data:/var/lib/mysql
+
+volumes:
+    caddy_data:
+    caddy_config:
+    private_data:
+    var_data:
+    database_data:

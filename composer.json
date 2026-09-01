@@ -119,6 +119,7 @@
   "require-dev": {
     "carthage-software/mago": "^1.13.1",
     "dama/doctrine-test-bundle": "^8.6",
+    "doctrine/doctrine-fixtures-bundle": "^4.3",
     "friendsofphp/php-cs-fixer": "^3.94",
     "jetbrains/phpstorm-stubs": "*",
     "phpstan/phpstan-phpunit": "^2.0",

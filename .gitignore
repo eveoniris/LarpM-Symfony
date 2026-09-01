@@ -1,5 +1,9 @@
+# OS and IDE files
 .DS_Store
-.idea
+Thumbs.db
+.idea/
+.vscode/
+.zed/
 /object/
 
 ###> local dev
@@ -9,9 +13,7 @@ docker/db/export
 ###< local dev
 
 ###> symfony/framework-bundle ###
-/.env.local
-/.env.local.php
-/.env.*.local
+/.env*.local*
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
