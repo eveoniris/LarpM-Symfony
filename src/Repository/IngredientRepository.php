@@ -22,6 +22,18 @@ class IngredientRepository extends BaseRepository
         return $this->getEntityManager()->createQuery('SELECT i FROM App\Entity\Ingredient i ORDER BY i.label ASC, i.niveau ASC')->getResult();
     }
 
+    /** @return array<int, string> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            self::SEARCH_ALL,
+            $alias . '.label',
+            $alias . '.description',
+        ];
+    }
+
     /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
