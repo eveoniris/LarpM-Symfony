@@ -118,6 +118,19 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            {% set gains = personnageService.getCompetenceGainDetails(personnage, competence) %}
+                            {% if gains and gains|length > 0 %}
+                                <div class="list-group mb-1">
+                                    {% for gain in gains %}
+                                        <small class="list-group-item">
+                                            <i class="fa {{ gain.type == 'merveille' ? 'fa-landmark' : 'fa-flag' }} text-success"
+                                               data-toggle="tooltip" data-placement="top"
+                                               title="{{ gain.type == 'merveille' ? 'Bonus territorial' : "Bonus d'origine" }}"></i>
+                                            {{ gain.bonus.titre }} (-{{ gain.valeur }} xp)
+                                        </small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                             <div class="list-group-item-text">{{ competence.description|markdown_to_html }}</div>
                         </div>
                     </div>

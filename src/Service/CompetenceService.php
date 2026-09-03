@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Bonus;
 use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
@@ -173,7 +174,13 @@ class CompetenceService
 
     public function getOrigineBonusCout(): int
     {
-        $count = 0;
+        return array_sum(array_column($this->getOrigineBonusDetails(), 'valeur'));
+    }
+
+    /** @return array<int, array{bonus: Bonus, valeur: int}> */
+    public function getOrigineBonusDetails(): array
+    {
+        $details = [];
 
         // On ne prend que les bonus encore actif
         foreach ($this->getPersonnage()->getOrigine()?->getValideOrigineBonus() ?? [] as $origineBonus) {
@@ -189,11 +196,11 @@ class CompetenceService
                 // null === $bonus->getCompetence() || TODO : at this time we do not allow to give xp to ALL competences
                 && $this->getCompetence()->getId() === $bonus->getCompetence()?->getId()
             ) {
-                $count += $bonus->getValeur();
+                $details[] = ['bonus' => $bonus, 'valeur' => $bonus->getValeur()];
             }
         }
 
-        return $count;
+        return $details;
     }
 
     public function getPersonnage(): Personnage
@@ -238,7 +245,13 @@ class CompetenceService
 
     public function getMerveilleBonusCout(): int
     {
-        $count = 0;
+        return array_sum(array_column($this->getMerveilleBonusDetails(), 'valeur'));
+    }
+
+    /** @return array<int, array{bonus: Bonus, valeur: int}> */
+    public function getMerveilleBonusDetails(): array
+    {
+        $details = [];
         $territoires = $this->getPersonnage()->getLastParticipant()?->getGroupe()?->getTerritoires() ?? new ArrayCollection();
 
         foreach ($territoires as $territoire) {
@@ -263,11 +276,13 @@ class CompetenceService
                 // Dans ce service, nous ne traitons que les bonus de type XP
                 // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
                 if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId() === $bonus->getCompetence()->getId())) {
+                    $valeur = 0;
+
                     // Valeur minimum : la réduction ne doit jamais faire descendre le coût sous ce plancher
                     if (null !== ($min = $bonus->getJsonData()['min'] ?? null)) {
                         $baseCost = $this->getCompetenceCout(baseOnly: true);
                         if ($baseCost > $min) {
-                            $count += min($bonus->getValeur(), $baseCost - $min);
+                            $valeur = min($bonus->getValeur(), $baseCost - $min);
                         }
                     } elseif ($bonus->getJsonData()['COMPETENCE_FAMILLE'] ?? null) {
                         $bonusJsonData = $bonus->getJsonData()['COMPETENCE_FAMILLE'];
@@ -285,21 +300,25 @@ class CompetenceService
                         if ($canApply && 'FAVORITE' === $bonusJsonData['value']) {
                             // CAS NORMAL
                             if ($this->isNormale($this->getPersonnage()->getClasse(), $this->getCompetenceFamily())) {
-                                $count += abs($this->getCompetenceLevel()->getCoutFavori() - $this->getCompetenceLevel()->getCout());
+                                $valeur += abs($this->getCompetenceLevel()->getCoutFavori() - $this->getCompetenceLevel()->getCout());
                             }
                             // CAS MECONNUE
                             if ($this->isMeconnue($this->getPersonnage()->getClasse(), $this->getCompetenceFamily())) {
-                                $count += abs($this->getCompetenceLevel()->getCoutMeconu() - $this->getCompetenceLevel()->getCoutFavori());
+                                $valeur += abs($this->getCompetenceLevel()->getCoutMeconu() - $this->getCompetenceLevel()->getCoutFavori());
                             }
                         }
                     } else {
-                        $count += $bonus->getValeur();
+                        $valeur = $bonus->getValeur();
+                    }
+
+                    if ($valeur > 0) {
+                        $details[] = ['bonus' => $bonus, 'valeur' => $valeur];
                     }
                 }
             }
         }
 
-        return $count;
+        return $details;
     }
 
     public function getCompetenceFamily(): CompetenceFamily
