@@ -246,18 +246,21 @@ class ConditionsService
 
         // Parmi les familles de competence du personnage
         if ($entity instanceof Personnage && 'COMPETENCE_FAMILLE' === $this->getConditionType($condition)) {
-            if ($service instanceof CompetenceService) {
-                if ($entity->getId() === (int) $this->getConditionValue($condition)) {
-                    return true;
-                }
+            if (!$service instanceof CompetenceService) {
+                // Filtre de portée par compétence : non évaluable hors d'un achat précis, donc non bloquant ici.
+                return true;
+            }
 
-                if (is_numeric($this->getConditionValue($condition)) && $service->getCompetence()->getCompetenceFamily()?->getId() === (int) $this->getConditionValue($condition)) {
-                    return true;
-                }
+            if ($entity->getId() === (int) $this->getConditionValue($condition)) {
+                return true;
+            }
 
-                if (strtoupper($service->getCompetence()->getCompetenceFamily()?->getCompetenceFamilyType()->value ?? '') === strtoupper($this->getConditionValue($condition))) {
-                    return true;
-                }
+            if (is_numeric($this->getConditionValue($condition)) && $service->getCompetence()->getCompetenceFamily()?->getId() === (int) $this->getConditionValue($condition)) {
+                return true;
+            }
+
+            if (strtoupper($service->getCompetence()->getCompetenceFamily()?->getCompetenceFamilyType()->value ?? '') === strtoupper($this->getConditionValue($condition))) {
+                return true;
             }
         }
 
