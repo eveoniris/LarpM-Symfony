@@ -3,7 +3,6 @@
 {% block title %}Territoire{% endblock title %}
 
 {% block body %}
-
     {% if canReadPrivate is not defined %}
         {% set canReadPrivate = false %}
     {% endif %}
@@ -548,13 +547,16 @@
                                     <br/>
                                     <div>
                                         {% if canReadPrivate or isMappingInitiated %}
+                                            <hr />
+                                            <strong class="text-gamemaster"><i class="fa fa-feather"></i> Description
+                                                cartographe</strong><br />
                                             {{ merveille.descriptionCartographe|markdown_to_html|default('Description non connue') }}
                                         {% endif %}
                                         {% if isAdmin %}
                                             <hr>
-                                            <h6 class="text-gamemaster"><i class="fa fa-feather"></i> Description
-                                                scénariste</h6>
-                                            {{ merveille.descriptionScenariste|default('Aucune')|markdown_to_html }}
+                                            <strong class="text-gamemaster"><i class="fa fa-feather"></i> Description
+                                                scénariste</strong><br />
+                                            {{ merveille.descriptionScenariste|default(merveille.description|default('Aucune'))|markdown_to_html }}
                                         {% endif %}
                                     </div>
                                 </li>
