@@ -475,6 +475,26 @@ class PersonnageService
     }
 
     /**
+     * Détail des bonus (origine, merveille) qui réduisent le coût d'achat de cette compétence, pour affichage.
+     *
+     * @return array<int, array{type: string, bonus: Bonus, valeur: int}>
+     */
+    public function getCompetenceGainDetails(Personnage $personnage, Competence $competence): array
+    {
+        $service = $this->getCompetenceHandler($personnage, $competence);
+
+        $gains = [];
+        foreach ($service->getOrigineBonusDetails() as $detail) {
+            $gains[] = ['type' => 'origine', ...$detail];
+        }
+        foreach ($service->getMerveilleBonusDetails() as $detail) {
+            $gains[] = ['type' => 'merveille', ...$detail];
+        }
+
+        return $gains;
+    }
+
+    /**
      * Récupére la liste de toutes les religions non connue du personnage, vue admin.
      *
      * @return ArrayCollection<int, Religion>
