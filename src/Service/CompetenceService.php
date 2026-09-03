@@ -263,11 +263,11 @@ class CompetenceService
                 // Dans ce service, nous ne traitons que les bonus de type XP
                 // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
                 if ($bonus->isXp() && (null === $bonus->getCompetence() || $this->getCompetence()->getId() === $bonus->getCompetence()->getId())) {
-                    // Valeur minimum ?
-                    if ($bonus->getJsonData()['min'] ?? null) {
-                        // If parameters is not "true" is a loop
-                        if (($this->getCompetenceCout(baseOnly: true) - $bonus->getValeur()) > $bonus->getJsonData()['min']) {
-                            $count += $bonus->getValeur();
+                    // Valeur minimum : la réduction ne doit jamais faire descendre le coût sous ce plancher
+                    if (null !== ($min = $bonus->getJsonData()['min'] ?? null)) {
+                        $baseCost = $this->getCompetenceCout(baseOnly: true);
+                        if ($baseCost > $min) {
+                            $count += min($bonus->getValeur(), $baseCost - $min);
                         }
                     } elseif ($bonus->getJsonData()['COMPETENCE_FAMILLE'] ?? null) {
                         $bonusJsonData = $bonus->getJsonData()['COMPETENCE_FAMILLE'];
