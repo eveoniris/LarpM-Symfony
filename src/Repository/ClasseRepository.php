@@ -51,6 +51,19 @@ class ClasseRepository extends BaseRepository
         return $query->setParameter('value', $creation);
     }
 
+    /** @return array<int, string> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            self::SEARCH_ALL,
+            $alias . '.label_masculin',
+            $alias . '.label_feminin',
+            $alias . '.description',
+        ];
+    }
+
     /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
