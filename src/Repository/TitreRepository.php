@@ -22,6 +22,17 @@ class TitreRepository extends BaseRepository
         return $this->getEntityManager()->createQuery('SELECT t FROM App\Entity\Titre t ORDER BY t.renomme ASC')->getResult();
     }
 
+    /** @return array<int, string> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            self::SEARCH_ALL,
+            $alias . '.label',
+        ];
+    }
+
     /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {

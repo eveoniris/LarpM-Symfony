@@ -10,4 +10,16 @@ class RuleRepository extends BaseRepository
     {
         return $this->findBy([], ['gn' => 'ASC']);
     }
+
+    /** @return array<int, string> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            self::SEARCH_ALL,
+            $alias . '.label',
+            $alias . '.description',
+        ];
+    }
 }

@@ -42,6 +42,18 @@ class CompetenceFamilyRepository extends BaseRepository
         return parent::search($search, $attributes, $orderBy, $alias, $query);
     }
 
+    /** @return array<int, string> */
+    public function searchAttributes(?string $alias = null, bool $withAlias = true): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        return [
+            self::SEARCH_ALL,
+            $alias . '.label',
+            $alias . '.description',
+        ];
+    }
+
     /** @return array<string, array<string, mixed>> */
     public function sortAttributes(?string $alias = null): array
     {
