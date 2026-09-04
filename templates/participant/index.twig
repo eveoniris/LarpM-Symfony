@@ -134,7 +134,15 @@
                 </ul>
 
                 <div class="header mt-2">
-                    {% include 'participant/fragment/etatCivil.twig' with {'etatCivil':participant.user.etatCivil} %}
+                    {% if participant.user.etatCivil %}
+                        {% include 'participant/fragment/etatCivil.twig' with {'etatCivil':participant.user.etatCivil} %}
+                    {% else %}
+                        {% include '_partials/cardNotif.twig' with {
+                            'type' : 'warning',
+                            'title': 'État civil',
+                            'content' : "Ce joueur n'a pas encore rempli ses informations administratives."
+                        } %}
+                    {% endif %}
                 </div>
             </div>
         </div>

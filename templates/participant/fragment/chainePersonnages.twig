@@ -17,6 +17,7 @@
 {% set estLeJoueur = app.user and participant.user and participant.user.id == app.user.id %}
 {% set estAdmin = is_granted('ROLE_SCENARISTE') or is_granted('ROLE_ORGA') or is_granted('ROLE_ADMIN') %}
 {% set editable = not compact and (estLeJoueur or estAdmin) %}
+{% set peutDeverrouiller = is_granted('ROLE_SCENARISTE') and participant.groupeGn and participant.groupeGn.groupe %}
 
 {% set routes = {
     'principal': 'participant.personnage.old',
@@ -50,22 +51,29 @@
                 </span>
 
                 {% if editable %}
-                    {% if verrouille and not estAdmin %}
-                        <span class="text-muted small" data-bs-toggle="tooltip" data-bs-placement="top"
-                              title="Le groupe est verrouillé : la composition n'est plus modifiable.">
-                            <i class="fa fa-lock" aria-hidden="true"></i> Verrouillé
-                        </span>
+                    {% if verrouille %}
+                        {% if peutDeverrouiller and loop.first %}
+                            <a class="btn btn-sm btn-gamemaster"
+                               data-bs-toggle="tooltip" data-bs-placement="top"
+                               title="Le groupe est verrouillé. Déverrouillez-le pour modifier la chaîne."
+                               href="{{ path('groupe.unlock', {'groupe': participant.groupeGn.groupe.id}) }}">
+                                <i class="fa fa-unlock" aria-hidden="true"></i> Déverrouiller le groupe
+                            </a>
+                        {% else %}
+                            <span class="text-muted small" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  title="Le groupe est verrouillé : la composition n'est plus modifiable.">
+                                <i class="fa fa-lock" aria-hidden="true"></i> Verrouillé
+                            </span>
+                        {% endif %}
                     {% elseif role.value != 'principal' and not peutChoisir %}
                         <span class="text-muted small" data-bs-toggle="tooltip" data-bs-placement="top"
                               title="Un billet et un personnage principal sont nécessaires.">
                             <i class="fa fa-ban" aria-hidden="true"></i> Indisponible
                         </span>
                     {% else %}
-                        <a class="btn btn-sm {{ verrouille ? 'btn-gamemaster' : 'btn-secondary' }}"
-                           href="{{ path(routes[role.value], {'participant': participant.id}) }}"
-                           {% if verrouille %}data-bs-toggle="tooltip" data-bs-placement="top"
-                           title="Le groupe est verrouillé : seule la gestion peut encore modifier."{% endif %}>
-                            <i class="fa {{ verrouille ? 'fa-unlock' : 'fa-pencil' }}" aria-hidden="true"></i> {{ valeur ? 'Modifier' : 'Choisir' }}
+                        <a class="btn btn-sm btn-secondary"
+                           href="{{ path(routes[role.value], {'participant': participant.id}) }}">
+                            <i class="fa fa-pencil" aria-hidden="true"></i> {{ valeur ? 'Modifier' : 'Choisir' }}
                         </a>
                     {% endif %}
                 {% endif %}

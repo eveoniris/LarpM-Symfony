@@ -1756,12 +1756,26 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->checkParticipantGroupeLock(
-            $participant,
-            'participant.index',
-            ['participant' => $participant->getId()],
-            "Désolé, il n'est plus possible de modifier vos personnages pour ce GN.",
-        );
+        if (!$participant->isVerrouille()) {
+            return null;
+        }
+
+        // Le verrouillage du groupe bloque tout le monde, scénaristes compris : pour
+        // modifier la chaîne il faut déverrouiller le groupe au préalable.
+        $message = "Le groupe est verrouillé : la composition de vos personnages n'est plus modifiable.";
+
+        $groupe = $participant->getGroupeGn()?->getGroupe();
+        if (null !== $groupe && $this->isGranted(Role::SCENARISTE->value)) {
+            $message .= sprintf(
+                ' <a href="%s">Déverrouiller le groupe %s</a> pour pouvoir la modifier.',
+                $this->generateUrl('groupe.unlock', ['groupe' => $groupe->getId()]),
+                htmlspecialchars((string) $groupe->getNom(), \ENT_QUOTES),
+            );
+        }
+
+        $this->addFlash('error', $message);
+
+        return $this->redirectToRoute('participant.index', ['participant' => $participant->getId()], 303);
     }
 
     /**

@@ -26,7 +26,8 @@ use Zenstruck\Foundry\Persistence\Proxy;
  * Règles couvertes :
  * - la substitution n'est accessible que si l'opus active l'option ;
  * - billet + personnage principal sont obligatoires ;
- * - le verrouillage du groupe bloque les trois choix (l'admin passe outre) ;
+ * - le verrouillage du groupe bloque les trois choix, gestion comprise : il faut
+ *   déverrouiller le groupe avant de pouvoir modifier ;
  * - la liste de choix exclut les personnages déjà engagés sur le GN.
  *
  * DAMA enveloppe chaque test dans une transaction annulée automatiquement.
@@ -103,12 +104,27 @@ class PersonnageAlternatifTest extends WebTestCase
         static::assertResponseRedirects('/participant/' . $contexte['participant']->getId() . '/index');
     }
 
-    public function testAdminPasseOutreLeVerrouillage(): void
+    #[TestWith(['ROLE_SCENARISTE'])]
+    #[TestWith(['ROLE_ORGA'])]
+    #[TestWith(['ROLE_ADMIN'])]
+    public function testLeVerrouillageBloqueAussiLaGestion(string $role): void
     {
         $client = static::createClient();
         $contexte = $this->contexte($client, verrouille: true);
 
-        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_ADMIN']]));
+        // Un scénariste peut déverrouiller le groupe, mais pas modifier sans l'avoir fait.
+        $client->loginUser(UserFactory::createOne(['roles' => [$role]]));
+        $client->request('GET', sprintf('/participant/%d/personnageReleve', $contexte['participant']->getId()));
+
+        static::assertResponseRedirects('/participant/' . $contexte['participant']->getId() . '/index');
+    }
+
+    public function testUnGroupeDeverrouilleRedonneLAccesALaGestion(): void
+    {
+        $client = static::createClient();
+        $contexte = $this->contexte($client, verrouille: false);
+
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_SCENARISTE']]));
         $client->request('GET', sprintf('/participant/%d/personnageReleve', $contexte['participant']->getId()));
 
         static::assertResponseIsSuccessful();
