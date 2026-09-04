@@ -535,7 +535,10 @@ class ParticipantRepository extends BaseRepository
         $query ??= $this->createQueryBuilder($alias);
         $query->join($alias . '.user', 'user');
         $query->join($alias . '.gn', 'gn');
-        $query->join('user.etatCivil', 'etatCivil');
+        // LEFT JOIN : un joueur qui n'a pas encore rempli ses informations
+        // administratives doit rester visible dans la liste, c'est justement lui
+        // que l'organisation doit relancer.
+        $query->leftJoin('user.etatCivil', 'etatCivil');
         $query->leftJoin($alias . '.billet', 'billet');
         // Next may be a LEFT join because it's can be null
         // $query->join($alias.'.territoire', 'territoire');
