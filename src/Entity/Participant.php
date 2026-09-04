@@ -295,15 +295,14 @@ class Participant extends BaseParticipant implements Stringable
      */
     public function getPersonnagesEngages(): array
     {
-        $engages = [];
-
-        foreach (
-            [
+        $parRole = [
             PersonnageRoleType::PRINCIPAL->value => $this->getPersonnage(),
             PersonnageRoleType::SUBSTITUTION->value => $this->getPersonnageSubstitution(),
             PersonnageRoleType::RELEVE->value => $this->getPersonnageReleve(),
-            ] as $role => $personnage
-        ) {
+        ];
+
+        $engages = [];
+        foreach ($parRole as $role => $personnage) {
             if (!$personnage instanceof Personnage) {
                 continue;
             }
