@@ -48,8 +48,8 @@ class ChainePersonnagesCoherenteTest extends KernelTestCase
 
         $violations = $this->validator->validate($participant);
 
-        self::assertCount(1, $violations);
-        self::assertSame('personnageReleve', $violations->get(0)->getPropertyPath());
+        static::assertCount(1, $violations);
+        static::assertSame('personnageReleve', $violations->get(0)->getPropertyPath());
     }
 
     public function testPersonnageDejaPrincipalAilleursSurLeMemeGnEstRefuseEnReleve(): void
@@ -72,12 +72,12 @@ class ChainePersonnagesCoherenteTest extends KernelTestCase
         $violations = $this->validator->validate($participant);
 
         // Le personnage appartient à un autre joueur ET est déjà engagé : 2 violations.
-        self::assertGreaterThanOrEqual(1, $violations->count());
+        static::assertGreaterThanOrEqual(1, $violations->count());
         $paths = [];
         foreach ($violations as $violation) {
             $paths[] = $violation->getPropertyPath();
         }
-        self::assertContains('personnageReleve', $paths);
+        static::assertContains('personnageReleve', $paths);
     }
 
     public function testPersonnageDeSonPropreStockDejaEngageSurLeGnEstRefuse(): void
@@ -96,8 +96,8 @@ class ChainePersonnagesCoherenteTest extends KernelTestCase
 
         $violations = $this->validator->validate($seconde);
 
-        self::assertCount(1, $violations);
-        self::assertSame('personnage', $violations->get(0)->getPropertyPath());
+        static::assertCount(1, $violations);
+        static::assertSame('personnage', $violations->get(0)->getPropertyPath());
     }
 
     public function testMemePersonnageSurDeuxGnDifferentsEstAutorise(): void
@@ -112,7 +112,7 @@ class ChainePersonnagesCoherenteTest extends KernelTestCase
         $participantB = ParticipantFactory::createOne(['gn' => GnFactory::createOne(), 'user' => $user]);
         $participantB->setPersonnageSubstitution($personnage);
 
-        self::assertCount(0, $this->validator->validate($participantB));
+        static::assertCount(0, $this->validator->validate($participantB));
     }
 
     public function testPersonnageDUnAutreJoueurEstRefuse(): void
@@ -124,8 +124,8 @@ class ChainePersonnagesCoherenteTest extends KernelTestCase
 
         $violations = $this->validator->validate($participant);
 
-        self::assertCount(1, $violations);
-        self::assertSame('personnageSubstitution', $violations->get(0)->getPropertyPath());
+        static::assertCount(1, $violations);
+        static::assertSame('personnageSubstitution', $violations->get(0)->getPropertyPath());
     }
 
     public function testRepositoryTrouveLaParticipationEngageante(): void
@@ -141,15 +141,10 @@ class ChainePersonnagesCoherenteTest extends KernelTestCase
         /** @var ParticipantRepository $repository */
         $repository = $this->em->getRepository(Participant::class);
 
-        self::assertSame(
-            $participant->getId(),
-            $repository->findParticipationEngageantPersonnage($gn, $personnage)?->getId(),
-        );
+        static::assertSame($participant->getId(), $repository->findParticipationEngageantPersonnage($gn, $personnage)?->getId());
 
         // La participation en cours d'édition est ignorée.
-        self::assertNull(
-            $repository->findParticipationEngageantPersonnage($gn, $personnage, $participant),
-        );
+        static::assertNull($repository->findParticipationEngageantPersonnage($gn, $personnage, $participant));
     }
 
     public function testRepositoryListeLesPersonnagesEngagesSurLeGn(): void
@@ -173,7 +168,7 @@ class ChainePersonnagesCoherenteTest extends KernelTestCase
         $attendus = [$principal->getId(), $releve->getId()];
         sort($attendus);
 
-        self::assertSame($attendus, $ids);
-        self::assertSame([], $repository->findPersonnageIdsEngagesSurGn($gn, $participant));
+        static::assertSame($attendus, $ids);
+        static::assertSame([], $repository->findPersonnageIdsEngagesSurGn($gn, $participant));
     }
 }

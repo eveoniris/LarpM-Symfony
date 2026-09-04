@@ -440,8 +440,6 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
 
     /**
      * Remove the given role from the User.
-     *
-     * @param string $role
      */
     /**
      * The Symfony Security component stores a serialized User object in the session.

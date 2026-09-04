@@ -64,9 +64,6 @@ class GnSubstitutionOptionTest extends WebTestCase
         $rafraichi = $em->getRepository(Gn::class)->find($gn->getId());
 
         static::assertTrue($rafraichi->isSubstitutionActive());
-        static::assertSame(
-            'Les nobles restés au pays font avancer leurs intrigues.',
-            $rafraichi->getSubstitutionDescription(),
-        );
+        static::assertSame('Les nobles restés au pays font avancer leurs intrigues.', $rafraichi->getSubstitutionDescription());
     }
 }

@@ -697,10 +697,7 @@ class GroupeController extends AbstractController
     {
         $groupe->setLock(true);
         $this->entityManager->persist($groupe);
-        $this->log(
-            ['groupe' => $groupe->getId(), 'nom' => $groupe->getNom()],
-            LogActionType::GROUPE_LOCK,
-        );
+        $this->log(['groupe' => $groupe->getId(), 'nom' => $groupe->getNom()], LogActionType::GROUPE_LOCK);
         $this->entityManager->flush();
 
         $this->addFlash('success', 'Le groupe est verrouillé. Cela bloque la création et la modification des personnages membres de ce groupe');
@@ -1339,10 +1336,7 @@ class GroupeController extends AbstractController
 
         $groupe->setLock(false);
         $this->entityManager->persist($groupe);
-        $this->log(
-            ['groupe' => $groupe->getId(), 'nom' => $groupe->getNom()],
-            LogActionType::GROUPE_UNLOCK,
-        );
+        $this->log(['groupe' => $groupe->getId(), 'nom' => $groupe->getNom()], LogActionType::GROUPE_UNLOCK);
         $this->entityManager->flush();
 
         $this->addFlash('success', 'Le groupe est dévérouillé');

@@ -33,21 +33,21 @@
             <li>
                 <strong>{{ _self.popa(item.value) }}</strong>
                 {% if item.type == 'territoire' %}
-                    — territoire <em>{{ item.source }}</em>
+                    - territoire <em>{{ item.source }}</em>
                     <small>({{ item.detail }})</small>
                 {% elseif item.type == 'merveille' %}
-                    — merveille <em>{{ item.source }}</em>
+                    - merveille <em>{{ item.source }}</em>
                     {% if item.detail %}<small>({{ item.detail }})</small>{% endif %}
                 {% elseif item.type == 'bonus' %}
-                    — bonus <em>{{ item.source }}</em>
+                    - bonus <em>{{ item.source }}</em>
                     {% if item.detail %}<small>({{ item.detail }})</small>{% endif %}
                 {% else %}
-                    — richesse directe du groupe
+                    - richesse directe du groupe
                 {% endif %}
             </li>
         {% endfor %}
         {% for nom, montant in richesse.pj %}
-            <li><strong>{{ _self.popa(montant) }}</strong> — PJ {{ nom }}</li>
+            <li><strong>{{ _self.popa(montant) }}</strong> - PJ {{ nom }}</li>
         {% endfor %}
         <li><strong>Total : {{ _self.popa(richesse.total) }}</strong></li>
     </ul>

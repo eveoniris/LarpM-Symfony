@@ -35,10 +35,7 @@ class ParticipantChainePersonnagesTest extends TestCase
 
         $roles = $this->roles($participant);
 
-        self::assertSame(
-            [PersonnageRoleType::PRINCIPAL, PersonnageRoleType::RELEVE, PersonnageRoleType::ARCHETYPE],
-            $roles,
-        );
+        static::assertSame([PersonnageRoleType::PRINCIPAL, PersonnageRoleType::RELEVE, PersonnageRoleType::ARCHETYPE], $roles);
     }
 
     public function testChaineAvecOptionSubstitutionInsereLeRoleApresLePrincipal(): void
@@ -47,7 +44,7 @@ class ParticipantChainePersonnagesTest extends TestCase
 
         $roles = $this->roles($participant);
 
-        self::assertSame(
+        static::assertSame(
             [
                 PersonnageRoleType::PRINCIPAL,
                 PersonnageRoleType::SUBSTITUTION,
@@ -73,28 +70,32 @@ class ParticipantChainePersonnagesTest extends TestCase
 
         $chaine = $participant->getChainePersonnages();
 
-        self::assertSame($principal, $chaine[0]['personnage']);
-        self::assertSame($substitution, $chaine[1]['personnage']);
-        self::assertSame($releve, $chaine[2]['personnage']);
-        self::assertSame($archetype, $chaine[3]['archetype']);
-        self::assertNull($chaine[3]['personnage']);
+        static::assertSame($principal, $chaine[0]['personnage']);
+        static::assertSame($substitution, $chaine[1]['personnage']);
+        static::assertSame($releve, $chaine[2]['personnage']);
+        static::assertSame($archetype, $chaine[3]['archetype']);
+        static::assertNull($chaine[3]['personnage']);
     }
 
     public function testLeLibelleDeLArchetypeEstAccordeAuGenreDuPrincipal(): void
     {
-        $classe = (new Classe())->setLabelMasculin('Soldat')->setLabelFeminin('Soldate');
+        $classe = (new Classe())
+            ->setLabelMasculin('Soldat')
+            ->setLabelFeminin('Soldate');
         $archetype = (new PersonnageSecondaire())->setClasse($classe);
 
         $participant = $this->participant(substitutionActive: false);
         $participant->setPersonnage($this->personnage('Valeria', 'Feminin'));
         $participant->setPersonnageSecondaire($archetype);
 
-        self::assertSame('Soldate', $participant->getChainePersonnages()[2]['libelle']);
+        static::assertSame('Soldate', $participant->getChainePersonnages()[2]['libelle']);
     }
 
     public function testLeLibelleDeLArchetypeEstAuMasculinParDefaut(): void
     {
-        $classe = (new Classe())->setLabelMasculin('Soldat')->setLabelFeminin('Soldate');
+        $classe = (new Classe())
+            ->setLabelMasculin('Soldat')
+            ->setLabelFeminin('Soldate');
         $archetype = (new PersonnageSecondaire())->setClasse($classe);
 
         $participant = $this->participant(substitutionActive: false);
@@ -103,7 +104,7 @@ class ParticipantChainePersonnagesTest extends TestCase
         $participant->setPersonnage($this->personnage('Conan'));
         $participant->setPersonnageSecondaire($archetype);
 
-        self::assertSame('Soldat', $participant->getChainePersonnages()[2]['libelle']);
+        static::assertSame('Soldat', $participant->getChainePersonnages()[2]['libelle']);
     }
 
     public function testLeLibelleDUnRoleNonPourvuEstNul(): void
@@ -111,7 +112,7 @@ class ParticipantChainePersonnagesTest extends TestCase
         $participant = $this->participant(substitutionActive: true);
 
         foreach ($participant->getChainePersonnages() as $maillon) {
-            self::assertNull($maillon['libelle']);
+            static::assertNull($maillon['libelle']);
         }
     }
 
@@ -122,8 +123,8 @@ class ParticipantChainePersonnagesTest extends TestCase
         $participant = $this->participant(substitutionActive: true);
         $participant->setPersonnage($principal);
 
-        self::assertNull($participant->getPersonnageSubstitution());
-        self::assertSame($principal, $participant->getPersonnageSubstitutionEffectif());
+        static::assertNull($participant->getPersonnageSubstitution());
+        static::assertSame($principal, $participant->getPersonnageSubstitutionEffectif());
     }
 
     public function testAvecSubstitutionLeRoleEstTenuParLeSubstitut(): void
@@ -135,7 +136,7 @@ class ParticipantChainePersonnagesTest extends TestCase
         $participant->setPersonnage($principal);
         $participant->setPersonnageSubstitution($substitution);
 
-        self::assertSame($substitution, $participant->getPersonnageSubstitutionEffectif());
+        static::assertSame($substitution, $participant->getPersonnageSubstitutionEffectif());
     }
 
     public function testPersonnagesEngagesRegroupeLesTroisRolesReels(): void
@@ -151,7 +152,7 @@ class ParticipantChainePersonnagesTest extends TestCase
         // L'archétype n'est pas un personnage : il ne fait pas partie des engagés.
         $participant->setPersonnageSecondaire(new PersonnageSecondaire());
 
-        self::assertSame(
+        static::assertSame(
             [
                 PersonnageRoleType::PRINCIPAL->value => $principal,
                 PersonnageRoleType::SUBSTITUTION->value => $substitution,
@@ -168,7 +169,7 @@ class ParticipantChainePersonnagesTest extends TestCase
         $participant = $this->participant(substitutionActive: true);
         $participant->setPersonnage($principal);
 
-        self::assertSame([PersonnageRoleType::PRINCIPAL->value => $principal], $participant->getPersonnagesEngages());
+        static::assertSame([PersonnageRoleType::PRINCIPAL->value => $principal], $participant->getPersonnagesEngages());
     }
 
     public function testChoixAlternatifRefuseSansBillet(): void
@@ -176,7 +177,7 @@ class ParticipantChainePersonnagesTest extends TestCase
         $participant = $this->participant(substitutionActive: true);
         $participant->setPersonnage($this->personnage('Conan'));
 
-        self::assertFalse($participant->peutChoisirPersonnageAlternatif());
+        static::assertFalse($participant->peutChoisirPersonnageAlternatif());
     }
 
     public function testChoixAlternatifRefuseSansPersonnagePrincipal(): void
@@ -184,7 +185,7 @@ class ParticipantChainePersonnagesTest extends TestCase
         $participant = $this->participant(substitutionActive: true);
         $participant->setBillet(new Billet());
 
-        self::assertFalse($participant->peutChoisirPersonnageAlternatif());
+        static::assertFalse($participant->peutChoisirPersonnageAlternatif());
     }
 
     public function testChoixAlternatifAutoriseAvecBilletEtPrincipal(): void
@@ -193,7 +194,7 @@ class ParticipantChainePersonnagesTest extends TestCase
         $participant->setBillet(new Billet());
         $participant->setPersonnage($this->personnage('Conan'));
 
-        self::assertTrue($participant->peutChoisirPersonnageAlternatif());
+        static::assertTrue($participant->peutChoisirPersonnageAlternatif());
     }
 
     public function testVerrouillageSuitLeGroupeDuParticipant(): void
@@ -205,18 +206,18 @@ class ParticipantChainePersonnagesTest extends TestCase
         $participant = $this->participant(substitutionActive: false);
         $participant->setGroupeGn($groupeGn);
 
-        self::assertFalse($participant->isVerrouille());
+        static::assertFalse($participant->isVerrouille());
 
         $groupe->setLock(true);
 
-        self::assertTrue($participant->isVerrouille());
+        static::assertTrue($participant->isVerrouille());
     }
 
     public function testSansGroupeLaParticipationNEstPasVerrouillee(): void
     {
         $participant = $this->participant(substitutionActive: false);
 
-        self::assertFalse($participant->isVerrouille());
+        static::assertFalse($participant->isVerrouille());
     }
 
     private function participant(bool $substitutionActive): Participant
