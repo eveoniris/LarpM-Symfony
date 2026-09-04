@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Billet;
+use App\Entity\Classe;
+use App\Entity\Genre;
 use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Entity\GroupeGn;
@@ -76,6 +78,41 @@ class ParticipantChainePersonnagesTest extends TestCase
         self::assertSame($releve, $chaine[2]['personnage']);
         self::assertSame($archetype, $chaine[3]['archetype']);
         self::assertNull($chaine[3]['personnage']);
+    }
+
+    public function testLeLibelleDeLArchetypeEstAccordeAuGenreDuPrincipal(): void
+    {
+        $classe = (new Classe())->setLabelMasculin('Soldat')->setLabelFeminin('Soldate');
+        $archetype = (new PersonnageSecondaire())->setClasse($classe);
+
+        $participant = $this->participant(substitutionActive: false);
+        $participant->setPersonnage($this->personnage('Valeria', 'Feminin'));
+        $participant->setPersonnageSecondaire($archetype);
+
+        self::assertSame('Soldate', $participant->getChainePersonnages()[2]['libelle']);
+    }
+
+    public function testLeLibelleDeLArchetypeEstAuMasculinParDefaut(): void
+    {
+        $classe = (new Classe())->setLabelMasculin('Soldat')->setLabelFeminin('Soldate');
+        $archetype = (new PersonnageSecondaire())->setClasse($classe);
+
+        $participant = $this->participant(substitutionActive: false);
+        // Personnage sans genre renseigné : le masculin est la forme par défaut,
+        // comme le fait déjà Personnage::getClasseName().
+        $participant->setPersonnage($this->personnage('Conan'));
+        $participant->setPersonnageSecondaire($archetype);
+
+        self::assertSame('Soldat', $participant->getChainePersonnages()[2]['libelle']);
+    }
+
+    public function testLeLibelleDUnRoleNonPourvuEstNul(): void
+    {
+        $participant = $this->participant(substitutionActive: true);
+
+        foreach ($participant->getChainePersonnages() as $maillon) {
+            self::assertNull($maillon['libelle']);
+        }
     }
 
     public function testSansSubstitutionLePrincipalEndosseLesDeuxRoles(): void
@@ -194,10 +231,14 @@ class ParticipantChainePersonnagesTest extends TestCase
         return $participant;
     }
 
-    private function personnage(string $nom): Personnage
+    private function personnage(string $nom, ?string $genre = null): Personnage
     {
         $personnage = new Personnage();
         $personnage->setNom($nom);
+
+        if (null !== $genre) {
+            $personnage->setGenre((new Genre())->setLabel($genre));
+        }
 
         return $personnage;
     }

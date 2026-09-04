@@ -9,7 +9,7 @@
 #}
 <strong>Personnages jouables :</strong><br/>
 {% for maillon in participant.chainePersonnages %}
-    {% set valeur = maillon.personnage ? maillon.personnage.identity : (maillon.archetype ? maillon.archetype.label : null) %}
+    {% set valeur = maillon.libelle %}
     {{ maillon.role.label }} :
     {% if valeur %}
         {{ valeur }}

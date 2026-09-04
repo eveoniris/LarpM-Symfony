@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Participant;
 
+use App\Entity\Genre;
 use App\Entity\Participant;
 use App\Entity\PersonnageSecondaire;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -21,12 +22,16 @@ class ParticipantPersonnageSecondaireType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // L'archétype n'a pas de genre propre : on l'accorde sur le personnage
+        // principal de la participation.
+        $genre = $options['genre'];
+
         $builder->add('personnageSecondaire', EntityType::class, [
             'label' => 'Choisissez votre archétype de secours.',
             'required' => true,
             'expanded' => true,
             'class' => PersonnageSecondaire::class,
-            'choice_label' => 'label',
+            'choice_label' => static fn (PersonnageSecondaire $archetype): string => $archetype->getLabelPourGenre($genre),
         ]);
     }
 
@@ -37,7 +42,10 @@ class ParticipantPersonnageSecondaireType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Participant::class,
+            'genre' => null,
         ]);
+
+        $resolver->setAllowedTypes('genre', ['null', Genre::class]);
     }
 
     /*
