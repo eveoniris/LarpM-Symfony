@@ -1,0 +1,75 @@
+{#
+    Chaîne de personnages d'une participation :
+    principal -> substitution (si l'opus l'active) -> relève -> archétype de secours.
+
+    Fragment unique réutilisé par la page de participation, le détail du GN, la fiche
+    du personnage et les pages de choix.
+
+    Paramètres :
+      participant : la participation (obligatoire)
+      compact     : true pour la version sans liens d'action (défaut false)
+      roleActif   : valeur du rôle en cours d'édition, mis en évidence (défaut null)
+#}
+{% set compact = compact|default(false) %}
+{% set roleActif = roleActif|default(null) %}
+{% set verrouille = participant.isVerrouille() %}
+{% set peutChoisir = participant.peutChoisirPersonnageAlternatif() %}
+{% set estLeJoueur = app.user and participant.user and participant.user.id == app.user.id %}
+{% set estAdmin = is_granted('ROLE_SCENARISTE') or is_granted('ROLE_ORGA') or is_granted('ROLE_ADMIN') %}
+{% set editable = not compact and (estLeJoueur or estAdmin) %}
+
+{% set routes = {
+    'principal': 'participant.personnage.old',
+    'substitution': 'participant.personnageSubstitution',
+    'releve': 'participant.personnageReleve',
+    'archetype': 'participant.personnageSecondaire'
+} %}
+
+<ul class="list-group mb-3">
+    {% for maillon in participant.chainePersonnages %}
+        {% set role = maillon.role %}
+        {% set valeur = maillon.personnage ? maillon.personnage.identity : (maillon.archetype ? maillon.archetype.label : null) %}
+        <li class="list-group-item{% if roleActif == role.value %} border-info{% endif %}">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <span>
+                    <i class="fa {{ role.icon }} me-1" aria-hidden="true"
+                       data-bs-toggle="tooltip" data-bs-placement="top"
+                       title="{{ role.description }}"></i>
+                    <strong>{{ role.label }}</strong> :
+                    {% if valeur %}
+                        {% if maillon.personnage %}
+                            <a href="{{ path('personnage.detail', {'personnage': maillon.personnage.id}) }}">{{ valeur }}</a>
+                        {% else %}
+                            {{ valeur }}
+                        {% endif %}
+                    {% elseif role.value == 'substitution' %}
+                        <em class="text-muted">Aucun — votre personnage principal endosse les deux rôles.</em>
+                    {% else %}
+                        <em class="text-muted">Non choisi</em>
+                    {% endif %}
+                </span>
+
+                {% if editable %}
+                    {% if verrouille and not estAdmin %}
+                        <span class="text-muted small" data-bs-toggle="tooltip" data-bs-placement="top"
+                              title="Le groupe est verrouillé : la composition n'est plus modifiable.">
+                            <i class="fa fa-lock" aria-hidden="true"></i> Verrouillé
+                        </span>
+                    {% elseif role.value != 'principal' and not peutChoisir %}
+                        <span class="text-muted small" data-bs-toggle="tooltip" data-bs-placement="top"
+                              title="Un billet et un personnage principal sont nécessaires.">
+                            <i class="fa fa-ban" aria-hidden="true"></i> Indisponible
+                        </span>
+                    {% else %}
+                        <a class="btn btn-sm {{ verrouille ? 'btn-gamemaster' : 'btn-secondary' }}"
+                           href="{{ path(routes[role.value], {'participant': participant.id}) }}"
+                           {% if verrouille %}data-bs-toggle="tooltip" data-bs-placement="top"
+                           title="Le groupe est verrouillé : seule la gestion peut encore modifier."{% endif %}>
+                            <i class="fa {{ verrouille ? 'fa-unlock' : 'fa-pencil' }}" aria-hidden="true"></i> {{ valeur ? 'Modifier' : 'Choisir' }}
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </li>
+    {% endfor %}
+</ul>

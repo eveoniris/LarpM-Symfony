@@ -30,6 +30,7 @@ use App\Enum\CompetenceFamilyType;
 use App\Enum\GroupeGnDemandeType;
 use App\Enum\LevelType;
 use App\Enum\LogActionType;
+use App\Enum\PersonnageRoleType;
 use App\Enum\Role;
 use App\Enum\TriggerType;
 use App\Form\DeleteType;
@@ -41,11 +42,11 @@ use App\Form\JoueurXpType;
 use App\Form\MessageType;
 use App\Form\Participant\ParticipantGroupeType;
 use App\Form\Participant\ParticipantNewType;
-use App\Form\Participant\ParticipantPersonnageReleveType;
+use App\Form\Participant\ParticipantPersonnageAlternatifType;
+use App\Form\Participant\ParticipantPersonnageSecondaireType;
 use App\Form\Participant\ParticipantRemoveType;
 use App\Form\Participant\ParticipantRetourType;
 use App\Form\ParticipantBilletType;
-use App\Form\ParticipantPersonnageSecondaireType;
 use App\Form\ParticipantRestaurationType;
 use App\Form\ParticipantType;
 use App\Form\Personnage\PersonnageEditType;
@@ -510,6 +511,33 @@ class ParticipantController extends AbstractController
             'classes' => $classes,
             'participant' => $participant,
         ]);
+    }
+
+    /**
+     * Personnages que le joueur peut reprendre comme personnage principal : les siens,
+     * vivants, et qui ne tiennent aucun rôle sur ce GN via une autre participation.
+     *
+     * @return array<int, Personnage>
+     */
+    private function personnagesReprenables(Participant $participant): array
+    {
+        /** @var ParticipantRepository $participantRepository */
+        $participantRepository = $this->entityManager->getRepository(Participant::class);
+        $exclus = array_flip($participantRepository->findPersonnageIdsEngagesSurGn($participant->getGn(), $participant));
+
+        // Le personnage déjà porté par cette participation reste sélectionnable.
+        unset($exclus[$participant->getPersonnage()?->getId()]);
+
+        $reprenables = [];
+        foreach ($participant->getUser()?->getPersonnagesAvailableToParticipation() ?? [] as $personnage) {
+            if (isset($exclus[$personnage->getId()])) {
+                continue;
+            }
+
+            $reprenables[] = $personnage;
+        }
+
+        return $reprenables;
     }
 
     /** @param array<string, mixed>|null $routeParams */
@@ -1465,7 +1493,7 @@ class ParticipantController extends AbstractController
                 'label' => 'Choisissez votre personnage',
                 'choice_label' => 'resumeParticipations',
                 'class' => Personnage::class,
-                'choices' => $participant->getUser()?->getPersonnagesAvailableToParticipation() ?? [],
+                'choices' => $this->personnagesReprenables($participant),
                 'data' => $default,
                 'required' => false,
                 'placeholder' => $canFreeParticipation ? '- Aucun personnage (libérer la participation)' : null,
@@ -1594,7 +1622,10 @@ class ParticipantController extends AbstractController
     }
 
     /**
-     * Choix du personnage secondaire par un utilisateur.
+     * Choix de l'archétype de secours par un utilisateur.
+     *
+     * L'archétype est le dernier maillon de la chaîne : il est endossé si le
+     * personnage de relève vient lui aussi à trépasser.
      */
     #[Route('/participant/{participant}/personnageSecondaire', name: 'participant.personnageSecondaire')]
     #[IsGranted(Role::USER->value)]
@@ -1603,36 +1634,22 @@ class ParticipantController extends AbstractController
         Participant $participant,
         PersonnageSecondaireRepository $repo,
     ): RedirectResponse|Response {
-        $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
-
-        if (!$isAdmin && $participant->getUser()?->getId() !== $this->getUser()?->getId()) {
-            throw new AccessDeniedException();
+        if ($refus = $this->refuserChoixPersonnageAlternatif($participant)) {
+            return $refus;
         }
 
-        $form = $this->createForm(ParticipantPersonnageSecondaireType::class, $participant)->add('choice', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
+        $form = $this->createForm(ParticipantPersonnageSecondaireType::class, $participant)
+            ->add('choice', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $participant = $form->getData();
             $this->entityManager->persist($participant);
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Le personnage secondaire a été enregistré.');
+            $this->addFlash('success', 'Votre archétype de secours a été enregistré.');
 
-            $personnage = $participant->getPersonnage();
-            if (null === $personnage) {
-                return $this->redirectToRoute('participant.index', ['participant' => $participant->getId()], 303);
-            }
-
-            return $this->redirectToRoute(
-                'personnage.detail',
-                [
-                    'gn' => $participant->getGn()->getId(),
-                    'personnage' => $personnage->getId(),
-                ],
-                303,
-            );
+            return $this->redirectToRoute('participant.index', ['participant' => $participant->getId()], 303);
         }
 
         return $this->render('participant/personnageSecondaire.twig', [
@@ -1643,7 +1660,9 @@ class ParticipantController extends AbstractController
     }
 
     /**
-     * Choix du personnage de relève par un utilisateur (une seule fois, sauf scénariste/gestion).
+     * Choix du personnage de relève par un utilisateur.
+     *
+     * Modifiable tant que le groupe du participant n'est pas verrouillé.
      */
     #[Route('/participant/{participant}/personnageReleve', name: 'participant.personnageReleve')]
     #[IsGranted(Role::USER->value)]
@@ -1651,21 +1670,46 @@ class ParticipantController extends AbstractController
         Request $request,
         Participant $participant,
     ): RedirectResponse|Response {
-        $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::ADMIN->value);
+        return $this->choixPersonnageAlternatif($request, $participant, PersonnageRoleType::RELEVE);
+    }
 
-        if (!$isAdmin && $participant->getUser()?->getId() !== $this->getUser()?->getId()) {
-            throw new AccessDeniedException();
-        }
-
-        if ($participant->getPersonnageReleve() !== null && !$isAdmin) {
-            $this->addFlash('warning', 'Vous avez déjà choisi un personnage de relève. Contactez un scénariste ou la gestion pour le modifier.');
+    /**
+     * Choix du personnage de substitution par un utilisateur.
+     *
+     * Réservé aux opus qui proposent des instances hors du temps et du lieu de
+     * l'événement. Ne pas en choisir signifie que le personnage principal endosse
+     * les deux rôles.
+     */
+    #[Route('/participant/{participant}/personnageSubstitution', name: 'participant.personnageSubstitution')]
+    #[IsGranted(Role::USER->value)]
+    public function personnageSubstitutionAction(
+        Request $request,
+        Participant $participant,
+    ): RedirectResponse|Response {
+        if (!$participant->getGn()->isSubstitutionActive()) {
+            $this->addFlash('error', 'Cet opus ne propose pas de personnage de substitution.');
 
             return $this->redirectToRoute('participant.index', ['participant' => $participant->getId()], 303);
         }
 
-        $form = $this->createForm(ParticipantPersonnageReleveType::class, $participant, [
-            'user_id' => $participant->getUser()?->getId(),
-            'personnage_id' => $participant->getPersonnage()?->getId() ?? 0,
+        return $this->choixPersonnageAlternatif($request, $participant, PersonnageRoleType::SUBSTITUTION);
+    }
+
+    /**
+     * Traitement commun aux rôles relève et substitution.
+     */
+    private function choixPersonnageAlternatif(
+        Request $request,
+        Participant $participant,
+        PersonnageRoleType $role,
+    ): RedirectResponse|Response {
+        if ($refus = $this->refuserChoixPersonnageAlternatif($participant)) {
+            return $refus;
+        }
+
+        $form = $this->createForm(ParticipantPersonnageAlternatifType::class, $participant, [
+            'role' => $role,
+            'participant' => $participant,
         ])->add('choice', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
@@ -1673,15 +1717,51 @@ class ParticipantController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->persist($participant);
             $this->entityManager->flush();
-            $this->addFlash('success', 'Le personnage de relève a été enregistré.');
+            $this->addFlash('success', sprintf('Votre %s a été enregistré.', lcfirst($role->label())));
 
             return $this->redirectToRoute('participant.index', ['participant' => $participant->getId()], 303);
         }
 
-        return $this->render('participant/personnageReleve.twig', [
+        return $this->render('participant/personnageAlternatif.twig', [
             'participant' => $participant,
+            'role' => $role,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * Conditions communes à tout choix de personnage alternatif (relève,
+     * substitution, archétype de secours) : être le joueur concerné ou un
+     * administrateur, disposer d'un billet et d'un personnage principal, et
+     * appartenir à un groupe non verrouillé.
+     *
+     * Retourne la réponse de refus le cas échéant, null si le choix est permis.
+     */
+    private function refuserChoixPersonnageAlternatif(Participant $participant): ?Response
+    {
+        $isAdmin = $this->isGranted(Role::SCENARISTE->value)
+            || $this->isGranted(Role::ORGA->value)
+            || $this->isGranted(Role::ADMIN->value);
+
+        if (!$isAdmin && $participant->getUser()?->getId() !== $this->getUser()?->getId()) {
+            throw new AccessDeniedException();
+        }
+
+        if (!$participant->peutChoisirPersonnageAlternatif()) {
+            $this->addFlash(
+                'error',
+                "Vous devez disposer d'un billet et d'un personnage principal avant de choisir un autre personnage.",
+            );
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
+        }
+
+        return $this->checkParticipantGroupeLock(
+            $participant,
+            'participant.index',
+            ['participant' => $participant->getId()],
+            "Désolé, il n'est plus possible de modifier vos personnages pour ce GN.",
+        );
     }
 
     /**

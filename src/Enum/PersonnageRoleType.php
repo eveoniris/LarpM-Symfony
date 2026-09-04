@@ -30,6 +30,19 @@ enum PersonnageRoleType: string
         };
     }
 
+    /**
+     * Champ de l'entité Participant portant ce rôle.
+     */
+    public function field(): string
+    {
+        return match ($this) {
+            self::PRINCIPAL => 'personnage',
+            self::SUBSTITUTION => 'personnageSubstitution',
+            self::RELEVE => 'personnageReleve',
+            self::ARCHETYPE => 'personnageSecondaire',
+        };
+    }
+
     public function icon(): string
     {
         return match ($this) {

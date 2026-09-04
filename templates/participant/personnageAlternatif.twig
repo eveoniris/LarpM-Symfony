@@ -1,0 +1,54 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ role.label }}{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : participant.gn.label, 'route': path('gn.detail', {'gn': participant.gn.id}) },
+            {'name' : 'Détail de votre participation', 'route': path('participant.index', {'participant': participant.id}) },
+            {'name' : 'Choix du ' ~ role.label|lower }
+        ]
+    } %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5><i class="fa {{ role.icon }}" aria-hidden="true"></i> Choix du {{ role.label|lower }}</h5>
+        </div>
+
+        {% set noticeHtml %}
+            {{ role.description }}
+            {% if role.value == 'substitution' and participant.gn.substitutionDescription %}
+                <hr/>
+                {{ participant.gn.substitutionDescription|raw }}
+            {% endif %}
+        {% endset %}
+        {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : noticeHtml} %}
+
+        {% include 'participant/fragment/chainePersonnages.twig' with {
+            'participant': participant,
+            'compact': true,
+            'roleActif': role.value
+        } %}
+
+        <div class="row">
+            <div class="col-md-6">
+                {{ form_start(form) }}
+                <div class="card text-bg mb-3 overflow-auto">
+                    <div class="header"><h5>{{ field_label(attribute(form, role.field)) }}</h5></div>
+                    <div class="card-body">
+                        {{ form_errors(form) }}
+                        {{ form_errors(attribute(form, role.field)) }}
+                        {{ form_widget(attribute(form, role.field)) }}
+                        <div class="w-100 d-flex justify-content-center m-2">
+                            {{ form_row(form.choice, { 'label': 'Enregistrer', 'attr' : {'class' : 'btn btn-secondary'} }) }}
+                        </div>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}
