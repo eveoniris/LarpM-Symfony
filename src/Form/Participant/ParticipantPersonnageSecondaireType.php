@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Form;
+namespace App\Form\Participant;
 
 use App\Entity\Participant;
 use App\Entity\PersonnageSecondaire;
@@ -11,6 +11,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * @extends AbstractType<Participant>
+ */
 class ParticipantPersonnageSecondaireType extends AbstractType
 {
     /**
@@ -19,7 +22,7 @@ class ParticipantPersonnageSecondaireType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('personnageSecondaire', EntityType::class, [
-            'label' => 'Choisissez un archétype',
+            'label' => 'Choisissez votre archétype de secours.',
             'required' => true,
             'expanded' => true,
             'class' => PersonnageSecondaire::class,
@@ -33,7 +36,7 @@ class ParticipantPersonnageSecondaireType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'class' => Participant::class,
+            'data_class' => Participant::class,
         ]);
     }
 
