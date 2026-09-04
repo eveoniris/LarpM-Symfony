@@ -1,0 +1,21 @@
+{#
+    Badges compacts signalant les personnages alternatifs d'une participation.
+
+    Destiné aux listes (participants, personnages, membres d'un groupe) où afficher
+    la chaîne complète alourdirait la lecture : seul le personnage principal reste
+    en clair, les autres rôles sont réduits à une lettre avec info-bulle.
+
+    Paramètres :
+      participant : la participation (obligatoire)
+#}
+{% for maillon in participant.chainePersonnages %}
+    {% if maillon.role.value != 'principal' %}
+        {% set valeur = maillon.personnage ? maillon.personnage.identity : (maillon.archetype ? maillon.archetype.label : null) %}
+        {% if valeur %}
+            <span class="badge text-bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
+                  title="{{ maillon.role.label }} : {{ valeur }}">
+                <i class="fa {{ maillon.role.icon }}" aria-hidden="true"></i>{{ maillon.role.badge }}
+            </span>
+        {% endif %}
+    {% endif %}
+{% endfor %}

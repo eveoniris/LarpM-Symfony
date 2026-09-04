@@ -80,6 +80,7 @@
                 <td>
                     {% if participant.personnage %}
                         <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id}) }}">{{ participant.personnage.nom }}</a>
+                        {% include '_partials/badgesPersonnagesAlternatifs.twig' with {'participant': participant} %}
                     {% else %}
                         <span class="text-danger">Aucun personnage sélectionné</span>
                     {% endif %}

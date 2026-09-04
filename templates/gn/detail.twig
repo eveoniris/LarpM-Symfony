@@ -410,19 +410,9 @@
                                 {% endif %}
                             {% endif %}
 
-                            {% if participant.personnageSecondaire %}
-                                <li class="list-group-item">Personnage secondaire
-                                    :&nbsp;<strong>{{ participant.personnageSecondaire.classe.label }}</strong></li>
-                            {% elseif participant.user.id == app.user.id %}
-                                <li class="list-group-item">
-                                    {% set personnageMissingHtml %}
-                                        Vous n'avez pas de personne secondaire par défaut, choisissez-en !<br/>
-                                        <a href="{{ path('participant.personnageSecondaire', {'participant': participant.id}) }}">
-                                            <i class="fa fa-pencil" aria-hidden="true">
-                                            </i> Modifier votre personnage secondaire
-                                        </a>
-                                    {% endset %}
-                                    {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : personnageMissingHtml } %}
+                            {% if participant.personnage %}
+                                <li class="list-group-item p-0">
+                                    {% include 'participant/fragment/chainePersonnages.twig' with {'participant': participant} %}
                                 </li>
                             {% endif %}
 
