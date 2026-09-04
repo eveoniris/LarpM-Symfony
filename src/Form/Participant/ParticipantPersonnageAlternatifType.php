@@ -18,7 +18,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * Choix d'un personnage alternatif (relève ou substitution) sur une participation.
  *
  * Les deux rôles partagent exactement les mêmes règles de sélection : un personnage
- * vivant du joueur, qui ne tient aucun autre rôle sur ce GN — ni dans cette
+ * vivant du joueur, qui ne tient aucun autre rôle sur ce GN - ni dans cette
  * participation, ni dans une autre.
  *
  * @extends AbstractType<Participant>
@@ -31,8 +31,9 @@ class ParticipantPersonnageAlternatifType extends AbstractType
         PersonnageRoleType::SUBSTITUTION->value,
     ];
 
-    public function __construct(private readonly ParticipantRepository $participantRepository)
-    {
+    public function __construct(
+        private readonly ParticipantRepository $participantRepository,
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -81,9 +82,7 @@ class ParticipantPersonnageAlternatifType extends AbstractType
     private function choix(Participant $participant, string $champCourant): array
     {
         // Déjà engagés sur ce GN par une AUTRE participation.
-        $indisponibles = array_flip(
-            $this->participantRepository->findPersonnageIdsEngagesSurGn($participant->getGn(), $participant),
-        );
+        $indisponibles = array_flip($this->participantRepository->findPersonnageIdsEngagesSurGn($participant->getGn(), $participant));
 
         // Déjà engagés par cette participation dans un AUTRE rôle. Le rôle en cours
         // d'édition reste sélectionnable, sinon sa valeur actuelle disparaîtrait de

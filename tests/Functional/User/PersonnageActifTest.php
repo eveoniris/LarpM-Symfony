@@ -126,10 +126,7 @@ class PersonnageActifTest extends WebTestCase
         // On passe par le formulaire réellement rendu dans le menu : cela valide du
         // même coup la présence du sélecteur et la génération du jeton CSRF.
         $crawler = $client->request('GET', '/');
-        $bouton = $crawler->filter(sprintf(
-            'form[action="/user/personnageActif/%d"] button[type=submit]',
-            $cible->getId(),
-        ));
+        $bouton = $crawler->filter(sprintf('form[action="/user/personnageActif/%d"] button[type=submit]', $cible->getId()));
 
         static::assertCount(1, $bouton, 'Le sélecteur rapide du menu ne propose pas le personnage.');
 

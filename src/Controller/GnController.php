@@ -215,7 +215,7 @@ class GnController extends AbstractController
         $questions = $questionRepository->findByParticipant($participant);
 
         // Comptages calculés en SQL (COUNT) pour éviter d'hydrater tous les participants
-        // et leurs personnages — uniquement pour les admins qui voient ces statistiques.
+        // et leurs personnages - uniquement pour les admins qui voient ces statistiques.
         $counts = null;
         if ($this->isGranted('ROLE_ADMIN')) {
             $counts = [

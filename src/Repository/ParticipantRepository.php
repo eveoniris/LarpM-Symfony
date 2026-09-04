@@ -59,7 +59,8 @@ class ParticipantRepository extends BaseRepository
         Personnage $personnage,
         ?Participant $exclure = null,
     ): ?Participant {
-        $queryBuilder = $this->createQueryBuilder('p')
+        $queryBuilder = $this
+            ->createQueryBuilder('p')
             ->andWhere('p.gn = :gn')
             ->andWhere('p.personnage = :personnage OR p.personnageReleve = :personnage OR p.personnageSubstitution = :personnage')
             ->setParameter('gn', $gn)
@@ -84,7 +85,8 @@ class ParticipantRepository extends BaseRepository
      */
     public function findPersonnageIdsEngagesSurGn(Gn $gn, ?Participant $exclure = null): array
     {
-        $queryBuilder = $this->createQueryBuilder('p')
+        $queryBuilder = $this
+            ->createQueryBuilder('p')
             ->select('IDENTITY(p.personnage) AS principal', 'IDENTITY(p.personnageReleve) AS releve', 'IDENTITY(p.personnageSubstitution) AS substitution')
             ->andWhere('p.gn = :gn')
             ->setParameter('gn', $gn);
@@ -96,9 +98,11 @@ class ParticipantRepository extends BaseRepository
         $ids = [];
         foreach ($queryBuilder->getQuery()->getScalarResult() as $row) {
             foreach ($row as $id) {
-                if (null !== $id) {
-                    $ids[(int) $id] = (int) $id;
+                if (null === $id) {
+                    continue;
                 }
+
+                $ids[(int) $id] = (int) $id;
             }
         }
 

@@ -75,17 +75,15 @@ class UserPersonnageDefaultType extends AbstractType
 
         $vivants = [];
         foreach ($user->getPersonnages() as $personnage) {
-            if ($personnage->getVivant()) {
-                $vivants[] = $personnage;
+            if (!$personnage->getVivant()) {
+                continue;
             }
+
+            $vivants[] = $personnage;
         }
 
         // Le dernier participé d'abord : c'est celui que le joueur cherche.
-        usort(
-            $vivants,
-            static fn (Personnage $a, Personnage $b) => ($b->getLastParticipant()?->getId() ?? 0)
-                <=> ($a->getLastParticipant()?->getId() ?? 0),
-        );
+        usort($vivants, static fn (Personnage $a, Personnage $b) => ($b->getLastParticipant()?->getId() ?? 0) <=> ($a->getLastParticipant()?->getId() ?? 0));
 
         if (null !== $limit) {
             $vivants = \array_slice($vivants, 0, $limit);

@@ -22,8 +22,9 @@ class ChainePersonnagesCoherenteValidator extends ConstraintValidator
         PersonnageRoleType::RELEVE->value => 'personnageReleve',
     ];
 
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+    ) {
     }
 
     public function validate(mixed $value, Constraint $constraint): void
@@ -60,7 +61,8 @@ class ChainePersonnagesCoherenteValidator extends ConstraintValidator
             $id = $personnage->getId();
 
             if (isset($vus[$id])) {
-                $this->context->buildViolation($constraint->messageDoublonInterne)
+                $this->context
+                    ->buildViolation($constraint->messageDoublonInterne)
                     ->setParameter('{{ personnage }}', $personnage->getIdentity())
                     ->setParameter('{{ role1 }}', PersonnageRoleType::from($vus[$id])->label())
                     ->setParameter('{{ role2 }}', PersonnageRoleType::from($role)->label())
@@ -98,7 +100,8 @@ class ChainePersonnagesCoherenteValidator extends ConstraintValidator
                 continue;
             }
 
-            $this->context->buildViolation($constraint->messageAutreJoueur)
+            $this->context
+                ->buildViolation($constraint->messageAutreJoueur)
                 ->setParameter('{{ personnage }}', $personnage->getIdentity())
                 ->atPath(self::PROPERTY_PATHS[$role])
                 ->addViolation();
@@ -131,7 +134,8 @@ class ChainePersonnagesCoherenteValidator extends ConstraintValidator
                 continue;
             }
 
-            $this->context->buildViolation($constraint->messageDejaEngage)
+            $this->context
+                ->buildViolation($constraint->messageDejaEngage)
                 ->setParameter('{{ personnage }}', $personnage->getIdentity())
                 ->setParameter('{{ joueur }}', $autre->getUserFullName())
                 ->atPath(self::PROPERTY_PATHS[$role])

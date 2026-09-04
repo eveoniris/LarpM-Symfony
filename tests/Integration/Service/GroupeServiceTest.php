@@ -90,7 +90,7 @@ class GroupeServiceTest extends KernelTestCase
     }
 
     // -------------------------------------------------------------------------
-    // isUserIsGroupeGnMember — no security context (null user)
+    // isUserIsGroupeGnMember - no security context (null user)
     // -------------------------------------------------------------------------
 
     public function testIsUserIsGroupeGnMemberReturnsFalseWithoutSecurityContext(): void

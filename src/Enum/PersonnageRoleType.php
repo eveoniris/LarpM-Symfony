@@ -70,7 +70,8 @@ enum PersonnageRoleType: string
     {
         return match ($this) {
             self::PRINCIPAL => "Le personnage que vous jouez sur l'événement. C'est lui qui porte votre participation.",
-            self::SUBSTITUTION => "Le personnage que vous jouez dans les instances situées hors du temps et du lieu de l'événement. Si vous n'en choisissez pas, votre personnage principal endosse les deux rôles.",
+            self::SUBSTITUTION
+                => "Le personnage que vous jouez dans les instances situées hors du temps et du lieu de l'événement. Si vous n'en choisissez pas, votre personnage principal endosse les deux rôles.",
             self::RELEVE => 'Le personnage que vous reprenez si votre personnage principal (ou de substitution) vient à trépasser.',
             self::ARCHETYPE => "L'archétype prêt à jouer que vous endossez si votre personnage de relève vient lui aussi à trépasser.",
         };

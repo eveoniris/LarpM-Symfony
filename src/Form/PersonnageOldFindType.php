@@ -19,8 +19,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class PersonnageOldFindType extends AbstractType
 {
-    public function __construct(private readonly ParticipantRepository $participantRepository)
-    {
+    public function __construct(
+        private readonly ParticipantRepository $participantRepository,
+    ) {
     }
 
     /**
@@ -33,10 +34,7 @@ class PersonnageOldFindType extends AbstractType
 
         // Un personnage ne peut tenir qu'un seul rôle sur un GN : on écarte ceux
         // déjà engagés par une autre participation à ce GN.
-        $exclus = $this->participantRepository->findPersonnageIdsEngagesSurGn(
-            $participant->getGn(),
-            $participant,
-        );
+        $exclus = $this->participantRepository->findPersonnageIdsEngagesSurGn($participant->getGn(), $participant);
 
         $builder->add('personnage', EntityType::class, [
             'label' => 'Choisissez le personnage',

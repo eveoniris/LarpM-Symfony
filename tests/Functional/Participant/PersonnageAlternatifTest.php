@@ -161,10 +161,7 @@ class PersonnageAlternatifTest extends WebTestCase
         $autreParticipation->setPersonnageReleve($pris);
         static::getContainer()->get(EntityManagerInterface::class)->flush();
 
-        $crawler = $client->request(
-            'GET',
-            sprintf('/participant/%d/personnageReleve', $contexte['participant']->getId()),
-        );
+        $crawler = $client->request('GET', sprintf('/participant/%d/personnageReleve', $contexte['participant']->getId()));
 
         static::assertResponseIsSuccessful();
 

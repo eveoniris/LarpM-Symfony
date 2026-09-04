@@ -256,10 +256,7 @@ class Participant extends BaseParticipant implements Stringable
         $chaine = [$this->maillonPersonnage(PersonnageRoleType::PRINCIPAL, $this->getPersonnage())];
 
         if ($this->getGn()->isSubstitutionActive()) {
-            $chaine[] = $this->maillonPersonnage(
-                PersonnageRoleType::SUBSTITUTION,
-                $this->getPersonnageSubstitution(),
-            );
+            $chaine[] = $this->maillonPersonnage(PersonnageRoleType::SUBSTITUTION, $this->getPersonnageSubstitution());
         }
 
         $chaine[] = $this->maillonPersonnage(PersonnageRoleType::RELEVE, $this->getPersonnageReleve());
@@ -300,14 +297,18 @@ class Participant extends BaseParticipant implements Stringable
     {
         $engages = [];
 
-        foreach ([
+        foreach (
+            [
             PersonnageRoleType::PRINCIPAL->value => $this->getPersonnage(),
             PersonnageRoleType::SUBSTITUTION->value => $this->getPersonnageSubstitution(),
             PersonnageRoleType::RELEVE->value => $this->getPersonnageReleve(),
-        ] as $role => $personnage) {
-            if ($personnage instanceof Personnage) {
-                $engages[$role] = $personnage;
+            ] as $role => $personnage
+        ) {
+            if (!$personnage instanceof Personnage) {
+                continue;
             }
+
+            $engages[$role] = $personnage;
         }
 
         return $engages;

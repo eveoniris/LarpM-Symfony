@@ -894,9 +894,7 @@ class UserController extends AbstractController
      */
     private function limitePersonnagesActifs(): ?int
     {
-        $sansLimite = $this->isGranted(Role::SCENARISTE->value)
-            || $this->isGranted(Role::ORGA->value)
-            || $this->isGranted(Role::ADMIN->value);
+        $sansLimite = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::ADMIN->value);
 
         return $sansLimite ? null : UserPersonnageDefaultType::DEFAULT_LIMIT;
     }

@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 /**
  * Régression : ParticipantRepository::search() joignait user.etatCivil en INNER
  * JOIN, ce qui faisait disparaître de la liste des participants tout joueur
- * n'ayant pas rempli ses informations administratives — précisément ceux que
+ * n'ayant pas rempli ses informations administratives - précisément ceux que
  * l'organisation doit relancer.
  *
  * DAMA enveloppe chaque test dans une transaction annulée automatiquement.

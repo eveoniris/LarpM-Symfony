@@ -66,10 +66,7 @@ class ChainePersonnagesAffichageTest extends WebTestCase
 
         $crawler = $client->request('GET', '/participant/' . $participant->getId() . '/index');
 
-        static::assertStringContainsString(
-            'endosse les deux rôles',
-            $crawler->filter('body')->text(),
-        );
+        static::assertStringContainsString('endosse les deux rôles', $crawler->filter('body')->text());
     }
 
     public function testLaListeDesParticipantsAfficheDesBadgesEtPasLaChaineComplete(): void
@@ -92,13 +89,7 @@ class ChainePersonnagesAffichageTest extends WebTestCase
     public function testLesBadgesNApparaissentPasQuandAucunRoleNEstPourvu(): void
     {
         $client = static::createClient();
-        $participant = $this->participationComplete(
-            $client,
-            substitutionActive: true,
-            avecSubstitution: false,
-            avecReleve: false,
-            avecArchetype: false,
-        );
+        $participant = $this->participationComplete($client, substitutionActive: true, avecSubstitution: false, avecReleve: false, avecArchetype: false);
 
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_ORGA']]));
         $crawler = $client->request('GET', '/gn/' . $participant->getGn()->getId() . '/participants');

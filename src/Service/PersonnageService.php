@@ -263,24 +263,20 @@ class PersonnageService
             return [];
         }
 
-        if ($this->security->isGranted(Role::SCENARISTE->value)
-            || $this->security->isGranted(Role::ORGA->value)
-            || $this->security->isGranted(Role::ADMIN->value)) {
+        if ($this->security->isGranted(Role::SCENARISTE->value) || $this->security->isGranted(Role::ORGA->value) || $this->security->isGranted(Role::ADMIN->value)) {
             $limit = null;
         }
 
         $vivants = [];
         foreach ($user->getPersonnages() as $personnage) {
-            if ($personnage->getVivant()) {
-                $vivants[] = $personnage;
+            if (!$personnage->getVivant()) {
+                continue;
             }
+
+            $vivants[] = $personnage;
         }
 
-        usort(
-            $vivants,
-            static fn (Personnage $a, Personnage $b) => ($b->getLastParticipant()?->getId() ?? 0)
-                <=> ($a->getLastParticipant()?->getId() ?? 0),
-        );
+        usort($vivants, static fn (Personnage $a, Personnage $b) => ($b->getLastParticipant()?->getId() ?? 0) <=> ($a->getLastParticipant()?->getId() ?? 0));
 
         return null === $limit ? $vivants : \array_slice($vivants, 0, $limit);
     }

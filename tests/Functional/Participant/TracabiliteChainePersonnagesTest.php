@@ -91,7 +91,8 @@ class TracabiliteChainePersonnagesTest extends WebTestCase
 
     private function dernierLog(LogActionType $type): ?LogAction
     {
-        return static::getContainer()->get(EntityManagerInterface::class)
+        return static::getContainer()
+            ->get(EntityManagerInterface::class)
             ->getRepository(LogAction::class)
             ->findOneBy(['type' => $type->value], ['id' => 'DESC']);
     }

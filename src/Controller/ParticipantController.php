@@ -292,12 +292,7 @@ class ParticipantController extends AbstractController
 
             // Après le flush : le personnage vient d'être créé, son identifiant
             // n'existe qu'à partir de là.
-            $this->logChangementRole(
-                $participant,
-                PersonnageRoleType::PRINCIPAL,
-                $avantPrincipal,
-                $personnage->getId(),
-            );
+            $this->logChangementRole($participant, PersonnageRoleType::PRINCIPAL, $avantPrincipal, $personnage->getId());
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
@@ -345,12 +340,7 @@ class ParticipantController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $participant = $form->getData();
             $personnage = $participant->getPersonnage();
-            $this->logChangementRole(
-                $participant,
-                PersonnageRoleType::PRINCIPAL,
-                $avantPrincipal,
-                $personnage?->getId(),
-            );
+            $this->logChangementRole($participant, PersonnageRoleType::PRINCIPAL, $avantPrincipal, $personnage?->getId());
 
             $territoire = $groupe->getTerritoire();
             if ($territoire) {
@@ -1448,12 +1438,7 @@ class ParticipantController extends AbstractController
 
             // Après le flush : le personnage vient d'être créé, son identifiant
             // n'existe qu'à partir de là.
-            $this->logChangementRole(
-                $participant,
-                PersonnageRoleType::PRINCIPAL,
-                $avantPrincipal,
-                $personnage->getId(),
-            );
+            $this->logChangementRole($participant, PersonnageRoleType::PRINCIPAL, $avantPrincipal, $personnage->getId());
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
@@ -1555,12 +1540,7 @@ class ParticipantController extends AbstractController
             if (null === $personnage->getUser()) {
                 $personnage->setUser($user);
             }
-            $this->logChangementRole(
-                $participant,
-                PersonnageRoleType::PRINCIPAL,
-                $participant->getPersonnage()?->getId(),
-                $personnage->getId(),
-            );
+            $this->logChangementRole($participant, PersonnageRoleType::PRINCIPAL, $participant->getPersonnage()?->getId(), $personnage->getId());
             $participant->setPersonnage($personnage);
 
             if (!$user->getPersonnage()) {
@@ -1685,12 +1665,7 @@ class ParticipantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->persist($participant);
-            $this->logChangementRole(
-                $participant,
-                PersonnageRoleType::ARCHETYPE,
-                $avant,
-                $participant->getPersonnageSecondaire()?->getId(),
-            );
+            $this->logChangementRole($participant, PersonnageRoleType::ARCHETYPE, $avant, $participant->getPersonnageSecondaire()?->getId());
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre archétype de secours a été enregistré.');
@@ -1807,17 +1782,14 @@ class ParticipantController extends AbstractController
             return;
         }
 
-        $this->log(
-            [
-                'participant' => $participant->getId(),
-                'gn' => $participant->getGn()->getId(),
-                'joueur' => $participant->getUser()?->getId(),
-                'role' => $role->value,
-                'avant' => $avant,
-                'apres' => $apres,
-            ],
-            LogActionType::PERSONNAGE_ROLE_CHANGE,
-        );
+        $this->log([
+            'participant' => $participant->getId(),
+            'gn' => $participant->getGn()->getId(),
+            'joueur' => $participant->getUser()?->getId(),
+            'role' => $role->value,
+            'avant' => $avant,
+            'apres' => $apres,
+        ], LogActionType::PERSONNAGE_ROLE_CHANGE);
     }
 
     /**
@@ -1830,19 +1802,14 @@ class ParticipantController extends AbstractController
      */
     private function refuserChoixPersonnageAlternatif(Participant $participant): ?Response
     {
-        $isAdmin = $this->isGranted(Role::SCENARISTE->value)
-            || $this->isGranted(Role::ORGA->value)
-            || $this->isGranted(Role::ADMIN->value);
+        $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::ADMIN->value);
 
         if (!$isAdmin && $participant->getUser()?->getId() !== $this->getUser()?->getId()) {
             throw new AccessDeniedException();
         }
 
         if (!$participant->peutChoisirPersonnageAlternatif()) {
-            $this->addFlash(
-                'error',
-                "Vous devez disposer d'un billet et d'un personnage principal avant de choisir un autre personnage.",
-            );
+            $this->addFlash('error', "Vous devez disposer d'un billet et d'un personnage principal avant de choisir un autre personnage.");
 
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }

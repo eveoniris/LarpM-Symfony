@@ -1063,10 +1063,10 @@ readonly class GroupeService
 
             $source = $bonus->getSourceTmp() ?? '';
             if ($bonus->getMerveille()) {
-                $source = ($source ? $source . ' — ' : '') . $bonus->getMerveille()->getLabel();
+                $source = ($source ? $source . ' - ' : '') . $bonus->getMerveille()->getLabel();
             }
             if ($bonus->getOrigine()) {
-                $source = ($source ? $source . ' — ' : '') . $bonus->getOrigine()->getNom();
+                $source = ($source ? $source . ' - ' : '') . $bonus->getOrigine()->getNom();
             }
 
             $breakdown[] = [
