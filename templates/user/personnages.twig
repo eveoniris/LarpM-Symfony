@@ -36,11 +36,11 @@
                 {% endif %}
                 {% if personnageService.hasPersonnages(user) %}
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Choisir le personnage principal actif"
+                       title="Choisir le personnage au nom duquel vous agissez sur LarpManager"
                        href="{{ path('user.personnageDefault', {'user': user.id}) }}"
                     ><span
-                            class="fa fa-users" style="margin-right: 5px;"></span>
-                        Choisir principal</a>
+                            class="fa fa-user-secret" style="margin-right: 5px;"></span>
+                        Personnage actif</a>
                 {% endif %}
 
             </div>
@@ -53,7 +53,7 @@
     {% set iconPjDead = '<span title="Personnage mort"><i class="fa-solid fa-skull"></i></span>' %}
     {% set iconPnj = '<span title="PNJ"><i class="fa-solid fa-masks-theater"></i></span>' %}
     {% set iconPjOld = '<span title="Ancien PJ ne participant pas au GN actif"><i class="fa-solid fa-hourglass-end"></i></span>' %}
-    {% set iconPjActive = '<span title="Personnage principal actif sur le LarpManager"><i class="fa-solid fa-star"></i></span>' %}
+    {% set iconPjActive = '<span title="Personnage actif sur votre session LarpManager"><i class="fa-solid fa-star"></i></span>' %}
 
     <div class="well well-sm">
         {% if not isAdmin or paginator.count <= 25 %}

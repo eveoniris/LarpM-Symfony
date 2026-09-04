@@ -52,6 +52,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 
@@ -817,32 +818,87 @@ class UserController extends AbstractController
     }
 
     /**
-     * Choix du personnage par défaut de l'utilisateur.
+     * Choix du personnage actif sur LarpManager.
+     *
+     * Cette notion est applicative : elle détermine au nom de quel personnage le
+     * joueur agit dans l'outil (signature des messages, candidature à un groupe).
+     * Elle ne concerne pas le personnage principal d'une participation à un GN.
      */
     #[Route('/user/{user}/personage/default', name: 'user.personnageDefault')]
     public function personnageDefaultAction(Request $request, #[MapEntity] User $user): RedirectResponse|Response
     {
         $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
+
         $form = $this->createForm(UserPersonnageDefaultType::class, $user, [
-            'user_id' => $user->getId(),
+            'user' => $user,
+            'limit' => $this->limitePersonnagesActifs(),
         ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $form->getData();
-
             $this->entityManager->persist($user);
             $this->entityManager->flush();
-            $this->addFlash('success', 'Vos informations ont été enregistrées.');
-
-            // return $this->redirectToRoute('homepage', [], 303);
+            $this->addFlash('success', 'Votre personnage actif a été enregistré.');
         }
 
         return $this->render('user/personnageDefault.twig', [
             'form' => $form->createView(),
             'User' => $user,
         ]);
+    }
+
+    /**
+     * Bascule rapide du personnage actif depuis le menu.
+     */
+    #[Route('/user/personnageActif/{personnage}', name: 'user.personnageActif.switch', methods: ['POST'])]
+    #[IsGranted(Role::USER->value)]
+    public function personnageActifSwitchAction(
+        Request $request,
+        #[MapEntity]
+        Personnage $personnage,
+    ): RedirectResponse {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        // Ces deux gardes ne modifient rien : les placer avant la vérification du
+        // jeton rend le refus explicite quelle que soit la validité de celui-ci.
+        if ($personnage->getUser()?->getId() !== $user->getId()) {
+            throw new AccessDeniedException();
+        }
+
+        if (!$personnage->getVivant()) {
+            $this->addFlash('error', 'Ce personnage est mort, il ne peut pas devenir votre personnage actif.');
+
+            return $this->redirectToReferer($request) ?? $this->redirectToRoute('homepage', [], 303);
+        }
+
+        if (!$this->isCsrfTokenValid('personnage_actif_' . $personnage->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+
+            return $this->redirectToReferer($request) ?? $this->redirectToRoute('homepage', [], 303);
+        }
+
+        $user->setPersonnage($personnage);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', sprintf('%s est désormais votre personnage actif.', $personnage->getIdentity()));
+
+        return $this->redirectToReferer($request) ?? $this->redirectToRoute('homepage', [], 303);
+    }
+
+    /**
+     * Les scénaristes et l'organisation manipulent beaucoup de personnages : la
+     * liste ne leur est pas tronquée.
+     */
+    private function limitePersonnagesActifs(): ?int
+    {
+        $sansLimite = $this->isGranted(Role::SCENARISTE->value)
+            || $this->isGranted(Role::ORGA->value)
+            || $this->isGranted(Role::ADMIN->value);
+
+        return $sansLimite ? null : UserPersonnageDefaultType::DEFAULT_LIMIT;
     }
 
     #[Route('/user/{user}/personage/list', name: 'user.personnage.list')]

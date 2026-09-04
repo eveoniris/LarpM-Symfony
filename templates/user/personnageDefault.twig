@@ -1,19 +1,26 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Mes personnages par défaut{% endblock title %}
+{% block title %}Personnage actif sur LarpManager{% endblock title %}
 
 {% block body %}
 
-    {% include '_partials/breadcrumb.twig' with {'items' :[{'name' : "Mes personnages par défaut" }]} %}
+    {% include '_partials/breadcrumb.twig' with {'items' :[{'name' : "Personnage actif sur LarpManager" }]} %}
 
     {% set notifHtml %}
-        La notion de « personnage actif » est utilisée uniquement par le LarpManager. Elle permet de déterminer sur quel personnage se baser pour vos actions envers d’autres joueurs ou pour vous-même, en dehors de la fiche du personnage.
-        Par exemple : signature de vos messages, candidature à un groupe principal ou transverse, etc.
+        La notion de « personnage actif » est utilisée uniquement par le LarpManager. Elle détermine au nom de
+        quel personnage vous agissez dans l'outil, en dehors de la fiche du personnage : signature de vos
+        messages, candidature à un groupe principal ou transverse, etc.
+        <br/>
+        Elle n'a **aucun rapport** avec votre **personnage principal** sur un GN, ni avec votre personnage
+        de relève, de substitution ou votre archétype de secours, qui se choisissent sur votre participation.
+        <br/>
+        Seuls vos personnages vivants sont proposés. Vous pouvez aussi basculer directement depuis
+        l'icône de la barre de menu.
     {% endset %}
     {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : notifHtml } %}
 
     <div class="well well-sm">
-        <div class="header"><h5>Choix du personnage actif sur LarpManager</h5></div>
+        <div class="header"><h5><i class="fa fa-user-secret" aria-hidden="true"></i> Choix du personnage actif sur LarpManager</h5></div>
         {{ form(form) }}
     </div>
 
