@@ -75,15 +75,7 @@ class GroupeGnTitreFieldOptionsTest extends WebTestCase
             ->filter(\sprintf('select[name="groupe_gn[%s]"] option', $field))
             ->each(static fn ($node) => $node->attr('value'));
 
-        static::assertContains(
-            (string) $memberPersonnage->getId(),
-            $optionValues,
-            \sprintf('Le personnage du groupeGn courant doit être proposé pour le titre "%s"', $field),
-        );
-        static::assertNotContains(
-            (string) $autrePersonnage->getId(),
-            $optionValues,
-            \sprintf('Un personnage d\'un autre groupe du même GN ne doit pas être proposé pour le titre "%s"', $field),
-        );
+        static::assertContains((string) $memberPersonnage->getId(), $optionValues, \sprintf('Le personnage du groupeGn courant doit être proposé pour le titre "%s"', $field),);
+        static::assertNotContains((string) $autrePersonnage->getId(), $optionValues, \sprintf('Un personnage d\'un autre groupe du même GN ne doit pas être proposé pour le titre "%s"', $field),);
     }
 }

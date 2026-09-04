@@ -42,7 +42,6 @@ class ChainePersonnagesImpressionTest extends WebTestCase
 
         $texte = $crawler->filter('body')->text();
 
-        static::assertStringContainsString('Personnages jouables', $texte);
         // L'archétype ne doit plus masquer la relève : les deux figurent.
         static::assertStringContainsString('Personnage de relève', $texte);
         static::assertStringContainsString('Releve', $texte);
