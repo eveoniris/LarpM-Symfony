@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Enum\LevelType;
+use App\Enum\PersonnageRoleType;
 use App\Repository\ParticipantRepository;
+use App\Validator\ChainePersonnagesCoherente;
 use DateTime;
 use Doctrine\ORM\Mapping\Entity;
 use Stringable;
 
 #[Entity(repositoryClass: ParticipantRepository::class)]
+#[ChainePersonnagesCoherente]
 class Participant extends BaseParticipant implements Stringable
 {
     public function __construct()
@@ -224,5 +227,100 @@ class Participant extends BaseParticipant implements Stringable
         $this->setPersonnage(null);
 
         return $this;
+    }
+
+    /**
+     * Le personnage réellement joué dans les instances hors temps / hors lieu.
+     *
+     * Ne pas choisir de personnage de substitution signifie que le personnage
+     * principal endosse les deux rôles.
+     */
+    public function getPersonnageSubstitutionEffectif(): ?Personnage
+    {
+        return $this->getPersonnageSubstitution() ?? $this->getPersonnage();
+    }
+
+    /**
+     * La chaîne de jeu du participant, dans l'ordre où le joueur la descend.
+     *
+     * Le rôle de substitution n'apparaît que si l'opus propose l'option ; l'entrée
+     * correspondante peut être nulle (le principal endosse alors les deux rôles).
+     *
+     * @return array<int, array{role: PersonnageRoleType, personnage: Personnage|null, archetype: PersonnageSecondaire|null}>
+     */
+    public function getChainePersonnages(): array
+    {
+        $chaine = [
+            [
+                'role' => PersonnageRoleType::PRINCIPAL,
+                'personnage' => $this->getPersonnage(),
+                'archetype' => null,
+            ],
+        ];
+
+        if ($this->getGn()->isSubstitutionActive()) {
+            $chaine[] = [
+                'role' => PersonnageRoleType::SUBSTITUTION,
+                'personnage' => $this->getPersonnageSubstitution(),
+                'archetype' => null,
+            ];
+        }
+
+        $chaine[] = [
+            'role' => PersonnageRoleType::RELEVE,
+            'personnage' => $this->getPersonnageReleve(),
+            'archetype' => null,
+        ];
+
+        $chaine[] = [
+            'role' => PersonnageRoleType::ARCHETYPE,
+            'personnage' => null,
+            'archetype' => $this->getPersonnageSecondaire(),
+        ];
+
+        return $chaine;
+    }
+
+    /**
+     * Les personnages engagés par cette participation, tous rôles confondus.
+     *
+     * Sert au garde-fou d'unicité : un personnage ne peut tenir qu'un seul rôle
+     * sur un GN donné, toutes participations confondues.
+     *
+     * @return array<string, Personnage> indexé par rôle
+     */
+    public function getPersonnagesEngages(): array
+    {
+        $engages = [];
+
+        foreach ([
+            PersonnageRoleType::PRINCIPAL->value => $this->getPersonnage(),
+            PersonnageRoleType::SUBSTITUTION->value => $this->getPersonnageSubstitution(),
+            PersonnageRoleType::RELEVE->value => $this->getPersonnageReleve(),
+        ] as $role => $personnage) {
+            if ($personnage instanceof Personnage) {
+                $engages[$role] = $personnage;
+            }
+        }
+
+        return $engages;
+    }
+
+    /**
+     * Un personnage alternatif (relève, substitution, archétype) ne peut être choisi
+     * que si la participation dispose d'un billet et d'un personnage principal.
+     */
+    public function peutChoisirPersonnageAlternatif(): bool
+    {
+        return null !== $this->getBillet() && null !== $this->getPersonnage();
+    }
+
+    /**
+     * Le groupe du participant est-il verrouillé ? Dans ce cas la composition de la
+     * chaîne de personnages n'est plus modifiable.
+     */
+    public function isVerrouille(): bool
+    {
+        return $this->getGroupeGn()?->getGroupe()?->getLock() ?? false;
     }
 }
