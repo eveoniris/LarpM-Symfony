@@ -20,7 +20,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  *
  * Key rule: the 6 titre fields (suzerain, connetable, intendant, navigateur,
  * camarilla, diplomate) must all be restricted to personnages belonging to
- * participants of the CURRENT groupeGn — not to every participant of the GN,
+ * participants of the CURRENT groupeGn - not to every participant of the GN,
  * even though other groupeGn belong to the same GN.
  *
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.

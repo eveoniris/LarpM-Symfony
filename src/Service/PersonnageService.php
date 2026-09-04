@@ -246,6 +246,41 @@ class PersonnageService
         }
     }
 
+    /**
+     * Personnages proposables comme personnage actif sur LarpManager : les vivants du
+     * joueur, du plus récemment joué au plus ancien.
+     *
+     * Les scénaristes et l'organisation ne sont pas limités en nombre ; pour les
+     * autres la liste est tronquée, au-delà elle devient illisible dans le menu.
+     *
+     * @return array<int, Personnage>
+     */
+    public function getPersonnagesActifsProposables(?User $user = null, ?int $limit = 5): array
+    {
+        $user ??= $this->security->getUser();
+
+        if (!$user instanceof User) {
+            return [];
+        }
+
+        if ($this->security->isGranted(Role::SCENARISTE->value) || $this->security->isGranted(Role::ORGA->value) || $this->security->isGranted(Role::ADMIN->value)) {
+            $limit = null;
+        }
+
+        $vivants = [];
+        foreach ($user->getPersonnages() as $personnage) {
+            if (!$personnage->getVivant()) {
+                continue;
+            }
+
+            $vivants[] = $personnage;
+        }
+
+        usort($vivants, static fn (Personnage $a, Personnage $b) => ($b->getLastParticipant()?->getId() ?? 0) <=> ($a->getLastParticipant()?->getId() ?? 0));
+
+        return null === $limit ? $vivants : \array_slice($vivants, 0, $limit);
+    }
+
     public function hasPersonnages(?User $user = null): bool
     {
         $user ??= $this->security->getUser();

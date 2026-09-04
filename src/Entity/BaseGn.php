@@ -75,6 +75,20 @@ class BaseGn
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $conditions_inscription = null;
 
+    /**
+     * Cet opus propose-t-il un personnage de substitution pour les instances
+     * hors temps / hors lieu de l'événement ?
+     */
+    #[Column(name: 'substitution_active', type: Types::BOOLEAN, options: ['default' => false])]
+    protected bool $substitutionActive = false;
+
+    /**
+     * Texte expliquant aux joueurs la nature de l'instance hors temps / hors lieu
+     * propre à cet opus.
+     */
+    #[Column(name: 'substitution_description', type: Types::TEXT, nullable: true)]
+    protected ?string $substitutionDescription = null;
+
     /** @var Collection<int, Annonce> */
     #[OneToMany(targetEntity: Annonce::class, mappedBy: 'gn')]
     #[JoinColumn(name: 'id', referencedColumnName: 'gn_id', nullable: false)]
@@ -281,6 +295,30 @@ class BaseGn
     public function getConditionsInscription(): string
     {
         return $this->conditions_inscription ?? '';
+    }
+
+    public function isSubstitutionActive(): bool
+    {
+        return $this->substitutionActive;
+    }
+
+    public function setSubstitutionActive(bool $substitutionActive): static
+    {
+        $this->substitutionActive = $substitutionActive;
+
+        return $this;
+    }
+
+    public function getSubstitutionDescription(): ?string
+    {
+        return $this->substitutionDescription;
+    }
+
+    public function setSubstitutionDescription(?string $substitutionDescription): static
+    {
+        $this->substitutionDescription = $substitutionDescription;
+
+        return $this;
     }
 
     public function addAnnonce(Annonce $annonce): static

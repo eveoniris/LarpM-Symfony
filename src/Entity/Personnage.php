@@ -897,23 +897,31 @@ class Personnage extends BasePersonnage implements Stringable
 
     /**
      * Recupère le nom de classe genrifié du personnage.
-     *
-     * @todo : Evoluer vers un modèle de données ou les libélés de ressource sont variable en fonction du genre
      */
     public function getClasseName(): string
     {
-        $lGenreMasculin = true;
-        if (null != $this->getGenre()) {
-            $lGenreMasculin = 'Masculin' == $this->getGenre()->getLabel();
-        }
+        return $this->getClasseOrNull()?->getLabelPourGenre($this->getGenreOrNull()) ?? '';
+    }
 
-        if (null == $this->getClasse()) {
-            return '';
-        } elseif ($lGenreMasculin) {
-            return $this->getClasse()->getLabelMasculin();
-        }
+    /**
+     * Genre du personnage, ou null s'il n'est pas encore renseigné.
+     *
+     * BasePersonnage::$genre et $classe sont des propriétés typées non-nullables
+     * sans valeur par défaut : y accéder sur un personnage non hydraté par Doctrine
+     * (en cours de création, ou construit hors ORM) lève une Error. Ces getters
+     * permettent aux appelants qui tolèrent leur absence de ne pas s'en soucier.
+     */
+    public function getGenreOrNull(): ?Genre
+    {
+        return $this->genre ?? null;
+    }
 
-        return $this->getClasse()->getLabelFeminin();
+    /**
+     * Classe du personnage, ou null si elle n'est pas encore renseignée.
+     */
+    public function getClasseOrNull(): ?Classe
+    {
+        return $this->classe ?? null;
     }
 
     /**

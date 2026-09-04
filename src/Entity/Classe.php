@@ -69,6 +69,25 @@ class Classe extends BaseClasse
         return $competenceFamiliesLabels;
     }
 
+    /**
+     * Libellé accordé au genre donné.
+     *
+     * Le masculin est la forme par défaut : c'est ce que fait déjà
+     * Personnage::getClasseName(), on garde la même règle pour rester cohérent
+     * partout où une classe est affichée.
+     *
+     * @todo évoluer vers un modèle où les libellés varient en fonction du genre
+     */
+    public function getLabelPourGenre(?Genre $genre = null): string
+    {
+        return null === $genre || 'Masculin' === $genre->getLabel()
+            ? $this->getLabelMasculin()
+            : $this->getLabelFeminin();
+    }
+
+    /**
+     * Les deux formes, quand aucun personnage de référence ne permet d'accorder.
+     */
     public function getLabel(): string
     {
         return $this->getLabelFeminin() . ' / ' . $this->getLabelMasculin();
