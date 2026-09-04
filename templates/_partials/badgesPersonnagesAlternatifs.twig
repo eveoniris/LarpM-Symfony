@@ -10,7 +10,7 @@
 #}
 {% for maillon in participant.chainePersonnages %}
     {% if maillon.role.value != 'principal' %}
-        {% set valeur = maillon.personnage ? maillon.personnage.identity : (maillon.archetype ? maillon.archetype.label : null) %}
+        {% set valeur = maillon.libelle %}
         {% if valeur %}
             <span class="badge text-bg-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
                   title="{{ maillon.role.label }} : {{ valeur }}">

@@ -26,10 +26,23 @@ class PersonnageSecondaire extends BasePersonnageSecondaire
     }
 
     /**
-     * Fourni le label de la classe en guide de la label pour l'archétype.
+     * Fourni le label de la classe en guise de label pour l'archétype.
+     *
+     * Les deux formes, faute de personnage de référence permettant d'accorder.
      */
     public function getLabel(): string
     {
         return $this->getClasse()?->getLabel() ?? '';
+    }
+
+    /**
+     * Label de l'archétype accordé au genre donné.
+     *
+     * Un archétype n'a pas de genre propre : c'est celui du personnage qui
+     * l'endosserait qui fait foi.
+     */
+    public function getLabelPourGenre(?Genre $genre = null): string
+    {
+        return $this->getClasse()?->getLabelPourGenre($genre) ?? '';
     }
 }

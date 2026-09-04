@@ -246,39 +246,46 @@ class Participant extends BaseParticipant implements Stringable
      * Le rôle de substitution n'apparaît que si l'opus propose l'option ; l'entrée
      * correspondante peut être nulle (le principal endosse alors les deux rôles).
      *
-     * @return array<int, array{role: PersonnageRoleType, personnage: Personnage|null, archetype: PersonnageSecondaire|null}>
+     * La clé « libelle » porte le texte prêt à afficher, ou null si le rôle n'est
+     * pas pourvu : les vues n'ont ainsi pas à savoir accorder un archétype.
+     *
+     * @return array<int, array{role: PersonnageRoleType, personnage: Personnage|null, archetype: PersonnageSecondaire|null, libelle: string|null}>
      */
     public function getChainePersonnages(): array
     {
-        $chaine = [
-            [
-                'role' => PersonnageRoleType::PRINCIPAL,
-                'personnage' => $this->getPersonnage(),
-                'archetype' => null,
-            ],
-        ];
+        $chaine = [$this->maillonPersonnage(PersonnageRoleType::PRINCIPAL, $this->getPersonnage())];
 
         if ($this->getGn()->isSubstitutionActive()) {
-            $chaine[] = [
-                'role' => PersonnageRoleType::SUBSTITUTION,
-                'personnage' => $this->getPersonnageSubstitution(),
-                'archetype' => null,
-            ];
+            $chaine[] = $this->maillonPersonnage(
+                PersonnageRoleType::SUBSTITUTION,
+                $this->getPersonnageSubstitution(),
+            );
         }
 
-        $chaine[] = [
-            'role' => PersonnageRoleType::RELEVE,
-            'personnage' => $this->getPersonnageReleve(),
-            'archetype' => null,
-        ];
+        $chaine[] = $this->maillonPersonnage(PersonnageRoleType::RELEVE, $this->getPersonnageReleve());
 
+        $archetype = $this->getPersonnageSecondaire();
         $chaine[] = [
             'role' => PersonnageRoleType::ARCHETYPE,
             'personnage' => null,
-            'archetype' => $this->getPersonnageSecondaire(),
+            'archetype' => $archetype,
+            'libelle' => $archetype?->getLabelPourGenre($this->getPersonnage()?->getGenreOrNull()),
         ];
 
         return $chaine;
+    }
+
+    /**
+     * @return array{role: PersonnageRoleType, personnage: Personnage|null, archetype: null, libelle: string|null}
+     */
+    private function maillonPersonnage(PersonnageRoleType $role, ?Personnage $personnage): array
+    {
+        return [
+            'role' => $role,
+            'personnage' => $personnage,
+            'archetype' => null,
+            'libelle' => $personnage?->getIdentity(),
+        ];
     }
 
     /**

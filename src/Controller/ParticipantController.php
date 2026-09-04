@@ -1677,8 +1677,9 @@ class ParticipantController extends AbstractController
 
         $avant = $participant->getPersonnageSecondaire()?->getId();
 
-        $form = $this->createForm(ParticipantPersonnageSecondaireType::class, $participant)
-            ->add('choice', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
+        $form = $this->createForm(ParticipantPersonnageSecondaireType::class, $participant, [
+            'genre' => $participant->getPersonnage()?->getGenreOrNull(),
+        ])->add('choice', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
 
         $form->handleRequest($request);
 
