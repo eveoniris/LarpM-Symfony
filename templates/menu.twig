@@ -305,26 +305,60 @@
             {% endif %}
 
             {% if app.user and personnageService.hasPersonnages > 0 %}
-                {% if app.user.personnage(true) %}
-                    <div class="d-flex">
-                        <a class="btn btn-dark shadow me-2" data-bs-placement="bottom"
-                           data-bs-toggle="tooltip"
-                           data-bs-original-title="Personnage actif: {{ app.user.personnage.label }}"
-                           href="{{ path('user.personnageDefault', {"user":app.user.id}) }}">
-                            <i class="fa fa-user-secret text-warning"></i>
-                        </a>
-                    </div>
-                {% else %}
-                    <a class="btn btn-dark shadow me-2 position-relative" data-bs-toggle="tooltip"
-                       data-bs-placement="bottom" data-bs-original-title="Choisir un personnage actif"
-                       href="{{ path('user.personnageDefault', {"user":app.user.id}) }}">
-                    <span
-                        class="position-absolute top-0 end-0 translate-middle badge z-3 p-1 bg-danger border border-light rounded-circle">
-									        <span class="visually-hidden">!</span>
-									    </span>
+                {% set personnageActif = app.user.personnage(true) %}
+                {% set proposables = personnageService.getPersonnagesActifsProposables() %}
+                <div class="dropdown d-flex">
+                    <a class="btn btn-dark shadow me-2{% if not personnageActif %} position-relative{% endif %}"
+                       data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"
+                       href="#" role="button"
+                       aria-label="{% if personnageActif %}Personnage actif sur LarpManager : {{ personnageActif.identity }}{% else %}Choisir votre personnage actif sur LarpManager{% endif %}">
+                        {% if not personnageActif %}
+                            <span class="position-absolute top-0 end-0 translate-middle badge z-3 p-1 bg-danger border border-light rounded-circle">
+                                <span class="visually-hidden">!</span>
+                            </span>
+                        {% endif %}
                         <i class="fa fa-user-secret text-warning"></i>
                     </a>
-                {% endif %}
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                        <li>
+                            <h6 class="dropdown-header">Personnage actif sur LarpManager</h6>
+                        </li>
+                        <li>
+                            <span class="dropdown-item-text small text-muted" style="max-width: 20rem; white-space: normal;">
+                                Détermine au nom de quel personnage vous agissez dans l'outil : signature
+                                de vos messages, candidature à un groupe. Sans rapport avec le personnage
+                                principal d'une participation à un GN.
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+
+                        {% for personnage in proposables %}
+                            <li>
+                                <form method="post" action="{{ path('user.personnageActif.switch', {'personnage': personnage.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('personnage_actif_' ~ personnage.id) }}"/>
+                                    <button type="submit" class="dropdown-item{% if personnageActif and personnageActif.id == personnage.id %} active{% endif %}">
+                                        {% if personnageActif and personnageActif.id == personnage.id %}
+                                            <i class="fa fa-circle-check" aria-hidden="true"></i>
+                                        {% else %}
+                                            <i class="fa fa-user" aria-hidden="true"></i>
+                                        {% endif %}
+                                        {{ personnage.identity }}
+                                    </button>
+                                </form>
+                            </li>
+                        {% else %}
+                            <li><span class="dropdown-item-text text-muted">Aucun personnage vivant</span></li>
+                        {% endfor %}
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('user.personnageDefault', {"user":app.user.id}) }}">
+                                <i class="fa fa-list" aria-hidden="true"></i> Voir tous mes personnages
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             {% else %}
                 <div class="d-flex">
                     <a class="btn btn-dark shadow me-2" data-bs-placement="bottom"

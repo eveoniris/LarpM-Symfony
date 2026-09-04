@@ -6,14 +6,28 @@ namespace App\Form\User;
 
 use App\Entity\Personnage;
 use App\Entity\User;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Choix du personnage actif sur LarpManager.
+ *
+ * Cette notion est purement applicative : elle détermine au nom de quel personnage
+ * le joueur signe ses messages, postule à un groupe, etc. Elle n'a rien à voir avec
+ * le personnage principal d'une participation à un GN.
+ *
+ * @extends AbstractType<User>
+ */
 class UserPersonnageDefaultType extends AbstractType
 {
+    /**
+     * Au-delà, la liste devient illisible pour un joueur ordinaire. Les scénaristes
+     * et l'organisation, qui manipulent beaucoup de personnages, ne sont pas limités.
+     */
+    public const DEFAULT_LIMIT = 5;
+
     /**
      * Construction du formulaire.
      */
@@ -21,14 +35,14 @@ class UserPersonnageDefaultType extends AbstractType
     {
         $builder->add('personnage', EntityType::class, [
             'required' => false,
-            'label' => 'Choisissez votre personnage actif sur votre session.',
+            'label' => 'Choisissez le personnage actif sur votre session LarpManager.',
             'multiple' => false,
             'expanded' => true,
             'class' => Personnage::class,
             'choice_label' => 'identity',
             'placeholder' => 'Aucun',
             'empty_data' => null,
-            'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('p')->join('p.user', 'u')->where('u.id = :userId')->setParameter('userId', $options['user_id']),
+            'choices' => $this->choix($options['user'], $options['limit']),
         ]);
     }
 
@@ -39,11 +53,48 @@ class UserPersonnageDefaultType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
-            'user_id' => null,
+            'user' => null,
+            'limit' => self::DEFAULT_LIMIT,
         ]);
+
+        $resolver->setAllowedTypes('user', [User::class]);
+        $resolver->setAllowedTypes('limit', ['null', 'int']);
     }
 
-    /*
-     * Nom du formulaire.
+    /**
+     * Les personnages vivants du joueur, du plus récemment joué au plus ancien.
+     *
+     * Le personnage actuellement actif reste toujours proposé, même s'il sort de la
+     * limite ou s'il est mort : sinon le formulaire le remplacerait silencieusement.
+     *
+     * @return array<int, Personnage>
      */
+    private function choix(User $user, ?int $limit): array
+    {
+        $actif = $user->getPersonnage(true);
+
+        $vivants = [];
+        foreach ($user->getPersonnages() as $personnage) {
+            if ($personnage->getVivant()) {
+                $vivants[] = $personnage;
+            }
+        }
+
+        // Le dernier participé d'abord : c'est celui que le joueur cherche.
+        usort(
+            $vivants,
+            static fn (Personnage $a, Personnage $b) => ($b->getLastParticipant()?->getId() ?? 0)
+                <=> ($a->getLastParticipant()?->getId() ?? 0),
+        );
+
+        if (null !== $limit) {
+            $vivants = \array_slice($vivants, 0, $limit);
+        }
+
+        if ($actif instanceof Personnage && !\in_array($actif, $vivants, true)) {
+            array_unshift($vivants, $actif);
+        }
+
+        return $vivants;
+    }
 }
