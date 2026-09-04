@@ -1,31 +1,40 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Personnages secondaires{% endblock title %}
+{% block title %}Archétype de secours{% endblock title %}
 
 {% block body %}
 
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
             {'name' : participant.gn.label, 'route': path('gn.detail', {'gn': participant.gn.id}) },
-            {'name' : 'Choix du personnage secondaire' }
+            {'name' : 'Détail de votre participation', 'route': path('participant.index', {'participant': participant.id}) },
+            {'name' : "Choix de l'archétype de secours" }
         ]
     } %}
 
 <div class="well well-sm">
 
     <div class="header">
-        <h5>Choix du personnage secondaire</h5>
+        <h5><i class="fa fa-masks-theater" aria-hidden="true"></i> Choix de l'archétype de secours</h5>
     </div>
 
     {% set noticeHtml %}
-        Le personnage secondaire est un archétype que vous pouvez utiliser dans le cas
-        où <strong>votre personnage principal viendrait à trépasser</strong>
-        (ce que nous ne souhaitons pas, mais l'Hyborée est un monde violent dans lequel les pires choses sont possibles) ou
-        <strong>si vous souhaitez l'utiliser dans une instance à la place de l'autre</strong>
-        (plus utile, ou toute autre raison)
+        L'archétype de secours est le <strong>dernier maillon</strong> de votre chaîne de personnages :
+        un personnage prêt à jouer, défini par sa seule classe, que vous endossez si votre
+        <strong>personnage de relève</strong> vient lui aussi à trépasser.
+        (Ce que nous ne souhaitons pas, mais l'Hyborée est un monde violent dans lequel les pires choses sont possibles.)
+        <br/>
+        Ce n'est <strong>pas</strong> un personnage de votre liste : pour cela, choisissez un
+        <strong>personnage de relève</strong>.
     {% endset %}
 
     {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : noticeHtml} %}
+
+    {% include 'participant/fragment/chainePersonnages.twig' with {
+        'participant': participant,
+        'compact': true,
+        'roleActif': 'archetype'
+    } %}
 
     <div class="row">
 
@@ -57,7 +66,7 @@
                         <tbody>
                         {% for personnageSecondaire in personnageSecondaires %}
                             <tr>
-                                <th>{{ personnageSecondaire.classe.label }}</th>
+                                <th>{{ personnageSecondaire.getLabelPourGenre(participant.personnage ? participant.personnage.genre : null) }}</th>
                                 <td>
                                     {% include 'classe/fragment/competenceFamiliesBadges.twig' with {'competenceFamilies': personnageSecondaire.competences} %}
                                 </td>

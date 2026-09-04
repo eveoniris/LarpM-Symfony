@@ -32,4 +32,16 @@ enum LogActionType: string
     case ENTITY = 'entity';
     case OTHER = 'autre';
     case DUPLICATE_PERSONNAGE = 'duplicate_personnage';
+
+    /** Verrouillage d'un groupe : bloque la modification de ses personnages. */
+    case GROUPE_LOCK = 'groupe_lock';
+
+    /** Déverrouillage d'un groupe. */
+    case GROUPE_UNLOCK = 'groupe_unlock';
+
+    /**
+     * Modification de la chaîne de personnages d'une participation : principal,
+     * substitution, relève ou archétype de secours.
+     */
+    case PERSONNAGE_ROLE_CHANGE = 'personnage_role_change';
 }

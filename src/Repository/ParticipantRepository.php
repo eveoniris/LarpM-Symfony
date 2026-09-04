@@ -17,6 +17,7 @@ use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\UnitOfWork;
 
 class ParticipantRepository extends BaseRepository
 {
@@ -41,6 +42,90 @@ class ParticipantRepository extends BaseRepository
         $query->setParameter('gnid', $gn->getId());
 
         return $query->getResult();
+    }
+
+    /**
+     * Retourne la participation qui engage déjà ce personnage sur ce GN, quel que
+     * soit le rôle tenu (principal, relève ou substitution).
+     *
+     * Un personnage ne peut tenir qu'un seul rôle sur un GN donné, toutes
+     * participations confondues : c'est le garde-fou qui empêche qu'il soit le
+     * principal d'un joueur et la relève d'un autre sur le même opus.
+     *
+     * @param Participant|null $exclure participation en cours d'édition, à ignorer
+     */
+    public function findParticipationEngageantPersonnage(
+        Gn $gn,
+        Personnage $personnage,
+        ?Participant $exclure = null,
+    ): ?Participant {
+        $queryBuilder = $this
+            ->createQueryBuilder('p')
+            ->andWhere('p.gn = :gn')
+            ->andWhere('p.personnage = :personnage OR p.personnageReleve = :personnage OR p.personnageSubstitution = :personnage')
+            ->setParameter('gn', $gn)
+            ->setParameter('personnage', $personnage)
+            ->setMaxResults(1);
+
+        if (null !== ($exclureId = $this->identifiantPersiste($exclure))) {
+            $queryBuilder->andWhere('p.id <> :exclure')->setParameter('exclure', $exclureId);
+        }
+
+        /** @var Participant|null */
+        return $queryBuilder->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * Identifiants des personnages déjà engagés sur ce GN, tous rôles et toutes
+     * participations confondus. Sert à filtrer les listes de choix.
+     *
+     * @param Participant|null $exclure participation en cours d'édition, à ignorer
+     *
+     * @return array<int, int>
+     */
+    public function findPersonnageIdsEngagesSurGn(Gn $gn, ?Participant $exclure = null): array
+    {
+        $queryBuilder = $this
+            ->createQueryBuilder('p')
+            ->select('IDENTITY(p.personnage) AS principal', 'IDENTITY(p.personnageReleve) AS releve', 'IDENTITY(p.personnageSubstitution) AS substitution')
+            ->andWhere('p.gn = :gn')
+            ->setParameter('gn', $gn);
+
+        if (null !== ($exclureId = $this->identifiantPersiste($exclure))) {
+            $queryBuilder->andWhere('p.id <> :exclure')->setParameter('exclure', $exclureId);
+        }
+
+        $ids = [];
+        foreach ($queryBuilder->getQuery()->getScalarResult() as $row) {
+            foreach ($row as $id) {
+                if (null === $id) {
+                    continue;
+                }
+
+                $ids[(int) $id] = (int) $id;
+            }
+        }
+
+        return array_values($ids);
+    }
+
+    /**
+     * Identifiant d'une participation, uniquement si elle est déjà persistée.
+     *
+     * Une participation en cours de création n'a pas encore d'identifiant : accéder
+     * à getId() lèverait une erreur sur une propriété typée non initialisée.
+     */
+    private function identifiantPersiste(?Participant $participant): ?int
+    {
+        if (null === $participant) {
+            return null;
+        }
+
+        if (UnitOfWork::STATE_MANAGED !== $this->entityManager->getUnitOfWork()->getEntityState($participant, UnitOfWork::STATE_NEW)) {
+            return null;
+        }
+
+        return $participant->getId();
     }
 
     /**
@@ -454,7 +539,10 @@ class ParticipantRepository extends BaseRepository
         $query ??= $this->createQueryBuilder($alias);
         $query->join($alias . '.user', 'user');
         $query->join($alias . '.gn', 'gn');
-        $query->join('user.etatCivil', 'etatCivil');
+        // LEFT JOIN : un joueur qui n'a pas encore rempli ses informations
+        // administratives doit rester visible dans la liste, c'est justement lui
+        // que l'organisation doit relancer.
+        $query->leftJoin('user.etatCivil', 'etatCivil');
         $query->leftJoin($alias . '.billet', 'billet');
         // Next may be a LEFT join because it's can be null
         // $query->join($alias.'.territoire', 'territoire');

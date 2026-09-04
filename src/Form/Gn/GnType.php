@@ -87,6 +87,24 @@ class GnType extends AbstractType
                     'Oui' => true,
                     'Non' => false,
                 ],
+            ])
+            ->add('substitutionActive', ChoiceType::class, [
+                'label' => 'Personnage de substitution ?',
+                'help' => 'Cet opus propose-t-il de jouer un second personnage dans des instances situées hors du temps et du lieu de l\'événement ? Exemple : le jeu se déroule sur une île à explorer, les nobles restés au pays y font avancer leurs intrigues.',
+                'required' => true,
+                'choices' => [
+                    'Oui' => true,
+                    'Non' => false,
+                ],
+            ])
+            ->add('substitutionDescription', TextareaType::class, [
+                'label' => 'Description de l\'instance hors temps / hors lieu',
+                'help' => 'Texte affiché aux joueurs au moment de choisir leur personnage de substitution. Sans effet si l\'option est désactivée.',
+                'required' => false,
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 9,
+                ],
             ]);
     }
 

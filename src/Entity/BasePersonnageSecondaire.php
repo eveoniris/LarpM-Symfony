@@ -46,9 +46,14 @@ abstract class BasePersonnageSecondaire
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $personnageSecondairesSkills;
 
+    /**
+     * La colonne est NOT NULL, mais la propriété PHP tolère l'absence avant
+     * persistance : getClasse() et setClasse() annoncent déjà ?Classe, et une
+     * propriété typée non initialisée lève une Error au moindre accès.
+     */
     #[ManyToOne(targetEntity: Classe::class, inversedBy: 'personnageSecondaires')]
     #[JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: false)]
-    protected Classe $classe;
+    protected ?Classe $classe = null;
 
     public function __construct()
     {
