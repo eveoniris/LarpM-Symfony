@@ -22,21 +22,21 @@ class GroupeGnRepository extends BaseRepository
 
         $pid = $personnage->getId();
         $sql = <<<SQL
-            SELECT 
+            SELECT
                 SUM(
-                    IF(suzerin_id = {$pid}, 1, 0) + 
-                    IF(connetable_id = {$pid}, 1, 0) + 
-                    IF(intendant_id = {$pid}, 1, 0) + 
-                    IF(navigateur_id = {$pid}, 1, 0) + 
-                    IF(camarilla_id = {$pid}, 1, 0) + 
-                    IF(diplomate_id = {$pid}, 1, 0) 
+                    IF(suzerin_id = {$pid}, 1, 0) +
+                    IF(connetable_id = {$pid}, 1, 0) +
+                    IF(intendant_id = {$pid}, 1, 0) +
+                    IF(navigateur_id = {$pid}, 1, 0) +
+                    IF(camarilla_id = {$pid}, 1, 0) +
+                    IF(diplomate_id = {$pid}, 1, 0)
                     ) AS total
-            FROM groupe_gn as ggn  
+            FROM groupe_gn as ggn
             INNER JOIN groupe as g ON g.id = ggn.groupe_id
-            WHERE (suzerin_id = :pid 
-                OR connetable_id = :pid 
-                OR intendant_id = :pid 
-                OR navigateur_id = :pid 
+            WHERE (suzerin_id = :pid
+                OR connetable_id = :pid
+                OR intendant_id = :pid
+                OR navigateur_id = :pid
                 OR camarilla_id = :pid
                 OR diplomate_id = :pid)
             SQL;
@@ -91,9 +91,9 @@ class GroupeGnRepository extends BaseRepository
         $pid = $personnage->getId();
         // Attention le concat ne prendra qu'un titre car un pj ne peut en avoir qu'un
         $sql = <<<SQL
-            SELECT 
+            SELECT
                 CONCAT(
-                   case 
+                   case
                        when suzerin_id = {$pid} then 'Suzerain'
                        when connetable_id = {$pid} then 'Chef de guerre'
                        when intendant_id = {$pid} then 'Intendant'
@@ -106,12 +106,12 @@ class GroupeGnRepository extends BaseRepository
                    ' - ',
                    g.nom
                    ) as titre
-            FROM groupe_gn as ggn  
+            FROM groupe_gn as ggn
             INNER JOIN groupe as g ON g.id = ggn.groupe_id
-            WHERE (suzerin_id = :pid 
-                OR connetable_id = :pid 
-                OR intendant_id = :pid 
-                OR navigateur_id = :pid 
+            WHERE (suzerin_id = :pid
+                OR connetable_id = :pid
+                OR intendant_id = :pid
+                OR navigateur_id = :pid
                 OR camarilla_id = :pid
                 OR diplomate_id = :pid)
             SQL;
@@ -234,7 +234,8 @@ class GroupeGnRepository extends BaseRepository
      */
     public function excludeAlreadyTitled(QueryBuilder $qb, string $alias, Gn $gn, ?GroupeGn $excludeGroupeGn = null): QueryBuilder
     {
-        $exists = "EXISTS (SELECT 1 FROM App\Entity\GroupeGn gg2 WHERE gg2.gn = :titre_gn_id"
+        $exists =
+            "EXISTS (SELECT 1 FROM App\Entity\GroupeGn gg2 WHERE gg2.gn = :titre_gn_id"
             . " AND (gg2.suzerin = {$alias} OR gg2.connetable = {$alias} OR gg2.intendant = {$alias}"
             . " OR gg2.navigateur = {$alias} OR gg2.camarilla = {$alias} OR gg2.diplomate = {$alias})";
 
@@ -256,7 +257,7 @@ class GroupeGnRepository extends BaseRepository
     {
         $query = $this->getEntityManager()->createQuery(<<<DQL
             SELECT MAX(grp.id) as exists
-            FROM App\Entity\User u 
+            FROM App\Entity\User u
             INNER JOIN u.participants as part
             INNER JOIN part.groupeGn as grp
             WHERE u.id = :uid AND grp.id = :gid
