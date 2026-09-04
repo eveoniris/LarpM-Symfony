@@ -55,7 +55,15 @@
             <tr>
                 <td>
                     <a href="{{ path('participant.detail', {'participant':participant.id}) }}">
-                        {{ participant.user.etatCivil.nom|highlight(pagerService.searchValue) }} {{ participant.user.etatCivil.prenom|highlight(pagerService.searchValue) }}
+                        {% if participant.user.etatCivil %}
+                            {{ participant.user.etatCivil.nom|highlight(pagerService.searchValue) }} {{ participant.user.etatCivil.prenom|highlight(pagerService.searchValue) }}
+                        {% else %}
+                            <span class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  title="Informations administratives non renseignées">
+                                <i class="fa fa-triangle-exclamation" aria-hidden="true"></i>
+                                {{ participant.user.username|highlight(pagerService.searchValue) }}
+                            </span>
+                        {% endif %}
                     </a>
                 </td>
                 <td>{{ participant.user.email|highlight(pagerService.searchValue) }}</td>

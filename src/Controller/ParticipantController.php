@@ -198,6 +198,7 @@ class ParticipantController extends AbstractController
             $personnage = $form->getData();
             $personnage->setUser($participant->getUser());
             $personnage->setGroupe($participant->getGroupeGn()->getGroupe());
+            $avantPrincipal = $participant->getPersonnage()?->getId();
             $participant->setPersonnage($personnage);
 
             // Ajout des points d'expérience gagné à la création d'un personnage
@@ -289,6 +290,16 @@ class ParticipantController extends AbstractController
             $this->entityManager->persist($participant);
             $this->entityManager->flush();
 
+            // Après le flush : le personnage vient d'être créé, son identifiant
+            // n'existe qu'à partir de là.
+            $this->logChangementRole(
+                $participant,
+                PersonnageRoleType::PRINCIPAL,
+                $avantPrincipal,
+                $personnage->getId(),
+            );
+            $this->entityManager->flush();
+
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
             return $this->redirectToRoute('gn.participants.withoutperso', ['gn' => $groupeGn->getGn()->getId()], 303);
@@ -325,6 +336,8 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
         }
 
+        $avantPrincipal = $participant->getPersonnage()?->getId();
+
         $form = $this->createForm(PersonnageOldFindType::class, $participant);
 
         $form->handleRequest($request);
@@ -332,6 +345,12 @@ class ParticipantController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $participant = $form->getData();
             $personnage = $participant->getPersonnage();
+            $this->logChangementRole(
+                $participant,
+                PersonnageRoleType::PRINCIPAL,
+                $avantPrincipal,
+                $personnage?->getId(),
+            );
 
             $territoire = $groupe->getTerritoire();
             if ($territoire) {
@@ -1094,12 +1113,7 @@ class ParticipantController extends AbstractController
     public function newAction(Request $request, #[MapEntity] User $user): RedirectResponse|Response
     {
         $participant = new Participant();
-        $userRepository = $this->entityManager->getRepository(User::class);
-        // $user = $userRepository->find($request->query->get('user'));
-
-        if ($user) {
-            $participant->setUser($user);
-        }
+        $participant->setUser($user);
 
         $form = $this->createForm(ParticipantNewType::class, $participant)->add('save', SubmitType::class, [
             'label' => 'Sauvegarder',
@@ -1298,6 +1312,9 @@ class ParticipantController extends AbstractController
             if (null === $personnage->getUser()) {
                 $personnage->setUser($user);
             }
+            // L'action refuse plus haut une participation qui a déjà un personnage :
+            // il n'y a donc jamais de valeur précédente à tracer ici.
+            $avantPrincipal = null;
             $participant->setPersonnage($personnage);
             if (!$user->getPersonnage()) {
                 $user->setPersonnage($personnage);
@@ -1429,6 +1446,16 @@ class ParticipantController extends AbstractController
             $this->entityManager->persist($participant);
             $this->entityManager->flush();
 
+            // Après le flush : le personnage vient d'être créé, son identifiant
+            // n'existe qu'à partir de là.
+            $this->logChangementRole(
+                $participant,
+                PersonnageRoleType::PRINCIPAL,
+                $avantPrincipal,
+                $personnage->getId(),
+            );
+            $this->entityManager->flush();
+
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
@@ -1512,8 +1539,10 @@ class ParticipantController extends AbstractController
 
             // Cas "libérer la participation" (aucun personnage sélectionné)
             if (null === $personnage) {
+                $avant = $participant->getPersonnage()?->getId();
                 $participant->setPersonnageNull();
                 $this->entityManager->persist($participant);
+                $this->logChangementRole($participant, PersonnageRoleType::PRINCIPAL, $avant, null);
                 $this->entityManager->flush();
 
                 $this->addFlash('success', 'La participation a été libérée (aucun personnage associé).');
@@ -1526,6 +1555,12 @@ class ParticipantController extends AbstractController
             if (null === $personnage->getUser()) {
                 $personnage->setUser($user);
             }
+            $this->logChangementRole(
+                $participant,
+                PersonnageRoleType::PRINCIPAL,
+                $participant->getPersonnage()?->getId(),
+                $personnage->getId(),
+            );
             $participant->setPersonnage($personnage);
 
             if (!$user->getPersonnage()) {
@@ -1604,8 +1639,10 @@ class ParticipantController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $avant = $participant->getPersonnage()?->getId();
             $participant->setPersonnageNull();
             $this->entityManager->persist($participant);
+            $this->logChangementRole($participant, PersonnageRoleType::PRINCIPAL, $avant, null);
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre modification a été enregistrée');
@@ -1638,6 +1675,8 @@ class ParticipantController extends AbstractController
             return $refus;
         }
 
+        $avant = $participant->getPersonnageSecondaire()?->getId();
+
         $form = $this->createForm(ParticipantPersonnageSecondaireType::class, $participant)
             ->add('choice', SubmitType::class, ['label' => 'Enregistrer', 'attr' => ['class' => 'btn btn-secondary']]);
 
@@ -1645,6 +1684,12 @@ class ParticipantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->persist($participant);
+            $this->logChangementRole(
+                $participant,
+                PersonnageRoleType::ARCHETYPE,
+                $avant,
+                $participant->getPersonnageSecondaire()?->getId(),
+            );
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre archétype de secours a été enregistré.');
@@ -1707,6 +1752,8 @@ class ParticipantController extends AbstractController
             return $refus;
         }
 
+        $avant = $this->personnageIdDuRole($participant, $role);
+
         $form = $this->createForm(ParticipantPersonnageAlternatifType::class, $participant, [
             'role' => $role,
             'participant' => $participant,
@@ -1716,6 +1763,7 @@ class ParticipantController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->persist($participant);
+            $this->logChangementRole($participant, $role, $avant, $this->personnageIdDuRole($participant, $role));
             $this->entityManager->flush();
             $this->addFlash('success', sprintf('Votre %s a été enregistré.', lcfirst($role->label())));
 
@@ -1727,6 +1775,48 @@ class ParticipantController extends AbstractController
             'role' => $role,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * Personnage actuellement affecté à ce rôle, ou null.
+     */
+    private function personnageIdDuRole(Participant $participant, PersonnageRoleType $role): ?int
+    {
+        return match ($role) {
+            PersonnageRoleType::PRINCIPAL => $participant->getPersonnage()?->getId(),
+            PersonnageRoleType::SUBSTITUTION => $participant->getPersonnageSubstitution()?->getId(),
+            PersonnageRoleType::RELEVE => $participant->getPersonnageReleve()?->getId(),
+            PersonnageRoleType::ARCHETYPE => $participant->getPersonnageSecondaire()?->getId(),
+        };
+    }
+
+    /**
+     * Trace une modification de la chaîne de personnages d'une participation.
+     *
+     * Rien n'est journalisé si la valeur n'a pas changé, pour éviter de polluer
+     * l'historique avec les simples réenregistrements du formulaire.
+     */
+    private function logChangementRole(
+        Participant $participant,
+        PersonnageRoleType $role,
+        ?int $avant,
+        ?int $apres,
+    ): void {
+        if ($avant === $apres) {
+            return;
+        }
+
+        $this->log(
+            [
+                'participant' => $participant->getId(),
+                'gn' => $participant->getGn()->getId(),
+                'joueur' => $participant->getUser()?->getId(),
+                'role' => $role->value,
+                'avant' => $avant,
+                'apres' => $apres,
+            ],
+            LogActionType::PERSONNAGE_ROLE_CHANGE,
+        );
     }
 
     /**
