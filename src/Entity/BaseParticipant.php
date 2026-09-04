@@ -59,19 +59,22 @@ class BaseParticipant
     protected ?User $user = null;
     #[ManyToOne(targetEntity: PersonnageSecondaire::class, cascade: ['persist'], inversedBy: 'participants')]
     #[JoinColumn(name: 'personnage_secondaire_id', referencedColumnName: 'id', nullable: true)]
-    protected ?PersonnageSecondaire $personnageSecondaire;
+    protected ?PersonnageSecondaire $personnageSecondaire = null;
     #[ManyToOne(targetEntity: Personnage::class, cascade: ['persist'], inversedBy: 'participants')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: true)]
-    protected ?Personnage $personnage;
+    protected ?Personnage $personnage = null;
     #[ManyToOne(targetEntity: Personnage::class)]
     #[JoinColumn(name: 'personnage_releve_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     protected ?Personnage $personnageReleve = null;
+    #[ManyToOne(targetEntity: Personnage::class)]
+    #[JoinColumn(name: 'personnage_substitution_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    protected ?Personnage $personnageSubstitution = null;
     #[ManyToOne(targetEntity: Billet::class, inversedBy: 'participants')]
     #[JoinColumn(name: 'billet_id', referencedColumnName: 'id')]
     protected ?Billet $billet = null;
     #[ManyToOne(targetEntity: GroupeGn::class, inversedBy: 'participants')]
     #[JoinColumn(name: 'groupe_gn_id', referencedColumnName: 'id')]
-    protected ?GroupeGn $groupeGn;
+    protected ?GroupeGn $groupeGn = null;
     /** @var Collection<int, Potion> */
     #[ORM\ManyToMany(targetEntity: Potion::class, inversedBy: 'participants')]
     #[ORM\JoinTable(name: 'participant_potions_depart')]
@@ -347,6 +350,18 @@ class BaseParticipant
     public function setPersonnageReleve(?Personnage $personnageReleve = null): static
     {
         $this->personnageReleve = $personnageReleve;
+
+        return $this;
+    }
+
+    public function getPersonnageSubstitution(): ?Personnage
+    {
+        return $this->personnageSubstitution;
+    }
+
+    public function setPersonnageSubstitution(?Personnage $personnageSubstitution = null): static
+    {
+        $this->personnageSubstitution = $personnageSubstitution;
 
         return $this;
     }
