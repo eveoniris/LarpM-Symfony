@@ -308,8 +308,12 @@
                 {% set personnageActif = app.user.personnage(true) %}
                 {% set proposables = personnageService.getPersonnagesActifsProposables() %}
                 <div class="dropdown d-flex">
+                    {# auto-close="outside" : sans cela Bootstrap ferme le menu au clic sur
+                       un item, ce qui peut annuler la soumission du formulaire avant son
+                       envoi. La fermeture se fait ici par la navigation qui suit. #}
                     <a class="btn btn-dark shadow me-2{% if not personnageActif %} position-relative{% endif %}"
-                       data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false"
+                       data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside"
+                       aria-expanded="false"
                        href="#" role="button"
                        aria-label="{% if personnageActif %}Personnage actif sur LarpManager : {{ personnageActif.identity }}{% else %}Choisir votre personnage actif sur LarpManager{% endif %}">
                         {% if not personnageActif %}
@@ -320,7 +324,10 @@
                         <i class="fa fa-user-secret text-warning"></i>
                     </a>
 
-                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                    {# max-height : sur mobile le menu depasse sinon le viewport et le bas
+                       de la liste devient inatteignable. #}
+                    <ul class="dropdown-menu dropdown-menu-end shadow overflow-auto"
+                        style="max-height: 70vh;">
                         <li>
                             <h6 class="dropdown-header">Personnage actif sur LarpManager</h6>
                         </li>
