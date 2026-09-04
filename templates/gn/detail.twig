@@ -375,17 +375,13 @@
 
             {% if participant %}
                 <div class="card mb-2">
-                    <div class="header"><h5>Votre personnage</h5></div>
+                    <div class="header"><h5>Votre(vos) personnage(s)</h5></div>
 
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
                             {% if participant.personnage %}
-                                <li class="list-group-item">
-                                    <a href="{{ path('gn.personnage', {'gn': gn.id}) }}"><i class="fa fa-user"
-                                                                                            aria-hidden="true"></i>&nbsp;
-                                        {{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}
-                                        &nbsp;-&nbsp;{{ participant.personnage.classeName }}
-                                    </a>
+                                <li class="list-group-item p-0">
+                                    {% include 'participant/fragment/chainePersonnages.twig' with {'participant': participant} %}
                                 </li>
                             {% else %}
                                 {% if participant.session %}
@@ -408,12 +404,6 @@
                                         {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : groupeMissingHtml } %}
                                     </li>
                                 {% endif %}
-                            {% endif %}
-
-                            {% if participant.personnage %}
-                                <li class="list-group-item p-0">
-                                    {% include 'participant/fragment/chainePersonnages.twig' with {'participant': participant} %}
-                                </li>
                             {% endif %}
 
                             {% if participant.session %}
