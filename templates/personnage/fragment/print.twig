@@ -49,14 +49,7 @@
                     {% for participantHasRestauration in participant.participantHasRestaurations %}
                         {{ participantHasRestauration.restauration.label }}<br/>
                     {% endfor %}
-                    <strong>Personnage Secondaire : </strong>
-                    {% if participant.personnageSecondaire %}
-                        {{ participant.personnageSecondaire.classe.label }}
-                    {% elseif participant.personnageReleve %}
-                        Relève : {{ participant.personnageReleve.identity }}
-                    {% else %}
-                        PAS DE PERSONNAGE SECONDAIRE
-                    {% endif %}
+                    {% include 'participant/fragment/chainePersonnagesPrint.twig' with {'participant': participant} %}
                 {% endif %}
                 <br/>
                 <strong>Espèce :</strong>

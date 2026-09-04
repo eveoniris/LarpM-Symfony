@@ -1,0 +1,22 @@
+{#
+    Version imprimable de la chaîne de personnages d'une participation.
+
+    Sans lien ni bouton : la fiche est lue sur table de jeu, elle doit dire
+    immédiatement quels personnages le joueur peut incarner et à quel titre.
+
+    Paramètres :
+      participant : la participation (obligatoire)
+#}
+<strong>Personnages jouables :</strong><br/>
+{% for maillon in participant.chainePersonnages %}
+    {% set valeur = maillon.personnage ? maillon.personnage.identity : (maillon.archetype ? maillon.archetype.label : null) %}
+    {{ maillon.role.label }} :
+    {% if valeur %}
+        {{ valeur }}
+    {% elseif maillon.role.value == 'substitution' %}
+        aucun, le personnage principal endosse les deux rôles
+    {% else %}
+        <strong>NON CHOISI</strong>
+    {% endif %}
+    <br/>
+{% endfor %}
