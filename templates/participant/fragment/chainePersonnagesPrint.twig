@@ -1,20 +1,25 @@
 {#
-    Version imprimable de la chaîne de personnages d'une participation.
+Version imprimable de la chaîne de personnages d'une participation.
 
-    Sans lien ni bouton : la fiche est lue sur table de jeu, elle doit dire
-    immédiatement quels personnages le joueur peut incarner et à quel titre.
+Sans lien ni bouton : la fiche est lue sur table de jeu, elle doit dire
+immédiatement quels personnages le joueur peut incarner et à quel titre.
 
-    Paramètres :
-      participant : la participation (obligatoire)
+Paramètres :
+  participant : la participation (obligatoire)
 #}
+{% if print is not defined %}
+    {% set print = false %}
+{% endif %}
+{% if not print %}
 <strong>Personnages jouables :</strong><br/>
+{% endif %}
 {% for maillon in participant.chainePersonnages %}
     {% set valeur = maillon.libelle %}
     {{ maillon.role.label }} :
     {% if valeur %}
         {{ valeur }}
-    {% elseif maillon.role.value == 'substitution' %}
-        aucun, le personnage principal endosse les deux rôles
+    {% elseif maillon.role.value == 'substitution' and print == true %}
+        le principal
     {% else %}
         <strong>NON CHOISI</strong>
     {% endif %}

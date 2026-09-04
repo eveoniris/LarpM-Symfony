@@ -49,7 +49,7 @@
                     {% for participantHasRestauration in participant.participantHasRestaurations %}
                         {{ participantHasRestauration.restauration.label }}<br/>
                     {% endfor %}
-                    {% include 'participant/fragment/chainePersonnagesPrint.twig' with {'participant': participant} %}
+                    {% include 'participant/fragment/chainePersonnagesPrint.twig' with {'participant': participant, 'print':true} %}
                 {% endif %}
                 <br/>
                 <strong>Espèce :</strong>
