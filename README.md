@@ -4,139 +4,149 @@ Live action role-playing game (LARP) Manager
 
 This tool was made for manage player subscription, player background and many other things on LARP event.
 
-Gestionnaire de jeu de rôle grandeur nature
+Gestionnaire de jeu de rôle grandeur nature.
 
-# Install
+## Installation
 
-Vous aurez besoin de
+Vous aurez besoin de:
 
 - Git : https://git-scm.com/downloads
 - Docker : https://docs.docker.com/engine/install/
 - Docker compose : https://docs.docker.com/compose/install/
 
-## 1- Source
+Et bien sûr, du projet LarpM-Symfony, que vous pouvez cloner avec la commande suivante:
 
-```
+```bash
 git clone git@github.com:eveoniris/LarpM-Symfony.git larpmanager
 ```
 
-## 2- compiler le projet
+### Mode développement (dev)
 
-Normalement inutile car gérer par le point suivant. Il pourra être parfois requis de recompiler. Voici
-donc la commande.
+#### 1- Lancer le projet
 
-```
-docker compose build
-```
-
-## 3- Lancer le projet
-
-```
+```bash
 docker compose up -d
 ```
 
-## 3- Charger une première fois les librairies externe (vendor)
+#### 2- Charger une première fois les librairies externe (vendor)
 
+```bash
+docker compose exec webserver composer install
 ```
-docker compose run --rm composer install
-```
 
-## 4- Accéder au site
+#### 3- Accéder au site
 
-aller sur http://localhost:8080/
+Se rendre sur [localhost/](http://localhost/)
 
-Vous pouvez utiliser un reverse proxy comme Caddy pour accéder plutot avec l'url http://larpmanager.test
-Pour cela, il faudra modifier votre fichier "hosts" /etc/hosts et y ajouter
+Un reverse proxy sur [larpmanager.test](http://larpmanager.test) est aussi disponible si vous avez configuré votre /etc/hosts commme suit:
 
-```
+```text
 127.0.0.1 larpmanager.test
 ```
 
-## 5- Connection d'un IDE à la base de donnée
+### Tester l'image de production
 
-On utilise la même version que sur le serveur de production : Mysql 8.0+
+Attention, le script suivant n'est à utiliser que pour tester l'image de production, il ne doit être utilisé ni pour le développement (voir [mode dev](#mode-développement-dev)) ni pour le déploiement en production (voir [docker-ci.yml](.github/workflows/docker-ci.yml) et [deploy.yml](.github/workflows/deploy.yml)).:
 
-```
-- host : localhost
-- port : 30202
-- user : admin
-- pass : password
-- database : larpm
+```bash
+./docker/prod-test.sh
 ```
 
-## 6- Voir les mails
+Par ailleurs, le mailpit est ici factice pour pouvoir faire démarrer le service, il ne doit pas être utilisé pour tester l'envoi de mail.
+
+## Commmandes post-installation
+
+### Connection d'un IDE à la base de donnée
+
+Configuration de la base de donnée pour un IDE (ex: DBeaver, DataGrip, TablePlus, HeidiSQL, etc.):
+
+- host: localhost
+- port: 3306
+- user: admin
+- pass: password
+- database: larpm
+
+Attention à bien utiliser la même version de MySQL que celle du container (8.4) pour éviter les soucis de compatibilité.
+
+### Voir les mails
 
 Tous les mails sont catché par mailpit et consultable sur : http://localhost:8025/
 
-## 7- commande Symfony
+### Commandes Symfony CLI
 
-Les commandes symfony sont disponibles via :
+Les commandes Symfony sont disponibles via:
 
-```
-   docker compose exec frankenphp symfony
-```
-
-Ou via
-
-```
-docker compose exec frankenphp php bin/console
+```bash
+docker compose exec webserver symfony
 ```
 
-## Voir les logs
+Ou via:
 
+```bash
+docker compose exec webserver php bin/console
 ```
+
+### Voir les logs
+
+```bash
 docker compose logs
-docker compose logs frankenphp
+docker compose logs webserver
 docker compose logs mailer
 docker compose logs database
 ```
 
-## Base de donnée
+## Gestion de la base de donnée
 
 Lors du docker compose up -d, est installé pour la première fois (tant que /docker/db/data est vide) les fichiers
 contenus dans docker/db/initData par ordre alphabetique
 
-Export de la base de donnée
-`docker exec -it larpmanager-database-1 mysqldump -uadmin -ppassword --opt larpm > backup.sql`
+Export de la base de donnée:
 
-Pour importer, créer un fichier puis le copier dans le container
-`docker cp backup.sql larpmanager-database-1:/tmp/backup.sql`
+```bash
+docker compose exec -it database mysqldump -uadmin -ppassword --opt larpm > backup.sql
+```
 
-Import de la base de donnée (le fichier doit être dans le container)
-`docker exec -it larpmanager-database-1 /bin/sh -c "mysql -uadmin -ppassword larpm < /tmp/backup.sql"`
+Pour importer, créer un fichier puis le copier dans le container:
 
-# Export des données uniquement
+```bash
+docker compose cp backup.sql database:/tmp/backup.sql
+```
 
-On utilise --no-create-info avant d'indiquer la base
+Import de la base de donnée (le fichier doit être dans le container):
 
-# Export de la structure uniquement
+```bash
+docker commpose exec -it database /bin/sh -c "mysql -uadmin -ppassword larpm < /tmp/backup.sql"
+```
 
-On utilise --no-data avant d'indiquer la base
+Arguments possibles:
 
-Noter: --compact pour un fichier sans commentaire, et --no-create-db pour éviter la partie création
+- `--no-create-info` : export uniquement les données, pas la structure (à placer avant le nom de la base)
+- `--no-data` : export uniquement la structure, pas les données (à placer avant le nom de la base)
+- `--compact` : export sans commentaire
+- `--no-create-db` : évite la partie création de la base
 
-# Tests
+## Tests
 
-## Lancer les tests
+### Lancer les tests
 
 ```bash
 # Tous les tests
-docker compose exec frankenphp ./vendor/bin/phpunit
+docker compose exec webserver ./vendor/bin/phpunit
 
 # Un fichier précis
-docker compose exec frankenphp ./vendor/bin/phpunit tests/Unit/Service/ConditionsServiceTest.php
+docker compose exec webserver ./vendor/bin/phpunit tests/Unit/Service/ConditionsServiceTest.php
 
 # Un groupe (unit ou integration)
-docker compose exec frankenphp ./vendor/bin/phpunit --group unit
-docker compose exec frankenphp ./vendor/bin/phpunit --group integration
+docker compose exec webserver ./vendor/bin/phpunit --group unit
+docker compose exec webserver ./vendor/bin/phpunit --group integration
 
 # Avec sortie lisible (noms des tests)
-docker compose exec frankenphp ./vendor/bin/phpunit --testdox
+docker compose exec webserver ./vendor/bin/phpunit --testdox
 ```
 
-## Structure des tests
+### Structure des tests
 
-```
+```text
 tests/
 ├── bootstrap.php                        # Initialisation PHPUnit (charge .env.test)
 ├── Factory/                             # Foundry factories (données de test)
@@ -154,15 +164,15 @@ tests/
         └── SanctuaireEffectTest.php
 ```
 
-## Outils utilisés
+### Outils utilisés
 
-| Outil | Rôle |
-|---|---|
-| **PHPUnit 11** | Framework de test |
+| Outil                       | Rôle                                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------------------- |
+| **PHPUnit 11**              | Framework de test                                                                                 |
 | **DAMA DoctrineTestBundle** | Enveloppe chaque test dans une transaction → rollback automatique, isolation sans reset de schéma |
-| **zenstruck/foundry** | Factories pour créer des entités Doctrine en test |
+| **zenstruck/foundry**       | Factories pour créer des entités Doctrine en test                                                 |
 
-## Écrire un test unitaire
+### Écrire un test unitaire
 
 Les tests unitaires n'ont pas besoin de la base de données ni du Kernel Symfony.
 Ils héritent de `PHPUnit\Framework\TestCase` et utilisent des stubs/mocks.
@@ -185,7 +195,7 @@ class MonServiceTest extends TestCase
 }
 ```
 
-## Écrire un test d'intégration
+### Écrire un test d'intégration
 
 Les tests d'intégration démarrent le Kernel Symfony et accèdent à la vraie base de données.
 Ils héritent de `Symfony\Bundle\FrameworkBundle\Test\KernelTestCase` et utilisent le trait `Factories`.
@@ -232,7 +242,7 @@ class MonServiceTest extends KernelTestCase
 }
 ```
 
-## Créer une Factory Foundry
+### Créer une Factory Foundry
 
 Les factories se trouvent dans `tests/Factory/`. Chaque factory correspond à une entité Doctrine.
 
@@ -289,9 +299,9 @@ $entites = MonEntiteFactory::createMany(5);
 - Des exemples de tests API via fichiers HTTP se trouvent dans `tests/rest/` (ex: `tests/rest/stats.http`)
   et peuvent être exécutés depuis un IDE compatible.
 
-# Divers
+## Commandes utiles
 
-## Composer
+### Composer
 
 Commande pour maj aller sur le container (voir point 6) puis faire :
 
@@ -306,75 +316,73 @@ Au besoin pour mettre à jour le recipes :
 docker compose run --rm composer recipes:update
 ```
 
-# Commande utile
-
-## Vider le cache
+### Vider le cache
 
 Nettoyer et recharger le cache
 
-```
-docker compose exec frankenphp php bin/console cache:clear
+```bash
+docker compose exec webserver php bin/console cache:clear
 ```
 
-```
-docker compose exec frankenphp php bin/console cache:warmup
+```bash
+docker compose exec webserver php bin/console cache:warmup
 ```
 
 Si le clear:cache échoue :
 
-```
+```bash
 php -d memory_limit=-1 bin/console cache:clear
-``` 
-
-## Exécuter les migrations Doctrine
-
-```
-docker compose exec frankenphp php bin/console doctrine:migrations:migrate
 ```
 
-## Lancer un serveur de développement (si nécessaire)
+### Exécuter les migrations Doctrine
 
-```
-docker compose exec frankenphp php bin/console server:run
-```
-
-## Lancer un worker Messenger
-
-```
-docker compose exec frankenphp php bin/console messenger:consume async -vv
+```bash
+docker compose exec webserver php bin/console doctrine:migrations:migrate
 ```
 
-## Compiler les assets
+### Lancer un serveur de développement (si nécessaire)
+
+```bash
+docker compose exec webserver php bin/console server:run
+```
+
+### Lancer un worker Messenger
+
+```bash
+docker compose exec webserver php bin/console messenger:consume async -vv
+```
+
+### Compiler les assets
 
 Voir https://symfony.com/doc/current/frontend/asset_mapper.html
 
-```
-docker compose exec frankenphp php bin/console asset-map:compile
-```
-
-## Debug les assets
-
-```
-docker compose exec frankenphp php bin/console debug:asset-map
+```bash
+docker compose exec webserver php bin/console asset-map:compile
 ```
 
-## Maj ou install de l'importmap
+### Debug les assets
 
-```
-docker compose exec frankenphp php bin/console importmap:update
-docker compose exec frankenphp php bin/console importmap:install
+```bash
+docker compose exec webserver php bin/console debug:asset-map
 ```
 
-## Maj service du docker compose
+### Maj ou install de l'importmap
+
+```bash
+docker compose exec webserver php bin/console importmap:update
+docker compose exec webserver php bin/console importmap:install
+```
+
+### Maj service du docker compose
 
 Pour mettre à jour les service définis dans le docker-compose.yml si une nouvelle version est disponible. Il faudra
 jouer la commande
 
-```
+```bash
 docker compose pull
 ```
 
-# Soucis possible
+## Soucis possible
 
 Si vous avez un souci pour vous connecter
 
@@ -382,35 +390,44 @@ fair un `docker compose ps` voir si un container est en "restarting"
 
 Si oui faire un `docker compose down -v` puis faire un `docker compose up -d` et vérifier les logs.
 
-## Exemple pour mettre à jour les librairies de composer
+### Exemple pour mettre à jour les librairies de composer
 
-    Mettre à jour composer.json sur la version visé puis
+Mettre à jour composer.json sur la version visé puis:
 
-- `docker compose run --rm composer update "doctrine/*" --with-all-dependencies`
-- `docker compose run --rm composer update "symfony/*" --with-all-dependencies`
-
-## Ajout de Imagine
-
-Si manquant
-
-```
-docker compose exec frankenphp symfony composer req "imagine/imagine:^1.2"
+```bash
+docker compose run --rm composer update "doctrine/*" --with-all-dependencies
+docker compose run --rm composer update "symfony/*" --with-all-dependencies
 ```
 
-## Ajout de Autocomplete
+### Ajout de Imagine
 
-Si manquant
+Si manquant:
 
-- `docker compose run --rm composer require symfony/stimulus-bundle`
-- `docker compose run --rm composer require symfony/ux-autocomplete`
+```bash
+docker compose exec webserver symfony composer req "imagine/imagine:^1.2"
+```
 
-# phpCsFixer
+### Ajout de Autocomplete
 
-`PHP_CS_FIXER_IGNORE_ENV=1 ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --verbose --path-mode=intersection *`
-`docker compose exec frankenphp ./vendor/bin/php-cs-fixer fix --config .php-cs-fixer.dist.php`
-# Mago
+Si manquant:
+
+```bash
+docker compose run --rm composer require symfony/stimulus-bundle
+docker compose run --rm composer require symfony/ux-autocomplete
+```
+
+## phpCsFixer
+
+```bash
+PHP_CS_FIXER_IGNORE_ENV=1 ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --verbose --path-mode=intersection *
+docker compose exec webserver ./vendor/bin/php-cs-fixer fix --config .php-cs-fixer.dist.php
+```
+
+## Mago
 
 @see https://mago.carthage.software/tools/overview
 
-- `mago lint`
-- `mago fmt`
+```bash
+mago lint
+mago fmt
+```

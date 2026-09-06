@@ -1,0 +1,12 @@
+services:
+    database:
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "mysqladmin ping -h 127.0.0.1 -u${MYSQL_USER:-admin} -p${MYSQL_PASSWORD:-password}",
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 30
+            start_period: 60s
