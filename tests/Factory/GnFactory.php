@@ -25,6 +25,7 @@ final class GnFactory extends PersistentObjectFactory
             'xp_creation' => 20,
             'actif' => false,
             'date_jeu' => 800, // in-game year (Hyborian Age setting)
+            'substitutionActive' => false,
         ];
     }
 }

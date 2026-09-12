@@ -23,7 +23,7 @@ use PHPUnit\Framework\TestCase;
  *
  * Note : `GroupeAllie`/`GroupeEnemy`/`Restriction` avaient le même mismatch apparent,
  * mais leur colonne DB est réellement `nullable: false` (relation obligatoire) et leur
- * propriété Base* est elle-même non-nullable — les rendre nullables n'aurait rien
+ * propriété Base* est elle-même non-nullable - les rendre nullables n'aurait rien
  * corrigé (le crash se serait juste déplacé au niveau de l'assignation de propriété
  * dans le setter Base*), donc ces 3 cas n'ont volontairement pas été modifiés.
  */

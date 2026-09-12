@@ -49,14 +49,7 @@
                     {% for participantHasRestauration in participant.participantHasRestaurations %}
                         {{ participantHasRestauration.restauration.label }}<br/>
                     {% endfor %}
-                    <strong>Personnage Secondaire : </strong>
-                    {% if participant.personnageSecondaire %}
-                        {{ participant.personnageSecondaire.classe.label }}
-                    {% elseif participant.personnageReleve %}
-                        Relève : {{ participant.personnageReleve.identity }}
-                    {% else %}
-                        PAS DE PERSONNAGE SECONDAIRE
-                    {% endif %}
+                    {% include 'participant/fragment/chainePersonnagesPrint.twig' with {'participant': participant, 'print':true} %}
                 {% endif %}
                 <br/>
                 <strong>Espèce :</strong>
@@ -303,8 +296,8 @@
     <hr/>
     <br/>
     <div class="print-center">
-        <h3>Personnage secondaire<br/>
-            {{ participant.personnageSecondaire.classe.label }}
+        <h3>Archétype de secours<br/>
+            {{ participant.personnageSecondaire.getLabelPourGenre(personnage.genre) }}
         </h3>
     </div>
 

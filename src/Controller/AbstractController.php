@@ -24,6 +24,7 @@ use App\Service\PagerService;
 use App\Service\PersonnageService;
 use App\Service\StatsService;
 use DateTime;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -312,20 +313,26 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         if ($entityToDelete) {
-            // Soft or hard delete ?
-            if (\is_object($entityToDelete) && method_exists($entityToDelete, 'getDeletedAt')) {
-                /* @phpstan-ignore method.notFound */
-                $entityToDelete->setDeletedAt(new DateTime('NOW'));
-                $this->entityManager->persist($entityToDelete);
-            } else {
-                $this->entityManager->remove($entityToDelete);
-            }
-            $this->entityManager->flush();
-
-            $this->addFlash('success', $successMsg);
-
             $redirectStr = \is_array($redirect) ? (string) ($redirect['route'] ?? '') : $redirect;
             $redirectParams = \is_array($redirect) ? (array) ($redirect['params'] ?? []) : [];
+
+            try {
+                // Soft or hard delete ?
+                if (\is_object($entityToDelete) && method_exists($entityToDelete, 'getDeletedAt')) {
+                    /* @phpstan-ignore method.notFound */
+                    $entityToDelete->setDeletedAt(new DateTime('NOW'));
+                    $this->entityManager->persist($entityToDelete);
+                } else {
+                    $this->entityManager->remove($entityToDelete);
+                }
+                $this->entityManager->flush();
+
+                $this->addFlash('success', $successMsg);
+            } catch (ForeignKeyConstraintViolationException) {
+                $this->entityManager->clear();
+                $this->addFlash('error', 'Impossible de supprimer : des données liées à cet élément existent encore.');
+            }
+
             try {
                 return $this->redirectToRoute($redirectStr, $redirectParams, 303);
             } catch (Exception $e) {

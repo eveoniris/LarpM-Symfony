@@ -245,6 +245,10 @@ abstract class BaseBonus
 
     public function getType(): ?BonusType
     {
+        if ($this->type === null) {
+            return null;
+        }
+
         return BonusType::tryFrom($this->type);
     }
 

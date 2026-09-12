@@ -45,7 +45,6 @@ abstract class BaseUser
     protected ?string $password = '';
 
     #[Column(type: Types::STRING, length: 255)]
-    #[Assert\NotBlank]
     protected ?string $pwd = '';
 
     #[Column(type: Types::STRING, length: 100, unique: true)]

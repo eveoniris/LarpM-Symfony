@@ -1519,12 +1519,6 @@ parameters:
 			path: src/Form/Participant/ParticipantNewType.php
 
 		-
-			message: '#^Class App\\Form\\Participant\\ParticipantPersonnageReleveType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/Participant/ParticipantPersonnageReleveType.php
-
-		-
 			message: '#^Class App\\Form\\Participant\\ParticipantRemoveType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -1535,12 +1529,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Form/ParticipantBilletType.php
-
-		-
-			message: '#^Class App\\Form\\ParticipantPersonnageSecondaireType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ParticipantPersonnageSecondaireType.php
 
 		-
 			message: '#^Class App\\Form\\ParticipantRestaurationType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
@@ -1691,12 +1679,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Form/PersonnageItemType.php
-
-		-
-			message: '#^Class App\\Form\\PersonnageOldFindType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/PersonnageOldFindType.php
 
 		-
 			message: '#^Class App\\Form\\PersonnageOriginType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'

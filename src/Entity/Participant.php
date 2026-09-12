@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Enum\LevelType;
+use App\Enum\PersonnageRoleType;
 use App\Repository\ParticipantRepository;
+use App\Validator\ChainePersonnagesCoherente;
 use DateTime;
 use Doctrine\ORM\Mapping\Entity;
 use Stringable;
 
 #[Entity(repositoryClass: ParticipantRepository::class)]
+#[ChainePersonnagesCoherente]
 class Participant extends BaseParticipant implements Stringable
 {
     public function __construct()
@@ -224,5 +227,107 @@ class Participant extends BaseParticipant implements Stringable
         $this->setPersonnage(null);
 
         return $this;
+    }
+
+    /**
+     * Le personnage réellement joué dans les instances hors temps / hors lieu.
+     *
+     * Ne pas choisir de personnage de substitution signifie que le personnage
+     * principal endosse les deux rôles.
+     */
+    public function getPersonnageSubstitutionEffectif(): ?Personnage
+    {
+        return $this->getPersonnageSubstitution() ?? $this->getPersonnage();
+    }
+
+    /**
+     * La chaîne de jeu du participant, dans l'ordre où le joueur la descend.
+     *
+     * Le rôle de substitution n'apparaît que si l'opus propose l'option ; l'entrée
+     * correspondante peut être nulle (le principal endosse alors les deux rôles).
+     *
+     * La clé « libelle » porte le texte prêt à afficher, ou null si le rôle n'est
+     * pas pourvu : les vues n'ont ainsi pas à savoir accorder un archétype.
+     *
+     * @return array<int, array{role: PersonnageRoleType, personnage: Personnage|null, archetype: PersonnageSecondaire|null, libelle: string|null}>
+     */
+    public function getChainePersonnages(): array
+    {
+        $chaine = [$this->maillonPersonnage(PersonnageRoleType::PRINCIPAL, $this->getPersonnage())];
+
+        if ($this->getGn()->isSubstitutionActive()) {
+            $chaine[] = $this->maillonPersonnage(PersonnageRoleType::SUBSTITUTION, $this->getPersonnageSubstitution());
+        }
+
+        $chaine[] = $this->maillonPersonnage(PersonnageRoleType::RELEVE, $this->getPersonnageReleve());
+
+        $archetype = $this->getPersonnageSecondaire();
+        $chaine[] = [
+            'role' => PersonnageRoleType::ARCHETYPE,
+            'personnage' => null,
+            'archetype' => $archetype,
+            'libelle' => $archetype?->getLabelPourGenre($this->getPersonnage()?->getGenreOrNull()),
+        ];
+
+        return $chaine;
+    }
+
+    /**
+     * @return array{role: PersonnageRoleType, personnage: Personnage|null, archetype: null, libelle: string|null}
+     */
+    private function maillonPersonnage(PersonnageRoleType $role, ?Personnage $personnage): array
+    {
+        return [
+            'role' => $role,
+            'personnage' => $personnage,
+            'archetype' => null,
+            'libelle' => $personnage?->getIdentity(),
+        ];
+    }
+
+    /**
+     * Les personnages engagés par cette participation, tous rôles confondus.
+     *
+     * Sert au garde-fou d'unicité : un personnage ne peut tenir qu'un seul rôle
+     * sur un GN donné, toutes participations confondues.
+     *
+     * @return array<string, Personnage> indexé par rôle
+     */
+    public function getPersonnagesEngages(): array
+    {
+        $parRole = [
+            PersonnageRoleType::PRINCIPAL->value => $this->getPersonnage(),
+            PersonnageRoleType::SUBSTITUTION->value => $this->getPersonnageSubstitution(),
+            PersonnageRoleType::RELEVE->value => $this->getPersonnageReleve(),
+        ];
+
+        $engages = [];
+        foreach ($parRole as $role => $personnage) {
+            if (!$personnage instanceof Personnage) {
+                continue;
+            }
+
+            $engages[$role] = $personnage;
+        }
+
+        return $engages;
+    }
+
+    /**
+     * Un personnage alternatif (relève, substitution, archétype) ne peut être choisi
+     * que si la participation dispose d'un billet et d'un personnage principal.
+     */
+    public function peutChoisirPersonnageAlternatif(): bool
+    {
+        return null !== $this->getBillet() && null !== $this->getPersonnage();
+    }
+
+    /**
+     * Le groupe du participant est-il verrouillé ? Dans ce cas la composition de la
+     * chaîne de personnages n'est plus modifiable.
+     */
+    public function isVerrouille(): bool
+    {
+        return $this->getGroupeGn()?->getGroupe()?->getLock() ?? false;
     }
 }

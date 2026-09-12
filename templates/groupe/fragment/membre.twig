@@ -101,6 +101,7 @@
                             - {{ participant.personnage.nom }}{% if participant.personnage.surnom %} ({{ participant.personnage.surnom }}){% endif %}
                             - {{ participant.personnage.classeName }}
                         </a>
+                        {% include '_partials/badgesPersonnagesAlternatifs.twig' with {'participant': participant} %}
 
                         {% if isAdmin %}
                             <br/>

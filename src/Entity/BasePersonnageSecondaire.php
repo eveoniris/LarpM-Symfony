@@ -46,14 +46,14 @@ abstract class BasePersonnageSecondaire
     #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
     protected Collection $personnageSecondairesSkills;
 
-    /** @var Collection<int, User> */
-    #[OneToMany(mappedBy: 'personnageSecondaire', targetEntity: User::class, cascade: ['persist', 'remove'])]
-    #[JoinColumn(name: 'id', referencedColumnName: 'personnage_secondaire_id', nullable: false)]
-    protected Collection $users;
-
+    /**
+     * La colonne est NOT NULL, mais la propriété PHP tolère l'absence avant
+     * persistance : getClasse() et setClasse() annoncent déjà ?Classe, et une
+     * propriété typée non initialisée lève une Error au moindre accès.
+     */
     #[ManyToOne(targetEntity: Classe::class, inversedBy: 'personnageSecondaires')]
     #[JoinColumn(name: 'classe_id', referencedColumnName: 'id', nullable: false)]
-    protected Classe $classe;
+    protected ?Classe $classe = null;
 
     public function __construct()
     {
@@ -61,7 +61,6 @@ abstract class BasePersonnageSecondaire
         $this->personnageSecondaireCompetences = new ArrayCollection();
         $this->personnageSecondairesCompetences = new ArrayCollection();
         $this->personnageSecondairesSkills = new ArrayCollection();
-        $this->users = new ArrayCollection();
     }
 
     /**
@@ -80,16 +79,6 @@ abstract class BasePersonnageSecondaire
     public function addPersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
     {
         $this->personnageSecondaireCompetences[] = $personnageSecondaireCompetence;
-
-        return $this;
-    }
-
-    /**
-     * Add User entity to collection (one to many).
-     */
-    public function addUser(User $user): static
-    {
-        $this->users[] = $user;
 
         return $this;
     }
@@ -151,16 +140,6 @@ abstract class BasePersonnageSecondaire
     }
 
     /**
-     * Get User entity collection (one to many).
-     *
-     * @return Collection<int, User>
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    /**
      * Remove Participant entity from collection (one to many).
      */
     public function removeParticipant(Participant $participant): static
@@ -176,16 +155,6 @@ abstract class BasePersonnageSecondaire
     public function removePersonnageSecondaireCompetence(PersonnageSecondaireCompetence $personnageSecondaireCompetence): static
     {
         $this->personnageSecondaireCompetences->removeElement($personnageSecondaireCompetence);
-
-        return $this;
-    }
-
-    /**
-     * Remove User entity from collection (one to many).
-     */
-    public function removeUser(User $user): static
-    {
-        $this->users->removeElement($user);
 
         return $this;
     }
