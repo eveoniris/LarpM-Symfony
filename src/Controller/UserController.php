@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Age;
 use App\Entity\Annonce;
+use App\Entity\Classe;
 use App\Entity\EtatCivil;
 use App\Entity\Gn;
 use App\Entity\LogAction;
 use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\Restriction;
+use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\LogActionType;
 use App\Enum\Role;
@@ -25,6 +28,7 @@ use App\Form\UserFindType;
 use App\Form\UserRegisterType;
 use App\Form\UserRestrictionType;
 use App\Manager\FedegnManager;
+use App\Manager\GroupeManager;
 use App\Repository\PersonnageRepository;
 use App\Repository\UserRepository;
 use App\Service\PagerService;
@@ -951,8 +955,14 @@ class UserController extends AbstractController
             $this->addFlash('error', (string) $form->getErrors(true));
         }
 
+        $classes = $this->entityManager->getRepository(Classe::class)->findAllCreation();
+
         return $this->render('personnage/add.twig', [
             'form' => $form->createView(),
+            'ages' => $this->entityManager->getRepository(Age::class)->findAllOnCreation(),
+            'classes' => array_unique($classes),
+            'territoires' => $this->entityManager->getRepository(Territoire::class)->findRoot(),
+            'gn' => GroupeManager::getGnActif($this->entityManager),
         ]);
 
         // $this->redirectToRoute('personnage.add');

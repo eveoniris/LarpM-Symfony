@@ -17,7 +17,7 @@
             </div>
 
             <div class="col-md-8">
-                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Lors de la création d\'un personnage vous recevez {{ participant.gn.xpCreation }} points
+                {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : 'Lors de la création d\'un personnage vous recevez ' ~ participant.gn.xpCreation ~ ' points
                     d\'expériences (XP) qui vous serviront à obtenir des compétences.'} %}
 
                 <div class="accordion" id="accordionHelper">

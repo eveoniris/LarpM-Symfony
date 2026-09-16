@@ -42,6 +42,7 @@ use App\Entity\RenommeHistory;
 use App\Entity\Ressource;
 use App\Entity\Sort;
 use App\Entity\Technologie;
+use App\Entity\Territoire;
 use App\Entity\Token;
 use App\Entity\User;
 use App\Enum\ChronologyType;
@@ -500,9 +501,15 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
+        $classes = $this->entityManager->getRepository(Classe::class)->findAllCreation();
+
         return $this->render('personnage/add.twig', [
             'form' => $form->createView(),
             'participant' => $participant,
+            'ages' => $this->entityManager->getRepository(Age::class)->findAllOnCreation(),
+            'classes' => array_unique($classes),
+            'territoires' => $this->entityManager->getRepository(Territoire::class)->findRoot(),
+            'gn' => $participant?->getGn() ?? $gnActif,
         ]);
     }
 
