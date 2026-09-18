@@ -11,6 +11,7 @@ enum Role: string
     case ADMIN = 'ROLE_ADMIN';
     case SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
     case CARTOGRAPHE = 'ROLE_CARTOGRAPHE';
+    case COHERENCE = 'ROLE_COHERENCE';
     case DEV = 'ROLE_DEV';
     case GESTION = 'ROLE_GESTION';
     case MODERATEUR = 'ROLE_MODERATEUR';
@@ -37,7 +38,8 @@ enum Role: string
             self::SUPER_ADMIN->value => 'Droit divin, en plus de l\'admin, peu se faire passer pour autrui',
             self::ADMIN->value => 'Droit de modification sur tout',
             self::DEV->value => 'Droit de développeur',
-            self::CARTOGRAPHE->value => 'Droit de modification sur l\'univers',
+            self::CARTOGRAPHE->value => 'Droit de modification sur le territoire et les fiefs',
+            self::COHERENCE->value => 'Garant de la cohérence de l\'univers, droit de modification complet sur le menu Univers',
             self::MODERATEUR->value => 'Modération du forum',
             self::ORGA->value => 'Organisateur',
             self::REDACTEUR->value => 'Droit de modification des annonces',

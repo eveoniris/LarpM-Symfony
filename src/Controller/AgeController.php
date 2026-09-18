@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Age;
+use App\Enum\Role;
 use App\Form\AgeType;
 use App\Repository\AgeRepository;
 use App\Repository\PersonnageRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -17,7 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
+#[IsGranted(new MultiRolesExpression(Role::REGLE, Role::SCENARISTE))]
 #[Route('/age', name: 'age.')]
 class AgeController extends AbstractController
 {
@@ -56,6 +58,7 @@ class AgeController extends AbstractController
     }
 
     #[Route('/add', name: 'add')]
+    #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request): RedirectResponse|Response
     {
         $age = new Age();
@@ -73,6 +76,7 @@ class AgeController extends AbstractController
             'POST',
         ],
     )]
+    #[IsGranted('ROLE_REGLE')]
     public function updateAction(Request $request, #[MapEntity] Age $age): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate($request, $age, AgeType::class);
@@ -118,6 +122,7 @@ class AgeController extends AbstractController
             'POST',
         ],
     )]
+    #[IsGranted('ROLE_REGLE')]
     public function deleteAction(#[MapEntity] Age $age): RedirectResponse|Response
     {
         return $this->genericDelete($age, 'Supprimer un age', 'L\'age a été supprimée', 'age.list', [

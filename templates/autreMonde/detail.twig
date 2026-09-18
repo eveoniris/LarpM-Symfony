@@ -1,0 +1,74 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Autres mondes{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des autres mondes', 'route': path('autreMonde.list') },
+            {'name' : 'Détail' }
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Détail</h5>
+        </div>
+
+        {% if isAdmin %}
+            <div class="d-flex justify-content-end">
+
+                <div class="btn-toolbar d-flex justify-content-between" role="toolbar">
+                    <div class="btn-group" role="group">
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Ajouter"
+                           href="{{ path('autreMonde.add') }}"><i
+                                class="fa fa-plus"></i> Ajouter</a>
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Modifier"
+                           href="{{ path('autreMonde.update',{'autreMonde':autreMonde.id}) }}"><i
+                                class="fa fa-pencil"></i> Modifier</a>
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Supprimer"
+                           href="{{ path('autreMonde.delete',{'autreMonde':autreMonde.id}) }}"><i
+                                class="fa fa-eraser"></i> Supprimer</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="card">
+
+            <div class="list-group">
+
+                <div class="list-group-item">
+                    <div class="list-group-item-heading fw-bold mb-1">Titre</div>
+                    <div class="list-group-item-text ps-1">{{ autreMonde.titre }}</div>
+                </div>
+
+                <div class="list-group-item">
+                    <div class="list-group-item-heading fw-bold mb-1">Description</div>
+                    <div class="list-group-item-text ps-1">{{ autreMonde.description|markdown_to_html }}</div>
+                </div>
+
+                {% if isAdmin %}
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1 border-gamemaster border-bottom">
+                            <i data-bs-toggle="tooltip"
+                               data-bs-placement="bottom"
+                               class="fa fa-feather text-gamemaster"
+                               title="Information scénariste"></i>
+                            Information scénariste
+                        </div>
+                        <div
+                            class="list-group-item-text ps-1">{{ autreMonde.descriptionScenariste|default('')|markdown_to_html }}</div>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}

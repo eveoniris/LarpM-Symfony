@@ -36,7 +36,7 @@ class EspeceType extends AbstractType
             ],
         ])->add('description_secrete', TextareaType::class, [
             'required' => false,
-            'label' => 'Description secrète',
+            'label' => 'Information scénariste',
             'attr' => [
                 'rows' => 9,
                 'class' => 'tinymce',

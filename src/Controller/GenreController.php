@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Genre;
+use App\Enum\Role;
 use App\Form\GenreType;
+use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -15,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
+#[IsGranted(new MultiRolesExpression(Role::REGLE, Role::SCENARISTE))]
 class GenreController extends AbstractController
 {
     /**
@@ -33,6 +35,7 @@ class GenreController extends AbstractController
      * Ajout d'un genre.
      */
     #[Route('/genre/add', name: 'genre.add')]
+    #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         $genre = new Genre();
@@ -89,6 +92,7 @@ class GenreController extends AbstractController
      * Met à jour un genre.
      */
     #[Route('/genre/{genre}/update', name: 'genre.update')]
+    #[IsGranted('ROLE_REGLE')]
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,

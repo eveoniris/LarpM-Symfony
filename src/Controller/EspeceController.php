@@ -25,7 +25,7 @@ class EspeceController extends AbstractController
 {
     #[Route(name: 'index')]
     #[Route(name: 'list')]
-    #[IsGranted(new MultiRolesExpression(Role::REGLE), message: 'You are not allowed to access to this.')]
+    #[IsGranted(new MultiRolesExpression(Role::CARTOGRAPHE, Role::SCENARISTE), message: 'You are not allowed to access to this.')]
     public function indexAction(Request $request, PagerService $pagerService, EspeceRepository $repository): Response
     {
         $pagerService->setRequest($request)->setRepository($repository);
@@ -37,7 +37,7 @@ class EspeceController extends AbstractController
     }
 
     #[Route('/add', name: 'add')]
-    #[IsGranted('ROLE_REGLE')]
+    #[IsGranted(new MultiRolesExpression(Role::COHERENCE))]
     public function addAction(Request $request): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate($request, new Espece(), EspeceType::class);
@@ -47,7 +47,7 @@ class EspeceController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function detailAction(#[MapEntity] Espece $espece, PersonnageService $personnageService): Response
     {
-        $this->checkHasAccess([Role::ORGA, Role::REGLE, Role::SCENARISTE], function () use ($espece, $personnageService) {
+        $this->checkHasAccess([Role::CARTOGRAPHE, Role::SCENARISTE], function () use ($espece, $personnageService) {
             /** @var User $user */
             $user = $this->getUser();
             foreach ($user->getPersonnages() as $personnage) {
@@ -59,20 +59,23 @@ class EspeceController extends AbstractController
             return false;
         });
 
-        return $this->render('espece\detail.twig', [
+        $isAdmin = $this->isGranted(Role::CARTOGRAPHE->value) || $this->isGranted(Role::SCENARISTE->value);
+
+        return $this->render('espece/detail.twig', [
             'espece' => $espece,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
     #[Route('/{espece}/udpate', name: 'update', requirements: ['espece' => Requirement::DIGITS])]
-    #[IsGranted('ROLE_REGLE')]
+    #[IsGranted(new MultiRolesExpression(Role::COHERENCE))]
     public function updateAction(Request $request, #[MapEntity] Espece $espece): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate($request, $espece, EspeceType::class);
     }
 
     #[Route('/{espece}/delete', name: 'delete', requirements: ['espece' => Requirement::DIGITS])]
-    #[IsGranted('ROLE_REGLE')]
+    #[IsGranted(new MultiRolesExpression(Role::COHERENCE))]
     public function deleteAction(#[MapEntity] Espece $espece): RedirectResponse|Response
     {
         return $this->genericDelete($espece, 'Supprimer une espece', "L'espèce a été supprimée", 'espece.list', [
@@ -87,7 +90,7 @@ class EspeceController extends AbstractController
     }
 
     #[Route('/{espece}/personnages', name: 'personnages', requirements: ['espece' => Requirement::DIGITS])]
-    #[IsGranted('ROLE_REGLE')]
+    #[IsGranted(new MultiRolesExpression(Role::CARTOGRAPHE, Role::SCENARISTE))]
     public function personnagesAction(
         Request $request,
         #[MapEntity]

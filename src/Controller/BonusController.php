@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Bonus;
+use App\Enum\Role;
 use App\Form\Bonus\BonusType;
 use App\Repository\BonusRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +20,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
+#[IsGranted(new MultiRolesExpression(Role::REGLE, Role::SCENARISTE))]
 #[Route('/bonus', name: 'bonus.')]
 class BonusController extends AbstractController
 {
@@ -44,6 +46,7 @@ class BonusController extends AbstractController
      * Ajout d'un bonus.
      */
     #[Route('/add', name: 'add')]
+    #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate($request, new Bonus(), BonusType::class, breadcrumb: [
@@ -68,6 +71,7 @@ class BonusController extends AbstractController
      * Mise à jour d'un bonus.
      */
     #[Route('/{bonus}/udpate', name: 'update', requirements: ['bonus' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_REGLE')]
     public function updateAction(Request $request, #[MapEntity] Bonus $bonus): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate($request, $bonus, BonusType::class, breadcrumb: [
@@ -84,6 +88,7 @@ class BonusController extends AbstractController
      * Suppression d'une bonus.
      */
     #[Route('/{bonus}/delete', name: 'delete', requirements: ['bonus' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_REGLE')]
     public function deleteAction(#[MapEntity] Bonus $bonus): RedirectResponse|Response
     {
         return $this->genericDelete($bonus, 'Supprimer un bonus', 'Le bonus a été supprimée', 'bonus.list', [
