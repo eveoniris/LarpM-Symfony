@@ -1,35 +1,66 @@
-FROM php:8.3-cli
+FROM dunglas/frankenphp:1-php8.4-bookworm AS base
+WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gnupg g++ procps openssl git zip unzip locales \
-    zlib1g-dev libzip-dev libfreetype6-dev libpng-dev libwebp-dev libxpm-dev \
-    libpq-dev libjpeg-dev libjpeg62-turbo-dev libicu-dev libgd-dev libonig-dev libxslt1-dev \
-    acl vim wget npm nodejs apt-transport-https lsb-release ca-certificates \
-    && echo 'alias sf="php bin/console"' >> ~/.bashrc
+RUN install-php-extensions \
+        pdo_mysql \
+        intl \
+        zip \
+        sockets \
+        calendar \
+        mbstring \
+        exif \
+        gd \
+        xsl \
+        mysqli \
+        opcache
 
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen  \
-    &&  echo "fr_FR.UTF-8 UTF-8" >> /etc/locale.gen \
-    &&  locale-gen
 
-RUN curl -sS https://getcomposer.org/installer | php -- \
-    &&  mv composer.phar /usr/local/bin/composer
+FROM composer:2 AS build
+WORKDIR /build
 
-RUN curl -sS https://get.symfony.com/cli/installer | bash \
-    &&  mv /root/.symfony5/bin/symfony /usr/local/bin
+COPY composer.json composer.lock ./
+RUN APP_ENV=prod composer install \
+        --no-dev \
+        --no-interaction \
+        --no-progress \
+        --prefer-dist \
+        --no-scripts \
+        --no-autoloader \
+        --ignore-platform-reqs
 
-RUN docker-php-ext-configure intl \
-    && docker-php-ext-configure gd --enable-gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ --with-webp=/usr/include/ \
-    && docker-php-ext-install \
-       pdo pdo_mysql opcache intl zip calendar dom mbstring exif gd xsl mysqli
+COPY . .
+RUN APP_ENV=prod composer dump-autoload --classmap-authoritative --no-dev
 
-RUN pecl install apcu && docker-php-ext-enable apcu
 
-RUN npm install --global yarn
+FROM base AS prod
+ENV APP_ENV=prod \
+    APP_DEBUG=0
 
-CMD tail -f /dev/null
+ARG USER=appuser
 
-WORKDIR /var/www/html/
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/zzz-app.ini
+COPY --from=build /build /app
 
-# Expose port 8000 and launch server.
-EXPOSE 8000
-CMD symfony server:start
+RUN DATABASE_URL="sqlite:///:memory:" php bin/console cache:clear --no-warmup \
+    && DATABASE_URL="sqlite:///:memory:" php bin/console cache:warmup \
+    && useradd ${USER} \
+    && setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp \
+    && chown -R ${USER}:${USER} /app /config/caddy /data/caddy
+
+USER ${USER}
+
+
+FROM ghcr.io/symfony-cli/symfony-cli:v5 AS symfony-cli
+
+FROM base AS dev
+ENV APP_ENV=dev \
+    APP_DEBUG=1
+
+# Install Symfony CLI and Composer
+COPY --link --from=symfony-cli /usr/local/bin/symfony /usr/local/bin/symfony
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+COPY --chmod=755 docker/scripts/docker-entrypoint-dev.sh /usr/local/bin/docker-entrypoint-dev.sh
+ENTRYPOINT ["docker-entrypoint-dev.sh"]
+
+CMD ["frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile"]
