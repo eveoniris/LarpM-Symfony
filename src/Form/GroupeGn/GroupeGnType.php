@@ -152,7 +152,7 @@ class GroupeGnType extends AbstractType
                 $personnageRepository->findVivantsParticipantsAuGroupeGn($groupeGn),
                 'p',
                 $gn,
-                $groupeGn
+                $groupeGn,
             ),
             'constraints' => [
                 /* @phpstan-ignore argument.type */
