@@ -877,6 +877,12 @@ parameters:
 			path: src/Form/AttributeTypeType.php
 
 		-
+			message: '#^Class App\\Form\\AutreMonde\\AutreMondeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/AutreMonde/AutreMondeType.php
+
+		-
 			message: '#^Class App\\Form\\BackgroundDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -1037,6 +1043,12 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Form/ConstructionType.php
+
+		-
+			message: '#^Class App\\Form\\Cosmogonie\\CosmogonieType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Cosmogonie/CosmogonieType.php
 
 		-
 			message: '#^Class App\\Form\\Culture\\CultureDeleteType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
@@ -2759,6 +2771,12 @@ parameters:
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: tests/bootstrap.php
+
+		-
+			message: '#^Class App\\Security\\Voter\\TerritoireVoter extends generic class Symfony\\Component\\Security\\Core\\Authorization\\Voter\\Voter but does not specify its types\: TAttribute, TSubject$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Security/Voter/TerritoireVoter.php
 
 
 

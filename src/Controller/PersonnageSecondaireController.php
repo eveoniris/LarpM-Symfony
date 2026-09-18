@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\PersonnageSecondaire;
+use App\Enum\Role;
 use App\Form\PersonnageSecondaireDeleteType;
 use App\Form\PersonnageSecondaireType;
+use App\Security\MultiRolesExpression;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -17,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
+#[IsGranted(new MultiRolesExpression(Role::REGLE, Role::SCENARISTE))]
 class PersonnageSecondaireController extends AbstractController
 {
     /**
@@ -49,6 +51,7 @@ class PersonnageSecondaireController extends AbstractController
      * Ajout d'un personnage secondaire.
      */
     #[Route('/personnageSecondaire/add', name: 'personnageSecondaire.add')]
+    #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request): RedirectResponse|Response
     {
         $form = $this->createForm(PersonnageSecondaireType::class, new PersonnageSecondaire())->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
@@ -82,6 +85,7 @@ class PersonnageSecondaireController extends AbstractController
      * Mise à jour d'un personnage secondaire.
      */
     #[Route('/personnageSecondaire/update/{personnageSecondaire}', name: 'personnageSecondaire.update')]
+    #[IsGranted('ROLE_REGLE')]
     public function updateAction(
         Request $request,
         #[MapEntity]
@@ -142,6 +146,7 @@ class PersonnageSecondaireController extends AbstractController
      * Suppression d'un personnage secondaire.
      */
     #[Route('/personnageSecondaire/delete/{personnageSecondaire}', name: 'personnageSecondaire.delete')]
+    #[IsGranted('ROLE_REGLE')]
     public function deleteAction(
         Request $request,
         EntityManagerInterface $entityManager,

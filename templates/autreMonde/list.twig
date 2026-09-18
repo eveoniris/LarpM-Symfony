@@ -1,25 +1,25 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Espèce{% endblock title %}
+{% block title %}Autres mondes{% endblock title %}
 
 {% block body %}
 
     {% include '_partials/breadcrumb.twig' with {'items' :
         [
-            {'name' : 'Liste des espèces' },
+            {'name' : 'Liste des autres mondes' },
         ]
     } %}
 
     <div class="well well-sm">
 
         <div class="header">
-            <h5>Liste des espèces</h5>
+            <h5>Liste des autres mondes</h5>
         </div>
 
         {% include '_partials/formListSearch.twig' with
             {
-                'canAdd': {'title': 'Ajouter une escpèce', 'path': path('espece.add')},
-                'actionPath' : path('espece.list')
+                'canAdd': {'title': 'Ajouter un autre monde', 'path': path('autreMonde.add')},
+                'actionPath' : path('autreMonde.list')
             } %}
     </div>
 
@@ -27,48 +27,36 @@
 
     <div class="table-responsive">
     <table class="table table-sm table-striped table-bordered table-hover">
-        {% include '_partials/thead.twig' with  { 'route': 'espece.list', 'rows': [
+        {% include '_partials/thead.twig' with  { 'route': 'autreMonde.list', 'rows': [
             {'name' : 'Id', 'field' : 'id', 'css' : 'text-center'},
-            {'name' : 'Secret', 'field' : 'secret', 'css' : 'text-center'},
-            {'name' : 'Nom', 'field' : 'nom', 'css' : 'text-center'},
+            {'name' : 'Titre', 'field' : 'titre', 'css' : 'text-center'},
             {'name' : 'Description', 'field' : 'description'},
-            {'name' : 'Type', 'field' : 'type'},
             {'name' : 'Actions', 'css' : 'text-center'},
         ]} %}
         <tbody>
-        {% for espece in paginator %}
+        {% for autreMonde in paginator %}
             <tr>
                 <td class="text-center align-middle col-1">
-                    {{ espece.id|highlight(pagerService.searchValue) }}
+                    {{ autreMonde.id|highlight(pagerService.searchValue) }}
                 </td>
-                <td class="text-center align-middle col-1">
-                    {% if espece.secret %}<span class="text-warning">Oui</span>{% else %}<span class="text-info">Non</span>{% endif %}
-                </td>
-                <td class="text-center align-middle col-1">{{ espece.nom|highlight(pagerService.searchValue) }}</td>
+                <td class="text-center align-middle col-1">{{ autreMonde.titre|highlight(pagerService.searchValue) }}</td>
                 <td>
-                    {{ espece.description|markdown_to_html|highlight(pagerService.searchValue) }}
-                </td>
-                <td>
-                    {% if espece.type %}{{ espece.type|trans|highlight(pagerService.searchValue) }}{% endif %}
+                    {{ autreMonde.description|markdown_to_html|highlight(pagerService.searchValue) }}
                 </td>
                 <td class="col-1">
                     <div class="btn-toolbar float-end" role="toolbar">
                         <div class="btn-group-vertical" role="group">
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Modifier"
-                               href="{{ path('espece.update',{'espece':espece.id}) }}"><i
+                               href="{{ path('autreMonde.update',{'autreMonde':autreMonde.id}) }}"><i
                                         class="fa fa-pencil"></i> Modifier</a>
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Détail"
-                               href="{{ path('espece.detail',{'espece':espece.id}) }}"><i
+                               href="{{ path('autreMonde.detail',{'autreMonde':autreMonde.id}) }}"><i
                                         class="fa fa-eye"></i> Detail</a>
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Personnages associés"
-                               href="{{ path('espece.personnages',{'espece':espece.id}) }}"><i
-                                        class="fa fa-users"></i> Personnages ({{ espece.personnages|length }})</a>
-                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Supprimer"
-                               href="{{ path('espece.delete',{'espece':espece.id}) }}"><i
+                               href="{{ path('autreMonde.delete',{'autreMonde':autreMonde.id}) }}"><i
                                         class="fa fa-eraser"></i> Supprimer</a>
                         </div>
                     </div>

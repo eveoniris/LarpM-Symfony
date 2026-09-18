@@ -106,7 +106,7 @@ class Espece
 
     public function getType(): ?EspeceType
     {
-        return EspeceType::tryFrom($this->type);
+        return null !== $this->type ? EspeceType::tryFrom($this->type) : null;
     }
 
     public function setType(string|EspeceType|null $type): static

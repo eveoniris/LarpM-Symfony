@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Level;
+use App\Enum\Role;
 use App\Form\LevelType;
 use App\Repository\LevelRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -16,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
+#[IsGranted(new MultiRolesExpression(Role::REGLE, Role::SCENARISTE))]
 #[Route('/level', name: 'level.')]
 class LevelController extends AbstractController
 {
@@ -35,6 +37,7 @@ class LevelController extends AbstractController
     }
 
     #[Route('/add', name: 'add')]
+    #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request): RedirectResponse|Response
     {
         $level = new Level();
@@ -52,6 +55,7 @@ class LevelController extends AbstractController
             'POST',
         ],
     )]
+    #[IsGranted('ROLE_REGLE')]
     public function updateAction(Request $request, #[MapEntity] Level $level): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate($request, $level, LevelType::class);
@@ -73,6 +77,7 @@ class LevelController extends AbstractController
             'POST',
         ],
     )]
+    #[IsGranted('ROLE_REGLE')]
     public function deleteAction(#[MapEntity] Level $level): RedirectResponse|Response
     {
         return $this->genericDelete($level, title: 'Supprimer un niveau', successMsg: 'Le niveau a été supprimée', redirect: 'level.list', breadcrumb: [

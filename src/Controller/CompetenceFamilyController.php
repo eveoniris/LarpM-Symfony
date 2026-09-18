@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\CompetenceFamily;
+use App\Enum\Role;
 use App\Form\CompetenceFamilyType;
 use App\Repository\CompetenceFamilyRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -23,7 +25,7 @@ class CompetenceFamilyController extends AbstractController
      * Liste les famille de competence.
      */
     #[Route('/competenceFamily', name: 'competenceFamily.index')]
-    #[IsGranted('ROLE_REGLE')]
+    #[IsGranted(new MultiRolesExpression(Role::REGLE, Role::SCENARISTE))]
     public function indexAction(
         Request $request,
         PagerService $pagerService,

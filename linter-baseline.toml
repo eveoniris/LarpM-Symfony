@@ -325,6 +325,18 @@ message = "Controller classes should be declared as `final`."
 count = 1
 
 [[issues]]
+file = "src/Controller/AutreMondeController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/AutreMondeController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
 file = "src/Controller/BackgroundController.php"
 code = "cyclomatic-complexity"
 message = "Class has high complexity."
@@ -458,6 +470,18 @@ count = 1
 
 [[issues]]
 file = "src/Controller/ConnaissanceController.php"
+code = "final-controller"
+message = "Controller classes should be declared as `final`."
+count = 1
+
+[[issues]]
+file = "src/Controller/CosmogonieController.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Controller/CosmogonieController.php"
 code = "final-controller"
 message = "Controller classes should be declared as `final`."
 count = 1
@@ -4693,6 +4717,12 @@ message = "Literal passwords or sensitive data should not be stored in code."
 count = 4
 
 [[issues]]
+file = "tests/Functional/Security/UniversAndReglesAccessTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
 file = "tests/Integration/Service/CompetenceServiceTest.php"
 code = "too-many-methods"
 message = "Class has too many methods."
@@ -4706,6 +4736,12 @@ count = 1
 
 [[issues]]
 file = "tests/Unit/Entity/PersonnageAnomalieTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Unit/Security/TerritoireVoterTest.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1

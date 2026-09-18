@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\AttributeType;
+use App\Enum\Role;
 use App\Form\AttributeTypeType;
 use App\Repository\AttributeTypeRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -16,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
+#[IsGranted(new MultiRolesExpression(Role::REGLE, Role::SCENARISTE))]
 #[Route('/attributType', name: 'attributeType.')]
 class AttributeTypeController extends AbstractController
 {
@@ -36,6 +38,7 @@ class AttributeTypeController extends AbstractController
     }
 
     #[Route('/add', name: 'add')]
+    #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request): RedirectResponse|Response
     {
         $attributeType = new AttributeType();
@@ -44,6 +47,7 @@ class AttributeTypeController extends AbstractController
     }
 
     #[Route('/{attributeType}/update', name: 'update', requirements: ['attributeType' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_REGLE')]
     public function updateAction(Request $request, #[MapEntity] AttributeType $attributeType): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate($request, $attributeType, AttributeTypeType::class);
@@ -59,6 +63,7 @@ class AttributeTypeController extends AbstractController
             'POST',
         ],
     )]
+    #[IsGranted('ROLE_REGLE')]
     public function deleteAction(#[MapEntity] AttributeType $attributeType): RedirectResponse|Response
     {
         return $this->genericDelete($attributeType, title: 'Supprimer un type d\'attribut', successMsg: 'Le type d\'attribut a été supprimée', redirect: 'attributeType.list', breadcrumb: [

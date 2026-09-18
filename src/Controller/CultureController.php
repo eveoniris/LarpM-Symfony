@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Culture;
+use App\Enum\Role;
 use App\Form\Culture\CultureDeleteType;
 use App\Form\Culture\CultureType;
+use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_CARTOGRAPHE')]
+#[IsGranted(new MultiRolesExpression(Role::CARTOGRAPHE, Role::SCENARISTE))]
 class CultureController extends AbstractController
 {
     /**
@@ -34,6 +36,7 @@ class CultureController extends AbstractController
      * Ajout d'une culture.
      */
     #[Route('/culture/add', name: 'culture.add')]
+    #[IsGranted(new MultiRolesExpression(Role::COHERENCE))]
     public function addAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(CultureType::class, new Culture());
@@ -73,6 +76,7 @@ class CultureController extends AbstractController
      * Mise à jour d'une culture.
      */
     #[Route('/culture/{culture}/update', name: 'culture.update')]
+    #[IsGranted(new MultiRolesExpression(Role::COHERENCE))]
     public function updateAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -103,6 +107,7 @@ class CultureController extends AbstractController
      * Suppression d'une culture.
      */
     #[Route('/culture/{culture}/delete', name: 'culture.delete')]
+    #[IsGranted(new MultiRolesExpression(Role::COHERENCE))]
     public function deleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
