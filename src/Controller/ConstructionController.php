@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Construction;
+use App\Enum\Role;
 use App\Form\ConstructionType;
 use App\Repository\ConstructionRepository;
 use App\Repository\TerritoireRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -17,7 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
+#[IsGranted(new MultiRolesExpression(Role::REGLE, Role::SCENARISTE))]
 #[Route('/construction', name: 'construction.')]
 class ConstructionController extends AbstractController
 {
@@ -43,6 +45,7 @@ class ConstructionController extends AbstractController
      * Ajoute une construction.
      */
     #[Route('/add', name: 'add')]
+    #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request): Response|RedirectResponse
     {
         return $this->handleCreateOrUpdate($request, new Construction(), ConstructionType::class);
@@ -52,6 +55,7 @@ class ConstructionController extends AbstractController
      * Modifie une construction.
      */
     #[Route('/{construction}/update', name: 'update', requirements: ['construction' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_REGLE')]
     public function updateAction(Request $request, #[MapEntity] Construction $construction): Response|RedirectResponse
     {
         return $this->handleCreateOrUpdate($request, $construction, ConstructionType::class);
@@ -61,6 +65,7 @@ class ConstructionController extends AbstractController
      * Supprime une construction.
      */
     #[Route('/{construction}/delete', name: 'delete', requirements: ['construction' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_REGLE')]
     public function deleteAction(#[MapEntity] Construction $construction): Response|RedirectResponse
     {
         return $this->genericDelete($construction, 'Supprimer une construction', 'La construction a été supprimée', 'construction.list', [

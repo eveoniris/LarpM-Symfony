@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Merveille;
+use App\Enum\Role;
 use App\Form\Merveille\MerveilleType;
 use App\Repository\MerveilleRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -17,11 +19,12 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
+#[IsGranted(new MultiRolesExpression(Role::REGLE, Role::SCENARISTE))]
 #[Route('/merveille', name: 'merveille.')]
 class MerveilleController extends AbstractController
 {
     #[Route('/add', name: 'add')]
+    #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request, EntityManagerInterface $entityManager): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate($request, new Merveille(), MerveilleType::class);
@@ -58,6 +61,7 @@ class MerveilleController extends AbstractController
     }
 
     #[Route('/{merveille}/delete', name: 'delete', requirements: ['merveille' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_REGLE')]
     public function deleteAction(#[MapEntity] Merveille $merveille): RedirectResponse|Response
     {
         return $this->genericDelete($merveille, 'Supprimer une merveille', 'La merveille a été supprimée', 'merveille.list', [
@@ -103,6 +107,7 @@ class MerveilleController extends AbstractController
     }
 
     #[Route('/{merveille}/udpate', name: 'update', requirements: ['merveille' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_REGLE')]
     public function updateAction(Request $request, #[MapEntity] Merveille $merveille): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate($request, $merveille, MerveilleType::class);

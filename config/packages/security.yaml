@@ -60,13 +60,21 @@ security:
             # switch_user: true
 
     role_hierarchy:
-        ROLE_ADMIN: [ ROLE_USER, ROLE_SCENARISTE, ROLE_ORGA, ROLE_GESTION, ROLE_REGLE, ROLE_STOCK, ROLE_REDACTEUR, ROLE_INTER_JEU ]
+        ROLE_ADMIN: [ ROLE_USER, ROLE_SCENARISTE, ROLE_ORGA, ROLE_GESTION, ROLE_REGLE, ROLE_STOCK, ROLE_REDACTEUR, ROLE_INTER_JEU, ROLE_COHERENCE ]
         ROLE_SUPER_ADMIN: [ ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH ]
         ROLE_DEV: [ ROLE_SUPER_ADMIN ]
         ROLE_REGLE: [ ROLE_WARGAME, ROLE_TERRITOIRE ]
-        ROLE_SCENARISTE: [ ROLE_WARGAME, ROLE_GROUPE_TRANSVERSE, ROLE_CARTOGRAPHE ]
+        # ROLE_SCENARISTE n'hérite plus de ROLE_CARTOGRAPHE : un scénariste n'a plus d'écriture
+        # globale sur les territoires/fiefs/cultures, seulement une lecture (cf. menu.twig et
+        # les contrôleurs du domaine Univers) et une écriture ciblée sur son propre territoire
+        # (voir TerritoireVoter).
+        ROLE_SCENARISTE: [ ROLE_WARGAME, ROLE_GROUPE_TRANSVERSE ]
         ROLE_ORGA: [ ROLE_WARGAME, ROLE_GROUPE_TRANSVERSE, ROLE_CARTOGRAPHE ]
         ROLE_CARTOGRAPHE: [ ROLE_TERRITOIRE ]
+        # Garant de la cohérence de l'univers : droits complets de Cartographe (Territoire/Fief),
+        # plus (via les contrôleurs) l'écriture sur Culture/Espece/Cosmogonie/Autres mondes que
+        # Cartographe seul ne donne pas. N'hérite pas de ROLE_SCENARISTE (rôle Univers uniquement).
+        ROLE_COHERENCE: [ ROLE_CARTOGRAPHE ]
 
     # Note: Only the *first* matching rule is applied
     access_control:

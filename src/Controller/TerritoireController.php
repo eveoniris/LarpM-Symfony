@@ -59,7 +59,7 @@ class TerritoireController extends AbstractController
      * Modifier les listes de cibles pour les quêtes commerciales.
      */
     // #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access to this.')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::COHERENCE))]
     #[Route('/territoire/add', name: 'territoire.add')]
     public function addAction(Request $request): RedirectResponse|Response
     {
@@ -126,7 +126,7 @@ class TerritoireController extends AbstractController
     /**
      * Ajoute une construction dans un territoire.
      */
-    #[IsGranted(new MultiRolesExpression(Role::TERRITOIRE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/constructionAdd', name: 'territoire.constructionAdd')]
     public function constructionAddAction(
         Request $request,
@@ -171,7 +171,7 @@ class TerritoireController extends AbstractController
         ]);
     }
 
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/sanctuaireReligionEdit', name: 'territoire.sanctuaireReligionEdit')]
     public function sanctuaireReligionEditAction(
         Request $request,
@@ -199,7 +199,7 @@ class TerritoireController extends AbstractController
     /**
      * Retire une construction d'un territoire.
      */
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/constructionRemove/{construction}', name: 'territoire.constructionRemove')]
     public function constructionRemoveAction(
         Request $request,
@@ -330,7 +330,7 @@ class TerritoireController extends AbstractController
     }
 
     #[Route('/territoire/{territoire}/eventAdd', name: 'territoire.eventAdd')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     public function eventAddAction(Request $request, #[MapEntity] Territoire $territoire): RedirectResponse|Response
     {
         $event = $request->query->get('event');
@@ -364,7 +364,7 @@ class TerritoireController extends AbstractController
      * Met à jour un événement.
      */
     #[Route('/territoire/{territoire}/eventUpdate', name: 'territoire.eventUpdate')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     public function eventUpdateAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -686,7 +686,7 @@ class TerritoireController extends AbstractController
     /**
      * Modifie un territoire.
      */
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/update', name: 'territoire.update')]
     public function updateAction(Request $request, #[MapEntity] Territoire $territoire): RedirectResponse|Response
     {
@@ -715,7 +715,7 @@ class TerritoireController extends AbstractController
     /**
      * Met à jour le blason d'un territoire.
      */
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/updateBlason', name: 'territoire.updateBlason')]
     public function updateBlasonAction(
         Request $request,
@@ -764,7 +764,7 @@ class TerritoireController extends AbstractController
         ]);
     }
 
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/updateBonus', name: 'territoire.updateBonus')]
     public function updateBonusAction(
         Request $request,
@@ -821,7 +821,7 @@ class TerritoireController extends AbstractController
         ]);
     }
 
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/updateCibles', name: 'territoire.updateCibles')]
     public function updateCiblesAction(
         Request $request,
@@ -855,7 +855,7 @@ class TerritoireController extends AbstractController
     /**
      * Met à jour la culture d'un territoire.
      */
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/updateCulture', name: 'territoire.updateCulture')]
     public function updateCultureAction(
         Request $request,
@@ -922,7 +922,7 @@ class TerritoireController extends AbstractController
     /**
      * Mise à jour de la liste des ingrédients fourni par un territoire.
      */
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/updateIngredients', name: 'territoire.updateIngredients')]
     public function updateIngredientsAction(
         Request $request,
@@ -956,7 +956,7 @@ class TerritoireController extends AbstractController
     /**
      * Ajoute une loi à un territoire.
      */
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/updateLoi', name: 'territoire.updateLoi')]
     public function updateLoiAction(
         Request $request,
@@ -990,7 +990,7 @@ class TerritoireController extends AbstractController
     /**
      * Met à jour le statut d'un territoire.
      */
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/updateStatut', name: 'territoire.updateStatut')]
     public function updateStatutAction(Request $request, #[MapEntity] Territoire $territoire): RedirectResponse|Response
     {
@@ -1018,7 +1018,7 @@ class TerritoireController extends AbstractController
     /**
      * Modifie le jeu strategique d'un territoire.
      */
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::CARTOGRAPHE))]
+    #[IsGranted(TerritoireVoter::EDIT, subject: 'territoire')]
     #[Route('/territoire/{territoire}/update/strategie', name: 'territoire.updateStrategie')]
     public function updateStrategieAction(
         Request $request,

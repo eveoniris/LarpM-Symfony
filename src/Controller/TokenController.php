@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Token;
+use App\Enum\Role;
 use App\Form\TokenType;
 use App\Repository\TokenRepository;
+use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use SensitiveParameter;
@@ -19,7 +21,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_REGLE')]
+#[IsGranted(new MultiRolesExpression(Role::REGLE, Role::SCENARISTE))]
 #[Route('/token', name: 'token.')]
 class TokenController extends AbstractController
 {
@@ -54,6 +56,7 @@ class TokenController extends AbstractController
     }
 
     #[Route('/add', name: 'add')]
+    #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request): RedirectResponse|Response
     {
         $token = new Token();
@@ -70,6 +73,7 @@ class TokenController extends AbstractController
     }
 
     #[Route('/{token}/update', name: 'update', requirements: ['token' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_REGLE')]
     public function updateAction(Request $request, #[SensitiveParameter]
         #[MapEntity] Token $token): RedirectResponse|Response
     {
@@ -87,6 +91,7 @@ class TokenController extends AbstractController
             'POST',
         ],
     )]
+    #[IsGranted('ROLE_REGLE')]
     public function deleteAction(#[SensitiveParameter]
         #[MapEntity] Token $token): RedirectResponse|Response
     {

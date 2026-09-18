@@ -90,7 +90,7 @@
                         <li><a class="dropdown-item text-body-emphasis"
                                href="{{ path('religion.list') }}">Religions</a></li>
                         <li><a class="dropdown-item text-body-emphasis" href="{{ path('world') }}">Carte</a></li>
-                        {% if is_granted('ROLE_CARTOGRAPHE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+                        {% if is_granted('ROLE_CARTOGRAPHE', app.user) or is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -99,6 +99,12 @@
                             <li><a class="dropdown-item" href="{{ path('territoire.fief') }}">Fiefs</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ path('culture.index') }}">Cultures</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('espece.list') }}">Espèces, races, créatures</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('cosmogonie.list') }}">Cosmogonie</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('autreMonde.list') }}">Autres mondes</a>
                             </li>
                         {% endif %}
                     </ul>
@@ -179,7 +185,7 @@
                                 Compétences</a></li>
                         <li><a class="dropdown-item text-body-emphasis" href="{{ path('classe.index') }}">
                                 Classes</a></li>
-                        {% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+                        {% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -208,8 +214,6 @@
                             </li>
                             <li><a class="dropdown-item" href="{{ path('bonus.list') }}">Bonus</a></li>
                             <li><a class="dropdown-item" href="{{ path('merveille.list') }}">Merveilles</a></li>
-                            <li><a class="dropdown-item" href="{{ path('espece.list') }}">Espèces, races, créatures</a>
-                            </li>
                         {% endif %}
                     </ul>
                 </li>
