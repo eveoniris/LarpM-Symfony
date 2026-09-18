@@ -1,6 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Merveille{% endblock title %}
+{% block title %}Espèce{% endblock title %}
 
 {% block body %}
 
@@ -56,7 +56,7 @@
 
                 <div class="list-group-item">
                     <div class="list-group-item-heading fw-bold mb-1">Type</div>
-                    <div class="list-group-item-text ps-1">{{ espece.type|trans }}</div>
+                    <div class="list-group-item-text ps-1">{% if espece.type %}{{ espece.type|trans }}{% else %}—{% endif %}</div>
                 </div>
 
                 <div class="list-group-item">
@@ -66,13 +66,13 @@
 
                 {% if isAdmin %}
                     <div class="list-group-item">
-                        <div class="list-group-item-heading fw-bold mb-1 border-warning border-bottom">
+                        <div class="list-group-item-heading fw-bold mb-1 border-gamemaster border-bottom">
 
                             <i data-bs-toggle="tooltip"
                                data-bs-placement="bottom"
-                               class="fa fa-user-secret text-warning"
-                               title="Secret"></i>
-                            Description secrète
+                               class="fa fa-feather text-gamemaster"
+                               title="Information scénariste"></i>
+                            Information scénariste
                         </div>
                         <div
                             class="list-group-item-text ps-1">{{ espece.descriptionSecrete|default('')|markdown_to_html }}</div>

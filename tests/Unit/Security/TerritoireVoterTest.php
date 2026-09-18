@@ -9,6 +9,7 @@ use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\Role;
 use App\Security\Voter\TerritoireVoter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -18,6 +19,15 @@ use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 #[Group('unit')]
 class TerritoireVoterTest extends TestCase
 {
+    /** @return array<string, array{0: string}> */
+    public static function editAttributesProvider(): array
+    {
+        return [
+            'EDIT' => [TerritoireVoter::EDIT],
+            'EDIT_LANGUE' => [TerritoireVoter::EDIT_LANGUE],
+        ];
+    }
+
     /**
      * @param array<string, bool> $grantedRoles rôles globaux accordés à l'utilisateur courant
      */
@@ -56,52 +66,72 @@ class TerritoireVoterTest extends TestCase
         return $token;
     }
 
-    public function testOrgaIsGranted(): void
+    #[DataProvider('editAttributesProvider')]
+    public function testOrgaIsGranted(string $attribute): void
     {
         $voter = $this->makeVoter([Role::ORGA->value => true]);
         // Aucun scénariste : l'accès doit venir du rôle global uniquement.
         $territoire = $this->makeTerritoire(null);
         $token = $this->makeToken($this->makeUser(42));
 
-        static::assertSame(VoterInterface::ACCESS_GRANTED, $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE]));
+        static::assertSame(VoterInterface::ACCESS_GRANTED, $voter->vote($token, $territoire, [$attribute]));
     }
 
-    public function testCartographeIsGranted(): void
+    #[DataProvider('editAttributesProvider')]
+    public function testCoherenceIsGranted(string $attribute): void
+    {
+        $voter = $this->makeVoter([Role::COHERENCE->value => true]);
+        $territoire = $this->makeTerritoire(null);
+        $token = $this->makeToken($this->makeUser(42));
+
+        static::assertSame(VoterInterface::ACCESS_GRANTED, $voter->vote($token, $territoire, [$attribute]));
+    }
+
+    /**
+     * Un simple Cartographe (rôle porté par tout Organisateur, mais qui n'est plus hérité par
+     * un Scénariste depuis le retrait de l'écriture globale) ne doit plus, à lui seul, donner
+     * accès à l'écriture d'un territoire dont il n'est pas le scénariste.
+     */
+    #[DataProvider('editAttributesProvider')]
+    public function testCartographeAloneIsDenied(string $attribute): void
     {
         $voter = $this->makeVoter([Role::CARTOGRAPHE->value => true]);
         $territoire = $this->makeTerritoire(null);
         $token = $this->makeToken($this->makeUser(42));
 
-        static::assertSame(VoterInterface::ACCESS_GRANTED, $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE]));
+        static::assertSame(VoterInterface::ACCESS_DENIED, $voter->vote($token, $territoire, [$attribute]));
     }
 
-    public function testScenaristeOfOwningGroupIsGranted(): void
+    #[DataProvider('editAttributesProvider')]
+    public function testScenaristeOfOwningGroupIsGranted(string $attribute): void
     {
         $voter = $this->makeVoter(); // aucun rôle global
         $user = $this->makeUser(7);
         $territoire = $this->makeTerritoire($this->makeUser(7)); // même id que l'utilisateur
         $token = $this->makeToken($user);
 
-        static::assertSame(VoterInterface::ACCESS_GRANTED, $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE]));
+        static::assertSame(VoterInterface::ACCESS_GRANTED, $voter->vote($token, $territoire, [$attribute]));
     }
 
-    public function testScenaristeOfAnotherGroupIsDenied(): void
+    #[DataProvider('editAttributesProvider')]
+    public function testScenaristeOfAnotherGroupIsDenied(string $attribute): void
     {
         $voter = $this->makeVoter(); // aucun rôle global
         $user = $this->makeUser(7);
         $territoire = $this->makeTerritoire($this->makeUser(99)); // scénariste d'un autre groupe
         $token = $this->makeToken($user);
 
-        static::assertSame(VoterInterface::ACCESS_DENIED, $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE]));
+        static::assertSame(VoterInterface::ACCESS_DENIED, $voter->vote($token, $territoire, [$attribute]));
     }
 
-    public function testTerritoireWithoutScenaristeIsDenied(): void
+    #[DataProvider('editAttributesProvider')]
+    public function testTerritoireWithoutScenaristeIsDenied(string $attribute): void
     {
         $voter = $this->makeVoter(); // aucun rôle global
         $territoire = $this->makeTerritoire(null);
         $token = $this->makeToken($this->makeUser(7));
 
-        static::assertSame(VoterInterface::ACCESS_DENIED, $voter->vote($token, $territoire, [TerritoireVoter::EDIT_LANGUE]));
+        static::assertSame(VoterInterface::ACCESS_DENIED, $voter->vote($token, $territoire, [$attribute]));
     }
 
     public function testAbstainsOnUnsupportedAttribute(): void

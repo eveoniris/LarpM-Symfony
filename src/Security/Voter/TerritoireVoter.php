@@ -18,7 +18,15 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 class TerritoireVoter extends Voter
 {
     /**
+     * Droit d'écriture général sur un territoire existant (fiche, événements, sanctuaire,
+     * suppression...) : accordé globalement à Organisateur/Cohérence, ou ciblé au scénariste
+     * du groupe propriétaire du territoire, sur ce territoire uniquement.
+     */
+    public const string EDIT = 'TERRITOIRE_EDIT';
+
+    /**
      * Droit de modifier les langues (principale et parlées) d'un territoire.
+     * Même logique que EDIT (alias historique conservé pour la route dédiée).
      */
     public const string EDIT_LANGUE = 'TERRITOIRE_EDIT_LANGUE';
 
@@ -29,14 +37,14 @@ class TerritoireVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return self::EDIT_LANGUE === $attribute && $subject instanceof Territoire;
+        return \in_array($attribute, [self::EDIT, self::EDIT_LANGUE], strict: true) && $subject instanceof Territoire;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
-        // Les organisateurs et cartographes conservent leur accès existant
-        // (ROLE_SCENARISTE global hérite de ROLE_CARTOGRAPHE dans security.yaml).
-        if ($this->security->isGranted(Role::ORGA->value) || $this->security->isGranted(Role::CARTOGRAPHE->value)) {
+        // Les organisateurs et le rôle Cohérence ont un accès global (pas les cartographes/
+        // scénaristes simples, qui n'ont d'écriture que sur leur propre territoire).
+        if ($this->security->isGranted(Role::ORGA->value) || $this->security->isGranted(Role::COHERENCE->value)) {
             return true;
         }
 
