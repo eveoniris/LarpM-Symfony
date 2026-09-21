@@ -30,6 +30,8 @@ class EspeceController extends AbstractController
     {
         $pagerService->setRequest($request)->setRepository($repository);
 
+        $this->setCan(self::IS_ADMIN, $this->isGranted(Role::COHERENCE->value));
+
         return $this->render('espece/list.twig', [
             'pagerService' => $pagerService,
             'paginator' => $repository->searchPaginated($pagerService),
