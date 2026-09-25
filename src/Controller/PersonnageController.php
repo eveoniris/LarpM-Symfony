@@ -3733,7 +3733,7 @@ class PersonnageController extends AbstractController
     }
 
     #[Route('/{personnage}/enveloppe/print', name: 'enveloppe.print')]
-    #[IsGranted(Role::ORGA->value)]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function enveloppePrintAction(#[MapEntity] Personnage $personnage): Response
     {
         return $this->render('personnage/enveloppe.twig', [
