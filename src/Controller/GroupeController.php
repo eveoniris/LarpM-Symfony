@@ -1653,7 +1653,7 @@ class GroupeController extends AbstractController
 
         $this->hasAccess($groupe, $gn, $groupeGn, [Role::WARGAME]);
 
-        if ('domaine' === $tab && $this->getPersonnage() && $this->getPersonnage()->getId() === $groupeGn?->getSuzerain(false)?->getId()) {
+        if ('domaine' === $tab && $groupeGn && $this->groupeService->isUserSuzerain($groupeGn)) {
             $this->setCan(self::CAN_WRITE, true);
         }
 

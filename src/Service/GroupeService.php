@@ -866,14 +866,29 @@ readonly class GroupeService
         return $renommeByNbFiefs[max($territoire->getTerritoires()->count(), 1)] ?? 20;
     }
 
-    public function hasOnePersonnageSuzerain(GroupeGn $groupeGn, ?User $user = null): bool
+    /**
+     * Le suzerain est désigné par le propriétaire du personnage portant le titre,
+     * et non par le personnage actuellement actif du joueur : un suzerain peut
+     * posséder plusieurs personnages et le sien peut ne pas être celui qui est actif.
+     */
+    public function isUserSuzerain(GroupeGn $groupeGn, ?User $user = null): bool
     {
         $user ??= $this->security->getUser();
         if (!$user instanceof User) {
             return false;
         }
+
+        $suzerain = $groupeGn->getSuzerain(false);
+        if (!$suzerain) {
+            return false;
+        }
+
+        if ($suzerain->getUser()?->getId() === $user->getId()) {
+            return true;
+        }
+
         foreach ($user->getPersonnages() as $personnage) {
-            if ($personnage->getId() === $groupeGn->getSuzerain()?->getId()) {
+            if ($personnage->getId() === $suzerain->getId()) {
                 return true;
             }
         }
