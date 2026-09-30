@@ -34,7 +34,9 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 #[Group('functional')]
 class GroupeDomaineTitreAccessTest extends WebTestCase
 {
-    private const TITRES = ['suzerain', 'connestable', 'intendant', 'navigateur', 'camarilla', 'diplomate'];
+    private const TITRES = ['suzerain', 'connetable', 'intendant', 'navigateur', 'camarilla', 'diplomate'];
+
+    private const TITRE_AVERTISSEMENT = 'Personnage actif différent du suzerain';
 
     // -------------------------------------------------------------------------
     // Bouton "Modifier" de l'onglet Jeu de domaine
@@ -94,6 +96,35 @@ class GroupeDomaineTitreAccessTest extends WebTestCase
         foreach (self::TITRES as $titre) {
             static::assertCount(1, $crawler->filter(\sprintf('select[name="groupe_gn[%s]"]', $titre)), \sprintf('Le champ "%s" doit être éditable par le suzerain.', $titre));
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // Avertissement "personnage actif différent du suzerain"
+    // -------------------------------------------------------------------------
+
+    public function testWarningShownWhenActivePersonnageIsNotTheSuzerain(): void
+    {
+        $client = static::createClient();
+        $ctx = $this->creerContexte(secondPersoAuSuzerain: true);
+
+        $client->loginUser($ctx['suzerainUser']);
+        $crawler = $client->request('GET', '/groupeGn/' . $ctx['groupeGn']->getId() . '/update');
+
+        static::assertResponseIsSuccessful();
+        static::assertStringContainsString(self::TITRE_AVERTISSEMENT, $crawler->text(), 'Le suzerain doit être averti que son personnage actif n\'est pas celui du titre.');
+        static::assertStringContainsString($ctx['suzerainPerso']->getNameSurname(), $crawler->text(), 'Le message doit nommer le personnage porteur du titre de suzerain.');
+    }
+
+    public function testNoWarningWhenActivePersonnageIsTheSuzerain(): void
+    {
+        $client = static::createClient();
+        $ctx = $this->creerContexte();
+
+        $client->loginUser($ctx['suzerainUser']);
+        $crawler = $client->request('GET', '/groupeGn/' . $ctx['groupeGn']->getId() . '/update');
+
+        static::assertResponseIsSuccessful();
+        static::assertStringNotContainsString(self::TITRE_AVERTISSEMENT, $crawler->text(), 'Aucun avertissement quand le personnage actif est bien celui du suzerain.');
     }
 
     /**

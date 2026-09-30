@@ -674,8 +674,7 @@ class TerritoireController extends AbstractController
         foreach ($pointsCorrespondants as $match) {
             echo
                 \sprintf("<br />Points trouvés : [%f, %f] et [%f, %f] - Distance : %.2f km\n", $match['point1'][0], $match['point1'][1], $match['point2'][0], $match['point2'][1], $match['distance'])
-                    . \PHP_EOL
-            ;
+                    . \PHP_EOL;
         }
 
         echo '<br /><br />Soit un total de ' . \count($pointsCorrespondants) . ' points géographiquement proches de moins de ' . $mDist . 'km';
