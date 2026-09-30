@@ -104,7 +104,10 @@
     ],
     "cs": "./vendor/bin/phpcs",
     "cs-fix": "./vendor/bin/phpcbf",
-    "phpstan": "php -d memory_limit=-1 vendor/bin/phpstan analyse --no-progress --configuration=phpstan.dist.neon"
+    "phpstan": "php -d memory_limit=-1 vendor/bin/phpstan analyse --no-progress --configuration=phpstan.dist.neon",
+    "mago": "mago",
+    "lint": "mago lint",
+    "format": "mago format"
   },
   "conflict": {
     "symfony/symfony": "*"
@@ -117,7 +120,7 @@
     }
   },
   "require-dev": {
-    "carthage-software/mago": "^1.13.1",
+    "carthage-software/mago": "^1.50.0",
     "dama/doctrine-test-bundle": "^8.6",
     "friendsofphp/php-cs-fixer": "^3.94",
     "jetbrains/phpstorm-stubs": "*",

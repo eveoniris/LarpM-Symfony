@@ -42,30 +42,16 @@
 
     {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : descriptionHtml } %}
 
-    {% if app.user.personnage is not defined or (app.user.personnage is defined and app.user.personnage and not groupeGn.isSuzerain(app.user.personnage) and groupeService.hasOnePersonnageSuzerain(groupeGn, app.user)) %}
-        {% set notValidActivePersonnageHtml %}
-            {% if app.user.personnage is defined %}
-                <p>
-                    Votre personnage actif {{ app.user.personnage.nameSurname|default('Aucun') }} n'est pas le suzerain
-                    de
-                    ce groupe.
-                </p>
-            {% else %}
-                <p>
-                    Vous n'avez pas de personnage actif par défaut.
-                </p>
-            {% endif %}
-            <p>
-                Vous pouvez temporairement modifier ces titres. Mais à l'avenir vous devrez choisir le bon personnage
-                actif pour éditer les titres.
-            </p>
-            <p>
-                <a class="btn btn-sm btn-secondary" href="{{ path('user.personnageDefault', {'user': app.user.id}) }}">Choisir
-                    un
-                    personnage actif par défaut</a>
-            </p>
+    {% if app.user.personnage and not groupeGn.isSuzerain(app.user.personnage) and groupeService.isUserSuzerain(groupeGn, app.user) %}
+        {% set activePersonnageHtml %}
+            Vous êtes suzerain de ce groupe grâce au personnage **{{ groupeGn.suzerain(false).nameSurname }}**, mais votre
+            personnage actif est **{{ app.user.personnage.nameSurname }}**.
+
+            Vous pouvez distribuer les titres : c'est votre fonction de suzerain qui compte, pas le personnage actif.
+
+            [Choisir un autre personnage actif par défaut]({{ path('user.personnageDefault', {'user': app.user.id}) }})
         {% endset %}
-        {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : notValidActivePersonnageHtml } %}
+        {% include '_partials/cardNotif.twig' with {'type' : 'info', 'title' : 'Personnage actif différent du suzerain', 'content' : activePersonnageHtml } %}
     {% endif %}
 
     <div class="well well-sm">
