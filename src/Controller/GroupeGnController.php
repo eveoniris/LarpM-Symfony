@@ -778,10 +778,7 @@ class GroupeGnController extends AbstractController
             }
         }
 
-        $isSuzerain = false;
-        if ($this->getPersonnage() && $this->getPersonnage()->getId() === $groupeGn->getSuzerain()?->getId()) {
-            $isSuzerain = true;
-        }
+        $isSuzerain = $this->groupeService->isUserSuzerain($groupeGn);
 
         // TODO check if membre can read secret
 
