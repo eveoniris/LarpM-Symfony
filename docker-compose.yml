@@ -2,7 +2,6 @@ services:
     frankenphp:
         build:
             context: .
-            target: dev
             dockerfile: Dockerfile.frankenphp
         restart: unless-stopped
         ports:
@@ -98,7 +97,13 @@ services:
             MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
     composer:
-        image: composer:latest
+        # Utilise l'image applicative (et non composer:latest) car phpoffice/phpspreadsheet
+        # exige ext-gd, absente de l'image composer officielle.
+        image: larpm-symfony-frankenphp
+        build:
+            context: .
+            dockerfile: Dockerfile.frankenphp
+        entrypoint: ["symfony", "composer"]
         volumes:
             - ./:/app
         working_dir: /app
