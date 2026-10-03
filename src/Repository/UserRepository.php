@@ -156,12 +156,11 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
     /**
      * @return list<User>
      */
-    public function findWithBilletForGnButIncompleteEtatCivil(Gn $gn): array
+    public function findParticipantsForGnButIncompleteEtatCivil(Gn $gn): array
     {
         $qb = $this->createQueryBuilder('u');
         $qb->select('u')
             ->innerJoin('u.participants', 'p')
-            ->innerJoin('p.billet', 'b')
             ->leftJoin('u.etatCivil', 'ec')
             ->where('p.gn = :gn')
             ->andWhere(
@@ -177,6 +176,14 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
             ->distinct();
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return list<User>
+     */
+    public function findWithBilletForGnButIncompleteEtatCivil(Gn $gn): array
+    {
+        return $this->findParticipantsForGnButIncompleteEtatCivil($gn);
     }
 
     /** @return array<int, int> */
