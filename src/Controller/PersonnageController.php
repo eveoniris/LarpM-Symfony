@@ -411,6 +411,7 @@ class PersonnageController extends AbstractController
         Request $request,
         PersonnageService $personnageService,
     ): Response {
+        $this->denyAccessUnlessGranted('PERSONNAGE_CREATE');
         $personnage = new Personnage();
         $gnActif = GroupeManager::getGnActif($this->entityManager);
 

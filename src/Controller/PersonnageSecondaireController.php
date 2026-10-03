@@ -54,6 +54,7 @@ class PersonnageSecondaireController extends AbstractController
     #[IsGranted('ROLE_REGLE')]
     public function addAction(Request $request): RedirectResponse|Response
     {
+        $this->denyAccessUnlessGranted('PERSONNAGE_CREATE');
         $form = $this->createForm(PersonnageSecondaireType::class, new PersonnageSecondaire())->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);

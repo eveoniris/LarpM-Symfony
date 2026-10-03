@@ -143,11 +143,40 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         $query = $this->getEntityManager()->createQuery(<<<DQL
             SELECT u
             FROM App\Entity\User u
-            WHERE IDENTITY(u.etatCivil) IS NULL
+            LEFT JOIN u.etatCivil ec
+            WHERE ec IS NULL
+               OR ec.nom IS NULL OR ec.nom = ''
+               OR ec.prenom IS NULL OR ec.prenom = ''
             ORDER BY u.email ASC
             DQL);
 
         return $query->getResult();
+    }
+
+    /**
+     * @return list<User>
+     */
+    public function findWithBilletForGnButIncompleteEtatCivil(Gn $gn): array
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->select('u')
+            ->innerJoin('u.participants', 'p')
+            ->innerJoin('p.billet', 'b')
+            ->leftJoin('u.etatCivil', 'ec')
+            ->where('p.gn = :gn')
+            ->andWhere(
+                $qb->expr()->orX(
+                    'ec IS NULL',
+                    $qb->expr()->isNull('ec.nom'),
+                    $qb->expr()->eq('ec.nom', "''"),
+                    $qb->expr()->isNull('ec.prenom'),
+                    $qb->expr()->eq('ec.prenom', "''")
+                )
+            )
+            ->setParameter('gn', $gn)
+            ->distinct();
+
+        return $qb->getQuery()->getResult();
     }
 
     /** @return array<int, int> */

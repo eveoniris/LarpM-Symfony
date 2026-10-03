@@ -106,6 +106,13 @@
                                                     class="fa fa-face-sad-tear"></i>
                                                 Sans personnage ({{ counts.withoutPerso }})</a>
                                         </li>
+                                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTION') %}
+                                        <li class="list-group-item"><a
+                                                href="#participants-sans-etat-civil"><i
+                                                    class="fa fa-exclamation-triangle text-warning"></i>
+                                                Sans état civil ({{ usersSansEtatCivil|length }})</a>
+                                        </li>
+                                        {% endif %}
                                     </ul>
                                 </div>
                                 <div class="col-md-6">
@@ -179,6 +186,45 @@
                                 <h5 class="m-0">Résumé des billets</h5>
                             </div>
                             <div class="card-body p-0">
+{% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTION')) and usersSansEtatCivil is defined and usersSansEtatCivil|length > 0 %}
+                                <div class="card mb-2" id="participants-sans-etat-civil">
+                                    <div class="header m-0">
+                                        <h5 class="m-0">Participants inscrits sans état civil</h5>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                        <table class="table table-sm table-striped table-bordered m-0 rounded-2">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">#</th>
+                                                    <th class="text-center">Utilisateur</th>
+                                                    <th class="text-center">Email</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for user in usersSansEtatCivil %}
+                                                <tr>
+                                                    <td class="text-center">{{ user.id }}</td>
+                                                    <td class="text-center">{{ user.username }}</td>
+                                                    <td class="text-center">{{ user.email }}</td>
+                                                    <td class="text-center">
+                                                        <div class="btn-group" role="group">
+                                                            <a class="btn btn-sm btn-secondary" data-toggle="tooltip" title="Détail utilisateur" href="{{ path('user.view', {'user': user.id}) }}"><i class="fa fa-eye"></i></a>
+                                                            {% if user.etatCivil %}
+                                                            <a class="btn btn-sm btn-secondary" data-toggle="tooltip" title="Voir l'état civil" href="{{ path('etatCivil.detail', {'etatCivil': user.etatCivil.id}) }}"><i class="fa fa-user"></i></a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
                                 <div class="table-responsive">
                                 <table class="table table-sm table-striped table-bordered m-0 rounded-2">
                                     <thead>
