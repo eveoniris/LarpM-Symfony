@@ -231,7 +231,7 @@ class GnController extends AbstractController
         $usersSansEtatCivil = [];
         if ($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GESTION')) {
             $usersSansEtatCivil = $this->entityManager->getRepository(User::class)
-                ->findWithBilletForGnButIncompleteEtatCivil($gn);
+                ->findParticipantsForGnButIncompleteEtatCivil($gn);
         }
 
         return $this->render('gn/detail.twig', [
