@@ -140,6 +140,26 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     }
 
     /**
+     * Indique si l'état civil de l'utilisateur est complet.
+     */
+    public function isEtatCivilComplet(): bool
+    {
+        $etatCivil = $this->getEtatCivil();
+        if (!$etatCivil) {
+            return false;
+        }
+
+        $nom = $etatCivil->getNom();
+        $prenom = $etatCivil->getPrenom();
+
+        if ($nom === null || $nom === '' || $prenom === null || $prenom === '') {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Fourni tous les billets d'un utilisateur.
      *
      * @return Collection<int, Billet>
