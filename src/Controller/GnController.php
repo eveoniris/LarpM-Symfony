@@ -201,6 +201,7 @@ class GnController extends AbstractController
         Gn $gn,
         QuestionRepository $questionRepository,
         ParticipantRepository $participantRepository,
+        UserRepository $userRepository,
     ): Response {
         $participant = $this->getUser()?->getParticipant($gn);
 
@@ -228,11 +229,17 @@ class GnController extends AbstractController
             ];
         }
 
+        $usersSansEtatCivil = [];
+        if ($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GESTION')) {
+           $usersSansEtatCivil = $userRepository->findParticipantsForGnButIncompleteEtatCivil($gn);
+        }
+
         return $this->render('gn/detail.twig', [
             'gn' => $gn,
             'participant' => $participant,
             'questions' => $questions,
             'counts' => $counts,
+            'usersSansEtatCivil' => [], $usersSansEtatCivil,
         ]);
     }
 
