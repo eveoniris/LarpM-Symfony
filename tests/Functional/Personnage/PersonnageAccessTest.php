@@ -101,7 +101,7 @@ class PersonnageAccessTest extends WebTestCase
         $client->loginUser($scenariste);
         $client->request('GET', '/personnage/' . $personnage->getId() . '/technologie/' . $technologie->getId() . '/add');
 
-        static::assertResponseIsSuccessful();
+        static::assertResponseRedirects();
     }
 
     public function testScenaristeCanRemoveTechnologieFromPersonnage(): void
@@ -118,6 +118,6 @@ class PersonnageAccessTest extends WebTestCase
         $client->loginUser($scenariste);
         $client->request('GET', '/personnage/' . $personnage->getId() . '/technologie/' . $technologie->getId() . '/delete');
 
-        static::assertResponseIsSuccessful();
+        static::assertResponseRedirects();
     }
 }
