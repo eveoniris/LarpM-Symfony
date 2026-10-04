@@ -40,20 +40,15 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
-      - name: Setup Mago
-        uses: nhedger/setup-mago@v1
-        with:
-          version: '1.42.0'
-
       - name: Mago — check formatting
-        run: mago format --dry-run
+        run: ./vendor/bin/mago format --dry-run
 
       - name: Mago — lint
-        run: mago lint --reporting-format=github
+        run: ./vendor/bin/mago lint --reporting-format=github
         continue-on-error: true   # remove once linter baseline is clean
 
       - name: Mago — analyze
-        run: mago analyze --reporting-format=github
+        run: ./vendor/bin/mago analyze --reporting-format=github
         continue-on-error: true   # remove once analysis baseline is clean
 
   # ──────────────────────────────────────────────────
