@@ -188,6 +188,19 @@ class Gn extends BaseGn implements Stringable
         return $participants;
     }
 
+    public function getParticipantsWithoutEtatCivil(): Collection
+    {
+        $participants = new ArrayCollection();
+        foreach ($this->getParticipants() as $participant) {
+            if (!$participant->getUser()?->isEtatCivilComplet()) {
+                continue;
+            }
+            $participants->add($participant);
+        }
+
+        return $participants;
+    }
+
     /**
      * Fourni la liste de tous les participants à un GN ayant un billet mais n'étant pas encore dans un groupe.
      */
