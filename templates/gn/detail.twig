@@ -108,7 +108,7 @@
                                         </li>
                                         {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTION') %}
                                         <li class="list-group-item"><a
-                                                href="#participants-sans-etat-civil"><i
+                                                href="{{ path('gn.participants.withoutEtatCivil', {'gn': gn.id}) }}"><i
                                                     class="fa fa-exclamation-triangle text-warning"></i>
                                                 Sans état civil ({{ usersSansEtatCivil|length }})</a>
                                         </li>

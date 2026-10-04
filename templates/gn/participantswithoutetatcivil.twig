@@ -1,0 +1,59 @@
+﻿{% extends "base.html.twig" %}
+
+{% block title %}Grandeur nature{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' :
+		[
+			{'name' : 'Liste des GNs', 'route': path('gn.list') },
+			{'name' : gn.label, 'route': path('gn.detail', {'gn':gn.id}) },
+			{'name' : 'Liste des participants sans etat civil' }
+		]
+	} %}
+
+	<div class="well well-sm">
+
+	<div class="header">
+		<h5>Liste des participants à {{ gn.label }} sans etat civil</h5>
+	</div>
+
+	<div class="btn-toolbar" role="toolbar" aria-label="...">
+		<div class="btn-group" role="group" aria-label="...">
+			<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="" href="{{  '#', {'gn': gn.id}) }}"><i class="fa fa-file-csv"></i> </a>
+		</div>
+	</div>
+
+		<div class="table-responsive">
+		<table class="table table-sm table-striped table-bordered table-hover">
+			{% include '_partials/thead.twig' with  { 'route': 'gn.participants.withoutEtatCivil', 'routeOptions': {'gn': gn.id}, 'rows': [
+				{'name' : 'Participant', 'field' : 'user.etatCivil.nom'},
+				{'name' : 'Email', 'field' : 'user.email'},
+				{'name' : 'Action'},
+			]} %}
+		<tbody>
+			{% for participant in participants %}
+				<tr>
+					<td>{{ participant.user.etatCivil }}</td>
+					<td>{{ participant.user.email }}</td>
+					<td>
+						<div class="btn-toolbar float-end" role="toolbar" aria-label="...">
+							<div class="btn-group" role="group" aria-label="...">
+                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+								   title="Choisir le billet"
+								   href="{{ path('participant.billet',{'participant':participant.id}) }}"><i
+											class="fa fa-ticket"></i></a>
+							</div>
+						</div>
+					</td>
+				</tr>
+			{% else %}
+				{% include '_partials/noResultTableRow.twig' %}
+			{% endfor %}
+		</tbody>
+	</table>
+	</div>
+
+</div>
+
+{% endblock body %}
