@@ -39,4 +39,3 @@ class PersonnageVoter extends Voter
         return true;
     }
 }
-
