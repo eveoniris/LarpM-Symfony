@@ -159,19 +159,12 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
     public function findParticipantsForGnButIncompleteEtatCivil(Gn $gn): array
     {
         $qb = $this->createQueryBuilder('u');
-        $qb->select('u')
+        $qb
+            ->select('u')
             ->innerJoin('u.participants', 'p')
             ->leftJoin('u.etatCivil', 'ec')
             ->where('p.gn = :gn')
-            ->andWhere(
-                $qb->expr()->orX(
-                    'ec IS NULL',
-                    $qb->expr()->isNull('ec.nom'),
-                    $qb->expr()->eq('ec.nom', "''"),
-                    $qb->expr()->isNull('ec.prenom'),
-                    $qb->expr()->eq('ec.prenom', "''")
-                )
-            )
+            ->andWhere($qb->expr()->orX('ec IS NULL', $qb->expr()->isNull('ec.nom'), $qb->expr()->eq('ec.nom', "''"), $qb->expr()->isNull('ec.prenom'), $qb->expr()->eq('ec.prenom', "''")))
             ->setParameter('gn', $gn)
             ->distinct();
 
