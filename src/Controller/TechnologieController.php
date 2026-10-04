@@ -184,7 +184,7 @@ class TechnologieController extends AbstractController
      */
     #[Route(name: 'index')]
     #[Route(name: 'list')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function indexAction(PagerService $pagerService, TechnologieRepository $technologieRepository): Response
     {
         $pagerService->setDefaultOrdersBy([$technologieRepository::getEntityAlias() . '.label' => OrderBy::ASC]); // test default overwrite from request
@@ -199,7 +199,7 @@ class TechnologieController extends AbstractController
      * Liste des personnages ayant cette technologie.
      */
     #[Route('/{technologie}/personnages', name: 'personnages', requirements: ['technologie' => Requirement::DIGITS])]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE))]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function personnagesAction(
         Request $request,
         #[MapEntity]

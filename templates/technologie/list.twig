@@ -16,9 +16,14 @@
             <h5>Liste des technologies</h5>
         </div>
 
+        {% if is_granted('ROLE_REGLE') or is_granted('ROLE_ORGA') or is_granted('ROLE_ADMIN') %}
+            {% set canAdd = {'title': 'Ajouter une technologie', 'path': path('technologie.add')} %}
+        {% else %}
+            {% set canAdd = null %}
+        {% endif %}
         {% include '_partials/formListSearch.twig' with
             {
-                'canAdd': {'title': 'Ajouter une technologie', 'path': path('technologie.add')},
+                'canAdd': canAdd,
                 'actionPath' : path('technologie.list')
             } %}
     </div>
@@ -60,29 +65,33 @@
                                 <div>
                                     {{ technologieRessource.quantite }} {{ technologieRessource.ressource.label }}
                                 </div>
-                                <div class="btn-group">
-                                    <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
-                                       data-placement="top"
-                                       title="Modifier"
-                                       href="{{ path('technologie.ressource.update', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}">
-                                        <i class="fa fa-pencil"></i>
-                                    </a>
-                                    <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
-                                       data-placement="top"
-                                       title="Retirer {{ technologieRessource.ressource.label }}"
-                                       href="{{ path('technologie.ressource.delete', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}"
-                                       onclick="return confirm('Vous vous apprétez à retirer {{ technologieRessource.ressource.label }} de {{ technologie.label }}. Confirmer ?')">
-                                        <i class="fa fa-trash"></i></a>
-                                </div>
+                                {% if is_granted('ROLE_REGLE') or is_granted('ROLE_ORGA') or is_granted('ROLE_ADMIN') %}
+                                    <div class="btn-group">
+                                        <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Modifier"
+                                           href="{{ path('technologie.ressource.update', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}">
+                                            <i class="fa fa-pencil"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-secondary" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Retirer {{ technologieRessource.ressource.label }}"
+                                           href="{{ path('technologie.ressource.delete', {'technologie':technologie.id, 'technologiesRessources':technologieRessource.id}) }}"
+                                           onclick="return confirm('Vous vous apprétez à retirer {{ technologieRessource.ressource.label }} de {{ technologie.label }}. Confirmer ?')">
+                                            <i class="fa fa-trash"></i></a>
+                                    </div>
+                                {% endif %}
                             </div>
                         {% else %}
                             {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "#{technologie.label} ne requiert actuellement aucune Ressource ; Veuillez en ajouter :" } %}
                         {% endfor %}
-                        <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
-                           title="Ajouter une Ressource"
-                           href="{{ path('technologie.ressource.add', {'technologie':technologie.id}) }}">
-                            <i class="fa fa-plus"></i> Ajouter
-                        </a>
+                        {% if is_granted('ROLE_REGLE') or is_granted('ROLE_ORGA') or is_granted('ROLE_ADMIN') %}
+                            <a class="btn btn-sm btn-secondary" data-toggle="tooltip" data-placement="top"
+                               title="Ajouter une Ressource"
+                               href="{{ path('technologie.ressource.add', {'technologie':technologie.id}) }}">
+                                <i class="fa fa-plus"></i> Ajouter
+                            </a>
+                        {% endif %}
                     </div>
                 </td>
                 <td>
@@ -94,22 +103,26 @@
                                    href="{{ path('technologie.document', {'technologie': technologie.id, 'document': technologie.documentUrl}) }}"><i
                                         class="fa-solid fa-download"></i> Télécharger</a>
                             {% endif %}
+                            {% if is_granted('ROLE_REGLE') or is_granted('ROLE_ORGA') or is_granted('ROLE_ADMIN') %}
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Modifier"
+                                   href="{{ path('technologie.update',{'technologie':technologie.id}) }}"><i
+                                        class="fa fa-pencil"></i> Modifier</a>
+                            {% endif %}
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Modifier"
-                               href="{{ path('technologie.update',{'technologie':technologie.id}) }}"><i
-                                    class="fa fa-pencil"></i> Modifier</a>
-                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Détail"
+                               title="D�tail"
                                href="{{ path('technologie.detail',{'technologie':technologie.id}) }}"><i
                                     class="fa fa-eye"></i> Detail</a>
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Personnages associés"
+                               title="Personnages associ�s"
                                href="{{ path('technologie.personnages',{'technologie':technologie.id}) }}"><i
                                     class="fa fa-users"></i> Personnages ({{ technologie.personnages|length }})</a>
-                            <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Supprimer"
-                               href="{{ path('technologie.delete',{'technologie':technologie.id}) }}"><i
-                                    class="fa fa-eraser"></i> Supprimer</a>
+                            {% if is_granted('ROLE_REGLE') or is_granted('ROLE_ORGA') or is_granted('ROLE_ADMIN') %}
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Supprimer"
+                                   href="{{ path('technologie.delete',{'technologie':technologie.id}) }}"><i
+                                        class="fa fa-eraser"></i> Supprimer</a>
+                            {% endif %}
                         </div>
                     </div>
                 </td>

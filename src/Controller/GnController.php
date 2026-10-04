@@ -239,8 +239,7 @@ class GnController extends AbstractController
             'participant' => $participant,
             'questions' => $questions,
             'counts' => $counts,
-            'usersSansEtatCivil' => [],
-            $usersSansEtatCivil,
+            'usersSansEtatCivil' => $usersSansEtatCivil,
         ]);
     }
 
@@ -794,6 +793,18 @@ class GnController extends AbstractController
 
         fclose($output);
         exit;
+    }
+
+    #[Route('/{gn}/participants/withoutEtatCivil', name: 'participants.withoutEtatCivil')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
+    public function participantsWithoEtatCivil(#[MapEntity] Gn $gn): Response
+    {
+        $participants = $gn->getParticipantsWithoutEtatCivil();
+
+        return $this->render('gn/getParticipantsWithoutEtatCivil.twig', [
+            'gn' => $gn,
+            'participants' => $participants,
+        ]);
     }
 
     /**
