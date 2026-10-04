@@ -156,20 +156,34 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
     /**
      * Fourni le nom de tous les groupes de PJ présents dans ce territoire.
      *
-     * @return array<int, mixed>
+     * @return array<int, string>
      */
     public function getGroupesPj(): array
     {
-        $groupes = new ArrayCollection();
-        if ($this->getGroupe() && $this->getGroupe()->getPj()) {
-            $groupes->add($this->getGroupe()->getNom());
+        $groupes = [];
+        $territoires = [$this];
+        $visites = [];
+
+        for ($index = 0; isset($territoires[$index]); ++$index) {
+            $territoire = $territoires[$index];
+            $cle = spl_object_id($territoire);
+
+            if (isset($visites[$cle])) {
+                continue;
+            }
+            $visites[$cle] = true;
+
+            $groupe = $territoire->getGroupe();
+            if ($groupe && $groupe->getPj()) {
+                $groupes[] = $groupe->getNom();
+            }
+
+            foreach ($territoire->getTerritoires() as $enfant) {
+                $territoires[] = $enfant;
+            }
         }
 
-        foreach ($this->getTerritoires() as $territoire) {
-            $groupes->add($territoire->getGroupesPj());
-        }
-
-        return $groupes->toArray();
+        return array_values(array_unique($groupes));
     }
 
     /**

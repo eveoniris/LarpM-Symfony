@@ -801,7 +801,7 @@ class GnController extends AbstractController
     {
         $participants = $gn->getParticipantsWithoutEtatCivil();
 
-        return $this->render('gn/getParticipantsWithoutEtatCivil.twig', [
+        return $this->render('gn/participantswithoutetatcivil.twig', [
             'gn' => $gn,
             'participants' => $participants,
         ]);
