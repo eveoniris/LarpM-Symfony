@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Personnage;
 
 use App\Tests\Factory\EspeceFactory;
 use App\Tests\Factory\PersonnageFactory;
+use App\Tests\Factory\TechnologieFactory;
 use App\Tests\Factory\UserFactory;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -84,6 +85,38 @@ class PersonnageAccessTest extends WebTestCase
 
         $client->loginUser($user);
         $client->request('GET', '/personnage/' . $personnage->getId() . '/detail');
+
+        static::assertResponseIsSuccessful();
+    }
+
+    public function testScenaristeCanAddTechnologieToPersonnage(): void
+    {
+        $client = static::createClient();
+
+        EspeceFactory::createOne(['nom' => 'Humain']);
+        $scenariste = UserFactory::createOne(['roles' => ['ROLE_SCENARISTE']]);
+        $personnage = PersonnageFactory::createOne();
+        $technologie = TechnologieFactory::createOne();
+
+        $client->loginUser($scenariste);
+        $client->request('GET', '/personnage/' . $personnage->getId() . '/technologie/' . $technologie->getId() . '/add');
+
+        static::assertResponseIsSuccessful();
+    }
+
+    public function testScenaristeCanRemoveTechnologieFromPersonnage(): void
+    {
+        $client = static::createClient();
+
+        EspeceFactory::createOne(['nom' => 'Humain']);
+        $scenariste = UserFactory::createOne(['roles' => ['ROLE_SCENARISTE']]);
+        $personnage = PersonnageFactory::createOne();
+        $technologie = TechnologieFactory::createOne();
+
+        $personnage->addTechnologie($technologie);
+
+        $client->loginUser($scenariste);
+        $client->request('GET', '/personnage/' . $personnage->getId() . '/technologie/' . $technologie->getId() . '/delete');
 
         static::assertResponseIsSuccessful();
     }
