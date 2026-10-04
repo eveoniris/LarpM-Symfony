@@ -62,7 +62,7 @@ class TechnologieAccessTest extends WebTestCase
         $client->loginUser($scenariste);
         $client->request('GET', '/technologie/add');
 
-        static::assertResponseStatusCodeSame(403);
+        static::assertResponseRedirects('/access_denied');
     }
 
     public function testScenaristeCannotAccessTechnologyUpdate(): void
@@ -74,7 +74,7 @@ class TechnologieAccessTest extends WebTestCase
         $client->loginUser($scenariste);
         $client->request('GET', '/technologie/' . $technologie->getId() . '/udpate');
 
-        static::assertResponseStatusCodeSame(403);
+        static::assertResponseRedirects('/access_denied');
     }
 
     public function testScenaristeCannotAccessTechnologyDelete(): void
@@ -86,7 +86,7 @@ class TechnologieAccessTest extends WebTestCase
         $client->loginUser($scenariste);
         $client->request('GET', '/technologie/' . $technologie->getId() . '/delete');
 
-        static::assertResponseStatusCodeSame(403);
+        static::assertResponseRedirects('/access_denied');
     }
 
     public function testScenaristeCannotAccessRessourceAdd(): void
@@ -98,7 +98,7 @@ class TechnologieAccessTest extends WebTestCase
         $client->loginUser($scenariste);
         $client->request('GET', '/technologie/' . $technologie->getId() . '/ressource/add');
 
-        static::assertResponseStatusCodeSame(403);
+        static::assertResponseRedirects('/access_denied');
     }
 
     public function testScenaristeDoesNotSeeWriteButtonsOnList(): void

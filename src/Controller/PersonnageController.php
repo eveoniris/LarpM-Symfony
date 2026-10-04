@@ -1997,7 +1997,7 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}/technologie', name: 'technologie')]
     public function technologieAction(Request $request, #[MapEntity] Personnage $personnage): RedirectResponse|Response
     {
-        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN, Role::SCENARISTE]);
 
         if (!$personnage->hasTrigger('TECHNOLOGIE')) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de technologie supplémentaire.');
@@ -2075,7 +2075,7 @@ class PersonnageController extends AbstractController
         #[MapEntity]
         Technologie $technologie,
     ): BinaryFileResponse|RedirectResponse {
-        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN, Role::SCENARISTE]);
 
         if (!$personnage->isKnownTechnologie($technologie)) {
             $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
