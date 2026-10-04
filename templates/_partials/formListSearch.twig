@@ -34,15 +34,17 @@
                             {% if buttons is not defined %}
                                 {% set buttons = {} %}
                             {% endif %}
-                            {% if canAdd is defined and canAdd %}
-                                {% set buttons = buttons|merge([{'title': canAdd.title, 'route': canAdd.path, 'icon': 'fa-plus', 'label': 'Ajouter'}]) %}
-                            {% endif %}
-
                             {% if print is defined and print %}
                                 {% set buttons = buttons|merge([{'title': print.title, 'route': print.path, 'icon': 'fa-print', 'label': 'Imprimer'}]) %}
                             {% endif %}
 
-                            {% include '_partials/btnGroup.twig' with {'butons' : buttons, 'css': 'input-group'} %}
+                            {% include '_partials/btnGroup.twig' with {'buttons': buttons, 'css': 'input-group'} %}
+                            {% if canAdd is defined and canAdd %}
+                                <a class="btn btn-secondary align-self-center" data-bs-toggle="tooltip"
+                                   data-bs-placement="bottom" title="{{ canAdd.title }}" href="{{ canAdd.path }}">
+                                    <i class="fa fa-plus"></i> Ajouter
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
