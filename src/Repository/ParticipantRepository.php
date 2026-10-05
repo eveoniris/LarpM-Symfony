@@ -349,6 +349,15 @@ class ParticipantRepository extends BaseRepository
         return $query->setParameter('gnId', $gn->getId());
     }
 
+    public function withoutEtatCivil(QueryBuilder $query): QueryBuilder
+    {
+        return $query
+            ->join($this->alias . '.user', 'u')
+            ->leftJoin('u.etatCivil', 'ec')
+            ->andWhere('ec.id IS NULL OR ec.nom IS NULL OR ec.nom = :wecEmpty OR ec.prenom IS NULL OR ec.prenom = :wecEmpty')
+            ->setParameter('wecEmpty', '');
+    }
+
     public function getEmailsAll(Gn $gn): NativeQuery
     {
         $rsm = new ResultSetMapping();

@@ -1,4 +1,4 @@
-﻿{% extends "base.html.twig" %}
+{% extends "base.html.twig" %}
 
 {% block title %}Grandeur nature{% endblock title %}
 
@@ -20,19 +20,19 @@
 
 	<div class="btn-toolbar" role="toolbar" aria-label="...">
 		<div class="btn-group" role="group" aria-label="...">
-			<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="" href="{{  '#', {'gn': gn.id} }}"><i class="fa fa-file-csv"></i> </a>
+			<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="" href="{{ path('stats.personnages.csv',{'gn':gn.id}) }}"><i class="fa fa-file-csv"></i> </a>
 		</div>
 	</div>
 
 		<div class="table-responsive">
 		<table class="table table-sm table-striped table-bordered table-hover">
-			{% include '_partials/thead.twig' with  { 'route': 'gn.participants.withoutEtatCivil', 'routeOptions': {'gn': gn.id}, 'rows': [
-				{'name' : 'Participant', 'field' : 'user.etatCivil.nom'},
-				{'name' : 'Email', 'field' : 'user.email'},
+			{% include '_partials/thead.twig' with  { 'pagerService': pagerService, 'route': 'gn.participants.withoutEtatCivil', 'routeOptions': {'gn': gn.id}, 'rows': [
+				{'name' : 'Participant', 'field' : 'ec.nom'},
+				{'name' : 'Email', 'field' : 'u.email'},
 				{'name' : 'Action'},
 			]} %}
 		<tbody>
-			{% for participant in participants %}
+			{% for participant in paginator %}
 				<tr>
 					<td>{{ participant.user.etatCivil }}</td>
 					<td>{{ participant.user.email }}</td>
@@ -53,6 +53,8 @@
 		</tbody>
 	</table>
 	</div>
+
+	{% include '_partials/pagination.html.twig' %}
 
 </div>
 

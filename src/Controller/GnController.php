@@ -296,13 +296,38 @@ class GnController extends AbstractController
 
     #[Route('/{gn}/participants/withoutEtatCivil', name: 'participants.withoutEtatCivil')]
     #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
-    public function participantsWithoEtatCivil(#[MapEntity] Gn $gn): Response
-    {
-        $participants = $gn->getParticipantsWithoutEtatCivil();
+    public function participantsWithoEtatCivil(
+        Request $request,
+        PagerService $pagerService,
+        ParticipantRepository $participantRepository,
+        #[MapEntity] Gn $gn,
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($participantRepository);
+        $alias = $participantRepository->getAlias();
+        $queryBuilder = $participantRepository->createQueryBuilder($alias);
+        $queryBuilder = $participantRepository->gn($queryBuilder, $gn);
+        $queryBuilder = $participantRepository->withoutEtatCivil($queryBuilder);
+
+        // Sort is applied manually: u (user) and ec (etatCivil) aliases come from withoutEtatCivil join
+        $allowedSorts = ['ec.nom', 'u.email'];
+        $orderByParam = $request->query->getString('order_by');
+        $applied = false;
+        foreach (array_filter(explode(',', $orderByParam)) as $part) {
+            $desc = str_starts_with($part, '-');
+            $field = ltrim($part, '-');
+            if (in_array($field, $allowedSorts, true)) {
+                $queryBuilder->addOrderBy($field, $desc ? 'DESC' : 'ASC');
+                $applied = true;
+            }
+        }
+        if (!$applied) {
+            $queryBuilder->addOrderBy('ec.nom', 'ASC');
+        }
 
         return $this->render('gn/participantswithoutetatcivil.twig', [
             'gn' => $gn,
-            'participants' => $participants,
+            'pagerService' => $pagerService,
+            'paginator' => $participantRepository->searchPaginated($pagerService, $queryBuilder),
         ]);
     }
 

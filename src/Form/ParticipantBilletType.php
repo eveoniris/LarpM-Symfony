@@ -29,9 +29,9 @@ class ParticipantBilletType extends AbstractType
             'choice_label' => 'fullLabel',
             'query_builder' => static function ($er) use ($options) {
                 $qb = $er->createQueryBuilder('b');
-                $qb->orderBy('b.gn', 'ASC');
-                $qb->where('b.gn_id = :gnId');
+                $qb->where('b.gn = :gnId');
                 $qb->setParameter('gnId', $options['gnId']);
+                $qb->orderBy('b.label', 'ASC');
 
                 return $qb;
             },
