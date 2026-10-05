@@ -60,7 +60,9 @@ security:
             # switch_user: true
 
     role_hierarchy:
-        ROLE_ADMIN: [ ROLE_USER, ROLE_SCENARISTE, ROLE_ORGA, ROLE_GESTION, ROLE_REGLE, ROLE_STOCK, ROLE_REDACTEUR, ROLE_INTER_JEU, ROLE_COHERENCE ]
+        # ROLE_ADMIN hérite de ROLE_STATISTIQUE : l'administrateur accède au module
+        # Larp > Statistique sans qu'on ait à lui attribuer explicitement le rôle.
+        ROLE_ADMIN: [ ROLE_USER, ROLE_SCENARISTE, ROLE_ORGA, ROLE_GESTION, ROLE_REGLE, ROLE_STOCK, ROLE_REDACTEUR, ROLE_INTER_JEU, ROLE_COHERENCE, ROLE_STATISTIQUE ]
         ROLE_SUPER_ADMIN: [ ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH ]
         ROLE_DEV: [ ROLE_SUPER_ADMIN ]
         ROLE_REGLE: [ ROLE_WARGAME, ROLE_TERRITOIRE ]
