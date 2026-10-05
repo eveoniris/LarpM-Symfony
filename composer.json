@@ -105,9 +105,9 @@
     "cs": "./vendor/bin/phpcs",
     "cs-fix": "./vendor/bin/phpcbf",
     "phpstan": "php -d memory_limit=-1 vendor/bin/phpstan analyse --no-progress --configuration=phpstan.dist.neon",
-    "mago": "mago",
-    "lint": "mago lint",
-    "format": "mago format"
+    "mago": "./vendor/bin/mago",
+    "lint": "./vendor/bin/mago lint",
+    "format": "./vendor/bin/mago format"
   },
   "conflict": {
     "symfony/symfony": "*"

@@ -679,7 +679,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 $iterateMode = BaseRepository::ITERATE_EXPORT_HEADER;
                 if ($header) {
                     $iterateMode = BaseRepository::ITERATE_EXPORT;
-                    fputcsv($output, $header, ';');
+                    fputcsv($output, $header, ';', '"', '\\');
                 }
 
                 if (empty($dataProvider)) {
@@ -692,7 +692,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
 
                 foreach ($dataProvider as $data) {
                     // fputcsv($output, mb_convert_encoding($data, 'UTF-16LE', 'UTF-8'), ';');
-                    fputcsv($output, $data, ';');
+                    fputcsv($output, $data, ';', '"', '\\');
                 }
                 fclose($output);
             };

@@ -1,0 +1,41 @@
+# Normalisation des fins de ligne : l'index et le dépôt restent en LF, quel que
+# soit le réglage core.autocrlf du poste de développement. Sans ces règles,
+# phpcs et mago format remontent des violations "LineEndings" sur les postes
+# Windows alors que la CI (ubuntu) est verte.
+#
+# Volontairement limité aux formats textuels du dépôt : la règle catch-all
+# `* text=auto` toucherait aux ~12 000 fichiers d'assets vendorisés.
+
+.gitattributes        text eol=lf
+
+*.php   text eol=lf
+*.twig  text eol=lf
+*.neon  text eol=lf
+*.toml  text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.xml   text eol=lf
+*.json  text eol=lf
+*.sql   text eol=lf
+*.md    text eol=lf
+
+# Binaires : aucune conversion, aucun diff parasite.
+*.ttf   -text
+*.woff  -text
+*.woff2 -text
+*.eot   -text
+*.otf   -text
+*.png   -text
+*.jpg   -text
+*.jpeg  -text
+*.gif   -text
+*.webp  -text
+*.ico   -text
+
+# Leaflet et jQuery sont vendorisés en CRLF : aucune règle ne les cible, ils
+# gardent l'auto-détection par défaut et donc un index LF inchangé. Les
+# épingler ici produirait un diff de plusieurs milliers de lignes sans valeur
+# fonctionnelle ; ils ne sont ni analysés par phpcs ni formatés par mago.
+
+# Détection de renommages plus précise pour les sources PHP.
+*.php diff=php

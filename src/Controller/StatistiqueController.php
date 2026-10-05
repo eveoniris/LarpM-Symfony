@@ -35,7 +35,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(new MultiRolesExpression(Role::ADMIN, Role::SCENARISTE, Role::WARGAME, Role::ORGA))]
+// Garde de classe : l'accès au module Statistique est conditionné par
+// ROLE_STATISTIQUE. Les gardes de méthode restent en place et se cumulent
+// (ET), ce qui permet de cloisonner chaque panneau par rôle métier.
+#[IsGranted(Role::STATISTIQUE->value)]
 class StatistiqueController extends AbstractController
 {
     #[Route('/stats/alchimieHerboriste/{gn}/csv', name: 'stats.alchimieHerboriste.gn.csv', requirements: [
@@ -1164,18 +1167,87 @@ class StatistiqueController extends AbstractController
 
     #[Route('/stats', name: 'stats')]
     #[Route('/stats/list', name: 'stats.list')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE, Role::ADMIN, Role::WARGAME))]
+    #[IsGranted(Role::STATISTIQUE->value)]
     public function statsAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $allGns = $entityManager->getRepository(Gn::class)->findAll();
-        $selectedGnId = $request->query->get('gn', $allGns[0]?->getId());
-        $selectedGn = $entityManager->getRepository(Gn::class)->find($selectedGnId);
+        // $request->query->get() évalue sa valeur par défaut même quand ?gn= est
+        // fourni : on ne doit donc pas indexer $allGns[0] sans garde, sinon la
+        // page plante sur une base sans GN. find(null) lèverait aussi une
+        // exception « identifier id is missing ».
+        $firstGn = $allGns[0] ?? null;
+        $selectedGnId = $request->query->get('gn') ?: $firstGn?->getId();
+        $selectedGn = null !== $selectedGnId ? $entityManager->getRepository(Gn::class)->find((int) $selectedGnId) : null;
 
         return $this->render('statistique/list.twig', [
             'allGns' => $allGns,
             'selectedGnId' => $selectedGnId,
             'selectedGn' => $selectedGn,
         ]);
+    }
+
+    /**
+     * Extract de tous les personnages avec, pour chacun, une colonne par famille
+     * de compétences (le meilleur niveau atteint dans la famille, 0 si absent).
+     *
+     * Le filtre `?gn=` est optionnel : sans lui la liste est globale.
+     */
+    #[Route('/stats/personnages', name: 'stats.personnages', methods: ['GET'])]
+    #[Route('/stats/personnages/csv', name: 'stats.personnages.csv', methods: ['GET'])]
+    #[Route('/stats/personnages/json', name: 'stats.personnages.json', methods: ['GET'])]
+    #[Route('/api/personnages', name: 'api.personnages', methods: ['GET'])]
+    #[IsGranted(new MultiRolesExpression(Role::ADMIN, Role::SCENARISTE))]
+    public function personnagesExtractAction(Request $request, EntityManagerInterface $entityManager, string $_route): Response|JsonResponse|StreamedResponse
+    {
+        $gn = $this->resolveGnFromQuery($request, $entityManager);
+        $families = $this->statsService->getPersonnagesExtractFamilies();
+        $dataQuery = $this->statsService->getPersonnagesExtract($gn);
+
+        return match ($_route) {
+            'api.personnages', 'stats.personnages.json' => new JsonResponse($dataQuery->getResult()),
+            'stats.personnages.csv' => $this->sendCsv(
+                title: 'personnages_extract' . (null !== $gn ? '_gn_' . $gn->getId() : '') . '_' . date('Ymd'),
+                query: $dataQuery,
+                header: array_merge(
+                    [
+                        'personnageId',
+                        'nom',
+                        'classe',
+                        'age',
+                        'ageReel',
+                        'genre',
+                        'origine',
+                        'renomme',
+                        'vivant',
+                        'pnj',
+                        'xpTotal',
+                        'nbPersosMortsJoueur',
+                        'userId',
+                        'email',
+                    ],
+                    array_map(static fn (CompetenceFamily $family): string => $family->getLabel(), $families),
+                ),
+            ),
+            default => $this->render('statistique/personnages.twig', [
+                'personnages' => $dataQuery->getResult(),
+                'familles' => $families,
+                'allGns' => $entityManager->getRepository(Gn::class)->findBy([], ['label' => 'ASC']),
+                'selectedGn' => $gn,
+            ]),
+        };
+    }
+
+    /**
+     * Le paramètre `?gn=` de l'extract est optionnel et peut être absent ou vide.
+     */
+    private function resolveGnFromQuery(Request $request, EntityManagerInterface $entityManager): ?Gn
+    {
+        $gnId = $request->query->get('gn');
+        if (null === $gnId || '' === $gnId) {
+            return null;
+        }
+
+        return $entityManager->getRepository(Gn::class)->find((int) $gnId);
     }
 
     #[Route('/stats/users/roles', name: 'stats.users.roles')]

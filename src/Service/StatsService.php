@@ -725,4 +725,146 @@ class StatsService
                     AND sensible = 1;
             SQL, $rsm)->setParameter('gnid', $gn->getId());
     }
+
+    /**
+     * Familles de compétences utilisées comme colonnes du pivot de l'extract.
+     *
+     * @return CompetenceFamily[]
+     */
+    public function getPersonnagesExtractFamilies(): array
+    {
+        return $this->entityManager->getRepository(CompetenceFamily::class)->findBy([], ['id' => 'ASC']);
+    }
+
+    /**
+     * Extract de tous les personnages, avec une colonne par famille de compétences.
+     *
+     * Le GN est optionnel : sans $gn on liste tous les personnages, avec $gn on
+     * ne garde que ceux ayant participé à ce GN. Les personnages n'ayant aucune
+     * compétence restent visibles (toutes les colonnes de famille valent alors 0).
+     *
+     * Le nombre de morts et l'indicateur PNJ sont calculés à partir de la
+     * participation la plus récente (gn_id puis id décroissants), afin de
+     * refléter l'état du personnage au dernier GN plutôt qu'un JOIN arbitraire.
+     */
+    public function getPersonnagesExtract(?Gn $gn = null): NativeQuery
+    {
+        $families = $this->getPersonnagesExtractFamilies();
+
+        $pivot = [];
+        foreach ($families as $family) {
+            $pivot[] = sprintf('                COALESCE(MAX(CASE WHEN fam.competence_family_id = %d THEN fam.niveau END), 0) AS `fam_%d`', $family->getId(), $family->getId());
+        }
+        $pivot = implode(",\n", $pivot);
+        // Ajoute la virgule de liaison uniquement s'il y a des colonnes de famille.
+        $pivotSuffix = '' === $pivot ? '' : ",\n" . $pivot;
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('personnageId', 'personnageId', 'integer');
+        $rsm->addScalarResult('nom', 'nom', 'string');
+        $rsm->addScalarResult('classe', 'classe', 'string');
+        $rsm->addScalarResult('age', 'age', 'string');
+        $rsm->addScalarResult('ageReel', 'ageReel', 'string');
+        $rsm->addScalarResult('genre', 'genre', 'string');
+        $rsm->addScalarResult('origine', 'origine', 'string');
+        $rsm->addScalarResult('renomme', 'renomme', 'integer');
+        $rsm->addScalarResult('vivant', 'vivant', 'boolean');
+        $rsm->addScalarResult('pnj', 'pnj', 'boolean');
+        $rsm->addScalarResult('xpTotal', 'xpTotal', 'integer');
+        $rsm->addScalarResult('nbPersosMortsJoueur', 'nbPersosMortsJoueur', 'integer');
+        $rsm->addScalarResult('userId', 'userId', 'integer');
+        $rsm->addScalarResult('email', 'email', 'string');
+        foreach ($families as $family) {
+            $rsm->addScalarResult('fam_' . $family->getId(), 'fam_' . $family->getId(), 'integer');
+        }
+
+        // Reprend exactement le filtre de Personnage::getXpTotal() : les gains dont
+        // l'explication mentionne une suppression de compétence sont exclus.
+        // Reprend aussi Billet::isPnj() (stripos > 0, donc libellé ne commençant
+        // pas directement par « PNJ »). Toute évolution de l'un doit être
+        // répercutée ici.
+        /* @noinspection SqlNoDataSourceInspection */
+        $query = $this->entityManager->createNativeQuery(<<<SQL
+            WITH dernier_participant AS (
+                SELECT p.personnage_id,
+                       p.billet_id,
+                       ROW_NUMBER() OVER (PARTITION BY p.personnage_id ORDER BY p.gn_id DESC, p.id DESC) AS rn
+                FROM participant p
+                WHERE p.personnage_id IS NOT NULL
+            ),
+            familles AS (
+                SELECT pc.personnage_id,
+                       cpt.competence_family_id,
+                       MAX(l.`index`) AS niveau
+                FROM personnages_competences pc
+                         INNER JOIN competence cpt ON pc.competence_id = cpt.id
+                         INNER JOIN `level` l ON cpt.level_id = l.id
+                GROUP BY pc.personnage_id, cpt.competence_family_id
+            ),
+            xp AS (
+                SELECT eg.personnage_id,
+                       SUM(eg.xp_gain) AS xp_total
+                FROM experience_gain eg
+                WHERE eg.explanation NOT LIKE '%Suppression de la compétence%'
+                GROUP BY eg.personnage_id
+            ),
+            morts AS (
+                SELECT p.user_id,
+                       COUNT(*) AS nb_morts
+                FROM personnage p
+                WHERE p.user_id IS NOT NULL
+                  AND p.vivant = 0
+                GROUP BY p.user_id
+            )
+            SELECT p.id AS personnageId,
+                   p.nom AS nom,
+                   CASE
+                       WHEN g.id IS NULL OR g.label = 'Masculin' THEN cl.label_masculin
+                       ELSE cl.label_feminin
+                       END AS classe,
+                   a.label AS age,
+                   p.age_reel AS ageReel,
+                   g.label AS genre,
+                   t.nom AS origine,
+                   COALESCE(p.renomme, 0) AS renomme,
+                   p.vivant AS vivant,
+                   IF(b.label IS NULL, 0, IF(LOCATE('PNJ', UPPER(b.label)) > 0, 1, 0)) AS pnj,
+                   COALESCE(x.xp_total, 0) AS xpTotal,
+                   COALESCE(m.nb_morts, 0) AS nbPersosMortsJoueur,
+                   u.id AS userId,
+                   u.email AS email{$pivotSuffix}
+            FROM personnage p
+                     LEFT JOIN classe cl ON p.classe_id = cl.id
+                     LEFT JOIN age a ON p.age_id = a.id
+                     LEFT JOIN genre g ON p.genre_id = g.id
+                     LEFT JOIN territoire t ON p.territoire_id = t.id
+                     LEFT JOIN `user` u ON p.user_id = u.id
+                     LEFT JOIN xp x ON x.personnage_id = p.id
+                     LEFT JOIN morts m ON m.user_id = p.user_id
+                     LEFT JOIN dernier_participant lp ON lp.personnage_id = p.id AND lp.rn = 1
+                     LEFT JOIN billet b ON b.id = lp.billet_id
+                     LEFT JOIN familles fam ON fam.personnage_id = p.id
+            {$this->getPersonnagesExtractGnFilter($gn)}
+            GROUP BY p.id, cl.label_masculin, cl.label_feminin, a.label, p.age_reel, g.label, t.nom, p.renomme,
+                     p.vivant, b.label, x.xp_total, m.nb_morts, u.id, u.email
+            ORDER BY p.nom ASC
+            SQL, $rsm);
+
+        if (null !== $gn) {
+            $query->setParameter('gnid', $gn->getId());
+        }
+
+        return $query;
+    }
+
+    private function getPersonnagesExtractGnFilter(?Gn $gn): string
+    {
+        if (null === $gn) {
+            return '';
+        }
+
+        // EXISTS plutôt qu'un JOIN : un personnage participant plusieurs fois au
+        // même GN ne doit pas être dupliqué dans l'extract.
+        return 'WHERE EXISTS (SELECT 1 FROM participant pf WHERE pf.personnage_id = p.id AND pf.gn_id = :gnid)';
+    }
 }

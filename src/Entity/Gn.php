@@ -192,7 +192,7 @@ class Gn extends BaseGn implements Stringable
     {
         $participants = new ArrayCollection();
         foreach ($this->getParticipants() as $participant) {
-            if (!$participant->getUser()?->isEtatCivilComplet()) {
+            if ($participant->getUser()?->isEtatCivilComplet()) {
                 continue;
             }
             $participants->add($participant);
