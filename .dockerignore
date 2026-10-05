@@ -61,4 +61,4 @@ Dockerfile
 docker/db/data/
 docker/db/export/
 docker/mailpit/
-docker/prod-test.sh
+docker/scripts/prod-test.sh
