@@ -25,6 +25,7 @@ enum Role: string
     case USER = 'ROLE_USER';
     case ROLE_GROUPE_TRANSVERSE = 'ROLE_GROUPE_TRANSVERSE';
     case INTER_JEU = 'ROLE_INTER_JEU';
+    case STATISTIQUE = 'ROLE_STATISTIQUE';
 
     public function getLabel(): string
     {
@@ -51,6 +52,8 @@ enum Role: string
             self::ROLE_GROUPE_TRANSVERSE->value => 'Gestion groupe transverse',
             self::TERRITOIRE->value => 'Gestion des territoires',
             self::INTER_JEU->value => 'Gestion des inter-jeux',
+            self::GESTION->value => 'Gestion des données',
+            self::STATISTIQUE->value => 'Accès au module Statistique',
         ];
     }
 }
