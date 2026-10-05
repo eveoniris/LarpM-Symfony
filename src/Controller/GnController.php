@@ -293,6 +293,19 @@ class GnController extends AbstractController
         exit;
     }
 
+
+    #[Route('/{gn}/participants/withoutEtatCivil', name: 'participants.withoutEtatCivil')]
+    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
+    public function participantsWithoEtatCivil(#[MapEntity] Gn $gn): Response
+    {
+        $participants = $gn->getParticipantsWithoutEtatCivil();
+
+        return $this->render('gn/participantswithoutetatcivil.twig', [
+            'gn' => $gn,
+            'participants' => $participants,
+        ]);
+    }
+
     /**
      * Liste des groupes prévus sur le jeu.
      */
@@ -793,18 +806,6 @@ class GnController extends AbstractController
 
         fclose($output);
         exit;
-    }
-
-    #[Route('/{gn}/participants/withoutEtatCivil', name: 'participants.withoutEtatCivil')]
-    #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
-    public function participantsWithoEtatCivil(#[MapEntity] Gn $gn): Response
-    {
-        $participants = $gn->getParticipantsWithoutEtatCivil();
-
-        return $this->render('gn/participantswithoutetatcivil.twig', [
-            'gn' => $gn,
-            'participants' => $participants,
-        ]);
     }
 
     /**
