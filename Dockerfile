@@ -12,7 +12,8 @@ RUN install-php-extensions \
         gd \
         xsl \
         mysqli \
-        opcache
+        opcache \
+        apcu
 
 
 FROM composer:2 AS build
