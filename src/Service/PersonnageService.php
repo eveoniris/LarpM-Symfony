@@ -294,6 +294,18 @@ class PersonnageService
         return 0 < $personnageRepository->countUser($user);
     }
 
+    public function countUnreadMessages(?User $user = null): int
+    {
+        $user ??= $this->security->getUser();
+        if (!$user instanceof User) {
+            return 0;
+        }
+
+        return (int) $this->entityManager->createQuery(
+            'SELECT COUNT(m.id) FROM App\Entity\Message m WHERE m.userRelatedByDestinataire = :user AND (m.lu = false OR m.lu IS NULL)'
+        )->setParameter('user', $user)->getSingleScalarResult();
+    }
+
     public function canCreatePersonnage(?User $user): bool
     {
         $user ??= $this->security->getUser();

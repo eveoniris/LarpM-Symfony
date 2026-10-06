@@ -445,14 +445,20 @@ class GroupeSecondaireController extends AbstractController
         $isAdmin = $this->hasRoles([Role::ROLE_GROUPE_TRANSVERSE]);
 
         $fetchCollection = false;
-        if (!$isAdmin && ($personnage = $this->getPersonnage())) {
+        $personnage = $this->getPersonnage();
+        if (!$isAdmin && $personnage) {
             $fetchCollection = true; // may have issue with OrderBy but paginator will load result without member in (due to leftjoin(member))
             $queryBuilder = $secondaryGroupRepository->visibleForPersonnage($queryBuilder, $personnage->getId());
         }
 
+        $membershipIds = $personnage ? $secondaryGroupRepository->getMembershipGroupIds($personnage->getId()) : [];
+        $postulantIds = $personnage ? $secondaryGroupRepository->getPostulantGroupIds($personnage->getId()) : [];
+
         return $this->render('groupeSecondaire/list.twig', [
             'pagerService' => $pagerService,
             'paginator' => $secondaryGroupRepository->searchPaginated($pagerService, $queryBuilder, $fetchCollection),
+            'membershipIds' => $membershipIds,
+            'postulantIds' => $postulantIds,
         ]);
     }
 

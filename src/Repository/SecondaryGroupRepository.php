@@ -202,6 +202,39 @@ class SecondaryGroupRepository extends BaseRepository
         return (bool) $query->setParameter('uid', $user->getId())->setParameter('sgid', $secondaryGroup->getId())->getSingleScalarResult();
     }
 
+    /** @return list<int> */
+    public function getMembershipGroupIds(int $personnageId): array
+    {
+        $alias = $this->getAlias();
+        $qb = $this->createQueryBuilder($alias);
+        $result = $qb->select("$alias.id")
+            ->leftJoin("$alias.membres", 'm')
+            ->where($qb->expr()->orX(
+                $qb->expr()->eq("$alias.personnage", ':pid'),
+                $qb->expr()->eq('m.personnage', ':pid'),
+            ))
+            ->setParameter('pid', $personnageId)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_column($result, 'id');
+    }
+
+    /** @return list<int> */
+    public function getPostulantGroupIds(int $personnageId): array
+    {
+        $alias = $this->getAlias();
+        $qb = $this->createQueryBuilder($alias);
+        $result = $qb->select("$alias.id")
+            ->leftJoin("$alias.postulants", 'p')
+            ->where($qb->expr()->eq('p.personnage', ':pid'))
+            ->setParameter('pid', $personnageId)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_column($result, 'id');
+    }
+
     public function visibleForPersonnage(QueryBuilder $queryBuilder, int $personnagesId): QueryBuilder
     {
         return $queryBuilder

@@ -41,9 +41,19 @@ class Espece
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description_secrete = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $energieVitale = null;
+
+    /**
+     * @var Collection<int, EspeceBonus>
+     */
+    #[ORM\OneToMany(mappedBy: 'espece', targetEntity: EspeceBonus::class, cascade: ['persist', 'remove'])]
+    private Collection $especeBonus;
+
     public function __construct()
     {
         $this->personnages = new ArrayCollection();
+        $this->especeBonus = new ArrayCollection();
     }
 
     public function addPersonnage(Personnage $personnage): static
@@ -159,6 +169,43 @@ class Espece
     public function setDescriptionSecrete(?string $description_secrete): static
     {
         $this->description_secrete = $description_secrete;
+
+        return $this;
+    }
+
+    public function getEnergieVitale(): ?int
+    {
+        return $this->energieVitale;
+    }
+
+    public function setEnergieVitale(?int $energieVitale): static
+    {
+        $this->energieVitale = $energieVitale;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EspeceBonus>
+     */
+    public function getEspeceBonus(): Collection
+    {
+        return $this->especeBonus;
+    }
+
+    public function addEspeceBonus(EspeceBonus $especeBonus): static
+    {
+        if (!$this->especeBonus->contains($especeBonus)) {
+            $this->especeBonus->add($especeBonus);
+            $especeBonus->setEspece($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEspeceBonus(EspeceBonus $especeBonus): static
+    {
+        $this->especeBonus->removeElement($especeBonus);
 
         return $this;
     }

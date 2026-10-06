@@ -96,6 +96,7 @@ use App\Repository\UserRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\CarteAlchimisteService;
 use App\Service\CompetenceService;
+use App\Service\EspeceBonusService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Carbon\Carbon;
@@ -4704,6 +4705,7 @@ class PersonnageController extends AbstractController
         Request $request,
         #[MapEntity]
         Personnage $personnage,
+        EspeceBonusService $especeBonusService,
     ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
         if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
@@ -4750,10 +4752,12 @@ class PersonnageController extends AbstractController
                 }
 
                 $personnage->addEspece($espece);
+                $especeBonusService->applyEspeceBonuses($personnage, $espece);
             }
 
             if (0 === \count($especesChanges)) {
                 foreach ($personnage->getEspeces() as $espece) {
+                    $especeBonusService->removeEspeceBonuses($personnage, $espece);
                     $personnage->removeEspece($espece);
                 }
             } else {
@@ -4771,6 +4775,7 @@ class PersonnageController extends AbstractController
                     }
 
                     if (!$found) {
+                        $especeBonusService->removeEspeceBonuses($personnage, $espece);
                         $personnage->removeEspece($espece);
                     }
                 }

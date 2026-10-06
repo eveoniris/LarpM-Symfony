@@ -517,22 +517,14 @@ class Personnage extends BasePersonnage implements Stringable
             return 0;
         }
 
-        if ($this->isOmbrelin()) {
-            return 2;
-        }
-
-        return 1;
-    }
-
-    public function isOmbrelin(): bool
-    {
+        $vitale = 1;
         foreach ($this->getEspeces() as $espece) {
-            if ($espece->isOmbrelin()) {
-                return true;
+            if ($espece->getEnergieVitale() !== null) {
+                $vitale = max($vitale, $espece->getEnergieVitale());
             }
         }
 
-        return false;
+        return $vitale;
     }
 
     public function getFilename(): ?string
