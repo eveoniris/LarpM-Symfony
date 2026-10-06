@@ -25,6 +25,7 @@ services:
               required: false
         volumes:
             - ./docker/db/data:/var/lib/mysql # persistent data
+            - ./docker/db/initData:/docker-entrypoint-initdb.d:ro # auto-init on empty DB
 
     mailer:
         image: axllent/mailpit:v1.30
