@@ -13,6 +13,8 @@ services:
         volumes:
             - ./:/app # project files
             - ./docker/php/php.ini:/usr/local/etc/php/conf.d/zzz-app.ini:ro # custom php.ini
+            - caddy_data:/data # Caddy CA + cert storage (persisted across restarts)
+            - caddy_config:/config # Caddy runtime config
         depends_on:
             - mailer
 
@@ -36,3 +38,7 @@ services:
               required: false
         volumes:
             - ./docker/mailpit:/data # persistent data
+
+volumes:
+    caddy_data:
+    caddy_config:
