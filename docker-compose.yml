@@ -3,6 +3,9 @@ services:
         restart: unless-stopped
         ports:
             - "80:80" # HTTP
+            - "443:443" # HTTPS
+            - "443:443/udp" # HTTP/3
+            - "8080:80" # fallback sans admin (override via .env.dev.local)
         env_file:
             - .env
             - path: .env.local

@@ -29,9 +29,4 @@ else
     echo "Fixtures marker found: skipping fixtures:load."
 fi
 
-if [ "$1" = 'prod' ]; then
-    echo "Running in production mode."
-else
-    echo "Running in development mode."
-    exec docker-php-entrypoint "$@"
-fi
+exec docker-php-entrypoint "$@"
