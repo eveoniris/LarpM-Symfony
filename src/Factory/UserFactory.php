@@ -27,8 +27,8 @@ final class UserFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         return [
-            "email" => self::faker()->unique()->safeEmail(),
-            "username" => self::faker()->unique()->userName(), # required for UserInterface
+            'email' => self::faker()->unique()->safeEmail(),
+            'username' => self::faker()->unique()->userName(), // required for UserInterface
         ];
     }
 
@@ -37,9 +37,7 @@ final class UserFactory extends PersistentObjectFactory
         return $this->afterInstantiate(function (User $user): void {
             // Default dev password: "password" (change if needed).
             // setPassword() is overridden on User to write into `pwd`.
-            $user->setPassword(
-                $this->passwordHasher->hashPassword($user, "password"),
-            );
+            $user->setPassword($this->passwordHasher->hashPassword($user, 'password'));
             $user->setEnabled(true);
         });
     }
@@ -50,14 +48,12 @@ final class UserFactory extends PersistentObjectFactory
     public function admin(): static
     {
         return $this->with([
-            "email" => "admin@larpm.local",
-            "username" => "admin",
+            'email' => 'admin@larpm.local',
+            'username' => 'admin',
         ])->afterInstantiate(function (User $user): void {
-            $user->setPassword(
-                $this->passwordHasher->hashPassword($user, "admin"),
-            );
+            $user->setPassword($this->passwordHasher->hashPassword($user, 'admin'));
             $user->setEnabled(true);
-            $user->setRoles(["ROLE_ADMIN"]);
+            $user->setRoles(['ROLE_ADMIN']);
         });
     }
 }
