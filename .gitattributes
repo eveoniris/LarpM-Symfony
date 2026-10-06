@@ -18,6 +18,7 @@
 *.json  text eol=lf
 *.sql   text eol=lf
 *.md    text eol=lf
+*.sh    text eol=lf
 
 # Binaires : aucune conversion, aucun diff parasite.
 *.ttf   -text
