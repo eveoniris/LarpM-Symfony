@@ -56,12 +56,14 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           MAILER_DSN: ${{ secrets.MAILER_DSN }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
           RUN_MIGRATIONS: ${{ github.event.inputs.run_migrations || 'true' }}
           CLEAR_CACHE: ${{ github.event.inputs.clear_cache || 'true' }}
         run: |
-          # Encode le MAILER_DSN (secret) en base64 pour le transmettre au serveur sans
-          # risque de caractères spéciaux/quoting. Vide si le secret n'est pas défini.
+          # Encode les secrets en base64 pour les transmettre sans risque de caractères
+          # spéciaux/quoting. Vide si le secret n'est pas défini.
           MAILER_DSN_B64=$(printf '%s' "$MAILER_DSN" | base64 | tr -d '\n')
+          APP_SECRET_B64=$(printf '%s' "$APP_SECRET" | base64 | tr -d '\n')
           ssh $SSH_USER@$SSH_HOST bash -s << ENDSSH
             set -e
 
@@ -95,13 +97,19 @@ jobs:
               --prefer-dist \
               --no-scripts
 
-            # Écrit le MAILER_DSN dans .env.prod.local (prioritaire sur .env.local pour prod,
-            # non versionné) uniquement si le secret est fourni. Sinon on ne touche à rien :
-            # la prod garde sa configuration d'envoi existante.
+            # Écrit les secrets dans .env.prod.local (prioritaire sur .env.local pour prod,
+            # non versionné). On reconstruit le fichier à chaque déploiement.
             MAILER_DSN_B64='$MAILER_DSN_B64'
-            if [ -n "\$MAILER_DSN_B64" ]; then
-              echo "==> Writing MAILER_DSN to .env.prod.local"
-              printf 'MAILER_DSN=%s\n' "\$(printf '%s' "\$MAILER_DSN_B64" | base64 --decode)" > .env.prod.local
+            APP_SECRET_B64='$APP_SECRET_B64'
+            if [ -n "\$MAILER_DSN_B64" ] || [ -n "\$APP_SECRET_B64" ]; then
+              echo "==> Writing secrets to .env.prod.local"
+              > .env.prod.local
+              if [ -n "\$APP_SECRET_B64" ]; then
+                printf 'APP_SECRET=%s\n' "\$(printf '%s' "\$APP_SECRET_B64" | base64 --decode)" >> .env.prod.local
+              fi
+              if [ -n "\$MAILER_DSN_B64" ]; then
+                printf 'MAILER_DSN=%s\n' "\$(printf '%s' "\$MAILER_DSN_B64" | base64 --decode)" >> .env.prod.local
+              fi
             fi
 
             echo "==> Dumping compiled env for production"
