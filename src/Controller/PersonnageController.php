@@ -3866,7 +3866,7 @@ class PersonnageController extends AbstractController
             }
 
             $response = new StreamedResponse();
-            $response->headers->set('Content-Control', 'private');
+            $response->headers->set('Cache-Control', 'private, max-age=86400');
             $response->headers->set('Content-Type', 'image/jpeg');
             $response->setCallback(static function () use ($image): void {
                 echo $image->thumbnail(new Box(200, 200))->get('jpeg');
@@ -3874,7 +3874,8 @@ class PersonnageController extends AbstractController
             });
         } else {
             $response = new BinaryFileResponse($filename);
-            $response->headers->set('Content-Control', 'private');
+            $response->setAutoLastModified();
+            $response->headers->set('Cache-Control', 'private, max-age=86400');
 
             $ext = strtolower($personnage->getTrombineUrl());
             if (str_ends_with($ext, '.png')) {

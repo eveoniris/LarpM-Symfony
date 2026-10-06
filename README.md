@@ -1,10 +1,23 @@
-# larpManager
+# LarpManager
 
-Live action role-playing game (LARP) Manager
+Outil de gestion de jeux de rôle grandeur nature (GN), développé par et pour l'association Eveoniris.
 
-This tool was made for manage player subscription, player background and many other things on LARP event.
+*Live action role-playing (LARP) management tool.*
 
-Gestionnaire de jeu de rôle grandeur nature.
+## Ce que fait l'outil
+
+- Inscriptions et billetterie des joueurs, suivi des participations par événement.
+- Fiches de personnages (compétences, langues, religions, historique), groupes et territoires.
+- Préparation du jeu par les organisateurs : intrigues, documents, objets et leur rangement.
+
+Il sert plus de 1 500 participants sur plusieurs saisons de jeu.
+
+## Pile technique
+
+- PHP 8.4, Symfony (migré depuis Silex, puis Symfony 6, 7 et 8).
+- FrankenPHP, Docker et Docker Compose pour le développement.
+- Qualité : PHPStan, Mago, PHP CS Fixer, Rector, PHPUnit et intégration continue GitHub Actions.
+- API JWT documentée (dossier `apidoc`).
 
 ## Installation
 
