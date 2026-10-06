@@ -1,0 +1,13 @@
+{
+    "language_server_phpstan.enabled": true,
+    "language_server_mago.enabled": true,
+    "language_server_php_cs_fixer.enabled": true,
+    "php_code_sniffer.enabled": true,
+    "symfony.enabled": true,
+    "indexer.exclude_patterns": [
+        "/vendor/**/Tests/**/*",
+        "/vendor/**/tests/**/*",
+        "/var/cache/**/*",
+        "/vendor/composer/**/*"
+    ]
+}
