@@ -42,17 +42,25 @@ docker compose exec webserver cat /data/caddy/pki/authorities/local/root.crt > c
 
 ### 2. Entrée hosts + import CA selon votre OS
 
-#### Windows (PowerShell en tant qu'administrateur)
+#### Windows
 
 ```powershell
-# Ajouter le domaine
+# Ajouter le domaine (PowerShell admin requis pour le hosts file)
 Add-Content C:\Windows\System32\drivers\etc\hosts "`n127.0.0.1 larpmanager.test"
+```
 
-# Importer la CA dans le trust store Windows (méthode PowerShell)
+Importer la CA — **sans droits admin** via .NET X509Store (recommandé) :
+```powershell
+$cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2("caddy-root.crt")
+$store = New-Object System.Security.Cryptography.X509Certificates.X509Store("Root", "CurrentUser")
+$store.Open("ReadWrite")
+$store.Add($cert)
+$store.Close()
+```
+
+Ou via `Import-Certificate` **(admin requis)** :
+```powershell
 Import-Certificate -FilePath caddy-root.crt -CertStoreLocation Cert:\LocalMachine\Root
-
-# OU via certutil (compatible cmd.exe)
-certutil -addstore -f "ROOT" caddy-root.crt
 ```
 
 #### macOS (Terminal)
