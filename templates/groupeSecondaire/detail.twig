@@ -109,6 +109,20 @@
                         {% endif %}
                     </div>
                 </div>
+
+                {% if isMembre and groupeSecondaire.scenariste %}
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading">
+                            <h6>Scénariste</h6>
+                        </div>
+                        <div class="list-group-item-text">
+                            <ul>
+                                <li>{{ groupeSecondaire.scenariste.username }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+
             </div>
         </div>
     </div>

@@ -293,14 +293,14 @@ class GnController extends AbstractController
         exit;
     }
 
-
     #[Route('/{gn}/participants/withoutEtatCivil', name: 'participants.withoutEtatCivil')]
     #[IsGranted('ROLE_ORGA', message: 'You are not allowed to access tho this page.')]
     public function participantsWithoEtatCivil(
         Request $request,
         PagerService $pagerService,
         ParticipantRepository $participantRepository,
-        #[MapEntity] Gn $gn,
+        #[MapEntity]
+        Gn $gn,
     ): Response {
         $pagerService->setRequest($request)->setRepository($participantRepository);
         $alias = $participantRepository->getAlias();

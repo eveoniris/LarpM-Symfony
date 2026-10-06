@@ -13,7 +13,7 @@ final class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         UserFactory::createOne([
-            "email" => "admin@larpm.local",
+            'email' => 'admin@larpm.local',
         ]);
 
         UserFactory::createMany(10);
