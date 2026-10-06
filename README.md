@@ -1,10 +1,12 @@
 # LarpManager
 
-Application web de gestion de jeux de rôle grandeur nature (GN), développée et utilisée par l'association [Eveoniris](https://github.com/eveoniris) pour organiser ses événements, des inscriptions jusqu'au jeu.
+Outil de gestion de jeux de rôle grandeur nature (GN), développé par et pour l'association [Eveoniris](https://github.com/eveoniris).
 
-*Web application to run live action role-playing (LARP) events: registrations, characters, groups, background, rules and logistics.*
+*Live action role-playing (LARP) management tool: registrations, characters, groups, background, rules and logistics.*
 
-## Fonctionnalités
+Il sert plus de 1 500 participants sur plusieurs saisons de jeu.
+
+## Ce que fait l'outil
 
 - **Joueurs et inscriptions** : comptes, participations aux GN, billetterie, état civil, restauration, trombinoscope.
 - **Personnages** : création et suivi (classes, compétences, langues, religions, lignées, titres, niveaux), personnages secondaires, background et débriefing.
@@ -12,13 +14,17 @@ Application web de gestion de jeux de rôle grandeur nature (GN), développée e
 - **Organisation** : stock d'objets (localisation, rangement, état, étiquettes), génération de QR codes, documents à imprimer, messagerie et notifications, statistiques et exports.
 - **Administration** : gestion des droits par rôle, règles du jeu, intégration Discord, API pour les joueurs.
 
-## Stack technique
+## Pile technique
 
-PHP 8.4 · Symfony 8 · Doctrine ORM 3 · Twig · Symfony UX (Turbo, Autocomplete) · MySQL 8.4 · Docker · PHPUnit · Mago · GitHub Actions.
+- PHP 8.4, Symfony 8 (migré depuis Silex, puis Symfony 6, 7 et 8), Doctrine ORM 3, Twig, Symfony UX (Turbo, Autocomplete), MySQL 8.4.
+- FrankenPHP, Docker et Docker Compose pour le développement.
+- Qualité : PHPStan, Mago, PHP CS Fixer, Rector, PHPUnit et intégration continue GitHub Actions.
+- API JWT documentée (dossier `apidoc`).
 
 ## Contribuer
 
 Les contributions sont les bienvenues : ouvrez une issue ou une pull request. La liste des contributeurs est visible dans l'onglet [Contributors](https://github.com/eveoniris/LarpM-Symfony/graphs/contributors). L'installation en local est décrite ci-dessous.
+
 ## Installation
 
 Vous aurez besoin de:

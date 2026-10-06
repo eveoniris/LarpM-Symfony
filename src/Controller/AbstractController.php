@@ -784,8 +784,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
     protected function sendNoImageAvailable(string $path = 'no'): BinaryFileResponse
     {
         $response = new BinaryFileResponse($this->fileUploader->getDirectory(FolderType::Private) . 'No_Image_Available.jpg');
+        $response->setAutoLastModified();
         $response->headers->set('Content-Type', 'image/jpeg');
-        $response->headers->set('Content-Control', 'private');
+        $response->headers->set('Cache-Control', 'private, max-age=86400');
         if ($this->isGranted('ROLE_ADMIN')) {
             $response->headers->set('Content-X-Path', $path);
         }
