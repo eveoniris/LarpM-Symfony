@@ -829,8 +829,7 @@ class PersonnageService
             }
 
             // Le bonus n'est actif que si le personnage est natif d'un territoire dont son 1er groupe est à l'origine.
-            $firstGroupOrigin = $personnage->getFirstParticipantGnGroupe()?->getTerritoire()?->getId();
-            if ($firstGroupOrigin && $firstGroupOrigin !== $personnage->getOrigine()?->getId()) {
+            if (!$personnage->isOrigineBonusActive()) {
                 continue;
             }
             unset($origineBonus);

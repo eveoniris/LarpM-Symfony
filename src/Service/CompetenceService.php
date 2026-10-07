@@ -182,6 +182,10 @@ class CompetenceService
     {
         $details = [];
 
+        if (!$this->getPersonnage()->isOrigineBonusActive()) {
+            return $details;
+        }
+
         // On ne prend que les bonus encore actif
         foreach ($this->getPersonnage()->getOrigine()?->getValideOrigineBonus() ?? [] as $origineBonus) {
             if (!$origineBonus) {
@@ -555,7 +559,12 @@ class CompetenceService
     public function getOrigineBonusCompetences(?Personnage $personnage = null): ArrayCollection
     {
         $competences = new ArrayCollection();
-        foreach (($personnage ?? $this->getPersonnage())->getOrigine()?->getValideOrigineBonus() as $origineBonus) {
+        $personnage ??= $this->getPersonnage();
+        if (!$personnage->isOrigineBonusActive()) {
+            return $competences;
+        }
+
+        foreach ($personnage->getOrigine()?->getValideOrigineBonus() ?? [] as $origineBonus) {
             $bonus = $origineBonus->getBonus();
             if ($bonus->isCompetence() && null !== $bonus->getCompetence()) {
                 $competences->add($bonus->getCompetence());
