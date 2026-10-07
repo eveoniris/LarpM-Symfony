@@ -37,6 +37,12 @@
                        title="Supprimer"
                        href="{{ path('espece.delete',{'espece':espece.id}) }}"><i
                             class="fa fa-eraser"></i> Supprimer</a>
+                    {% if isAdmin %}
+                        <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                           title="Gérer les bonus"
+                           href="{{ path('espece.bonus',{'espece':espece.id}) }}"><i
+                                class="fa fa-gift"></i> Bonus</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -58,6 +64,30 @@
                     <div class="list-group-item-heading fw-bold mb-1">Type</div>
                     <div class="list-group-item-text ps-1">{% if espece.type %}{{ espece.type|trans }}{% else %}—{% endif %}</div>
                 </div>
+
+                <div class="list-group-item">
+                    <div class="list-group-item-heading fw-bold mb-1">Énergie vitale (PV)</div>
+                    <div class="list-group-item-text ps-1">{{ espece.energieVitale ?? 1 }} PV</div>
+                </div>
+
+                {% if espece.especeBonus|length > 0 %}
+                    <div class="list-group-item">
+                        <div class="list-group-item-heading fw-bold mb-1">Bonus accordés</div>
+                        <div class="list-group-item-text ps-1">
+                            <ul class="mb-0">
+                                {% for eb in espece.especeBonus %}
+                                    {% if isAdmin or eb.bonus.competence and not eb.bonus.competence.secret %}
+                                        <li>
+                                            <span class="badge bg-secondary me-1">{{ eb.bonus.type ? eb.bonus.type.value : '?' }}</span>
+                                            {{ eb.bonus.titre ?? '—' }}
+                                            {% if eb.bonus.competence %}— <em>{{ eb.bonus.competence.label }}</em>{% endif %}
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
 
                 <div class="list-group-item">
                     <div class="list-group-item-heading fw-bold mb-1">Description</div>

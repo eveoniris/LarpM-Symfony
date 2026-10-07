@@ -87,21 +87,16 @@
                     <td class="text-center">{{ groupeSecondaire.membres|length }}</td>
                 {% endif %}
                 <td class="text-center">
-                    {% set displayPostuler = true %}
-                    {% set isMembreOrPostulant = groupeSecondaire.isMembreOrResponsable(app.user.personnage) %}
-                    {% if groupeSecondaire.isPostulant(app.user.personnage) or isMembreOrPostulant %}
-                        {% set displayPostuler = false %}
-                        {% if not isMembreOrPostulant %}
-                            <div class="mb-2">
-                                <span class="badge rounded-pill bg-secondary">demande en cours</span>
-                            </div>
-                        {% endif %}
+                    {% set isMembre = groupeSecondaire.id in membershipIds %}
+                    {% set isPostulantG = groupeSecondaire.id in postulantIds %}
+                    {% set displayPostuler = not isMembre and not isPostulantG %}
+                    {% if isPostulantG and not isMembre %}
+                        <div class="mb-2">
+                            <span class="badge rounded-pill bg-secondary">demande en cours</span>
+                        </div>
                     {% endif %}
 
-                    {% set displayVoir = false or isAdmin %}
-                    {% if groupeSecondaire.isMembreOrResponsable(app.user.personnage) or isAdmin %}
-                        {% set displayVoir = true %}
-                    {% endif %}
+                    {% set displayVoir = isMembre or isAdmin %}
 
                     <div class="d-flex justify-content-center">
                         {% include '_partials/btnGroup.twig' with { 'css': 'btn-group-vertical', 'display': true, 'buttons' :

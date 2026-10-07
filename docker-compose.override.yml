@@ -5,7 +5,6 @@ services:
             context: .
             target: dev
             dockerfile: Dockerfile
-        pull_policy: build
         env_file:
             - .env.dev
             - path: .env.dev.local

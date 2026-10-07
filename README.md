@@ -1,23 +1,29 @@
 # LarpManager
 
-Outil de gestion de jeux de rôle grandeur nature (GN), développé par et pour l'association Eveoniris.
+Outil de gestion de jeux de rôle grandeur nature (GN), développé par et pour l'association [Eveoniris](https://github.com/eveoniris).
 
-*Live action role-playing (LARP) management tool.*
-
-## Ce que fait l'outil
-
-- Inscriptions et billetterie des joueurs, suivi des participations par événement.
-- Fiches de personnages (compétences, langues, religions, historique), groupes et territoires.
-- Préparation du jeu par les organisateurs : intrigues, documents, objets et leur rangement.
+*Live action role-playing (LARP) management tool: registrations, characters, groups, background, rules and logistics.*
 
 Il sert plus de 1 500 participants sur plusieurs saisons de jeu.
 
+## Ce que fait l'outil
+
+- **Joueurs et inscriptions** : comptes, participations aux GN, billetterie, état civil, restauration, trombinoscope.
+- **Personnages** : création et suivi (classes, compétences, langues, religions, lignées, titres, niveaux), personnages secondaires, background et débriefing.
+- **Groupes et monde** : groupes et groupes secondaires, territoires, constructions, économie et ressources, intrigues, rumeurs, chronologie, lois.
+- **Organisation** : stock d'objets (localisation, rangement, état, étiquettes), génération de QR codes, documents à imprimer, messagerie et notifications, statistiques et exports.
+- **Administration** : gestion des droits par rôle, règles du jeu, intégration Discord, API pour les joueurs.
+
 ## Pile technique
 
-- PHP 8.4, Symfony (migré depuis Silex, puis Symfony 6, 7 et 8).
+- PHP 8.4, Symfony 8 (migré depuis Silex, puis Symfony 6, 7 et 8), Doctrine ORM 3, Twig, Symfony UX (Turbo, Autocomplete), MySQL 8.4.
 - FrankenPHP, Docker et Docker Compose pour le développement.
 - Qualité : PHPStan, Mago, PHP CS Fixer, Rector, PHPUnit et intégration continue GitHub Actions.
 - API JWT documentée (dossier `apidoc`).
+
+## Contribuer
+
+Les contributions sont les bienvenues : ouvrez une issue ou une pull request. La liste des contributeurs est visible dans l'onglet [Contributors](https://github.com/eveoniris/LarpM-Symfony/graphs/contributors). L'installation en local est décrite ci-dessous.
 
 ## Installation
 
@@ -45,7 +51,7 @@ docker compose up -d
 
 Se rendre sur [localhost/](http://localhost/)
 
-Un reverse proxy sur [larpmanager.test](http://larpmanager.test) est aussi disponible si vous avez configuré votre /etc/hosts commme suit:
+Un reverse proxy sur [larpmanager.test](http://larpmanager.test) est aussi disponible si vous avez configuré votre /etc/hosts comme suit:
 
 ```text
 127.0.0.1 larpmanager.test
@@ -78,9 +84,9 @@ Attention, le script suivant n'est à utiliser que pour tester l'image de produc
 
 Par ailleurs, le mailpit est ici factice pour pouvoir faire démarrer le service, il ne doit pas être utilisé pour tester l'envoi de mail.
 
-## Commmandes post-installation
+## Commandes post-installation
 
-### Connection d'un IDE à la base de donnée
+### Connexion d'un IDE à la base de donnée
 
 Configuration de la base de donnée pour un IDE (ex: DBeaver, DataGrip, TablePlus, HeidiSQL, etc.):
 
@@ -94,7 +100,7 @@ Attention à bien utiliser la même version de MySQL que celle du container (8.4
 
 ### Voir les mails
 
-Tous les mails sont catché par mailpit et consultable sur : http://localhost:8025/
+Tous les mails sont capturés par Mailpit et consultables sur : http://localhost:8025/
 
 ### Commandes Symfony CLI
 
@@ -122,7 +128,7 @@ docker compose logs database
 ## Gestion de la base de donnée
 
 Lors du docker compose up -d, est installé pour la première fois (tant que /docker/db/data est vide) les fichiers
-contenus dans docker/db/initData par ordre alphabetique
+contenus dans docker/db/initData par ordre alphabétique
 
 Export de la base de donnée:
 
@@ -139,7 +145,7 @@ docker compose cp backup.sql database:/tmp/backup.sql
 Import de la base de donnée (le fichier doit être dans le container):
 
 ```bash
-docker commpose exec -it database /bin/sh -c "mysql -uadmin -ppassword larpm < /tmp/backup.sql"
+docker compose exec -it database /bin/sh -c "mysql -uadmin -ppassword larpm < /tmp/backup.sql"
 ```
 
 Arguments possibles:
@@ -406,17 +412,17 @@ jouer la commande
 docker compose pull
 ```
 
-## Soucis possible
+## Problèmes fréquents
 
 Si vous avez un souci pour vous connecter
 
-fair un `docker compose ps` voir si un container est en "restarting"
+faire un `docker compose ps` voir si un container est en "restarting"
 
 Si oui faire un `docker compose down -v` puis faire un `docker compose up -d` et vérifier les logs.
 
 ### Exemple pour mettre à jour les librairies de composer
 
-Mettre à jour composer.json sur la version visé puis:
+Mettre à jour composer.json sur la version visée puis:
 
 ```bash
 docker compose run --rm composer update "doctrine/*" --with-all-dependencies

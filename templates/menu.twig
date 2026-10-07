@@ -383,7 +383,7 @@
             {% endif %}
 
             {% if app.user %}
-                {% set unreadCount = app.user.messageRelatedByDestinataires|filter(m => m.lu != 1)|length %}
+                {% set unreadCount = personnageService.countUnreadMessages() %}
                 <div class="d-flex me-2">
                     <a class="btn btn-dark shadow position-relative" href="{{ path('messagerie') }}"
                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="Messagerie">

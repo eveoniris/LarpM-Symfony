@@ -8,6 +8,7 @@ use App\Entity\Espece;
 use App\Enum\EspeceType as EspeceTypeEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -65,6 +66,10 @@ class EspeceType extends AbstractType
             'choice_translation_domain' => 'enum',
             // 'choice_label' => fn (EspeceType $type) => $type->trans($this->translator),
             'label' => 'Type',
+        ])->add('energieVitale', IntegerType::class, [
+            'required' => false,
+            'label' => 'Énergie vitale (PV)',
+            'attr' => ['placeholder' => '1 (défaut)'],
         ])/* TODO ?
          * ->add('bonus', EntityType::class, [
          * 'required' => false,

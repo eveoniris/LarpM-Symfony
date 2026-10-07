@@ -61,6 +61,12 @@ abstract class BaseBonus
     #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id')]
     private ?Collection $groupeBonus;
 
+    /** @var Collection<int, EspeceBonus> */
+    #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: EspeceBonus::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinTable(name: 'espece_bonus')]
+    #[JoinColumn(name: 'bonus_id', referencedColumnName: 'id')]
+    private Collection $especeBonus;
+
     /** @var Collection<int, Merveille> */
     #[ORM\OneToMany(mappedBy: 'bonus', targetEntity: Merveille::class)]
     private Collection $merveilles;
@@ -71,6 +77,7 @@ abstract class BaseBonus
         $this->groupeBonus = new ArrayCollection();
         $this->originesBonus = new ArrayCollection();
         $this->merveilles = new ArrayCollection();
+        $this->especeBonus = new ArrayCollection();
     }
 
     public function addGroupeBonus(GroupeBonus $groupeBonus): static
@@ -280,6 +287,32 @@ abstract class BaseBonus
     public function removeGroupeBonus(GroupeBonus $groupeBonus): static
     {
         $this->groupeBonus->removeElement($groupeBonus);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EspeceBonus>
+     */
+    public function getEspeceBonus(): Collection
+    {
+        return $this->especeBonus;
+    }
+
+    public function addEspeceBonus(EspeceBonus $especeBonus): static
+    {
+        if (!$this->especeBonus->contains($especeBonus)) {
+            $this->especeBonus->add($especeBonus);
+            /* @phpstan-ignore argument.type */
+            $especeBonus->setBonus($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEspeceBonus(EspeceBonus $especeBonus): static
+    {
+        $this->especeBonus->removeElement($especeBonus);
 
         return $this;
     }

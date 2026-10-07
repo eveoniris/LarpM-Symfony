@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Index(columns: ['bonus_id'], name: 'fk_bonus_idx')]
 #[ORM\Index(columns: ['personnage_id'], name: 'fk_personnage_idx')]
+#[ORM\Index(columns: ['espece_id'], name: 'fk_personnage_bonus_espece_idx')]
 #[ORM\Entity(repositoryClass: PersonnageBonusRepository::class)]
 class PersonnageBonus
 {
@@ -34,6 +35,10 @@ class PersonnageBonus
 
     #[ORM\Column(length: 36, nullable: true)]
     private ?string $status = null;
+
+    #[ORM\ManyToOne(targetEntity: Espece::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Espece $espece = null;
 
     public function getId(): ?int
     {
@@ -79,6 +84,18 @@ class PersonnageBonus
     public function setCreationDate(?DateTimeInterface $creation_date): static
     {
         $this->creation_date = $creation_date;
+
+        return $this;
+    }
+
+    public function getEspece(): ?Espece
+    {
+        return $this->espece;
+    }
+
+    public function setEspece(?Espece $espece): static
+    {
+        $this->espece = $espece;
 
         return $this;
     }

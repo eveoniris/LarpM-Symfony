@@ -1,0 +1,58 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Bonus de l'espèce{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Liste des espèces', 'route': path('espece.list') },
+            {'name' : espece.nom, 'route': path('espece.detail', {'espece': espece.id}) },
+            {'name' : 'Gestion des bonus' }
+        ]
+    } %}
+
+    <div class="well well-sm">
+
+        <div class="header">
+            <h5>Bonus de l'espèce {{ espece.nom }}</h5>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header fw-bold">Bonus actuels</div>
+            <div class="list-group list-group-flush">
+                {% for eb in espece.especeBonus %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-secondary me-2">{{ eb.bonus.type ? eb.bonus.type.value : '?' }}</span>
+                            <strong>{{ eb.bonus.titre ?? '—' }}</strong>
+                            {% if eb.bonus.competence %}
+                                — <em>{{ eb.bonus.competence.label }}</em>
+                            {% endif %}
+                            {% if eb.bonus.description %}
+                                <small class="text-muted ms-2">{{ eb.bonus.description }}</small>
+                            {% endif %}
+                            <span class="badge ms-2 {{ eb.status.value == 'ACTIVE' ? 'bg-success' : 'bg-warning' }}">{{ eb.status.value }}</span>
+                        </div>
+                        <a href="{{ path('espece.bonus.delete', {'espece': espece.id, 'especeBonus': eb.id}) }}"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Supprimer ce bonus de l\'espèce ?')">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="list-group-item text-muted">Aucun bonus pour cette espèce.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header fw-bold">Ajouter un bonus</div>
+            <div class="card-body">
+                {{ form(form) }}
+            </div>
+        </div>
+
+    </div>
+
+{% endblock body %}
