@@ -574,13 +574,54 @@ class Personnage extends BasePersonnage implements Stringable
         return null;
     }
 
+    /**
+     * Participation la plus ancienne (date de début du GN, puis id), indépendamment de l'ordre de la collection.
+     */
     public function getFirstParticipant(): ?Participant
     {
-        if (!$this->getParticipants()->isEmpty()) {
-            return $this->getParticipants()->first() ?: null;
+        $first = null;
+        foreach ($this->getParticipants() as $participant) {
+            if (null !== $first && !$this->isParticipantOlder($participant, $first)) {
+                continue;
+            }
+
+            $first = $participant;
         }
 
-        return null;
+        return $first;
+    }
+
+    /**
+     * Le bonus d'origine compense l'absence de langue gratuite du groupe : il n'est acquis que si
+     * le personnage a au moins une participation et que son premier groupe de jeu a la même origine que lui.
+     * Sans groupe lors de la première participation, il n'y a rien à compenser : le bonus est conservé.
+     */
+    public function isOrigineBonusActive(): bool
+    {
+        $firstParticipant = $this->getFirstParticipant();
+        if (null === $firstParticipant) {
+            return false;
+        }
+
+        $firstGroupOrigin = $this->getFirstParticipantGnGroupe()?->getTerritoire()?->getId();
+
+        return null === $firstGroupOrigin || $firstGroupOrigin === $this->getOrigine()?->getId();
+    }
+
+    private function isParticipantOlder(Participant $candidate, Participant $current): bool
+    {
+        $candidateDate = $candidate->getGn()->getDateDebut();
+        $currentDate = $current->getGn()->getDateDebut();
+
+        if ($candidateDate != $currentDate) {
+            if (null === $candidateDate || null === $currentDate) {
+                return null !== $candidateDate; // les GN sans date passent après les autres
+            }
+
+            return $candidateDate < $currentDate;
+        }
+
+        return $candidate->getId() < $current->getId();
     }
 
     public function getFullLabel(): string
