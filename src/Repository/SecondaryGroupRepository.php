@@ -207,12 +207,10 @@ class SecondaryGroupRepository extends BaseRepository
     {
         $alias = $this->getAlias();
         $qb = $this->createQueryBuilder($alias);
-        $result = $qb->select("$alias.id")
+        $result = $qb
+            ->select("$alias.id")
             ->leftJoin("$alias.membres", 'm')
-            ->where($qb->expr()->orX(
-                $qb->expr()->eq("$alias.personnage", ':pid'),
-                $qb->expr()->eq('m.personnage', ':pid'),
-            ))
+            ->where($qb->expr()->orX($qb->expr()->eq("$alias.personnage", ':pid'), $qb->expr()->eq('m.personnage', ':pid')))
             ->setParameter('pid', $personnageId)
             ->getQuery()
             ->getScalarResult();
@@ -225,7 +223,8 @@ class SecondaryGroupRepository extends BaseRepository
     {
         $alias = $this->getAlias();
         $qb = $this->createQueryBuilder($alias);
-        $result = $qb->select("$alias.id")
+        $result = $qb
+            ->select("$alias.id")
             ->leftJoin("$alias.postulants", 'p')
             ->where($qb->expr()->eq('p.personnage', ':pid'))
             ->setParameter('pid', $personnageId)

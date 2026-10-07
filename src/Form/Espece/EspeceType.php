@@ -25,52 +25,58 @@ class EspeceType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('nom', TextType::class, [
-            'required' => true,
-            'label' => 'Nom',
-        ])->add('description', TextareaType::class, [
-            'required' => false,
-            'label' => 'Description succinte',
-            'attr' => [
-                'rows' => 9,
-                'class' => 'tinymce',
-            ],
-        ])->add('description_secrete', TextareaType::class, [
-            'required' => false,
-            'label' => 'Information scénariste',
-            'attr' => [
-                'rows' => 9,
-                'class' => 'tinymce',
-            ],
-        ])->add('secret', ChoiceType::class, [
-            'required' => true,
-            'choices' => [
-                'visible' => false,
-                'secrète' => true,
-            ],
-            'label' => 'Secret',
-        ])->add('type', ChoiceType::class, [
-            'required' => true,
-            'choices' => EspeceTypeEnum::toArray(),
-            'choice_value' => static function (string|EspeceTypeEnum|null $type) {
-                if (null === $type) {
-                    return 'Aucune';
-                }
+        $builder
+            ->add('nom', TextType::class, [
+                'required' => true,
+                'label' => 'Nom',
+            ])
+            ->add('description', TextareaType::class, [
+                'required' => false,
+                'label' => 'Description succinte',
+                'attr' => [
+                    'rows' => 9,
+                    'class' => 'tinymce',
+                ],
+            ])
+            ->add('description_secrete', TextareaType::class, [
+                'required' => false,
+                'label' => 'Information scénariste',
+                'attr' => [
+                    'rows' => 9,
+                    'class' => 'tinymce',
+                ],
+            ])
+            ->add('secret', ChoiceType::class, [
+                'required' => true,
+                'choices' => [
+                    'visible' => false,
+                    'secrète' => true,
+                ],
+                'label' => 'Secret',
+            ])
+            ->add('type', ChoiceType::class, [
+                'required' => true,
+                'choices' => EspeceTypeEnum::toArray(),
+                'choice_value' => static function (string|EspeceTypeEnum|null $type) {
+                    if (null === $type) {
+                        return 'Aucune';
+                    }
 
-                if ($type instanceof EspeceTypeEnum) {
-                    return $type->value;
-                }
+                    if ($type instanceof EspeceTypeEnum) {
+                        return $type->value;
+                    }
 
-                return $type;
-            },
-            'choice_translation_domain' => 'enum',
-            // 'choice_label' => fn (EspeceType $type) => $type->trans($this->translator),
-            'label' => 'Type',
-        ])->add('energieVitale', IntegerType::class, [
-            'required' => false,
-            'label' => 'Énergie vitale (PV)',
-            'attr' => ['placeholder' => '1 (défaut)'],
-        ])/* TODO ?
+                    return $type;
+                },
+                'choice_translation_domain' => 'enum',
+                // 'choice_label' => fn (EspeceType $type) => $type->trans($this->translator),
+                'label' => 'Type',
+            ])
+            ->add('energieVitale', IntegerType::class, [
+                'required' => false,
+                'label' => 'Énergie vitale (PV)',
+                'attr' => ['placeholder' => '1 (défaut)'],
+            ])/* TODO ?
          * ->add('bonus', EntityType::class, [
          * 'required' => false,
          * 'label' => 'Bonus',

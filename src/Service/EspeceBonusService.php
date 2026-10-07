@@ -13,8 +13,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class EspeceBonusService
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+    ) {
     }
 
     public function applyEspeceBonuses(Personnage $personnage, Espece $espece): void
@@ -25,7 +26,8 @@ class EspeceBonusService
             }
 
             $personnageBonus = new PersonnageBonus();
-            $personnageBonus->setPersonnage($personnage)
+            $personnageBonus
+                ->setPersonnage($personnage)
                 ->setBonus($especeBonus->getBonus())
                 ->setEspece($espece)
                 ->setStatus(Status::ACTIVE)

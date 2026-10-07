@@ -168,7 +168,8 @@ class EspeceController extends AbstractController
             $bonus = $form->getData()['bonus'];
 
             $especeBonus = new EspeceBonus();
-            $especeBonus->setEspece($espece)
+            $especeBonus
+                ->setEspece($espece)
                 ->setBonus($bonus)
                 ->setCreationDate(new DateTime())
                 ->setStatus(Status::ACTIVE);
