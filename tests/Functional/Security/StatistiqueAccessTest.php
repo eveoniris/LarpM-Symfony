@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Security;
 
 use App\Tests\Factory\UserFactory;
-use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Factory;
 
 use App\Entity\ExperienceGain;
+use DateTime;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
@@ -24,7 +25,7 @@ final class ExperienceGainFactory extends PersistentObjectFactory
             'personnage' => PersonnageFactory::new(),
             'explanation' => self::faker()->sentence(),
             'xp_gain' => self::faker()->numberBetween(10, 100),
-            'operation_date' => new \DateTime(),
+            'operation_date' => new DateTime(),
         ];
     }
 }

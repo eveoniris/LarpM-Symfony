@@ -132,8 +132,8 @@ class GroupeDomaineTitreAccessTest extends WebTestCase
      * désigné. Les deux sont joueurs du groupeGn.
      *
      * @param bool $secondPersoAuSuzerain Ajoute un 2e personnage au suzerain et l'active :
-     *                                     c'est le cas qui échoue si l'on compare le
-     *                                     personnage actif au personnage suzerain
+     *                                    c'est le cas qui échoue si l'on compare le
+     *                                    personnage actif au personnage suzerain
      *
      * @return array{
      *     groupe: Groupe,

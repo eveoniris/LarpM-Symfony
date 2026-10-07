@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service;
 
-use App\Entity\ExperienceGain;
 use App\Entity\Gn;
 use App\Service\StatsService;
 use App\Tests\Factory\AgeFactory;

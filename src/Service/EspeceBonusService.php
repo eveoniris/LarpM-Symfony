@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Espece;
-use App\Entity\PersonnageBonus;
 use App\Entity\Personnage;
+use App\Entity\PersonnageBonus;
 use App\Enum\Status;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
