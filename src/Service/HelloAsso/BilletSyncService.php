@@ -59,7 +59,7 @@ class BilletSyncService
         return [
             'traites' => \count($page['items']),
             'termine' => $page['termine'],
-            'suivant' => $skip + \count($page['items']),
+            'suivant' => $page['suivant'],
         ];
     }
 

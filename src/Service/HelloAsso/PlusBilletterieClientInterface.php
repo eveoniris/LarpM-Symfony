@@ -9,7 +9,7 @@ interface PlusBilletterieClientInterface
     /**
      * Retourne une page de participants d'un évènement.
      *
-     * @return array{items: list<Attendee>, termine: bool}
+     * @return array{items: list<Attendee>, termine: bool, suivant: int} suivant = position à passer au prochain appel
      *
      * @throws PlusBilletterieException
      */

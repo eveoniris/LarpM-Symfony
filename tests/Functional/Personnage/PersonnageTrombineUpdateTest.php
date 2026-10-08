@@ -21,6 +21,19 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 #[Group('functional')]
 class PersonnageTrombineUpdateTest extends WebTestCase
 {
+    /** Fichier réellement écrit par l'upload, supprimé après le test pour ne rien laisser dans private/img/photos. */
+    private ?string $uploadedFile = null;
+
+    protected function tearDown(): void
+    {
+        if (null !== $this->uploadedFile && is_file($this->uploadedFile)) {
+            @unlink($this->uploadedFile);
+        }
+        $this->uploadedFile = null;
+
+        parent::tearDown();
+    }
+
     public function testUploadWithVeryLongFilenameDoesNotOverflowColumn(): void
     {
         $client = static::createClient();
@@ -64,6 +77,10 @@ class PersonnageTrombineUpdateTest extends WebTestCase
         $em->clear();
         $personnage = $em->getRepository($personnage::class)->find($personnage->getId());
         $stored = $personnage->getTrombineUrl();
+
+        if (null !== $stored) {
+            $this->uploadedFile = static::getContainer()->getParameter('kernel.project_dir') . '/private/img/photos/' . $stored;
+        }
 
         self::assertNotNull($stored);
         self::assertLessThanOrEqual(255, mb_strlen($stored));

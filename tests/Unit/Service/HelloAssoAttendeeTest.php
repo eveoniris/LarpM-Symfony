@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Service;
 
 use App\Service\HelloAsso\Attendee;
 use App\Service\HelloAsso\FakePlusBilletterieClient;
+use App\Service\HelloAsso\PlusBilletterieClient;
 use PHPUnit\Framework\TestCase;
 
 class HelloAssoAttendeeTest extends TestCase
@@ -55,6 +56,51 @@ class HelloAssoAttendeeTest extends TestCase
 
         $this->assertNull($attendee->idLarpManager);
         $this->assertSame('abc', $attendee->clientReference);
+    }
+
+    public function testAttendeesDepuisUnMouvement(): void
+    {
+        $movement = [
+            '_id' => 'mvt1',
+            'type' => 'order',
+            'status' => 'successful',
+            'eventId' => 'evt1',
+            'clientReference' => 'acheteur@example.org',
+            'clientDetails' => ['firstName' => 'Jeanne', 'lastName' => 'Darc', 'address' => ['city' => 'Rouen']],
+            'sellingItems' => [[
+                'products' => [
+                    ['productId' => 'p1', 'attendeeId' => 'att1', 'attendeeEmail' => 'Joueur@Example.org', 'price' => 10000, 'status' => 'enabled'],
+                    ['productId' => 'p2', 'attendeeId' => 'att2', 'attendeeEmail' => 'autre@example.org', 'price' => 5000, 'status' => 'refunded'],
+                ],
+            ]],
+        ];
+
+        $attendees = PlusBilletterieClient::attendeesFromMovement($movement, 'evt1');
+
+        $this->assertCount(2, $attendees);
+        $this->assertSame('att1', $attendees[0]->id);
+        $this->assertSame('mvt1', $attendees[0]->orderId);
+        $this->assertSame('p1', $attendees[0]->productId);
+        $this->assertSame('joueur@example.org', $attendees[0]->email);
+        $this->assertSame('enabled', $attendees[0]->status);
+        $this->assertSame(10000, $attendees[0]->price);
+        $this->assertSame('refunded', $attendees[1]->status);
+        // L'adresse de l'acheteur n'est pas conservée.
+        $this->assertArrayNotHasKey('address', $attendees[0]->raw);
+    }
+
+    public function testMouvementAutreEvenementOuNonAbouti(): void
+    {
+        $base = [
+            'type' => 'order',
+            'status' => 'successful',
+            'eventId' => 'evt1',
+            'sellingItems' => [['products' => [['attendeeId' => 'a', 'attendeeEmail' => 'x@example.org']]]],
+        ];
+
+        $this->assertSame([], PlusBilletterieClient::attendeesFromMovement($base, 'autre'));
+        $this->assertSame([], PlusBilletterieClient::attendeesFromMovement(['status' => 'failed'] + $base, 'evt1'));
+        $this->assertSame([], PlusBilletterieClient::attendeesFromMovement(['type' => 'refund'] + $base, 'evt1'));
     }
 
     public function testFauxClientPagine(): void
