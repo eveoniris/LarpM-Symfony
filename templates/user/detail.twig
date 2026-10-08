@@ -164,7 +164,8 @@
                     </div>
 
                     <div class="list-group">
-                        {% set hasDefaultPersonnage = false %}
+                        {# Personnage actif de l'utilisateur consulté (pas forcément l'utilisateur connecté) #}
+                        {% set personnageActifConsulte = user.personnage(true) %}
                         {% for participant in user.participants %}
                             <div class="list-group-item">
                                 <div>
@@ -194,17 +195,16 @@
                                         {% else %}
                                             <a href="{{ path('gn.personnage',{'gn': participant.gn.id}) }}">{{ participant.personnage.identity }}</a>
                                         {% endif %}
-                                        {% if participant.user.personnage is defined and participant.personnage.id == participant.user.personnage.id %}
-                                            {% set hasDefaultPersonnage = true %}
+                                        {% if personnageActifConsulte and participant.personnage.id == personnageActifConsulte.id %}
                                             <span class="badge rounded-pill text-bg-secondary">Actif</span>
                                         {% endif %}
                                     </div>
                                 {% endif %}
                             </div>
                         {% endfor %}
-                        {% if not hasDefaultPersonnage and canManage %}
+                        {% if not personnageActifConsulte and canManage %}
                             <div class="mt-2">
-                                {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : "Vous n'avez pas de personnage actif"} %}
+                                {% include '_partials/cardNotif.twig' with {'type' : 'danger', 'content' : (app.user.id == user.id ? "Vous n'avez pas de personnage actif" : "Cet utilisateur n'a pas de personnage actif")} %}
                             </div>
                         {% endif %}
                     </div>
