@@ -1,0 +1,85 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Rapprochement billetterie{% endblock title %}
+
+{% block body %}
+    <div class="well well-sm">
+        {% include '_partials/breadcrumb.twig' with {'items' : [
+            {'name' : 'Liste des grandeurs nature', 'route': path('gn.list') },
+            {'name' : gn.label, 'route': path('gn.detail', {'gn':gn.id}) },
+            {'name' : 'Billetterie', 'route': path('gn.billetterie', {'gn':gn.id}) },
+            {'name' : 'Rapprochement HelloAsso' }
+        ]} %}
+
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+            {% for e in etats %}
+                <a class="btn btn-sm {{ etat == e ? 'btn-primary' : 'btn-outline-primary' }}"
+                   href="{{ path('gn.billetterie.rapprochement', {'gn': gn.id, 'etat': e.value}) }}">{{ e.label }}</a>
+            {% endfor %}
+
+            <form method="post" class="ms-auto"
+                  action="{{ path('gn.billetterie.valider_tout', {'gn': gn.id}) }}"
+                  onsubmit="return confirm('Valider toutes les lignes sûres ou à e-mail unique ? Les lignes ambiguës ou sans correspondance sont ignorées.');">
+                <input type="hidden" name="_token" value="{{ csrf_token('billetterie_sync_' ~ gn.id) }}">
+                <button class="btn btn-success btn-sm" type="submit">Tout valider (lignes sûres)</button>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-sm align-middle">
+                <thead>
+                <tr>
+                    <th>Participant HelloAsso</th>
+                    <th>Statut</th>
+                    <th>Prix</th>
+                    <th>Confiance</th>
+                    <th>Utilisateur / billet proposés</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for sync in syncs %}
+                    <tr>
+                        <td>{{ sync.nom }}<br><small>{{ sync.email }}</small></td>
+                        <td>{{ sync.status }}</td>
+                        <td>{{ sync.price is not null ? (sync.price / 100)|number_format(2, ',', ' ') ~ ' €' : '' }}</td>
+                        <td>{{ sync.confiance.label }}</td>
+                        <td>
+                            {% if sync.etat.value == 'a_valider' %}
+                                <form method="post" class="d-flex flex-wrap gap-1"
+                                      action="{{ path('gn.billetterie.valider', {'gn': gn.id, 'sync': sync.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('billetterie_sync_' ~ gn.id) }}">
+                                    <input type="number" name="user_id" class="form-control form-control-sm w-auto"
+                                           placeholder="ID utilisateur" value="{{ sync.user ? sync.user.id : '' }}"
+                                           title="{{ sync.user ? sync.user.email : 'Aucun utilisateur proposé' }}">
+                                    <select name="billet_id" class="form-select form-select-sm w-auto">
+                                        <option value="">— billet —</option>
+                                        {% for billet in billets %}
+                                            <option value="{{ billet.id }}" {{ sync.billet and sync.billet.id == billet.id ? 'selected' : '' }}>{{ billet.label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-success btn-sm" type="submit">Valider</button>
+                                </form>
+                            {% else %}
+                                {{ sync.user ? sync.user.email : '' }} — {{ sync.billet ? sync.billet.label : '' }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if sync.etat.value == 'a_valider' %}
+                                <form method="post" action="{{ path('gn.billetterie.ignorer', {'gn': gn.id, 'sync': sync.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('billetterie_sync_' ~ gn.id) }}">
+                                    <button class="btn btn-outline-secondary btn-sm" type="submit">Ignorer</button>
+                                </form>
+                            {% else %}
+                                {{ sync.etat.label }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6" class="text-center text-muted">Aucune ligne. Lancez « Contrôler la billetterie » depuis la page billetterie.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

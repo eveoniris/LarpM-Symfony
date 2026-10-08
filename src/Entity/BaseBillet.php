@@ -45,6 +45,10 @@ abstract class BaseBillet
     #[Column(type: \Doctrine\DBAL\Types\Types::INTEGER)]
     protected ?int $gn_id = null;
 
+    /** Identifiant du produit (tarif) correspondant sur HelloAsso Plus Billetterie. */
+    #[Column(name: 'helloasso_product_id', type: \Doctrine\DBAL\Types\Types::STRING, length: 64, nullable: true)]
+    protected ?string $helloassoProductId = null;
+
     /**
      * @var Collection<int, Participant>|Participant[]
      */
@@ -128,6 +132,18 @@ abstract class BaseBillet
     public function setFedegn(bool $fedegn): self
     {
         $this->fedegn = $fedegn;
+
+        return $this;
+    }
+
+    public function getHelloassoProductId(): ?string
+    {
+        return $this->helloassoProductId;
+    }
+
+    public function setHelloassoProductId(?string $helloassoProductId): static
+    {
+        $this->helloassoProductId = '' === $helloassoProductId ? null : $helloassoProductId;
 
         return $this;
     }

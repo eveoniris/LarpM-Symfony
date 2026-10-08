@@ -33,6 +33,7 @@ use ArrayIterator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -151,7 +152,11 @@ class GnController extends AbstractController
      */
     #[Route('/{gn}/billetterie', name: 'billetterie')]
     #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
-    public function billetterieAction(#[MapEntity] Gn $gn): Response
+    public function billetterieAction(
+        #[MapEntity] Gn $gn,
+        #[Autowire('%helloasso.plus.enabled%')]
+        bool $helloassoEnabled = false,
+    ): Response
     {
         $groupeGns = $gn->getGroupeGnsPj();
         /** @var ArrayIterator<int, mixed> $iterator */
@@ -163,6 +168,7 @@ class GnController extends AbstractController
         return $this->render('gn/billetterie.twig', [
             'gn' => $gn,
             'groupeGns' => $groupeGns,
+            'helloassoEnabled' => $helloassoEnabled,
         ]);
     }
 

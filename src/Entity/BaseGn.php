@@ -75,6 +75,10 @@ class BaseGn
     #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $conditions_inscription = null;
 
+    /** Identifiant de l'évènement sur HelloAsso Plus Billetterie. */
+    #[Column(name: 'helloasso_event_id', type: Types::STRING, length: 64, nullable: true)]
+    protected ?string $helloassoEventId = null;
+
     /**
      * Cet opus propose-t-il un personnage de substitution pour les instances
      * hors temps / hors lieu de l'événement ?
@@ -283,6 +287,18 @@ class BaseGn
     public function getBilletterie(): string
     {
         return $this->billetterie ?? '';
+    }
+
+    public function getHelloassoEventId(): ?string
+    {
+        return $this->helloassoEventId;
+    }
+
+    public function setHelloassoEventId(?string $helloassoEventId): static
+    {
+        $this->helloassoEventId = '' === $helloassoEventId ? null : $helloassoEventId;
+
+        return $this;
     }
 
     public function setConditionsInscription(?string $conditions_inscription): static
