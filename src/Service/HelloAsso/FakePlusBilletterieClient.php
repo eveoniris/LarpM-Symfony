@@ -23,7 +23,11 @@ class FakePlusBilletterieClient implements PlusBilletterieClientInterface
         $all = $this->attendees ?? self::defaultAttendees();
         $items = \array_slice($all, $skip, $limit);
 
-        return ['items' => $items, 'termine' => ($skip + \count($items)) >= \count($all)];
+        return [
+            'items' => $items,
+            'termine' => ($skip + \count($items)) >= \count($all),
+            'suivant' => $skip + \count($items),
+        ];
     }
 
     /** @return list<Attendee> */
