@@ -301,9 +301,10 @@ class PersonnageService
             return 0;
         }
 
-        return (int) $this->entityManager->createQuery(
-            'SELECT COUNT(m.id) FROM App\Entity\Message m WHERE m.userRelatedByDestinataire = :user AND (m.lu = false OR m.lu IS NULL)'
-        )->setParameter('user', $user)->getSingleScalarResult();
+        return (int) $this->entityManager
+            ->createQuery('SELECT COUNT(m.id) FROM App\Entity\Message m WHERE m.userRelatedByDestinataire = :user AND (m.lu = false OR m.lu IS NULL)')
+            ->setParameter('user', $user)
+            ->getSingleScalarResult();
     }
 
     public function canCreatePersonnage(?User $user): bool

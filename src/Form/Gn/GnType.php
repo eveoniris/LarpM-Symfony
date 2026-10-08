@@ -80,6 +80,10 @@ class GnType extends AbstractType
                 'label' => 'Code de la billetterie',
                 'required' => false,
             ])
+            ->add('helloassoEventId', TextType::class, [
+                'label' => 'Identifiant évènement HelloAsso (Plus Billetterie)',
+                'required' => false,
+            ])
             ->add('actif', ChoiceType::class, [
                 'label' => 'GN actif ?',
                 'required' => true,

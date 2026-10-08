@@ -12,8 +12,8 @@ use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\TerritoireFactory;
 use App\Tests\Factory\UserFactory;
-use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**

@@ -37,6 +37,18 @@ message = "Avoid assignments in conditions."
 count = 1
 
 [[issues]]
+file = "src/Command/GnRemoveLearning.php"
+code = "halstead"
+message = "Method has a high halstead volume and effort"
+count = 1
+
+[[issues]]
+file = "src/Command/GnRemoveLearning.php"
+code = "no-else-clause"
+message = "Avoid `else` clauses."
+count = 5
+
+[[issues]]
 file = "src/Command/GnUnLock.php"
 code = "assert-description"
 message = "Missing description in assert function."
@@ -105,6 +117,12 @@ count = 1
 [[issues]]
 file = "src/Controller/AbstractController.php"
 code = "literal-named-argument"
+message = """Literal argument `'"'` should be passed as a named argument for clarity."""
+count = 2
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "literal-named-argument"
 message = "Literal argument `'.'` should be passed as a named argument for clarity."
 count = 2
 
@@ -112,6 +130,12 @@ count = 2
 file = "src/Controller/AbstractController.php"
 code = "literal-named-argument"
 message = "Literal argument `';'` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "src/Controller/AbstractController.php"
+code = "literal-named-argument"
+message = '''Literal argument `'\\'` should be passed as a named argument for clarity.'''
 count = 2
 
 [[issues]]
@@ -475,25 +499,25 @@ message = "Controller classes should be declared as `final`."
 count = 1
 
 [[issues]]
-file = "src/Controller/CosmogonieController.php"
+file = "src/Controller/ConstructionController.php"
 code = "excessive-parameter-list"
 message = "Parameter list is too long."
 count = 1
 
 [[issues]]
-file = "src/Controller/CosmogonieController.php"
+file = "src/Controller/ConstructionController.php"
 code = "final-controller"
 message = "Controller classes should be declared as `final`."
 count = 1
 
 [[issues]]
-file = "src/Controller/ConstructionController.php"
+file = "src/Controller/CosmogonieController.php"
 code = "excessive-parameter-list"
 message = "Parameter list is too long."
 count = 1
 
 [[issues]]
-file = "src/Controller/ConstructionController.php"
+file = "src/Controller/CosmogonieController.php"
 code = "final-controller"
 message = "Controller classes should be declared as `final`."
 count = 1
@@ -655,6 +679,12 @@ message = "Controller classes should be declared as `final`."
 count = 1
 
 [[issues]]
+file = "src/Controller/EspeceController.php"
+code = "no-redundant-nullsafe"
+message = "The nullsafe operator (`?->`) is redundant when used with `??`."
+count = 1
+
+[[issues]]
 file = "src/Controller/EtatCivilController.php"
 code = "final-controller"
 message = "Controller classes should be declared as `final`."
@@ -723,6 +753,12 @@ count = 1
 [[issues]]
 file = "src/Controller/GnController.php"
 code = "literal-named-argument"
+message = "Literal argument `'-'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "literal-named-argument"
 message = "Literal argument `'0'` should be passed as a named argument for clarity."
 count = 1
 
@@ -748,6 +784,12 @@ count = 5
 file = "src/Controller/GnController.php"
 code = "literal-named-argument"
 message = "Literal argument `24` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Controller/GnController.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
@@ -928,18 +970,24 @@ count = 1
 file = "src/Controller/GroupeGnController.php"
 code = "no-boolean-flag-parameter"
 message = "Avoid boolean flag parameters."
-count = 2
+count = 6
 
 [[issues]]
 file = "src/Controller/GroupeGnController.php"
 code = "no-else-clause"
 message = "Avoid `else` clauses."
-count = 1
+count = 3
 
 [[issues]]
 file = "src/Controller/GroupeGnController.php"
 code = "no-isset"
 message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
+file = "src/Controller/GroupeGnController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
 count = 1
 
 [[issues]]
@@ -1462,7 +1510,7 @@ count = 1
 file = "src/Controller/ParticipantController.php"
 code = "no-assign-in-condition"
 message = "Avoid assignments in conditions."
-count = 3
+count = 5
 
 [[issues]]
 file = "src/Controller/ParticipantController.php"
@@ -1480,6 +1528,18 @@ count = 3
 file = "src/Controller/ParticipantController.php"
 code = "no-empty"
 message = "Use of the `empty` construct."
+count = 1
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
 count = 1
 
 [[issues]]
@@ -1522,13 +1582,13 @@ count = 1
 file = "src/Controller/PersonnageController.php"
 code = "halstead"
 message = "Method has a high halstead effort"
-count = 3
+count = 4
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "halstead"
 message = "Method has a high halstead volume and effort"
-count = 3
+count = 4
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -1919,6 +1979,12 @@ file = "src/Controller/StatistiqueController.php"
 code = "no-isset"
 message = "Use of the `isset` construct."
 count = 2
+
+[[issues]]
+file = "src/Controller/StatistiqueController.php"
+code = "no-shorthand-ternary"
+message = "Use of the shorthand ternary operator."
+count = 1
 
 [[issues]]
 file = "src/Controller/StatistiqueController.php"
@@ -2755,6 +2821,12 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
+file = "src/Entity/Espece.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
 file = "src/Entity/FicheRetourGroupeHistory.php"
 code = "too-many-properties"
 message = "Class has too many properties."
@@ -2920,7 +2992,7 @@ count = 1
 file = "src/Entity/Personnage.php"
 code = "identity-comparison"
 message = "Use identity comparison `===` instead of equality comparison `==`."
-count = 26
+count = 24
 
 [[issues]]
 file = "src/Entity/Personnage.php"
@@ -2962,7 +3034,7 @@ count = 6
 file = "src/Entity/Personnage.php"
 code = "no-else-clause"
 message = "Avoid `elseif` clauses."
-count = 7
+count = 6
 
 [[issues]]
 file = "src/Entity/Personnage.php"
@@ -2992,7 +3064,13 @@ count = 3
 file = "src/Entity/Personnage.php"
 code = "no-shorthand-ternary"
 message = "Use of the shorthand ternary operator."
-count = 3
+count = 2
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "prefer-early-continue"
+message = "Consider using early continue pattern to reduce nesting."
+count = 1
 
 [[issues]]
 file = "src/Entity/Personnage.php"
@@ -3130,13 +3208,7 @@ count = 1
 file = "src/Entity/Territoire.php"
 code = "no-isset"
 message = "Use of the `isset` construct."
-count = 2
-
-[[issues]]
-file = "src/Entity/Territoire.php"
-code = "tagged-todo"
-message = "TODO should be tagged with (@username) or (#issue)."
-count = 1
+count = 4
 
 [[issues]]
 file = "src/Entity/Territoire.php"
@@ -3202,7 +3274,7 @@ count = 1
 file = "src/Entity/User.php"
 code = "literal-named-argument"
 message = "Literal argument `true` should be passed as a named argument for clarity."
-count = 3
+count = 2
 
 [[issues]]
 file = "src/Entity/User.php"
@@ -3332,33 +3404,9 @@ count = 1
 
 [[issues]]
 file = "src/Form/GroupeGn/GroupeGnType.php"
-code = "cyclomatic-complexity"
-message = "Class has high complexity."
-count = 1
-
-[[issues]]
-file = "src/Form/GroupeGn/GroupeGnType.php"
-code = "halstead"
-message = "Method has a high halstead volume and effort"
-count = 1
-
-[[issues]]
-file = "src/Form/GroupeGn/GroupeGnType.php"
 code = "no-empty"
 message = "Use of the `empty` construct."
-count = 2
-
-[[issues]]
-file = "src/Form/GroupeGn/GroupeGnType.php"
-code = "prefer-arrow-function"
-message = "This closure can be simplified to a more concise arrow function."
 count = 1
-
-[[issues]]
-file = "src/Form/GroupeGn/GroupeGnType.php"
-code = "tagged-todo"
-message = "TODO should be tagged with (@username) or (#issue)."
-count = 4
 
 [[issues]]
 file = "src/Form/GroupeSecondaire/GroupeSecondaireType.php"
@@ -3370,6 +3418,18 @@ count = 1
 file = "src/Form/Item/ItemType.php"
 code = "halstead"
 message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Form/Participant/ParticipantPersonnageAlternatifType.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Form/Participant/ParticipantPersonnageAlternatifType.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
 count = 1
 
 [[issues]]
@@ -3388,6 +3448,18 @@ count = 1
 file = "src/Form/TerritoireType.php"
 code = "halstead"
 message = "Method has a high halstead volume"
+count = 1
+
+[[issues]]
+file = "src/Form/User/UserPersonnageDefaultType.php"
+code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Form/User/UserPersonnageDefaultType.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
@@ -3800,6 +3872,12 @@ count = 1
 
 [[issues]]
 file = "src/Repository/ParticipantRepository.php"
+code = "kan-defect"
+message = "Class has a high kan defect score."
+count = 1
+
+[[issues]]
+file = "src/Repository/ParticipantRepository.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
@@ -3875,6 +3953,12 @@ file = "src/Repository/ReligionRepository.php"
 code = "no-empty"
 message = "Use of the `empty` construct."
 count = 2
+
+[[issues]]
+file = "src/Repository/SecondaryGroupRepository.php"
+code = "braced-string-interpolation"
+message = "Unbraced variable in string interpolation."
+count = 5
 
 [[issues]]
 file = "src/Repository/SecondaryGroupRepository.php"
@@ -4009,6 +4093,18 @@ message = "Avoid assignments in conditions."
 count = 1
 
 [[issues]]
+file = "src/Security/Voter/PersonnageVoter.php"
+code = "no-redundant-use"
+message = "Unused import: `Gn`."
+count = 1
+
+[[issues]]
+file = "src/Security/Voter/PersonnageVoter.php"
+code = "sensitive-parameter"
+message = "Parameters that may contain sensitive information should be marked with the `#[SensitiveParameter]` attribute."
+count = 1
+
+[[issues]]
 file = "src/Security/Voter/TerritoireVoter.php"
 code = "sensitive-parameter"
 message = "Parameters that may contain sensitive information should be marked with the `#[SensitiveParameter]` attribute."
@@ -4042,6 +4138,12 @@ count = 3
 file = "src/Service/CompetenceService.php"
 code = "cyclomatic-complexity"
 message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/CompetenceService.php"
+code = "halstead"
+message = "Method has a high halstead effort"
 count = 1
 
 [[issues]]
@@ -4187,6 +4289,12 @@ file = "src/Service/DataFormatterService.php"
 code = "no-isset"
 message = "Use of the `isset` construct."
 count = 2
+
+[[issues]]
+file = "src/Service/EspeceBonusService.php"
+code = "prefer-early-continue"
+message = "Consider using early continue pattern to reduce nesting."
+count = 1
 
 [[issues]]
 file = "src/Service/FicheRetourGroupeImportService.php"
@@ -4372,7 +4480,7 @@ count = 2
 file = "src/Service/GroupeService.php"
 code = "halstead"
 message = "Method has a high halstead effort"
-count = 5
+count = 4
 
 [[issues]]
 file = "src/Service/GroupeService.php"
@@ -4587,6 +4695,12 @@ count = 1
 [[issues]]
 file = "src/Service/PersonnageService.php"
 code = "literal-named-argument"
+message = "Literal argument `0` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "literal-named-argument"
 message = "Literal argument `1` should be passed as a named argument for clarity."
 count = 1
 
@@ -4699,9 +4813,81 @@ message = "Trait has too many methods."
 count = 1
 
 [[issues]]
+file = "src/Validator/ChainePersonnagesCoherenteValidator.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
 file = "tests/Factory/UserFactory.php"
 code = "no-literal-password"
 message = "Literal passwords or sensitive data should not be stored in code."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Groupe/GroupeDemandeTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Groupe/GroupeDomaineTitreAccessTest.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "tests/Functional/Participant/ChainePersonnagesAffichageTest.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 3
+
+[[issues]]
+file = "tests/Functional/Participant/ChainePersonnagesImpressionTest.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "tests/Functional/Participant/PersonnageAlternatifTest.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 2
+
+[[issues]]
+file = "tests/Functional/Participant/PersonnageAlternatifTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Personnage/PersonnageTrombineUpdateTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 3
+
+[[issues]]
+file = "tests/Functional/Personnage/PersonnageTrombineUpdateTest.php"
+code = "literal-named-argument"
+message = "Literal argument `'trombine'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Personnage/PersonnageTrombineUpdateTest.php"
+code = "literal-named-argument"
+message = "Literal argument `200` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Personnage/PersonnageTrombineUpdateTest.php"
+code = "literal-named-argument"
+message = "Literal argument `8` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Personnage/PersonnageTrombineUpdateTest.php"
+code = "no-error-control-operator"
+message = "Unsafe use of error control operator `@`."
 count = 1
 
 [[issues]]
@@ -4717,10 +4903,52 @@ message = "Literal passwords or sensitive data should not be stored in code."
 count = 4
 
 [[issues]]
+file = "tests/Functional/Security/StatistiqueAccessTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Security/StatistiquePersonnagesAccessTest.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 2
+
+[[issues]]
+file = "tests/Functional/Security/StatistiquePersonnagesAccessTest.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Security/StatistiquePersonnagesAccessTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
 file = "tests/Functional/Security/UniversAndReglesAccessTest.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
+
+[[issues]]
+file = "tests/Functional/Security/UserRegisterMissingPasswordTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Technologie/TechnologieAccessTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Functional/User/PersonnageActifTest.php"
+code = "no-literal-password"
+message = "Literal passwords or sensitive data should not be stored in code."
+count = 3
 
 [[issues]]
 file = "tests/Integration/Service/CompetenceServiceTest.php"
@@ -4735,7 +4963,49 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
+file = "tests/Integration/Service/StatsServicePersonnagesTest.php"
+code = "no-redundant-use"
+message = "Unused import: `ExperienceGain`."
+count = 1
+
+[[issues]]
+file = "tests/Integration/Service/StatsServicePersonnagesTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Unit/Entity/NullableAliasSetterTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 6
+
+[[issues]]
+file = "tests/Unit/Entity/ParticipantChainePersonnagesTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
 file = "tests/Unit/Entity/PersonnageAnomalieTest.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "tests/Unit/Entity/PersonnageOrigineBonusTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 6
+
+[[issues]]
+file = "tests/Unit/Entity/TerritoireGroupesPjTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 2
+
+[[issues]]
+file = "tests/Unit/Entity/TerritoireWealthTest.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
@@ -4747,10 +5017,28 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
-file = "tests/Unit/Entity/TerritoireWealthTest.php"
-code = "too-many-methods"
-message = "Class has too many methods."
+file = "tests/Unit/Security/Voter/PersonnageVoterTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 3
+
+[[issues]]
+file = "tests/Unit/Security/Voter/PersonnageVoterTest.php"
+code = "no-boolean-flag-parameter"
+message = "Avoid boolean flag parameters."
 count = 1
+
+[[issues]]
+file = "tests/Unit/Security/Voter/PersonnageVoterTest.php"
+code = "no-redundant-use"
+message = "Unused import: `EtatCivil`."
+count = 1
+
+[[issues]]
+file = "tests/Unit/Service/CompetenceServiceOrigineBonusTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 5
 
 [[issues]]
 file = "tests/Unit/Service/ConditionsServiceTest.php"

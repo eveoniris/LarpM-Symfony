@@ -20,6 +20,9 @@ parameters:
     discord.bot.token: "%env(string:DISCORD_BOT_TOKEN)%"
     discord.oauth.id: "%env(string:DISCORD_OAUTH_ID)%"
     discord.oauth.secret: "%env(string:DISCORD_OAUTH_SECRET)%"
+    helloasso.plus.api_key: "%env(string:HELLOASSO_PLUS_API_KEY)%"
+    helloasso.plus.organizer_id: "%env(string:HELLOASSO_PLUS_ORGANIZER_ID)%"
+    helloasso.plus.enabled: "%env(bool:HELLOASSO_PLUS_ENABLED)%"
 
 services:
     # default configuration for services in *this* file
@@ -35,6 +38,9 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+            - '../src/Service/HelloAsso/Attendee.php'
+            - '../src/Service/HelloAsso/PlusBilletterieClient.php'
+            - '../src/Service/HelloAsso/FakePlusBilletterieClient.php'
 
     # Register endroid QR code controller manually (route_enabled: false in config)
     Endroid\QrCodeBundle\Controller\GenerateController:
@@ -60,6 +66,14 @@ services:
             $apiKey: '%discord.api.key%'
             $oauthId: '%discord.oauth.id%'
             $oauthSecret: '%discord.oauth.secret%'
+
+    App\Service\HelloAsso\PlusBilletterieClientFactory:
+        arguments:
+            $apiKey: '%helloasso.plus.api_key%'
+            $organizerId: '%helloasso.plus.organizer_id%'
+
+    App\Service\HelloAsso\PlusBilletterieClientInterface:
+        factory: ['@App\Service\HelloAsso\PlusBilletterieClientFactory', 'create']
 
     App\EventListener\AccessEventListener:
         tags:

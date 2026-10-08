@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Espece;
-use App\Entity\PersonnageBonus;
 use App\Entity\Personnage;
+use App\Entity\PersonnageBonus;
 use App\Enum\Status;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EspeceBonusService
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+    ) {
     }
 
     public function applyEspeceBonuses(Personnage $personnage, Espece $espece): void
@@ -25,7 +26,8 @@ class EspeceBonusService
             }
 
             $personnageBonus = new PersonnageBonus();
-            $personnageBonus->setPersonnage($personnage)
+            $personnageBonus
+                ->setPersonnage($personnage)
                 ->setBonus($especeBonus->getBonus())
                 ->setEspece($espece)
                 ->setStatus(Status::ACTIVE)

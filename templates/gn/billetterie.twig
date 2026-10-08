@@ -39,6 +39,70 @@
             </div>
         </div>
 
+        {% if helloassoEnabled and is_granted('ROLE_SUPER_ADMIN') %}
+            <div class="card mb-3 border-primary" id="helloasso-sync">
+                <div class="card-header"><i class="fa fa-rotate text-primary"></i> Synchronisation HelloAsso (bêta)</div>
+                <div class="card-body">
+                    {% if gn.helloassoEventId %}
+                        <button type="button" class="btn btn-primary" id="helloasso-sync-btn">Contrôler la billetterie</button>
+                        <a class="btn btn-outline-primary" href="{{ path('gn.billetterie.rapprochement', {'gn': gn.id}) }}">Tableau de rapprochement</a>
+                        <div class="progress mt-3 d-none" id="helloasso-sync-progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                        </div>
+                        <p class="mt-2 mb-0" id="helloasso-sync-status" role="status"></p>
+                        <script>
+                            (function () {
+                                const btn = document.getElementById('helloasso-sync-btn');
+                                const progress = document.getElementById('helloasso-sync-progress');
+                                const status = document.getElementById('helloasso-sync-status');
+                                const url = {{ path('gn.billetterie.sync', {'gn': gn.id})|json_encode|raw }};
+                                const token = {{ csrf_token('billetterie_sync_' ~ gn.id)|json_encode|raw }};
+
+                                async function lot(skip, tentative) {
+                                    const body = new URLSearchParams({skip: skip, _token: token});
+                                    try {
+                                        const response = await fetch(url, {method: 'POST', body: body});
+                                        const data = await response.json();
+                                        if (!response.ok) {
+                                            throw new Error(data.erreur || ('HTTP ' + response.status));
+                                        }
+                                        return data;
+                                    } catch (error) {
+                                        if (tentative < 2) {
+                                            return lot(skip, tentative + 1);
+                                        }
+                                        throw error;
+                                    }
+                                }
+
+                                btn.addEventListener('click', async function () {
+                                    btn.disabled = true;
+                                    progress.classList.remove('d-none');
+                                    let skip = 0;
+                                    try {
+                                        let data;
+                                        do {
+                                            data = await lot(skip, 0);
+                                            skip = data.suivant;
+                                            status.textContent = skip + ' participant(s) traité(s)…';
+                                        } while (!data.termine);
+                                        status.textContent = skip + ' participant(s) synchronisé(s). Rendez-vous dans le tableau de rapprochement.';
+                                    } catch (error) {
+                                        status.textContent = 'Erreur : ' + error.message + ' (la synchronisation peut être relancée).';
+                                    } finally {
+                                        progress.classList.add('d-none');
+                                        btn.disabled = false;
+                                    }
+                                });
+                            })();
+                        </script>
+                    {% else %}
+                        <p class="mb-0">Renseignez l'identifiant d'évènement HelloAsso dans la fiche du GN pour activer la synchronisation.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
         <div class="row">
             <div class="col-md-5">
                 En cas de problème d'affichage, utilisez <a

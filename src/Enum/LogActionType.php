@@ -33,6 +33,9 @@ enum LogActionType: string
     case OTHER = 'autre';
     case DUPLICATE_PERSONNAGE = 'duplicate_personnage';
 
+    /** Validation d'un participant HelloAsso dans le rapprochement de la billetterie. */
+    case BILLETTERIE_SYNC = 'billetterie_sync';
+
     /** Verrouillage d'un groupe : bloque la modification de ses personnages. */
     case GROUPE_LOCK = 'groupe_lock';
 

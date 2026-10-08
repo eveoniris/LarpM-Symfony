@@ -45,6 +45,10 @@ class BilletType extends AbstractType
                 default => (string) $value,
             },
             'expanded' => true,
+        ])->add('helloassoProductId', TextType::class, [
+            'label' => 'Identifiant produit HelloAsso (Plus Billetterie)',
+            'required' => false,
+            'help' => 'Permet de rapprocher automatiquement les participants HelloAsso de ce billet.',
         ])->add('description', TextareaType::class, [
             'required' => true,
             'label' => 'Description',
