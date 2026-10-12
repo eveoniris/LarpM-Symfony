@@ -7,11 +7,11 @@ namespace App\Service\HelloAsso;
 interface PlusBilletterieClientInterface
 {
     /**
-     * Retourne une page de participants d'un évènement.
+     * Retourne une page de participants d'un évènement (filtrable sur un produit/tarif).
      *
      * @return array{items: list<Attendee>, termine: bool, suivant: int} suivant = position à passer au prochain appel
      *
      * @throws PlusBilletterieException
      */
-    public function listAttendees(string $eventId, int $skip = 0, int $limit = 100): array;
+    public function listAttendees(string $eventId, int $skip = 0, int $limit = 100, ?string $productId = null): array;
 }

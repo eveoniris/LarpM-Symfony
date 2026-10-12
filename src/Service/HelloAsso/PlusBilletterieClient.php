@@ -11,9 +11,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 /**
  * Client de l'API HelloAsso Plus Billetterie (lecture seule). Authentification : en-tête X-API-KEY.
  *
- * Les participants sont lus via la ressource « movements » (achats) : les routes « events/attendees »
- * renvoient 401 avec la clé actuelle. Un mouvement peut contenir plusieurs billets, la pagination porte
- * donc sur les mouvements et non sur les participants.
+ * Les participants sont lus via `/organizers/{organizerId}/events/{eventId}/attendees` (les évènements sont
+ * sous l'organisateur : le préfixe complet est obligatoire). Si la clé est refusée sur cette route, repli sur
+ * la ressource « movements » (achats) : un mouvement peut alors contenir plusieurs billets, la pagination
+ * porte donc sur les mouvements et non sur les participants.
  */
 class PlusBilletterieClient implements PlusBilletterieClientInterface
 {
@@ -27,18 +28,93 @@ class PlusBilletterieClient implements PlusBilletterieClientInterface
     ) {
     }
 
-    public function listAttendees(string $eventId, int $skip = 0, int $limit = 100): array
+    public function listAttendees(string $eventId, int $skip = 0, int $limit = 100, ?string $productId = null): array
+    {
+        $url = \sprintf('%s/organizers/%s/events/%s/attendees', self::BASE_URL, rawurlencode($this->organizerId), rawurlencode($eventId));
+
+        $query = ['limit' => $limit, 'skip' => $skip, 'sort' => '{"_createdAt":"asc"}'];
+        if (null !== $productId && '' !== $productId) {
+            $query['filters'] = json_encode([['productId' => $productId]], JSON_THROW_ON_ERROR);
+        }
+
+        $response = $this->get($url, $query, [401, 403, 404]);
+        if (null === $response) {
+            return $this->listFromMovements($eventId, $skip, $limit);
+        }
+
+        $attendees = \is_array($response['data'] ?? null) ? $response['data'] : [];
+
+        $items = [];
+        foreach ($attendees as $attendee) {
+            if (\is_array($attendee)) {
+                $items[] = Attendee::fromArray($attendee);
+            }
+        }
+
+        return $this->page($items, \count($attendees), $response, $skip, $limit);
+    }
+
+    /**
+     * @return array{items: list<Attendee>, termine: bool, suivant: int}
+     *
+     * @throws PlusBilletterieException
+     */
+    private function listFromMovements(string $eventId, int $skip, int $limit): array
     {
         $url = \sprintf('%s/organizers/%s/movements', self::BASE_URL, rawurlencode($this->organizerId));
 
+        $data = $this->get($url, ['limit' => $limit, 'skip' => $skip, 'sort' => '{"_createdAt":"asc"}']);
+        $movements = \is_array($data['data'] ?? null) ? $data['data'] : [];
+
+        $items = [];
+        foreach ($movements as $movement) {
+            if (\is_array($movement)) {
+                array_push($items, ...self::attendeesFromMovement($movement, $eventId));
+            }
+        }
+
+        return $this->page($items, \count($movements), $data, $skip, $limit);
+    }
+
+    /**
+     * @param list<Attendee>       $items
+     * @param array<string, mixed> $data  réponse décodée de l'API
+     *
+     * @return array{items: list<Attendee>, termine: bool, suivant: int}
+     */
+    private function page(array $items, int $received, array $data, int $skip, int $limit): array
+    {
+        $total = $data['metadata']['totalCount'] ?? null;
+        $suivant = $skip + $received;
+
+        return [
+            'items' => $items,
+            'termine' => 0 === $received || $received < $limit || \is_int($total) && $suivant >= $total,
+            'suivant' => $suivant,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $query
+     * @param list<int>            $tolerated statuts HTTP pour lesquels on renvoie null au lieu de lever une exception
+     *
+     * @return array<string, mixed>|null
+     *
+     * @throws PlusBilletterieException
+     */
+    private function get(string $url, array $query, array $tolerated = []): ?array
+    {
         try {
             $response = $this->httpClient->request('GET', $url, [
                 'headers' => ['X-API-KEY' => $this->apiKey, 'Accept' => 'application/json'],
-                'query' => ['limit' => $limit, 'skip' => $skip, 'sort' => '{"_createdAt":"asc"}'],
+                'query' => $query,
                 'timeout' => 20,
             ]);
 
             $status = $response->getStatusCode();
+            if (\in_array($status, $tolerated, true)) {
+                return null;
+            }
             if (401 === $status || 403 === $status) {
                 throw new PlusBilletterieException('Clé API HelloAsso refusée (HTTP ' . $status . ').');
             }
@@ -49,70 +125,20 @@ class PlusBilletterieClient implements PlusBilletterieClientInterface
                 throw new PlusBilletterieException('Erreur HelloAsso (HTTP ' . $status . ').');
             }
 
-            $data = $response->toArray(false);
+            return $response->toArray(false);
         } catch (ExceptionInterface $exception) {
             // Le message ne contient jamais la clé (elle n'est que dans les en-têtes).
             throw new PlusBilletterieException('Appel HelloAsso impossible : ' . $exception->getMessage(), 0, $exception);
         }
-
-        $movements = \is_array($data['data'] ?? null) ? $data['data'] : [];
-        $total = $data['metadata']['totalCount'] ?? null;
-
-        $items = [];
-        foreach ($movements as $movement) {
-            if (\is_array($movement)) {
-                array_push($items, ...self::attendeesFromMovement($movement, $eventId));
-            }
-        }
-
-        $suivant = $skip + \count($movements);
-
-        return [
-            'items' => $items,
-            'termine' => [] === $movements || \count($movements) < $limit || \is_int($total) && $suivant >= $total,
-            'suivant' => $suivant,
-        ];
     }
 
     /**
-     * Extrait les billets d'un mouvement d'achat. Seules les données utiles au rapprochement sont conservées
-     * (pas d'adresse ni de données bancaires).
-     *
      * @param array<string, mixed> $movement
      *
      * @return list<Attendee>
      */
     public static function attendeesFromMovement(array $movement, string $eventId): array
     {
-        if ('order' !== ($movement['type'] ?? null) || 'successful' !== ($movement['status'] ?? null) || ($movement['eventId'] ?? null) !== $eventId) {
-            return [];
-        }
-
-        $client = \is_array($movement['clientDetails'] ?? null) ? $movement['clientDetails'] : [];
-        $attendees = [];
-
-        foreach (\is_array($movement['sellingItems'] ?? null) ? $movement['sellingItems'] : [] as $sellingItem) {
-            foreach (\is_array($sellingItem['products'] ?? null) ? $sellingItem['products'] : [] as $product) {
-                if (!\is_array($product) || !isset($product['attendeeId'])) {
-                    continue;
-                }
-
-                $attendees[] = Attendee::fromArray([
-                    '_id' => $product['attendeeId'],
-                    'orderId' => $movement['_id'] ?? null,
-                    'productId' => $product['productId'] ?? null,
-                    'email' => $product['attendeeEmail'] ?? null,
-                    'firstName' => $client['firstName'] ?? null,
-                    'lastName' => $client['lastName'] ?? null,
-                    'status' => $product['status'] ?? null,
-                    'price' => $product['price'] ?? null,
-                    'clientReference' => $movement['clientReference'] ?? null,
-                    'formResponseId' => $product['formResponseId'] ?? null,
-                    'movementStatus' => $movement['status'] ?? null,
-                ]);
-            }
-        }
-
-        return $attendees;
+        return MovementAttendees::extract($movement, $eventId);
     }
 }

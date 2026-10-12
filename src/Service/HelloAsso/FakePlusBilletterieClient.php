@@ -18,9 +18,12 @@ class FakePlusBilletterieClient implements PlusBilletterieClientInterface
         $this->attendees = $attendees;
     }
 
-    public function listAttendees(string $eventId, int $skip = 0, int $limit = 100): array
+    public function listAttendees(string $eventId, int $skip = 0, int $limit = 100, ?string $productId = null): array
     {
         $all = $this->attendees ?? self::defaultAttendees();
+        if (null !== $productId) {
+            $all = array_values(array_filter($all, static fn (Attendee $attendee): bool => $attendee->productId === $productId));
+        }
         $items = \array_slice($all, $skip, $limit);
 
         return [
