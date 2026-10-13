@@ -107,6 +107,32 @@ class PlusBilletterieClientTest extends TestCase
         $this->assertStringContainsString('/organizers/org1/movements', $urls[1]);
         $this->assertCount(1, $page['items']);
         $this->assertSame('att1', $page['items'][0]->id);
+        $this->assertSame('movements', $page['source']);
+        $this->assertSame(401, $page['statutAttendees']);
+    }
+
+    public function testSourceAttendeesQuandLaRouteRepond(): void
+    {
+        $client = $this->client([self::json(['data' => [['_id' => 'a1']], 'metadata' => ['totalCount' => 1]])]);
+
+        $page = $client->listAttendees('evt1');
+
+        $this->assertSame('attendees', $page['source']);
+        $this->assertNull($page['statutAttendees']);
+    }
+
+    public function testDiagnosticRenvoieLeStatutDeChaqueRoute(): void
+    {
+        $client = $this->client(
+            static fn (string $method, string $url): MockResponse => self::json([], str_contains($url, '/attendees') ? 401 : 200),
+        );
+
+        $routes = $client->diagnose('evt1');
+
+        $this->assertCount(4, $routes);
+        $parRoute = array_column($routes, 'statut', 'route');
+        $this->assertSame(200, $parRoute['/movements']);
+        $this->assertSame(401, $parRoute['/events/{eventId}/attendees']);
     }
 
     public function testCleRefuseePartout(): void

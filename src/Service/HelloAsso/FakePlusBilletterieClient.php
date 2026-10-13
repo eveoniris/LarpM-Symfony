@@ -30,7 +30,14 @@ class FakePlusBilletterieClient implements PlusBilletterieClientInterface
             'items' => $items,
             'termine' => ($skip + \count($items)) >= \count($all),
             'suivant' => $skip + \count($items),
+            'source' => 'fake',
+            'statutAttendees' => null,
         ];
+    }
+
+    public function diagnose(string $eventId): array
+    {
+        return [['route' => '/events/{eventId}/attendees', 'statut' => null, 'erreur' => 'Faux client : aucune clé API configurée.']];
     }
 
     /** @return list<Attendee> */

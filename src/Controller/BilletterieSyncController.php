@@ -63,6 +63,24 @@ final class BilletterieSyncController extends SymfonyAbstractController
         return new JsonResponse($result);
     }
 
+    /**
+     * Diagnostic en lecture seule : statut HTTP de chaque route HelloAsso testée avec la clé configurée.
+     */
+    #[Route('/diagnostic', name: 'diagnostic', methods: ['POST'])]
+    public function diagnosticAction(Request $request, #[MapEntity] Gn $gn): JsonResponse
+    {
+        $this->assertEnabled();
+        if (!$this->isCsrfTokenValid('billetterie_sync_' . $gn->getId(), (string) $request->request->get('_token'))) {
+            return new JsonResponse(['erreur' => 'Jeton CSRF invalide.'], Response::HTTP_FORBIDDEN);
+        }
+
+        try {
+            return new JsonResponse(['routes' => $this->syncService->diagnose($gn)]);
+        } catch (InvalidArgumentException $exception) {
+            return new JsonResponse(['erreur' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
     #[Route('/rapprochement', name: 'rapprochement', methods: ['GET'])]
     public function rapprochementAction(Request $request, #[MapEntity] Gn $gn): Response
     {

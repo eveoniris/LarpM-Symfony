@@ -37,9 +37,9 @@ class PlusBilletterieClient implements PlusBilletterieClientInterface
             $query['filters'] = json_encode([['productId' => $productId]], JSON_THROW_ON_ERROR);
         }
 
-        $response = $this->get($url, $query, [401, 403, 404]);
+        $response = $this->get($url, $query, [401, 403, 404], $refusedStatus);
         if (null === $response) {
-            return $this->listFromMovements($eventId, $skip, $limit);
+            return $this->listFromMovements($eventId, $skip, $limit, $refusedStatus);
         }
 
         $attendees = \is_array($response['data'] ?? null) ? $response['data'] : [];
@@ -51,15 +51,47 @@ class PlusBilletterieClient implements PlusBilletterieClientInterface
             }
         }
 
-        return $this->page($items, \count($attendees), $response, $skip, $limit);
+        return $this->page($items, \count($attendees), $response, $skip, $limit, 'attendees', null);
     }
 
     /**
-     * @return array{items: list<Attendee>, termine: bool, suivant: int}
+     * Teste en lecture seule les routes utiles et renvoie le statut HTTP de chacune (jamais la clé ni le corps).
+     */
+    public function diagnose(string $eventId): array
+    {
+        $org = self::BASE_URL . '/organizers/' . rawurlencode($this->organizerId);
+        $event = $org . '/events/' . rawurlencode($eventId);
+
+        $routes = [
+            '/movements' => [$org . '/movements', ['limit' => 1]],
+            '/events' => [$org . '/events', ['limit' => 1]],
+            '/events/{eventId}' => [$event, []],
+            '/events/{eventId}/attendees' => [$event . '/attendees', ['limit' => 1]],
+        ];
+
+        $results = [];
+        foreach ($routes as $label => [$url, $query]) {
+            try {
+                $status = $this->httpClient->request('GET', $url, [
+                    'headers' => ['X-API-KEY' => $this->apiKey, 'Accept' => 'application/json'],
+                    'query' => $query,
+                    'timeout' => 20,
+                ])->getStatusCode();
+                $results[] = ['route' => $label, 'statut' => $status, 'erreur' => null];
+            } catch (ExceptionInterface $exception) {
+                $results[] = ['route' => $label, 'statut' => null, 'erreur' => $exception->getMessage()];
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * @return array{items: list<Attendee>, termine: bool, suivant: int, source: string, statutAttendees: int|null}
      *
      * @throws PlusBilletterieException
      */
-    private function listFromMovements(string $eventId, int $skip, int $limit): array
+    private function listFromMovements(string $eventId, int $skip, int $limit, ?int $attendeesStatus): array
     {
         $url = \sprintf('%s/organizers/%s/movements', self::BASE_URL, rawurlencode($this->organizerId));
 
@@ -73,16 +105,16 @@ class PlusBilletterieClient implements PlusBilletterieClientInterface
             }
         }
 
-        return $this->page($items, \count($movements), $data, $skip, $limit);
+        return $this->page($items, \count($movements), $data, $skip, $limit, 'movements', $attendeesStatus);
     }
 
     /**
      * @param list<Attendee>       $items
      * @param array<string, mixed> $data  réponse décodée de l'API
      *
-     * @return array{items: list<Attendee>, termine: bool, suivant: int}
+     * @return array{items: list<Attendee>, termine: bool, suivant: int, source: string, statutAttendees: int|null}
      */
-    private function page(array $items, int $received, array $data, int $skip, int $limit): array
+    private function page(array $items, int $received, array $data, int $skip, int $limit, string $source, ?int $attendeesStatus): array
     {
         $total = $data['metadata']['totalCount'] ?? null;
         $suivant = $skip + $received;
@@ -91,19 +123,24 @@ class PlusBilletterieClient implements PlusBilletterieClientInterface
             'items' => $items,
             'termine' => 0 === $received || $received < $limit || \is_int($total) && $suivant >= $total,
             'suivant' => $suivant,
+            'source' => $source,
+            'statutAttendees' => $attendeesStatus,
         ];
     }
 
     /**
      * @param array<string, mixed> $query
-     * @param list<int>            $tolerated statuts HTTP pour lesquels on renvoie null au lieu de lever une exception
+     * @param list<int>            $tolerated    statuts HTTP pour lesquels on renvoie null au lieu de lever une exception
+     * @param int|null             $toleratedGot reçoit le statut HTTP toléré (null si la réponse est exploitable)
      *
      * @return array<string, mixed>|null
      *
      * @throws PlusBilletterieException
      */
-    private function get(string $url, array $query, array $tolerated = []): ?array
+    private function get(string $url, array $query, array $tolerated = [], ?int &$toleratedGot = null): ?array
     {
+        $toleratedGot = null;
+
         try {
             $response = $this->httpClient->request('GET', $url, [
                 'headers' => ['X-API-KEY' => $this->apiKey, 'Accept' => 'application/json'],
@@ -113,6 +150,8 @@ class PlusBilletterieClient implements PlusBilletterieClientInterface
 
             $status = $response->getStatusCode();
             if (\in_array($status, $tolerated, true)) {
+                $toleratedGot = $status;
+
                 return null;
             }
             if (401 === $status || 403 === $status) {
