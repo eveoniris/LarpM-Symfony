@@ -121,7 +121,7 @@ class BilletSyncService
     {
         $count = 0;
         foreach ($this->billetSyncRepository->findByGnAndEtat($gn, SyncEtat::A_VALIDER) as $sync) {
-            if (!\in_array($sync->getConfiance(), [SyncConfiance::SUR, SyncConfiance::PROBABLE], true) || null === $sync->getUser() || null === $sync->getBillet() || !$sync->isPaye()) {
+            if (!$this->estValidableAutomatiquement($sync)) {
                 continue;
             }
 
@@ -146,21 +146,9 @@ class BilletSyncService
 
         $sync = $this->billetSyncRepository->findOneByAttendee($gn, $attendee->id);
         $nouveau = null === $sync;
-        if ($nouveau) {
-            $sync = new BilletSync();
-            $sync->setGn($gn);
-            $sync->setAttendeeId($attendee->id);
-            $this->entityManager->persist($sync);
-        }
+        $sync ??= $this->creer($gn, $attendee->id);
 
-        $sync->setOrderId($attendee->orderId);
-        $sync->setProductId($attendee->productId);
-        $sync->setEmail($attendee->email);
-        $sync->setNom($attendee->nom);
-        $sync->setStatus($attendee->status);
-        $sync->setPrice($attendee->price);
-        $sync->setRawData($attendee->raw);
-        $sync->setSynchroniseLe(new DateTime());
+        $this->remplir($sync, $attendee);
 
         // Une ligne déjà traitée garde sa décision ; sinon on (re)calcule la proposition.
         if ($nouveau || SyncEtat::A_VALIDER === $sync->getEtat()) {
@@ -169,5 +157,32 @@ class BilletSyncService
             $sync->setBillet($match['billet']);
             $sync->setConfiance($match['confiance']);
         }
+    }
+
+    private function creer(Gn $gn, string $attendeeId): BilletSync
+    {
+        $sync = new BilletSync();
+        $sync->setGn($gn);
+        $sync->setAttendeeId($attendeeId);
+        $this->entityManager->persist($sync);
+
+        return $sync;
+    }
+
+    private function remplir(BilletSync $sync, Attendee $attendee): void
+    {
+        $sync->setOrderId($attendee->orderId);
+        $sync->setProductId($attendee->productId);
+        $sync->setEmail($attendee->email);
+        $sync->setNom($attendee->nom);
+        $sync->setStatus($attendee->status);
+        $sync->setPrice($attendee->price);
+        $sync->setRawData($attendee->raw);
+        $sync->setSynchroniseLe(new DateTime());
+    }
+
+    private function estValidableAutomatiquement(BilletSync $sync): bool
+    {
+        return \in_array($sync->getConfiance(), [SyncConfiance::SUR, SyncConfiance::PROBABLE], strict: true) && null !== $sync->getUser() && null !== $sync->getBillet() && $sync->isPaye();
     }
 }

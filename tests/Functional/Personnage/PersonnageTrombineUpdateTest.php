@@ -67,7 +67,9 @@ class PersonnageTrombineUpdateTest extends WebTestCase
             ],
         ]);
 
-        @unlink($tmpPath);
+        if (is_file($tmpPath)) {
+            unlink($tmpPath);
+        }
 
         static::assertResponseRedirects();
 
