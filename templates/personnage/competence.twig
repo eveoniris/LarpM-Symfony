@@ -4,7 +4,9 @@
 
 {% block body %}
 
-    <div class="container-fluid" data-tubro="false">
+    <div class="container-fluid" data-tubro="false"
+         data-controller="confirm-choice"
+         data-confirm-choice-message-value="Confirmez-vous vouloir prendre la compétence {label} au niveau {niveau} pour {cout} xp ?">
 
         {% set breadcrumb = [] %}
         {% if isAdmin %}
@@ -34,7 +36,16 @@
 
                     <div class="card mt-2">
                         <div class="card-body text-center align-center">
-                            {{ form(form) }}
+                            {{ form_start(form, {'attr': {
+                                'data-confirm-choice-target': 'form',
+                                'data-action': 'submit->confirm-choice#submit'
+                            }}) }}
+                            {{ form_row(form.id, {'attr': {
+                                'data-confirm-choice-target': 'select',
+                                'data-confirm-choice-name': 'main'
+                            }}) }}
+                            {{ form_row(form.save) }}
+                            {{ form_end(form) }}
                         </div>
                     </div>
                 </div>
@@ -89,54 +100,12 @@
 
             <div class="row ps-2">
                 {% for competence in competences|sort %}
-                    <div class="col-md-6 list-group mb-2">
-                        <div class="list-group-item">
-                            <div class="list-group-item-heading d-flex justify-content-between">
-                                <h6>
-                                    <a href="{{ path('competence.detail', {"competence":competence.id}) }}">{{ competence.label }}</a>
-                                    {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
-                                        <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top"
-                                           title="Favorite"></i>
-                                    {% elseif not personnage.classe.isCommonCompetenceFamily(competence.competenceFamily) %}
-                                        <i class="fa fa-face-tired text-danger" data-toggle="tooltip"
-                                           data-placement="top"
-                                           title="Méconnue"></i>
-                                    {% endif %}
-                                    &nbsp;({{ personnageService.getCompetenceCout(personnage, competence) }} xp)
-                                </h6>
-                            </div>
-                            {% set apprentissages = personnage.getApprentissage(competence) %}
-                            {% if apprentissages and apprentissages|length > 0 %}
-                                <div class="list-group mb-1">
-                                    {% for apprentissage in apprentissages %}
-
-                                        <small class="list-group-item"><i class="fa fa-graduation-cap text-info"
-                                                                          data-toggle="tooltip" data-placement="top"
-                                                                          title="Apprentissage"></i> Enseignée
-                                            par {{ apprentissage.enseignant.publicName }}
-                                            en {{ apprentissage.dateEnseignement }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% set gains = personnageService.getCompetenceGainDetails(personnage, competence) %}
-                            {% if gains and gains|length > 0 %}
-                                <div class="list-group mb-1">
-                                    {% for gain in gains %}
-                                        <small class="list-group-item">
-                                            <i class="fa {{ gain.type == 'merveille' ? 'fa-landmark' : 'fa-flag' }} text-success"
-                                               data-toggle="tooltip" data-placement="top"
-                                               title="{{ gain.type == 'merveille' ? 'Bonus territorial' : "Bonus d'origine" }}"></i>
-                                            {{ gain.bonus.titre }} (-{{ gain.valeur }} xp)
-                                        </small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="list-group-item-text">{{ competence.description|markdown_to_html }}</div>
-                        </div>
-                    </div>
+                    {% include 'personnage/fragment/competenceCard.twig' %}
                 {% endfor %}
             </div>
 
         </div>
+
+        {% include '_partials/confirmChoiceModal.twig' %}
     </div>
 {% endblock body %}

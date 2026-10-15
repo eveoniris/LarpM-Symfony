@@ -1,0 +1,22 @@
+{# Modale de confirmation partagée, pilotée par le contrôleur Stimulus confirm-choice (à inclure dans son élément). #}
+<div class="modal fade" id="confirmChoiceModal" tabindex="-1" aria-labelledby="confirmChoiceModalTitle"
+     aria-hidden="true" data-confirm-choice-target="modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="confirmChoiceModalTitle">{{ title|default('Confirmation') }}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body" data-confirm-choice-target="message"></div>
+            <div class="modal-footer d-grid d-sm-flex gap-2">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Annuler
+                </button>
+                <button type="button" class="btn btn-primary"
+                        data-action="click->confirm-choice#confirm">
+                    Confirmer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

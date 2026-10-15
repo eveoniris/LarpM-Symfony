@@ -3,7 +3,9 @@
 {% block title %}{{ personnage.publicName }}{% endblock title %}
 
 {% block body %}
-    <div class="container-fluid">
+    <div class="container-fluid"
+         data-controller="confirm-choice"
+         data-confirm-choice-message-value="Confirmez-vous vouloir prendre la religion {label} au niveau {niveau} ?">
 
         {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Choix d'une religion"} %}
 
@@ -28,7 +30,42 @@
                 </ul>
             </div>
 
-            {{ form(form) }}
+            {{ form_start(form, {'attr': {
+                'data-confirm-choice-target': 'form',
+                'data-action': 'submit->confirm-choice#submit'
+            }}) }}
+            {{ form_row(form.religionLevel) }}
+            {{ form_row(form.religion) }}
+            {{ form_row(form.save) }}
+            {{ form_end(form) }}
         </div>
+
+        <div class="well">
+            <div class="header">
+                <h5>Religions disponibles</h5>
+            </div>
+            <p class="text-muted">Choisissez d'abord votre degré de fanatisme, puis la religion.</p>
+
+            <div class="row">
+                {% for religion in religions %}
+                    <div class="col-md-6 list-group mb-2">
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <h6>{{ religion.label }}</h6>
+                                <button type="button" class="btn btn-sm btn-secondary text-nowrap"
+                                        data-action="confirm-choice#ask"
+                                        data-confirm-choice-value-param="{{ religion.id }}"
+                                        data-confirm-choice-target-param="religion">
+                                    <i class="fa fa-plus"></i> Choisir
+                                </button>
+                            </div>
+                            <div class="list-group-item-text">{{ religion.description|markdown_to_html }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% include '_partials/confirmChoiceModal.twig' %}
     </div>
 {% endblock body %}

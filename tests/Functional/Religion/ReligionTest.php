@@ -41,7 +41,7 @@ class ReligionTest extends WebTestCase
         static::assertResponseIsSuccessful();
 
         // Pick the first available religion option value from the rendered select
-        $firstOptionValue = $crawler->filter('select[name="personnage_religion[religion]"] option')->first()->attr('value');
+        $firstOptionValue = $crawler->filter('select[name="personnage_religion[religion]"] option:not([value=""])')->first()->attr('value');
 
         $form = $crawler
             ->selectButton('Valider votre religion')
@@ -106,7 +106,7 @@ class ReligionTest extends WebTestCase
         $crawler = $client->request('GET', '/personnage/' . $personnage->getId() . '/addReligion');
         static::assertResponseIsSuccessful();
 
-        $firstOptionValue = $crawler->filter('select[name="personnage_religion[religion]"] option')->first()->attr('value');
+        $firstOptionValue = $crawler->filter('select[name="personnage_religion[religion]"] option:not([value=""])')->first()->attr('value');
 
         // Try to add religion2 as fervent
         $form = $crawler

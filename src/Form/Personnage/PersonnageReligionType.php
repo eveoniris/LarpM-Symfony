@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class PersonnageReligionType extends AbstractType
 {
@@ -23,6 +24,10 @@ class PersonnageReligionType extends AbstractType
             'label' => 'Votre degré de fanatisme',
             'class' => ReligionLevel::class,
             'choice_label' => 'label',
+            'choice_attr' => static fn (ReligionLevel $level): array => ['data-niveau' => $level->getLabel()],
+            'placeholder' => '— Choisir un degré —',
+            'attr' => ['data-confirm-choice-target' => 'select', 'data-confirm-choice-name' => 'level'],
+            'constraints' => [new NotBlank(message: 'Veuillez choisir un degré de fanatisme.')],
         ]);
     }
 

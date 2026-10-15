@@ -81,6 +81,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[IsGranted('ROLE_USER')]
 class ParticipantController extends AbstractController
@@ -190,6 +191,8 @@ class ParticipantController extends AbstractController
             'choice_label' => 'label',
             'class' => Classe::class,
             'choices' => array_unique($classes),
+            'placeholder' => '— Choisir une classe —',
+            'constraints' => [new NotBlank(message: 'Veuillez choisir une classe.')],
         ])->add('save', SubmitType::class, ['label' => 'Valider le personnage']);
 
         $form->handleRequest($request);
@@ -1284,6 +1287,8 @@ class ParticipantController extends AbstractController
             'choice_label' => 'label',
             'class' => Classe::class,
             'choices' => array_unique($classes),
+            'placeholder' => '— Choisir une classe —',
+            'constraints' => [new NotBlank(message: 'Veuillez choisir une classe.')],
         ])->add('save', SubmitType::class, [
             'label' => 'Valider mon personnage',
             'attr' => ['onclick' => "return confirm('Confirmez vous le personnage ?')"],
