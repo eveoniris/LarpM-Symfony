@@ -154,6 +154,8 @@ jobs:
           key: importmap-${{ hashFiles('importmap.php') }}
 
       - name: Install importmap assets (retry — jsdelivr is flaky)
+        # Non bloquant : les tests passent sans les assets JS (vérifié), jsdelivr peut être en panne (503).
+        continue-on-error: true
         if: steps.importmap-cache.outputs.cache-hit != 'true'
         env:
           APP_ENV: test
