@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Enum\LogActionType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -184,6 +185,28 @@ class GnRemoveLearning extends Command
             $stmt = $conn->prepare('SELECT xp FROM personnage WHERE id = :pid');
             $stmt->bindValue('pid', $personnageId);
             $newXp = (int) $stmt->executeQuery()->fetchOne();
+
+            // Suppressions en SQL brut : invisibles pour DeletionLogListener, on les trace ici (pas d'utilisateur en CLI)
+            $conn->insert('log_action', [
+                'user_id' => null,
+                'date' => date('Y-m-d H:i:s'),
+                'type' => LogActionType::ENTITY_DELETE->value,
+                'data' => json_encode(
+                    [
+                        'source' => 'command:' . $this->getName(),
+                        'personnage_id' => $personnageId,
+                        'competence_id' => $competenceId,
+                        'deleted' => [
+                            'personnages_competences' => $countPc,
+                            'experience_usage' => $countUsage,
+                            'experience_gain' => $countGain,
+                            'personnage_apprentissage_soft' => $countApp,
+                        ],
+                        'nouveau_xp' => $newXp,
+                    ],
+                    \JSON_THROW_ON_ERROR,
+                ),
+            ]);
 
             $io->success(sprintf('Terminé. Nouveau XP du personnage %d : %d', $personnageId, $newXp));
         } else {
