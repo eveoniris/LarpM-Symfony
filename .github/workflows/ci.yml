@@ -146,25 +146,33 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction --no-scripts
 
-      - name: Cache importmap vendor assets
+      # Les tests fonctionnels rendent base.html.twig : importmap('app') exige assets/vendor.
+      # restore/save séparés : le cache est sauvegardé dès que l'install réussit, même si les tests échouent ensuite.
+      - name: Restore importmap vendor assets
         id: importmap-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: assets/vendor
           key: importmap-${{ hashFiles('importmap.php') }}
 
       - name: Install importmap assets (retry — jsdelivr is flaky)
-        # Non bloquant : les tests passent sans les assets JS (vérifié), jsdelivr peut être en panne (503).
-        continue-on-error: true
         if: steps.importmap-cache.outputs.cache-hit != 'true'
         env:
           APP_ENV: test
         run: |
-          for attempt in 1 2 3; do
+          for attempt in 1 2 3 4 5; do
             php bin/console importmap:install && exit 0
-            echo "importmap:install failed (attempt $attempt/3)"; sleep 15
+            echo "importmap:install failed (attempt $attempt/5)"; sleep $((attempt * 20))
           done
+          echo "jsdelivr indisponible : relancer le job plus tard (re-run)."
           exit 1
+
+      - name: Save importmap vendor assets
+        if: steps.importmap-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: assets/vendor
+          key: importmap-${{ hashFiles('importmap.php') }}
 
       - name: Create .env.test.local
         run: |
