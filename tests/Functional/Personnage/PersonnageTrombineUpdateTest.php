@@ -80,7 +80,7 @@ class PersonnageTrombineUpdateTest extends WebTestCase
         $personnage = $em->getRepository($personnage::class)->find($personnage->getId());
         $stored = $personnage->getTrombineUrl();
 
-        if (null !== $stored) {
+        if (\is_string($stored)) {
             $this->uploadedFile = static::getContainer()->getParameter('kernel.project_dir') . '/private/img/photos/' . $stored;
         }
 
