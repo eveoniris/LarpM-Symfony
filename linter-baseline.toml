@@ -5051,3 +5051,39 @@ file = "tests/Unit/Service/PersonnageServiceStaffTest.php"
 code = "literal-named-argument"
 message = "Literal argument `true` should be passed as a named argument for clarity."
 count = 1
+
+[[issues]]
+file = "src/Entity/BaseBillet.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Entity/BilletSync.php"
+code = "too-many-properties"
+message = "Class has too many properties."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/Attendee.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/Attendee.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/PlusBilletterieClient.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/BilletSyncService.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1

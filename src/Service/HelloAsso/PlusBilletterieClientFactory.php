@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\HelloAsso;
 
+use SensitiveParameter;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**

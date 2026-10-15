@@ -110,7 +110,8 @@ final class BilletterieSyncController extends SymfonyAbstractController
         }
 
         try {
-            $this->syncService->validate($sync, $this->getUser() instanceof User ? $this->getUser() : null);
+            $admin = $this->getUser();
+            $this->syncService->validate($sync, $admin instanceof User ? $admin : null);
             $this->addFlash('success', 'Billet attribué à ' . ($sync->getEmail() ?? $sync->getAttendeeId()) . '.');
         } catch (InvalidArgumentException $exception) {
             $this->entityManager->flush();
@@ -126,7 +127,8 @@ final class BilletterieSyncController extends SymfonyAbstractController
         $this->assertEnabled();
         $this->assertCsrf($request, $gn);
 
-        $count = $this->syncService->validateAllSure($gn, $this->getUser() instanceof User ? $this->getUser() : null);
+        $admin = $this->getUser();
+        $count = $this->syncService->validateAllSure($gn, $admin instanceof User ? $admin : null);
         $this->addFlash('success', $count . ' billet(s) attribué(s).');
 
         return $this->redirectToRapprochement($gn);

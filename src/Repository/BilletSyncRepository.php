@@ -8,14 +8,13 @@ use App\Entity\BilletSync;
 use App\Entity\Gn;
 use App\Enum\SyncEtat;
 
-/**
- * @extends BaseRepository<BilletSync>
- */
 class BilletSyncRepository extends BaseRepository
 {
     public function findOneByAttendee(Gn $gn, string $attendeeId): ?BilletSync
     {
-        return $this->findOneBy(['gn' => $gn, 'attendeeId' => $attendeeId]);
+        $sync = $this->findOneBy(['gn' => $gn, 'attendeeId' => $attendeeId]);
+
+        return $sync instanceof BilletSync ? $sync : null;
     }
 
     /** @return list<BilletSync> */
@@ -26,6 +25,8 @@ class BilletSyncRepository extends BaseRepository
             $criteria['etat'] = $etat;
         }
 
-        return $this->findBy($criteria, ['email' => 'ASC']);
+        $rows = $this->findBy($criteria, ['email' => 'ASC']);
+
+        return array_values(array_filter($rows, static fn (object $row): bool => $row instanceof BilletSync));
     }
 }

@@ -78,7 +78,7 @@ class PlusBilletterieClient implements PlusBilletterieClientInterface
      * Extrait les billets d'un mouvement d'achat. Seules les données utiles au rapprochement sont conservées
      * (pas d'adresse ni de données bancaires).
      *
-     * @param array<string, mixed> $movement
+     * @param array<array-key, mixed> $movement
      *
      * @return list<Attendee>
      */
@@ -93,7 +93,7 @@ class PlusBilletterieClient implements PlusBilletterieClientInterface
 
         foreach (\is_array($movement['sellingItems'] ?? null) ? $movement['sellingItems'] : [] as $sellingItem) {
             foreach (\is_array($sellingItem['products'] ?? null) ? $sellingItem['products'] : [] as $product) {
-                if (!\is_array($product) || !isset($product['attendeeId'])) {
+                if (!\is_array($product) || !\array_key_exists('attendeeId', $product)) {
                     continue;
                 }
 
