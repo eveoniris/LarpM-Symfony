@@ -444,6 +444,10 @@ class UserController extends AbstractController
         if ($request->isMethod('POST')) {
             $user->setEmail((string) $request->request->getString('email'));
             $user->setEmailContact($request->request->getString('email_contact') ?: null);
+            $user->setDiscordPseudo($request->request->getString('discord_pseudo'));
+            if (null !== $user->getDiscordPseudo() && !preg_match('/^[a-z0-9_.]{2,32}$/i', $user->getDiscordPseudo())) {
+                $errors[] = 'ID Discord invalide : 2 à 32 caractères (lettres, chiffres, "_" et ".").';
+            }
             if ($request->request->has('username')) {
                 $user->setUsername((string) $request->request->getString('username'));
             }

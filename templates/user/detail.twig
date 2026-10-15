@@ -57,6 +57,12 @@
                     </div>
                 {% endif %}
 
+                {% if user.discordPseudo %}
+                    <div class="text-muted">
+                        <i class="fa-brands fa-discord" aria-hidden="true"></i> {{ user.discordPseudo }}
+                    </div>
+                {% endif %}
+
                 <div class="m-2 d-flex justify-content-between">
                     {% if isAdmin or not isSelfUser %}
                         <a class="btn btn-secondary" href="{{ path('message.new', {'to': user.id}) }}"><span
