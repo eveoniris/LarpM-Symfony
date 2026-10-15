@@ -17,6 +17,7 @@ use App\Enum\Role;
 use App\Form\DeleteType;
 use App\Repository\BaseRepository;
 use App\Repository\GnRepository;
+use App\Service\DeletionLogContext;
 use App\Service\FileUploader;
 use App\Service\GroupeService;
 use App\Service\MailService;
@@ -536,9 +537,11 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
             }
 
             $logType = LogActionType::ENTITY;
+            $deleted = false;
 
+            // La suppression est journalisée par DeletionLogListener (onFlush)
             if ($form->has('delete') && ($form->get('delete') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('delete')->isClicked())) {
-                $logType = LogActionType::ENTITY_DELETE;
+                $deleted = true;
                 $this->entityManager->remove($entity);
                 $this->addFlash('success', $msg['entity_deleted']);
             } else {
@@ -555,7 +558,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
                 }
             }
 
-            $this->log($entity, $logType);
+            if (!$deleted) {
+                $this->log($entity, $logType);
+            }
 
             $this->entityManager->flush();
 
@@ -593,6 +598,25 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
      * ]
      * );
      */
+
+    /**
+     * Précise le contexte de la suppression d'une entité (avant le flush) : DeletionLogListener
+     * fusionne ces informations dans l'entrée log_action unique de la suppression.
+     *
+     * @param array<string, mixed> $extra
+     */
+    protected function annotateDeletion(object $entity, ?LogActionType $type = null, array $extra = []): void
+    {
+        $this->container->get(DeletionLogContext::class)->annotate($entity, $type, $extra);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function getSubscribedServices(): array
+    {
+        return [...parent::getSubscribedServices(), DeletionLogContext::class => DeletionLogContext::class];
+    }
 
     protected function log(mixed $entity, LogActionType $type, bool $flush = false): void
     {

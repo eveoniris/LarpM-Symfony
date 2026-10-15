@@ -21,7 +21,8 @@ class LogActionRepository extends BaseRepository
     ): QueryBuilder {
         $alias ??= static::getEntityAlias();
         $query ??= $this->createQueryBuilder($alias);
-        $query->join($alias . '.user', 'user');
+        // leftJoin : les logs sans utilisateur (commande, cron) doivent rester visibles
+        $query->leftJoin($alias . '.user', 'user');
         $query->leftJoin('user.etatCivil', 'etatCivil');
 
         return parent::search($search, $attributes, $orderBy, $alias, $query);

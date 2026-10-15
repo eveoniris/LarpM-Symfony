@@ -2058,6 +2058,7 @@ class ParticipantController extends AbstractController
             'personnage_id' => $personnage->getId(),
             'potion_id' => $potion->getId(),
         ]);
+        $this->entityManager->persist($logAction);
 
         $this->entityManager->flush();
 
@@ -2106,6 +2107,7 @@ class ParticipantController extends AbstractController
                 'personnage_id' => $personnage->getId(),
                 'potion_id' => $potion->getId(),
             ]);
+            $this->entityManager->persist($logAction);
 
             $this->entityManager->flush();
 
