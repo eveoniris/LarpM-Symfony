@@ -19,8 +19,7 @@
                     <li class="list-group-item"><strong>Taille du cache :</strong> {{ cacheTotalSpace }} (<a
                             href="{{ path('admin.cache.empty') }}">vider</a>)
                     </li>
-                    <li class="list-group-item"><strong>Taille des logs :</strong> {{ logTotalSpace }} (<a
-                            href="{{ path('admin.log.empty') }}">vider</a>)
+                    <li class="list-group-item"><strong>Taille des logs :</strong> {{ logTotalSpace }} (<form method="post" action="{{ path('admin.log.empty') }}" class="d-inline" onsubmit="return confirm('Vider les logs ?');"><input type="hidden" name="_token" value="{{ csrf_token('admin_log_empty') }}"><button type="submit" class="btn btn-link p-0 align-baseline">vider</button></form>)
                     </li>
                     <li class="list-group-item"><strong>Taille des documents :</strong> {{ docTotalSpace }}</li>
                 </ul>

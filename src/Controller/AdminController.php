@@ -11,11 +11,10 @@ use App\Repository\LogActionRepository;
 use App\Repository\PersonnageRepository;
 use App\Repository\UserRepository;
 use App\Service\ConditionsService;
+use App\Service\LogReaderService;
 use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\EntityManagerInterface;
-use SplFileObject;
 use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseAlias;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -158,60 +157,42 @@ class AdminController extends AbstractController
      * Consulter les logs de larpManager.
      */
     #[Route('/admin/log', name: 'admin.log')]
-    public function logAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function logAction(Request $request, LogReaderService $logReader): Response
     {
-        // TODO if ('prod' === $app['config']['env']['env']) {
-        // $filename = __DIR__.'/../../../log/prod.log';
-        // } else {
-        $filename = __DIR__ . '/../../var/log/dev.log';
-        // }
+        $level = strtoupper((string) $request->query->get('level', 'ERROR'));
+        $levels = match ($level) {
+            'ALL' => [],
+            'WARNING' => ['WARNING', 'ERROR', 'CRITICAL', 'ALERT', 'EMERGENCY'],
+            'CRITICAL' => ['CRITICAL', 'ALERT', 'EMERGENCY'],
+            default => ['ERROR', 'CRITICAL', 'ALERT', 'EMERGENCY'],
+        };
+        $level = \in_array($level, ['ALL', 'WARNING', 'CRITICAL'], true) ? $level : 'ERROR';
+        $limit = max(10, min(1000, $request->query->getInt('limit', 100)));
+        $search = trim((string) $request->query->get('q', ''));
 
-        $logfile = new SplFileObject($filename);
-
-        $lines = [];
-        $linesFatal = [];
-
-        $handle = fopen($filename, 'r');
-        $lineCount = 0;
-        while (!$logfile->eof()) {
-            $current = $logfile->current();
-            $linetmp = is_string($current) ? $current : '';
-            if (str_contains($linetmp, 'CRITICAL')) {
-                $linesFatal[] = $linetmp;
-            }
-
-            ++$lineCount;
-            $logfile->next();
-        }
-
-        $start = $lineCount - 20;
-        if ($start < 0) {
-            $start = 0;
-        }
-
-        $logfile->seek($start);
-        while (!$logfile->eof()) {
-            $lines[] = $logfile->current();
-            $logfile->next();
-        }
-
-        $lines = array_reverse($lines);
-        $linesFatal = array_reverse($linesFatal);
-
-        return $this->render('log.twig', [
-            'lines' => $lines,
-            'linesFatal' => $linesFatal,
+        return $this->render('admin/log.twig', [
+            'entries' => $logReader->read($limit, $levels, $search),
+            'fileExists' => $logReader->exists(),
+            'filename' => basename($logReader->getFilename()),
+            'level' => $level,
+            'limit' => $limit,
+            'search' => $search,
         ]);
     }
 
     /**
-     * Vider les logs.
+     * Vider les logs de l'environnement courant.
      */
-    #[Route('/admin/log/empty', name: 'admin.log.empty')]
-    public function logEmptyAction(): RedirectResponseAlias
+    #[Route('/admin/log/empty', name: 'admin.log.empty', methods: ['POST'])]
+    public function logEmptyAction(Request $request, LogReaderService $logReader): RedirectResponseAlias
     {
-        file_put_contents(__DIR__ . '/../../var/log/prod.log', '');
-        file_put_contents(__DIR__ . '/../../var/log/dev.log', '');
+        if (!$this->isCsrfTokenValid('admin_log_empty', (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+
+            return $this->redirectToRoute('admin', [], 303);
+        }
+
+        $logReader->clear();
 
         $this->addFlash('success', 'Les logs ont été vidés.');
 
