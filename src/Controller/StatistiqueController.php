@@ -780,32 +780,18 @@ class StatistiqueController extends AbstractController
 
         $statCompetences = [];
         $statCompetencesFamily = [];
-        $valueFamily = 0;
-        $previousFamily = '';
+        $valueByFamily = [];
         foreach ($competencesStats as $competence) {
-            $colors = RandomColor::many(2, [
-                'luminosity' => ['light', 'bright'],
-                'hue' => 'random',
-            ]);
             $statCompetences[] = [
                 'value' => (int) $competence['value'],
-                'color' => $colors[0],
-                'highlight' => $colors[1],
                 'label' => $competence['family_label'] . ' - ' . $competence['level_label'],
             ];
 
-            if ($previousFamily !== $competence['family_label']) {
-                $statCompetencesFamily[] = [
-                    'value' => $valueFamily,
-                    'color' => $colors[0],
-                    'highlight' => $colors[1],
-                    'label' => $previousFamily,
-                ];
-                $valueFamily = (int) $competence['value'];
-                $previousFamily = $competence['family_label'];
-            } else {
-                $valueFamily += (int) $competence['value'];
-            }
+            $valueByFamily[$competence['family_label']] = ($valueByFamily[$competence['family_label']] ?? 0) + (int) $competence['value'];
+        }
+
+        foreach ($valueByFamily as $familyLabel => $familyValue) {
+            $statCompetencesFamily[] = ['value' => $familyValue, 'label' => (string) $familyLabel];
         }
 
         $statGenres = [];
