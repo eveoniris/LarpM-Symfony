@@ -17,13 +17,28 @@
         {% include '_partials/formListSearch.twig' with
             {
                 'canAdd': {'title': 'Ajouter un utilisateur', 'path': path('user.new')},
-                'actionPath' : path('user.list')
+                'actionPath' : path('user.list'),
+                'hiddenParams': role_filter ? {'role_filter': role_filter} : {}
             } %}
 
         {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_GESTION') %}
         <div class="d-flex justify-content-center mt-2">
             <form method="get" action="{{ path('user.list') }}" class="d-inline-flex align-items-center gap-2">
                 <label for="role_filter" class="mb-0 text-nowrap">Filtrer par rôle :</label>
+                {# conserve recherche, tri et limite (retour page 1) #}
+                {% for name, value in app.request.query.all %}
+                    {% if name not in ['role_filter', 'page'] %}
+                        {% if value is iterable %}
+                            {% for subName, subValue in value %}
+                                {% if subValue is not iterable %}
+                                    <input type="hidden" name="{{ name }}[{{ subName }}]" value="{{ subValue }}">
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <input type="hidden" name="{{ name }}" value="{{ value }}">
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
                 <select id="role_filter" name="role_filter" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
                     <option value="">-- Tous --</option>
                     {% for role in roles %}

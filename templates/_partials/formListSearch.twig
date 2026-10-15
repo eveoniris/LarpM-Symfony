@@ -50,6 +50,11 @@
                 </div>
             </div>
 
+            {% if hiddenParams is defined %}
+                {% for hiddenName, hiddenValue in hiddenParams %}
+                    <input type="hidden" name="{{ hiddenName }}" value="{{ hiddenValue }}">
+                {% endfor %}
+            {% endif %}
             {{ form_rest(form) }}
             {{ form_end(form) }}
         </li>
