@@ -153,11 +153,11 @@ class GnController extends AbstractController
     #[Route('/{gn}/billetterie', name: 'billetterie')]
     #[IsGranted('ROLE_USER', message: 'You are not allowed to access tho this page.')]
     public function billetterieAction(
-        #[MapEntity] Gn $gn,
+        #[MapEntity]
+        Gn $gn,
         #[Autowire('%helloasso.plus.enabled%')]
         bool $helloassoEnabled = false,
-    ): Response
-    {
+    ): Response {
         $groupeGns = $gn->getGroupeGnsPj();
         /** @var ArrayIterator<int, mixed> $iterator */
         $iterator = $groupeGns->getIterator();

@@ -38,7 +38,9 @@ jobs:
           restore-keys: composer-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-interaction
+        # --no-scripts : importmap:install télécharge ~50 fichiers depuis jsdelivr (timeouts sur les runners)
+        # et cet outil n'a besoin ni des assets JS ni du cache Symfony.
+        run: composer install --prefer-dist --no-progress --no-interaction --no-scripts
 
       - name: Mago — check formatting
         run: ./vendor/bin/mago format --dry-run
@@ -79,7 +81,9 @@ jobs:
           restore-keys: composer-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-interaction
+        # --no-scripts : importmap:install télécharge ~50 fichiers depuis jsdelivr (timeouts sur les runners)
+        # et cet outil n'a besoin ni des assets JS ni du cache Symfony.
+        run: composer install --prefer-dist --no-progress --no-interaction --no-scripts
 
       - name: PHP CS Fixer — check style
         run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --no-interaction
@@ -140,7 +144,25 @@ jobs:
           restore-keys: composer-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-interaction
+        run: composer install --prefer-dist --no-progress --no-interaction --no-scripts
+
+      - name: Cache importmap vendor assets
+        id: importmap-cache
+        uses: actions/cache@v4
+        with:
+          path: assets/vendor
+          key: importmap-${{ hashFiles('importmap.php') }}
+
+      - name: Install importmap assets (retry — jsdelivr is flaky)
+        if: steps.importmap-cache.outputs.cache-hit != 'true'
+        env:
+          APP_ENV: test
+        run: |
+          for attempt in 1 2 3; do
+            php bin/console importmap:install && exit 0
+            echo "importmap:install failed (attempt $attempt/3)"; sleep 15
+          done
+          exit 1
 
       - name: Create .env.test.local
         run: |
