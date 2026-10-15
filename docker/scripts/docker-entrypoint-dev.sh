@@ -30,6 +30,6 @@ echo "Running pending migrations..."
 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 
 echo "Warming up Symfony cache..."
-php bin/console cache:warmup --no-debug
+php bin/console cache:warmup
 
 exec docker-php-entrypoint "$@"
