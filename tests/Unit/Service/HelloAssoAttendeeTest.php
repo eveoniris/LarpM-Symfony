@@ -50,6 +50,25 @@ class HelloAssoAttendeeTest extends TestCase
         $this->assertSame('987', $attendee->idLarpManager);
     }
 
+    public function testAttendeeDeLaRouteEventsAttendees(): void
+    {
+        $attendee = Attendee::fromArray([
+            '_id' => 'att9',
+            'orderId' => 'ord9',
+            'productId' => 'p9',
+            'email' => 'Joueur@Example.org',
+            'status' => 'used',
+            'price' => 7500,
+            'clientReference' => 'acheteur@example.org',
+            'customFields' => [['label' => 'ID LarpManager', 'value' => '321']],
+        ]);
+
+        $this->assertSame('att9', $attendee->id);
+        $this->assertSame('used', $attendee->status);
+        $this->assertSame('321', $attendee->idLarpManager);
+        $this->assertSame('acheteur@example.org', $attendee->clientReference);
+    }
+
     public function testClientReferenceNonNumeriqueIgnoree(): void
     {
         $attendee = Attendee::fromArray(['id' => 'a', 'clientReference' => 'abc']);

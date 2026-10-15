@@ -46,6 +46,8 @@
                     {% if gn.helloassoEventId %}
                         <button type="button" class="btn btn-primary" id="helloasso-sync-btn">Contrôler la billetterie</button>
                         <a class="btn btn-outline-primary" href="{{ path('gn.billetterie.rapprochement', {'gn': gn.id}) }}">Tableau de rapprochement</a>
+                        <button type="button" class="btn btn-outline-secondary" id="helloasso-diag-btn">Tester la connexion HelloAsso</button>
+                        <pre class="mt-3 mb-0 d-none" id="helloasso-diag-result"></pre>
                         <div class="progress mt-3 d-none" id="helloasso-sync-progress">
                             <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
                         </div>
@@ -75,6 +77,30 @@
                                     }
                                 }
 
+                                const diagBtn = document.getElementById('helloasso-diag-btn');
+                                const diagResult = document.getElementById('helloasso-diag-result');
+                                const diagUrl = {{ path('gn.billetterie.diagnostic', {'gn': gn.id})|json_encode|raw }};
+
+                                diagBtn.addEventListener('click', async function () {
+                                    diagBtn.disabled = true;
+                                    diagResult.classList.remove('d-none');
+                                    diagResult.textContent = 'Test en cours…';
+                                    try {
+                                        const response = await fetch(diagUrl, {method: 'POST', body: new URLSearchParams({_token: token})});
+                                        const data = await response.json();
+                                        if (!response.ok) {
+                                            throw new Error(data.erreur || ('HTTP ' + response.status));
+                                        }
+                                        diagResult.textContent = data.routes
+                                            .map(function (r) { return r.route.padEnd(32) + ' -> ' + (r.statut !== null ? r.statut : 'erreur : ' + r.erreur); })
+                                            .join('\n');
+                                    } catch (error) {
+                                        diagResult.textContent = 'Erreur : ' + error.message;
+                                    } finally {
+                                        diagBtn.disabled = false;
+                                    }
+                                });
+
                                 btn.addEventListener('click', async function () {
                                     btn.disabled = true;
                                     progress.classList.remove('d-none');
@@ -86,7 +112,10 @@
                                             skip = data.suivant;
                                             status.textContent = skip + ' participant(s) traité(s)…';
                                         } while (!data.termine);
-                                        status.textContent = skip + ' participant(s) synchronisé(s). Rendez-vous dans le tableau de rapprochement.';
+                                        const source = data.source === 'movements'
+                                            ? ' Source : /movements (repli, /attendees a répondu HTTP ' + data.statutAttendees + ').'
+                                            : ' Source : /attendees.';
+                                        status.textContent = skip + ' participant(s) synchronisé(s).' + source + ' Rendez-vous dans le tableau de rapprochement.';
                                     } catch (error) {
                                         status.textContent = 'Erreur : ' + error.message + ' (la synchronisation peut être relancée).';
                                     } finally {

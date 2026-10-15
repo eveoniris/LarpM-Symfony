@@ -36,7 +36,7 @@ class BilletSyncService
      * Lit un lot de participants et met à jour la table de rapprochement (upsert sur l'identifiant HelloAsso).
      * Les lignes déjà validées ou ignorées ne sont pas repassées « à valider ».
      *
-     * @return array{traites: int, termine: bool, suivant: int}
+     * @return array{traites: int, termine: bool, suivant: int, source: string, statutAttendees: int|null}
      *
      * @throws PlusBilletterieException
      * @throws InvalidArgumentException si le GN n'a pas d'évènement HelloAsso
@@ -60,7 +60,26 @@ class BilletSyncService
             'traites' => \count($page['items']),
             'termine' => $page['termine'],
             'suivant' => $page['suivant'],
+            'source' => $page['source'],
+            'statutAttendees' => $page['statutAttendees'],
         ];
+    }
+
+    /**
+     * Teste en lecture seule les routes HelloAsso pour le GN (diagnostic super admin).
+     *
+     * @return list<array{route: string, statut: int|null, erreur: string|null}>
+     *
+     * @throws InvalidArgumentException si le GN n'a pas d'évènement HelloAsso
+     */
+    public function diagnose(Gn $gn): array
+    {
+        $eventId = $gn->getHelloassoEventId();
+        if (null === $eventId) {
+            throw new InvalidArgumentException("Ce GN n'a pas d'identifiant d'évènement HelloAsso.");
+        }
+
+        return $this->client->diagnose($eventId);
     }
 
     /**

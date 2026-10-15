@@ -62,7 +62,7 @@ class BilletSync
     #[ORM\Column(type: Types::STRING, length: 16, enumType: SyncEtat::class)]
     private SyncEtat $etat = SyncEtat::A_VALIDER;
 
-    /** @var array<string, mixed>|null */
+    /** @var array<array-key, mixed>|null */
     #[ORM\Column(name: 'raw_data', type: Types::JSON, nullable: true)]
     private ?array $rawData = null;
 
@@ -227,13 +227,13 @@ class BilletSync
         return $this;
     }
 
-    /** @return array<string, mixed>|null */
+    /** @return array<array-key, mixed>|null */
     public function getRawData(): ?array
     {
         return $this->rawData;
     }
 
-    /** @param array<string, mixed>|null $rawData */
+    /** @param array<array-key, mixed>|null $rawData */
     public function setRawData(?array $rawData): static
     {
         $this->rawData = $rawData;

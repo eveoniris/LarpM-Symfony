@@ -18,16 +18,26 @@ class FakePlusBilletterieClient implements PlusBilletterieClientInterface
         $this->attendees = $attendees;
     }
 
-    public function listAttendees(string $eventId, int $skip = 0, int $limit = 100): array
+    public function listAttendees(string $eventId, int $skip = 0, int $limit = 100, ?string $productId = null): array
     {
         $all = $this->attendees ?? self::defaultAttendees();
+        if (null !== $productId) {
+            $all = array_values(array_filter($all, static fn (Attendee $attendee): bool => $attendee->productId === $productId));
+        }
         $items = \array_slice($all, $skip, $limit);
 
         return [
             'items' => $items,
             'termine' => ($skip + \count($items)) >= \count($all),
             'suivant' => $skip + \count($items),
+            'source' => 'fake',
+            'statutAttendees' => null,
         ];
+    }
+
+    public function diagnose(string $eventId): array
+    {
+        return [['route' => '/events/{eventId}/attendees', 'statut' => null, 'erreur' => 'Faux client : aucune clé API configurée.']];
     }
 
     /** @return list<Attendee> */
