@@ -19,6 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Constraints\NotNull;
 
 class PersonnageUpdateType extends AbstractType
@@ -27,6 +28,7 @@ class PersonnageUpdateType extends AbstractType
 
     public function __construct(
         private readonly Security $security,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -112,11 +114,22 @@ class PersonnageUpdateType extends AbstractType
     {
         $user = $personnage->getUser();
         if (null !== $user && $user->getAgeJoueur() < 18) {
+            $help = 'Les joueurs mineurs sont automatiquement considérés comme sensibles.';
+            $etatCivil = $user->getEtatCivil();
+            if (null !== $etatCivil && null === $etatCivil->getDateNaissance()) {
+                // sans date de naissance le joueur est traité comme mineur : on renvoie vers l'état civil
+                $help = \sprintf(
+                    'La date de naissance du joueur n\'est pas renseignée : il est donc considéré comme mineur. <a href="%s">Renseigner la date de naissance dans l\'état civil</a>.',
+                    htmlspecialchars($this->urlGenerator->generate('etatCivil.update', ['etatCivil' => $etatCivil->getId()])),
+                );
+            }
+
             return [
                 'label' => 'Personnage sensible',
                 'disabled' => true,
                 'data' => true,
-                'help' => 'Les joueurs mineurs sont automatiquement considérés comme sensibles.',
+                'help' => $help,
+                'help_html' => true,
             ];
         }
 
