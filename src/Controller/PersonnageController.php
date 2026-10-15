@@ -960,8 +960,6 @@ class PersonnageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $personnage = $form->getData();
-
             foreach ($personnage->getExperienceGains() as $xp) {
                 $personnage->removeExperienceGain($xp);
                 $this->entityManager->remove($xp);
@@ -1024,16 +1022,8 @@ class PersonnageController extends AbstractController
                 $this->entityManager->persist($user);
             }
 
-            // Trace la suppression : qui, quand, quel personnage, et les utilisateurs détachés
-            $logAction = new LogAction();
-            $logAction->setDate(new DateTime());
-            $logAction->setUser($this->getUser());
-            $logAction->setType(LogActionType::ENTITY_DELETE);
-            $logAction->setData([
-                'personnage_id' => $personnage->getId(),
-                'detached_user_ids' => $detachedUserIds,
-            ]);
-            $this->entityManager->persist($logAction);
+            // La suppression est tracée par DeletionLogListener ; on y ajoute les utilisateurs détachés
+            $this->annotateDeletion($personnage, null, ['detached_user_ids' => $detachedUserIds]);
 
             // inter_jeu_personnage est une jonction unidirectionnelle non gérée par Doctrine
             $this->entityManager->getConnection()->executeStatement('DELETE FROM inter_jeu_personnage WHERE personnage_id = :id', ['id' => $personnage->getId()]);
