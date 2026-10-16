@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Enum\Role;
 use App\Repository\AnnonceRepository;
+use App\Security\MultiRolesExpression;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,19 +15,18 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class IndexController extends AbstractController
 {
+    /**
+     * Guide de style : réservé aux rôles qui construisent le contenu du site
+     * (tout utilisateur connecté sans rôle en est exclu). ROLE_ADMIN hérite des autres.
+     */
     #[Route('/design', name: 'design')]
+    #[IsGranted(new MultiRolesExpression(Role::ADMIN, Role::SCENARISTE, Role::ORGA, Role::REGLE, Role::STOCK))]
     public function designAction(Request $request): Response
     {
-        // Only in dev
-        if ('dev' !== $this->getParameter('kernel.environment')) {
-            $this->addFlash('error', 'Do not challenge the dark gods');
-
-            return $this->redirectToRoute('homepage');
-        }
-
         return $this->render('index/design.twig', ['user' => $this->getUser()]);
     }
 
