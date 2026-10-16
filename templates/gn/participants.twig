@@ -66,7 +66,11 @@
                         {% endif %}
                     </a>
                 </td>
-                <td>{{ participant.user.email|highlight(pagerService.searchValue) }}</td>
+                <td>{{ participant.user.email|highlight(pagerService.searchValue) }}
+                    {% if participant.user.discordPseudo %}
+                        <br><small class="text-muted"><i class="fa-brands fa-discord" aria-hidden="true"></i> {{ participant.user.discordPseudo }}</small>
+                    {% endif %}
+                </td>
                 <td>
                     {% if not participant.billet %}
                         <span class="text-danger">Ce participant n'a pas de billet !</span>

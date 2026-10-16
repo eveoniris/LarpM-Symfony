@@ -1,31 +1,85 @@
 {% extends "base.html.twig" %}
 
-{% block title %}Admin{% endblock title %}
+{% block title %}Logs{% endblock title %}
 
 {% block body %}
- 
+{% set badges = {
+	'DEBUG': 'secondary', 'INFO': 'info', 'NOTICE': 'info', 'WARNING': 'warning',
+	'ERROR': 'danger', 'CRITICAL': 'danger', 'ALERT': 'danger', 'EMERGENCY': 'danger'
+} %}
 <div class="container-fluid">
 	<ol class="breadcrumb">
-		<li><a href="{{ path('admin') }}">Interface d'administration</a></li>
-		<li class="active">Visualisation des logs</li>
+		<li class="breadcrumb-item"><a href="{{ path('admin') }}">Interface d'administration</a></li>
+		<li class="breadcrumb-item active">Visualisation des logs</li>
 	</ol>
-	
-	
-	<h5>Logs</h5>
-	
-	<h6>les erreurs fatales</h6>
-	<ul class="list-group">
-		{% for line in linesFatal %}
-			<li class="list-group-item">{{ line }}</li>
-		{% endfor %}
-	</ul>
-	
-	<h6>les 20 dernières lignes</h6>
-	<ul class="list-group">
-		{% for line in lines %}
-			<li class="list-group-item">{{ line }}</li>
-		{% endfor %}
-	</ul>
-</div>
 
-{% endblock  %}
+	<h5>Logs <small class="text-muted">({{ filename }})</small></h5>
+
+	<form method="get" class="row g-2 align-items-end mb-3">
+		<div class="col-auto">
+			<label class="form-label" for="log-level">Niveau minimum</label>
+			<select id="log-level" name="level" class="form-select form-select-sm">
+				{% for value, label in {'ERROR': 'Erreurs', 'CRITICAL': 'Critiques', 'WARNING': 'Avertissements et +', 'ALL': 'Tous'} %}
+					<option value="{{ value }}" {{ level == value ? 'selected' }}>{{ label }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="col-auto">
+			<label class="form-label" for="log-limit">Nombre d'entrées</label>
+			<select id="log-limit" name="limit" class="form-select form-select-sm">
+				{% for value in [50, 100, 200, 500, 1000] %}
+					<option value="{{ value }}" {{ limit == value ? 'selected' }}>{{ value }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="col-auto">
+			<label class="form-label" for="log-q">Recherche</label>
+			<input id="log-q" type="search" name="q" value="{{ search }}" class="form-control form-control-sm">
+		</div>
+		<div class="col-auto">
+			<button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+		</div>
+	</form>
+
+	{% if not fileExists %}
+		<div class="alert alert-info">Aucun fichier de log pour cet environnement ({{ filename }}).</div>
+	{% elseif entries is empty %}
+		<div class="alert alert-info">Aucune entrée ne correspond aux filtres.</div>
+	{% else %}
+		<div class="table-responsive">
+			<table class="table table-sm table-striped align-middle">
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Niveau</th>
+						<th>Message</th>
+						<th>Requête</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for entry in entries %}
+						<tr>
+							<td class="text-nowrap">{{ entry.datetime ? entry.datetime|date('d/m/Y H:i:s') : '' }}</td>
+							<td><span class="badge bg-{{ badges[entry.level]|default('secondary') }}">{{ entry.level }}</span></td>
+							<td>
+								<div class="text-break">{{ entry.message|slice(0, 300) ~ (entry.message|length > 300 ? '…' : '') }}</div>
+								{% if entry.context or entry.message|length > 300 %}
+									<details>
+										<summary class="text-muted small">Détails</summary>
+										<pre class="small mb-0">{{ entry.message }}{{ entry.context ? "\n" ~ entry.context }}</pre>
+									</details>
+								{% endif %}
+							</td>
+							<td class="small text-break">
+								{{ entry.url }}
+								{% if entry.route %}<br><span class="text-muted">{{ entry.route }}</span>{% endif %}
+								{% if entry.channel %}<br><span class="text-muted">{{ entry.channel }}</span>{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	{% endif %}
+</div>
+{% endblock body %}

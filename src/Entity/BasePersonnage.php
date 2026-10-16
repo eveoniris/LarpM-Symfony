@@ -1313,7 +1313,7 @@ abstract class BasePersonnage
     /**
      * Set the value of sensible.
      */
-    public function setSensible(bool $sensible): static
+    public function setSensible(?bool $sensible): static
     {
         $this->sensible = $sensible;
 

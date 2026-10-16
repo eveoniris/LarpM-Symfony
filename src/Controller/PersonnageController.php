@@ -126,6 +126,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[Route('/personnage', name: 'personnage.')]
 class PersonnageController extends AbstractController
@@ -245,18 +246,28 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('homepage', [], 303);
         }
 
-        // construit le tableau de choix
+        // construit le tableau de choix et les données utilisées par la modale de confirmation
         $choices = [];
+        $choiceAttrs = [];
         foreach ($availableCompetences as $competence) {
-            $choices[$competence->getLabel() . ' (cout : ' . $personnageService->getCompetenceCout($personnage, $competence) . ' xp)'] = $competence->getId();
+            $cout = $personnageService->getCompetenceCout($personnage, $competence);
+            $choices[$competence->getLabel() . ' (cout : ' . $cout . ' xp)'] = $competence->getId();
+            $choiceAttrs[$competence->getId()] = [
+                'data-label' => (string) $competence->getCompetenceFamily()?->getLabel(),
+                'data-niveau' => (string) $competence->getLevel()?->getLabel(),
+                'data-cout' => (string) $cout,
+            ];
         }
 
-        $competence = new Competence();
         $form = $this
-            ->createFormBuilder($competence)
+            ->createFormBuilder()
             ->add('id', ChoiceType::class, [
                 'label' => 'Choisissez une nouvelle compétence',
                 'choices' => $choices,
+                'choice_attr' => static fn (int $id): array => $choiceAttrs[$id] ?? [],
+                'placeholder' => '— Choisir une compétence —',
+                'required' => true,
+                'constraints' => [new NotBlank(message: 'Veuillez choisir une compétence.')],
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Ajouter la compétence',
@@ -267,8 +278,7 @@ class PersonnageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $competenceId = $data->getId();
+            $competenceId = $form->get('id')->getData();
             $competence = $this->entityManager->find(Competence::class, $competenceId);
 
             $service = null;
@@ -312,6 +322,20 @@ class PersonnageController extends AbstractController
             'participant' => $participant,
             'competences' => $availableCompetences,
         ]);
+    }
+
+    /**
+     * Couleur de la famille de langue entre parenthèses, visible des scénaristes et orgas (et plus) uniquement.
+     */
+    private function langueCouleurSuffix(Langue $langue): string
+    {
+        if (!$this->isGranted(Role::SCENARISTE->value) && !$this->isGranted(Role::ORGA->value)) {
+            return '';
+        }
+
+        $couleur = $langue->getGroupeLangue()->getCouleur();
+
+        return '' === $couleur ? '' : ' (' . $couleur . ')';
     }
 
     /** @param array<int, Role> $roles */
@@ -436,6 +460,8 @@ class PersonnageController extends AbstractController
             'label' => 'Classes disponibles',
             'choice_label' => 'label',
             'class' => Classe::class,
+            'placeholder' => '— Choisir une classe —',
+            'constraints' => [new NotBlank(message: 'Veuillez choisir une classe.')],
         ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -785,6 +811,10 @@ class PersonnageController extends AbstractController
             'label' => 'Votre religion',
             'choices' => $availableReligions,
             'choice_label' => 'label',
+            'choice_attr' => static fn (Religion $religion): array => ['data-label' => $religion->getLabel()],
+            'placeholder' => '— Choisir une religion —',
+            'attr' => ['data-confirm-choice-target' => 'select', 'data-confirm-choice-name' => 'religion'],
+            'constraints' => [new NotBlank(message: 'Veuillez choisir une religion.')],
         ])->add('save', SubmitType::class, [
             'label' => 'Valider votre religion',
             'attr' => ['class' => 'btn btn-secondary'],
@@ -871,6 +901,7 @@ class PersonnageController extends AbstractController
         return $this->render('personnage/religion_add.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
+            'religions' => $availableReligions,
         ]);
     }
 
@@ -1441,14 +1472,18 @@ class PersonnageController extends AbstractController
 
         $availableLangues = $this->personnageService->getAvailableLangues($personnage, 1);
 
-        $form = $this->createFormBuilder()->add('langue', ChoiceType::class, [
-            'required' => true,
-            'label' => 'Choisissez votre nouvelle langue',
-            'multiple' => false,
-            'expanded' => true,
-            'choices' => $availableLangues,
-            'choice_label' => 'fullDescription',
-        ])->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])->getForm();
+        $form = $this
+            ->createFormBuilder()
+            ->add('langue', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre nouvelle langue',
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => $availableLangues,
+                'choice_label' => fn (Langue $langue): string => $langue->getLabel() . $this->langueCouleurSuffix($langue) . ' : ' . $langue->getDescription(),
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1500,14 +1535,18 @@ class PersonnageController extends AbstractController
 
         $availableLangues = $this->personnageService->getAvailableLangues($personnage, 0);
 
-        $form = $this->createFormBuilder()->add('langue', ChoiceType::class, [
-            'required' => true,
-            'label' => 'Choisissez votre nouvelle langue',
-            'multiple' => false,
-            'expanded' => true,
-            'choices' => $availableLangues,
-            'choice_label' => 'fullDescription',
-        ])->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])->getForm();
+        $form = $this
+            ->createFormBuilder()
+            ->add('langue', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre nouvelle langue',
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => $availableLangues,
+                'choice_label' => fn (Langue $langue): string => $langue->getLabel() . $this->langueCouleurSuffix($langue) . ' : ' . $langue->getDescription(),
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -1554,14 +1593,18 @@ class PersonnageController extends AbstractController
 
         $availableLangues = $this->personnageService->getAvailableLangues($personnage, 2);
 
-        $form = $this->createFormBuilder()->add('langue', ChoiceType::class, [
-            'required' => true,
-            'label' => 'Choisissez votre nouvelle langue',
-            'multiple' => false,
-            'expanded' => true,
-            'choices' => $availableLangues,
-            'choice_label' => 'fullDescription',
-        ])->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])->getForm();
+        $form = $this
+            ->createFormBuilder()
+            ->add('langue', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Choisissez votre nouvelle langue',
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => $availableLangues,
+                'choice_label' => fn (Langue $langue): string => $langue->getLabel() . $this->langueCouleurSuffix($langue) . ' : ' . $langue->getDescription(),
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Valider votre nouvelle langue'])
+            ->getForm();
 
         $form->handleRequest($request);
 
@@ -4816,8 +4859,14 @@ class PersonnageController extends AbstractController
                 'label' => 'Langue à ajouter',
                 'class' => Langue::class,
                 'autocomplete' => true,
-                'choice_label' => 'label',
-                'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('l')->addOrderBy('l.secret', 'ASC')->addOrderBy('l.diffusion', 'DESC')->addOrderBy('l.label', 'ASC'),
+                'choice_label' => fn (Langue $langue): string => $langue->getLabel() . $this->langueCouleurSuffix($langue),
+                'query_builder' => static fn (EntityRepository $er) => $er
+                    ->createQueryBuilder('l')
+                    ->addSelect('g')
+                    ->leftJoin('l.groupeLangue', 'g')
+                    ->addOrderBy('l.secret', 'ASC')
+                    ->addOrderBy('l.diffusion', 'DESC')
+                    ->addOrderBy('l.label', 'ASC'),
             ])
             ->add('source', ChoiceType::class, [
                 'required' => true,

@@ -19,11 +19,16 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class PersonnageUpdateType extends AbstractType
 {
+    private const ALERT_ICON = '<i class="fa-solid fa-circle-exclamation me-1"></i>';
+
     public function __construct(
         private readonly Security $security,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -63,19 +68,6 @@ class PersonnageUpdateType extends AbstractType
 
         /** @var Personnage $personnage */
         $personnage = $builder->getData();
-        $braceletAttr = [];
-        $braceletIcon = '';
-        if (false === $personnage->isBraceletSetted()) {
-            $braceletAttr = ['class' => 'text-danger'];
-            $braceletIcon = '<i class="fa-solid fa-circle-exclamation me-1"></i>';
-        }
-
-        $sensibleAttr = [];
-        $sensibleIcon = '';
-        if (false === $personnage->isSensibleSetted()) {
-            $sensibleAttr = ['class' => 'text-danger'];
-            $sensibleIcon = '<i class="fa-solid fa-circle-exclamation me-1"></i>';
-        }
 
         $builder->add('surnom', TextType::class, [
             'required' => false,
@@ -87,16 +79,12 @@ class PersonnageUpdateType extends AbstractType
         ])->add('sensible', ChoiceType::class, [
             'required' => true,
             'choices' => ['Non' => false, 'Oui' => true],
-            'label_attr' => $sensibleAttr,
-            'label_html' => true,
-            'label' => $sensibleIcon . 'Personnage sensible',
+            ...$this->sensibleOptions($personnage),
         ])->add('bracelet', ChoiceType::class, [
             'required' => true,
             'choices' => ['Non' => false, 'Oui' => true],
-            'label_attr' => $braceletAttr,
-            'label_html' => true,
-            'label' => $braceletIcon . 'Possédez-vous votre bracelet de langue ?',
             'help' => 'Si vous cochez Oui. Vous ne recevrez pas de bracelet de langue dans votre enveloppe personnage ',
+            ...$this->braceletOptions($personnage),
         ]);
 
         if ($this->security->isGranted(Role::SCENARISTE->value) || $this->security->isGranted(Role::ORGA->value)) {
@@ -114,6 +102,66 @@ class PersonnageUpdateType extends AbstractType
                 },
             ]);
         }
+    }
+
+    /**
+     * Un mineur est toujours sensible (règle de Personnage::isSensible()) : champ figé.
+     * Tant que la valeur n'est pas renseignée, aucun choix par défaut n'est présélectionné.
+     *
+     * @return array<string, mixed>
+     */
+    private function sensibleOptions(Personnage $personnage): array
+    {
+        $user = $personnage->getUser();
+        if (null !== $user && $user->getAgeJoueur() < 18) {
+            $help = 'Les joueurs mineurs sont automatiquement considérés comme sensibles.';
+            $etatCivil = $user->getEtatCivil();
+            if (null !== $etatCivil && null === $etatCivil->getDateNaissance()) {
+                // sans date de naissance le joueur est traité comme mineur : on renvoie vers l'état civil
+                $help = \sprintf(
+                    'La date de naissance du joueur n\'est pas renseignée : il est donc considéré comme mineur. <a href="%s">Renseigner la date de naissance dans l\'état civil</a>.',
+                    htmlspecialchars($this->urlGenerator->generate('etatCivil.update', ['etatCivil' => $etatCivil->getId()])),
+                );
+            }
+
+            return [
+                'label' => 'Personnage sensible',
+                'disabled' => true,
+                'data' => true,
+                'help' => $help,
+                'help_html' => true,
+            ];
+        }
+
+        if ($personnage->isSensibleSetted()) {
+            return ['label' => 'Personnage sensible'];
+        }
+
+        return [
+            'label_attr' => ['class' => 'text-danger'],
+            'label_html' => true,
+            'label' => self::ALERT_ICON . 'Personnage sensible',
+            'placeholder' => '— Choisir —',
+            'constraints' => [new NotNull(message: 'Veuillez indiquer si le personnage est sensible.')],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function braceletOptions(Personnage $personnage): array
+    {
+        if ($personnage->isBraceletSetted()) {
+            return ['label' => 'Possédez-vous votre bracelet de langue ?'];
+        }
+
+        return [
+            'label_attr' => ['class' => 'text-danger'],
+            'label_html' => true,
+            'label' => self::ALERT_ICON . 'Possédez-vous votre bracelet de langue ?',
+            'placeholder' => '— Choisir —',
+            'constraints' => [new NotNull(message: 'Veuillez indiquer si vous possédez votre bracelet.')],
+        ];
     }
 
     public function configureOptions(OptionsResolver $resolver): void

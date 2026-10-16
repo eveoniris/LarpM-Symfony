@@ -129,6 +129,16 @@ docker compose exec webserver rm var/.composer-installed && docker compose resta
 docker compose exec webserver rm -f var/.schema-created var/.fixtures-loaded
 docker compose restart webserver
 
+# Vider le cache (var/ et vendor/ sont des volumes nommés, pas visibles côté Windows)
+docker compose exec webserver php bin/console cache:clear
+
+# Autocomplétion IDE : vendor/ n'est plus visible côté Windows, le recopier à la demande
+# (copie locale en lecture seule pour l'IDE, ignorée par git ; à refaire après un composer update)
+docker compose cp webserver:/app/vendor ./vendor
+
+# Reset complet de var/ et vendor/ (recrée le cache et refait composer install)
+docker compose down && docker volume rm larpm-symfony_app_var larpm-symfony_app_vendor
+
 # Lancer les tests
 docker compose exec webserver ./vendor/bin/phpunit
 

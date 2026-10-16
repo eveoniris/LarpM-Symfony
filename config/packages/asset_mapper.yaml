@@ -4,6 +4,12 @@ framework:
         paths:
             - assets/
         missing_import_mode: strict
+        # Tuiles de carte (servies depuis public/img) et blasons (lus par ReligionController) :
+        # ~630 Mo / 7 000 fichiers inutilement scannés et hashés par AssetMapper.
+        excluded_patterns:
+            - '*/assets/img/map/*'
+            - '*/assets/img/map_clean/*'
+            - '*/assets/img/religions/*'
 
 when@prod:
     framework:

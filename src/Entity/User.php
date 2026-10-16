@@ -116,9 +116,10 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
         }
 
         $naissance = $etat_civil->getDateNaissance();
-        $gn_date = $this->getLastParticipant()?->getGn()->getDateDebut();
+        // sans participation, l'âge est évalué à la date du jour
+        $gn_date = $this->getLastParticipant()?->getGn()->getDateDebut() ?? new DateTime();
 
-        if (!$naissance || !$gn_date) {
+        if (!$naissance) {
             return 0;
         }
 

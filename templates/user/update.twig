@@ -55,6 +55,18 @@
 
             </div>
 
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-discord-pseudo">ID Discord</label>
+                <div class="col-sm-8">
+                    <input class="form-control" name="discord_pseudo" type="text" id="input-discord-pseudo"
+                           placeholder="mon_id_discord" maxlength="33" value="{{ user.discordPseudo }}">
+                    <div class="help-block small">
+                        Facultatif. Votre identifiant unique Discord (sans le @). Visible des organisateurs et des membres de votre groupe pour vous ajouter ou vous
+                        contacter sur Discord.
+                    </div>
+                </div>
+            </div>
+
             {% if user.hasRealUsername %}
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-name">Username</label>

@@ -1,0 +1,51 @@
+{# Carte d'une compétence achetable (un seul niveau à la fois). Variables : personnage, competence. #}
+{% set cout = personnageService.getCompetenceCout(personnage, competence) %}
+<div class="col-md-6 list-group mb-2">
+    <div class="list-group-item">
+        <div class="list-group-item-heading d-flex justify-content-between align-items-start gap-2">
+            <h6>
+                <a href="{{ path('competence.detail', {"competence":competence.id}) }}">{{ competence.label }}</a>
+                {% if personnage.classe.isFavoriteCompetenceFamily(competence.competenceFamily) %}
+                    <i class="fa fa-star text-success" data-toggle="tooltip" data-placement="top"
+                       title="Favorite"></i>
+                {% elseif not personnage.classe.isCommonCompetenceFamily(competence.competenceFamily) %}
+                    <i class="fa fa-face-tired text-danger" data-toggle="tooltip"
+                       data-placement="top"
+                       title="Méconnue"></i>
+                {% endif %}
+            </h6>
+            <button type="button" class="btn btn-sm btn-secondary text-nowrap"
+                    data-action="confirm-choice#ask"
+                    data-confirm-choice-value-param="{{ competence.id }}"
+                    data-confirm-choice-target-param="main">
+                <i class="fa fa-plus"></i> Ajouter ({{ cout }} xp)
+            </button>
+        </div>
+        {% set apprentissages = personnage.getApprentissage(competence) %}
+        {% if apprentissages and apprentissages|length > 0 %}
+            <div class="list-group mb-1">
+                {% for apprentissage in apprentissages %}
+                    <small class="list-group-item"><i class="fa fa-graduation-cap text-info"
+                                                      data-toggle="tooltip" data-placement="top"
+                                                      title="Apprentissage"></i> Enseignée
+                        par {{ apprentissage.enseignant.publicName }}
+                        en {{ apprentissage.dateEnseignement }}</small>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% set gains = personnageService.getCompetenceGainDetails(personnage, competence) %}
+        {% if gains and gains|length > 0 %}
+            <div class="list-group mb-1">
+                {% for gain in gains %}
+                    <small class="list-group-item">
+                        <i class="fa {{ gain.type == 'merveille' ? 'fa-landmark' : 'fa-flag' }} text-success"
+                           data-toggle="tooltip" data-placement="top"
+                           title="{{ gain.type == 'merveille' ? 'Bonus territorial' : "Bonus d'origine" }}"></i>
+                        {{ gain.bonus.titre }} (-{{ gain.valeur }} xp)
+                    </small>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="list-group-item-text">{{ competence.description|markdown_to_html }}</div>
+    </div>
+</div>

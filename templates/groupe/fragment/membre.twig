@@ -85,6 +85,16 @@
                     <div class="col-md-10 px-2 align-middle py-1">{{ participant.user.email }}</div>
                 </div>
             </li>
+            {% if participant.user.discordPseudo %}
+                <li class="list-group-item m-0 p-0 g-0">
+                    <div class="d-flex justify-content-start">
+                        <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
+                            Discord
+                        </div>
+                        <div class="col-md-10 px-2 align-middle py-1">{{ participant.user.discordPseudo }}</div>
+                    </div>
+                </li>
+            {% endif %}
         {% endif %}
 
         <li class="list-group-item m-0 p-0 g-0">

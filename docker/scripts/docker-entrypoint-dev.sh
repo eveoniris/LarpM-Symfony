@@ -3,12 +3,6 @@ set -e
 
 COMPOSER_MARKER="var/.composer-installed"
 
-echo "Waiting for database..."
-until php bin/console dbal:run-sql "SELECT 1" > /dev/null 2>&1; do
-    sleep 2
-done
-echo "Database is ready."
-
 if [ ! -f "$COMPOSER_MARKER" ]; then
     echo "No composer marker found: installing dependencies."
     composer install --no-interaction --optimize-autoloader
@@ -16,6 +10,12 @@ if [ ! -f "$COMPOSER_MARKER" ]; then
 else
     echo "Composer marker found: skipping composer install."
 fi
+
+echo "Waiting for database..."
+until php bin/console dbal:run-sql "SELECT 1" > /dev/null 2>&1; do
+    sleep 2
+done
+echo "Database is ready."
 
 # If no migrations are recorded, the DB was just initialized from SQL files.
 # Mark all existing migrations as done so only future ones will run.
@@ -29,7 +29,11 @@ fi
 echo "Running pending migrations..."
 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 
-echo "Warming up Symfony cache..."
-php bin/console cache:warmup --no-debug
+if [ ! -d "var/cache/dev" ]; then
+    echo "Warming up Symfony cache..."
+    php bin/console cache:warmup
+else
+    echo "Symfony cache found: skipping warmup."
+fi
 
 exec docker-php-entrypoint "$@"

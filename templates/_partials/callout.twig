@@ -1,0 +1,10 @@
+{# Remplace _partials/cardNotif.twig. role : info | ok | warn | err | secret | gm | orga | admin | domaine #}
+{% set icons = {info:'info', ok:'ok', warn:'warn', err:'err', secret:'spy', gm:'feather', orga:'clipboard', admin:'key', domaine:'crown'} %}
+{% set labels = {info:'Information', ok:'Confirmation', warn:'Attention', err:'Erreur', secret:'Secret', gm:'Scénarisation', orga:'Organisation', admin:'Administratif', domaine:'Jeu de domaine'} %}
+<div class="lm-callout{% if css is defined %} {{ css }}{% endif %}" data-role="{{ role }}">
+    <p class="lm-callout-title">
+        <svg class="lm-ico" aria-hidden="true"><use href="#i-{{ icons[role] }}"/></svg>
+        {{ title is defined ? title : labels[role] }}
+    </p>
+    <div>{{ content|markdown_to_html }}</div>
+</div>

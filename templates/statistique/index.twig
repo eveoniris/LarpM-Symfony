@@ -150,71 +150,50 @@
 	
 {% endblock %}
 
-{% block javascript %}
+{% block javascripts %}
 	{{ parent() }}
-	<script src="{{ app.request.basepath }}/js/Chart.min.js"></script>
-	
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
 	<script>
-		Chart.defaults.global.responsive = true;
-	
-		var data = {{ langues|raw }};
-		var ctx = document.getElementById("myChart").getContext("2d");
-		var myNewChart = new Chart(ctx).Pie(data, {
-			animation: true,
-			animationSteps: 60,
-			animationEasing: "easeOutQuart",
-			segmentShowStroke : true,
-			segmentStrokeColor : "#fff",
-			});
+		(function () {
+			// Palette fixe : couleurs stables d'un affichage à l'autre.
+			const palette = ['#2e86ab', '#e4572e', '#76b041', '#f3a712', '#a23b72', '#17bebb', '#6c757d', '#8d6a9f', '#c1666b', '#4b7f52'];
 
-		var data = {{ classes|raw }};
-		var ctx = document.getElementById("myChartClasses").getContext("2d");
-		var myNewChart = new Chart(ctx).Pie(data, {
-			animation: true,
-			animationSteps: 60,
-			animationEasing: "easeOutQuart",
-			segmentShowStroke : true,
-			segmentStrokeColor : "#fff",
-			});
+			const charts = {
+				myChart: {{ langues|raw }},
+				myChartClasses: {{ classes|raw }},
+				myChartGenres: {{ genres|raw }},
+				myChartCompetences: {{ competences|raw }},
+				myChartCompetencesFamily: {{ competencesFamily|raw }},
+				myChartConstructions: {{ constructions|raw }}
+			};
 
-		var data = {{ genres|raw }};
-		var ctx = document.getElementById("myChartGenres").getContext("2d");
-		var myNewChart = new Chart(ctx).Pie(data, {
-			animation: true,
-			animationSteps: 60,
-			animationEasing: "easeOutQuart",
-			segmentShowStroke : true,
-			segmentStrokeColor : "#fff",
-			});
+			Object.entries(charts).forEach(([id, rows]) => {
+				const canvas = document.getElementById(id);
+				if (!canvas) {
+					return;
+				}
 
-		var data = {{ competences|raw }};
-		var ctx = document.getElementById("myChartCompetences").getContext("2d");
-		var myNewChart = new Chart(ctx).Pie(data, {
-			animation: true,
-			animationSteps: 60,
-			animationEasing: "easeOutQuart",
-			segmentShowStroke : true,
-			segmentStrokeColor : "#fff",
-			});
+				if (!rows.length) {
+					canvas.replaceWith(Object.assign(document.createElement('p'), {
+						className: 'text-muted mb-0',
+						textContent: 'Aucune donnée.'
+					}));
+					return;
+				}
 
-		var data = {{ competencesFamily|raw }};
-		var ctx = document.getElementById("myChartCompetencesFamily").getContext("2d");
-		var myNewChart = new Chart(ctx).Pie(data, {
-			animation: true,
-			animationSteps: 60,
-			animationEasing: "easeOutQuart",
-			segmentShowStroke : true,
-			segmentStrokeColor : "#fff",
+				new Chart(canvas, {
+					type: 'pie',
+					data: {
+						labels: rows.map((row) => row.label),
+						datasets: [{
+							data: rows.map((row) => row.value),
+							backgroundColor: rows.map((row, index) => palette[index % palette.length])
+						}]
+					},
+					options: {responsive: true, plugins: {legend: {position: 'bottom'}}}
+				});
 			});
-
-		var data = {{ constructions|raw }};
-		var ctx = document.getElementById("myChartConstructions").getContext("2d");
-		var myNewChart = new Chart(ctx).Pie(data, {
-			animation: true,
-			animationSteps: 60,
-			animationEasing: "easeOutQuart",
-			segmentShowStroke : true,
-			segmentStrokeColor : "#fff",
-			});
+		})();
 	</script>
 {% endblock %}

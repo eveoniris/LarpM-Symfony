@@ -10,7 +10,7 @@ namespace App\Service\HelloAsso;
 final readonly class Attendee
 {
     /**
-     * @param array<string, mixed> $raw réponse brute de l'API (conservée pour audit)
+     * @param array<array-key, mixed> $raw réponse brute de l'API (conservée pour audit)
      */
     public function __construct(
         public string $id,
@@ -29,7 +29,7 @@ final readonly class Attendee
     /**
      * Construit un Attendee depuis un élément JSON de l'API. Tolérant : les champs absents restent null.
      *
-     * @param array<string, mixed> $data
+     * @param array<array-key, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -53,7 +53,7 @@ final readonly class Attendee
      * L'ID LarpManager est lu dans la clientReference, sinon dans un champ de formulaire personnalisé
      * dont le libellé contient « larpmanager » (la structure exacte est à confirmer sur les données réelles).
      *
-     * @param array<string, mixed> $data
+     * @param array<array-key, mixed> $data
      */
     private static function extractLarpManagerId(array $data): ?string
     {

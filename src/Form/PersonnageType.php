@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * @see \App\Form\Personnage\PersonnageType
@@ -60,6 +61,8 @@ class PersonnageType extends AbstractType
                 'class' => Territoire::class,
                 'choice_label' => 'nom',
                 'autocomplete' => true,
+                'placeholder' => '— Choisir une origine —',
+                'constraints' => [new NotBlank(message: 'Veuillez choisir une origine.')],
                 'query_builder' => static function (TerritoireRepository $er) {
                     $qb = $er->createQueryBuilder('t');
                     $qb->andWhere('t.territoire IS NULL');

@@ -227,6 +227,9 @@ abstract class BaseUser
     #[Column(length: 255, nullable: true)]
     private ?string $email_contact = null;
 
+    #[Column(name: 'discord_pseudo', type: Types::STRING, length: 64, nullable: true)]
+    private ?string $discordPseudo = null;
+
     public function __construct()
     {
         $this->backgrounds = new ArrayCollection();
@@ -621,6 +624,20 @@ abstract class BaseUser
     public function setEmailContact(?string $email_contact): static
     {
         $this->email_contact = $email_contact;
+
+        return $this;
+    }
+
+    public function getDiscordPseudo(): ?string
+    {
+        return $this->discordPseudo;
+    }
+
+    /** Normalise la saisie : espaces et "@" initial retirés, null si vide. */
+    public function setDiscordPseudo(?string $discordPseudo): static
+    {
+        $discordPseudo = null === $discordPseudo ? '' : ltrim(trim($discordPseudo), characters: '@');
+        $this->discordPseudo = '' === $discordPseudo ? null : $discordPseudo;
 
         return $this;
     }
