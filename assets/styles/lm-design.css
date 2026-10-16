@@ -43,9 +43,10 @@
   --lm-seq-1: #4a3a2c; --lm-seq-2: #7a5632; --lm-seq-3: #a8702f; --lm-seq-4: #d98a3d; --lm-seq-5: #f0b26b;
 
   /* Typographie, espacement, forme */
-  --lm-font-display: 'Cinzel', Georgia, serif;
-  --lm-font-body: 'Source Sans 3', system-ui, 'Segoe UI', Roboto, sans-serif;
-  --lm-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* Polices auto-hébergées via importmap (@fontsource-variable/*), avec repli système */
+  --lm-font-display: 'Cinzel Variable', 'Cinzel', Georgia, serif;
+  --lm-font-body: 'Source Sans 3 Variable', 'Source Sans 3', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --lm-font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
   --lm-s1: 4px; --lm-s2: 8px; --lm-s3: 12px; --lm-s4: 16px; --lm-s5: 24px; --lm-s6: 32px;
   --lm-radius: 6px; --lm-radius-lg: 10px;
   --lm-touch: 44px;
@@ -103,6 +104,80 @@
 .lm-cost { display: inline-flex; align-items: baseline; gap: 6px; font: 700 .95rem var(--lm-font-mono);
            font-variant-numeric: tabular-nums; color: var(--role-text, var(--lm-fg)); }
 .lm-cost s { color: var(--lm-muted); font-weight: 400; font-size: .8rem; }
+
+/* États de participation / type de personnage : pastille icône + texte */
+.lm-state { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px 2px 8px; border-radius: var(--lm-radius);
+            border: 1px solid var(--role, var(--lm-line)); color: var(--role-text, var(--lm-fg));
+            font: 600 .78rem/1.5 var(--lm-font-body); white-space: nowrap; }
+.lm-state--pending { border-style: dashed; background: transparent; }
+.lm-state--dead { opacity: .75; }
+.lm-state--dead .lm-state-label { text-decoration: line-through; }
+/* Chaîne de jeu : principal > substitution > relève > archétype */
+.lm-chain { display: flex; flex-wrap: wrap; gap: var(--lm-s2); margin: 0; padding: 0; list-style: none; align-items: stretch; }
+.lm-link { flex: 1 1 150px; min-width: 0; display: grid; grid-template-columns: auto 1fr; gap: 2px var(--lm-s2); align-items: center;
+           padding: var(--lm-s2) var(--lm-s3); border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); background: var(--lm-surface); }
+.lm-link-badge { grid-row: span 2; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+                 font: 700 .85rem var(--lm-font-display); background: var(--lm-raised); border: 1px solid var(--lm-line); }
+.lm-link-role { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--lm-muted); }
+.lm-link-name { font-weight: 600; overflow-wrap: anywhere; }
+.lm-link.is-active { border-color: var(--lm-accent); }
+.lm-link.is-active .lm-link-badge { background: var(--lm-accent); border-color: var(--lm-accent); color: var(--lm-on-accent); }
+.lm-link.is-empty { border-style: dashed; background: transparent; }
+.lm-link.is-empty .lm-link-name { color: var(--lm-muted); font-weight: 400; font-style: italic; }
+.lm-link.is-dead .lm-link-name { text-decoration: line-through; color: var(--lm-muted); }
+.lm-ico--dashed { stroke-dasharray: 3 3; }
+.lm-ico--fill { fill: currentColor; }
+/* Type de classe (palette de données, pas un rôle) */
+[data-class="combat"] { --role: var(--lm-data-3); --role-text: var(--lm-data-3); }
+[data-class="social"] { --role: var(--lm-data-4); --role-text: var(--lm-data-4); }
+[data-class="savoir"] { --role: var(--lm-data-2); --role-text: var(--lm-data-2); }
+
+/* Conseil du domaine : un siège par rôle */
+.lm-seats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--lm-s3); margin: 0; padding: 0; list-style: none; }
+.lm-seat { display: grid; grid-template-columns: auto 1fr; gap: 0 var(--lm-s3); align-items: center; padding: var(--lm-s3);
+           border: 1px solid var(--lm-line); border-left: 4px solid var(--lm-domaine); border-radius: var(--lm-radius-lg); background: var(--lm-surface); }
+.lm-seat > .lm-ico { grid-row: span 2; width: 1.6em; height: 1.6em; color: var(--lm-domaine-text); }
+.lm-seat-role { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--lm-muted); }
+.lm-seat-name { font-weight: 600; overflow-wrap: anywhere; }
+.lm-seat.is-vacant { border-style: dashed; border-left-style: dashed; background: transparent; }
+.lm-seat.is-vacant .lm-seat-name { color: var(--lm-muted); font-style: italic; font-weight: 400; }
+
+/* Chronologie : opus (jeux) et inter-jeux */
+.lm-timeline { display: flex; gap: 0; margin: 0; padding: var(--lm-s2) 0 var(--lm-s3); list-style: none; overflow-x: auto; align-items: flex-start; }
+.lm-opus { flex: 0 0 auto; width: 128px; text-align: center; position: relative; padding-top: 22px; }
+.lm-opus::before { content: ""; position: absolute; top: 0; left: 50%; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%;
+                   background: var(--lm-surface); border: 3px solid var(--lm-line); }
+.lm-opus[data-state="done"]::before { background: var(--lm-muted); border-color: var(--lm-muted); }
+.lm-opus[data-state="active"]::before { background: var(--lm-accent); border-color: var(--lm-accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--lm-accent) 30%, transparent); }
+.lm-opus[data-state="next"]::before { border-style: dashed; border-color: var(--lm-accent); }
+.lm-opus-name { font: 700 1rem var(--lm-font-display); letter-spacing: .04em; }
+.lm-opus-date { display: block; font-size: .78rem; color: var(--lm-muted); font-variant-numeric: tabular-nums; }
+.lm-opus-game { display: block; font-size: .74rem; color: var(--lm-domaine-text); }
+.lm-inter { flex: 0 0 auto; min-width: 150px; align-self: stretch; position: relative; padding: 22px var(--lm-s2) 0; }
+.lm-inter::before { content: ""; position: absolute; top: 8px; left: 0; right: 0; height: 2px; background: var(--lm-line); }
+.lm-inter[data-state="done"]::before { background: var(--lm-muted); }
+.lm-inter[data-state="active"]::before { background: linear-gradient(90deg, var(--lm-domaine), var(--lm-line)); height: 3px; }
+.lm-inter[data-state="next"]::before { background: repeating-linear-gradient(90deg, var(--lm-domaine) 0 8px, transparent 8px 14px); }
+.lm-inter-title { font: 700 .72rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--lm-domaine-text); margin-bottom: 4px; }
+.lm-acts { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.lm-act { display: flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--lm-muted); }
+.lm-act .lm-ico { width: 1em; height: 1em; }
+.lm-act[data-state="done"] { color: var(--lm-ok-text); }
+.lm-act[data-state="open"] { color: var(--lm-fg); font-weight: 600; }
+.lm-act[data-state="open"] .lm-ico { color: var(--lm-domaine-text); }
+@media (max-width: 640px) {
+  .lm-timeline { flex-direction: column; overflow: visible; padding-left: 28px; border-left: 2px solid var(--lm-line); margin-left: 8px; }
+  .lm-opus, .lm-inter { width: auto; min-width: 0; text-align: left; padding: 0 0 var(--lm-s3) var(--lm-s3); }
+  .lm-opus::before { left: -37px; top: 2px; margin-left: 0; }
+  .lm-inter::before { display: none; }
+}
+
+/* Membre de groupe : ligne compacte */
+.lm-member { display: grid; grid-template-columns: 44px 1fr auto; gap: var(--lm-s3); align-items: center; padding: var(--lm-s2) var(--lm-s3);
+             border-bottom: 1px solid var(--lm-line); }
+.lm-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--lm-raised); border: 1px solid var(--lm-line);
+             display: grid; place-items: center; font: 700 .9rem var(--lm-font-display); color: var(--lm-muted); }
+.lm-member-meta { min-width: 0; display: flex; flex-wrap: wrap; gap: 2px var(--lm-s3); align-items: center; font-size: .85rem; color: var(--lm-muted); }
 
 /* Sources de réduction (apprentissage, bonus d'origine, bonus territorial) */
 .lm-sources { display: grid; gap: 4px; margin: var(--lm-s2) 0 0; padding: 0; list-style: none; }
@@ -175,6 +250,11 @@
                 padding: var(--lm-s3) var(--lm-s4); border-bottom: 1px solid var(--lm-line);
                 background: linear-gradient(180deg, color-mix(in srgb, var(--role, var(--lm-accent)) 22%, var(--lm-raised)), var(--lm-raised));
                 border-radius: var(--lm-radius-lg) var(--lm-radius-lg) 0 0; border-top: 2px solid var(--role, var(--lm-accent)); }
+/* Variante « panneau de bois » (nostalgie) : même image qu'avant, recompressée en WebP (143 Ko -> 5 Ko).
+   Usage : <div class="lm-card-head lm-card-head--bois"> */
+.lm-card-head--bois { background: url('../img/header-bois.webp') center / 100% 100% no-repeat #8b360c;
+                      border-top-color: transparent; color: #f4e9d8; text-shadow: 0 1px 2px rgba(0, 0, 0, .6); }
+.lm-card-head--bois .lm-card-title, .lm-card-head--bois .lm-ico { color: #f4e9d8; }
 .lm-card-title { margin: 0; font: 700 1rem/1.3 var(--lm-font-display); letter-spacing: .04em;
                  display: flex; align-items: center; gap: var(--lm-s2); }
 .lm-card-title .lm-ico { color: var(--role-text, var(--lm-accent)); }

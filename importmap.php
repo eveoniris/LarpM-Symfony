@@ -10,170 +10,72 @@
  *     be used as an "entrypoint" (and passed to the importmap() Twig function).
  *
  * The "importmap:require" command can be used to add new entries to this file.
+ *
+ * @return array<string, array{    // Import name as key, description of the imported file as value
+ *     path: string,               // Logical, relative or absolute path to the file
+ *     type?: 'js'|'css'|'json',   // Type of the file, defaults to 'js'
+ *     entrypoint?: bool,          // Whether the file is an entrypoint, for 'js' only
+ * }|array{
+ *     version: string,            // Version of the remote package
+ *     package_specifier?: string, // Remote "package-name/path" specifier, defaults to the import name
+ *     type?: 'js'|'css'|'json',
+ *     entrypoint?: bool,
+ * }>
  */
 return [
-    'app' => [
-        'path' => './assets/app.js',
-        'entrypoint' => true,
-    ],
-    '@symfony/stimulus-bundle' => [
-        'path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js',
-    ],
-    '@hotwired/stimulus' => [
-        'version' => '3.2.2',
-    ],
-    'bootstrap' => [
-        'version' => '5.3.8',
-    ],
-    '@popperjs/core' => [
-        'version' => '2.11.8',
-    ],
-    'bootstrap/dist/css/bootstrap.min.css' => [
-        'version' => '5.3.8',
-        'type' => 'css',
-    ],
-    'clipboard' => [
-        'version' => '2.0.11',
-    ],
-    'tom-select' => [
-        'version' => '2.4.3',
-    ],
-    '@orchidjs/sifter' => [
-        'version' => '1.1.0',
-    ],
-    '@orchidjs/unicode-variants' => [
-        'version' => '1.1.2',
-    ],
-    'tom-select/dist/css/tom-select.default.min.css' => [
-        'version' => '2.4.3',
-        'type' => 'css',
-    ],
-    'tom' => [
-        'version' => '0.4.1',
-    ],
-    'rx' => [
-        'version' => '4.1.0',
-    ],
-    'tom-select/dist/css/tom-select.bootstrap5.css' => [
-        'version' => '2.4.3',
-        'type' => 'css',
-    ],
-    '@hotwired/turbo' => [
-        'version' => '8.0.20',
-    ],
-    '@fortawesome/fontawesome-free/css/all.css' => [
-        'version' => '7.1.0',
-        'type' => 'css',
-    ],
-    '@fontsource-variable/roboto-condensed/index.min.css' => [
-        'version' => '5.2.8',
-        'type' => 'css',
-    ],
-    'axios' => [
-        'version' => '1.13.2',
-    ],
-    'tinymce/tinymce' => [
-        'version' => '8.2.2',
-    ],
-    'bs-custom-file-input' => [
-        'version' => '1.3.4',
-    ],
-    'jquery' => [
-        'version' => '3.7.1',
-    ],
-    'datatables' => [
-        'version' => '1.10.18',
-    ],
-    'tinymce' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/themes/silver' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/link' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/code' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/table' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/lists' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/insertdatetime' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/preview' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/media' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/wordcount' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/autolink' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/autoresize' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/anchor' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/charmap' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/image' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/models/dom' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/visualblocks' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/advlist' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/help' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/searchreplace' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/fullscreen' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/skins/ui/oxide-dark/skin' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/skins/ui/oxide/skin' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/icons/default' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/skins/ui/oxide-dark/content' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/plugins/help/js/i18n/keynav/en' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/skins/ui/oxide/content' => [
-        'version' => '8.2.2',
-    ],
-    'tinymce/skins/content/dark/content' => [
-        'version' => '8.2.2',
-    ],
-    'tom-select/dist/css/tom-select.default.css' => [
-        'version' => '2.4.3',
-        'type' => 'css',
-    ],
-    'tom-select/dist/css/tom-select.bootstrap4.css' => [
-        'version' => '2.4.3',
-        'type' => 'css',
-    ],
+    'app' => ['path' => './assets/app.js', 'entrypoint' => true],
+    '@symfony/stimulus-bundle' => ['path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js'],
+    '@hotwired/stimulus' => ['version' => '3.2.2'],
+    'bootstrap' => ['version' => '5.3.8'],
+    '@popperjs/core' => ['version' => '2.11.8'],
+    'bootstrap/dist/css/bootstrap.min.css' => ['version' => '5.3.8', 'type' => 'css'],
+    'clipboard' => ['version' => '2.0.11'],
+    'tom-select' => ['version' => '2.4.3'],
+    '@orchidjs/sifter' => ['version' => '1.1.0'],
+    '@orchidjs/unicode-variants' => ['version' => '1.1.2'],
+    'tom-select/dist/css/tom-select.default.min.css' => ['version' => '2.4.3', 'type' => 'css'],
+    'tom' => ['version' => '0.4.1'],
+    'rx' => ['version' => '4.1.0'],
+    'tom-select/dist/css/tom-select.bootstrap5.css' => ['version' => '2.4.3', 'type' => 'css'],
+    '@hotwired/turbo' => ['version' => '8.0.20'],
+    '@fortawesome/fontawesome-free/css/all.css' => ['version' => '7.1.0', 'type' => 'css'],
+    '@fontsource-variable/roboto-condensed/index.min.css' => ['version' => '5.2.8', 'type' => 'css'],
+    'axios' => ['version' => '1.13.2'],
+    'tinymce/tinymce' => ['version' => '8.2.2'],
+    'bs-custom-file-input' => ['version' => '1.3.4'],
+    'jquery' => ['version' => '3.7.1'],
+    'datatables' => ['version' => '1.10.18'],
+    'tinymce' => ['version' => '8.2.2'],
+    'tinymce/themes/silver' => ['version' => '8.2.2'],
+    'tinymce/plugins/link' => ['version' => '8.2.2'],
+    'tinymce/plugins/code' => ['version' => '8.2.2'],
+    'tinymce/plugins/table' => ['version' => '8.2.2'],
+    'tinymce/plugins/lists' => ['version' => '8.2.2'],
+    'tinymce/plugins/insertdatetime' => ['version' => '8.2.2'],
+    'tinymce/plugins/preview' => ['version' => '8.2.2'],
+    'tinymce/plugins/media' => ['version' => '8.2.2'],
+    'tinymce/plugins/wordcount' => ['version' => '8.2.2'],
+    'tinymce/plugins/autolink' => ['version' => '8.2.2'],
+    'tinymce/plugins/autoresize' => ['version' => '8.2.2'],
+    'tinymce/plugins/anchor' => ['version' => '8.2.2'],
+    'tinymce/plugins/charmap' => ['version' => '8.2.2'],
+    'tinymce/plugins/image' => ['version' => '8.2.2'],
+    'tinymce/models/dom' => ['version' => '8.2.2'],
+    'tinymce/plugins/visualblocks' => ['version' => '8.2.2'],
+    'tinymce/plugins/advlist' => ['version' => '8.2.2'],
+    'tinymce/plugins/help' => ['version' => '8.2.2'],
+    'tinymce/plugins/searchreplace' => ['version' => '8.2.2'],
+    'tinymce/plugins/fullscreen' => ['version' => '8.2.2'],
+    'tinymce/skins/ui/oxide-dark/skin' => ['version' => '8.2.2'],
+    'tinymce/skins/ui/oxide/skin' => ['version' => '8.2.2'],
+    'tinymce/icons/default' => ['version' => '8.2.2'],
+    'tinymce/skins/ui/oxide-dark/content' => ['version' => '8.2.2'],
+    'tinymce/plugins/help/js/i18n/keynav/en' => ['version' => '8.2.2'],
+    'tinymce/skins/ui/oxide/content' => ['version' => '8.2.2'],
+    'tinymce/skins/content/dark/content' => ['version' => '8.2.2'],
+    'tom-select/dist/css/tom-select.default.css' => ['version' => '2.4.3', 'type' => 'css'],
+    'tom-select/dist/css/tom-select.bootstrap4.css' => ['version' => '2.4.3', 'type' => 'css'],
+    '@fontsource-variable/cinzel/index.css' => ['version' => '5.3.0', 'type' => 'css'],
+    '@fontsource-variable/source-sans-3/index.css' => ['version' => '5.3.1', 'type' => 'css'],
+    '@fontsource-variable/jetbrains-mono/index.css' => ['version' => '5.3.0', 'type' => 'css'],
 ];
