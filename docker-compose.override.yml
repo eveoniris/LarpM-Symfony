@@ -16,7 +16,11 @@ services:
               required: false
         volumes:
             - ./:/app # project files
+            - app_var:/app/var # cache/logs dans la VM Docker (bien plus rapide que le bind mount Windows)
+            - app_vendor:/app/vendor # idem pour vendor/
             - ./docker/php/php.ini:/usr/local/etc/php/conf.d/zzz-app.ini:ro # custom php.ini
+            - ./docker/scripts/docker-entrypoint-dev.sh:/usr/local/bin/docker-entrypoint-dev.sh:ro # entrypoint modifiable sans rebuild
+            - ./docker/php/php.dev.ini:/usr/local/etc/php/conf.d/zzzz-dev.ini:ro # surcharges OpCache dev
             - caddy_data:/data # Caddy CA + cert storage (persisted across restarts)
         depends_on:
             - mailer
@@ -45,3 +49,5 @@ services:
 
 volumes:
     caddy_data:
+    app_var:
+    app_vendor:
