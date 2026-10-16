@@ -3,658 +3,678 @@
 {% block title %}Template de design{% endblock title %}
 
 {% block body %}
+    {# Nécessite assets/styles/lm-design.css chargé dans base.html.twig #}
+    <style>
+.doc{max-width:980px;margin:0 auto;background:var(--lm-bg);padding:var(--lm-s5);border:1px solid var(--lm-line);border-radius:var(--lm-radius-lg);display:flex;flex-direction:column;gap:var(--lm-s6);font:400 1rem/1.6 var(--lm-font-body);color:var(--lm-fg)}
+.doc h1,.doc h2,.doc h3,.doc h4{font-family:var(--lm-font-display);text-wrap:balance;line-height:1.25;color:var(--lm-fg)}
+.doc h1{font-size:clamp(1.7rem,5vw,2.4rem);margin:.2rem 0 .6rem;letter-spacing:.02em}
+.doc h2{font-size:1.4rem;margin:0 0 var(--lm-s4);padding-bottom:var(--lm-s2);border-bottom:1px solid var(--lm-line)}
+.doc h3{font-size:1.05rem;margin:var(--lm-s5) 0 var(--lm-s3);letter-spacing:.04em}
+.doc-kicker{font:400 .75rem var(--lm-font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--lm-accent)}
+.doc-lead{color:var(--lm-muted);font-size:1.1rem;max-width:68ch;margin:0 0 var(--lm-s4)}
+.doc-note{color:var(--lm-muted);font-size:.9rem;max-width:72ch;margin:var(--lm-s3) 0 0}
+.doc code{font-family:var(--lm-font-mono);font-size:.84em;background:var(--lm-raised);padding:1px 5px;border-radius:4px}
+.doc pre.code{font:400 .8rem/1.7 var(--lm-font-mono);background:var(--lm-surface);border:1px solid var(--lm-line);border-radius:var(--lm-radius);padding:var(--lm-s4);overflow-x:auto;margin:0;color:var(--lm-fg)}
+.doc .sample{border:1px dashed var(--lm-line);border-radius:var(--lm-radius-lg);padding:var(--lm-s4);background:color-mix(in srgb,var(--lm-surface) 60%,transparent)}
+.doc .doc-rules{margin:0;padding-left:1.2rem;display:grid;gap:var(--lm-s2);align-content:start}
+.doc .doc-sec,.doc .lm-stack{min-width:0}
+.doc h4.lm-page-title{font-size:1.4rem}
+@media (max-width:640px){.doc h2{font-size:1.2rem}}
+    </style>
+{% verbatim %}
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-err" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></symbol>
+  <symbol id="i-spy" viewBox="0 0 24 24"><path d="M3 10h18M6 10l1.6-6h8.8L18 10"/><circle cx="8.5" cy="15" r="2.5"/><circle cx="15.5" cy="15" r="2.5"/><path d="M11 15h2M9 20.5c1.8 1 4.2 1 6 0"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-feather" viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5zM16 8 2 22M17.5 15H9"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></symbol>
+  <symbol id="i-crown" viewBox="0 0 24 24"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7zM5 20h14"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6l-1 14H6L5 6M8 6V4h8v2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2 2 9.3l6.9-1z"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></symbol>
+  <symbol id="i-frown" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2M9 9h.01M15 9h.01"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/></symbol>
+  <symbol id="i-landmark" viewBox="0 0 24 24"><path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2 3 7h18z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+  <symbol id="i-clipboard" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M9 2h6v4H9zM9 12h6M9 16h6"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></symbol>
+  <symbol id="i-castle" viewBox="0 0 24 24"><path d="M4 21V9l2 2V7h3v4h2V7h3v4h2V7h3v14zM10 21v-4h4v4"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5zM3.3 7.5 12 12.5l8.7-5M12 22V12"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><path d="M3 5h18v14H3zM3 7l9 7 9-7"/></symbol>
+  <symbol id="i-sword" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/></symbol>
+  <symbol id="i-mask" viewBox="0 0 24 24"><path d="M2 8c0-1 1-2 2-2h16c1 0 2 1 2 2v3a10 10 0 0 1-20 0zM8 11h.01M16 11h.01M9 16c1.5 1 4.5 1 6 0"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-skull" viewBox="0 0 24 24"><path d="M5 11a7 7 0 0 1 14 0c0 2.5-1.2 4-3 5v2H8v-2c-1.8-1-3-2.5-3-5zM9 11h.01M15 11h.01M10 21v-3M14 21v-3"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="m17 1 4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></symbol>
+  <symbol id="i-pawn" viewBox="0 0 24 24"><circle cx="12" cy="6" r="3"/><path d="M9 9c0 3-2 4-2 6h10c0-2-2-3-2-6M6 15h12l1 5H5z"/></symbol>
+  <symbol id="i-userplus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M19 8v6M22 11h-6"/><circle cx="9" cy="7" r="4"/></symbol>
+  <symbol id="i-scroll" viewBox="0 0 24 24"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4M19 17V5a2 2 0 0 0-2-2H4"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-coins" viewBox="0 0 24 24"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18M7 6h1v4"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2 6.3-6.4 2.1 2-6.3z"/></symbol>
+  <symbol id="i-balance" viewBox="0 0 24 24"><path d="M12 3v18M5 21h14M5 7h14M5 7l-3 8a3 3 0 0 0 6 0zM19 7l-3 8a3 3 0 0 0 6 0z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></symbol>
+  <symbol id="i-ship" viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M4 18l-1-5 9-3 9 3-1 5M12 10V2l6 4"/></symbol>
+  <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M5 22h14M5 2h14M17 22v-4.17a2 2 0 0 0-.59-1.42L12 12l-4.41 4.41A2 2 0 0 0 7 17.83V22M7 2v4.17a2 2 0 0 0 .59 1.42L12 12l4.41-4.41A2 2 0 0 0 17 6.17V2"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10"/></symbol>
+  <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+</svg>
 
-    <ol class="breadcrumb">
-        <li><a href="{{ path('homepage') }}">Accueil</a></li>
-        <li class="active">Templates de design</li>
-    </ol>
+<div class="doc">
 
-    <div class="well well-sm">
+<header class="doc-head">
+  <div class="doc-kicker">Guide de style · v0.1 · Bootstrap 5.3</div>
+  <h1>Template de design LarpManager</h1>
+  <p class="doc-lead">Référence unique pour les couleurs, les rôles d'information, les composants et les gabarits de page. Chaque bloc ci-dessous est utilisable tel quel avec <code>lm-design.css</code> et se transpose en widgets Flutter ou React Native à partir des mêmes tokens.</p>
+  
+</header>
 
-        <div class="header">
-            <h5>Templates de design</h5>
-        </div>
+<!-- ===================== 1. DÉCISIONS ===================== -->
+<section class="doc-sec">
+  <h2>1. Décisions de cette version</h2>
+  <div class="lm-table-wrap"><table class="lm-table">
+    <thead><tr><th>Sujet</th><th>Constat</th><th>Décision</th></tr></thead>
+    <tbody>
+      <tr><td><b>Secret et attention</b></td><td>Le secret utilise <code>border-warning</code> : or et jaune d'avertissement sont la même couleur.</td><td>Le secret garde l'or mais devient un liseré <b>double</b> avec cadenas. L'avertissement passe à l'ambre, avec triangle.</td></tr>
+      <tr><td><b>Jeu de domaine</b></td><td>Réutilise le cadre or du secret avec une autre icône.</td><td>Thème propre : <b>pourpre royal</b>, icône couronne. Seule teinte encore libre sur le cercle chromatique.</td></tr>
+      <tr><td><b>Pastille orange (anomalie)</b></td><td>Orange pur, identique à l'étiquette « objet orange » imprimée.</td><td>Badge « Anomalie » en ambre avec icône. L'orange pur est réservé aux objets.</td></tr>
+      <tr><td><b>Secret en rouge</b></td><td>Dans l'ancien /design, <code>fa-user-secret</code> est en <code>text-danger</code>.</td><td>Le secret est toujours or. Le rouge n'est plus que l'erreur.</td></tr>
+      <tr><td><b>Boutons d'édition violets</b></td><td>Le violet (scénario) sert aussi de bouton « modifier » sur les blocs MJ.</td><td>Acceptable : bouton contouré de la couleur du bloc. Les autres boutons restent neutres ou cuivre.</td></tr>
+    </tbody>
+  </table></div>
+</section>
 
-
-        <div class="container shadow min-vh-50 py-2 panel">
-            <div class="row">
-                <div class="card mb-3 border-info">
-                    <div class="card-header "><i class="fa fa-info-circle text-info"></i> Documentation</div>
-                    <div class="card-body">
-                        <p class="card-text">
-                            Actuellement sur <a href="https://getbootstrap.com/docs/5.3">Bootstrap 5.3</a>
-
-                        </p>
-                    </div>
-                </div>
-
-            </div>
-            <div class="row">
-                <div class="col">
-                    <h2>Mode sombre</h2>
-                    <p>
-                        Permet de tester les modes Dark et Light <br/>
-                        <b class="text-bg-warning">TODO:</b> Prévoir de stocker cela en session ou en cookie
-                    </p>
-                    <p>
-                        <button class="btn btn-primary me-2 element">Primary</button>
-                        <button class="btn btn-secondary me-2">Secondary</button>
-                        <button class="btn btn-danger me-2">Danger</button>
-                    </p>
-                </div>
-                <Div class="col-auto">
-
-                    <button class="btn btn-secondary shadow" id="btnSwitch" data-placement="top"
-                            title="Changer mode sombre/claire"><i class="fa fa-toggle-on"></i></button>
-                </Div>
-            </div>
-            <div>
-                <div class="dropdown" data-bs-theme="light">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonLight"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                        Default dropdown
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonLight">
-                        <li><a class="dropdown-item active" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">Separated link</a></li>
-                    </ul>
-                </div>
-
-                <div class="dropdown" data-bs-theme="dark">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonDark"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                        Dark dropdown
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonDark">
-                        <li><a class="dropdown-item active" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">Separated link</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div>
-                <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
-                        title="Tooltip on top">
-                    Tooltip on top
-                </button>
-
-                <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                        title="Tooltip on bottom">
-                    Tooltip on bottom
-                </button>
-
-                <a href="#" data-bs-toggle="tooltip" title="" data-bs-original-title="Default tooltip">inline links
-                    Tooltips</a></div>
-        </div>
-
-
+<!-- ===================== 2. COULEURS ===================== -->
+<section class="doc-sec">
+  <h2>2. Couleurs et rôles</h2>
+  <p class="doc-note">Un rôle = une couleur + une icône + un libellé. La couleur seule ne porte jamais le sens.</p>
+  <div class="lm-grid-2">
+    <div class="lm-stack">
+      <div class="lm-callout" data-role="info"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-info"/></svg>Information</p><p>Aucune annonce pour ce GN.</p></div>
+      <div class="lm-callout" data-role="ok"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-ok"/></svg>Confirmation</p><p>Le personnage a été enregistré.</p></div>
+      <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>Attention</p><p>244 objets n'ont pas de propriétaire.</p></div>
+      <div class="lm-callout" data-role="err"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-err"/></svg>Erreur</p><p>Le billet n'a pas pu être supprimé : il est lié à 87 inscriptions.</p></div>
     </div>
-
-
-    <h5>Notification</h5>
-
-
-    <div class="row">
-        <div class="alert alert-success d-flex flex-row align-items-center" role="alert">
-            <div class="p-2 flex-grow-1"><i class="fa-solid fa-circle-check"></i> Notif OK</div>
-            <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+    <div class="lm-stack">
+      <div class="lm-callout" data-role="secret"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-spy"/></svg>Secret</p><p>Le Seigneur de Zamora finance en secret la révolte des clans.</p></div>
+      <div class="lm-callout" data-role="gm"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-feather"/></svg>Scénarisation</p><p>Rumeur à diffuser avant la bataille du gué.</p></div>
+      <div class="lm-callout" data-role="orga"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-clipboard"/></svg>Organisation</p><p>Briefing des PNJ samedi à 8 h, tente du pentagone.</p></div>
+      <div class="lm-callout" data-role="admin"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-key"/></svg>Administratif</p><p>État civil et paiements. Visible des administrateurs uniquement.</p></div>
+      <div class="lm-callout" data-role="domaine"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-crown"/></svg>Jeu de domaine</p><p>Import des fiches retour de la phase inter-jeu.</p></div>
     </div>
+  </div>
 
-    <div class="well well-sm">
-        <h5>Tableau</h5>
-        <p>
-            <a href=" https://getbootstrap.com/docs/5.3/content/tables/#active-tables">
-                https://getbootstrap.com/docs/5.3/content/tables</a>
-        </p>
+  <h3>Badges et étiquettes objet</h3>
+  <div class="sample lm-actions">
+    <span class="lm-badge" data-role="secret"><svg class="lm-ico"><use href="#i-spy"/></svg>Secret</span>
+    <span class="lm-badge" data-role="gm"><svg class="lm-ico"><use href="#i-feather"/></svg>Scénario</span>
+    <span class="lm-badge" data-role="orga"><svg class="lm-ico"><use href="#i-clipboard"/></svg>Orga</span>
+    <span class="lm-badge" data-role="admin"><svg class="lm-ico"><use href="#i-key"/></svg>Admin</span>
+    <span class="lm-badge" data-role="domaine"><svg class="lm-ico"><use href="#i-crown"/></svg>Domaine</span>
+    <span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-warn"/></svg>Anomalie</span>
+    <span class="lm-objet" data-objet="bleu">Objet bleu</span>
+    <span class="lm-objet" data-objet="orange">Objet orange</span>
+  </div>
+  <p class="doc-note">Les deux étiquettes objet ont un contour blanc et noir : elles restent lisibles sur n'importe quel fond et ne changent jamais de teinte entre les thèmes.</p>
 
-        <div class="table-responsive">
-        <table class="table table-sm table-striped table-bordered table-hover">
-            <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td colspan="2">Larry the Bird</td>
-                <td>@twitter</td>
-            </tr>
-            </tbody>
-        </table>
-        </div>
+  <h3>Tokens</h3>
+<pre class="code">--lm-accent    cuivre   #D98A3D (clair #A8541A)     marque + action principale
+--lm-secret    or       #D4AF37 (clair #A88A14)     secret
+--lm-gm        violet   #A07EE0 (clair #6F46C1)     scénarisation / MJ
+--lm-orga      bleu     #5B8DEF (clair #2F5FC7)     organisation / gestion
+--lm-admin     bordeaux #B5413A (clair #A23530)     administratif / privé
+--lm-domaine   pourpre  #C75B9B (clair #B03D82)     jeu de domaine / inter-jeu
+--lm-info      cyan     #2FB5C4    --lm-ok  #4FA06B
+--lm-warn      ambre    #F0A63A    --lm-err #E5484D
+--lm-objet-bleu #1E88E5  --lm-objet-orange #FF9800   (figés, hors thème)</pre>
+</section>
 
+<!-- ===================== 3. BOUTONS ===================== -->
+<section class="doc-sec">
+  <h2>3. Boutons et actions</h2>
+  <div class="lm-grid-2">
+    <div class="lm-card"><div class="lm-card-body lm-stack">
+      <div class="lm-actions">
+        <button class="lm-btn lm-btn--primary" type="button"><svg class="lm-ico"><use href="#i-plus"/></svg>Ajouter</button>
+        <button class="lm-btn" type="button">Annuler</button>
+        <button class="lm-btn lm-btn--danger" type="button"><svg class="lm-ico"><use href="#i-trash"/></svg>Supprimer</button>
+      </div>
+      <div class="lm-actions">
+        <button class="lm-btn lm-btn--role lm-btn--sm" data-role="gm" type="button"><svg class="lm-ico"><use href="#i-feather"/></svg>Modifier la scénarisation</button>
+        <button class="lm-btn lm-btn--role lm-btn--sm" data-role="domaine" type="button"><svg class="lm-ico"><use href="#i-crown"/></svg>Import fiches retour</button>
+        <button class="lm-btn lm-btn--icon lm-btn--sm" aria-label="Modifier" title="Modifier" type="button"><svg class="lm-ico"><use href="#i-edit"/></svg></button>
+        <button class="lm-btn lm-btn--icon lm-btn--sm" aria-label="Plus d'actions" title="Plus d'actions" type="button"><svg class="lm-ico"><use href="#i-more"/></svg></button>
+      </div>
+    </div></div>
+    <ul class="doc-rules">
+      <li><b>Un seul bouton plein cuivre</b> par écran : l'action la plus probable.</li>
+      <li>Secondaire : fond neutre. Annuler à gauche de Valider.</li>
+      <li>Destructif : contour rouge, libellé nommé (« Supprimer le personnage »), confirmation par modale.</li>
+      <li>Bouton de rôle : contour et texte de la couleur du bloc, jamais plein.</li>
+      <li>Icône seule : toujours <code>aria-label</code> et <code>title</code>. Hauteur 44 px, 34 px en tableau.</li>
+      <li>Emplacement : en haut à droite du cadre (desktop), barre fixe en bas (mobile).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== 4. CARTES ===================== -->
+<section class="doc-sec">
+  <h2>4. Cartes, indicateurs, fiches</h2>
+  <div class="lm-kpis">
+    <a class="lm-kpi" href="#"><span class="lm-kpi-value">1 675</span><span class="lm-kpi-label">Inscrits</span></a>
+    <a class="lm-kpi" href="#"><span class="lm-kpi-value">278</span><span class="lm-kpi-label">PNJ</span></a>
+    <a class="lm-kpi" data-role="warn" href="#"><span class="lm-kpi-value">24</span><span class="lm-kpi-label">Sans groupe (avec billet)</span></a>
+    <a class="lm-kpi" data-role="err" href="#"><span class="lm-kpi-value">4</span><span class="lm-kpi-label">Sans personnage</span></a>
+  </div>
+  <p class="doc-note">Un indicateur cliquable mène à la liste filtrée correspondante. La couleur n'apparaît que s'il y a un problème à traiter.</p>
+
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <article class="lm-card">
+      <div class="lm-card-head"><h3 class="lm-card-title">Identité</h3><button class="lm-btn lm-btn--icon lm-btn--sm" aria-label="Modifier" type="button"><svg class="lm-ico"><use href="#i-edit"/></svg></button></div>
+      <dl class="lm-dl">
+        <dt>Nom</dt><dd>Kaelwyn le Borgne</dd>
+        <dt>Classe</dt><dd>Guerrier des marches</dd>
+        <dt>Âge</dt><dd>58 ans (vieux)</dd>
+        <dt>Santé</dt><dd><span class="lm-badge" data-role="err">Mort</span></dd>
+        <dt>Biographie MJ</dt><dd data-role="gm">Fils illégitime du baron de Tarantia.</dd>
+        <dt>Secret</dt><dd data-role="secret">Espion de Koth depuis dix ans.</dd>
+      </dl>
+    </article>
+    <article class="lm-card">
+      <div class="lm-card-head" data-role="gm"><h3 class="lm-card-title"><svg class="lm-ico"><use href="#i-feather"/></svg>Jeu stratégique</h3><button class="lm-btn lm-btn--role lm-btn--sm" data-role="gm" type="button">Modifier</button></div>
+      <div class="lm-card-body lm-kpis">
+        <div class="lm-kpi"><span class="lm-kpi-value">0</span><span class="lm-kpi-label">Résistance de base</span></div>
+        <div class="lm-kpi"><span class="lm-kpi-value">0</span><span class="lm-kpi-label">Défense</span></div>
+        <div class="lm-kpi"><span class="lm-kpi-value">0</span><span class="lm-kpi-label">Trésor de base</span></div>
+      </div>
+      <div class="lm-card-foot"><span>Modifié par test</span><span>il y a 3 min</span></div>
+    </article>
+  </div>
+  <p class="doc-note">En-tête de carte : dégradé de la couleur du rôle (cuivre par défaut) et filet haut. Aucune image n'est nécessaire, ce qui remplace la texture <code>header-PegUayu.png</code>.</p>
+  <h3>Variante « panneau de bois » (nostalgie)</h3>
+  <div class="lm-card"><div class="lm-card-head lm-card-head--bois"><h4 class="lm-card-title">Fiche de personnage</h4></div><div class="lm-card-body">Même panneau qu'avant, en option : ajouter la classe <code>lm-card-head--bois</code> à l'en-tête. L'image d'origine (143 Ko) est recompressée en WebP (5 Ko), dans <code>assets/img/header-bois.webp</code>. L'aperçu de l'image n'apparaît que dans l'appli.</div></div>
+</section>
+
+<!-- ===================== 4b. AFFINITÉ ===================== -->
+<section class="doc-sec">
+  <h2>4b. Compétences : affinité et coût en XP</h2>
+  <p class="doc-note">Constat sur « Ajout de compétence » : la favorite est une étoile verte (<code>text-success</code>), la méconnue un visage rouge (<code>text-danger</code>). Vert et rouge disent « réussite » et « erreur » partout ailleurs, et la méconnue n'est pas une erreur. L'offerte n'a pas d'équivalent visible dans la liste.</p>
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <div class="lm-stack">
+      <article class="lm-card"><div class="lm-card-body lm-actions" style="justify-content:space-between">
+        <div><b>Armes à 1 main – Initié</b> <span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-star"/></svg>Favorite</span></div>
+        <div class="lm-actions"><span class="lm-cost" data-role="ok">2 xp <s>3 xp</s></span><button class="lm-btn lm-btn--sm" type="button"><svg class="lm-ico"><use href="#i-plus"/></svg>Ajouter</button></div>
+      </div></article>
+      <article class="lm-card"><div class="lm-card-body lm-actions" style="justify-content:space-between">
+        <div><b>Cartographie – Apprenti</b> <span class="lm-badge" data-role="accent"><svg class="lm-ico"><use href="#i-gift"/></svg>Offerte à la création</span></div>
+        <span class="lm-help" style="margin:0">Déjà acquise, absente de la liste d'achat</span>
+      </div></article>
+      <article class="lm-card"><div class="lm-card-body lm-actions" style="justify-content:space-between">
+        <div><b>Politique – Apprenti</b> <span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-star"/></svg>Favorite</span></div>
+        <div class="lm-actions"><span class="lm-cost" data-role="ok">0 xp <s>3 xp</s></span><button class="lm-btn lm-btn--sm" type="button"><svg class="lm-ico"><use href="#i-plus"/></svg>Ajouter</button></div>
+      </div></article>
+      <article class="lm-card"><div class="lm-card-body lm-actions" style="justify-content:space-between">
+        <div><b>Forge – Apprenti</b></div>
+        <div class="lm-actions"><span class="lm-cost">3 xp</span><button class="lm-btn lm-btn--sm" type="button"><svg class="lm-ico"><use href="#i-plus"/></svg>Ajouter</button></div>
+      </div></article>
+      <article class="lm-card"><div class="lm-card-body lm-actions" style="justify-content:space-between">
+        <div><b>Herboristerie – Apprenti</b> <span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-frown"/></svg>Méconnue</span></div>
+        <div class="lm-actions"><span class="lm-cost" data-role="warn">6 xp <s>3 xp</s></span><button class="lm-btn lm-btn--sm" type="button"><svg class="lm-ico"><use href="#i-plus"/></svg>Ajouter</button></div>
+      </div></article>
     </div>
+    <ul class="doc-rules">
+      <li><b>Favorite</b> : étoile, vert (avantage). Le prix normal est barré à côté du prix réduit.</li>
+      <li><b>Offerte</b> : cadeau, cuivre. Donnée à la création, elle ne s'achète pas : pas de prix ni de bouton, seulement le badge sur la fiche du personnage.</li>
+      <li><b>Gratuite</b> : une remise supérieure au prix ramène le coût à 0 xp (minimum 0). Elle reste achetable, affichée en vert avec le prix barré. Ce n'est pas une offerte.</li>
+      <li><b>Normale</b> : aucun badge, aucune couleur. L'absence de signe est l'information.</li>
+      <li><b>Méconnue</b> : visage triste, ambre (surcoût, pas erreur). Le rouge reste réservé aux erreurs.</li>
+      <li>Le <b>prix</b> est l'information utile : l'afficher avec l'écart, pas seulement l'icône. Le bouton « Ajouter (3 xp) » devient « Ajouter » avec le prix à côté.</li>
+      <li>Sur un tableau ou un résumé (« Compétences favorites »), chaque famille garde le même badge.</li>
+    </ul>
+  </div>
 
-    <div class="well well-sm">
-        <h5>Liste</h5>
-        <p>
-            <a href="https://getbootstrap.com/docs/5.3/components/list-group">https://getbootstrap.com/docs/5.3/components/list-group</a>
-        </p>
-
-        <ul class="list-group list-group-item-action">
-            <li class="list-group-item">An item</li>
-            <li class="list-group-item">A second item</li>
-            <li class="list-group-item">A third item</li>
-            <li class="list-group-item">A fourth item</li>
-            <li class="list-group-item">And a fifth one</li>
+  <h3>Règle générale : vert = remise, ambre = surcoût</h3>
+  <p class="doc-note">Dans le code, une réduction est signalée par trois icônes vertes différentes (<code>fa-graduation-cap text-info</code> en cyan pour l'apprentissage, <code>fa-flag</code> et <code>fa-landmark</code> en vert pour les bonus d'origine et territoriaux). Le cyan est la couleur de « information » : on le retire. Toutes les sources de réduction deviennent des lignes vertes avec le montant en <code>−xp</code>, et seule l'icône dit d'où elles viennent.</p>
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <article class="lm-card">
+      <div class="lm-card-body">
+        <div class="lm-actions" style="justify-content:space-between;align-items:flex-start">
+          <div><b>Armes à 1 main – Initié</b> <span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-star"/></svg>Favorite</span></div>
+          <div class="lm-actions"><span class="lm-cost" data-role="ok">1 xp <s>3 xp</s></span><button class="lm-btn lm-btn--sm" type="button"><svg class="lm-ico"><use href="#i-plus"/></svg>Ajouter</button></div>
+        </div>
+        <ul class="lm-sources">
+          <li class="lm-source"><svg class="lm-ico"><use href="#i-star"/></svg>Compétence favorite<b>−1 xp</b></li>
+          <li class="lm-source"><svg class="lm-ico"><use href="#i-book"/></svg>Enseignée par Sigrun H., le 14 août 2025<b>−1 xp</b></li>
+          <li class="lm-source"><svg class="lm-ico"><use href="#i-flag"/></svg>Bonus d'origine : Cimmérien<b>0 xp</b></li>
+          <li class="lm-source"><svg class="lm-ico"><use href="#i-landmark"/></svg>Bonus territorial : Forges de Venarium<b>0 xp</b></li>
         </ul>
+      </div>
+      <div class="lm-card-foot"><span>3 xp de base, 2 xp de remises</span><span>Prix final : 1 xp</span></div>
+    </article>
+    <ul class="doc-rules">
+      <li><b>Apprentissage</b> : livre ouvert (enseignement). Libellé : qui, quand.</li>
+      <li><b>Bonus d'origine</b> : drapeau. <b>Bonus territorial</b> (merveille) : monument.</li>
+      <li>Le détail est visible sous le prix : le joueur comprend pourquoi 3 xp deviennent 1 xp.</li>
+      <li>Le prix barré à côté du prix final n'apparaît que s'il y a une différence.</li>
+      <li>Les montants sont en police à chasse fixe pour s'aligner d'une carte à l'autre.</li>
+    </ul>
+  </div>
 
+  <h3>Compétence secrète et aide de jeu</h3>
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <article class="lm-card">
+      <div class="lm-card-body lm-stack">
+        <div class="lm-callout" data-role="secret"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-spy"/></svg>Famille secrète</p>
+          <p><b>Réseau d'espions – Initié.</b> Acquise sans XP : ni prix ni bouton d'ajout. Visible du joueur et de l'administrateur seulement.</p></div>
+        <div class="lm-docchip"><svg class="lm-ico"><use href="#i-file"/></svg>
+          <span>Aide de jeu : Contrebande <small>Document PDF · 2 pages</small></span>
+          <div class="lm-actions"><a class="lm-btn lm-btn--sm" href="#"><svg class="lm-ico"><use href="#i-eye"/></svg>Voir</a><a class="lm-btn lm-btn--sm" href="#"><svg class="lm-ico"><use href="#i-download"/></svg>Télécharger</a></div></div>
+      </div>
+    </article>
+    <ul class="doc-rules">
+      <li><b>Secrète</b> : or + espion (aujourd'hui <code>fa-user-secret text-warning</code>, donc jaune d'avertissement). Pas de coût affiché.</li>
+      <li><b>Aide de jeu</b> : une ligne document avec nom, type et taille ; Voir et Télécharger côte à côte. Sur mobile, les deux boutons passent sous le nom.</li>
+      <li>Même composant pour les documents du personnage (« Vos documents »).</li>
+    </ul>
+  </div>
 
+  <h3>Espèces multiples, tranche d'âge, bonus</h3>
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <article class="lm-card">
+      <dl class="lm-dl">
+        <dt>Espèces</dt><dd><span class="lm-badge">Humain</span> <span class="lm-badge">Demi-Pict</span> <span class="lm-count">2</span></dd>
+        <dt>Tranche d'âge</dt><dd><span class="lm-badge" data-role="warn">Vieux · 55 ans et plus</span></dd>
+        <dt>Bonus</dt><dd><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-flag"/></svg>Origine : Cimmérie</span> <span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-landmark"/></svg>Forges</span></dd>
+      </dl>
+    </article>
+    <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>Effet de l'âge</p>
+      <p>Ce personnage a au moins 55 ans : <b>vitalité 0</b>. Sans la compétence Survie, il est <b>blessé permanent</b>.</p></div>
+  </div>
+</section>
+
+<!-- ===================== 4c. PARTICIPATION ===================== -->
+<section class="doc-sec">
+  <h2>4c. Participants : états et chaîne de personnages</h2>
+  <p class="doc-note">Constat dans le code : le PNJ (<code>search.twig</code>) et l'archétype de secours (<code>PersonnageRoleType</code>) utilisent la <b>même icône</b> (<code>fa-masks-theater</code>), et le « ancien PJ » (<code>fa-hourglass-end</code>) ressemble à la substitution (<code>fa-hourglass-half</code>). Les lettres P / S / R / A existent déjà dans l'enum : on les garde comme repère commun à toutes les listes.</p>
+
+  <h3>Type et état d'un participant</h3>
+  <div class="sample lm-stack">
+    <div class="lm-actions">
+      <span class="lm-state" data-role="accent"><svg class="lm-ico lm-ico--fill"><use href="#i-user"/></svg><span class="lm-state-label">PJ</span></span>
+      <span class="lm-state" data-role="muted"><svg class="lm-ico"><use href="#i-mask"/></svg><span class="lm-state-label">PNJ</span></span>
+      <span class="lm-state" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg><span class="lm-state-label">Inscrit, prêt</span></span>
+      <span class="lm-state lm-state--pending" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg><span class="lm-state-label">En attente du prochain opus</span></span>
+      <span class="lm-state lm-state--pending" data-role="muted"><svg class="lm-ico lm-ico--dashed"><use href="#i-user"/></svg><span class="lm-state-label">Non inscrit</span></span>
+      <span class="lm-state lm-state--dead" data-role="err"><svg class="lm-ico"><use href="#i-skull"/></svg><span class="lm-state-label">Mort</span></span>
     </div>
+    <div class="lm-table-wrap"><table class="lm-table lm-table--cards">
+      <thead><tr><th>Type</th><th>Personnage</th><th>Joueur</th><th>Participation</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Type"><span class="lm-state" data-role="accent"><svg class="lm-ico lm-ico--fill"><use href="#i-user"/></svg>PJ</span></td><td class="lm-cell-main" data-label="Personnage"><a href="#">Kaelwyn le Borgne</a></td><td data-label="Joueur">Sigrun H.</td><td data-label="Participation"><span class="lm-state" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Inscrit, prêt</span></td></tr>
+        <tr><td data-label="Type"><span class="lm-state" data-role="muted"><svg class="lm-ico"><use href="#i-mask"/></svg>PNJ</span></td><td class="lm-cell-main" data-label="Personnage"><a href="#">Le Marchand de Shem</a></td><td data-label="Joueur">Aurélien M.</td><td data-label="Participation"><span class="lm-state" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Inscrit, prêt</span></td></tr>
+        <tr><td data-label="Type"><span class="lm-state" data-role="accent"><svg class="lm-ico lm-ico--fill"><use href="#i-user"/></svg>PJ</span></td><td class="lm-cell-main" data-label="Personnage"><a href="#">Thalia de Zamora</a></td><td data-label="Joueur">Maëlle D.</td><td data-label="Participation"><span class="lm-state lm-state--pending" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>En attente</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li><b>Deux colonnes séparées</b> : le <i>type</i> (PJ ou PNJ) ne change pas ; la <i>participation</i> (prêt, en attente, non inscrit) évolue. Aujourd'hui une seule icône mélange les deux.</li>
+    <li>Prêt = vert (bonne nouvelle). En attente et non inscrit = pointillé neutre : ce n'est pas un problème, c'est un état en cours. Une icône pleine veut dire « acquis », une icône en pointillé « pas encore ».</li>
+    <li>Le PJ passe de la main fermée à un buste plein (<code>fa-user</code> plein), pour libérer le masque au PNJ seul et l'épée au type « combat » des classes.</li>
+  </ul>
 
-
-    <div class="well well-sm">
-        <h5>Carte | Panneau | Encart</h5>
-        <p>
-            https://getbootstrap.com/docs/5.3/components/card/
-        </p>
-        <div class="card mb-3 border-warning">
-            <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
-            <div class="card-body">
-                <p class="card-text">
-                    Voici un avertissement
-                </p>
-            </div>
-        </div>
-
+  <h3>Chaîne de jeu : principal, substitution, relève, archétype</h3>
+  <div class="sample lm-stack">
+    <ol class="lm-chain">
+      <li class="lm-link is-active"><span class="lm-link-badge">P</span><span class="lm-link-role">Principal</span><span class="lm-link-name">Kaelwyn le Borgne</span></li>
+      <li class="lm-link"><span class="lm-link-badge">S</span><span class="lm-link-role">Substitution</span><span class="lm-link-name">Brann Mac Ardal</span></li>
+      <li class="lm-link is-empty"><span class="lm-link-badge">R</span><span class="lm-link-role">Relève</span><span class="lm-link-name">Non choisi</span></li>
+      <li class="lm-link"><span class="lm-link-badge">A</span><span class="lm-link-role">Archétype</span><span class="lm-link-name">Guerrier</span></li>
+    </ol>
+    <p class="doc-note" style="margin:0">Principal mort : le maillon est barré, le suivant devient actif.</p>
+    <ol class="lm-chain">
+      <li class="lm-link is-dead"><span class="lm-link-badge">P</span><span class="lm-link-role">Principal</span><span class="lm-link-name">Kaelwyn le Borgne</span></li>
+      <li class="lm-link"><span class="lm-link-badge">S</span><span class="lm-link-role">Substitution</span><span class="lm-link-name">Brann Mac Ardal</span></li>
+      <li class="lm-link is-active"><span class="lm-link-badge">R</span><span class="lm-link-role">Relève</span><span class="lm-link-name">Thalia de Zamora</span></li>
+      <li class="lm-link"><span class="lm-link-badge">A</span><span class="lm-link-role">Archétype</span><span class="lm-link-name">Guerrier</span></li>
+    </ol>
+    <div class="lm-actions">
+      <span class="lm-badge"><svg class="lm-ico"><use href="#i-user"/></svg>P Principal</span>
+      <span class="lm-badge"><svg class="lm-ico"><use href="#i-swap"/></svg>S Substitution</span>
+      <span class="lm-badge"><svg class="lm-ico"><use href="#i-userplus"/></svg>R Relève</span>
+      <span class="lm-badge"><svg class="lm-ico"><use href="#i-pawn"/></svg>A Archétype</span>
     </div>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li><b>Lettre + icône</b> : la lettre reste dans les listes compactes, l'icône dans les fiches. Les deux ensemble dans les infobulles.</li>
+    <li>Substitution : flèches d'échange (au lieu d'un sablier proche de « ancien PJ »). Relève : utilisateur avec un plus (inchangé). Archétype : pion, pour ne plus ressembler au PNJ.</li>
+    <li>Le maillon <b>actif</b> est le seul en cuivre plein ; vide en pointillé ; mort barré. Sur mobile, les maillons passent en deux colonnes puis une seule.</li>
+    <li>Aucune couleur de rôle ici : cette chaîne est vue par le joueur comme par l'orga.</li>
+  </ul>
 
-    <div class="well well-sm">
-        <h5>Position</h5>
-        <p>
-            Center https://getbootstrap.com/docs/5.3/utilities/position/#center-elements
-        </p>
-        <p>
-            Flex https://getbootstrap.com/docs/5.3/utilities/flex/
-        </p>
-        <div class="position-relative">
-            <div class="position-absolute top-0 start-0 translate-middle"></div>
-            <div class="position-absolute top-0 start-50 translate-middle"></div>
-            <div class="position-absolute top-0 start-100 translate-middle"></div>
-            <div class="position-absolute top-50 start-0 translate-middle"></div>
-            <div class="position-absolute top-50 start-50 translate-middle"></div>
-            <div class="position-absolute top-50 start-100 translate-middle"></div>
-            <div class="position-absolute top-100 start-0 translate-middle"></div>
-            <div class="position-absolute top-100 start-50 translate-middle"></div>
-            <div class="position-absolute top-100 start-100 translate-middle"></div>
-        </div>
+  <h3>Les 17 classes : trois types</h3>
+  <p class="doc-note">Source : la liste des classes du site (17 classes, trois types). Le type est le bon niveau d'iconographie : trois pictogrammes suffisent là où 17 seraient illisibles. Les couleurs viennent de la <b>palette de données</b> (acier, mauve, sable), donc jamais d'un rôle ni d'un état.</p>
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <div class="lm-card"><div class="lm-card-head"><h4 class="lm-card-title">Combat</h4></div><div class="lm-card-body lm-actions">
+      <span class="lm-state" data-class="combat"><svg class="lm-ico"><use href="#i-sword"/></svg>Bourreau</span>
+      <span class="lm-state" data-class="combat"><svg class="lm-ico"><use href="#i-sword"/></svg>Chevalier</span>
+      <span class="lm-state" data-class="combat"><svg class="lm-ico"><use href="#i-sword"/></svg>Ranger</span>
+      <span class="lm-state" data-class="combat"><svg class="lm-ico"><use href="#i-sword"/></svg>Sauvage</span>
+      <span class="lm-state" data-class="combat"><svg class="lm-ico"><use href="#i-sword"/></svg>Soldat</span>
+      <span class="lm-state" data-class="combat"><svg class="lm-ico"><use href="#i-sword"/></svg>Tacticien</span></div></div>
+    <div class="lm-card"><div class="lm-card-head"><h4 class="lm-card-title">Social</h4></div><div class="lm-card-body lm-actions">
+      <span class="lm-state" data-class="social"><svg class="lm-ico"><use href="#i-chat"/></svg>Artiste</span>
+      <span class="lm-state" data-class="social"><svg class="lm-ico"><use href="#i-chat"/></svg>Brigand</span>
+      <span class="lm-state" data-class="social"><svg class="lm-ico"><use href="#i-chat"/></svg>Espion</span>
+      <span class="lm-state" data-class="social"><svg class="lm-ico"><use href="#i-chat"/></svg>Intrigant</span>
+      <span class="lm-state" data-class="social"><svg class="lm-ico"><use href="#i-chat"/></svg>Négociant</span>
+      <span class="lm-state" data-class="social"><svg class="lm-ico"><use href="#i-chat"/></svg>Noble de robe</span></div></div>
+    <div class="lm-card"><div class="lm-card-head"><h4 class="lm-card-title">Savoir</h4></div><div class="lm-card-body lm-actions">
+      <span class="lm-state" data-class="savoir"><svg class="lm-ico"><use href="#i-scroll"/></svg>Conseiller</span>
+      <span class="lm-state" data-class="savoir"><svg class="lm-ico"><use href="#i-scroll"/></svg>Explorateur</span>
+      <span class="lm-state" data-class="savoir"><svg class="lm-ico"><use href="#i-scroll"/></svg>Forgeron</span>
+      <span class="lm-state" data-class="savoir"><svg class="lm-ico"><use href="#i-scroll"/></svg>Prêtre</span>
+      <span class="lm-state" data-class="savoir"><svg class="lm-ico"><use href="#i-scroll"/></svg>Rebouteux</span></div></div>
+    <ul class="doc-rules">
+      <li><b>Combat</b> : épée. <b>Social</b> : bulle de dialogue. <b>Savoir</b> : parchemin.</li>
+      <li>Le libellé suit le genre du personnage (Chevalier / Chevaleresse), comme déjà fait par <code>getLabelPourGenre</code>.</li>
+      <li>L'<b>archétype de secours</b> est l'une de ces classes : son badge reprend le type, avec le pion dans la chaîne de jeu.</li>
+      <li>Dans les listes : type + nom de classe, jamais l'illustration. L'illustration en pied reste pour la fiche.</li>
+      <li>La compétence acquise à la création (Torture pour le Bourreau, Vol pour le Brigand…) est un bon sous-titre de ligne.</li>
+    </ul>
+  </div></section>
+
+<!-- ===================== 4d. DOMAINE ===================== -->
+<section class="doc-sec">
+  <h2>4d. Jeu de domaine : conseil et indicateurs</h2>
+  <p class="doc-note">Sur « Jeu de domaine » d'un groupe (<code>/groupe/2/detail/domaine/…</code>), tout est au même gabarit : une boîte en gros caractères par rôle ou par chiffre, avec un bouton info cyan. Un même personnage tient souvent plusieurs rôles (Nom_3545 est suzerain, intendant, éminence grise et diplomate) : on le lit mal d'un coup d'œil. La page affiche « Chef de guerre » là où votre liste dit « stratège » : un libellé à trancher.</p>
+  <h3>Le conseil : un siège par rôle</h3>
+  <div class="sample lm-stack">
+    <ul class="lm-seats">
+      <li class="lm-seat"><svg class="lm-ico"><use href="#i-crown"/></svg><span class="lm-seat-role">Suzerain</span><span class="lm-seat-name">Kaelwyn le Borgne</span></li>
+      <li class="lm-seat"><svg class="lm-ico"><use href="#i-coins"/></svg><span class="lm-seat-role">Intendant</span><span class="lm-seat-name">Kaelwyn le Borgne</span></li>
+      <li class="lm-seat"><svg class="lm-ico"><use href="#i-target"/></svg><span class="lm-seat-role">Stratège</span><span class="lm-seat-name">Brann Mac Ardal</span></li>
+      <li class="lm-seat"><svg class="lm-ico"><use href="#i-compass"/></svg><span class="lm-seat-role">Navigateur</span><span class="lm-seat-name">Thalia de Zamora</span></li>
+      <li class="lm-seat"><svg class="lm-ico"><use href="#i-eye"/></svg><span class="lm-seat-role">Éminence grise</span><span class="lm-seat-name">Kaelwyn le Borgne</span></li>
+      <li class="lm-seat"><svg class="lm-ico"><use href="#i-balance"/></svg><span class="lm-seat-role">Diplomate</span><span class="lm-seat-name">Kaelwyn le Borgne</span></li>
+      <li class="lm-seat is-vacant"><svg class="lm-ico"><use href="#i-users"/></svg><span class="lm-seat-role">Chef de groupe</span><span class="lm-seat-name">Siège vacant</span></li>
+    </ul>
+    <div class="lm-kpis">
+      <div class="lm-kpi"><span class="lm-kpi-value">18</span><span class="lm-kpi-label">Initiative</span></div>
+      <div class="lm-kpi"><span class="lm-kpi-value">3</span><span class="lm-kpi-label"><svg class="lm-ico"><use href="#i-landmark"/></svg> Fiefs</span></div>
+      <div class="lm-kpi"><span class="lm-kpi-value">0</span><span class="lm-kpi-label"><svg class="lm-ico"><use href="#i-castle"/></svg> Armes de siège</span></div>
+      <div class="lm-kpi"><span class="lm-kpi-value">8</span><span class="lm-kpi-label"><svg class="lm-ico"><use href="#i-users"/></svg> Agents</span></div>
+      <div class="lm-kpi"><span class="lm-kpi-value">3</span><span class="lm-kpi-label"><svg class="lm-ico"><use href="#i-ship"/></svg> Bateaux</span></div>
+      <div class="lm-kpi"><span class="lm-kpi-value">0</span><span class="lm-kpi-label"><svg class="lm-ico"><use href="#i-scroll"/></svg> Ordres</span></div>
     </div>
-
-    <div class="well well-sm">
-        <div class="header">
-            <h5>Detail page elements split</h5>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-
-
-                <div class="list-group">
-
-                    <div class="list-group-item">
-                        <div class="list-group-item-heading fw-bold mb-1 list-group-item-light">Titre</div>
-                        <div class="list-group-item-text ps-1">Lorem Ipsum</div>
-                    </div>
-
-
-                    <hr/>
-                    <div class="card text-bg mb-3">
-
-                        <div class="card-header"><h6>Titre</h6></div>
-                        <div class="card-body">
-                            <div class="card-title"><span class="text-danger">
-                                <i class="fa fa-user-secret text-danger" data-toggle="tooltip" data-placement="top"
-                                   title="Secret"></i> Secret
-                            </span> Lorem Ipsum
-                            </div>
-                        </div>
-
-                        <div class="card-header fw-bold border-top">Description</div>
-                        <div class="card-body">
-                            <div class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
-                                imperdiet lacinia enim, sed sollicitudin urna sagittis eu. Integer nisl massa, aliquet
-                                dapibus fermentum non, efficitur sit amet justo. Maecenas et ligula sed dolor vulputate
-                                convallis.
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="card text-bg mb-3">
-                        <div class="card-header"><h6>Liste</h6></div>
-
-                        <ul class="list-group-flush list-group">
-
-                            <li class="list-group-item ps-1">
-                                <a href="">LOREM no text</a>
-                            </li>
-                            <li class="list-group-item list-group-item-secondary ps-1">
-                                <a href="">LOREM secondary ps 1</a>
-                            </li>
-
-                            <li class="list-group-item ps-1">
-                                <a href="">LOREM</a>
-                            </li>
-
-                            <li class="list-group-item">
-                                <a href="">LOREM no ps text </a>
-                            </li>
-
-
-                        </ul>
-
-
-                    </div>
-
-                </div>
-
-
-                <div class="card mb-2">
-                    <h5 class="card-header">Featured</h5>
-                    <div class="card-body">
-                        <h5 class="card-title">Special title treatment</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-body-secondary">Last updated 3 mins ago</small>
-                    </div>
-                </div>
-
-
-            </div>
-
-            <div class="col-md-6">
-
-
-                <div class="list-group">
-
-                    <div class="list-group-item mb-2">
-                        <div class="list-group-item-heading fw-bold mb-1 list-group-item-light">Titre</div>
-                        <div class="list-group-item-text ps-1">Lorem Ipsum</div>
-                    </div>
-
-
-                    <div class="card text-bg mb-3">
-                        <div class="card-header"><h6>Titre</h6></div>
-                        <div class="card-body">
-                            <div class="card-title">Lorem Ipsum</div>
-                        </div>
-
-                        <div class="card-header border-top"><h6>Description</h6></div>
-                        <div class="card-body">
-                            <div class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
-                                imperdiet lacinia enim, sed sollicitudin urna sagittis eu. Integer nisl massa, aliquet
-                                dapibus fermentum non, efficitur sit amet justo. Maecenas et ligula sed dolor vulputate
-                                convallis.
-                            </div>
-                        </div>
-
-                        <div class="card-footer border-bottom border-top-0">
-                            <div class="text-footer-secondary d-flex justify-content-between">
-                                <div>
-                                    <small>DATE</small>
-                                </div>
-                                <div>
-                                    <small> USER </small>
-                                </div>
-
-                                <div><small> STATUS </small></div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="card text-bg mb-3">
-                        <div class="card-header"><h6>Liste</h6></div>
-
-                        <ul class="list-group-flush list-group">
-
-                            <li class="list-group-item ps-1">
-                                <span>
-                                <i class="fa fa-user-secret text-danger" data-toggle="tooltip" data-placement="top"
-                                   title="Secret"></i>  - LOREM
-                            </span> LOREM no text
-                            </li>
-                            <li class="list-group-item list-group-item-secondary ps-1">
-                                LOREM secondary ps 1
-                            </li>
-
-                            <li class="list-group-item ps-1">
-                                LOREM
-                            </li>
-
-                            <li class="list-group-item list-group-item-secondary">
-                                LOREM
-                            </li>
-
-
-                        </ul>
-
-
-                    </div>
-
-                    <div class="card text-bg mb-3">
-                        <div class="card-header"><h5>Liste</h5></div>
-
-                        <ul class="list-group-flush list-group">
-
-                            <li class="list-group-item m-0 p-0 g-0">
-                                <div class="d-flex justify-content-start">
-                                    <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
-                                        TITLE
-                                    </div>
-                                    <div class="col-md-10 px-2 py-1">LOREM</div>
-                                </div>
-                            </li>
-
-                            <li class="list-group-item list-group-item-secondary m-0 p-0 g-0">
-                                <div class="d-flex justify-content-start">
-                                    <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
-                                        TITLE
-                                    </div>
-                                    <div class="col-md-10 px-2 align-middle py-1">LOREM IMPSUM IN DOLOR</div>
-                                </div>
-                            </li>
-
-                            <li class="list-group-item m-0 p-0 g-0">
-                                <div class="d-flex justify-content-start">
-                                    <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
-                                        TITLE
-                                    </div>
-                                    <div class="col-md-10 px-2">LOREM <br/> SIT AMET</div>
-                                </div>
-                            </li>
-
-                            <li class="list-group-item m-0 p-0 g-0">
-                                <div class="d-flex justify-content-start">
-                                    <div class="col-md-2 bg-body-secondary d-flex align-items-center justify-content-center ">
-                                        TITLE
-                                    </div>
-                                    <div class="col-md-10 px-2 align-middle py-1">LOREM</div>
-                                </div>
-                            </li>
-
-                        </ul>
-
-                    </div>
-
-                </div>
-
-                <div class="card mb-2">
-                    <div class="header">
-
-                        <h5 class="m-0">LOREM</h5>
-                    </div>
-                    <div class="table-responsive">
-                    <table class="table table-sm table-striped table-bordered table-hover mb-0">
-                        <thead>
-                        <tr class="text-center">
-                            <th scope="col" class="col-6">IPSUM</th>
-                            <th scope="col">DOLOR</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        <tr>
-                            <td><span class="text-danger">
-                                <i class="fa fa-user-secret text-danger" data-toggle="tooltip" data-placement="top"
-                                   title="Secret"></i>  - Secret
-                            </span> LOREM
-                            </td>
-                            <td>IPSUM IN DOLOR</td>
-                        </tr>
-                        <tr>
-                            <td>LOREM</td>
-                            <td>IPSUM IN DOLOR</td>
-                        </tr>
-                        <tr>
-                            <td>LOREM</td>
-                            <td>IPSUM IN DOLOR</td>
-                        </tr>
-                        <tr>
-                            <td>LOREM</td>
-                            <td>IPSUM IN DOLOR</td>
-                        </tr>
-
-                        </tbody>
-                    </table>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <h5>Liste </h5>
-
-        {# HEAD #}
-        <div class="container bg-body border border-secondary rounded-top">
-            <div class="row row-cols-2">
-                <div class="align-middle lh-lg head col-sm-2 border-end fw-bold text-center bg-body-secondary rounded-2 rounded-bottom-0 rounded-end-0 fw-bold">
-                    TITRE
-                </div>
-                <div class="text col-sm-10">
-                    <div class="d-flex justify-content-between h">
-                        <div class="align-middle lh-lg">Text lorem ipsum</div>
-                        <div>
-                            <button class="btn btn-sm btn-secondary " role="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#collapseTest1"
-                                    aria-expanded="false"
-                                    title="historique"
-                                    aria-controls="collapseTest1">
-                                <i class="fa fa-info" aria-hidden="true"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container bg-info-subtle border border-secondary border-top-0 collapse p-2" id="collapseTest1">
-            <div>
-                <div class="list-group">
-                    Pas de violence excessive dans les gestes ou les mots, pas de drague, de
-                    propositions d'alcool, etc.
-
-                </div>
-            </div>
-        </div>
-
-        {# ROW #}
-        <div class="container bg-body border border-secondary border-top-0">
-            <div class="row row-cols-2">
-                <div class="align-middle lh-lg col-sm-2 text-center bg-body-secondary border-end">
-                    1 of 3
-                </div>
-                <div class="align-middle lh-lg col-sm-10">
-                    2 of 3 (wider)
-                </div>
-            </div>
-        </div>
-
-        {# BOTTOM #}
-        <div class="container bg-body border border-secondary border-top-0 rounded-bottom mb-2">
-            <div class="row row-cols-2">
-                <div class="align-middle lh-lg col-sm-2 border-end fw-bold text-center bg-body-secondary rounded-2 rounded-end-0 rounded-top-0">
-                    ZZZZZZZ
-                </div>
-                <div class="align-middle lh-lg col-sm-10">
-                    TT
-                </div>
-            </div>
-        </div>
-
-
-        <div>
-            <div class="alert alert-warning" role="alert">
-                A simple primary alert-check it out!
-            </div>
-
-            <h2>couleur GM</h2>
-            <div class="alert alert-gamemaster" role="alert">
-                A simple primary alert-check it out!
-            </div>
-
-            <ul class="list-group list-group-item-action">
-                <li class="list-group-item text-gamemaster">An item</li>
-                <li class="list-group-item list-group-item-gamemaster">A second item</li>
-                <li class="list-group-item  text-bg-gamemaster">A third item</li>
-                <li class="list-group-item border-gamemaster">A fourth item</li>
-                <li class="list-group-item">And a fifth one</li>
-            </ul>
-
-            <div class="card mb-3 border-gamemaster mt-2">
-                <div class="card-header text-gamemaster-emphasis"><i class="fa fa-info-circle text-gamemaster"></i>
-                    Documentation
-                </div>
-                <div class="card-body">
-                    <p class=" text-gamemaster">
-                        Actuellement sur un essaie
-
-                    </p>
-                    <p class="text-bg-gamemaster">
-                        Actuellement sur BG
-                    </p>
-
-                    <a class="btn btn-sm btn-secondary border-gamemaster text-gamemaster"><i
-                                class="fa fa-feather text-gamemaster"></i> TEST</a>
-
-                    <a class="btn btn-sm btn-secondary border-gamemaster"><i
-                                class="fa fa-feather text-gamemaster-emphasis"></i> TEST</a>
-
-                    <a class="btn btn-sm btn-outline-gamemaster "><i
-                                class="fa fa-feather"></i> TEST</a>
-
-                    <a class="btn btn-sm btn-secondary border-warning"><i
-                                class="fa fa-feather text-warning"></i> TEST</a>
-                    <a class="btn btn-sm btn-warning border-warning"><i
-                                class="fa fa-feather text-gamemaster"></i> TEST</a>
-                    <a class="btn btn-sm btn-danger border-warning"><i
-                                class="fa fa-feather text-gamemaster"></i> TEST</a>
-                    <a class="btn btn-sm btn-info border-gamemaster"><i
-                                class="fa fa-feather text-gamemaster"></i> TEST</a>
-                    <a class="btn btn-sm btn-success border-gamemaster-subtle"><i
-                                class="fa fa-feather text-gamemaster"></i> TEST</a>
-
-                    <a class="btn btn-sm btn-gamemaster border-gamemaster">TEST</a>
-                    <a class="btn btn-sm btn-gamemaster border-gamemaster-subtle">TEST</a>
-                    <a class="btn btn-sm btn-primary border-gamemaster">TEST</a>
-
-
-                    <a class="btn btn-sm btn-outline-gamemaster"
-                       data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Modifier"
-                       href="#">
-                        <i class="fa-solid fa-feather"></i>
-                    </a>
-
-                </div>
-            </div>
-
-            <hr/>
-
-            <div class="table-responsive">
-            <table class="table table-gamemaster table-sm table-striped table-bordered table-hover">
-                <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">First</th>
-                    <th scope="col">Last</th>
-                    <th scope="col">Handle</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
-                <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr>
-                </tbody>
-            </table>
-            </div>
-        </div>
-
-        <hr/>
-        <h4>Cardnotif</h4>
-        {% include '_partials/cardNotif.twig' with {'type' : 'gamemaster', 'content' : 'Contenu de test', 'css' : 'mt-2'} %}
-        <h4>Message alert</h4>
-        <div class="alert alert-gamemaster d-flex align-items-center" role="alert">
-            <div class="p-2 flex-grow-1"><i class="fa-solid fa-feather"></i> Lorem Ipsum</div>
-            <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <div class="card">
-            <div class="list-group-item">
-                <div class="card-header d-flex justify-content-between border-warning">
-                    <h5 class="align-content-center ">
-                        <i data-bs-toggle="tooltip" data-bs-placement="bottom"
-                           class="fa fa-user-secret text-warning" title="Secret"></i>
-                        Description secrète
-                    </h5>
-                </div>
-                <div class="card-body">
-                    ddd
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h5 class="card-header border-info">Test Title</h5>
-            <h5 class="card-header border-warning">Test Title</h5>
-            <h5 class="card-header border-primary">Test Title</h5>
-            <h5 class="card-header border-danger">Test Title</h5>
-            <h5 class="card-header border-success">Test Title</h5>
-            <h5 class="card-header border-gamemaster">
-                <i data-bs-toggle="tooltip" data-bs-placement="bottom"
-                   class="fa fa-feather text-gamemaster" title="Scénarisation"></i>
-
-                Test Title
-            </h5>
-            <h5 class="card-header border-dark">Test Title</h5>
-            <h5 class="card-header border-light">Test Title</h5>
-        </div>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li>Tous les sièges sont en <b>pourpre domaine</b> : l'icône dit le rôle, pas la couleur.</li>
+    <li>Un siège vacant est en pointillé, avec le libellé « vacant » : on voit ce qui manque avant de lire les noms.</li>
+    <li>Option : regrouper par personnage (« Kaelwyn : suzerain, intendant, éminence grise, diplomate ») quand l'un d'eux cumule.</li>
+    <li>Les indicateurs ne se répètent pas en gros caractères : une rangée de tuiles, l'info (i) devient une infobulle.</li>
+    <li>« Agents » n'utilise pas l'espion : il reste réservé au secret. Le groupe d'icônes d'agents est un simple groupe de personnes.</li>
+  </ul>
+</section>
+
+<!-- ===================== 4e. CHRONOLOGIE ===================== -->
+<section class="doc-sec">
+  <h2>4e. Chronologie des opus et des inter-jeux</h2>
+  <p class="doc-note">Les opus sont LH1 à LH7 (le prochain est LH8) : environ tous les 2 ans réels, 5 ans en jeu. Entre deux opus, un inter-jeu enchaîne des actions de jeu (vieillissement, effet de sanctuaire, verrouillage des fiches, impression des enveloppes, ouverture du scanner d'objets). Aujourd'hui rien ne les montre dans le temps : c'est un bon candidat de composant partagé entre fiche GN, groupe et personnage.</p>
+  <div class="sample">
+    <ol class="lm-timeline">
+      <li class="lm-opus" data-state="done"><span class="lm-opus-name">LH5</span><span class="lm-opus-date">août 2021</span><span class="lm-opus-game">1 295 en jeu</span></li>
+      <li class="lm-inter" data-state="done"><p class="lm-inter-title">Inter-jeu</p><ul class="lm-acts">
+        <li class="lm-act" data-state="done"><svg class="lm-ico"><use href="#i-hourglass"/></svg>Vieillissement</li>
+        <li class="lm-act" data-state="done"><svg class="lm-ico"><use href="#i-sun"/></svg>Effet de sanctuaire</li></ul></li>
+      <li class="lm-opus" data-state="done"><span class="lm-opus-name">LH6</span><span class="lm-opus-date">août 2023</span><span class="lm-opus-game">1 300 en jeu</span></li>
+      <li class="lm-inter" data-state="done"><p class="lm-inter-title">Inter-jeu</p><ul class="lm-acts">
+        <li class="lm-act" data-state="done"><svg class="lm-ico"><use href="#i-hourglass"/></svg>Vieillissement</li>
+        <li class="lm-act" data-state="done"><svg class="lm-ico"><use href="#i-sun"/></svg>Effet de sanctuaire</li></ul></li>
+      <li class="lm-opus" data-state="done"><span class="lm-opus-name">LH7</span><span class="lm-opus-date">août 2025</span><span class="lm-opus-game">1 305 en jeu</span></li>
+      <li class="lm-inter" data-state="active"><p class="lm-inter-title">Inter-jeu en cours</p><ul class="lm-acts">
+        <li class="lm-act" data-state="done"><svg class="lm-ico"><use href="#i-hourglass"/></svg>Vieillissement</li>
+        <li class="lm-act" data-state="open"><svg class="lm-ico"><use href="#i-sun"/></svg>Effet de sanctuaire</li>
+        <li class="lm-act"><svg class="lm-ico"><use href="#i-lock"/></svg>Verrouillage des fiches</li>
+        <li class="lm-act"><svg class="lm-ico"><use href="#i-printer"/></svg>Impression des enveloppes</li></ul></li>
+      <li class="lm-opus" data-state="next"><span class="lm-opus-name">LH8</span><span class="lm-opus-date">août 2027</span><span class="lm-opus-game">1 310 en jeu</span></li>
+      <li class="lm-inter" data-state="next"><p class="lm-inter-title">Pendant le jeu</p><ul class="lm-acts">
+        <li class="lm-act"><svg class="lm-ico"><use href="#i-scan"/></svg>Scanner d'objets ouvert</li></ul></li>
+    </ol>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li><b>Nœud</b> = un opus : plein gris (terminé), plein cuivre avec halo (en cours), pointillé cuivre (prochain).</li>
+    <li><b>Segment</b> = un inter-jeu, en pourpre domaine. Chaque action y a une icône et un état : en gris (à venir), en gras (ouverte), en vert (faite).</li>
+    <li>Les dates réelles et l'année en jeu sont toutes deux affichées : le joueur raisonne en jeu, l'orga en réel.</li>
+    <li>Sur mobile, la frise devient verticale. Sur la fiche d'un personnage ou d'un groupe, on marque ses propres participations (un nœud plein = présent à cet opus).</li>
+    <li>Les années en jeu et les nombres de joueurs ci-dessus sont des exemples. Les dates réelles viennent de la liste des GN.</li>
+  </ul>
+</section>
+
+<!-- ===================== 4f. GROUPES TRANSVERSES ===================== -->
+<section class="doc-sec">
+  <h2>4f. Groupes transverses</h2>
+  <p class="doc-note">La page <code>/groupeSecondaire/1/detail</code> empile : description publique de cinq paragraphes en pleine largeur, description secrète, serveur Discord, chef et scénariste, matériel, intrigues, liste des postulants, liste des membres en cartes-photo (avec « Ne voit pas les secrets » et deux boutons par membre), puis les listes d'e-mails. Elle fonctionne, mais le premier écran est un mur de texte et les actions par membre occupent plus de place que l'information.</p>
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <div class="lm-stack">
+      <div class="lm-page-head"><div><h4 class="lm-page-title">Confrérie du savoir</h4><div class="lm-meta"><span>Groupe transverse</span><span>Discord</span><span class="lm-count">42 membres</span></div></div>
+        <div class="lm-actions"><button class="lm-btn lm-btn--primary" type="button">Postuler</button><button class="lm-btn lm-btn--icon" aria-label="Plus d'actions" type="button"><svg class="lm-ico"><use href="#i-more"/></svg></button></div></div>
+      <div class="lm-card"><div class="lm-card-body"><p style="margin:0;max-width:68ch">Ils savent beaucoup de choses. Et ils le savent. L'intellect, à leurs yeux, demeure la seule force véritablement digne d'admiration…</p><p><a href="#">Lire la suite</a></p></div></div>
+      <div class="lm-callout" data-role="secret"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-spy"/></svg>Description secrète</p><p>Visible des membres qui ont accès aux secrets.</p></div>
+      <div class="lm-seats"><div class="lm-seat" style="border-left-color:var(--lm-accent)"><svg class="lm-ico" style="color:var(--lm-accent)"><use href="#i-crown"/></svg><span class="lm-seat-role">Chef du groupe</span><span class="lm-seat-name">Aurélien M.</span></div>
+        <div class="lm-seat" style="border-left-color:var(--lm-gm)"><svg class="lm-ico" style="color:var(--lm-gm-text)"><use href="#i-feather"/></svg><span class="lm-seat-role">Scénariste</span><span class="lm-seat-name">Maëlle D.</span></div></div>
     </div>
+    <div class="lm-card">
+      <div class="lm-card-head"><h4 class="lm-card-title">Postulants <span class="lm-count">5</span></h4></div>
+      <div class="lm-member"><span class="lm-avatar">TZ</span><div><b>Thalia de Zamora</b><div class="lm-member-meta"><span>Inscrite à LH7</span></div></div>
+        <div class="lm-actions"><button class="lm-btn lm-btn--sm lm-btn--primary" type="button">Accepter</button><button class="lm-btn lm-btn--sm lm-btn--danger" type="button">Rejeter</button><button class="lm-btn lm-btn--sm lm-btn--icon" aria-label="Répondre, mettre en attente" type="button"><svg class="lm-ico"><use href="#i-more"/></svg></button></div></div>
+      <div class="lm-card-head" style="border-radius:0;border-top-width:1px"><h4 class="lm-card-title">Membres <span class="lm-count">42</span></h4></div>
+      <div class="lm-member"><span class="lm-avatar">BM</span><div><b>Brann Mac Ardal</b><div class="lm-member-meta"><span class="lm-badge" data-role="muted">Ne voit pas les secrets</span><span>Inscrit à LH7</span></div></div>
+        <button class="lm-btn lm-btn--sm lm-btn--icon" aria-label="Actions" type="button"><svg class="lm-ico"><use href="#i-more"/></svg></button></div>
+      <div class="lm-member"><span class="lm-avatar">SH</span><div><b>Sigrun H.</b><div class="lm-member-meta"><span class="lm-badge" data-role="secret"><svg class="lm-ico"><use href="#i-spy"/></svg>Voit les secrets</span><span>Inscrite à LH7</span></div></div>
+        <button class="lm-btn lm-btn--sm lm-btn--icon" aria-label="Actions" type="button"><svg class="lm-ico"><use href="#i-more"/></svg></button></div>
+    </div>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li>Premier écran : titre, type, nombre de membres, bouton principal (Postuler ou Contacter le chef). Le texte long est replié (« Lire la suite ») et limité à 68 caractères de large.</li>
+    <li>Le secret garde l'or et l'espion, y compris pour l'<b>accès d'un membre</b> : « Voit les secrets » en badge or, « Ne voit pas les secrets » en neutre.</li>
+    <li>Postulants : une file de décisions, au-dessus des membres. Accepter en cuivre, Rejeter en rouge contouré, « Répondre » et « Mettre en attente » dans le menu ⋯.</li>
+    <li>Membres : ligne compacte (avatar 44 px, nom, statut, accès). Contacter, Promouvoir et Retirer passent dans le menu ⋯. Les photos plein format deviennent une vue en cartes en option.</li>
+    <li>Les listes d'e-mails se copient depuis un bouton « Copier les e-mails » du menu, sans occuper deux blocs.</li>
+  </ul>
+</section>
 
+<!-- ===================== 5. TABLEAUX ===================== -->
+<section class="doc-sec">
+  <h2>5. Listes, tableaux, filtres</h2>
+  <div class="lm-stack">
+    <div class="lm-filters">
+      <label class="lm-search"><span class="sr-only" style="position:absolute;left:-9999px">Recherche</span>
+        <input class="lm-field" type="search" id="d-search" placeholder="Rechercher un personnage, un joueur, un groupe"></label>
+      <button class="lm-btn" type="button">Filtres <span class="lm-count">2</span></button>
+      <button class="lm-btn lm-btn--primary" type="button"><svg class="lm-ico"><use href="#i-plus"/></svg>Ajouter</button>
+    </div>
+    <div class="lm-chips">
+      <span class="lm-chip">Statut : actif <button aria-label="Retirer le filtre"><svg class="lm-ico"><use href="#i-x"/></svg></button></span>
+      <span class="lm-chip">Groupe : LH4 <button aria-label="Retirer le filtre"><svg class="lm-ico"><use href="#i-x"/></svg></button></span>
+      <button class="lm-btn lm-btn--ghost lm-btn--sm" type="button">Réinitialiser</button>
+    </div>
+    <div class="lm-table-wrap"><table class="lm-table lm-table--cards">
+      <thead><tr><th>Statut</th><th>Nom</th><th>Classe</th><th>Groupe</th><th>Joueur</th><th class="num">XP</th><th></th></tr></thead>
+      <tbody>
+        <tr><td data-label="Statut"><span class="lm-badge" data-role="ok">Actif</span></td><td class="lm-cell-main" data-label="Nom"><a href="#">Kaelwyn le Borgne</a></td><td data-label="Classe">Guerrier</td><td data-label="Groupe"><a href="#">LH4 – Marches</a></td><td data-label="Joueur">Sigrun H.</td><td class="num" data-label="XP">4 / 46</td><td><button class="lm-btn lm-btn--icon lm-btn--sm" aria-label="Actions"><svg class="lm-ico"><use href="#i-more"/></svg></button></td></tr>
+        <tr data-role="warn"><td data-label="Statut"><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-warn"/></svg>Anomalie</span></td><td class="lm-cell-main" data-label="Nom"><a href="#">Thalia de Zamora</a></td><td data-label="Classe">Voleuse</td><td data-label="Groupe"><a href="#">LH2 – Guilde</a></td><td data-label="Joueur">Aurélien M.</td><td class="num" data-label="XP">8 / 44</td><td><button class="lm-btn lm-btn--icon lm-btn--sm" aria-label="Actions"><svg class="lm-ico"><use href="#i-more"/></svg></button></td></tr>
+        <tr><td data-label="Statut"><span class="lm-badge">Non actif</span></td><td class="lm-cell-main" data-label="Nom"><a href="#">Brann Mac Ardal</a></td><td data-label="Classe">Barde</td><td data-label="Groupe"><a href="#">LH3 – Cimmérie</a></td><td data-label="Joueur">Maëlle D.</td><td class="num" data-label="XP">0 / 70</td><td><button class="lm-btn lm-btn--icon lm-btn--sm" aria-label="Actions"><svg class="lm-ico"><use href="#i-more"/></svg></button></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li>Le nom est le seul lien fort ; les autres références sont des liens discrets (soulignés au survol).</li>
+    <li>Sous 640 px, chaque ligne devient une carte (<code>lm-table--cards</code> + <code>data-label</code>), sans second gabarit.</li>
+    <li>Un liseré gauche de ligne indique l'état à traiter. Le statut est toujours un badge avec texte.</li>
+    <li>Une recherche toujours visible ; les autres filtres dans un panneau « Filtres (n) » ; puces des filtres actifs.</li>
+  </ul>
+</section>
 
+<!-- ===================== 6. FORMULAIRES ===================== -->
+<section class="doc-sec">
+  <h2>6. Formulaires</h2>
+  <form class="lm-card lm-card-body lm-form" onsubmit="return false">
+    <div><label class="lm-label is-required" for="d-nom">Nom du territoire</label><input class="lm-field" id="d-nom" value="Aquilonie"></div>
+    <div><label class="lm-label" for="d-type">Type</label>
+      <select class="lm-field" id="d-type"><option>Royaume</option><option>Province</option><option>Fief</option></select>
+      <div class="lm-help">Au-delà de 8 options, ce champ devient une liste avec recherche.</div></div>
+    <div><label class="lm-label is-required" for="d-res">Résistance de base</label><input class="lm-field is-invalid" id="d-res" value="-3" aria-describedby="d-res-err"><div class="lm-error" id="d-res-err">La valeur doit être positive ou nulle.</div></div>
+    <div class="lm-formbar"><button class="lm-btn lm-btn--danger" type="button">Supprimer</button><div class="lm-actions"><button class="lm-btn" type="button">Annuler</button><button class="lm-btn lm-btn--primary" type="submit">Enregistrer</button></div></div>
+  </form>
+  <p class="doc-note">Libellé au-dessus, une colonne, erreur sous le champ avec la correction attendue. La barre d'actions est toujours en bas : destructif à gauche, annuler puis valider à droite.</p>
+</section>
 
+<!-- ===================== 7. GABARITS ===================== -->
+<section class="doc-sec">
+  <h2>7. Gabarits de page</h2>
 
+  <h3>Détail d'un personnage</h3>
+  <div class="sample lm-stack">
+    <div class="lm-page-head">
+      <div><h4 class="lm-page-title">Kaelwyn le Borgne</h4>
+        <div class="lm-meta"><span>Guerrier des marches</span><span>58 ans</span><span class="lm-badge" data-role="err">Mort</span></div></div>
+      <div class="lm-actions"><button class="lm-btn lm-btn--primary" type="button"><svg class="lm-ico"><use href="#i-edit"/></svg>Modifier</button><button class="lm-btn lm-btn--icon" aria-label="Plus d'actions" type="button"><svg class="lm-ico"><use href="#i-more"/></svg></button></div>
+    </div>
+    <div class="lm-kpis">
+      <div class="lm-kpi"><span class="lm-kpi-value">4 / 46</span><span class="lm-kpi-label">Expérience</span></div>
+      <div class="lm-kpi"><span class="lm-kpi-value">27</span><span class="lm-kpi-label">Renommée</span></div>
+      <div class="lm-kpi"><span class="lm-kpi-value">3</span><span class="lm-kpi-label">Pugilat</span></div>
+      <div class="lm-kpi"><span class="lm-kpi-value">0</span><span class="lm-kpi-label">Héroïsme</span></div>
+    </div>
+    <nav class="lm-tabs" aria-label="Fiche"><a class="lm-tab" aria-current="page" href="#">Générale</a><a class="lm-tab" href="#">Compétences</a><a class="lm-tab" href="#">Religions</a><a class="lm-tab" href="#">Biographie</a><a class="lm-tab" href="#">Groupes</a><a class="lm-tab" href="#">Enveloppe</a></nav>
+    <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>À compléter (2)</p>
+      <p>Bracelets de langue : préférence non indiquée.<br>Sensibilité : brassard non attribué.</p>
+      <div class="lm-callout-actions"><a class="lm-btn lm-btn--sm" href="#">Mettre à jour mes préférences</a></div></div>
+  </div>
+  <p class="doc-note">Les deux « Attention » identiques de la fiche actuelle deviennent un seul bloc avec une liste. Les compteurs (XP, renommée, pugilat, héroïsme) passent en tête au lieu de lignes dans un tableau.</p>
+
+  <h3>Tableau de bord stock</h3>
+  <div class="sample lm-stack">
+    <div class="lm-kpis">
+      <div class="lm-kpi"><span class="lm-kpi-value">1 072</span><span class="lm-kpi-label">Objets</span></div>
+      <a class="lm-kpi" href="#"><span class="lm-kpi-value">815</span><span class="lm-kpi-label">En stock</span></a>
+      <a class="lm-kpi" href="#"><span class="lm-kpi-value">246</span><span class="lm-kpi-label">Hors stock</span></a>
+      <a class="lm-kpi" href="#"><span class="lm-kpi-value">5</span><span class="lm-kpi-label">À fabriquer</span></a>
+      <a class="lm-kpi" href="#"><span class="lm-kpi-value">3</span><span class="lm-kpi-label">À acheter</span></a>
+    </div>
+    <div class="lm-grid-2">
+      <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>À régler</p>
+        <p><a href="#">244 objets</a> sans propriétaire<br><a href="#">461 objets</a> sans responsable</p></div>
+      <div class="lm-card"><div class="lm-card-head"><h4 class="lm-card-title">Répartition par tag</h4></div>
+        <div class="lm-card-body lm-stack">
+          <div><div class="lm-actions" style="justify-content:space-between"><span>Arme</span><span class="lm-count">165</span></div><div class="lm-bar"><i style="--w:100%"></i></div></div>
+          <div><div class="lm-actions" style="justify-content:space-between"><span>Alchimie</span><span class="lm-count">94</span></div><div class="lm-bar"><i style="--w:57%"></i></div></div>
+          <div><div class="lm-actions" style="justify-content:space-between"><span>Statuette</span><span class="lm-count">46</span></div><div class="lm-bar"><i style="--w:28%"></i></div></div>
+        </div></div>
+    </div>
+  </div>
+  <p class="doc-note">Les 10 derniers objets passent en tableau compact (nom, état, date) au lieu de grandes cartes avec description : on voit 10 lignes sans défiler.</p>
+
+  <h3>Fiche GN avec jeu de domaine</h3>
+  <div class="sample lm-stack">
+    <div class="lm-callout" data-role="admin"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-key"/></svg>Administratif</p>
+      <div class="lm-actions"><button class="lm-btn lm-btn--sm" type="button">Billets</button><button class="lm-btn lm-btn--sm" type="button">Modifier</button><button class="lm-btn lm-btn--sm lm-btn--danger" type="button">Supprimer</button><button class="lm-btn lm-btn--sm" type="button">Document FédéGN</button></div></div>
+    <div class="lm-callout" data-role="domaine"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-crown"/></svg>Jeu de domaine</p>
+      <div class="lm-callout-actions"><button class="lm-btn lm-btn--role lm-btn--sm" data-role="domaine" type="button">Import fiches retour</button></div></div>
+  </div>
+</section>
+
+<!-- ===================== 8. ZONES ===================== -->
+<section class="doc-sec">
+  <h2>8. Zones du site</h2>
+  <p class="doc-note">Le menu actuel (<code>templates/menu.twig</code>) compte 8 entrées. La couleur d'un rôle ne teinte jamais toute une zone : elle marque seulement les blocs dont l'audience est restreinte. Une zone se reconnaît à son icône et à son titre ; ce tableau fixe l'icône et le traitement.</p>
+  <div class="lm-table-wrap"><table class="lm-table lm-table--cards">
+    <thead><tr><th>Entrée</th><th>Contenu</th><th>Icône</th><th>Traitement</th></tr></thead>
+    <tbody>
+      <tr><td class="lm-cell-main" data-label="Entrée"><b>Compte</b></td><td data-label="Contenu">Mon compte, mes GN, mes personnages, déconnexion</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-user"/></svg> utilisateur</td><td data-label="Traitement">Neutre.</td></tr>
+      <tr data-role="admin"><td class="lm-cell-main" data-label="Entrée"><b>Admin</b></td><td data-label="Contenu">GN, billets, utilisateurs, droits, rappels</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-key"/></svg> clé</td><td data-label="Traitement">Rôle <b>admin</b> (bordeaux) sur les blocs visibles des administrateurs seuls.</td></tr>
+      <tr><td class="lm-cell-main" data-label="Entrée"><b>Univers</b></td><td data-label="Contenu">Religions, carte, territoires, fiefs, cultures, espèces</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-globe"/></svg> globe</td><td data-label="Traitement">Cuivre (marque). Les blocs MJ d'un territoire gardent le violet.</td></tr>
+      <tr data-role="gm"><td class="lm-cell-main" data-label="Entrée"><b>Scénario</b></td><td data-label="Contenu">Groupes, personnages, intrigues, backgrounds, rumeurs</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-feather"/></svg> plume</td><td data-label="Traitement">Rôle <b>scénario</b> (violet) pour le contenu écrit par les MJ.</td></tr>
+      <tr data-role="domaine"><td class="lm-cell-main" data-label="Entrée"><b>Jeu</b></td><td data-label="Contenu">Lois, économie, stratégie, diplomatie, quêtes commerciales</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-castle"/></svg> château</td><td data-label="Traitement">Rôle <b>domaine</b> (pourpre) : ce sont les mécaniques du jeu de domaine. À confirmer avec vous.</td></tr>
+      <tr><td class="lm-cell-main" data-label="Entrée"><b>Règles</b></td><td data-label="Contenu">Règles, compétences, classes, magie, âges, bonus</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-book"/></svg> livre</td><td data-label="Traitement">Aucune couleur de rôle : c'est un référentiel. Les affinités et remises suivent §4b.</td></tr>
+      <tr><td class="lm-cell-main" data-label="Entrée"><b>Stock</b></td><td data-label="Contenu">Objets, états, tags, localisations, rangements</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-box"/></svg> caisse</td><td data-label="Traitement">Aucune couleur de rôle. Les états utilisent les couleurs d'état et la palette de données.</td></tr>
+      <tr data-role="domaine"><td class="lm-cell-main" data-label="Entrée"><b>Inter-jeu</b></td><td data-label="Contenu">Liste des inter-jeux, fiches retour, chronologie</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-crown"/></svg> couronne</td><td data-label="Traitement">Rôle <b>domaine</b> (pourpre).</td></tr>
+      <tr><td class="lm-cell-main" data-label="Entrée"><b>Larp</b></td><td data-label="Contenu">Tableau de bord, XP, statistiques, journal d'actions</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-chart"/></svg> courbe</td><td data-label="Traitement">Palette de données ci-dessous. Journal d'actions et XP : bloc <b>admin</b>.</td></tr>
+      <tr><td class="lm-cell-main" data-label="Entrée"><b>Messagerie</b></td><td data-label="Contenu">Messages, non lus</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-mail"/></svg> enveloppe</td><td data-label="Traitement">Pastille de non-lus en cuivre. Aujourd'hui <code>bg-danger</code> (rouge d'erreur).</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Collisions repérées dans le menu actuel</h3>
+  <div class="lm-stack">
+    <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>Personnage actif</p>
+      <p>Le bouton du personnage actif utilise <code>fa-user-secret text-warning</code> : l'icône et la couleur du secret. Utiliser l'icône <b>utilisateur</b> avec une coche, en cuivre.</p></div>
+    <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>Bouton « voir en tant qu'admin »</p>
+      <p>Il utilise <code>fa-shield-halved</code>, que j'avais retenu pour l'organisation. Le bouclier reste donc au mode admin et l'<b>organisation</b> passe à l'icône presse-papiers (<svg class="lm-ico"><use href="#i-clipboard"/></svg>).</p></div>
+    <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>Pastille de messages non lus</p>
+      <p>Rouge d'erreur pour un simple compteur. Le rouge ne doit apparaître que pour une erreur.</p></div>
+  </div>
+
+  <h3>Palette de données</h3>
+  <p class="doc-note">Réservée aux graphiques et aux répartitions (stock par tag, inscrits par billet, XP par mois). Teintes volontairement éteintes : une barre de statistique ne doit jamais se lire comme un secret, une erreur ou un rôle. Les états (ok, erreur) n'y apparaissent que pour un seuil, jamais comme série.</p>
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <div class="lm-card"><div class="lm-card-head"><h4 class="lm-card-title">Catégories (6 séries maximum)</h4></div>
+      <div class="lm-card-body lm-stack">
+        <div><div class="lm-actions" style="justify-content:space-between"><span>Inscrit PJ</span><span class="lm-count">1 097</span></div><div class="lm-bar"><i style="--w:100%;--role:var(--lm-data-1)"></i></div></div>
+        <div><div class="lm-actions" style="justify-content:space-between"><span>Inscrit PNJ</span><span class="lm-count">278</span></div><div class="lm-bar"><i style="--w:25%;--role:var(--lm-data-2)"></i></div></div>
+        <div><div class="lm-actions" style="justify-content:space-between"><span>Orga</span><span class="lm-count">66</span></div><div class="lm-bar"><i style="--w:6%;--role:var(--lm-data-3)"></i></div></div>
+        <div><div class="lm-actions" style="justify-content:space-between"><span>Enfants</span><span class="lm-count">37</span></div><div class="lm-bar"><i style="--w:3.5%;--role:var(--lm-data-4)"></i></div></div>
+        <div><div class="lm-actions" style="justify-content:space-between"><span>Bénévoles</span><span class="lm-count">49</span></div><div class="lm-bar"><i style="--w:4.5%;--role:var(--lm-data-5)"></i></div></div>
+        <div><div class="lm-actions" style="justify-content:space-between"><span>Autres</span><span class="lm-count">8</span></div><div class="lm-bar"><i style="--w:1%;--role:var(--lm-data-6)"></i></div></div>
+      </div></div>
+    <div class="lm-card"><div class="lm-card-head"><h4 class="lm-card-title">Rampe séquentielle (cuivre)</h4></div>
+      <div class="lm-card-body lm-stack">
+        <div class="lm-actions"><span style="width:2.4rem;height:2.4rem;border-radius:4px;background:var(--lm-seq-1);border:1px solid var(--lm-line)"></span><span style="width:2.4rem;height:2.4rem;border-radius:4px;background:var(--lm-seq-2)"></span><span style="width:2.4rem;height:2.4rem;border-radius:4px;background:var(--lm-seq-3)"></span><span style="width:2.4rem;height:2.4rem;border-radius:4px;background:var(--lm-seq-4)"></span><span style="width:2.4rem;height:2.4rem;border-radius:4px;background:var(--lm-seq-5)"></span></div>
+        <p class="doc-note" style="margin:0">Pour une seule grandeur (densité de joueurs par fief, activité par jour). Du plus clair au plus dense.</p>
+      </div></div>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li>Toujours une étiquette ou une valeur à côté de la couleur : la teinte seule ne porte pas l'information.</li>
+    <li>Au-delà de 6 catégories, regrouper en « Autres » plutôt que d'ajouter des teintes.</li>
+    <li>Pas de rouge/vert comme paire de séries. Un seuil dépassé utilise le token d'état.</li>
+  </ul>
+</section>
+
+<!-- ===================== 9. MAPPING ===================== -->
+<section class="doc-sec">
+  <h2>9. Correspondances avec l'existant</h2>
+  <div class="lm-table-wrap"><table class="lm-table">
+    <thead><tr><th>Aujourd'hui</th><th>Remplacer par</th></tr></thead>
+    <tbody>
+      <tr><td><code>_partials/cardNotif.twig</code> (<code>card border-*</code>)</td><td><code>lm-callout</code> avec <code>data-role</code> (modèle fourni : <code>callout.twig</code>)</td></tr>
+      <tr><td><code>.header</code> / <code>.header-conan</code> / <code>.panel-conan</code> (texture bois)</td><td><code>lm-card-head</code></td></tr>
+      <tr><td><code>.well</code>, <code>.panel</code></td><td><code>lm-card</code></td></tr>
+      <tr><td><code>border-warning</code> pour le secret</td><td><code>data-role="secret"</code></td></tr>
+      <tr><td><code>.pastille-orange</code></td><td><code>lm-badge</code> en <code>data-role="warn"</code></td></tr>
+      <tr><td><code>ul.detail li</code>, <code>list-group</code> + <code>.head</code></td><td><code>lm-dl</code></td></tr>
+      <tr><td><code>table-striped table-bordered</code></td><td><code>lm-table</code> (+ <code>lm-table--cards</code>)</td></tr>
+      <tr><td><code>btn-secondary</code> partout, <code>btn-primary</code> bleu</td><td><code>lm-btn</code>, <code>lm-btn--primary</code> cuivre, <code>lm-btn--danger</code></td></tr>
+      <tr><td><code>.item-bleu</code>, <code>.item-orange</code></td><td><code>lm-objet[data-objet]</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+</div>
+
+{% endverbatim %}
 {% endblock %}

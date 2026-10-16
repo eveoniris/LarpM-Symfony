@@ -17,6 +17,7 @@ import '@fontsource-variable/roboto-condensed/index.min.css';
 import './styles/dark_theme.css';
 import './styles/light_theme.css';
 import './styles/style.css';
+import './styles/lm-design.css';
 
 //import './styles/app.css';
 
