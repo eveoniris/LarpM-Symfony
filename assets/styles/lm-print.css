@@ -1,0 +1,73 @@
+/* =====================================================================
+   LarpManager - feuille d'impression commune (noir et blanc)
+   Utilisée par base.print.twig et layout_print.twig.
+   Règles : texte #000 sur #fff, aucune couleur ni aplat (les imprimantes
+   et photocopieuses les dégradent), filets pleins et fins, typographie
+   alignée sur le socle lm-design (Cinzel pour les titres, Source Sans 3
+   pour le texte). La taille/orientation de page reste pilotée par chaque
+   gabarit via un @page inline (bloc `size`).
+   ===================================================================== */
+
+@import '../vendor/@fontsource-variable/cinzel/index.css';
+@import '../vendor/@fontsource-variable/source-sans-3/index.css';
+
+@page { margin: 10mm; }
+
+html, body { background: #fff; color: #000; }
+
+body {
+  margin: 0;
+  font-family: 'Source Sans 3 Variable', 'Source Sans 3', Arial, Helvetica, sans-serif;
+  font-size: 9.5pt;
+  line-height: 1.35;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cinzel Variable', 'Cinzel', Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  letter-spacing: .03em;
+  line-height: 1.25;
+  margin: .6em 0 .35em;
+  color: #000;
+  break-after: avoid;
+}
+h1 { font-size: 15pt; } h2 { font-size: 13pt; } h3 { font-size: 11pt; } h4, h5, h6 { font-size: 10pt; }
+
+a { color: inherit; text-decoration: none; }
+hr { border: 0; border-top: .5pt solid #000; margin: 10px 0; }
+img { max-width: 100%; }
+
+/* ---------- Tableaux : filets pleins 0,5 pt, cadre 1 pt ---------- */
+table { width: 100%; border-collapse: collapse; border: 1pt solid #000; margin: 5px 0; }
+table th, table td { border: .5pt solid #000; padding: 3px 6px; vertical-align: top; }
+table td { text-align: center; }
+th {
+  font-size: 7.5pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  border-bottom: 1pt solid #000;
+}
+thead { display: table-header-group; }
+tfoot.report-footer { display: table-footer-group; }
+thead.report-header { display: table-header-group; }
+table.report-container { page-break-after: always; }
+tr, .print-avoid-break { break-inside: avoid; page-break-inside: avoid; }
+
+/* ---------- Utilitaires (noms conservés pour les gabarits existants) ---------- */
+.print-center { text-align: center; }
+.print-page-break { break-after: page; }
+.noprint { display: block; }
+.toprint { display: none; }
+
+/* Bouton « Imprimer » : écran uniquement, discret, en haut à droite */
+#info { text-align: right; margin: 8px 0; }
+#info button {
+  font: 600 10pt 'Source Sans 3 Variable', 'Source Sans 3', Arial, sans-serif;
+  padding: 4px 14px; border: 1px solid #000; border-radius: 4px;
+  background: #fff; color: #000; cursor: pointer;
+}
+#info button:hover, #info button:focus-visible { background: #000; color: #fff; }
+
+@media print {
+  #info, .noprint { display: none; }
+  .toprint { display: block; }
+  #content { width: auto; border: 0; margin: 0 5%; padding: 0; float: none !important; }
+}

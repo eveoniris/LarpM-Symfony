@@ -1,25 +1,14 @@
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="{{ app.request.basepath }}/css/print.css" media="print" />
-		<style>
-			#info {
-				border : 1px solid #000;
-				margin : 50px 50px 50px 50px;
-				padding: 50px 50px 50px 50px;
-				font-size : 18px;
-				font-weight: bold;
-				text-align : center;
-				background-color : lightgreen;
-			}
-		</style>
+		<meta charset="utf-8">
+		<title>LarpManager</title>
+		<link rel="stylesheet" href="{{ asset('styles/lm-print.css') }}">
 		
 		{% block style %}
 		{% endblock style %}
 	</head>
 	<body>
-		<div id="info">
-			Utilisez la fonction "Imprimer" de votre navigateur (Ctrl+p).
-		</div>
+		<div id="info"><button type="button" onclick="window.print()">Imprimer</button></div>
 		<div class="content">
 		{% block body %}
 		{% endblock body %}
