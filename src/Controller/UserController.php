@@ -630,6 +630,7 @@ class UserController extends AbstractController
                 $context = [
                     'resetUrl' => $url,
                     'resetExpireAt' => $resetExpireAt,
+                    'uiBeta' => $user->isUiBeta(),
                 ];
                 $subject = $this->renderBlock('user/email/forgotPassword.twig', 'subject', $context);
                 $textBody = $this->renderBlock('user/email/forgotPassword.twig', 'body_text', $context);
