@@ -1,0 +1,83 @@
+{# Gabarit email lm-design (tokens du socle assets/styles/lm-design.css). Child can define blocks subject, body_text, body_html. #}
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="dark light">
+<meta name="supported-color-schemes" content="dark light">
+<meta name="format-detection" content="telephone=no,address=no,email=no,date=no,url=no">
+<title>Eve-oniris</title>
+<style type="text/css">
+  body { margin:0; padding:0; width:100%!important; background:#14110f; }
+  table { border-collapse:collapse; }
+  img { border:0; outline:none; text-decoration:none; }
+  .serif { font-family:'Cinzel', Georgia, 'Times New Roman', serif; }
+  .sans  { font-family:'Source Sans 3', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  .content h1, .content h2, .content h3, .content h4, .content h5 { font-family:'Cinzel', Georgia, 'Times New Roman', serif; font-weight:700; color:#e9e1d3; margin:0 0 12px; line-height:1.3; letter-spacing:.04em; }
+  .content h1 { font-size:22px; } .content h2 { font-size:19px; } .content h3 { font-size:17px; } .content h4, .content h5 { font-size:15px; }
+  .content p { margin:0 0 14px; }
+  .content a { color:#7bbbd6; text-decoration:underline; }
+  .content hr { border:0; border-top:1px solid #3a332c; margin:24px 0; }
+  .content blockquote, .quote { margin:0 0 16px; padding:12px 16px; background:#26211d; border-left:3px solid #d98a3d; }
+  .content .note { margin:20px 0 0; padding:12px 16px; background:#26211d; border-left:3px solid #f0a63a; font-size:14px; color:#a89e8e; }
+  .content .note strong { color:#f5bd69; }
+  .btn a { color:#1a1208!important; text-decoration:none!important; }
+  @media only screen and (max-width:620px) {
+    .wrap { width:100%!important; }
+    .pad  { padding:24px 20px!important; }
+    .btn, .btn a { display:block!important; }
+  }
+  /* Thème clair parchemin : tokens --lm-* du thème clair */
+  @media (prefers-color-scheme: light) {
+    body, .bg { background:#f6f1e7!important; }
+    .card { background:#fffdf8!important; border-color:#d6cab4!important; }
+    .fg, .content, .content h1, .content h2, .content h3, .content h4, .content h5 { color:#2a2118!important; }
+    .muted, .content .note { color:#6b5f4f!important; }
+    .content .note strong { color:#7d4f00!important; }
+    .content a { color:#0f5f80!important; }
+    .content hr, .rule { border-color:#d6cab4!important; }
+    .content blockquote, .quote, .content .note { background:#efe7d8!important; }
+    .content blockquote, .quote { border-left-color:#a8541a!important; }
+    .content .note { border-left-color:#c47f0a!important; }
+    .accentbar { background:#a8541a!important; }
+    .brand { color:#a8541a!important; }
+    .btn { background:#a8541a!important; }
+    .btn a { color:#ffffff!important; }
+  }
+</style>
+</head>
+<body class="bg" style="margin:0;padding:0;background:#14110f;">
+{%- set _subject = block('subject')|striptags|trim -%}
+{# Pré-en-tête : texte d'aperçu dans la boîte de réception #}
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#14110f;">{{ _subject }}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg" style="background:#14110f;">
+<tr><td align="center" style="padding:32px 12px;">
+
+  <table role="presentation" class="wrap" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;">
+    <tr><td align="center" style="padding:0 0 20px;">
+      <div class="serif brand" style="font-size:20px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:#d98a3d;">Eve-oniris</div>
+      <div class="sans muted" style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#a89e8e;padding-top:4px;">LarpManager &middot; Hyborian Age</div>
+    </td></tr>
+
+    <tr><td class="card" style="background:#1c1815;border:1px solid #3a332c;border-radius:10px;overflow:hidden;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr><td class="accentbar" height="3" style="height:3px;line-height:3px;font-size:0;background:#d98a3d;">&nbsp;</td></tr>
+        <tr><td class="pad sans content fg" style="padding:32px 36px;font-size:16px;line-height:1.6;color:#e9e1d3;">
+          {% if _subject is not empty %}<h1 style="font-size:22px;">{{ _subject }}</h1>{% endif %}
+          {%- block body_html -%}{%- endblock -%}
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <tr><td align="center" class="sans muted" style="padding:20px 24px 0;font-size:12px;line-height:1.6;color:#a89e8e;">
+      Message automatique envoyé par Eve-oniris, merci de ne pas y répondre.
+    </td></tr>
+  </table>
+
+</td></tr>
+</table>
+</body>
+</html>

@@ -5,110 +5,11 @@
 
     <title>LarpManager {% block title %}{% endblock title %}</title>
 
-    <style media="all">
+    <link rel="stylesheet" href="{{ asset('styles/lm-print.css') }}">
+    <style>
         @page {
         {# Can be "landscape" instead #}
             size: {% block size %}A4{% endblock size %};
-        }
-
-        body {
-            background-color: #fff;
-            font-family: serif;
-            font-size: 9pt;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table th, table td {
-            border: 1px dotted #777;
-            padding: 0.5rem;
-            vertical-align: top;
-        }
-
-        thead {
-            display: table-header-group;
-        }
-
-        #info {
-            border: 1px solid #000;
-            margin: 50px 50px 50px 50px;
-            padding: 50px 50px 50px 50px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            background-color: lightgreen;
-        }
-
-        .noprint {
-            display: block;
-        }
-
-        .toprint {
-            display: none;
-        }
-
-        .print-center {
-            text-align: center;
-        }
-    </style>
-
-    <style media="print">
-        #info {
-            display: none;
-        }
-
-        .noprint {
-            display: none;
-        }
-
-        .toprint {
-            display: block;
-        }
-
-        #content {
-            width: auto;
-            border: 0;
-            margin: 0 5%;
-            padding: 0;
-            float: none !important;
-        }
-
-        .print-center {
-            text-align: center;
-        }
-
-        .print-page-break {
-            break-after: page;
-        }
-
-        table {
-            width: 100%;
-            border: 1px solid #000;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
-
-        table td {
-            text-align: center;
-        }
-
-        table.report-container {
-            page-break-after: always;
-        }
-
-        thead.report-header {
-            display: table-header-group;
-        }
-
-        tfoot.report-footer {
-            display: table-footer-group;
-        }
-
-        .print-avoid-break {
-            page-break-inside: avoid;
         }
     </style>
 
@@ -116,9 +17,7 @@
     {% endblock style %}
 </head>
 <body>
-<div id="info">
-    Utilisez la fonction "Imprimer" de votre navigateur (Ctrl+p).
-</div>
+<div id="info"><button type="button" onclick="window.print()">Imprimer</button></div>
 <div class="content">
     {% block content %}
     {% endblock content %}

@@ -62,7 +62,8 @@ final class MailService
 
     public function notify(Message $message): void
     {
-        if (!($email = $message->getUserRelatedByDestinataire()?->getEmail())) {
+        $destinataire = $message->getUserRelatedByDestinataire();
+        if (!($email = $destinataire?->getEmail())) {
             return; // unable to send
         }
 
@@ -70,7 +71,7 @@ final class MailService
             $this
                 ->getTemplatedEmail(
                     'user/email/message.twig',
-                    ['message' => $message->getText()],
+                    ['message' => $message->getText(), 'uiBeta' => $destinataire->isUiBeta()],
                     $message->getTitle() ?: 'Nouveau message de ' . $message->getUserRelatedByAuteur()?->getDisplayName(),
                 )
                 // TODO ->locale($user->getLocal())
@@ -105,6 +106,7 @@ final class MailService
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL,
             ),
+            'uiBeta' => $user->isUiBeta(),
         ];
 
         $this->mailer->send(

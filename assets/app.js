@@ -17,7 +17,7 @@ import '@fontsource-variable/roboto-condensed/index.min.css';
 import './styles/dark_theme.css';
 import './styles/light_theme.css';
 import './styles/style.css';
-import './styles/lm-design.css';
+// lm-design.css n'est pas importé ici : il est chargé à part (base.html.twig) pour les seuls comptes en interface bêta.
 
 //import './styles/app.css';
 

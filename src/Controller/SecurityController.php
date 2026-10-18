@@ -84,6 +84,7 @@ class SecurityController extends AbstractController
         $context = [
             'resetUrl' => $url,
             'resetExpireAt' => $resetExpireAt,
+            'uiBeta' => $user->isUiBeta(),
         ];
         $subject = $this->renderBlock('user/email/renewPassword.twig', 'subject', $context);
         $textBody = $this->renderBlock('user/email/renewPassword.twig', 'body_text', $context);

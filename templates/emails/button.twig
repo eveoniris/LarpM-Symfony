@@ -1,4 +1,13 @@
-{# For base.email.html.twig #}
+{# For base.email.html.twig : bouton lm-design pour les comptes bêta (uiBeta), ancien bouton sinon #}
+{% if uiBeta|default(false) %}
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 4px;">
+    <tr>
+        <td class="btn" align="center" bgcolor="#d98a3d" style="background:#d98a3d;border-radius:6px;">
+            <a href="{{ linkHref }}" target="_blank" style="display:inline-block;padding:13px 26px;font-family:'Source Sans 3','Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:16px;font-weight:700;color:#1a1208;text-decoration:none;">{{ linkText }}</a>
+        </td>
+    </tr>
+</table>
+{% else %}
 <div class="table-responsive">
 <table style="margin-top:1em;">
 <tr>
@@ -33,3 +42,4 @@
 </tr>
 </table>
 </div>
+{% endif %}

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="fr" data-bs-theme="dark">
+{# Interface bêta : réservée aux comptes qui l'ont activée (user.ui_theme). Le CSS bêta n'est chargé que pour eux. #}
+{% set uiBeta = app.user is not null and app.user.uiBeta %}
+<html lang="fr" data-bs-theme="dark"{% if uiBeta %} data-ui="beta"{% endif %}>
 <head>
     {% block head %}
         <meta charset="UTF-8"/>
@@ -18,6 +20,9 @@
         <meta name="apple-mobile-web-app-title" content="LarpManager">
         <link rel="apple-touch-icon" href="/icons/icon-192.svg">
 
+        {% if uiBeta %}
+            <link rel="stylesheet" href="{{ asset('styles/lm-design.css') }}">
+        {% endif %}
         {% block stylesheets %}
         {% endblock %}
 

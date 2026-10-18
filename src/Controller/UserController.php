@@ -450,6 +450,10 @@ class UserController extends AbstractController
             if (null !== $user->getDiscordPseudo() && !preg_match('/^[a-z0-9_.]{2,32}$/i', $user->getDiscordPseudo())) {
                 $errors[] = 'ID Discord invalide : 2 à 32 caractères (lettres, chiffres, "_" et ".").';
             }
+            // Interface bêta : choix personnel, réservé aux rôles qui construisent le contenu.
+            if ($request->request->has('ui_theme_form') && $user->getId() === $this->getUser()?->getId() && $this->canUseBetaUi()) {
+                $user->setUiTheme($request->request->getString('ui_theme'));
+            }
             if ($request->request->has('username')) {
                 $user->setUsername((string) $request->request->getString('username'));
             }
@@ -626,6 +630,7 @@ class UserController extends AbstractController
                 $context = [
                     'resetUrl' => $url,
                     'resetExpireAt' => $resetExpireAt,
+                    'uiBeta' => $user->isUiBeta(),
                 ];
                 $subject = $this->renderBlock('user/email/forgotPassword.twig', 'subject', $context);
                 $textBody = $this->renderBlock('user/email/forgotPassword.twig', 'body_text', $context);
@@ -1214,6 +1219,20 @@ class UserController extends AbstractController
         $this->setCan(self::CAN_MANAGE, $this->isGranted(Role::ADMIN->value) || $this->isGranted(Role::ORGA->value) || $user->getId() === $this->getUser()?->getId());
 
         return $this->render('user/detail.twig', ['user' => $user]);
+    }
+
+    /**
+     * L'interface bêta est réservée aux mêmes rôles que la page /design.
+     */
+    private function canUseBetaUi(): bool
+    {
+        foreach ([Role::ADMIN, Role::SCENARISTE, Role::ORGA, Role::REGLE, Role::STOCK] as $role) {
+            if ($this->isGranted($role->value)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
