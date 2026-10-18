@@ -29,7 +29,9 @@
   --lm-gm: #a07ee0;      --lm-gm-text: #b99cf0;       /* scénario / MJ */
   --lm-orga: #5b8def;    --lm-orga-text: #86a9f5;     /* orga / gestion */
   --lm-admin: #b5413a;   --lm-admin-text: #e07a72;    /* admin / privé */
-  --lm-domaine: #c75b9b; --lm-domaine-text: #de82b6;  /* jeu de domaine / inter-jeu */
+  --lm-domaine: #c75b9b; --lm-domaine-text: #de82b6;
+  --lm-pnj: #9dbe5b;     --lm-pnj-text: #b4d27a;       /* PNJ : vert olive */
+  --lm-gift: var(--lm-info); --lm-gift-text: var(--lm-info-text); /* compétence offerte : bleu ciel */  /* jeu de domaine / inter-jeu */
 
   /* Étiquettes imprimées : JAMAIS thémées */
   --lm-objet-bleu: #1e88e5;
@@ -65,7 +67,7 @@
   --lm-gm: #6f46c1;     --lm-gm-text: #5a35a8;
   --lm-orga: #2f5fc7;   --lm-orga-text: #254ba0;
   --lm-admin: #a23530;  --lm-admin-text: #8f2b26;
-  --lm-domaine: #b03d82; --lm-domaine-text: #92296a;
+  --lm-domaine: #b03d82; --lm-domaine-text: #92296a; --lm-pnj: #6a8c2a; --lm-pnj-text: #4f6c18;
   --lm-data-1: #4f8573; --lm-data-2: #9a7344; --lm-data-3: #4d6f8e;
   --lm-data-4: #8a5a7b; --lm-data-5: #6e8530; --lm-data-6: #7a7268;
   --lm-seq-1: #efe0cc; --lm-seq-2: #e0be8f; --lm-seq-3: #cf934b; --lm-seq-4: #a8541a; --lm-seq-5: #6e3410;
@@ -79,7 +81,7 @@
     --lm-warn: #c47f0a; --lm-warn-text: #7d4f00; --lm-err: #c42b30; --lm-err-text: #a31f24;
     --lm-secret: #a88a14; --lm-secret-text: #7a6200; --lm-gm: #6f46c1; --lm-gm-text: #5a35a8;
     --lm-orga: #2f5fc7; --lm-orga-text: #254ba0; --lm-admin: #a23530; --lm-admin-text: #8f2b26;
-    --lm-domaine: #b03d82; --lm-domaine-text: #92296a;
+    --lm-domaine: #b03d82; --lm-domaine-text: #92296a; --lm-pnj: #6a8c2a; --lm-pnj-text: #4f6c18;
     --lm-data-1: #4f8573; --lm-data-2: #9a7344; --lm-data-3: #4d6f8e;
     --lm-data-4: #8a5a7b; --lm-data-5: #6e8530; --lm-data-6: #7a7268;
     --lm-seq-1: #efe0cc; --lm-seq-2: #e0be8f; --lm-seq-3: #cf934b; --lm-seq-4: #a8541a; --lm-seq-5: #6e3410;
@@ -97,6 +99,8 @@
 [data-role="orga"]    { --role: var(--lm-orga);    --role-text: var(--lm-orga-text); }
 [data-role="admin"]   { --role: var(--lm-admin);   --role-text: var(--lm-admin-text); }
 [data-role="domaine"] { --role: var(--lm-domaine); --role-text: var(--lm-domaine-text); }
+[data-role="pnj"]     { --role: var(--lm-pnj);     --role-text: var(--lm-pnj-text); }
+[data-role="gift"]    { --role: var(--lm-gift);    --role-text: var(--lm-gift-text); }
 
 /* Affinité de compétence (tarif XP) : ce n'est pas un rôle, c'est un modificateur de coût */
 [data-role="accent"] { --role: var(--lm-accent); --role-text: var(--lm-accent); }
@@ -112,6 +116,15 @@
 .lm-state--pending { border-style: dashed; background: transparent; }
 .lm-state--dead { opacity: .75; }
 .lm-state--dead .lm-state-label { text-decoration: line-through; }
+/* Groupes d'états : type, participation, santé (jamais mélangés) */
+.lm-stategroups { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: var(--lm-s3); }
+.lm-stategroup { display: flex; flex-direction: column; gap: var(--lm-s2); align-items: flex-start; padding: var(--lm-s3); border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); background: var(--lm-surface); }
+.lm-stategroup-label { font: 700 .72rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--lm-muted); }
+.lm-segmented { display: inline-flex; border: 1px solid var(--lm-line); border-radius: var(--lm-radius); overflow: hidden; }
+.lm-segmented button { all: unset; box-sizing: border-box; cursor: pointer; min-height: var(--lm-touch); padding: 0 var(--lm-s4); display: inline-flex; align-items: center; gap: 6px; font: 600 .9rem var(--lm-font-body); color: var(--lm-fg); background: var(--lm-raised); }
+.lm-segmented button + button { border-left: 1px solid var(--lm-line); }
+.lm-segmented button[aria-pressed="true"] { background: var(--role, var(--lm-accent)); color: var(--lm-on-accent); }
+.lm-segmented button:focus-visible { outline: 2px solid var(--lm-accent); outline-offset: -2px; }
 /* Chaîne de jeu : principal > substitution > relève > archétype */
 .lm-chain { display: flex; flex-wrap: wrap; gap: var(--lm-s2); margin: 0; padding: 0; list-style: none; align-items: stretch; }
 .lm-link { flex: 1 1 150px; min-width: 0; display: grid; grid-template-columns: auto 1fr; gap: 2px var(--lm-s2); align-items: center;
@@ -124,7 +137,10 @@
 .lm-link.is-active .lm-link-badge { background: var(--lm-accent); border-color: var(--lm-accent); color: var(--lm-on-accent); }
 .lm-link.is-empty { border-style: dashed; background: transparent; }
 .lm-link.is-empty .lm-link-name { color: var(--lm-muted); font-weight: 400; font-style: italic; }
-.lm-link.is-dead .lm-link-name { text-decoration: line-through; color: var(--lm-muted); }
+.lm-link.is-dead { border-color: color-mix(in srgb, var(--lm-err) 55%, var(--lm-line)); }
+.lm-link.is-dead .lm-link-badge { border-color: var(--lm-err); color: var(--lm-err-text); }
+.lm-link.is-dead .lm-link-name { color: var(--lm-err-text); }
+.lm-link-name .lm-ico { margin-right: 2px; }
 .lm-ico--dashed { stroke-dasharray: 3 3; }
 .lm-ico--fill { fill: currentColor; }
 /* Type de classe (palette de données, pas un rôle) */

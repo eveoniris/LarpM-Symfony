@@ -73,6 +73,7 @@
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
   <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10"/></symbol>
   <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
 </svg>
 
@@ -96,6 +97,10 @@
       <tr><td><b>Pastille orange (anomalie)</b></td><td>Orange pur, identique à l'étiquette « objet orange » imprimée.</td><td>Badge « Anomalie » en ambre avec icône. L'orange pur est réservé aux objets.</td></tr>
       <tr><td><b>Secret en rouge</b></td><td>Dans l'ancien /design, <code>fa-user-secret</code> est en <code>text-danger</code>.</td><td>Le secret est toujours or. Le rouge n'est plus que l'erreur.</td></tr>
       <tr><td><b>Boutons d'édition violets</b></td><td>Le violet (scénario) sert aussi de bouton « modifier » sur les blocs MJ.</td><td>Acceptable : bouton contouré de la couleur du bloc. Les autres boutons restent neutres ou cuivre.</td></tr>
+      <tr><td><b>Modifier sans libellé</b></td><td>Retour QA : l'icône seule est trop discrète à côté des autres actions écrites.</td><td>« Modifier » porte son libellé partout où l'action est seule. L'icône seule est réservée aux lignes de tableau et au menu ⋯.</td></tr>
+      <tr><td><b>PNJ</b></td><td>Retour QA : le PNJ en gris se confond avec les états neutres.</td><td>Vert olive, à distance du vert de succès, de l'or et du bleu d'organisation.</td></tr>
+      <tr><td><b>Offerte et méconnue</b></td><td>Retour QA : le cuivre de l'offerte est trop proche de l'ambre de la méconnue.</td><td>Offerte en bleu ciel (cyan d'information). Méconnue : point d'interrogation ambre au lieu du smiley.</td></tr>
+      <tr><td><b>Effet de l'âge</b></td><td>Retour QA : l'ambre est trop proche de l'or du secret.</td><td>C'est une règle de jeu : information (cyan) avec un sablier. L'ambre reste pour « à compléter » et « anomalie ».</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -128,6 +133,8 @@
     <span class="lm-badge" data-role="admin"><svg class="lm-ico"><use href="#i-key"/></svg>Admin</span>
     <span class="lm-badge" data-role="domaine"><svg class="lm-ico"><use href="#i-crown"/></svg>Domaine</span>
     <span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-warn"/></svg>Anomalie</span>
+    <span class="lm-badge" data-role="pnj"><svg class="lm-ico"><use href="#i-mask"/></svg>PNJ</span>
+    <span class="lm-badge" data-role="gift"><svg class="lm-ico"><use href="#i-gift"/></svg>Offerte</span>
     <span class="lm-objet" data-objet="bleu">Objet bleu</span>
     <span class="lm-objet" data-objet="orange">Objet orange</span>
   </div>
@@ -142,6 +149,8 @@
 --lm-domaine   pourpre  #C75B9B (clair #B03D82)     jeu de domaine / inter-jeu
 --lm-info      cyan     #2FB5C4    --lm-ok  #4FA06B
 --lm-warn      ambre    #F0A63A    --lm-err #E5484D
+--lm-pnj       olive    #9DBE5B (clair #6A8C2A)     PNJ
+--lm-gift      cyan     = --lm-info                 compétence offerte
 --lm-objet-bleu #1E88E5  --lm-objet-orange #FF9800   (figés, hors thème)</pre>
 </section>
 
@@ -167,7 +176,7 @@
       <li>Secondaire : fond neutre. Annuler à gauche de Valider.</li>
       <li>Destructif : contour rouge, libellé nommé (« Supprimer le personnage »), confirmation par modale.</li>
       <li>Bouton de rôle : contour et texte de la couleur du bloc, jamais plein.</li>
-      <li>Icône seule : toujours <code>aria-label</code> et <code>title</code>. Hauteur 44 px, 34 px en tableau.</li>
+      <li><b>Une action écrite partout où elle est seule</b> : « Modifier », « Ajouter », « Supprimer » portent leur libellé avec l'icône. L'icône seule est réservée aux lignes de tableau et au menu ⋯, avec <code>aria-label</code> et <code>title</code>. Sur mobile étroit, le libellé d'un bouton d'en-tête peut se replier en icône. Hauteur 44 px, 34 px en tableau.</li>
       <li>Emplacement : en haut à droite du cadre (desktop), barre fixe en bas (mobile).</li>
     </ul>
   </div>
@@ -186,7 +195,7 @@
 
   <div class="lm-grid-2" style="margin-top:1rem">
     <article class="lm-card">
-      <div class="lm-card-head"><h3 class="lm-card-title">Identité</h3><button class="lm-btn lm-btn--icon lm-btn--sm" aria-label="Modifier" type="button"><svg class="lm-ico"><use href="#i-edit"/></svg></button></div>
+      <div class="lm-card-head"><h3 class="lm-card-title">Identité</h3><button class="lm-btn lm-btn--sm" type="button"><svg class="lm-ico"><use href="#i-edit"/></svg>Modifier</button></div>
       <dl class="lm-dl">
         <dt>Nom</dt><dd>Kaelwyn le Borgne</dd>
         <dt>Classe</dt><dd>Guerrier des marches</dd>
@@ -222,7 +231,7 @@
         <div class="lm-actions"><span class="lm-cost" data-role="ok">2 xp <s>3 xp</s></span><button class="lm-btn lm-btn--sm" type="button"><svg class="lm-ico"><use href="#i-plus"/></svg>Ajouter</button></div>
       </div></article>
       <article class="lm-card"><div class="lm-card-body lm-actions" style="justify-content:space-between">
-        <div><b>Cartographie – Apprenti</b> <span class="lm-badge" data-role="accent"><svg class="lm-ico"><use href="#i-gift"/></svg>Offerte à la création</span></div>
+        <div><b>Cartographie – Apprenti</b> <span class="lm-badge" data-role="gift"><svg class="lm-ico"><use href="#i-gift"/></svg>Offerte à la création</span></div>
         <span class="lm-help" style="margin:0">Déjà acquise, absente de la liste d'achat</span>
       </div></article>
       <article class="lm-card"><div class="lm-card-body lm-actions" style="justify-content:space-between">
@@ -234,16 +243,16 @@
         <div class="lm-actions"><span class="lm-cost">3 xp</span><button class="lm-btn lm-btn--sm" type="button"><svg class="lm-ico"><use href="#i-plus"/></svg>Ajouter</button></div>
       </div></article>
       <article class="lm-card"><div class="lm-card-body lm-actions" style="justify-content:space-between">
-        <div><b>Herboristerie – Apprenti</b> <span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-frown"/></svg>Méconnue</span></div>
+        <div><b>Herboristerie – Apprenti</b> <span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-help"/></svg>Méconnue</span></div>
         <div class="lm-actions"><span class="lm-cost" data-role="warn">6 xp <s>3 xp</s></span><button class="lm-btn lm-btn--sm" type="button"><svg class="lm-ico"><use href="#i-plus"/></svg>Ajouter</button></div>
       </div></article>
     </div>
     <ul class="doc-rules">
       <li><b>Favorite</b> : étoile, vert (avantage). Le prix normal est barré à côté du prix réduit.</li>
-      <li><b>Offerte</b> : cadeau, cuivre. Donnée à la création, elle ne s'achète pas : pas de prix ni de bouton, seulement le badge sur la fiche du personnage.</li>
+      <li><b>Offerte</b> : cadeau, <b>bleu ciel</b> (le cyan d'information, presque absent de l'IHM). Le cuivre était trop proche de l'ambre de la méconnue. Donnée à la création, elle ne s'achète pas : pas de prix ni de bouton, seulement le badge sur la fiche du personnage.</li>
       <li><b>Gratuite</b> : une remise supérieure au prix ramène le coût à 0 xp (minimum 0). Elle reste achetable, affichée en vert avec le prix barré. Ce n'est pas une offerte.</li>
       <li><b>Normale</b> : aucun badge, aucune couleur. L'absence de signe est l'information.</li>
-      <li><b>Méconnue</b> : visage triste, ambre (surcoût, pas erreur). Le rouge reste réservé aux erreurs.</li>
+      <li><b>Méconnue</b> : point d'interrogation, ambre (surcoût, pas erreur), toujours avec le libellé écrit. Le rouge reste réservé aux erreurs.</li>
       <li>Le <b>prix</b> est l'information utile : l'afficher avec l'écart, pas seulement l'icône. Le bouton « Ajouter (3 xp) » devient « Ajouter » avec le prix à côté.</li>
       <li>Sur un tableau ou un résumé (« Compétences favorites »), chaque famille garde le même badge.</li>
     </ul>
@@ -299,11 +308,11 @@
     <article class="lm-card">
       <dl class="lm-dl">
         <dt>Espèces</dt><dd><span class="lm-badge">Humain</span> <span class="lm-badge">Demi-Pict</span> <span class="lm-count">2</span></dd>
-        <dt>Tranche d'âge</dt><dd><span class="lm-badge" data-role="warn">Vieux · 55 ans et plus</span></dd>
+        <dt>Tranche d'âge</dt><dd><span class="lm-badge" data-role="info"><svg class="lm-ico"><use href="#i-hourglass"/></svg>Vieux · 55 ans et plus</span></dd>
         <dt>Bonus</dt><dd><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-flag"/></svg>Origine : Cimmérie</span> <span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-landmark"/></svg>Forges</span></dd>
       </dl>
     </article>
-    <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>Effet de l'âge</p>
+    <div class="lm-callout" data-role="info"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-hourglass"/></svg>Effet de l'âge</p>
       <p>Ce personnage a au moins 55 ans : <b>vitalité 0</b>. Sans la compétence Survie, il est <b>blessé permanent</b>.</p></div>
   </div>
 </section>
@@ -315,27 +324,38 @@
 
   <h3>Type et état d'un participant</h3>
   <div class="sample lm-stack">
-    <div class="lm-actions">
-      <span class="lm-state" data-role="accent"><svg class="lm-ico lm-ico--fill"><use href="#i-user"/></svg><span class="lm-state-label">PJ</span></span>
-      <span class="lm-state" data-role="muted"><svg class="lm-ico"><use href="#i-mask"/></svg><span class="lm-state-label">PNJ</span></span>
-      <span class="lm-state" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg><span class="lm-state-label">Inscrit, prêt</span></span>
-      <span class="lm-state lm-state--pending" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg><span class="lm-state-label">En attente du prochain opus</span></span>
-      <span class="lm-state lm-state--pending" data-role="muted"><svg class="lm-ico lm-ico--dashed"><use href="#i-user"/></svg><span class="lm-state-label">Non inscrit</span></span>
-      <span class="lm-state lm-state--dead" data-role="err"><svg class="lm-ico"><use href="#i-skull"/></svg><span class="lm-state-label">Mort</span></span>
+    <div class="lm-filters">
+      <div class="lm-segmented" role="group" aria-label="Type de personnage">
+        <button type="button" aria-pressed="false">Tous</button>
+        <button type="button" aria-pressed="false" data-role="accent">PJ</button>
+        <button type="button" aria-pressed="true" data-role="pnj">PNJ</button>
+      </div>
+      <button class="lm-btn" type="button">Filtres <span class="lm-count">1</span></button>
     </div>
-    <div class="lm-table-wrap"><table class="lm-table lm-table--cards">
+    <div class="lm-stategroups">
+      <div class="lm-stategroup"><span class="lm-stategroup-label">Type</span>
+        <span class="lm-state" data-role="accent"><svg class="lm-ico lm-ico--fill"><use href="#i-user"/></svg><span class="lm-state-label">PJ</span></span>
+        <span class="lm-state" data-role="pnj"><svg class="lm-ico"><use href="#i-mask"/></svg><span class="lm-state-label">PNJ</span></span></div>
+      <div class="lm-stategroup"><span class="lm-stategroup-label">Participation</span>
+        <span class="lm-state" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg><span class="lm-state-label">Inscrit, prêt</span></span>
+        <span class="lm-state lm-state--pending" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg><span class="lm-state-label">En attente du prochain opus</span></span>
+        <span class="lm-state lm-state--pending" data-role="muted"><svg class="lm-ico lm-ico--dashed"><use href="#i-user"/></svg><span class="lm-state-label">Non inscrit</span></span></div>
+      <div class="lm-stategroup"><span class="lm-stategroup-label">Santé</span>
+        <span class="lm-state" data-role="ok"><svg class="lm-ico"><use href="#i-user"/></svg><span class="lm-state-label">Vivant</span></span>
+        <span class="lm-state lm-state--dead" data-role="err"><svg class="lm-ico"><use href="#i-skull"/></svg><span class="lm-state-label">Mort</span></span></div>
+    </div>    <div class="lm-table-wrap"><table class="lm-table lm-table--cards">
       <thead><tr><th>Type</th><th>Personnage</th><th>Joueur</th><th>Participation</th></tr></thead>
       <tbody>
         <tr><td data-label="Type"><span class="lm-state" data-role="accent"><svg class="lm-ico lm-ico--fill"><use href="#i-user"/></svg>PJ</span></td><td class="lm-cell-main" data-label="Personnage"><a href="#">Kaelwyn le Borgne</a></td><td data-label="Joueur">Sigrun H.</td><td data-label="Participation"><span class="lm-state" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Inscrit, prêt</span></td></tr>
-        <tr><td data-label="Type"><span class="lm-state" data-role="muted"><svg class="lm-ico"><use href="#i-mask"/></svg>PNJ</span></td><td class="lm-cell-main" data-label="Personnage"><a href="#">Le Marchand de Shem</a></td><td data-label="Joueur">Aurélien M.</td><td data-label="Participation"><span class="lm-state" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Inscrit, prêt</span></td></tr>
+        <tr><td data-label="Type"><span class="lm-state" data-role="pnj"><svg class="lm-ico"><use href="#i-mask"/></svg>PNJ</span></td><td class="lm-cell-main" data-label="Personnage"><a href="#">Le Marchand de Shem</a></td><td data-label="Joueur">Aurélien M.</td><td data-label="Participation"><span class="lm-state" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Inscrit, prêt</span></td></tr>
         <tr><td data-label="Type"><span class="lm-state" data-role="accent"><svg class="lm-ico lm-ico--fill"><use href="#i-user"/></svg>PJ</span></td><td class="lm-cell-main" data-label="Personnage"><a href="#">Thalia de Zamora</a></td><td data-label="Joueur">Maëlle D.</td><td data-label="Participation"><span class="lm-state lm-state--pending" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>En attente</span></td></tr>
       </tbody>
     </table></div>
   </div>
   <ul class="doc-rules" style="margin-top:1rem">
-    <li><b>Deux colonnes séparées</b> : le <i>type</i> (PJ ou PNJ) ne change pas ; la <i>participation</i> (prêt, en attente, non inscrit) évolue. Aujourd'hui une seule icône mélange les deux.</li>
+    <li><b>Trois familles séparées</b> : le <i>type</i> (PJ ou PNJ) ne change pas ; la <i>participation</i> (prêt, en attente, non inscrit) évolue ; la <i>santé</i> (vivant, mort) est un fait de jeu. Aujourd'hui une seule icône les mélange. Dans une liste, le type est un sélecteur Tous / PJ / PNJ en tête ; les deux autres familles vont dans « Filtres ».</li>
     <li>Prêt = vert (bonne nouvelle). En attente et non inscrit = pointillé neutre : ce n'est pas un problème, c'est un état en cours. Une icône pleine veut dire « acquis », une icône en pointillé « pas encore ».</li>
-    <li>Le PJ passe de la main fermée à un buste plein (<code>fa-user</code> plein), pour libérer le masque au PNJ seul et l'épée au type « combat » des classes.</li>
+    <li><b>PJ en cuivre, PNJ en vert olive</b> (teinte éloignée du vert de succès et de l'or du secret) : le type se lit avant tout le reste.</li> à un buste plein (<code>fa-user</code> plein), pour libérer le masque au PNJ seul et l'épée au type « combat » des classes.</li>
   </ul>
 
   <h3>Chaîne de jeu : principal, substitution, relève, archétype</h3>
@@ -346,9 +366,9 @@
       <li class="lm-link is-empty"><span class="lm-link-badge">R</span><span class="lm-link-role">Relève</span><span class="lm-link-name">Non choisi</span></li>
       <li class="lm-link"><span class="lm-link-badge">A</span><span class="lm-link-role">Archétype</span><span class="lm-link-name">Guerrier</span></li>
     </ol>
-    <p class="doc-note" style="margin:0">Principal mort : le maillon est barré, le suivant devient actif.</p>
+    <p class="doc-note" style="margin:0">Principal mort : tête de mort et nom en rouge, le suivant devient actif.</p>
     <ol class="lm-chain">
-      <li class="lm-link is-dead"><span class="lm-link-badge">P</span><span class="lm-link-role">Principal</span><span class="lm-link-name">Kaelwyn le Borgne</span></li>
+      <li class="lm-link is-dead"><span class="lm-link-badge">P</span><span class="lm-link-role">Principal</span><span class="lm-link-name"><svg class="lm-ico"><use href="#i-skull"/></svg>Kaelwyn le Borgne</span></li>
       <li class="lm-link"><span class="lm-link-badge">S</span><span class="lm-link-role">Substitution</span><span class="lm-link-name">Brann Mac Ardal</span></li>
       <li class="lm-link is-active"><span class="lm-link-badge">R</span><span class="lm-link-role">Relève</span><span class="lm-link-name">Thalia de Zamora</span></li>
       <li class="lm-link"><span class="lm-link-badge">A</span><span class="lm-link-role">Archétype</span><span class="lm-link-name">Guerrier</span></li>
@@ -363,7 +383,7 @@
   <ul class="doc-rules" style="margin-top:1rem">
     <li><b>Lettre + icône</b> : la lettre reste dans les listes compactes, l'icône dans les fiches. Les deux ensemble dans les infobulles.</li>
     <li>Substitution : flèches d'échange (au lieu d'un sablier proche de « ancien PJ »). Relève : utilisateur avec un plus (inchangé). Archétype : pion, pour ne plus ressembler au PNJ.</li>
-    <li>Le maillon <b>actif</b> est le seul en cuivre plein ; vide en pointillé ; mort barré. Sur mobile, les maillons passent en deux colonnes puis une seule.</li>
+    <li>Le maillon <b>actif</b> est le seul en cuivre plein ; vide en pointillé ; mort en rouge avec tête de mort. Sur mobile, les maillons passent en deux colonnes puis une seule.</li>
     <li>Aucune couleur de rôle ici : cette chaîne est vue par le joueur comme par l'orga.</li>
   </ul>
 
@@ -518,7 +538,9 @@
       <thead><tr><th>Statut</th><th>Nom</th><th>Classe</th><th>Groupe</th><th>Joueur</th><th class="num">XP</th><th></th></tr></thead>
       <tbody>
         <tr><td data-label="Statut"><span class="lm-badge" data-role="ok">Actif</span></td><td class="lm-cell-main" data-label="Nom"><a href="#">Kaelwyn le Borgne</a></td><td data-label="Classe">Guerrier</td><td data-label="Groupe"><a href="#">LH4 – Marches</a></td><td data-label="Joueur">Sigrun H.</td><td class="num" data-label="XP">4 / 46</td><td><button class="lm-btn lm-btn--icon lm-btn--sm" aria-label="Actions"><svg class="lm-ico"><use href="#i-more"/></svg></button></td></tr>
-        <tr data-role="warn"><td data-label="Statut"><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-warn"/></svg>Anomalie</span></td><td class="lm-cell-main" data-label="Nom"><a href="#">Thalia de Zamora</a></td><td data-label="Classe">Voleuse</td><td data-label="Groupe"><a href="#">LH2 – Guilde</a></td><td data-label="Joueur">Aurélien M.</td><td class="num" data-label="XP">8 / 44</td><td><button class="lm-btn lm-btn--icon lm-btn--sm" aria-label="Actions"><svg class="lm-ico"><use href="#i-more"/></svg></button></td></tr>
+        <tr data-role="warn"><td data-label="Statut"><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-warn"/></svg>Anomalie</span>
+    <span class="lm-badge" data-role="pnj"><svg class="lm-ico"><use href="#i-mask"/></svg>PNJ</span>
+    <span class="lm-badge" data-role="gift"><svg class="lm-ico"><use href="#i-gift"/></svg>Offerte</span></td><td class="lm-cell-main" data-label="Nom"><a href="#">Thalia de Zamora</a></td><td data-label="Classe">Voleuse</td><td data-label="Groupe"><a href="#">LH2 – Guilde</a></td><td data-label="Joueur">Aurélien M.</td><td class="num" data-label="XP">8 / 44</td><td><button class="lm-btn lm-btn--icon lm-btn--sm" aria-label="Actions"><svg class="lm-ico"><use href="#i-more"/></svg></button></td></tr>
         <tr><td data-label="Statut"><span class="lm-badge">Non actif</span></td><td class="lm-cell-main" data-label="Nom"><a href="#">Brann Mac Ardal</a></td><td data-label="Classe">Barde</td><td data-label="Groupe"><a href="#">LH3 – Cimmérie</a></td><td data-label="Joueur">Maëlle D.</td><td class="num" data-label="XP">0 / 70</td><td><button class="lm-btn lm-btn--icon lm-btn--sm" aria-label="Actions"><svg class="lm-ico"><use href="#i-more"/></svg></button></td></tr>
       </tbody>
     </table></div>
