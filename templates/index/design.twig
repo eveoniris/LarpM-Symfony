@@ -2,6 +2,10 @@
 
 {% block title %}Template de design{% endblock title %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/lm-design.css') }}">
+{% endblock %}
+
 {% block body %}
     {# Nécessite assets/styles/lm-design.css chargé dans base.html.twig #}
     <style>

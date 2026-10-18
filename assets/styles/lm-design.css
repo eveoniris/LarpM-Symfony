@@ -6,6 +6,11 @@
    elles peuvent être exportées telles quelles vers Flutter / React Native.
    ===================================================================== */
 
+/* Polices auto-hébergées (installées par importmap:require dans assets/vendor) */
+@import '../vendor/@fontsource-variable/cinzel/index.css';
+@import '../vendor/@fontsource-variable/source-sans-3/index.css';
+@import '../vendor/@fontsource-variable/jetbrains-mono/index.css';
+
 /* ---------- TOKENS : thème sombre (défaut) ---------- */
 :root {
   --lm-bg: #14110f;          /* fond de page */
@@ -355,3 +360,49 @@ textarea.lm-field { padding: var(--lm-s3); min-height: 96px; }
 .lm-bar > i { display: block; height: 100%; background: var(--role, var(--lm-accent)); width: var(--w); }
 .lm-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--lm-s4); align-items: start; }
 .lm-stack { display: grid; gap: var(--lm-s3); }
+
+/* =====================================================================
+   HABILLAGE BÊTA
+   Actif uniquement sous <html data-ui="beta"> (compte ayant activé l'interface
+   bêta). Il re-teinte les pages existantes sans modifier leurs gabarits :
+   couleurs, polices, boutons, cartes et en-têtes de cadre. Les composants
+   .lm-* ci-dessus restent utilisables indépendamment.
+   ===================================================================== */
+html[data-ui="beta"] {
+  --bs-body-font-family: var(--lm-font-body);
+  --bs-link-color: var(--lm-link);
+  --bs-link-hover-color: var(--lm-link);
+  --bs-heading-color: var(--lm-fg);
+  --bs-border-color: var(--lm-line);
+}
+html[data-ui="beta"] body { font-family: var(--lm-font-body); }
+html[data-ui="beta"] h1, html[data-ui="beta"] h2, html[data-ui="beta"] h3,
+html[data-ui="beta"] h4, html[data-ui="beta"] h5, html[data-ui="beta"] h6 { font-family: var(--lm-font-display); letter-spacing: .02em; }
+
+html[data-ui="beta"] .btn { border-radius: var(--lm-radius); font-weight: 600; }
+html[data-ui="beta"] .btn-primary {
+  --bs-btn-bg: var(--lm-accent); --bs-btn-border-color: var(--lm-accent); --bs-btn-color: var(--lm-on-accent);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--lm-accent) 86%, #fff); --bs-btn-hover-border-color: color-mix(in srgb, var(--lm-accent) 86%, #fff);
+  --bs-btn-hover-color: var(--lm-on-accent);
+  --bs-btn-active-bg: color-mix(in srgb, var(--lm-accent) 78%, #000); --bs-btn-active-border-color: color-mix(in srgb, var(--lm-accent) 78%, #000);
+  --bs-btn-active-color: var(--lm-on-accent);
+}
+html[data-ui="beta"] .btn-secondary {
+  --bs-btn-bg: var(--lm-raised); --bs-btn-border-color: var(--lm-line); --bs-btn-color: var(--lm-fg);
+  --bs-btn-hover-bg: var(--lm-raised); --bs-btn-hover-border-color: var(--lm-muted); --bs-btn-hover-color: var(--lm-fg);
+  --bs-btn-active-bg: var(--lm-line); --bs-btn-active-border-color: var(--lm-muted); --bs-btn-active-color: var(--lm-fg);
+}
+html[data-ui="beta"] .well, html[data-ui="beta"] .panel, html[data-ui="beta"] .card {
+  background: var(--lm-surface); color: var(--lm-fg); border: 1px solid var(--lm-line);
+  border-radius: var(--lm-radius-lg); box-shadow: none;
+}
+/* En-têtes de cadre : le panneau de bois est remplacé par un dégradé cuivre (sans image) */
+html[data-ui="beta"] .header > h4, html[data-ui="beta"] .header > h5, html[data-ui="beta"] .header > h6,
+html[data-ui="beta"] .header-conan, html[data-ui="beta"] .panel-conan > .panel-heading {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--lm-accent) 26%, var(--lm-raised)), var(--lm-raised));
+  color: var(--lm-fg); border-top: 2px solid var(--lm-accent); border-radius: var(--lm-radius) var(--lm-radius) 0 0;
+  font-family: var(--lm-font-display); letter-spacing: .04em;
+}
+html[data-ui="beta"] .alert, html[data-ui="beta"] .dropdown-menu, html[data-ui="beta"] .form-control, html[data-ui="beta"] .form-select {
+  border-radius: var(--lm-radius);
+}

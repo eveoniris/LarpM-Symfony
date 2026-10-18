@@ -230,6 +230,10 @@ abstract class BaseUser
     #[Column(name: 'discord_pseudo', type: Types::STRING, length: 64, nullable: true)]
     private ?string $discordPseudo = null;
 
+    /** Interface choisie : null = interface actuelle, 'beta' = nouveau thème (bêta). */
+    #[Column(name: 'ui_theme', type: Types::STRING, length: 16, nullable: true)]
+    private ?string $uiTheme = null;
+
     public function __construct()
     {
         $this->backgrounds = new ArrayCollection();
@@ -640,6 +644,24 @@ abstract class BaseUser
         $this->discordPseudo = '' === $discordPseudo ? null : $discordPseudo;
 
         return $this;
+    }
+
+    public function getUiTheme(): ?string
+    {
+        return $this->uiTheme;
+    }
+
+    /** Seule la valeur 'beta' est reconnue ; toute autre valeur rétablit l'interface actuelle. */
+    public function setUiTheme(?string $uiTheme): static
+    {
+        $this->uiTheme = 'beta' === $uiTheme ? 'beta' : null;
+
+        return $this;
+    }
+
+    public function isUiBeta(): bool
+    {
+        return 'beta' === $this->uiTheme;
     }
 
     public function getEtatCivil(): ?EtatCivil

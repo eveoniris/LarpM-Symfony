@@ -67,6 +67,24 @@
                 </div>
             </div>
 
+            {% if user.id == app.user.id and (is_granted('ROLE_ADMIN') or is_granted('ROLE_SCENARISTE') or is_granted('ROLE_ORGA') or is_granted('ROLE_REGLE') or is_granted('ROLE_STOCK')) %}
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-ui-theme">Interface bêta</label>
+                    <div class="col-sm-8">
+                        <input type="hidden" name="ui_theme_form" value="1">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="ui_theme" value="beta"
+                                   id="input-ui-theme"{% if user.uiBeta %} checked{% endif %}>
+                            <label class="form-check-label" for="input-ui-theme">Essayer le nouveau thème</label>
+                        </div>
+                        <div class="help-block small">
+                            Facultatif. Ne concerne que votre compte : décochez pour revenir à l'interface actuelle.
+                            Le thème est en cours de test, des pages peuvent encore être inchangées.
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
             {% if user.hasRealUsername %}
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-name">Username</label>
