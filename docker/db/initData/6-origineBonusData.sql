@@ -1,7 +1,8 @@
 -- Jeu de données de développement pour le bonus d'origine figé à la première participation.
 --
 -- Règle : à sa première participation, le PJ garde le bonus d'origine si le groupe POSSÈDE (fiefs, territoire.groupe_id)
--- le territoire d'origine du PJ. Sinon il reçoit la langue du groupe (groupe.territoire_id) et pas le bonus.
+-- au moins un territoire situé dans la NATION d'origine du PJ (l'origine elle-même ou un territoire qui en dépend :
+-- nation > région > fief). Sinon il reçoit la langue du groupe (groupe.territoire_id) et pas le bonus.
 -- La décision est enregistrée dans personnage_bonus (source ORIGINE : ACTIVE = acquis, DELETED = refusé).
 --
 -- Script idempotent : il n'ajoute que ce qui manque et peut être rejoué à tout moment sur une base existante :
@@ -13,7 +14,7 @@
 -- Aucun écouteur Doctrine ne tourne ici : les décisions sont écrites telles que l'écouteur les aurait produites.
 --
 -- Comptes (mot de passe : azerty) et cas couverts, tous sur le GN 7, origine du PJ = Origine Test Alpha sauf E :
---   origine-a@test.com  A : groupe possédant l'origine                         -> bonus ACQUIS
+--   origine-a@test.com  A : groupe possédant un fief sous la nation d'origine   -> bonus ACQUIS
 --   origine-b@test.com  B : groupe sans fief commun, territoire de réf. autre   -> bonus REFUSÉ
 --   origine-c@test.com  C : territoire de réf. du groupe = origine, aucun fief  -> bonus REFUSÉ (l'ancien calcul l'acceptait)
 --   origine-d@test.com  D : participation sans groupe                           -> aucune décision (différée) ;
@@ -48,6 +49,15 @@ SELECT v.nom, 'extended', 0
 FROM (SELECT 'Origine Test Alpha' AS nom UNION ALL SELECT 'Origine Test Beta') v
 WHERE NOT EXISTS (SELECT 1 FROM larpm.territoire t WHERE t.nom = v.nom);
 
+-- Hiérarchie sous la nation Alpha : Région Test Alpha, puis Fief Test Alpha (le fief possédé par le groupe « Fief »).
+INSERT INTO larpm.territoire (nom, discr, ordre_social, territoire_id)
+SELECT 'Region Test Alpha', 'extended', 0, (SELECT id FROM larpm.territoire WHERE nom = 'Origine Test Alpha')
+WHERE NOT EXISTS (SELECT 1 FROM larpm.territoire t WHERE t.nom = 'Region Test Alpha');
+
+INSERT INTO larpm.territoire (nom, discr, ordre_social, territoire_id)
+SELECT 'Fief Test Alpha', 'extended', 0, (SELECT id FROM larpm.territoire WHERE nom = 'Region Test Alpha')
+WHERE NOT EXISTS (SELECT 1 FROM larpm.territoire t WHERE t.nom = 'Fief Test Alpha');
+
 INSERT INTO larpm.bonus (titre, description, type, valeur, periode, json_data, discr)
 SELECT 'Bonus Origine Test', 'Bonus de renommée lié à l''origine (jeu de test du bonus d''origine figé).',
        'RENOMME', 1, 'NATIVE', '{"renomme": 1}', 'extended'
@@ -62,7 +72,7 @@ WHERE b.titre = 'Bonus Origine Test'
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Groupes. territoire_id = territoire de référence (langue) ; fiefs possédés = territoire.groupe_id (ci-dessous).
---   Fief    : territoire de réf. Beta, possédera Alpha
+--   Fief    : territoire de réf. Beta, possédera Fief Test Alpha (sous la nation Alpha)
 --   Autre   : territoire de réf. Alpha, possédera Beta (cas C et F : réf. = origine mais aucun fief commun)
 --   Neutre  : territoire de réf. Beta, aucun fief
 --   Perdu   : territoire de réf. Alpha, ne possède plus Beta (cas E)
@@ -75,10 +85,16 @@ FROM (SELECT 'Groupe Test Origine Fief' AS nom, 9961 AS numero, 'TESTORF' AS cod
       UNION ALL SELECT 'Groupe Test Origine Perdu', 9964, 'TESTORP', 'Origine Test Alpha') v
 WHERE NOT EXISTS (SELECT 1 FROM larpm.groupe g WHERE g.nom = v.nom);
 
+-- Rattrapage d'une version antérieure de ce script où le groupe « Fief » possédait directement la nation Alpha.
+UPDATE larpm.territoire t
+    INNER JOIN larpm.groupe g ON g.nom = 'Groupe Test Origine Fief' AND g.id = t.groupe_id
+SET t.groupe_id = NULL
+WHERE t.nom = 'Origine Test Alpha';
+
 UPDATE larpm.territoire t
     INNER JOIN larpm.groupe g ON g.nom = 'Groupe Test Origine Fief'
 SET t.groupe_id = g.id
-WHERE t.nom = 'Origine Test Alpha' AND t.groupe_id IS NULL;
+WHERE t.nom = 'Fief Test Alpha' AND t.groupe_id IS NULL;
 
 UPDATE larpm.territoire t
     INNER JOIN larpm.groupe g ON g.nom = 'Groupe Test Origine Autre'
