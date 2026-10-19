@@ -137,7 +137,7 @@
     <tbody>
     <tr>
         <td class="print-center">
-            {% for personnageLangue in personnageService.allLangues(personnage) %}
+            {% for ligneLangue in personnageService.allLanguesUnique(personnage) %}{% set personnageLangue = ligneLangue.principal %}
                 <strong>{{ personnageLangue.langue }}</strong>{#  ({{ personnageLangue.source }}) #}<br/>
             {% endfor %}
         </td>
@@ -155,7 +155,7 @@
                 {% if personnage.bracelet %}
                     Géré par l'interprète du personnage
                 {% else %}
-                    {% for personnageLangue in personnageService.allLangues(personnage) %}
+                    {% for ligneLangue in personnageService.allLanguesUnique(personnage) %}{% set personnageLangue = ligneLangue.principal %}
                         {% if personnageLangue.langue.diffusion > 0 and personnageLangue.langue.secret == 0 %}
                             {% set mykey = personnageLangue.langue.groupeLangue.couleur %}
                             {% if mykey not in bracelets|keys %}

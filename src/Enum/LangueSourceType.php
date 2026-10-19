@@ -20,6 +20,22 @@ enum LangueSourceType: string
         return self::getLabels()[$this->value] ?? $this->value;
     }
 
+    /**
+     * Rang d'une source quand une même langue est connue par plusieurs voies : plus le rang est petit, plus la source prime.
+     * Origine > origine secondaire > groupe > littérature > maître / bonus (toute autre source) > admin.
+     */
+    public static function priorityOf(string $source): int
+    {
+        return match ($source) {
+            self::ORIGINE->value, self::ORIGINE_ET_GROUPE->value => 0,
+            self::ORIGINE_SECONDAIRE->value => 1,
+            self::GROUPE->value => 2,
+            self::LITTERATURE->value => 3,
+            self::ADMIN->value => 5,
+            default => 4,
+        };
+    }
+
     /** @return array<string, string> */
     public static function getLabels(): array
     {

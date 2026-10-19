@@ -49,6 +49,7 @@ use App\Enum\BonusApplication;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Enum\CompetenceFamilyType;
+use App\Enum\LangueSourceType;
 use App\Enum\LevelType;
 use App\Enum\LogActionType;
 use App\Enum\Role;
@@ -427,11 +428,10 @@ class PersonnageService
         // Ajout des langues en fonction de l'origine du personnage
         $langue = $personnage->getOrigine()?->getLangue();
         if ($langue) {
-            $personnageLangue = new PersonnageLangues();
-            $personnageLangue->setPersonnage($personnage);
-            $personnageLangue->setLangue($langue);
-            $personnageLangue->setSource('ORIGINE');
-            $this->entityManager->persist($personnageLangue);
+            $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE');
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
+            }
         }
 
         // Ajout des langues secondaires lié à l'origine du personnage
@@ -440,11 +440,10 @@ class PersonnageService
                 continue;
             }
 
-            $personnageLangue = new PersonnageLangues();
-            $personnageLangue->setPersonnage($personnage);
-            $personnageLangue->setLangue($langue);
-            $personnageLangue->setSource('ORIGINE SECONDAIRE');
-            $this->entityManager->persist($personnageLangue);
+            $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE SECONDAIRE');
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
+            }
         }
 
         // Ajout de la langue du groupe
@@ -453,11 +452,10 @@ class PersonnageService
             if ($territoire) {
                 $langue = $territoire->getLangue();
                 if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = new PersonnageLangues();
-                    $personnageLangue->setPersonnage($personnage);
-                    $personnageLangue->setLangue($langue);
-                    $personnageLangue->setSource('GROUPE');
-                    $this->entityManager->persist($personnageLangue);
+                    $personnageLangue = $personnage->addLangueSource($langue, 'GROUPE');
+                    if (null !== $personnageLangue) {
+                        $this->entityManager->persist($personnageLangue);
+                    }
                 }
             }
         }
@@ -1170,8 +1168,9 @@ class PersonnageService
      */
     public function getAllLangues(Personnage $personnage): Collection
     {
-        /** @var Collection<int, PersonnageLangues> $all */
-        $all = $personnage->getPersonnageLangues();
+        // Copie : on ne doit pas ajouter les langues de bonus à la collection Doctrine du personnage
+        /** @var ArrayCollection<int, PersonnageLangues> $all */
+        $all = new ArrayCollection($personnage->getPersonnageLangues()->toArray());
 
         /** @var Bonus $bonus */
         foreach ($this->getAllBonus($personnage, BonusType::LANGUE) as $bonus) {
@@ -1218,6 +1217,32 @@ class PersonnageService
         }
 
         return $all;
+    }
+
+    /**
+     * Langues du personnage sans doublon : une entrée par langue, avec la source qui prime
+     * (origine > origine secondaire > groupe > littérature > maître / bonus > admin)
+     * et les autres sources conservées pour information.
+     *
+     * @return list<array{principal: PersonnageLangues, autres: list<PersonnageLangues>}>
+     */
+    public function getAllLanguesUnique(Personnage $personnage): array
+    {
+        $groups = [];
+        foreach ($this->getAllLangues($personnage) as $personnageLangue) {
+            $langue = $personnageLangue->getLangue();
+            $key = $langue?->getId() ?? 'label:' . $langue?->getLabel();
+            $groups[$key][] = $personnageLangue;
+        }
+
+        $result = [];
+        foreach ($groups as $rows) {
+            usort($rows, static fn (PersonnageLangues $a, PersonnageLangues $b): int => LangueSourceType::priorityOf($a->getSource()) <=> LangueSourceType::priorityOf($b->getSource()));
+            $principal = array_shift($rows);
+            $result[] = ['principal' => $principal, 'autres' => $rows];
+        }
+
+        return $result;
     }
 
     public function isBonusEffective(Personnage $personnage, Bonus $bonus): bool
@@ -2166,11 +2191,10 @@ class PersonnageService
         $langue = $personnage->getOrigine()?->getLangue();
         if ($langue) {
             $hasOne = true;
-            $personnageLangue = new PersonnageLangues();
-            $personnageLangue->setPersonnage($personnage);
-            $personnageLangue->setLangue($langue);
-            $personnageLangue->setSource('ORIGINE');
-            $this->entityManager->persist($personnageLangue);
+            $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE');
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
+            }
         }
 
         // Ajout des langues secondaires lié à l'origine du personnage
@@ -2180,11 +2204,10 @@ class PersonnageService
             }
 
             $hasOne = true;
-            $personnageLangue = new PersonnageLangues();
-            $personnageLangue->setPersonnage($personnage);
-            $personnageLangue->setLangue($langue);
-            $personnageLangue->setSource('ORIGINE SECONDAIRE');
-            $this->entityManager->persist($personnageLangue);
+            $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE SECONDAIRE');
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
+            }
         }
 
         // Ajout de la langue du groupe
@@ -2193,20 +2216,18 @@ class PersonnageService
             $langue = $territoire->getLangue();
             if ($langue && !$personnage->isKnownLanguage($langue)) {
                 $hasOne = true;
-                $personnageLangue = new PersonnageLangues();
-                $personnageLangue->setPersonnage($personnage);
-                $personnageLangue->setLangue($langue);
-                $personnageLangue->setSource('GROUPE');
-                $this->entityManager->persist($personnageLangue);
+                $personnageLangue = $personnage->addLangueSource($langue, 'GROUPE');
+                if (null !== $personnageLangue) {
+                    $this->entityManager->persist($personnageLangue);
+                }
             }
         }
 
         if (!$hasOne && $baseLangue) {
-            $personnageLangue = new PersonnageLangues();
-            $personnageLangue->setPersonnage($personnage);
-            $personnageLangue->setLangue($baseLangue);
-            $personnageLangue->setSource('ADMIN');
-            $this->entityManager->persist($personnageLangue);
+            $personnageLangue = $personnage->addLangueSource($baseLangue, 'ADMIN');
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
+            }
         }
 
         if ($flush) {
