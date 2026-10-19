@@ -25,7 +25,7 @@ class OrigineBonusListenerTest extends OrigineBonusIntegrationTestCase
         $rows = $this->rows($personnage);
         static::assertCount(1, $rows);
         static::assertSame(Status::ACTIVE, $rows[0]->getStatus());
-        static::assertSame($origine->getId(), $rows[0]->getTerritoire()->getId());
+        static::assertSame($origine->getId(), $rows[0]->getTerritoire()?->getId());
     }
 
     public function testPremiereParticipationSansFiefCommunRefuseEtEnregistre(): void
@@ -52,7 +52,7 @@ class OrigineBonusListenerTest extends OrigineBonusIntegrationTestCase
         $rows = $this->rows($personnage);
         static::assertCount(1, $rows);
         static::assertSame(Status::ACTIVE, $rows[0]->getStatus());
-        static::assertSame($nation->getId(), $rows[0]->getTerritoire()->getId());
+        static::assertSame($nation->getId(), $rows[0]->getTerritoire()?->getId());
     }
 
     public function testFiefDUneAutreNationRefuseLeBonus(): void

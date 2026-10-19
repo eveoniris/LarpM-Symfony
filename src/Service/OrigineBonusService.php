@@ -112,11 +112,12 @@ class OrigineBonusService
      */
     public function getNativeBonus(Territoire $origine): array
     {
-        $valides = $origine->getOriginesBonus()->filter(static fn (OrigineBonus $origineBonus): bool => $origineBonus->isValid() && BonusPeriode::NATIVE === $origineBonus->getBonus()?->getPeriode());
-
         $bonuses = [];
-        foreach ($valides as $origineBonus) {
-            $bonuses[$origineBonus->getBonus()->getId()] = $origineBonus->getBonus();
+        foreach ($origine->getOriginesBonus()->filter(static fn (OrigineBonus $origineBonus): bool => $origineBonus->isValid()) as $origineBonus) {
+            $bonus = $origineBonus->getBonus();
+            if (BonusPeriode::NATIVE === $bonus?->getPeriode()) {
+                $bonuses[(int) $bonus->getId()] = $bonus;
+            }
         }
 
         return $bonuses;

@@ -101,6 +101,7 @@ class OrigineBonusServiceTest extends TestCase
         static::assertSame([], $this->service->grant($personnage));
 
         $participant = $personnage->getFirstParticipant();
+        static::assertNotNull($participant);
         $groupe = (new Groupe())->setTerritoire($this->f->territoire(9));
         $groupe->addTerritoire($origine);
         $participant->setGroupeGn(

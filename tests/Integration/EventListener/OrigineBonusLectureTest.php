@@ -72,8 +72,8 @@ class OrigineBonusLectureTest extends OrigineBonusIntegrationTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $personnage = $this->em->find(Personnage::class, $personnage->getId());
-        $competence = $this->em->find(Competence::class, $competence->getId());
+        $personnage = $this->recharger(Personnage::class, $personnage->getId());
+        $competence = $this->recharger(Competence::class, $competence->getId());
         static::assertSame(3, $this->cout($personnage, $competence));
     }
 
@@ -95,8 +95,8 @@ class OrigineBonusLectureTest extends OrigineBonusIntegrationTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $personnage = $this->em->find(Personnage::class, $personnage->getId());
-        $competence = $this->em->find(Competence::class, $competence->getId());
+        $personnage = $this->recharger(Personnage::class, $personnage->getId());
+        $competence = $this->recharger(Competence::class, $competence->getId());
         static::assertSame(0, $this->cout($personnage, $competence));
     }
 }
