@@ -452,3 +452,47 @@ html[data-ui="beta"] .nav-tabs .nav-link.active {
   color: var(--lm-fg); border-bottom-color: var(--lm-accent);
   background: color-mix(in srgb, var(--lm-accent) 16%, var(--lm-surface));
 }
+
+/* --- Contenu des pages à onglets : un cadre général sous l'en-tête (comme les fiches groupe, territoire) --- */
+html[data-ui="beta"] .tab-content {
+  background: var(--lm-surface); border: 1px solid var(--lm-line); border-radius: 0 0 var(--lm-radius-lg) var(--lm-radius-lg);
+  padding: var(--lm-s3);
+}
+html[data-ui="beta"] .tab-content .panel, html[data-ui="beta"] .tab-content .well {
+  background: color-mix(in srgb, var(--lm-surface) 55%, var(--lm-bg));
+}
+html[data-ui="beta"] .panel.mb-0.border-bottom-0 { border-radius: var(--lm-radius-lg) var(--lm-radius-lg) 0 0; }
+
+/* --- Listes, tableaux, formulaires, pagination, fil d'Ariane, fenêtres modales --- */
+html[data-ui="beta"] .table {
+  --bs-table-bg: transparent; --bs-table-color: var(--lm-fg); --bs-table-border-color: var(--lm-line);
+  --bs-table-striped-bg: color-mix(in srgb, var(--lm-raised) 55%, transparent); --bs-table-striped-color: var(--lm-fg);
+  --bs-table-hover-bg: var(--lm-raised); --bs-table-hover-color: var(--lm-fg);
+}
+html[data-ui="beta"] .table > thead > tr > th {
+  font: 700 .72rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--lm-muted); border-bottom: 2px solid var(--lm-line);
+}
+html[data-ui="beta"] .list-group {
+  --bs-list-group-bg: transparent; --bs-list-group-color: var(--lm-fg); --bs-list-group-border-color: var(--lm-line);
+  --bs-list-group-action-hover-bg: var(--lm-raised); --bs-list-group-action-hover-color: var(--lm-fg);
+  --bs-list-group-border-radius: var(--lm-radius);
+}
+html[data-ui="beta"] .form-control, html[data-ui="beta"] .form-select {
+  background-color: var(--lm-raised); color: var(--lm-fg); border-color: var(--lm-line);
+}
+html[data-ui="beta"] .form-control:focus, html[data-ui="beta"] .form-select:focus {
+  border-color: var(--lm-accent); box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--lm-accent) 25%, transparent);
+}
+html[data-ui="beta"] .ts-control, html[data-ui="beta"] .ts-dropdown {
+  background: var(--lm-raised); border-color: var(--lm-line); color: var(--lm-fg);
+}
+html[data-ui="beta"] .ts-control input, html[data-ui="beta"] .ts-control .item { color: var(--lm-fg); }
+html[data-ui="beta"] .pagination {
+  --bs-pagination-bg: var(--lm-raised); --bs-pagination-border-color: var(--lm-line); --bs-pagination-color: var(--lm-link);
+  --bs-pagination-hover-bg: var(--lm-line); --bs-pagination-hover-color: var(--lm-fg); --bs-pagination-hover-border-color: var(--lm-muted);
+  --bs-pagination-active-bg: var(--lm-accent); --bs-pagination-active-border-color: var(--lm-accent); --bs-pagination-active-color: var(--lm-on-accent);
+  --bs-pagination-disabled-bg: var(--lm-surface); --bs-pagination-disabled-color: var(--lm-muted); --bs-pagination-disabled-border-color: var(--lm-line);
+}
+html[data-ui="beta"] .breadcrumb { background-color: var(--lm-surface); border: 1px solid var(--lm-line); border-radius: var(--lm-radius); }
+html[data-ui="beta"] .modal-content { --bs-modal-bg: var(--lm-surface); --bs-modal-color: var(--lm-fg); --bs-modal-border-color: var(--lm-line); --bs-modal-header-border-color: var(--lm-line); --bs-modal-footer-border-color: var(--lm-line); }
