@@ -2588,6 +2588,20 @@ class PersonnageService
         return $religion && $this->knownReligion($personnage, $religion);
     }
 
+    /**
+     * Langue connue du personnage, bonus (origine, groupe...) compris.
+     */
+    public function isKnownLangue(Personnage $personnage, Langue $langue): bool
+    {
+        foreach ($this->getAllLangues($personnage) as $personnageLangue) {
+            if ($personnageLangue->getLangue()?->getId() === $langue->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function isKnownLoi(Personnage $personnage, Loi $loi): bool
     {
         // We currently only work on the competence level

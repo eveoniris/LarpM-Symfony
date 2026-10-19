@@ -84,7 +84,7 @@
 <div class="doc">
 
 <header class="doc-head">
-  <div class="doc-kicker">Guide de style · v0.1 · Bootstrap 5.3</div>
+  <div class="doc-kicker">Guide de style · v0.14 · Bootstrap 5.3</div>
   <h1>Template de design LarpManager</h1>
   <p class="doc-lead">Référence unique pour les couleurs, les rôles d'information, les composants et les gabarits de page. Chaque bloc ci-dessous est utilisable tel quel avec <code>lm-design.css</code> et se transpose en widgets Flutter ou React Native à partir des mêmes tokens.</p>
   
@@ -718,7 +718,51 @@
   </table></div>
 </section>
 
-</div>
+<!-- ===================== 10. CHANTIERS ===================== -->
+<section class="doc-sec">
+  <h2>10. Chantiers de migration vers la bêta</h2>
+  <p class="doc-note">Suivi des éléments déjà couverts par l'habillage bêta et de ceux qui restent à traiter. « Habillage » signifie une règle CSS sous <code>html[data-ui="beta"]</code> sans modification de gabarit ; « Gabarit » signifie une modification de template.</p>
+  <div class="lm-table-wrap"><table class="lm-table">
+    <thead><tr><th>Chantier</th><th>Périmètre constaté</th><th>Moyen</th><th>État</th></tr></thead>
+    <tbody>
+      <tr><td><b>Menus, panneau « Actions », onglets, listes, formulaires</b></td><td>Navigation, offcanvas, tableaux, pagination, modales, badges Bootstrap</td><td>Habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>Encadrés info, confirmation, avertissement, erreur</b></td><td><code>_partials/cardNotif.twig</code> (69 fichiers, 105 usages), <code>alert alert-*</code> (17 fichiers, 27 usages), <code>_partials/alert.twig</code></td><td>Habillage + attribut <code>data-role</code> dans <code>cardNotif.twig</code></td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> remplacement par <code>callout.twig</code> optionnel</td></tr>
+      <tr><td><b>Blocs de scénarisation</b></td><td><code>card border-gamemaster</code> (8 fichiers), <code>text-gamemaster</code> (9 fichiers), <code>alert-gamemaster</code></td><td>Habillage</td><td><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-clock"/></svg>Partiel</span> à contrôler page par page</td></tr>
+      <tr><td><b>Cadres administratifs</b></td><td><code>card border-danger</code> avec icône <code>fa-user-ninja</code> (fiche GN, fiche utilisateur). À inspecter : <code>/gn</code>, <code>/gn/7/groupes</code></td><td>Habillage (<code>:has(.fa-user-ninja)</code>) puis <code>data-role="admin"</code></td><td><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-clock"/></svg>Partiel</span></td></tr>
+      <tr><td><b>Liens d'action voisins d'un bouton</b></td><td>Règle : un lien qui déclenche une action et se trouve à proximité d'un bouton devient un bouton secondaire (<code>lm-btn</code>). À relever au fil des pages.</td><td>Gabarit</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>À faire</span></td></tr>
+      <tr><td><b>En-têtes de carte par rôle</b></td><td><code>/stats/list</code> (Admin, Orga, Scénarisation, Jeu de domaine)</td><td>Attribut <code>data-role</code> + habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> icônes à décider</td></tr>
+      <tr><td><b>Who's who imprimable</b></td><td><code>/stats/whoswho/{gn}</code> et route <code>/print</code></td><td>Gabarit d'impression commun</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>Groupes transverses</b></td><td><code>/groupeSecondaire/{id}/detail</code> : onglets par route, requêtes avec jointures</td><td>Session dédiée</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>Planifié</span></td></tr>
+      <tr><td><b>Compétences, classes</b></td><td><code>/competence</code> (grille compacte, affinité de classe), <code>/classe</code> (filtre par type, matrice classes × familles)</td><td>Gabarit</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>À faire</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
 
+<!-- ===================== 11. HISTORIQUE ===================== -->
+<section class="doc-sec">
+  <h2>11. Historique des versions</h2>
+  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque publication. Version actuelle : <b>v0.14</b>.</p>
+  <div class="lm-table-wrap"><table class="lm-table">
+    <thead><tr><th>Version</th><th>Contenu</th></tr></thead>
+    <tbody>
+      <tr><td>v0.14</td><td>Numéro de version aligné sur les publications ; historique des versions.</td></tr>
+      <tr><td>v0.13</td><td>Section « Chantiers de migration vers la bêta ».</td></tr>
+      <tr><td>v0.12</td><td>Reformulation sur un ton neutre et factuel.</td></tr>
+      <tr><td>v0.11</td><td>Couleur des liens (azurite), onglets, panneau latéral « Actions ».</td></tr>
+      <tr><td>v0.10</td><td>Retours de recette : PNJ olive, offerte en bleu ciel, méconnue « ? », effet de l'âge en information, bouton « Modifier » écrit.</td></tr>
+      <tr><td>v0.9</td><td>Jeu de domaine (conseil, indicateurs), chronologie des opus, groupes transverses.</td></tr>
+      <tr><td>v0.8</td><td>Les 17 classes et leurs trois types.</td></tr>
+      <tr><td>v0.7</td><td>États de participation et chaîne de personnages.</td></tr>
+      <tr><td>v0.6</td><td>Zones du site et palette de données.</td></tr>
+      <tr><td>v0.5</td><td>Sources de réduction, compétence secrète, aide de jeu, espèces multiples.</td></tr>
+      <tr><td>v0.4</td><td>Affinité de compétence et coût en XP.</td></tr>
+      <tr><td>v0.3</td><td>Icône du secret (espion).</td></tr>
+      <tr><td>v0.2</td><td>Corrections : débordement des champs, bascule sombre/clair.</td></tr>
+      <tr><td>v0.1</td><td>Tokens, rôles, composants, gabarits de page.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+</div>
 {% endverbatim %}
 {% endblock %}

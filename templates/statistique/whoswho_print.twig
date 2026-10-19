@@ -1,62 +1,59 @@
 {% extends "base.print.twig" %}
 
-{% block title %}
-    Bateaux sur {{ gn.label }}
-{% endblock title %}
+{# Who's who imprimable : A4 paysage, 6 fiches par ligne, plusieurs pages, noir et blanc.
+   Impression : bouton « Imprimer » puis « Enregistrer au format PDF ». #}
+
+{% block title %}Who's who - {{ gn.label }}{% endblock title %}
+
+{% block size %}A4 landscape{% endblock size %}
 
 {% block style %}
-{% endblock %}
+    <style>
+        @page {
+            margin: 10mm 10mm 12mm;
+            @bottom-center { content: "Who's who {{ gn.label|e('css') }} - page " counter(page) " / " counter(pages); font: 8pt 'Source Sans 3 Variable', Arial, sans-serif; }
+        }
+
+        .whoswho-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8mm; border-bottom: 1pt solid #000; margin-bottom: 4mm; padding-bottom: 1.5mm; }
+        .whoswho-head h1 { margin: 0; font-size: 15pt; }
+        .whoswho-head p { margin: 0; font-size: 8.5pt; }
+
+        .whoswho-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3mm; }
+        .whoswho-card { border: .5pt solid #000; padding: 1.5mm; break-inside: avoid; page-break-inside: avoid; }
+        .whoswho-name { margin: 0 0 1.2mm; font-size: 8.5pt; line-height: 1.2; text-align: center; overflow-wrap: anywhere; }
+        .whoswho-photo { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border: .5pt solid #000; }
+        .whoswho-photo--none { display: grid; place-items: center; font-size: 7pt; text-align: center; }
+        .whoswho-meta { margin: 1.5mm 0 0; font-size: 7.5pt; line-height: 1.25; }
+        .whoswho-meta dt { display: inline; font-weight: 700; }
+        .whoswho-meta dd { display: inline; margin: 0; }
+        .whoswho-meta div { overflow-wrap: anywhere; }
+    </style>
+{% endblock style %}
 
 {% block content %}
+    {% set renomme = app.request.query.get('renomme', 20) %}
 
-    <div class="well well-sm">
-        <div class="header">
-            <h5>Personnages illustres présents sur {{ gn.label }}</h5>
-        </div>
-
-        <div class="d-flex flex-wrap">
-            {% for data in all %}
-                <div class="col">
-                    <div class="card m-1">
-                        <div class="card-header text-center bg-body-secondary d-flex justify-content-around">
-                            <h5>{% if data.personnage_id %}<a href="{{ path('personnage.detail', {'personnage': data.personnage_id}) }}">
-                                    {{ data.personnage_nom }}
-                                </a>{% else %}{{ data.personnage_nom }}{% endif %}</h5>
-                        </div>
-
-                        <div class="card-img text-center">
-                            {% if data.personnage_trombine_url %}
-                                <img class="media-object w-auto"
-                                     style="max-height:200px;max-width: 200px"
-                                     src="{{ path('personnage.trombine', {'personnage' : data.personnage_id }) }}"
-                                     alt=""/>
-                            {% else %}
-                                <img class="media-object w-auto"
-                                     style="max-height:200px;max-width: 200px"
-                                     src="{{ app.request.basepath }}/img/no_trombine.png"/>
-                            {% endif %}
-                        </div>
-
-                        <div class="card-footer">
-                            <div class="list-group">
-                                <div class="list-group-item">
-                                    Groupe: <a href="{{ path('groupe.detail', {'groupe': data.groupe_id}) }}">
-                                        {{ data.groupe_nom }}
-                                    </a>
-                                </div>
-                                <div class="list-group-item">
-                                    Joué par: <a href="{{ path('user.detail', {'user': data.user_id}) }}">
-                                        {{ data.user_prenom }}
-                                    </a>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-
+    <div class="whoswho-head">
+        <h1>Personnages illustres présents sur {{ gn.label }}</h1>
+        <p>Renommée d'au moins {{ renomme }} · {{ all|length }} personnage{{ all|length > 1 ? 's' : '' }}</p>
     </div>
 
-{% endblock %}
+    <div class="whoswho-grid">
+        {% for data in all %}
+            <div class="whoswho-card">
+                <h2 class="whoswho-name">{{ data.personnage_nom }}</h2>
+
+                {% if data.personnage_trombine_url and data.personnage_id %}
+                    <img class="whoswho-photo" src="{{ path('personnage.trombine', {'personnage': data.personnage_id}) }}" alt="">
+                {% else %}
+                    <div class="whoswho-photo whoswho-photo--none">Photo à venir</div>
+                {% endif %}
+
+                <dl class="whoswho-meta">
+                    <div><dt>Groupe :</dt> <dd>{{ data.groupe_nom }}</dd></div>
+                    <div><dt>Joué par :</dt> <dd>{{ data.user_prenom }}</dd></div>
+                </dl>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

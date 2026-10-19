@@ -465,13 +465,13 @@ html[data-ui="beta"] .panel.mb-0.border-bottom-0 { border-radius: var(--lm-radiu
 
 /* --- Listes, tableaux, formulaires, pagination, fil d'Ariane, fenêtres modales --- */
 html[data-ui="beta"] .table {
-  --bs-table-bg: transparent; --bs-table-color: var(--lm-fg); --bs-table-border-color: var(--lm-line);
-  --bs-table-striped-bg: color-mix(in srgb, var(--lm-raised) 55%, transparent); --bs-table-striped-color: var(--lm-fg);
+  --bs-table-bg: var(--lm-surface); --bs-table-color: var(--lm-fg); --bs-table-border-color: var(--lm-line);
+  --bs-table-striped-bg: color-mix(in srgb, var(--lm-raised) 60%, var(--lm-surface)); --bs-table-striped-color: var(--lm-fg);
   --bs-table-hover-bg: var(--lm-raised); --bs-table-hover-color: var(--lm-fg);
 }
 html[data-ui="beta"] .table > thead > tr > th {
   font: 700 .72rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase;
-  color: var(--lm-muted); border-bottom: 2px solid var(--lm-line);
+  color: var(--lm-muted); background-color: var(--lm-raised); border-bottom: 2px solid var(--lm-line);
 }
 html[data-ui="beta"] .list-group {
   --bs-list-group-bg: transparent; --bs-list-group-color: var(--lm-fg); --bs-list-group-border-color: var(--lm-line);
@@ -496,3 +496,52 @@ html[data-ui="beta"] .pagination {
 }
 html[data-ui="beta"] .breadcrumb { background-color: var(--lm-surface); border: 1px solid var(--lm-line); border-radius: var(--lm-radius); }
 html[data-ui="beta"] .modal-content { --bs-modal-bg: var(--lm-surface); --bs-modal-color: var(--lm-fg); --bs-modal-border-color: var(--lm-line); --bs-modal-header-border-color: var(--lm-line); --bs-modal-footer-border-color: var(--lm-line); }
+
+/* --- Badges Bootstrap : pastilles sobres, la couleur ne sert qu'aux états --- */
+html[data-ui="beta"] .badge { font-family: var(--lm-font-body); font-weight: 600; letter-spacing: 0; }
+html[data-ui="beta"] .badge.text-bg-secondary, html[data-ui="beta"] .badge.bg-secondary, html[data-ui="beta"] .badge.text-bg-light, html[data-ui="beta"] .badge.text-bg-dark {
+  background-color: var(--lm-raised) !important; color: var(--lm-fg) !important; border: 1px solid var(--lm-line);
+}
+html[data-ui="beta"] a.badge.text-bg-secondary:hover, html[data-ui="beta"] a.badge.bg-secondary:hover { border-color: var(--lm-accent); color: var(--lm-accent) !important; }
+html[data-ui="beta"] .badge.text-bg-primary, html[data-ui="beta"] .badge.bg-primary {
+  background-color: color-mix(in srgb, var(--lm-accent) 18%, transparent) !important; color: var(--lm-accent) !important; border: 1px solid var(--lm-accent);
+}
+html[data-ui="beta"] .badge.text-bg-success, html[data-ui="beta"] .badge.bg-success {
+  background-color: color-mix(in srgb, var(--lm-ok) 16%, transparent) !important; color: var(--lm-ok-text) !important; border: 1px solid var(--lm-ok);
+}
+html[data-ui="beta"] .badge.text-bg-danger, html[data-ui="beta"] .badge.bg-danger {
+  background-color: color-mix(in srgb, var(--lm-err) 16%, transparent) !important; color: var(--lm-err-text) !important; border: 1px solid var(--lm-err);
+}
+html[data-ui="beta"] .badge.text-bg-warning, html[data-ui="beta"] .badge.bg-warning {
+  background-color: color-mix(in srgb, var(--lm-warn) 16%, transparent) !important; color: var(--lm-warn-text) !important; border: 1px solid var(--lm-warn);
+}
+html[data-ui="beta"] .badge.text-bg-info, html[data-ui="beta"] .badge.bg-info {
+  background-color: color-mix(in srgb, var(--lm-info) 16%, transparent) !important; color: var(--lm-info-text) !important; border: 1px solid var(--lm-info);
+}
+
+/* --- En-têtes de carte par rôle (ex. /stats/list) : dégradé et filet de la couleur du rôle --- */
+html[data-ui="beta"] .card-header[data-role] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--role) 26%, var(--lm-raised)), var(--lm-raised));
+  border-color: var(--role) !important; border-top: 2px solid var(--role) !important; color: var(--lm-fg);
+}
+html[data-ui="beta"] .card-header[data-role] h5 { margin: 0; font-family: var(--lm-font-display); letter-spacing: .04em; }
+html[data-ui="beta"] .card-header[data-role] i { color: var(--role-text) !important; }
+
+/* --- Encadrés d'information (cardNotif, alertes, blocs scénarisation et administratif) --- */
+html[data-ui="beta"] .card.border-gamemaster { --role: var(--lm-gm); --role-text: var(--lm-gm-text); }
+html[data-ui="beta"] .card.border-danger:has(.fa-user-ninja) { --role: var(--lm-admin); --role-text: var(--lm-admin-text); }
+html[data-ui="beta"] .card[data-role], html[data-ui="beta"] .card.border-gamemaster, html[data-ui="beta"] .card.border-danger:has(.fa-user-ninja) {
+  background: color-mix(in srgb, var(--role) 9%, var(--lm-surface)); color: var(--lm-fg);
+  border: 1px solid var(--lm-line) !important; border-left: 4px solid var(--role) !important; border-radius: var(--lm-radius);
+}
+html[data-ui="beta"] .card[data-role] > .card-header, html[data-ui="beta"] .card.border-gamemaster > .card-header, html[data-ui="beta"] .card.border-danger:has(.fa-user-ninja) > .card-header {
+  background: transparent; border-bottom: 0; padding-bottom: 0;
+  font: 700 .78rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--role-text);
+}
+html[data-ui="beta"] .card[data-role] > .card-header i, html[data-ui="beta"] .card.border-gamemaster > .card-header i, html[data-ui="beta"] .card.border-danger:has(.fa-user-ninja) > .card-header i { color: var(--role-text) !important; }
+html[data-ui="beta"] .alert { background: color-mix(in srgb, var(--role, var(--lm-line)) 10%, var(--lm-surface)); color: var(--lm-fg); border: 1px solid var(--lm-line); border-left: 4px solid var(--role, var(--lm-line)); border-radius: var(--lm-radius); }
+html[data-ui="beta"] .alert-info { --role: var(--lm-info); }
+html[data-ui="beta"] .alert-success { --role: var(--lm-ok); }
+html[data-ui="beta"] .alert-warning { --role: var(--lm-warn); }
+html[data-ui="beta"] .alert-danger { --role: var(--lm-err); }
+html[data-ui="beta"] .alert-gamemaster { --role: var(--lm-gm); }

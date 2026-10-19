@@ -118,4 +118,17 @@ class LangueManagementTest extends WebTestCase
         $triggers = $em->getRepository(PersonnageTrigger::class)->findBy(['personnage' => $personnage->getId()]);
         static::assertCount(0, $triggers);
     }
+
+    public function testDocumentOfUnknownLangueRedirectsToDetailWithoutError(): void
+    {
+        $client = static::createClient();
+        $orga = UserFactory::createOne(['roles' => ['ROLE_ORGA']]);
+        $personnage = PersonnageFactory::createOne();
+        $langue = LangueFactory::createOne();
+
+        $client->loginUser($orga);
+        $client->request('GET', '/personnage/' . $personnage->getId() . '/langue/' . $langue->getId() . '/document');
+
+        static::assertResponseRedirects('/personnage/' . $personnage->getId());
+    }
 }

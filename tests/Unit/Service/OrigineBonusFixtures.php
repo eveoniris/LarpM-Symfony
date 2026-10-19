@@ -29,6 +29,12 @@ final class OrigineBonusFixtures
         return (new Territoire())->setId($id);
     }
 
+    /** Territoire qui dépend de $parent (région sous une nation, fief sous une région). */
+    public function sous(Territoire $parent, int $id): Territoire
+    {
+        return $this->territoire($id)->setTerritoire($parent);
+    }
+
     public function bonus(BonusPeriode $periode = BonusPeriode::NATIVE): Bonus
     {
         return (new Bonus())
