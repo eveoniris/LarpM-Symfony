@@ -1577,8 +1577,9 @@ class Personnage extends BasePersonnage implements Stringable
      *
      * @return PersonnageLangues|null la ligne créée ou modifiée (à persister), null si rien n'a changé
      */
-    public function addLangueSource(Langue $langue, string $source, ?string $triggerTag = null): ?PersonnageLangues
+    public function addLangueSource(Langue $langue, LangueSourceType|string $source, ?string $triggerTag = null): ?PersonnageLangues
     {
+        $source = $source instanceof LangueSourceType ? $source->value : $source;
         $newRank = LangueSourceType::priorityOf($source);
 
         foreach ($this->getPersonnageLangues() as $existing) {

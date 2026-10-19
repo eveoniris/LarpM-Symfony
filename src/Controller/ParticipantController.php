@@ -25,6 +25,7 @@ use App\Entity\Rule;
 use App\Entity\SecondaryGroup;
 use App\Entity\Territoire;
 use App\Entity\User;
+use App\Enum\LangueSourceType;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\GroupeGnDemandeType;
 use App\Enum\LevelType;
@@ -255,7 +256,7 @@ class ParticipantController extends AbstractController
             // Ajout des langues en fonction de l'origine du personnage
             $langue = $personnage->getOrigine()?->getLangue();
             if ($langue) {
-                $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE');
+                $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::ORIGINE);
                 if (null !== $personnageLangue) {
                     $this->entityManager->persist($personnageLangue);
                 }
@@ -267,7 +268,7 @@ class ParticipantController extends AbstractController
                     continue;
                 }
 
-                $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE SECONDAIRE');
+                $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::ORIGINE_SECONDAIRE);
                 if (null !== $personnageLangue) {
                     $this->entityManager->persist($personnageLangue);
                 }
@@ -278,7 +279,7 @@ class ParticipantController extends AbstractController
             if ($territoire) {
                 $langue = $territoire->getLangue();
                 if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = $personnage->addLangueSource($langue, 'GROUPE');
+                    $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
                     if (null !== $personnageLangue) {
                         $this->entityManager->persist($personnageLangue);
                     }
@@ -345,7 +346,7 @@ class ParticipantController extends AbstractController
             if ($territoire) {
                 $langue = $territoire->getLangue();
                 if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = $personnage->addLangueSource($langue, 'GROUPE');
+                    $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
                     if (null !== $personnageLangue) {
                         $this->entityManager->persist($personnageLangue);
                     }
@@ -1399,7 +1400,7 @@ class ParticipantController extends AbstractController
             // Ajout des langues en fonction de l'origine du personnage
             $langue = $personnage->getOrigine()?->getLangue();
             if ($langue) {
-                $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE');
+                $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::ORIGINE);
                 if (null !== $personnageLangue) {
                     $this->entityManager->persist($personnageLangue);
                 }
@@ -1411,7 +1412,7 @@ class ParticipantController extends AbstractController
                     continue;
                 }
 
-                $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE SECONDAIRE');
+                $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::ORIGINE_SECONDAIRE);
                 if (null !== $personnageLangue) {
                     $this->entityManager->persist($personnageLangue);
                 }
@@ -1422,7 +1423,7 @@ class ParticipantController extends AbstractController
             if ($territoire) {
                 $langue = $territoire->getLangue();
                 if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = $personnage->addLangueSource($langue, 'GROUPE');
+                    $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
                     if (null !== $personnageLangue) {
                         $this->entityManager->persist($personnageLangue);
                     }
@@ -1549,7 +1550,7 @@ class ParticipantController extends AbstractController
             if ($territoire) {
                 $langue = $territoire->getLangue();
                 if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = $personnage->addLangueSource($langue, 'GROUPE');
+                    $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
                     if (null !== $personnageLangue) {
                         $this->entityManager->persist($personnageLangue);
                     }

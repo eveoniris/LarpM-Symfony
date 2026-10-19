@@ -1491,7 +1491,7 @@ class PersonnageController extends AbstractController
             $data = $form->getData();
             $langue = $data['langue'];
 
-            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::LITTERATURE->value);
+            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::LITTERATURE);
             if (!$personnageLangue) {
                 $this->addFlash('error', 'Le personnage connaît déjà cette langue.');
 
@@ -1557,7 +1557,7 @@ class PersonnageController extends AbstractController
             $data = $form->getData();
             $langue = $data['langue'];
 
-            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::LITTERATURE->value);
+            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::LITTERATURE);
             if (!$personnageLangue) {
                 $this->addFlash('error', 'Le personnage connaît déjà cette langue.');
 
@@ -1618,7 +1618,7 @@ class PersonnageController extends AbstractController
             $data = $form->getData();
             $langue = $data['langue'];
 
-            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::LITTERATURE->value);
+            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::LITTERATURE);
             if (!$personnageLangue) {
                 $this->addFlash('error', 'Le personnage connaît déjà cette langue.');
 
@@ -3028,7 +3028,7 @@ class PersonnageController extends AbstractController
             // le personnage doit perdre les langues de son ancienne origine
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
-                if (!('ORIGINE' === $personnageLangue->getSource() || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource())) {
+                if (!\in_array($personnageLangue->getSource(), [LangueSourceType::ORIGINE->value, LangueSourceType::ORIGINE_SECONDAIRE->value], true)) {
                     continue;
                 }
 
@@ -3038,7 +3038,7 @@ class PersonnageController extends AbstractController
 
             $newOrigine = $personnage->getTerritoire();
             foreach ($newOrigine->getLangues() as $langue) {
-                $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::ORIGINE_SECONDAIRE->value);
+                $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::ORIGINE_SECONDAIRE);
                 if (null !== $personnageLangue) {
                     $this->entityManager->persist($personnageLangue);
                 }

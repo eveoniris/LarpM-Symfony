@@ -428,7 +428,7 @@ class PersonnageService
         // Ajout des langues en fonction de l'origine du personnage
         $langue = $personnage->getOrigine()?->getLangue();
         if ($langue) {
-            $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE');
+            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::ORIGINE);
             if (null !== $personnageLangue) {
                 $this->entityManager->persist($personnageLangue);
             }
@@ -440,7 +440,7 @@ class PersonnageService
                 continue;
             }
 
-            $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE SECONDAIRE');
+            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::ORIGINE_SECONDAIRE);
             if (null !== $personnageLangue) {
                 $this->entityManager->persist($personnageLangue);
             }
@@ -452,7 +452,7 @@ class PersonnageService
             if ($territoire) {
                 $langue = $territoire->getLangue();
                 if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = $personnage->addLangueSource($langue, 'GROUPE');
+                    $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
                     if (null !== $personnageLangue) {
                         $this->entityManager->persist($personnageLangue);
                     }
@@ -2191,7 +2191,7 @@ class PersonnageService
         $langue = $personnage->getOrigine()?->getLangue();
         if ($langue) {
             $hasOne = true;
-            $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE');
+            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::ORIGINE);
             if (null !== $personnageLangue) {
                 $this->entityManager->persist($personnageLangue);
             }
@@ -2204,7 +2204,7 @@ class PersonnageService
             }
 
             $hasOne = true;
-            $personnageLangue = $personnage->addLangueSource($langue, 'ORIGINE SECONDAIRE');
+            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::ORIGINE_SECONDAIRE);
             if (null !== $personnageLangue) {
                 $this->entityManager->persist($personnageLangue);
             }
@@ -2216,7 +2216,7 @@ class PersonnageService
             $langue = $territoire->getLangue();
             if ($langue && !$personnage->isKnownLanguage($langue)) {
                 $hasOne = true;
-                $personnageLangue = $personnage->addLangueSource($langue, 'GROUPE');
+                $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
                 if (null !== $personnageLangue) {
                     $this->entityManager->persist($personnageLangue);
                 }
@@ -2224,7 +2224,7 @@ class PersonnageService
         }
 
         if (!$hasOne && $baseLangue) {
-            $personnageLangue = $personnage->addLangueSource($baseLangue, 'ADMIN');
+            $personnageLangue = $personnage->addLangueSource($baseLangue, LangueSourceType::ADMIN);
             if (null !== $personnageLangue) {
                 $this->entityManager->persist($personnageLangue);
             }
