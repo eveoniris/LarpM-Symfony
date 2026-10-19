@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\PersonnageBonusSource;
 use App\Repository\PersonnageBonusRepository;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
@@ -12,6 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(columns: ['bonus_id'], name: 'fk_bonus_idx')]
 #[ORM\Index(columns: ['personnage_id'], name: 'fk_personnage_idx')]
 #[ORM\Index(columns: ['espece_id'], name: 'fk_personnage_bonus_espece_idx')]
+#[ORM\Index(columns: ['territoire_id'], name: 'fk_personnage_bonus_territoire_idx')]
+#[ORM\UniqueConstraint(name: 'uniq_personnage_bonus_origine', columns: ['personnage_id', 'bonus_id', 'territoire_id'])]
 #[ORM\Entity(repositoryClass: PersonnageBonusRepository::class)]
 class PersonnageBonus
 {
@@ -22,11 +25,11 @@ class PersonnageBonus
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'personnageBonus')]
+    #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist'], inversedBy: 'personnageBonus')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Personnage $personnage = null;
 
-    #[ORM\ManyToOne(targetEntity: Bonus::class, cascade: ['persist', 'remove'], inversedBy: 'personnageBonus')]
+    #[ORM\ManyToOne(targetEntity: Bonus::class, cascade: ['persist'], inversedBy: 'personnageBonus')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Bonus $bonus = null;
 
@@ -39,6 +42,14 @@ class PersonnageBonus
     #[ORM\ManyToOne(targetEntity: Espece::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?Espece $espece = null;
+
+    /** Origine ayant donné le bonus (source ORIGINE), figée à l'acquisition. */
+    #[ORM\ManyToOne(targetEntity: Territoire::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Territoire $territoire = null;
+
+    #[ORM\Column(length: 36, nullable: true)]
+    private ?string $source = null;
 
     public function getId(): ?int
     {
@@ -96,6 +107,30 @@ class PersonnageBonus
     public function setEspece(?Espece $espece): static
     {
         $this->espece = $espece;
+
+        return $this;
+    }
+
+    public function getTerritoire(): ?Territoire
+    {
+        return $this->territoire;
+    }
+
+    public function setTerritoire(?Territoire $territoire): static
+    {
+        $this->territoire = $territoire;
+
+        return $this;
+    }
+
+    public function getSource(): ?PersonnageBonusSource
+    {
+        return $this->source ? PersonnageBonusSource::tryFrom($this->source) : null;
+    }
+
+    public function setSource(string|PersonnageBonusSource|null $source): static
+    {
+        $this->source = $source instanceof PersonnageBonusSource ? $source->value : $source;
 
         return $this;
     }

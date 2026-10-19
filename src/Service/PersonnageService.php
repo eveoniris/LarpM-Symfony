@@ -52,6 +52,7 @@ use App\Enum\CompetenceFamilyType;
 use App\Enum\LangueSourceType;
 use App\Enum\LevelType;
 use App\Enum\LogActionType;
+use App\Enum\PersonnageBonusSource;
 use App\Enum\Role;
 use App\Enum\TriggerType;
 use App\Form\PersonnageFindType;
@@ -827,8 +828,8 @@ class PersonnageService
                 continue;
             }
 
-            // Le bonus n'est actif que si le personnage est natif d'un territoire dont son 1er groupe est à l'origine.
-            if (!$personnage->isOrigineBonusActive()) {
+            // Le bonus n'est actif que s'il a été acquis à la première participation (décision enregistrée).
+            if (!$personnage->isOrigineBonusActive($bonus)) {
                 continue;
             }
             unset($origineBonus);
@@ -916,6 +917,11 @@ class PersonnageService
         $all ??= new ArrayCollection();
 
         foreach ($personnage->getPersonnageBonus() as $personnageBonus) {
+            // Les bonus d'origine acquis sont déjà fournis par getOrigineBonus (un refus ne doit pas apparaître comme bonus personnel)
+            if (PersonnageBonusSource::ORIGINE === $personnageBonus->getSource()) {
+                continue;
+            }
+
             // On évite les types non désirés
             if (!$withDisabled && !$personnageBonus->isValid()) {
                 continue;

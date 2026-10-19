@@ -10,6 +10,7 @@ use App\Repository\ParticipantRepository;
 use App\Validator\ChainePersonnagesCoherente;
 use DateTime;
 use Doctrine\ORM\Mapping\Entity;
+use ReflectionProperty;
 use Stringable;
 
 #[Entity(repositoryClass: ParticipantRepository::class)]
@@ -207,6 +208,14 @@ class Participant extends BaseParticipant implements Stringable
         }
 
         return false;
+    }
+
+    /**
+     * Faux tant que la participation n'est pas enregistrée (id pas encore attribué).
+     */
+    public function hasId(): bool
+    {
+        return (new ReflectionProperty(self::class, 'id'))->isInitialized($this);
     }
 
     /**
