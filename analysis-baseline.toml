@@ -121,9 +121,39 @@ message = "Cannot perform array access on possibly `false` value."
 count = 4
 
 [[issues]]
+file = "src/Command/GnRemoveLearning.php"
+code = "possibly-null-operand"
+message = "Possibly null right operand used in string concatenation (type `null|string`)."
+count = 1
+
+[[issues]]
 file = "src/Command/GnUnLock.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 1
+
+[[issues]]
+file = "src/Command/LangueDedoublonner.php"
+code = "mixed-operand"
+message = "Casting `mixed` to `bool`."
+count = 1
+
+[[issues]]
+file = "src/Command/LangueDedoublonner.php"
+code = "possible-method-access-on-null"
+message = "Attempting to call a method on `null`."
+count = 3
+
+[[issues]]
+file = "src/Command/LangueDedoublonner.php"
+code = "possibly-null-operand"
+message = "Possibly null right operand used in string concatenation (type `null|string`)."
+count = 1
+
+[[issues]]
+file = "src/Command/LangueDedoublonner.php"
+code = "redundant-docblock-type"
+message = "Redundant docblock type for variable `$all`."
 count = 1
 
 [[issues]]
@@ -416,6 +446,12 @@ count = 2
 
 [[issues]]
 file = "src/Controller/AdminController.php"
+code = "redundant-cast"
+message = "Redundant cast to `(string)`: the expression already has this type."
+count = 2
+
+[[issues]]
+file = "src/Controller/AdminController.php"
 code = "redundant-comparison"
 message = "Redundant `<` comparison: left-hand side is always less than right-hand side."
 count = 1
@@ -664,6 +700,18 @@ count = 1
 file = "src/Controller/BilletController.php"
 code = "undefined-variable"
 message = "Undefined variable: `$criterias`."
+count = 1
+
+[[issues]]
+file = "src/Controller/BilletterieSyncController.php"
+code = "possibly-null-operand"
+message = "Possibly null right operand used in string concatenation (type `int|null`)."
+count = 3
+
+[[issues]]
+file = "src/Controller/BilletterieSyncController.php"
+code = "redundant-cast"
+message = "Redundant cast to `(string)`: the expression already has this type."
 count = 1
 
 [[issues]]
@@ -2643,24 +2691,6 @@ count = 3
 [[issues]]
 file = "src/Controller/ParticipantController.php"
 code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `App\Entity\BasePersonnageLangues::setLangue`: expected `App\Entity\Langue|null`, but found `mixed`.'
-count = 2
-
-[[issues]]
-file = "src/Controller/ParticipantController.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `App\Entity\BasePersonnageLangues::setLangue`: expected `App\Entity\Langue|null`, but found `truthy-mixed`.'
-count = 4
-
-[[issues]]
-file = "src/Controller/ParticipantController.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `App\Entity\BasePersonnageLangues::setPersonnage`: expected `App\Entity\Personnage|null`, but found `mixed`.'
-count = 7
-
-[[issues]]
-file = "src/Controller/ParticipantController.php"
-code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `App\Entity\BasePostulant::setExplanation`: expected `string`, but found `mixed`.'
 count = 1
 
@@ -2693,6 +2723,12 @@ file = "src/Controller/ParticipantController.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `Doctrine\Persistence\ObjectManager::persist`: expected `object`, but found `mixed`.'
 count = 11
+
+[[issues]]
+file = "src/Controller/ParticipantController.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `Doctrine\Persistence\ObjectManager::persist`: expected `object`, but found `nonnull`.'
+count = 7
 
 [[issues]]
 file = "src/Controller/ParticipantController.php"
@@ -2734,13 +2770,13 @@ count = 10
 file = "src/Controller/ParticipantController.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 70
+count = 77
 
 [[issues]]
 file = "src/Controller/ParticipantController.php"
 code = "mixed-method-access"
 message = "Attempting to access a method on a non-object type (`mixed`)."
-count = 80
+count = 87
 
 [[issues]]
 file = "src/Controller/ParticipantController.php"
@@ -2956,7 +2992,7 @@ count = 1
 file = "src/Controller/PersonnageController.php"
 code = "invalid-iterator"
 message = "The expression provided to `foreach` is not iterable. It resolved to type `mixed`, which is not iterable."
-count = 19
+count = 7
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -3111,25 +3147,7 @@ count = 1
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `App\Entity\BasePersonnageLangues::setLangue`: expected `App\Entity\Langue|null`, but found `mixed`.'
-count = 5
-
-[[issues]]
-file = "src/Controller/PersonnageController.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `App\Entity\BasePersonnageLangues::setPersonnage`: expected `App\Entity\Personnage|null`, but found `mixed`.'
-count = 1
-
-[[issues]]
-file = "src/Controller/PersonnageController.php"
-code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `App\Entity\BasePersonnageLangues::setSource`: expected `string`, but found `mixed`.'
-count = 2
-
-[[issues]]
-file = "src/Controller/PersonnageController.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `App\Entity\BasePersonnageLangues::setTriggerTag`: expected `null|string`, but found `truthy-mixed`.'
 count = 1
 
 [[issues]]
@@ -3201,6 +3219,12 @@ count = 1
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `App\Entity\Personnage::addLangueSource`: expected `App\Entity\Langue`, but found `mixed`.'
+count = 4
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `App\Entity\Personnage::addPugilat`: expected `int`, but found `mixed`.'
 count = 1
 
@@ -3250,13 +3274,19 @@ count = 1
 file = "src/Controller/PersonnageController.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `Doctrine\Persistence\ObjectManager::persist`: expected `object`, but found `mixed`.'
-count = 16
+count = 14
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `Doctrine\Persistence\ObjectManager::persist`: expected `object`, but found `nonnull`.'
+count = 1
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `Doctrine\Persistence\ObjectManager::remove`: expected `object`, but found `mixed`.'
-count = 14
+count = 3
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -3291,6 +3321,12 @@ count = 1
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "mixed-argument"
+message = 'Invalid argument type for argument #2 of `App\Entity\Personnage::addLangueSource`: expected `enum(App\Enum\LangueSourceType)|string`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "mixed-argument"
 message = 'Invalid argument type for argument #2 of `App\Service\EspeceBonusService::applyEspeceBonuses`: expected `App\Entity\Espece`, but found `mixed`.'
 count = 1
 
@@ -3309,6 +3345,12 @@ count = 1
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "mixed-argument"
+message = 'Invalid argument type for argument #3 of `App\Entity\Personnage::addLangueSource`: expected `null|string`, but found `mixed`.'
+count = 1
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "mixed-argument"
 message = "Invalid argument type for argument #3 of `array_slice`: expected `int|null`, but found `truthy-mixed`."
 count = 3
 
@@ -3322,19 +3364,19 @@ count = 1
 file = "src/Controller/PersonnageController.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 22
+count = 23
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 101
+count = 88
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
 code = "mixed-method-access"
 message = "Attempting to access a method on a non-object type (`mixed`)."
-count = 92
+count = 64
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -3502,7 +3544,7 @@ count = 2
 file = "src/Controller/PersonnageController.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `Doctrine\Persistence\ObjectManager::persist` is possibly `null`, but parameter type `object` does not accept it.'
-count = 1
+count = 2
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -3515,6 +3557,12 @@ file = "src/Controller/PersonnageController.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `Symfony\Bundle\FrameworkBundle\Controller\AbstractController::redirect` is possibly `null`, but parameter type `string` does not accept it.'
 count = 2
+
+[[issues]]
+file = "src/Controller/PersonnageController.php"
+code = "possibly-null-array-index"
+message = "Possibly using `null` as an array index to access element."
+count = 1
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -3994,7 +4042,7 @@ count = 1
 file = "src/Controller/StatistiqueController.php"
 code = "mixed-array-access"
 message = "Unsafe array access on type `mixed`."
-count = 28
+count = 27
 
 [[issues]]
 file = "src/Controller/StatistiqueController.php"
@@ -4006,7 +4054,7 @@ count = 4
 file = "src/Controller/StatistiqueController.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 18
+count = 17
 
 [[issues]]
 file = "src/Controller/StatistiqueController.php"
@@ -4775,6 +4823,12 @@ file = "src/Controller/UserController.php"
 code = "possibly-null-argument"
 message = 'Argument #1 of method `Doctrine\Persistence\ObjectManager::persist` is possibly `null`, but parameter type `object` does not accept it.'
 count = 3
+
+[[issues]]
+file = "src/Controller/UserController.php"
+code = "possibly-null-argument"
+message = "Argument #2 of function `preg_match` is possibly `null`, but parameter type `string` does not accept it."
+count = 1
 
 [[issues]]
 file = "src/Controller/UserController.php"
@@ -8752,7 +8806,7 @@ count = 1
 file = "src/Entity/Personnage.php"
 code = "possible-method-access-on-null"
 message = "Attempting to call a method on `null`."
-count = 17
+count = 18
 
 [[issues]]
 file = "src/Entity/Personnage.php"
@@ -8884,6 +8938,12 @@ count = 2
 file = "src/Entity/Personnage.php"
 code = "redundant-docblock-type"
 message = "Redundant docblock type for variable `$religion`."
+count = 1
+
+[[issues]]
+file = "src/Entity/Personnage.php"
+code = "redundant-null-coalesce"
+message = "Redundant null coalesce: left-hand side can never be `null` or undefined."
 count = 1
 
 [[issues]]
@@ -9400,6 +9460,12 @@ count = 2
 file = "src/EventListener/JWTCreatedListener.php"
 code = "possible-method-access-on-null"
 message = "Attempting to call a method on `null`."
+count = 1
+
+[[issues]]
+file = "src/EventListener/OrigineBonusListener.php"
+code = "redundant-null-coalesce"
+message = "Redundant null coalesce: left-hand side can never be `null` or undefined."
 count = 1
 
 [[issues]]
@@ -11509,6 +11575,30 @@ message = "Redundant type assertion: `$key` is already `string`."
 count = 1
 
 [[issues]]
+file = "src/Service/DeletionLabelResolver.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 2
+
+[[issues]]
+file = "src/Service/DeletionLabelResolver.php"
+code = "string-member-selector"
+message = "This member selector uses a non-literal string type (`string`); its specific value cannot be statically determined."
+count = 1
+
+[[issues]]
+file = "src/Service/DeletionSnapshotBuilder.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 4
+
+[[issues]]
+file = "src/Service/DeletionTreeResolver.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 1
+
+[[issues]]
 file = "src/Service/EspeceBonusService.php"
 code = "redundant-null-coalesce"
 message = "Redundant null coalesce: left-hand side can never be `null` or undefined."
@@ -12091,6 +12181,54 @@ message = "Argument type mismatch for template `TKey`."
 count = 4
 
 [[issues]]
+file = "src/Service/HelloAsso/Attendee.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 3
+
+[[issues]]
+file = "src/Service/HelloAsso/BilletSyncService.php"
+code = "possibly-null-operand"
+message = "Possibly null middle operand used in string concatenation (type `null|string`)."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/MovementAttendees.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 2
+
+[[issues]]
+file = "src/Service/HelloAsso/PlusBilletterieClient.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 3
+
+[[issues]]
+file = "src/Service/LogLineParser.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
+count = 1
+
+[[issues]]
+file = "src/Service/LogLineParser.php"
+code = "reference-to-undefined-variable"
+message = "Reference created from a previously undefined variable `$m`."
+count = 1
+
+[[issues]]
+file = "src/Service/LogReaderService.php"
+code = "redundant-cast"
+message = "Redundant cast to `(string)`: the expression already has this type."
+count = 1
+
+[[issues]]
+file = "src/Service/MailService.php"
+code = "possible-method-access-on-null"
+message = "Attempting to call a method on `null`."
+count = 1
+
+[[issues]]
 file = "src/Service/MailService.php"
 code = "possibly-null-operand"
 message = "Possibly null right operand used in string concatenation (type `null|string`)."
@@ -12393,24 +12531,6 @@ count = 1
 [[issues]]
 file = "src/Service/PersonnageService.php"
 code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `App\Entity\BasePersonnageLangues::setLangue`: expected `App\Entity\Langue|null`, but found `mixed`.'
-count = 1
-
-[[issues]]
-file = "src/Service/PersonnageService.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `App\Entity\BasePersonnageLangues::setLangue`: expected `App\Entity\Langue|null`, but found `truthy-mixed`.'
-count = 1
-
-[[issues]]
-file = "src/Service/PersonnageService.php"
-code = "mixed-argument"
-message = 'Invalid argument type for argument #1 of `App\Entity\BasePersonnageLangues::setPersonnage`: expected `App\Entity\Personnage|null`, but found `mixed`.'
-count = 3
-
-[[issues]]
-file = "src/Service/PersonnageService.php"
-code = "mixed-argument"
 message = 'Invalid argument type for argument #1 of `App\Entity\BaseUser::setPersonnage`: expected `App\Entity\Personnage|null`, but found `mixed`.'
 count = 1
 
@@ -12459,6 +12579,12 @@ count = 2
 [[issues]]
 file = "src/Service/PersonnageService.php"
 code = "mixed-argument"
+message = 'Invalid argument type for argument #1 of `Doctrine\Persistence\ObjectManager::persist`: expected `object`, but found `nonnull`.'
+count = 3
+
+[[issues]]
+file = "src/Service/PersonnageService.php"
+code = "mixed-argument"
 message = "Invalid argument type for argument #1 of `count`: expected `Countable|array<array-key, mixed>`, but found `mixed`."
 count = 1
 
@@ -12502,7 +12628,7 @@ count = 2
 file = "src/Service/PersonnageService.php"
 code = "mixed-assignment"
 message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
-count = 39
+count = 41
 
 [[issues]]
 file = "src/Service/PersonnageService.php"
@@ -12514,13 +12640,7 @@ count = 5
 file = "src/Service/PersonnageService.php"
 code = "mixed-method-access"
 message = "Attempting to access a method on a non-object type (`mixed`)."
-count = 25
-
-[[issues]]
-file = "src/Service/PersonnageService.php"
-code = "mixed-method-access"
-message = "Attempting to access a method on a non-object type (`truthy-mixed`)."
-count = 7
+count = 28
 
 [[issues]]
 file = "src/Service/PersonnageService.php"
@@ -12568,12 +12688,6 @@ count = 1
 file = "src/Service/PersonnageService.php"
 code = "mixed-operand"
 message = "Right operand in spaceship comparison (`<=>`) has `mixed` type."
-count = 1
-
-[[issues]]
-file = "src/Service/PersonnageService.php"
-code = "mixed-property-access"
-message = "Attempting to access a property on a non-object type (`mixed`)."
 count = 1
 
 [[issues]]
@@ -12868,7 +12982,7 @@ count = 1
 file = "src/Service/PersonnageService.php"
 code = "possibly-null-operand"
 message = "Possibly null right operand used in string concatenation (type `null|string`)."
-count = 1
+count = 2
 
 [[issues]]
 file = "src/Service/PersonnageService.php"
@@ -12964,6 +13078,12 @@ count = 1
 file = "src/Service/PrintService.php"
 code = "invalid-argument"
 message = '''Invalid argument type for argument #3 of `App\Service\PrintService::streamFragments`: expected `(closure(object): array<string, mixed>)`, but found `(closure(App\Entity\Personnage): array{'extends': false, 'personnage': App\Entity\Personnage})`.'''
+count = 1
+
+[[issues]]
+file = "src/Service/SoftDeletionCollector.php"
+code = "mixed-assignment"
+message = "Assigning `mixed` type to a variable may lead to unexpected behavior."
 count = 1
 
 [[issues]]
@@ -13276,7 +13396,13 @@ count = 5
 file = "tests/Functional/Personnage/LangueManagementTest.php"
 code = "possibly-null-operand"
 message = "Possibly null middle operand used in string concatenation (type `int|null`)."
-count = 4
+count = 6
+
+[[issues]]
+file = "tests/Functional/Personnage/LangueManagementTest.php"
+code = "possibly-null-operand"
+message = "Possibly null right operand used in string concatenation (type `int|null`)."
+count = 1
 
 [[issues]]
 file = "tests/Functional/Personnage/PersonnageAccessTest.php"
@@ -13289,6 +13415,12 @@ file = "tests/Functional/Personnage/PersonnageAccessTest.php"
 code = "possibly-null-operand"
 message = "Possibly null right operand used in string concatenation (type `int|null`)."
 count = 4
+
+[[issues]]
+file = "tests/Functional/Personnage/PersonnageTrombineUpdateTest.php"
+code = "array-to-string-conversion"
+message = "Potential array in left operand of string concatenation."
+count = 1
 
 [[issues]]
 file = "tests/Functional/Personnage/PersonnageTrombineUpdateTest.php"
@@ -13318,6 +13450,12 @@ count = 1
 file = "tests/Functional/Personnage/PersonnageTrombineUpdateTest.php"
 code = "possibly-false-operand"
 message = "Possibly false left operand used in string concatenation (type `false|string`)."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Personnage/PersonnageTrombineUpdateTest.php"
+code = "possibly-null-operand"
+message = "Possibly null left operand used in string concatenation (type `UnitEnum|array<array-key, mixed>|null|scalar`)."
 count = 1
 
 [[issues]]
@@ -13358,6 +13496,12 @@ count = 1
 
 [[issues]]
 file = "tests/Functional/Security/StatistiquePersonnagesAccessTest.php"
+code = "possibly-null-operand"
+message = "Possibly null right operand used in string concatenation (type `int|null`)."
+count = 1
+
+[[issues]]
+file = "tests/Functional/Statistique/StatistiqueIndexTest.php"
 code = "possibly-null-operand"
 message = "Possibly null right operand used in string concatenation (type `int|null`)."
 count = 1
@@ -13465,6 +13609,12 @@ message = "Possibly null right operand used in string concatenation (type `int|n
 count = 4
 
 [[issues]]
+file = "tests/Unit/Entity/PersonnageLangueDedoublonnageTest.php"
+code = "possible-method-access-on-null"
+message = "Attempting to call a method on `null`."
+count = 2
+
+[[issues]]
 file = "tests/Unit/Entity/PersonnageOrigineBonusTest.php"
 code = "possible-method-access-on-null"
 message = "Attempting to call a method on `null`."
@@ -13480,4 +13630,10 @@ count = 1
 file = "tests/Unit/Service/ConditionsServiceTest.php"
 code = "non-existent-method"
 message = 'Method `method` does not exist on type `App\Entity\Personnage`.'
+count = 1
+
+[[issues]]
+file = "tests/Unit/Service/PlusBilletterieClientTest.php"
+code = "reference-to-undefined-variable"
+message = "Reference created from a previously undefined variable `$query`."
 count = 1

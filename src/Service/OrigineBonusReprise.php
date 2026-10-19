@@ -97,9 +97,11 @@ class OrigineBonusReprise
      */
     private function ids(): array
     {
-        return $this->entityManager
+        $ids = $this->entityManager
             ->createQuery('SELECT DISTINCT p.id FROM ' . Personnage::class . ' p INNER JOIN p.participants pa ORDER BY p.id')
             ->getSingleColumnResult();
+
+        return array_values(array_map(static fn (mixed $id): int => (int) $id, $ids));
     }
 
     /**
@@ -108,7 +110,7 @@ class OrigineBonusReprise
     private function ligne(Personnage $personnage, OrigineBonusRepriseStatut $statut): array
     {
         return [
-            $personnage->getId(),
+            (int) $personnage->getId(),
             $personnage->getNom(),
             $personnage->getOrigine()?->getNom() ?? '',
             $personnage->getFirstParticipantGnGroupe()?->getNom() ?? '',

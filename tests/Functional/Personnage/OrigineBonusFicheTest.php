@@ -7,8 +7,6 @@ namespace App\Tests\Functional\Personnage;
 use App\Entity\GroupeGn;
 use App\Entity\OrigineBonus;
 use App\Entity\Participant;
-use App\Entity\Personnage;
-use App\Entity\Territoire;
 use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
 use App\Enum\Status;
@@ -43,7 +41,6 @@ class OrigineBonusFicheTest extends WebTestCase
         EspeceFactory::createOne(['nom' => 'Humain']);
         $em = static::getContainer()->get(EntityManagerInterface::class);
 
-        /** @var Territoire $origine */
         $origine = TerritoireFactory::createOne();
         $bonus = BonusFactory::createOne([
             'titre' => self::TITRE,
@@ -60,7 +57,6 @@ class OrigineBonusFicheTest extends WebTestCase
         $em->refresh($origine);
 
         $user = UserFactory::createOne();
-        /** @var Personnage $personnage */
         $personnage = PersonnageFactory::createOne(['user' => $user, 'territoire' => $origine]);
         $gn = GnFactory::createOne(['dateDebut' => new DateTime('2020-01-01')]);
         $groupe = GroupeFactory::createOne();
@@ -83,7 +79,7 @@ class OrigineBonusFicheTest extends WebTestCase
         $em->clear();
 
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_SCENARISTE']]));
-        $client->request('GET', '/personnage/' . $personnage->getId());
+        $client->request('GET', '/personnage/' . (int) $personnage->getId());
     }
 
     public function testLaFicheListeLeBonusAcquisAvecSaSource(): void
@@ -94,7 +90,7 @@ class OrigineBonusFicheTest extends WebTestCase
 
         static::assertResponseIsSuccessful();
         static::assertSelectorTextContains('body', self::TITRE);
-        static::assertMatchesRegularExpression('/>\s*ORIGINE\s*</', $client->getResponse()->getContent());
+        static::assertMatchesRegularExpression('/>\s*ORIGINE\s*</', (string) $client->getResponse()->getContent());
     }
 
     public function testLaFicheNeListePasLeBonusRefuse(): void
@@ -104,6 +100,6 @@ class OrigineBonusFicheTest extends WebTestCase
         $this->ouvrirLaFiche($client, 0);
 
         static::assertResponseIsSuccessful();
-        static::assertStringNotContainsString(self::TITRE, $client->getResponse()->getContent());
+        static::assertStringNotContainsString(self::TITRE, (string) $client->getResponse()->getContent());
     }
 }

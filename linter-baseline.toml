@@ -220,7 +220,7 @@ count = 1
 file = "src/Controller/AdminController.php"
 code = "literal-named-argument"
 message = "Literal argument `''` should be passed as a named argument for clarity."
-count = 4
+count = 2
 
 [[issues]]
 file = "src/Controller/AdminController.php"
@@ -231,7 +231,7 @@ count = 1
 [[issues]]
 file = "src/Controller/AdminController.php"
 code = "literal-named-argument"
-message = "Literal argument `'r'` should be passed as a named argument for clarity."
+message = "Literal argument `true` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
@@ -250,7 +250,7 @@ count = 1
 file = "src/Controller/AdminController.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
-count = 3
+count = 2
 
 [[issues]]
 file = "src/Controller/AdminController.php"
@@ -407,6 +407,18 @@ file = "src/Controller/BilletController.php"
 code = "tagged-todo"
 message = "TODO should be tagged with (@username) or (#issue)."
 count = 2
+
+[[issues]]
+file = "src/Controller/BilletterieSyncController.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Controller/BilletterieSyncController.php"
+code = "too-many-methods"
+message = "Class has too many methods."
+count = 1
 
 [[issues]]
 file = "src/Controller/BonusController.php"
@@ -1630,7 +1642,7 @@ count = 1
 file = "src/Controller/PersonnageController.php"
 code = "literal-named-argument"
 message = "Literal argument `true` should be passed as a named argument for clarity."
-count = 2
+count = 3
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -1672,7 +1684,7 @@ count = 4
 file = "src/Controller/PersonnageController.php"
 code = "prefer-early-continue"
 message = "Consider using early continue pattern to reduce nesting."
-count = 1
+count = 2
 
 [[issues]]
 file = "src/Controller/PersonnageController.php"
@@ -1960,7 +1972,7 @@ count = 1
 file = "src/Controller/StatistiqueController.php"
 code = "no-else-clause"
 message = "Avoid `else` clauses."
-count = 3
+count = 2
 
 [[issues]]
 file = "src/Controller/StatistiqueController.php"
@@ -2302,7 +2314,7 @@ count = 1
 file = "src/Controller/UserController.php"
 code = "halstead"
 message = "Method has a high halstead effort"
-count = 2
+count = 3
 
 [[issues]]
 file = "src/Controller/UserController.php"
@@ -2332,7 +2344,7 @@ count = 2
 file = "src/Controller/UserController.php"
 code = "no-else-clause"
 message = "Avoid `else` clauses."
-count = 5
+count = 6
 
 [[issues]]
 file = "src/Controller/UserController.php"
@@ -2374,6 +2386,12 @@ count = 5
 file = "src/Controller/UserController.php"
 code = "too-many-methods"
 message = "Class has too many methods."
+count = 1
+
+[[issues]]
+file = "src/Entity/BaseBillet.php"
+code = "too-many-properties"
+message = "Class has too many properties."
 count = 1
 
 [[issues]]
@@ -2674,6 +2692,18 @@ count = 1
 file = "src/Entity/Billet.php"
 code = "literal-named-argument"
 message = "Literal argument `'PNJ'` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/BilletSync.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Entity/BilletSync.php"
+code = "too-many-properties"
+message = "Class has too many properties."
 count = 1
 
 [[issues]]
@@ -4094,12 +4124,6 @@ count = 1
 
 [[issues]]
 file = "src/Security/Voter/PersonnageVoter.php"
-code = "no-redundant-use"
-message = "Unused import: `Gn`."
-count = 1
-
-[[issues]]
-file = "src/Security/Voter/PersonnageVoter.php"
 code = "sensitive-parameter"
 message = "Parameters that may contain sensitive information should be marked with the `#[SensitiveParameter]` attribute."
 count = 1
@@ -4531,9 +4555,99 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
+file = "src/Service/HelloAsso/Attendee.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/Attendee.php"
+code = "excessive-parameter-list"
+message = "Parameter list is too long."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/Attendee.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 2
+
+[[issues]]
+file = "src/Service/HelloAsso/BilletSyncService.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/MovementAttendees.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/MovementAttendees.php"
+code = "no-isset"
+message = "Use of the `isset` construct."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/PlusBilletterieClient.php"
+code = "cyclomatic-complexity"
+message = "Class has high complexity."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/PlusBilletterieClient.php"
+code = "inline-variable-return"
+message = "Variable assignment can be inlined into the return statement."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/PlusBilletterieClient.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/HelloAsso/PlusBilletterieClient.php"
+code = "prefer-early-continue"
+message = "Consider using early continue pattern to reduce nesting."
+count = 2
+
+[[issues]]
 file = "src/Service/ImageOptimizer.php"
 code = "no-else-clause"
 message = "Avoid `else` clauses."
+count = 1
+
+[[issues]]
+file = "src/Service/LogLineParser.php"
+code = "halstead"
+message = "Method has a high halstead effort"
+count = 1
+
+[[issues]]
+file = "src/Service/LogLineParser.php"
+code = "literal-named-argument"
+message = 'Literal argument `"\r\n"` should be passed as a named argument for clarity.'
+count = 1
+
+[[issues]]
+file = "src/Service/LogLineParser.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/LogReaderService.php"
+code = "literal-named-argument"
+message = "Literal argument `''` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "src/Service/LogReaderService.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
@@ -4964,12 +5078,6 @@ count = 1
 
 [[issues]]
 file = "tests/Integration/Service/StatsServicePersonnagesTest.php"
-code = "no-redundant-use"
-message = "Unused import: `ExperienceGain`."
-count = 1
-
-[[issues]]
-file = "tests/Integration/Service/StatsServicePersonnagesTest.php"
 code = "too-many-methods"
 message = "Class has too many methods."
 count = 1
@@ -5029,12 +5137,6 @@ message = "Avoid boolean flag parameters."
 count = 1
 
 [[issues]]
-file = "tests/Unit/Security/Voter/PersonnageVoterTest.php"
-code = "no-redundant-use"
-message = "Unused import: `EtatCivil`."
-count = 1
-
-[[issues]]
 file = "tests/Unit/Service/CompetenceServiceOrigineBonusTest.php"
 code = "assertion-style"
 message = "Inconsistent assertions style."
@@ -5047,43 +5149,61 @@ message = "Class has too many methods."
 count = 1
 
 [[issues]]
+file = "tests/Unit/Service/HelloAssoAttendeeTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 29
+
+[[issues]]
+file = "tests/Unit/Service/HelloAssoAttendeeTest.php"
+code = "readable-literal"
+message = "Numeric literal could use underscore separators for readability."
+count = 2
+
+[[issues]]
+file = "tests/Unit/Service/LogReaderServiceTest.php"
+code = "literal-named-argument"
+message = 'Literal argument `"[2026-10-15T10:00:00+02:00] app.ERROR: x {} []\n"` should be passed as a named argument for clarity.'
+count = 1
+
+[[issues]]
+file = "tests/Unit/Service/LogReaderServiceTest.php"
+code = "literal-named-argument"
+message = "Literal argument `20000` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "tests/Unit/Service/LogReaderServiceTest.php"
+code = "literal-named-argument"
+message = "Literal argument `true` should be passed as a named argument for clarity."
+count = 1
+
+[[issues]]
+file = "tests/Unit/Service/LogReaderServiceTest.php"
+code = "readable-literal"
+message = "Numeric literal could use underscore separators for readability."
+count = 1
+
+[[issues]]
 file = "tests/Unit/Service/PersonnageServiceStaffTest.php"
 code = "literal-named-argument"
 message = "Literal argument `true` should be passed as a named argument for clarity."
 count = 1
 
 [[issues]]
-file = "src/Entity/BaseBillet.php"
-code = "too-many-properties"
-message = "Class has too many properties."
+file = "tests/Unit/Service/PlusBilletterieClientTest.php"
+code = "assertion-style"
+message = "Inconsistent assertions style."
+count = 20
+
+[[issues]]
+file = "tests/Unit/Service/PlusBilletterieClientTest.php"
+code = "prefer-static-closure"
+message = "This arrow function does not use `$this` and should be declared static."
 count = 1
 
 [[issues]]
-file = "src/Entity/BilletSync.php"
-code = "too-many-properties"
-message = "Class has too many properties."
-count = 1
-
-[[issues]]
-file = "src/Service/HelloAsso/Attendee.php"
-code = "excessive-parameter-list"
-message = "Parameter list is too long."
-count = 1
-
-[[issues]]
-file = "src/Service/HelloAsso/Attendee.php"
-code = "cyclomatic-complexity"
-message = "Class has high complexity."
-count = 1
-
-[[issues]]
-file = "src/Service/HelloAsso/PlusBilletterieClient.php"
-code = "cyclomatic-complexity"
-message = "Class has high complexity."
-count = 1
-
-[[issues]]
-file = "src/Service/HelloAsso/BilletSyncService.php"
-code = "cyclomatic-complexity"
-message = "Class has high complexity."
-count = 1
+file = "tests/Unit/Service/PlusBilletterieClientTest.php"
+code = "prefer-static-closure"
+message = "This closure does not use `$this` and should be declared static."
+count = 3

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration\EventListener;
 
 use App\Entity\Bonus;
+use App\Entity\OrigineBonus;
 use App\Entity\Personnage;
 use App\Entity\PersonnageBonus;
 use App\Enum\PersonnageBonusSource;
@@ -44,19 +45,21 @@ class OrigineBonusFigeListenerTest extends OrigineBonusIntegrationTestCase
         $personnage = PersonnageFactory::createOne(['territoire' => $origine]);
         $this->participant($personnage, $this->groupeGn([$origine]));
         $personnageId = $personnage->getId();
-        $bonusId = $origine->getOriginesBonus()->first()->getBonus()->getId();
+        $premierBonus = $origine->getOriginesBonus()->first();
+        static::assertInstanceOf(OrigineBonus::class, $premierBonus);
+        $bonusId = $premierBonus->getBonus()?->getId();
 
         $personnage->setTerritoire($autre);
         $this->em->flush();
         $this->em->clear();
 
         static::assertNotNull($this->em->find(Bonus::class, $bonusId));
-        $personnage = $this->em->find(Personnage::class, $personnageId);
+        $personnage = $this->recharger(Personnage::class, $personnageId);
         static::assertNotNull($personnage, "le personnage n'est pas supprimé");
         $rows = $this->rows($personnage);
         static::assertCount(1, $rows);
         static::assertSame(Status::DELETED, $rows[0]->getStatus(), 'le groupe ne possède pas la nouvelle origine');
-        static::assertSame($autre->getId(), $rows[0]->getTerritoire()->getId());
+        static::assertSame($autre->getId(), $rows[0]->getTerritoire()?->getId());
     }
 
     public function testLaContrainteUniqueEmpecheUneDeuxiemeLignePourLeMemeBonus(): void

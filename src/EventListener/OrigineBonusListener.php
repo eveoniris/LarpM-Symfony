@@ -97,8 +97,7 @@ final class OrigineBonusListener
         $uow = $em->getUnitOfWork();
         $metadata = $em->getClassMetadata(PersonnageBonus::class);
 
-        $rows = $personnage->getPersonnageBonus()?->filter($uow->isScheduledForInsert(...)) ?? [];
-        foreach ($rows as $row) {
+        foreach ($personnage->getPersonnageBonus()?->filter($uow->isScheduledForInsert(...)) ?? [] as $row) {
             $uow->computeChangeSet($metadata, $row);
         }
     }

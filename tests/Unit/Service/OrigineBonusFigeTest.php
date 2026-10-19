@@ -47,7 +47,7 @@ class OrigineBonusFigeTest extends TestCase
         $personnage = $this->f->personnage($origine, []);
         $this->service->grant($personnage);
 
-        $personnage->getFirstParticipantGnGroupe()->addTerritoire($origine);
+        $personnage->getFirstParticipantGnGroupe()?->addTerritoire($origine);
 
         static::assertTrue($this->service->isEligible($personnage), "l'état courant est éligible");
         static::assertSame([], $this->service->grant($personnage));
@@ -61,7 +61,7 @@ class OrigineBonusFigeTest extends TestCase
         $personnage = $this->f->personnage($origine, [$origine]);
         $this->service->grant($personnage);
 
-        $personnage->getFirstParticipantGnGroupe()->getTerritoires()->clear();
+        $personnage->getFirstParticipantGnGroupe()?->getTerritoires()->clear();
 
         static::assertFalse($this->service->isEligible($personnage));
         static::assertTrue($this->service->isGranted($personnage));
