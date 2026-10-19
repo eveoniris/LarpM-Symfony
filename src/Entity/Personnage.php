@@ -621,7 +621,8 @@ class Personnage extends BasePersonnage implements Stringable
             return $candidateDate < $currentDate;
         }
 
-        return $candidate->getId() < $current->getId();
+        // Une participation pas encore enregistrée (sans id) passe après les autres.
+        return ($candidate->hasId() ? $candidate->getId() : \PHP_INT_MAX) < ($current->hasId() ? $current->getId() : \PHP_INT_MAX);
     }
 
     public function getFullLabel(): string
