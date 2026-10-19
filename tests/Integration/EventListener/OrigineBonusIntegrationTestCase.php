@@ -35,10 +35,13 @@ abstract class OrigineBonusIntegrationTestCase extends KernelTestCase
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
     }
 
-    protected function origineAvecBonus(): Territoire
+    /**
+     * @param array<string, mixed> $bonusAttributes surcharge des attributs du bonus NATIVE porté par l'origine
+     */
+    protected function origineAvecBonus(array $bonusAttributes = []): Territoire
     {
         $origine = TerritoireFactory::createOne();
-        $bonus = BonusFactory::createOne(['periode' => BonusPeriode::NATIVE->value]);
+        $bonus = BonusFactory::createOne($bonusAttributes + ['periode' => BonusPeriode::NATIVE->value]);
         $this->em->persist(
             (new OrigineBonus())
                 ->setTerritoire($origine)
