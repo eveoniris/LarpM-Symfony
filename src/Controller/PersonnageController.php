@@ -2351,10 +2351,10 @@ class PersonnageController extends AbstractController
     ): BinaryFileResponse|RedirectResponse {
         $this->hasAccess($personnage);
 
-        if (!$personnage->isKnownLanguage($langue)) {
+        if (!$this->personnageService->isKnownLangue($personnage, $langue)) {
             $this->addFlash('error', 'Vous ne connaissez pas cette langue !');
 
-            return $this->redirectToRoute('personnage.detail', ['gn' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->sendDocument($langue);
