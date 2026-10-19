@@ -15,27 +15,33 @@
             {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : languesAnomalie } %}
         {% endif %}
         <div class="list-group border-0">
-            {% for personnageLangue in personnageService.getAllLangues(personnage) %}
-                <div class="list-group-item d-flex justify-content-between align-items-center{% if loop.first %} rounded-top-0{% endif %}">
-                    <div>
-                        {% if personnageLangue.langue.secret %}
-                            <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
-                               data-placement="top" title="Secret"></i> -
-                        {% endif %}
-                        {% if personnageLangue.langue.id %}
-                            <a href="{{ path('langue.detail', {'langue': personnageLangue.langue.id }) }}"><strong>{{ personnageLangue.langue }}</strong></a>
-                            ({{ personnageLangue.source }}{% if personnageLangue.triggerTag %} – {{ personnageLangue.triggerTag }}{% endif %})
+            {% for ligneLangue in personnageService.getAllLanguesUnique(personnage) %}
+                {% for personnageLangue in [ligneLangue.principal]|merge(ligneLangue.autres) %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center{% if loop.parent.loop.first and loop.first %} rounded-top-0{% endif %}{% if not loop.first %} ps-5 bg-body-tertiary{% endif %}">
+                        <div>
+                            {% if loop.first and personnageLangue.langue.secret %}
+                                <i class="fa fa-user-secret text-warning" data-toggle="tooltip"
+                                   data-placement="top" title="Secret"></i> -
+                            {% endif %}
+                            {% if personnageLangue.langue.id %}
+                                {% if loop.first %}
+                                    <a href="{{ path('langue.detail', {'langue': personnageLangue.langue.id }) }}"><strong>{{ personnageLangue.langue }}</strong></a>
+                                {% else %}
+                                    <small class="text-muted">aussi :</small>
+                                {% endif %}
+                                ({{ personnageLangue.source }}{% if personnageLangue.triggerTag %} – {{ personnageLangue.triggerTag }}{% endif %})
+                            {% endif %}
+                        </div>
+                        {% if personnageLangue.id is defined and personnageLangue.id %}
+                            <div class="d-flex gap-2">
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('personnage.edit.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Modifier la source</a>
+                                <a class="btn btn-sm btn-secondary"
+                                   href="{{ path('personnage.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Retirer</a>
+                            </div>
                         {% endif %}
                     </div>
-                    {% if personnageLangue.id is defined and personnageLangue.id %}
-                        <div class="d-flex gap-2">
-                            <a class="btn btn-sm btn-secondary"
-                               href="{{ path('personnage.edit.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Modifier la source</a>
-                            <a class="btn btn-sm btn-secondary"
-                               href="{{ path('personnage.delete.langue', {'personnage': personnage.id, 'personnageLangue' : personnageLangue.id }) }}">Retirer</a>
-                        </div>
-                    {% endif %}
-                </div>
+                {% endfor %}
             {% else %}
                 <div class="list-group-item rounded-top-0">Aucune</div>
             {% endfor %}

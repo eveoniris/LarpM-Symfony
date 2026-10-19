@@ -5,7 +5,7 @@
 {% if isAdmin is not defined %}
     {% set isAdmin = false %}
 {% endif %}
-{% set langues = personnageService.allLangues(personnage) %}
+{% set langues = [] %}{% for ligneLangue in personnageService.allLanguesUnique(personnage) %}{% set langues = langues|merge([ligneLangue.principal]) %}{% endfor %}
 
 {% if langues|length > 0 %}
 

@@ -21,7 +21,7 @@
   --lm-muted: #a89e8e;       /* texte secondaire */
   --lm-accent: #d98a3d;      /* cuivre : marque + action principale */
   --lm-on-accent: #1a1208;
-  --lm-link: #7bbbd6;
+  --lm-link: #8db4ea;
 
   /* États universels */
   --lm-info: #2fb5c4;   --lm-info-text: #5fd0dc;
@@ -63,7 +63,7 @@
 /* ---------- TOKENS : thème clair ---------- */
 :root[data-theme="light"], :root[data-bs-theme="light"] {
   --lm-bg: #f6f1e7; --lm-surface: #fffdf8; --lm-raised: #efe7d8; --lm-line: #d6cab4;
-  --lm-fg: #2a2118; --lm-muted: #6b5f4f; --lm-accent: #a8541a; --lm-on-accent: #ffffff; --lm-link: #0f5f80;
+  --lm-fg: #2a2118; --lm-muted: #6b5f4f; --lm-accent: #a8541a; --lm-on-accent: #ffffff; --lm-link: #1f5fa8;
   --lm-info: #0b7f8c;   --lm-info-text: #0b6772;
   --lm-ok: #2c7a4b;     --lm-ok-text: #226039;
   --lm-warn: #c47f0a;   --lm-warn-text: #7d4f00;
@@ -81,7 +81,7 @@
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]):not([data-bs-theme]) {
     --lm-bg: #f6f1e7; --lm-surface: #fffdf8; --lm-raised: #efe7d8; --lm-line: #d6cab4;
-    --lm-fg: #2a2118; --lm-muted: #6b5f4f; --lm-accent: #a8541a; --lm-on-accent: #ffffff; --lm-link: #0f5f80;
+    --lm-fg: #2a2118; --lm-muted: #6b5f4f; --lm-accent: #a8541a; --lm-on-accent: #ffffff; --lm-link: #1f5fa8;
     --lm-info: #0b7f8c; --lm-info-text: #0b6772; --lm-ok: #2c7a4b; --lm-ok-text: #226039;
     --lm-warn: #c47f0a; --lm-warn-text: #7d4f00; --lm-err: #c42b30; --lm-err-text: #a31f24;
     --lm-secret: #a88a14; --lm-secret-text: #7a6200; --lm-gm: #6f46c1; --lm-gm-text: #5a35a8;
@@ -271,7 +271,7 @@
                 padding: var(--lm-s3) var(--lm-s4); border-bottom: 1px solid var(--lm-line);
                 background: linear-gradient(180deg, color-mix(in srgb, var(--role, var(--lm-accent)) 22%, var(--lm-raised)), var(--lm-raised));
                 border-radius: var(--lm-radius-lg) var(--lm-radius-lg) 0 0; border-top: 2px solid var(--role, var(--lm-accent)); }
-/* Variante « panneau de bois » (nostalgie) : même image qu'avant, recompressée en WebP (143 Ko -> 5 Ko).
+/* Variante « panneau de bois » : image de l'ancienne interface, recompressée en WebP (143 Ko -> 5 Ko).
    Usage : <div class="lm-card-head lm-card-head--bois"> */
 .lm-card-head--bois { background: url('../img/header-bois.webp') center / 100% 100% no-repeat #8b360c;
                       border-top-color: transparent; color: #f4e9d8; text-shadow: 0 1px 2px rgba(0, 0, 0, .6); }
@@ -406,3 +406,93 @@ html[data-ui="beta"] .header-conan, html[data-ui="beta"] .panel-conan > .panel-h
 html[data-ui="beta"] .alert, html[data-ui="beta"] .dropdown-menu, html[data-ui="beta"] .form-control, html[data-ui="beta"] .form-select {
   border-radius: var(--lm-radius);
 }
+
+/* --- Barre de navigation, menus déroulants, boutons sombres --- */
+html[data-ui="beta"] .navbar { background-color: var(--lm-surface) !important; border-bottom: 1px solid var(--lm-line); }
+html[data-ui="beta"] .btn-dark {
+  --bs-btn-bg: var(--lm-raised); --bs-btn-border-color: var(--lm-line); --bs-btn-color: var(--lm-fg);
+  --bs-btn-hover-bg: var(--lm-raised); --bs-btn-hover-border-color: var(--lm-muted); --bs-btn-hover-color: var(--lm-fg);
+  --bs-btn-active-bg: var(--lm-line); --bs-btn-active-border-color: var(--lm-muted); --bs-btn-active-color: var(--lm-fg);
+}
+html[data-ui="beta"] .dropdown-menu {
+  --bs-dropdown-bg: var(--lm-surface); --bs-dropdown-color: var(--lm-fg); --bs-dropdown-border-color: var(--lm-line);
+  --bs-dropdown-link-color: var(--lm-fg); --bs-dropdown-link-hover-bg: var(--lm-raised); --bs-dropdown-link-hover-color: var(--lm-fg);
+  --bs-dropdown-link-active-bg: var(--lm-accent); --bs-dropdown-link-active-color: var(--lm-on-accent);
+  --bs-dropdown-divider-bg: var(--lm-line);
+}
+
+/* --- Panneau latéral « Actions » (offcanvas) et listes d'actions --- */
+html[data-ui="beta"] .offcanvas {
+  --bs-offcanvas-bg: var(--lm-surface); --bs-offcanvas-color: var(--lm-fg); --bs-offcanvas-border-color: var(--lm-line);
+}
+html[data-ui="beta"] .offcanvas-header { border-bottom: 1px solid var(--lm-line) !important; background: linear-gradient(180deg, color-mix(in srgb, var(--lm-accent) 18%, var(--lm-raised)), var(--lm-raised)); border-top: 2px solid var(--lm-accent); }
+html[data-ui="beta"] .offcanvas-title { font-family: var(--lm-font-display); letter-spacing: .04em; }
+html[data-ui="beta"] .offcanvas .list-group-item {
+  --bs-list-group-bg: transparent; --bs-list-group-color: var(--lm-fg); --bs-list-group-border-color: var(--lm-line);
+  --bs-list-group-action-hover-bg: var(--lm-raised); --bs-list-group-action-hover-color: var(--lm-fg);
+  min-height: var(--lm-touch); display: flex; align-items: center;
+}
+html[data-ui="beta"] .offcanvas h6 { font-family: var(--lm-font-body); font-weight: 700; letter-spacing: .08em; color: var(--lm-muted); }
+html[data-ui="beta"] .offcanvas h6.text-danger { color: var(--lm-admin-text) !important; }
+html[data-ui="beta"] .offcanvas .list-group-item-danger {
+  --bs-list-group-bg: color-mix(in srgb, var(--lm-admin) 12%, transparent); --bs-list-group-color: var(--lm-admin-text);
+  --bs-list-group-action-hover-bg: color-mix(in srgb, var(--lm-admin) 24%, transparent); --bs-list-group-action-hover-color: var(--lm-admin-text);
+  border-left: 3px solid var(--lm-admin);
+}
+
+/* --- Onglets : la page active se lit au premier coup d'œil --- */
+html[data-ui="beta"] .nav-tabs { --bs-nav-tabs-border-color: var(--lm-line); border-bottom: 1px solid var(--lm-line); gap: 2px; }
+html[data-ui="beta"] .nav-tabs .nav-link {
+  display: flex; align-items: center; min-height: var(--lm-touch); margin-bottom: -1px;
+  color: var(--lm-muted); font-weight: 600; background: transparent;
+  border: 0; border-bottom: 3px solid transparent; border-radius: var(--lm-radius) var(--lm-radius) 0 0;
+}
+html[data-ui="beta"] .nav-tabs .nav-link:hover { color: var(--lm-fg); background: var(--lm-raised); border-bottom-color: var(--lm-line); }
+html[data-ui="beta"] .nav-tabs .nav-link.active {
+  color: var(--lm-fg); border-bottom-color: var(--lm-accent);
+  background: color-mix(in srgb, var(--lm-accent) 16%, var(--lm-surface));
+}
+
+/* --- Contenu des pages à onglets : un cadre général sous l'en-tête (comme les fiches groupe, territoire) --- */
+html[data-ui="beta"] .tab-content {
+  background: var(--lm-surface); border: 1px solid var(--lm-line); border-radius: 0 0 var(--lm-radius-lg) var(--lm-radius-lg);
+  padding: var(--lm-s3);
+}
+html[data-ui="beta"] .tab-content .panel, html[data-ui="beta"] .tab-content .well {
+  background: color-mix(in srgb, var(--lm-surface) 55%, var(--lm-bg));
+}
+html[data-ui="beta"] .panel.mb-0.border-bottom-0 { border-radius: var(--lm-radius-lg) var(--lm-radius-lg) 0 0; }
+
+/* --- Listes, tableaux, formulaires, pagination, fil d'Ariane, fenêtres modales --- */
+html[data-ui="beta"] .table {
+  --bs-table-bg: transparent; --bs-table-color: var(--lm-fg); --bs-table-border-color: var(--lm-line);
+  --bs-table-striped-bg: color-mix(in srgb, var(--lm-raised) 55%, transparent); --bs-table-striped-color: var(--lm-fg);
+  --bs-table-hover-bg: var(--lm-raised); --bs-table-hover-color: var(--lm-fg);
+}
+html[data-ui="beta"] .table > thead > tr > th {
+  font: 700 .72rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--lm-muted); border-bottom: 2px solid var(--lm-line);
+}
+html[data-ui="beta"] .list-group {
+  --bs-list-group-bg: transparent; --bs-list-group-color: var(--lm-fg); --bs-list-group-border-color: var(--lm-line);
+  --bs-list-group-action-hover-bg: var(--lm-raised); --bs-list-group-action-hover-color: var(--lm-fg);
+  --bs-list-group-border-radius: var(--lm-radius);
+}
+html[data-ui="beta"] .form-control, html[data-ui="beta"] .form-select {
+  background-color: var(--lm-raised); color: var(--lm-fg); border-color: var(--lm-line);
+}
+html[data-ui="beta"] .form-control:focus, html[data-ui="beta"] .form-select:focus {
+  border-color: var(--lm-accent); box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--lm-accent) 25%, transparent);
+}
+html[data-ui="beta"] .ts-control, html[data-ui="beta"] .ts-dropdown {
+  background: var(--lm-raised); border-color: var(--lm-line); color: var(--lm-fg);
+}
+html[data-ui="beta"] .ts-control input, html[data-ui="beta"] .ts-control .item { color: var(--lm-fg); }
+html[data-ui="beta"] .pagination {
+  --bs-pagination-bg: var(--lm-raised); --bs-pagination-border-color: var(--lm-line); --bs-pagination-color: var(--lm-link);
+  --bs-pagination-hover-bg: var(--lm-line); --bs-pagination-hover-color: var(--lm-fg); --bs-pagination-hover-border-color: var(--lm-muted);
+  --bs-pagination-active-bg: var(--lm-accent); --bs-pagination-active-border-color: var(--lm-accent); --bs-pagination-active-color: var(--lm-on-accent);
+  --bs-pagination-disabled-bg: var(--lm-surface); --bs-pagination-disabled-color: var(--lm-muted); --bs-pagination-disabled-border-color: var(--lm-line);
+}
+html[data-ui="beta"] .breadcrumb { background-color: var(--lm-surface); border: 1px solid var(--lm-line); border-radius: var(--lm-radius); }
+html[data-ui="beta"] .modal-content { --bs-modal-bg: var(--lm-surface); --bs-modal-color: var(--lm-fg); --bs-modal-border-color: var(--lm-line); --bs-modal-header-border-color: var(--lm-line); --bs-modal-footer-border-color: var(--lm-line); }

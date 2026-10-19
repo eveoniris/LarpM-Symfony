@@ -100,11 +100,11 @@
       <tr><td><b>Jeu de domaine</b></td><td>Réutilise le cadre or du secret avec une autre icône.</td><td>Thème propre : <b>pourpre royal</b>, icône couronne. Seule teinte encore libre sur le cercle chromatique.</td></tr>
       <tr><td><b>Pastille orange (anomalie)</b></td><td>Orange pur, identique à l'étiquette « objet orange » imprimée.</td><td>Badge « Anomalie » en ambre avec icône. L'orange pur est réservé aux objets.</td></tr>
       <tr><td><b>Secret en rouge</b></td><td>Dans l'ancien /design, <code>fa-user-secret</code> est en <code>text-danger</code>.</td><td>Le secret est toujours or. Le rouge n'est plus que l'erreur.</td></tr>
-      <tr><td><b>Boutons d'édition violets</b></td><td>Le violet (scénario) sert aussi de bouton « modifier » sur les blocs MJ.</td><td>Acceptable : bouton contouré de la couleur du bloc. Les autres boutons restent neutres ou cuivre.</td></tr>
-      <tr><td><b>Modifier sans libellé</b></td><td>Retour QA : l'icône seule est trop discrète à côté des autres actions écrites.</td><td>« Modifier » porte son libellé partout où l'action est seule. L'icône seule est réservée aux lignes de tableau et au menu ⋯.</td></tr>
-      <tr><td><b>PNJ</b></td><td>Retour QA : le PNJ en gris se confond avec les états neutres.</td><td>Vert olive, à distance du vert de succès, de l'or et du bleu d'organisation.</td></tr>
-      <tr><td><b>Offerte et méconnue</b></td><td>Retour QA : le cuivre de l'offerte est trop proche de l'ambre de la méconnue.</td><td>Offerte en bleu ciel (cyan d'information). Méconnue : point d'interrogation ambre au lieu du smiley.</td></tr>
-      <tr><td><b>Effet de l'âge</b></td><td>Retour QA : l'ambre est trop proche de l'or du secret.</td><td>C'est une règle de jeu : information (cyan) avec un sablier. L'ambre reste pour « à compléter » et « anomalie ».</td></tr>
+      <tr><td><b>Boutons d'édition violets</b></td><td>Le violet (scénario) sert aussi de bouton « modifier » sur les blocs MJ.</td><td>Retenu : bouton contouré de la couleur du bloc. Les autres boutons restent neutres ou cuivre.</td></tr>
+      <tr><td><b>Modifier sans libellé</b></td><td>Retour de recette (QA) : l'icône seule est trop discrète à côté des autres actions écrites.</td><td>« Modifier » porte son libellé partout où l'action est seule. L'icône seule est réservée aux lignes de tableau et au menu ⋯.</td></tr>
+      <tr><td><b>PNJ</b></td><td>Retour de recette (QA) : le PNJ en gris se confond avec les états neutres.</td><td>Vert olive, à distance du vert de succès, de l'or et du bleu d'organisation.</td></tr>
+      <tr><td><b>Offerte et méconnue</b></td><td>Retour de recette (QA) : le cuivre de l'offerte est trop proche de l'ambre de la méconnue.</td><td>Offerte en bleu ciel (cyan d'information). Méconnue : point d'interrogation ambre au lieu du smiley.</td></tr>
+      <tr><td><b>Effet de l'âge</b></td><td>Retour de recette (QA) : l'ambre est trop proche de l'or du secret.</td><td>C'est une règle de jeu : information (cyan) avec un sablier. L'ambre reste pour « à compléter » et « anomalie ».</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -144,8 +144,26 @@
   </div>
   <p class="doc-note">Les deux étiquettes objet ont un contour blanc et noir : elles restent lisibles sur n'importe quel fond et ne changent jamais de teinte entre les thèmes.</p>
 
-  <h3>Tokens</h3>
-<pre class="code">--lm-accent    cuivre   #D98A3D (clair #A8541A)     marque + action principale
+  <h3>Couleur des liens</h3>
+  <p class="doc-note">Le principe du bleu historique (<code>#2A9FD6</code>) est conservé : le bleu est la couleur complémentaire du cuivre, il se détache de l'orange des actions, et un lien bleu est universellement reconnu. Le cuivre ne peut pas servir aux liens (il est réservé aux actions), et une patine verte entrerait en concurrence avec le vert de succès et le cyan d'information. Le bleu d'origine est en revanche trop vif sur le charbon chaud : il est remplacé par un <b>bleu azurite</b>, plus clair et légèrement violacé, qui reste distinct du cyan d'information.</p>
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <div class="lm-card"><div class="lm-card-head"><h4 class="lm-card-title">Candidats sur fond sombre</h4></div><div class="lm-card-body lm-stack" style="background:#1c1815;border-radius:0 0 10px 10px">
+      <div class="lm-actions" style="justify-content:space-between"><a href="#" style="color:#2a9fd6">Lien historique</a><span class="lm-count">5,9:1 · #2A9FD6</span></div>
+      <div class="lm-actions" style="justify-content:space-between"><a href="#" style="color:#8db4ea"><b>Azurite (retenu)</b></a><span class="lm-count">8,3:1 · #8DB4EA</span></div>
+      <div class="lm-actions" style="justify-content:space-between"><a href="#" style="color:#7bbbd6">Ciel pâle (ancien choix)</a><span class="lm-count">8,3:1 · #7BBBD6</span></div>
+      <div class="lm-actions" style="justify-content:space-between"><a href="#" style="color:#5cc2ae">Vert-de-gris (patine)</a><span class="lm-count">8,2:1 · #5CC2AE</span></div>
+      <div class="lm-actions" style="justify-content:space-between"><a href="#" style="color:#7e9cb8">Bleu acier</a><span class="lm-count">6,2:1 · #7E9CB8</span></div>
+    </div></div>
+    <ul class="doc-rules">
+      <li><b>Azurite</b> : le plus proche du bleu historique, assez clair pour le texte courant (8,3:1) et à 25° du cyan d'information (#2FB5C4).</li>
+      <li><b>Vert-de-gris</b> : associé naturellement au cuivre (c'est sa patine), mais il se confond avec le vert « prêt » et le cyan « info » dans les mêmes tableaux.</li>
+      <li><b>Bleu acier</b> : trop grisé, proche d'un texte désactivé, et déjà utilisé pour le type de classe « combat ».</li>
+      <li>Sur fond clair : <code>#1F5FA8</code> (6,3:1). L'ancien <code>#0F5F80</code> est trop proche du cyan d'information.</li>
+      <li>Dans un tableau, seul le nom est un lien visible ; les autres liens ne se soulignent qu'au survol.</li>
+    </ul>
+  </div>
+
+  <h3>Tokens</h3><pre class="code">--lm-accent    cuivre   #D98A3D (clair #A8541A)     marque + action principale
 --lm-secret    or       #D4AF37 (clair #A88A14)     secret
 --lm-gm        violet   #A07EE0 (clair #6F46C1)     scénarisation / MJ
 --lm-orga      bleu     #5B8DEF (clair #2F5FC7)     organisation / gestion
@@ -220,8 +238,8 @@
     </article>
   </div>
   <p class="doc-note">En-tête de carte : dégradé de la couleur du rôle (cuivre par défaut) et filet haut. Aucune image n'est nécessaire, ce qui remplace la texture <code>header-PegUayu.png</code>.</p>
-  <h3>Variante « panneau de bois » (nostalgie)</h3>
-  <div class="lm-card"><div class="lm-card-head lm-card-head--bois"><h4 class="lm-card-title">Fiche de personnage</h4></div><div class="lm-card-body">Même panneau qu'avant, en option : ajouter la classe <code>lm-card-head--bois</code> à l'en-tête. L'image d'origine (143 Ko) est recompressée en WebP (5 Ko), dans <code>assets/img/header-bois.webp</code>. L'aperçu de l'image n'apparaît que dans l'appli.</div></div>
+  <h3>Variante « panneau de bois »</h3>
+  <div class="lm-card"><div class="lm-card-head lm-card-head--bois"><h4 class="lm-card-title">Fiche de personnage</h4></div><div class="lm-card-body">Même panneau que l'ancienne interface, en option : ajouter la classe <code>lm-card-head--bois</code> à l'en-tête. L'image d'origine (143 Ko) est recompressée en WebP (5 Ko), dans <code>assets/img/header-bois.webp</code>. L'aperçu de l'image n'apparaît que dans l'appli.</div></div>
 </section>
 
 <!-- ===================== 4b. AFFINITÉ ===================== -->
@@ -263,7 +281,7 @@
   </div>
 
   <h3>Règle générale : vert = remise, ambre = surcoût</h3>
-  <p class="doc-note">Dans le code, une réduction est signalée par trois icônes vertes différentes (<code>fa-graduation-cap text-info</code> en cyan pour l'apprentissage, <code>fa-flag</code> et <code>fa-landmark</code> en vert pour les bonus d'origine et territoriaux). Le cyan est la couleur de « information » : on le retire. Toutes les sources de réduction deviennent des lignes vertes avec le montant en <code>−xp</code>, et seule l'icône dit d'où elles viennent.</p>
+  <p class="doc-note">Dans le code, une réduction est signalée par trois icônes vertes différentes (<code>fa-graduation-cap text-info</code> en cyan pour l'apprentissage, <code>fa-flag</code> et <code>fa-landmark</code> en vert pour les bonus d'origine et territoriaux). Le cyan est la couleur de « information » : il est retiré de cet usage. Toutes les sources de réduction deviennent des lignes vertes avec le montant en <code>−xp</code>, et seule l'icône dit d'où elles viennent.</p>
   <div class="lm-grid-2" style="margin-top:1rem">
     <article class="lm-card">
       <div class="lm-card-body">
@@ -324,7 +342,7 @@
 <!-- ===================== 4c. PARTICIPATION ===================== -->
 <section class="doc-sec">
   <h2>4c. Participants : états et chaîne de personnages</h2>
-  <p class="doc-note">Constat dans le code : le PNJ (<code>search.twig</code>) et l'archétype de secours (<code>PersonnageRoleType</code>) utilisent la <b>même icône</b> (<code>fa-masks-theater</code>), et le « ancien PJ » (<code>fa-hourglass-end</code>) ressemble à la substitution (<code>fa-hourglass-half</code>). Les lettres P / S / R / A existent déjà dans l'enum : on les garde comme repère commun à toutes les listes.</p>
+  <p class="doc-note">Constat dans le code : le PNJ (<code>search.twig</code>) et l'archétype de secours (<code>PersonnageRoleType</code>) utilisent la <b>même icône</b> (<code>fa-masks-theater</code>), et le « ancien PJ » (<code>fa-hourglass-end</code>) ressemble à la substitution (<code>fa-hourglass-half</code>). Les lettres P / S / R / A existent déjà dans l'enum : elles sont conservées comme repère commun à toutes les listes.</p>
 
   <h3>Type et état d'un participant</h3>
   <div class="sample lm-stack">
@@ -426,7 +444,7 @@
 <!-- ===================== 4d. DOMAINE ===================== -->
 <section class="doc-sec">
   <h2>4d. Jeu de domaine : conseil et indicateurs</h2>
-  <p class="doc-note">Sur « Jeu de domaine » d'un groupe (<code>/groupe/2/detail/domaine/…</code>), tout est au même gabarit : une boîte en gros caractères par rôle ou par chiffre, avec un bouton info cyan. Un même personnage tient souvent plusieurs rôles (Nom_3545 est suzerain, intendant, éminence grise et diplomate) : on le lit mal d'un coup d'œil. La page affiche « Chef de guerre » là où votre liste dit « stratège » : un libellé à trancher.</p>
+  <p class="doc-note">Sur « Jeu de domaine » d'un groupe (<code>/groupe/2/detail/domaine/…</code>), tout est au même gabarit : une boîte en gros caractères par rôle ou par chiffre, avec un bouton info cyan. Un même personnage tient souvent plusieurs rôles (Nom_3545 est suzerain, intendant, éminence grise et diplomate) : ce cumul se lit difficilement d'un coup d'œil. La page affiche « Chef de guerre » là où la liste des rôles du jeu de domaine indique « stratège » : libellé à harmoniser.</p>
   <h3>Le conseil : un siège par rôle</h3>
   <div class="sample lm-stack">
     <ul class="lm-seats">
@@ -449,7 +467,7 @@
   </div>
   <ul class="doc-rules" style="margin-top:1rem">
     <li>Tous les sièges sont en <b>pourpre domaine</b> : l'icône dit le rôle, pas la couleur.</li>
-    <li>Un siège vacant est en pointillé, avec le libellé « vacant » : on voit ce qui manque avant de lire les noms.</li>
+    <li>Un siège vacant est en pointillé, avec le libellé « vacant » : les sièges manquants se repèrent avant la lecture des noms.</li>
     <li>Option : regrouper par personnage (« Kaelwyn : suzerain, intendant, éminence grise, diplomate ») quand l'un d'eux cumule.</li>
     <li>Les indicateurs ne se répètent pas en gros caractères : une rangée de tuiles, l'info (i) devient une infobulle.</li>
     <li>« Agents » n'utilise pas l'espion : il reste réservé au secret. Le groupe d'icônes d'agents est un simple groupe de personnes.</li>
@@ -459,7 +477,7 @@
 <!-- ===================== 4e. CHRONOLOGIE ===================== -->
 <section class="doc-sec">
   <h2>4e. Chronologie des opus et des inter-jeux</h2>
-  <p class="doc-note">Les opus sont LH1 à LH7 (le prochain est LH8) : environ tous les 2 ans réels, 5 ans en jeu. Entre deux opus, un inter-jeu enchaîne des actions de jeu (vieillissement, effet de sanctuaire, verrouillage des fiches, impression des enveloppes, ouverture du scanner d'objets). Aujourd'hui rien ne les montre dans le temps : c'est un bon candidat de composant partagé entre fiche GN, groupe et personnage.</p>
+  <p class="doc-note">Les opus sont LH1 à LH7 (le prochain est LH8) : environ tous les 2 ans réels, 5 ans en jeu. Entre deux opus, un inter-jeu enchaîne des actions de jeu (vieillissement, effet de sanctuaire, verrouillage des fiches, impression des enveloppes, ouverture du scanner d'objets). Aucun écran ne les situe actuellement dans le temps : la chronologie est un composant partageable entre fiche GN, groupe et personnage.</p>
   <div class="sample">
     <ol class="lm-timeline">
       <li class="lm-opus" data-state="done"><span class="lm-opus-name">LH5</span><span class="lm-opus-date">août 2021</span><span class="lm-opus-game">1 295 en jeu</span></li>
@@ -485,7 +503,7 @@
     <li><b>Nœud</b> = un opus : plein gris (terminé), plein cuivre avec halo (en cours), pointillé cuivre (prochain).</li>
     <li><b>Segment</b> = un inter-jeu, en pourpre domaine. Chaque action y a une icône et un état : en gris (à venir), en gras (ouverte), en vert (faite).</li>
     <li>Les dates réelles et l'année en jeu sont toutes deux affichées : le joueur raisonne en jeu, l'orga en réel.</li>
-    <li>Sur mobile, la frise devient verticale. Sur la fiche d'un personnage ou d'un groupe, on marque ses propres participations (un nœud plein = présent à cet opus).</li>
+    <li>Sur mobile, la frise devient verticale. Sur la fiche d'un personnage ou d'un groupe, les participations propres sont marquées (un nœud plein = présent à cet opus).</li>
     <li>Les années en jeu et les nombres de joueurs ci-dessus sont des exemples. Les dates réelles viennent de la liste des GN.</li>
   </ul>
 </section>
@@ -493,7 +511,7 @@
 <!-- ===================== 4f. GROUPES TRANSVERSES ===================== -->
 <section class="doc-sec">
   <h2>4f. Groupes transverses</h2>
-  <p class="doc-note">La page <code>/groupeSecondaire/1/detail</code> empile : description publique de cinq paragraphes en pleine largeur, description secrète, serveur Discord, chef et scénariste, matériel, intrigues, liste des postulants, liste des membres en cartes-photo (avec « Ne voit pas les secrets » et deux boutons par membre), puis les listes d'e-mails. Elle fonctionne, mais le premier écran est un mur de texte et les actions par membre occupent plus de place que l'information.</p>
+  <p class="doc-note">La page <code>/groupeSecondaire/1/detail</code> empile : description publique de cinq paragraphes en pleine largeur, description secrète, serveur Discord, chef et scénariste, matériel, intrigues, liste des postulants, liste des membres en cartes-photo (avec « Ne voit pas les secrets » et deux boutons par membre), puis les listes d'e-mails. Le premier écran est occupé par du texte long, et les actions par membre occupent plus de place que l'information.</p>
   <div class="lm-grid-2" style="margin-top:1rem">
     <div class="lm-stack">
       <div class="lm-page-head"><div><h4 class="lm-page-title">Confrérie du savoir</h4><div class="lm-meta"><span>Groupe transverse</span><span>Discord</span><span class="lm-count">42 membres</span></div></div>
@@ -615,7 +633,7 @@
         </div></div>
     </div>
   </div>
-  <p class="doc-note">Les 10 derniers objets passent en tableau compact (nom, état, date) au lieu de grandes cartes avec description : on voit 10 lignes sans défiler.</p>
+  <p class="doc-note">Les 10 derniers objets passent en tableau compact (nom, état, date) au lieu de grandes cartes avec description : 10 lignes sont visibles sans défilement.</p>
 
   <h3>Fiche GN avec jeu de domaine</h3>
   <div class="sample lm-stack">
@@ -637,7 +655,7 @@
       <tr data-role="admin"><td class="lm-cell-main" data-label="Entrée"><b>Admin</b></td><td data-label="Contenu">GN, billets, utilisateurs, droits, rappels</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-key"/></svg> clé</td><td data-label="Traitement">Rôle <b>admin</b> (bordeaux) sur les blocs visibles des administrateurs seuls.</td></tr>
       <tr><td class="lm-cell-main" data-label="Entrée"><b>Univers</b></td><td data-label="Contenu">Religions, carte, territoires, fiefs, cultures, espèces</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-globe"/></svg> globe</td><td data-label="Traitement">Cuivre (marque). Les blocs MJ d'un territoire gardent le violet.</td></tr>
       <tr data-role="gm"><td class="lm-cell-main" data-label="Entrée"><b>Scénario</b></td><td data-label="Contenu">Groupes, personnages, intrigues, backgrounds, rumeurs</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-feather"/></svg> plume</td><td data-label="Traitement">Rôle <b>scénario</b> (violet) pour le contenu écrit par les MJ.</td></tr>
-      <tr data-role="domaine"><td class="lm-cell-main" data-label="Entrée"><b>Jeu</b></td><td data-label="Contenu">Lois, économie, stratégie, diplomatie, quêtes commerciales</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-castle"/></svg> château</td><td data-label="Traitement">Rôle <b>domaine</b> (pourpre) : ce sont les mécaniques du jeu de domaine. À confirmer avec vous.</td></tr>
+      <tr data-role="domaine"><td class="lm-cell-main" data-label="Entrée"><b>Jeu</b></td><td data-label="Contenu">Lois, économie, stratégie, diplomatie, quêtes commerciales</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-castle"/></svg> château</td><td data-label="Traitement">Rôle <b>domaine</b> (pourpre) : ce sont les mécaniques du jeu de domaine. À confirmer.</td></tr>
       <tr><td class="lm-cell-main" data-label="Entrée"><b>Règles</b></td><td data-label="Contenu">Règles, compétences, classes, magie, âges, bonus</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-book"/></svg> livre</td><td data-label="Traitement">Aucune couleur de rôle : c'est un référentiel. Les affinités et remises suivent §4b.</td></tr>
       <tr><td class="lm-cell-main" data-label="Entrée"><b>Stock</b></td><td data-label="Contenu">Objets, états, tags, localisations, rangements</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-box"/></svg> caisse</td><td data-label="Traitement">Aucune couleur de rôle. Les états utilisent les couleurs d'état et la palette de données.</td></tr>
       <tr data-role="domaine"><td class="lm-cell-main" data-label="Entrée"><b>Inter-jeu</b></td><td data-label="Contenu">Liste des inter-jeux, fiches retour, chronologie</td><td data-label="Icône"><svg class="lm-ico"><use href="#i-crown"/></svg> couronne</td><td data-label="Traitement">Rôle <b>domaine</b> (pourpre).</td></tr>
@@ -651,7 +669,7 @@
     <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>Personnage actif</p>
       <p>Le bouton du personnage actif utilise <code>fa-user-secret text-warning</code> : l'icône et la couleur du secret. Utiliser l'icône <b>utilisateur</b> avec une coche, en cuivre.</p></div>
     <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>Bouton « voir en tant qu'admin »</p>
-      <p>Il utilise <code>fa-shield-halved</code>, que j'avais retenu pour l'organisation. Le bouclier reste donc au mode admin et l'<b>organisation</b> passe à l'icône presse-papiers (<svg class="lm-ico"><use href="#i-clipboard"/></svg>).</p></div>
+      <p>Il utilise <code>fa-shield-halved</code>, déjà associé au mode admin. Le bouclier lui reste réservé et l'<b>organisation</b> utilise l'icône presse-papiers (<svg class="lm-ico"><use href="#i-clipboard"/></svg>).</p></div>
     <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>Pastille de messages non lus</p>
       <p>Rouge d'erreur pour un simple compteur. Le rouge ne doit apparaître que pour une erreur.</p></div>
   </div>

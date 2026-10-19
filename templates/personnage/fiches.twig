@@ -85,7 +85,7 @@
 							<td colspan="4">
 								<strong>Langages</strong><br />
 								<ul>
-								{% for personnageLangue in personnage.personnageLangues %}
+								{% for ligneLangue in personnageService.allLanguesUnique(personnage) %}{% set personnageLangue = ligneLangue.principal %}
 									<li><strong>{{ personnageLangue.langue}}</strong> ({{ personnageLangue.source }})</li>
 								{% endfor %}
 								</ul>

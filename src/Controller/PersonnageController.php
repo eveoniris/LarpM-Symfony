@@ -1491,10 +1491,13 @@ class PersonnageController extends AbstractController
             $data = $form->getData();
             $langue = $data['langue'];
 
-            $personnageLangue = new PersonnageLangues();
-            $personnageLangue->setPersonnage($personnage);
-            $personnageLangue->setLangue($langue);
-            $personnageLangue->setSource('LITTERATURE');
+            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::LITTERATURE);
+            if (!$personnageLangue) {
+                $this->addFlash('error', 'Le personnage connaît déjà cette langue.');
+
+                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            }
+
             $this->entityManager->persist($personnageLangue);
 
             if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_COURANTE)) {
@@ -1554,10 +1557,13 @@ class PersonnageController extends AbstractController
             $data = $form->getData();
             $langue = $data['langue'];
 
-            $personnageLangue = new PersonnageLangues();
-            $personnageLangue->setPersonnage($personnage);
-            $personnageLangue->setLangue($langue);
-            $personnageLangue->setSource('LITTERATURE');
+            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::LITTERATURE);
+            if (!$personnageLangue) {
+                $this->addFlash('error', 'Le personnage connaît déjà cette langue.');
+
+                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            }
+
             $this->entityManager->persist($personnageLangue);
 
             if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_ANCIENNE)) {
@@ -1612,10 +1618,13 @@ class PersonnageController extends AbstractController
             $data = $form->getData();
             $langue = $data['langue'];
 
-            $personnageLangue = new PersonnageLangues();
-            $personnageLangue->setPersonnage($personnage);
-            $personnageLangue->setLangue($langue);
-            $personnageLangue->setSource('LITTERATURE');
+            $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::LITTERATURE);
+            if (!$personnageLangue) {
+                $this->addFlash('error', 'Le personnage connaît déjà cette langue.');
+
+                return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+            }
+
             $this->entityManager->persist($personnageLangue);
 
             if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_COURANTE)) {
@@ -1715,6 +1724,15 @@ class PersonnageController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+
+            foreach ($personnage->getPersonnageLangues() as $autre) {
+                if ($autre !== $personnageLangue && $autre->getLangue()?->getId() === $personnageLangue->getLangue()?->getId() && $autre->getSource() === $data['source']) {
+                    $this->addFlash('error', 'Cette langue existe déjà avec cette source.');
+
+                    return $this->redirectToRoute('personnage.update.langue', ['personnage' => $personnage->getId()], 303);
+                }
+            }
+
             $personnageLangue->setSource($data['source']);
             $this->log($personnageLangue, LogActionType::ADD_LANGUE);
             $this->entityManager->flush();
@@ -3010,7 +3028,7 @@ class PersonnageController extends AbstractController
             // le personnage doit perdre les langues de son ancienne origine
             // et récupérer les langues de sa nouvelle origine
             foreach ($personnage->getPersonnageLangues() as $personnageLangue) {
-                if (!('ORIGINE' === $personnageLangue->getSource() || 'ORIGINE SECONDAIRE' === $personnageLangue->getSource())) {
+                if (!\in_array($personnageLangue->getSource(), [LangueSourceType::ORIGINE->value, LangueSourceType::ORIGINE_SECONDAIRE->value], true)) {
                     continue;
                 }
 
@@ -3020,13 +3038,10 @@ class PersonnageController extends AbstractController
 
             $newOrigine = $personnage->getTerritoire();
             foreach ($newOrigine->getLangues() as $langue) {
-                $personnageLangue = new PersonnageLangues();
-                $personnageLangue->setPersonnage($personnage);
-                $personnageLangue->setSource('ORIGINE SECONDAIRE');
-                $personnageLangue->setLangue($langue);
-
-                $this->entityManager->persist($personnageLangue);
-                $personnage->addPersonnageLangues($personnageLangue);
+                $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::ORIGINE_SECONDAIRE);
+                if (null !== $personnageLangue) {
+                    $this->entityManager->persist($personnageLangue);
+                }
             }
 
             $this->entityManager->persist($personnage);
@@ -4900,14 +4915,10 @@ class PersonnageController extends AbstractController
                 return $this->redirectToRoute('personnage.update.langue', ['personnage' => $personnage->getId()], 303);
             }
 
-            $personnageLangue = new PersonnageLangues();
-            $personnageLangue->setPersonnage($personnage);
-            $personnageLangue->setLangue($langue);
-            $personnageLangue->setSource($source);
+            $personnageLangue = $personnage->addLangueSource($langue, $source, LangueSourceType::LITTERATURE->value === $source ? $triggerTag : null);
 
             // Pour une langue de littérature, on trace et consomme le trigger choisi
             if (LangueSourceType::LITTERATURE->value === $source && $triggerTag) {
-                $personnageLangue->setTriggerTag($triggerTag);
                 if ($trigger = $personnage->getTrigger($triggerTag)) {
                     $this->entityManager->remove($trigger);
                 }

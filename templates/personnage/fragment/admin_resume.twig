@@ -84,7 +84,7 @@
                      {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : languesAnomalie } %}
                  {% endif %}
                  <div class="list-group border-0">
-                     {% for personnageLangue in personnageService.allLangues(personnage) %}
+                     {% for ligneLangue in personnageService.allLanguesUnique(personnage) %}{% set personnageLangue = ligneLangue.principal %}
                          <div
                              class="list-group-item d-flex justify-content-between{% if loop.first %} rounded-top-0{% endif %}">
                              <div>
@@ -96,6 +96,9 @@
                                  {% if personnageLangue.langue.id %}
                                      <a href="{{ path('langue.detail', {'langue': personnageLangue.langue.id }) }}"><strong>{{ personnageLangue.langue }}</strong></a>
                                      ({{ personnageLangue.source }}{% if personnageLangue.triggerTag %} – {{ personnageLangue.triggerTag }}{% endif %})
+                                     {% if ligneLangue.autres|length > 0 %}
+                                        <small class="text-muted">· aussi : {% for autre in ligneLangue.autres %}{{ autre.source }}{% if autre.triggerTag %} – {{ autre.triggerTag }}{% endif %}{{ loop.last ? '' : ', ' }}{% endfor %}</small>
+                                    {% endif %}
                                  {% endif %}
                              </div>
                          </div>

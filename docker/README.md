@@ -21,14 +21,22 @@ Le premier démarrage exécute automatiquement (via marqueurs dans `var/`) :
 
 | Service | URL / Port host | Description |
 |---------|----------------|-------------|
-| App (HTTPS) | https://larpmanager.test | URL principale (setup one-time requis) |
-| App (HTTP fallback) | http://localhost:8080 | Sans setup, sans admin |
+| App (HTTP) | http://localhost | URL par défaut, sans aucun setup |
+| App (HTTP, optionnel) | http://larpmanager.test | Si l'entrée `hosts` est ajoutée |
+| App (HTTPS, optionnel) | https://larpmanager.test | Surcharge `.env.dev.local` + CA approuvée (voir ci-dessous) |
 | Base de données | localhost:30202 | MySQL 8.4 — user `admin` / pass `password` |
 | Mailpit | http://localhost:8025 | Interface emails de dev |
 
 ---
 
-## Setup one-time — `https://larpmanager.test`
+## Activer HTTPS (optionnel) — `https://larpmanager.test`
+
+Par défaut le stack sert uniquement du HTTP. Pour activer le HTTPS :
+
+```bash
+cp docker/.env.dev.local.dist .env.dev.local
+docker compose up -d
+```
 
 Caddy génère automatiquement une CA locale et émet un certificat pour `larpmanager.test`.
 Il faut ajouter le domaine au fichier `hosts` de l'OS et faire approuver la CA par le navigateur.
@@ -100,16 +108,22 @@ Ouvrir **https://larpmanager.test** — aucune alerte de sécurité ne devrait a
 
 ---
 
-## Fallback sans droits admin — `http://localhost:8080`
+## Migration depuis l'ancien mode `:8080`
 
-Si vous ne pouvez pas modifier le fichier `hosts` ou importer un certificat, utilisez le mode HTTP sur le port 8080 :
+Le port `8080` n'est plus publié : `http://localhost` (port 80) le remplace. Si vous avez un ancien `.env.dev.local` issu de `.env.dev.local.dist` (`SERVER_NAME=":8080"`), supprimez-le (ou recopiez le nouveau `.dist` pour activer le HTTPS).
 
-```bash
-cp docker/.env.dev.local.dist .env.dev.local
-docker compose up -d
-```
+---
 
-L'app sera accessible sur **http://localhost:8080**.
+## Dépannage : erreur ou page blanche en https
+
+Par défaut, Caddy ne sert **que du HTTP** (`auto_https off`). Une URL `https://localhost` ou `https://larpmanager.test` (favori, historique, onglet resté ouvert) ne reçoit alors aucune réponse, et la page de login semble en erreur.
+
+1. Ouvrir l'URL en `http://localhost` (taper explicitement `http://`, dans un onglet neuf).
+2. Si le navigateur repasse seul en https (HSTS mémorisé) :
+   - Chrome / Edge : `chrome://net-internals/#hsts` (ou `edge://net-internals/#hsts`), puis "Delete domain security policies" pour `localhost` et `larpmanager.test`.
+   - Firefox : Historique → Oublier ce site.
+   - Ou utiliser une fenêtre privée.
+3. Pour garder le https, activer la surcharge décrite plus haut (`cp docker/.env.dev.local.dist .env.dev.local`, puis `docker compose up -d --force-recreate webserver`).
 
 ---
 

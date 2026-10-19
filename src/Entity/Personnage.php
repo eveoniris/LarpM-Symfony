@@ -1556,13 +1556,57 @@ class Personnage extends BasePersonnage implements Stringable
      */
     public function isKnownLanguage(?Langue $langue): bool
     {
+        if (null === $langue) {
+            return false;
+        }
+
         foreach ($this->getPersonnageLangues() as $personnageLangue) {
-            if ($personnageLangue->getLangue() === $langue) {
+            $known = $personnageLangue->getLangue();
+            if ($known === $langue || null !== $langue->getId() && $known?->getId() === $langue->getId()) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Ajoute une langue sans créer de doublon.
+     * Si la langue est déjà connue par une source de rang égal ou supérieur, rien n'est fait (null).
+     * Si elle l'est par une source de rang inférieur, la source de la ligne existante est relevée.
+     *
+     * @return PersonnageLangues|null la ligne créée ou modifiée (à persister), null si rien n'a changé
+     */
+    public function addLangueSource(Langue $langue, LangueSourceType|string $source, ?string $triggerTag = null): ?PersonnageLangues
+    {
+        $source = $source instanceof LangueSourceType ? $source->value : $source;
+        $newRank = LangueSourceType::priorityOf($source);
+
+        foreach ($this->getPersonnageLangues() as $existing) {
+            $known = $existing->getLangue();
+            $same = $known === $langue || null !== $langue->getId() && $known?->getId() === $langue->getId();
+            if (!$same) {
+                continue;
+            }
+
+            if ($newRank >= LangueSourceType::priorityOf($existing->getSource())) {
+                return null;
+            }
+
+            $existing->setSource($source);
+            $existing->setTriggerTag($triggerTag);
+
+            return $existing;
+        }
+
+        $personnageLangue = new PersonnageLangues();
+        $personnageLangue->setPersonnage($this);
+        $personnageLangue->setLangue($langue);
+        $personnageLangue->setSource($source);
+        $personnageLangue->setTriggerTag($triggerTag);
+        $this->addPersonnageLangues($personnageLangue);
+
+        return $personnageLangue;
     }
 
     /**
