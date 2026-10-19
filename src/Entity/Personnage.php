@@ -627,8 +627,10 @@ class Personnage extends BasePersonnage implements Stringable
      * Ancien calcul : le bonus d'origine compense l'absence de langue gratuite du groupe, il n'est acquis que si
      * le personnage a au moins une participation et que son premier groupe de jeu a la même origine que lui.
      * Sans groupe lors de la première participation, il n'y a rien à compenser : le bonus est conservé.
+     *
+     * Transitoire : public uniquement pour la commande de reprise (comparaison ancien / nouveau calcul).
      */
-    private function isOrigineBonusActiveLegacy(): bool
+    public function isOrigineBonusActiveLegacy(): bool
     {
         $firstParticipant = $this->getFirstParticipant();
         if (null === $firstParticipant) {
