@@ -1,0 +1,31 @@
+{% import 'groupeSecondaire/fragment/_ui.twig' as ui %}
+{% set beta = app.user is not null and app.user.uiBeta %}
+
+{% set lists = [
+    {'id': 'gs-emails-all', 'title': 'E-mails des membres du groupe', 'values': emails},
+    {'id': 'gs-emails-gn', 'title': gn ? 'E-mails des membres participant à ' ~ gn.label : 'E-mails des membres participants', 'values': emailsGn},
+] %}
+
+<div class="row g-3">
+    {% for list in lists %}
+        <div class="col-lg-6">
+            <div class="{{ beta ? 'lm-card' : 'card' }}">
+                <div class="{{ beta ? 'lm-card-head' : 'card-header d-flex justify-content-between align-items-center' }}">
+                    <h4 class="{{ beta ? 'lm-card-title' : 'h6 mb-0' }}">{{ list.title }} <span class="{{ beta ? 'lm-count' : 'badge text-bg-secondary' }}">{{ list.values|length }}</span></h4>
+                    {% if list.values %}
+                        <button type="button" class="{{ ui.btn('default', beta, true) }}" data-gs-copy="#{{ list.id }}">
+                            <i class="fa fa-copy" aria-hidden="true"></i> <span class="gs-copy-label">Copier</span>
+                        </button>
+                    {% endif %}
+                </div>
+                <div class="{{ beta ? 'lm-card-body' : 'card-body' }}">
+                    {% if list.values %}
+                        <div class="gs-emails" id="{{ list.id }}">{{ list.values|join(', ') }}</div>
+                    {% else %}
+                        {% include '_partials/noResult.twig' with {'css': 'w-100'} %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>

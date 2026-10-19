@@ -1,0 +1,15 @@
+{% import 'groupeSecondaire/fragment/_ui.twig' as ui %}
+{% set beta = app.user is not null and app.user.uiBeta %}
+
+{# File de décisions. Le chef et les membres ayant accès au secret voient les postulants (pseudos uniquement). #}
+<div class="{{ beta ? 'lm-card' : 'card' }}">
+    <div class="{{ beta ? 'lm-card-head' : 'card-header' }}">
+        <h4 class="{{ beta ? 'lm-card-title' : 'h6 mb-0' }}">Postulants <span class="{{ beta ? 'lm-count' : 'badge text-bg-secondary' }}">{{ postulants|length }}</span></h4>
+    </div>
+
+    {% for postulant in postulants %}
+        {% include 'groupeSecondaire/fragment/postulant.twig' %}
+    {% else %}
+        {% include '_partials/noResult.twig' with {'content': 'Aucune candidature en attente'} %}
+    {% endfor %}
+</div>

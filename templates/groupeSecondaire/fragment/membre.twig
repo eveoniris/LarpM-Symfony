@@ -1,141 +1,78 @@
-<div class="card text-bg mb-3">
+{#
+Ligne compacte d'un membre : avatar, nom, statut, accès, menu d'actions.
+Variables : row {personnage, membre, isChef}, et le contexte de la page.
+#}
+{% import 'groupeSecondaire/fragment/_ui.twig' as ui %}
+{% set beta = app.user is not null and app.user.uiBeta %}
+{% set personnage = row.personnage %}
+{% set membre = row.membre %}
+{% set inscrit = inscriptions[personnage.id] is defined %}
+{% set isMe = currentPersonnageId is same as(personnage.id) %}
 
-    <div class="text-center py-2 border-bottom border-2">
-        {% if personnage %}
-            <a href="{{ path('personnage.trombine', {'personnage': personnage.id}) }}">
-                {% if personnage.trombineUrl %}
-                    <img class="media-object w-auto rounded-2 border border-2 border-secondary"
-                         style="max-height:250px;max-width: 250px"
-                         src="{{ path('personnage.trombine', {'personnage' : personnage.id }) }}"
-                         alt=""/>
-                {% else %}
-                    <img class="media-object w-auto rounded-2 border-2  border-secondary"
-                         style="max-height:250px;max-width: 250px"
-                         src="{{ app.request.basepath }}/img/no_trombine.png"/>
-                {% endif %}
-            </a>
-        {% else %}
-            <img class="media-object w-auto rounded-2 border-2 border-secondary"
-                 style="max-height:250px;max-width: 250px"
-                 src="{{ app.request.basepath }}/img/no_trombine.png" alt=""/>
-        {% endif %}
-    </div>
+<div class="{{ beta ? 'lm-member' : 'd-flex align-items-center gap-3 px-3 py-2 border-bottom' }}">
+    {{ ui.avatar(personnage, beta) }}
 
-    {% set rankHtml %}
-        {% if personnage.id == groupeSecondaire.responsable.id %}
-            <span><i class="fa-solid fa-user-tie text-warning"></i> Responsable </span>
-        {% elseif membre is defined and membre.secret %}
-            Avancé
-        {% else %}
-            Basique
-        {% endif %}
-    {% endset %}
-
-    {% set surnameHtml %}
+    <div class="{{ beta ? '' : 'flex-grow-1 min-w-0' }}">
         <div>
             {% if personnage.vivant == 0 %}
-                <i class="fa-solid fa-skull"
-                   title="Mort"
-                   data-bs-toggle="tooltip"
-                   data-bs-placement="bottom"
-                   data-bs-title="Mort"></i>
+                <i class="fa-solid fa-skull" title="Mort" data-bs-toggle="tooltip" data-bs-placement="bottom"></i>
             {% endif %}
             {% if isAdmin %}
-                <a class="link-gamemaster" href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">
-                    <i class="fa fa-feather" data-toggle="tooltip"
-                       data-placement="top"
-                       title="Lien scénariste"></i>
-                    {{ personnage.identityByLabel(gn.getLabel()) }}
-                </a>
+                <a class="link-gamemaster fw-semibold" href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">
+                    <i class="fa fa-feather" title="Lien scénariste" data-bs-toggle="tooltip" data-bs-placement="top"></i>
+                    {{ personnage.publicName }}</a>
             {% else %}
-                {{ personnage.publicName }}
+                <strong>{{ personnage.publicName }}</strong>
             {% endif %}
         </div>
-    {% endset %}
-
-    {% set statutHtml %}
-        {% if personnage.participeTo(gn) %}
-            <span class="text-success">Inscrit à {{ gn.label }}</span><br/>
-        {% else %}
-            <span class="text-warning">Non inscrit à {{ gn.label }}</span>
-        {% endif %}
-    {% endset %}
-
-    {% set accessHtml %}
-        {% if membre is defined %}
-            {% if membre.secret %}
-                <div class="text-danger">Voit les secrets</div>
-                <div>
-                    <a class="btn btn-sm btn-secondary"
-                       href="{{ path('groupeSecondaire.secret.off', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
-                        <i class="fa fa-eye-slash"></i> Rétrograder
-                    </a>
-                </div>
-            {% else %}
-                <div>Ne voit pas les secrets</div>
-                <div>
-                    <a class="btn btn-sm btn-secondary"
-                       href="{{ path('groupeSecondaire.secret.on', {'groupeSecondaire': groupeSecondaire.id , 'membre':membre.id}) }}">
-                        <i class="fa fa-eye"></i> Promouvoir
-                    </a>
-                </div>
+        <div class="{{ beta ? 'lm-member-meta' : 'd-flex flex-wrap gap-2 align-items-center small text-body-secondary' }}">
+            {% if row.isChef %}
+                {{ ui.badge('Responsable', 'secret', beta, 'fa-user-tie') }}
+            {% elseif canManage and membre %}
+                {% if membre.secret %}
+                    {{ ui.badge('Voit les secrets', 'secret', beta, 'fa-user-secret') }}
+                {% else %}
+                    {{ ui.badge('Ne voit pas les secrets', 'muted', beta) }}
+                {% endif %}
             {% endif %}
-        {% elseif personnage.id == groupeSecondaire.responsable.id %}
-            <div>
-                <span><i class="fa-solid fa-user-tie text-warning"></i> Responsable </span>
-            </div>
-        {% endif %}
-    {% endset %}
-
-    {% set isReligion = groupeSecondaire.isReligion %}
-    {% set religionHtml %}
-        {% if isReligion and canManage %}
-            <ul class="list-group list-group-flush w-100 m-0 p-0">
+            {% if gn %}
+                {% if inscrit %}
+                    <span class="text-success">Inscrit à {{ gn.label }}</span>
+                    {% if isAdmin %}<span>· {{ inscriptions[personnage.id]|default('groupe non identifiable') }}</span>{% endif %}
+                {% else %}
+                    <span class="text-warning">Non inscrit à {{ gn.label }}</span>
+                {% endif %}
+            {% endif %}
+            {% if groupeSecondaire.isReligion and canManage %}
                 {% for personnageReligion in personnage.personnagesReligions %}
-                    <li class="list-group-item w-100 m-0 p-0 d-flex justify-content-between">
-                        <div>{{ personnageReligion.religion.label }}</div>
-                        <div>
-                            <span class="badge rounded-pill bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
-                        </div>
-                    </li>
+                    <span>{{ personnageReligion.religion.label }} ({{ personnageReligion.religionLevel.label }})</span>
                 {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    {% if canManage and not isMe %}
+        <div class="dropdown">
+            <button class="{{ ui.more_button(beta) }}" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                    aria-label="Actions pour {{ personnage.publicName }}"><i class="fa fa-ellipsis" aria-hidden="true"></i></button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                {% if membre %}
+                    <li><a class="dropdown-item" href="{{ path('groupeSecondaire.contact.membre', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}"><i class="fa fa-envelope" aria-hidden="true"></i> Contacter</a></li>
+                    <li>
+                        {% if membre.secret %}
+                            <a class="dropdown-item" href="{{ path('groupeSecondaire.secret.off', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}"><i class="fa fa-eye-slash" aria-hidden="true"></i> Rétrograder</a>
+                        {% else %}
+                            <a class="dropdown-item" href="{{ path('groupeSecondaire.secret.on', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}"><i class="fa fa-eye" aria-hidden="true"></i> Promouvoir</a>
+                        {% endif %}
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="{{ path('groupeSecondaire.member.remove', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}"><i class="fa fa-user-minus" aria-hidden="true"></i> Retirer ce membre</a></li>
+                {% else %}
+                    <li><a class="dropdown-item" href="{{ path('groupeSecondaire.contact', {'groupeSecondaire': groupeSecondaire.id}) }}"><i class="fa fa-envelope" aria-hidden="true"></i> Contacter</a></li>
+                {% endif %}
             </ul>
-        {% else %}
-            Aucune
-        {% endif %}
-    {% endset %}
-    {% set religionTitleHtml %}
-        <i class="fa fa-user-secret text-warning" data-toggle="tooltip" data-placement="top"
-           title="Secrets"></i> Religion
-    {% endset %}
-
-    {% set manageHtml %}
-        {% if membre is defined %}
-            <a class="btn btn-sm btn-secondary"
-               href="{{ path('groupeSecondaire.member.remove', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}">
-                Retirer ce membre
-            </a>
-            <a class="btn btn-sm btn-secondary"
-               href="{{ path('groupeSecondaire.contact.membre', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}">
-                Contacter
-            </a>
-        {% else %}
-            <a class="btn btn-sm btn-secondary"
-               href="{{ path('groupeSecondaire.contact', {'groupeSecondaire': groupeSecondaire.id}) }}">
-                Contacter
-            </a>
-        {% endif %}
-    {% endset %}
-
-    {% include '_partials/listItems.twig'
-        with { 'head' : false, 'items' : [
-        {'title': 'Surnom', 'text': surnameHtml},
-        {'title': 'Religion', 'text': religionHtml, 'visible': isReligion and canManage},
-        {'title': 'Statut', 'text': statutHtml },
-        {'title': 'Rang', 'text': rankHtml, visible: false},
-        {'title': 'Accès', 'text': accessHtml, visible: canManage },
-        {'title': 'Gestion', 'text': manageHtml, visible: canManage, 'css': 'mb-0' },
-    ]
-    } %}
-
+        </div>
+    {% else %}
+        <span></span>
+    {% endif %}
 </div>

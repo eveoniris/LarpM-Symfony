@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Gn;
+use App\Entity\IntrigueHasGroupeSecondaire;
 use App\Entity\Membre;
+use App\Entity\Participant;
 use App\Entity\Personnage;
+use App\Entity\Postulant;
 use App\Entity\SecondaryGroup;
 use App\Entity\User;
 use App\Service\OrderBy;
@@ -256,5 +260,143 @@ class SecondaryGroupRepository extends BaseRepository
             DQL);
 
         return $query->setParameter('uid', $user->getId())->getScalarResult();
+    }
+
+    /**
+     * Charge le groupe et sa collection de membres (personnage et joueur compris) en une requête.
+     * La collection `membres` du groupe est initialisée : les lectures suivantes ne coûtent plus rien.
+     *
+     * @param bool $withReligions joint aussi les religions de chaque personnage
+     */
+    public function findWithMembres(int $id, bool $withReligions = false): ?SecondaryGroup
+    {
+        $qb = $this->createQueryBuilder('g')
+            ->addSelect('m', 'p', 'u')
+            ->leftJoin('g.membres', 'm')
+            ->leftJoin('m.personnage', 'p')
+            ->leftJoin('p.user', 'u')
+            ->where('g.id = :id')
+            ->setParameter('id', $id);
+
+        if ($withReligions) {
+            $qb->addSelect('pr', 'r', 'rl')
+                ->leftJoin('p.personnagesReligions', 'pr')
+                ->leftJoin('pr.religion', 'r')
+                ->leftJoin('pr.religionLevel', 'rl');
+        }
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function countMembres(SecondaryGroup $secondaryGroup): int
+    {
+        return (int) $this->getEntityManager()
+            ->createQuery('SELECT COUNT(m.id) FROM App\Entity\Membre m WHERE m.secondaryGroup = :g')
+            ->setParameter('g', $secondaryGroup->getId())
+            ->getSingleScalarResult();
+    }
+
+    public function countPostulants(SecondaryGroup $secondaryGroup): int
+    {
+        return (int) $this->getEntityManager()
+            ->createQuery('SELECT COUNT(po.id) FROM App\Entity\Postulant po WHERE po.secondaryGroup = :g')
+            ->setParameter('g', $secondaryGroup->getId())
+            ->getSingleScalarResult();
+    }
+
+    public function hasPostulant(SecondaryGroup $secondaryGroup, Personnage $personnage): bool
+    {
+        return (int) $this->getEntityManager()
+            ->createQuery('SELECT COUNT(po.id) FROM App\Entity\Postulant po WHERE po.secondaryGroup = :g AND po.personnage = :p')
+            ->setParameter('g', $secondaryGroup->getId())
+            ->setParameter('p', $personnage->getId())
+            ->getSingleScalarResult() > 0;
+    }
+
+    public function hasMembre(SecondaryGroup $secondaryGroup, Personnage $personnage): bool
+    {
+        return (int) $this->getEntityManager()
+            ->createQuery('SELECT COUNT(m.id) FROM App\Entity\Membre m WHERE m.secondaryGroup = :g AND m.personnage = :p')
+            ->setParameter('g', $secondaryGroup->getId())
+            ->setParameter('p', $personnage->getId())
+            ->getSingleScalarResult() > 0;
+    }
+
+    /**
+     * Postulants avec personnage, joueur et groupe de jeu (et religions si demandé) en une requête.
+     *
+     * @return list<Postulant>
+     */
+    public function findPostulants(SecondaryGroup $secondaryGroup, bool $withReligions = false): array
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->select('po', 'p', 'u', 'pg')
+            ->from(Postulant::class, 'po')
+            ->join('po.personnage', 'p')
+            ->leftJoin('p.user', 'u')
+            ->leftJoin('p.groupe', 'pg')
+            ->where('po.secondaryGroup = :g')
+            ->orderBy('po.date', 'ASC')
+            ->addOrderBy('po.id', 'ASC')
+            ->setParameter('g', $secondaryGroup->getId());
+
+        if ($withReligions) {
+            $qb->addSelect('pr', 'r', 'rl')
+                ->leftJoin('p.personnagesReligions', 'pr')
+                ->leftJoin('pr.religion', 'r')
+                ->leftJoin('pr.religionLevel', 'rl');
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Personnages inscrits au GN (participant avec billet) parmi ceux donnés.
+     *
+     * @param list<int> $personnageIds
+     *
+     * @return array<int, ?string> id du personnage => nom du groupe de jeu (null si aucun)
+     */
+    public function findInscriptions(Gn $gn, array $personnageIds): array
+    {
+        if ([] === $personnageIds) {
+            return [];
+        }
+
+        $rows = $this->getEntityManager()->createQueryBuilder()
+            ->select('IDENTITY(pa.personnage) AS pid', 'g.nom AS groupe')
+            ->from(Participant::class, 'pa')
+            ->leftJoin('pa.groupeGn', 'gg')
+            ->leftJoin('gg.groupe', 'g')
+            ->where('pa.gn = :gn')
+            ->andWhere('pa.billet IS NOT NULL')
+            ->andWhere('pa.personnage IN (:ids)')
+            ->setParameter('gn', $gn->getId())
+            ->setParameter('ids', $personnageIds)
+            ->getQuery()
+            ->getArrayResult();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[(int) $row['pid']] = $row['groupe'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return list<IntrigueHasGroupeSecondaire>
+     */
+    public function findIntrigues(SecondaryGroup $secondaryGroup): array
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('ih', 'i')
+            ->from(IntrigueHasGroupeSecondaire::class, 'ih')
+            ->join('ih.intrigue', 'i')
+            ->where('ih.secondaryGroup = :g')
+            ->orderBy('i.titre', 'ASC')
+            ->setParameter('g', $secondaryGroup->getId())
+            ->getQuery()
+            ->getResult();
     }
 }

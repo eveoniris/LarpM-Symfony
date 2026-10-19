@@ -362,3 +362,14 @@ th.rotate > div > span {
 .btn-search a, .btn-search button i {
     font-size: 1.2em;
 }
+
+/* Groupes transverses (page détail) : texte long, avatars, listes d'e-mails. Valable avec ou sans interface bêta. */
+.gs-prose { max-width: 68ch; overflow-wrap: anywhere; }
+.gs-prose > :last-child { margin-bottom: 0; }
+.gs-clamp { max-height: 9.5em; overflow: hidden; position: relative; }
+.gs-clamp:not(.is-open)::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2.5em; pointer-events: none;
+    background: linear-gradient(to bottom, transparent, var(--bs-body-bg, transparent)); }
+.gs-clamp.is-open { max-height: none; }
+.gs-avatar { width: 44px; height: 44px; flex: none; overflow: hidden; }
+.gs-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gs-emails { word-break: break-word; user-select: all; }

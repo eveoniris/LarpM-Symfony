@@ -1,0 +1,5 @@
+{# Texte long replié (« Lire la suite »), 68 caractères de large. Variables : id, html, long (bool). #}
+<div class="gs-prose gs-clamp{% if not long %} is-open{% endif %}" id="{{ id }}">{{ html }}</div>
+{% if long %}
+    <p class="mt-2 mb-0"><a href="#{{ id }}" data-gs-toggle="#{{ id }}" aria-expanded="false" aria-controls="{{ id }}">Lire la suite</a></p>
+{% endif %}

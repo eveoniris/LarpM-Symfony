@@ -1,0 +1,23 @@
+{% import 'groupeSecondaire/fragment/_ui.twig' as ui %}
+{% set beta = app.user is not null and app.user.uiBeta %}
+
+{% if not canSeeMembres %}
+    {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Vous ne pouvez distinguer les membres"} %}
+{% else %}
+    <div class="{{ beta ? 'lm-card' : 'card' }}">
+        <div class="{{ beta ? 'lm-card-head' : 'card-header d-flex justify-content-between align-items-center' }}">
+            <h4 class="{{ beta ? 'lm-card-title' : 'h6 mb-0' }}">Membres <span class="{{ beta ? 'lm-count' : 'badge text-bg-secondary' }}">{{ membresRows|length }}</span></h4>
+            {% if canManage %}
+                <span class="{{ beta ? 'lm-meta' : 'small text-body-secondary' }}">
+                    {% if gn %}{{ inscriptions|length }} inscrit{{ inscriptions|length > 1 ? 's' : '' }} à {{ gn.label }}{% endif %}
+                </span>
+            {% endif %}
+        </div>
+
+        {% for row in membresRows %}
+            {% include 'groupeSecondaire/fragment/membre.twig' with {'row': row} %}
+        {% else %}
+            {% include '_partials/noResult.twig' %}
+        {% endfor %}
+    </div>
+{% endif %}
