@@ -144,8 +144,26 @@
   </div>
   <p class="doc-note">Les deux étiquettes objet ont un contour blanc et noir : elles restent lisibles sur n'importe quel fond et ne changent jamais de teinte entre les thèmes.</p>
 
-  <h3>Tokens</h3>
-<pre class="code">--lm-accent    cuivre   #D98A3D (clair #A8541A)     marque + action principale
+  <h3>Couleur des liens</h3>
+  <p class="doc-note">Le bleu historique (<code>#2A9FD6</code>) est le bon réflexe : le bleu est la couleur complémentaire du cuivre, il se détache de l'orange des actions, et tout le monde reconnaît un lien bleu. Le cuivre ne peut pas servir aux liens (il est réservé aux actions), et une patine verte entrerait en concurrence avec le vert de succès et le cyan d'information. Le bleu vif d'origine est en revanche un peu criard sur le charbon chaud : on le remplace par un <b>bleu azurite</b>, plus clair et légèrement violacé, qui reste distinct du cyan d'information.</p>
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <div class="lm-card"><div class="lm-card-head"><h4 class="lm-card-title">Candidats sur fond sombre</h4></div><div class="lm-card-body lm-stack" style="background:#1c1815;border-radius:0 0 10px 10px">
+      <div class="lm-actions" style="justify-content:space-between"><a href="#" style="color:#2a9fd6">Lien historique</a><span class="lm-count">5,9:1 · #2A9FD6</span></div>
+      <div class="lm-actions" style="justify-content:space-between"><a href="#" style="color:#8db4ea"><b>Azurite (retenu)</b></a><span class="lm-count">8,3:1 · #8DB4EA</span></div>
+      <div class="lm-actions" style="justify-content:space-between"><a href="#" style="color:#7bbbd6">Ciel pâle (ancien choix)</a><span class="lm-count">8,3:1 · #7BBBD6</span></div>
+      <div class="lm-actions" style="justify-content:space-between"><a href="#" style="color:#5cc2ae">Vert-de-gris (patine)</a><span class="lm-count">8,2:1 · #5CC2AE</span></div>
+      <div class="lm-actions" style="justify-content:space-between"><a href="#" style="color:#7e9cb8">Bleu acier</a><span class="lm-count">6,2:1 · #7E9CB8</span></div>
+    </div></div>
+    <ul class="doc-rules">
+      <li><b>Azurite</b> : le plus proche du bleu historique, assez clair pour le texte courant (8,3:1) et à 25° du cyan d'information (#2FB5C4).</li>
+      <li><b>Vert-de-gris</b> : élégant avec le cuivre (c'est sa patine), mais il se confond avec le vert « prêt » et le cyan « info » dans les mêmes tableaux.</li>
+      <li><b>Bleu acier</b> : trop gris, il ressemble à du texte désactivé et il est déjà pris par le type de classe « combat ».</li>
+      <li>Sur fond clair : <code>#1F5FA8</code> (6,3:1). L'ancien <code>#0F5F80</code> est trop proche du cyan d'information.</li>
+      <li>Dans un tableau, seul le nom est un lien visible ; les autres liens ne se soulignent qu'au survol.</li>
+    </ul>
+  </div>
+
+  <h3>Tokens</h3><pre class="code">--lm-accent    cuivre   #D98A3D (clair #A8541A)     marque + action principale
 --lm-secret    or       #D4AF37 (clair #A88A14)     secret
 --lm-gm        violet   #A07EE0 (clair #6F46C1)     scénarisation / MJ
 --lm-orga      bleu     #5B8DEF (clair #2F5FC7)     organisation / gestion
