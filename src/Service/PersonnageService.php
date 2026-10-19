@@ -815,6 +815,7 @@ class PersonnageService
                 continue;
             }
 
+            /** @var Bonus|null $bonus */
             $bonus = $origineBonus->getBonus();
 
             // On évite les non désirés

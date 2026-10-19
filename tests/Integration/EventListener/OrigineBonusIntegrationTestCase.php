@@ -20,6 +20,7 @@ use App\Tests\Factory\GroupeFactory;
 use App\Tests\Factory\TerritoireFactory;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use LogicException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -38,10 +39,26 @@ abstract class OrigineBonusIntegrationTestCase extends KernelTestCase
     /**
      * @param array<string, mixed> $bonusAttributes surcharge des attributs du bonus NATIVE porté par l'origine
      */
+    /**
+     * Recharge une entité après un clear() de l'EntityManager.
+     *
+     * @template T of object
+     *
+     * @param class-string<T> $classe
+     *
+     * @return T
+     */
+    protected function recharger(string $classe, ?int $id): object
+    {
+        return $this->em->find($classe, $id) ?? throw new LogicException($classe . ' #' . (string) $id . ' introuvable après rechargement.');
+    }
+
     protected function origineAvecBonus(array $bonusAttributes = []): Territoire
     {
         $origine = TerritoireFactory::createOne();
-        $bonus = BonusFactory::createOne($bonusAttributes + ['periode' => BonusPeriode::NATIVE->value]);
+        /** @var array<string, mixed> $attributes */
+        $attributes = array_merge(['periode' => BonusPeriode::NATIVE->value], $bonusAttributes);
+        $bonus = BonusFactory::createOne($attributes);
         $this->em->persist(
             (new OrigineBonus())
                 ->setTerritoire($origine)

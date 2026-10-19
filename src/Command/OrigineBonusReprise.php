@@ -43,7 +43,7 @@ class OrigineBonusReprise extends Command
         $io = new SymfonyStyle($input, $output);
         $mode = match (true) {
             !$input->getOption('apply') => OrigineBonusRepriseMode::SIMULATION,
-            (bool) $input->getOption('sans-douteux') => OrigineBonusRepriseMode::SANS_DOUTEUX,
+            true === $input->getOption('sans-douteux') => OrigineBonusRepriseMode::SANS_DOUTEUX,
             default => OrigineBonusRepriseMode::TOUT,
         };
 

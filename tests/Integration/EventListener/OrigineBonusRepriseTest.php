@@ -7,6 +7,7 @@ namespace App\Tests\Integration\EventListener;
 use App\Entity\Personnage;
 use App\Entity\PersonnageBonus;
 use App\Enum\Status;
+use LogicException;
 use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\TerritoireFactory;
 use PHPUnit\Framework\Attributes\Group;
@@ -54,7 +55,7 @@ class OrigineBonusRepriseTest extends OrigineBonusIntegrationTestCase
 
     private function lancer(array $options = []): CommandTester
     {
-        $application = new Application(self::$kernel);
+        $application = new Application(self::$kernel ?? throw new LogicException('Kernel non démarré.'));
         $tester = new CommandTester($application->find('app:origine-bonus:reprise'));
         $tester->execute($options);
 
@@ -67,7 +68,7 @@ class OrigineBonusRepriseTest extends OrigineBonusIntegrationTestCase
     private function statuts(Personnage $personnage): array
     {
         $statuts = [];
-        foreach ($this->rows($this->em->find(Personnage::class, $personnage->getId())) as $row) {
+        foreach ($this->rows($this->recharger(Personnage::class, $personnage->getId())) as $row) {
             $statuts[] = $row->getStatus();
         }
 
