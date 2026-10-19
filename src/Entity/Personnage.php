@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\BonusPeriode;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
 use App\Enum\FolderType;
 use App\Enum\LangueSourceType;
 use App\Enum\LevelType;
+use App\Enum\PersonnageBonusSource;
 use App\Enum\TriggerType;
 use App\Repository\PersonnageRepository;
 use App\Service\FileUploader;
@@ -592,11 +594,43 @@ class Personnage extends BasePersonnage implements Stringable
     }
 
     /**
-     * Le bonus d'origine compense l'absence de langue gratuite du groupe : il n'est acquis que si
+     * Décision enregistrée du bonus d'origine : une ligne personnage_bonus (source ORIGINE) par bonus NATIVE,
+     * ACTIVE si acquis, DELETED si refusé. Vide tant qu'aucune décision n'a été prise.
+     *
+     * @return list<PersonnageBonus>
+     */
+    public function getOrigineBonusDecisions(): array
+    {
+        return array_values(array_filter($this->getPersonnageBonus()?->toArray() ?? [], static fn (PersonnageBonus $row): bool => PersonnageBonusSource::ORIGINE === $row->getSource()));
+    }
+
+    /**
+     * Le bonus d'origine (ou le bonus $bonus) est-il acquis ?
+     *
+     * Une décision enregistrée à la première participation fait foi, quelle que soit l'évolution ultérieure des fiefs.
+     * Un bonus NATIVE n'est acquis que s'il figure parmi les lignes acquises ; les autres suivent la décision globale.
+     * Sans décision enregistrée, on retombe sur l'ancien calcul (transitoire, jusqu'à la reprise des anciens PJ).
+     */
+    public function isOrigineBonusActive(?Bonus $bonus = null): bool
+    {
+        $decisions = $this->getOrigineBonusDecisions();
+        if ([] === $decisions) {
+            return $this->isOrigineBonusActiveLegacy();
+        }
+
+        $specific = null !== $bonus && BonusPeriode::NATIVE === $bonus->getPeriode();
+
+        return array_any($decisions, static fn (PersonnageBonus $row): bool => $row->isValid() && (!$specific || $row->getBonus()?->getId() === $bonus->getId()));
+    }
+
+    /**
+     * Ancien calcul : le bonus d'origine compense l'absence de langue gratuite du groupe, il n'est acquis que si
      * le personnage a au moins une participation et que son premier groupe de jeu a la même origine que lui.
      * Sans groupe lors de la première participation, il n'y a rien à compenser : le bonus est conservé.
+     *
+     * Transitoire : public uniquement pour la commande de reprise (comparaison ancien / nouveau calcul).
      */
-    public function isOrigineBonusActive(): bool
+    public function isOrigineBonusActiveLegacy(): bool
     {
         $firstParticipant = $this->getFirstParticipant();
         if (null === $firstParticipant) {
@@ -621,7 +655,8 @@ class Personnage extends BasePersonnage implements Stringable
             return $candidateDate < $currentDate;
         }
 
-        return $candidate->getId() < $current->getId();
+        // Une participation pas encore enregistrée (sans id) passe après les autres.
+        return ($candidate->hasId() ? $candidate->getId() : \PHP_INT_MAX) < ($current->hasId() ? $current->getId() : \PHP_INT_MAX);
     }
 
     public function getFullLabel(): string

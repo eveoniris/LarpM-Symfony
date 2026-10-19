@@ -182,17 +182,17 @@ class CompetenceService
     {
         $details = [];
 
-        if (!$this->getPersonnage()->isOrigineBonusActive()) {
-            return $details;
-        }
-
-        // On ne prend que les bonus encore actif
+        // On ne prend que les bonus encore actif et acquis à la première participation
         foreach ($this->getPersonnage()->getOrigine()?->getValideOrigineBonus() ?? [] as $origineBonus) {
             if (!$origineBonus) {
                 continue;
             }
 
             $bonus = $origineBonus?->getBonus();
+            if (!$this->getPersonnage()->isOrigineBonusActive($bonus)) {
+                continue;
+            }
+
             // Dans ce service, nous ne traitons que les bonus de type XP
             // Enfin, nous vérifions que le bonus est pour une compétence donnée ou non.
             if (
@@ -560,13 +560,10 @@ class CompetenceService
     {
         $competences = new ArrayCollection();
         $personnage ??= $this->getPersonnage();
-        if (!$personnage->isOrigineBonusActive()) {
-            return $competences;
-        }
 
         foreach ($personnage->getOrigine()?->getValideOrigineBonus() ?? [] as $origineBonus) {
             $bonus = $origineBonus->getBonus();
-            if ($bonus->isCompetence() && null !== $bonus->getCompetence()) {
+            if ($bonus->isCompetence() && null !== $bonus->getCompetence() && $personnage->isOrigineBonusActive($bonus)) {
                 $competences->add($bonus->getCompetence());
             }
         }
