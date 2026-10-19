@@ -271,7 +271,7 @@
                 padding: var(--lm-s3) var(--lm-s4); border-bottom: 1px solid var(--lm-line);
                 background: linear-gradient(180deg, color-mix(in srgb, var(--role, var(--lm-accent)) 22%, var(--lm-raised)), var(--lm-raised));
                 border-radius: var(--lm-radius-lg) var(--lm-radius-lg) 0 0; border-top: 2px solid var(--role, var(--lm-accent)); }
-/* Variante « panneau de bois » (nostalgie) : même image qu'avant, recompressée en WebP (143 Ko -> 5 Ko).
+/* Variante « panneau de bois » : image de l'ancienne interface, recompressée en WebP (143 Ko -> 5 Ko).
    Usage : <div class="lm-card-head lm-card-head--bois"> */
 .lm-card-head--bois { background: url('../img/header-bois.webp') center / 100% 100% no-repeat #8b360c;
                       border-top-color: transparent; color: #f4e9d8; text-shadow: 0 1px 2px rgba(0, 0, 0, .6); }
