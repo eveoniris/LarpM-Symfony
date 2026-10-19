@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\Espece;
 use App\Entity\Personnage;
 use App\Entity\PersonnageBonus;
+use App\Enum\PersonnageBonusSource;
 use App\Enum\Status;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,6 +31,7 @@ class EspeceBonusService
                 ->setPersonnage($personnage)
                 ->setBonus($especeBonus->getBonus())
                 ->setEspece($espece)
+                ->setSource(PersonnageBonusSource::ESPECE)
                 ->setStatus(Status::ACTIVE)
                 ->setCreationDate(new DateTime());
 
