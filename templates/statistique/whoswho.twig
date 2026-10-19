@@ -1,61 +1,15 @@
 {% extends "base.html.twig" %}
 
 {% block title %}
-    Bateaux sur {{ gn.label }}
+    Who's who sur {{ gn.label }}
 {% endblock title %}
 
 {% block stylesheets %}
     {{ parent() }}
-    <style media="all">
-        @page {
-            size: landscape;
-        }
-
+    <style>
         .trombine {
             max-height: 200px;
             max-width: 200px;
-        }
-    </style>
-    <style media="{% if app.request.query.get('print') == 1 %}all{% else %}print{% endif %}">
-        #menu, nav, .noprint, #footer {
-            display: none;
-        }
-
-        body {
-            background-image: none;
-            background-color: #FFF;
-        }
-
-        .toprint {
-            display: block;
-        }
-
-        .asTable {
-            display: table;
-            direction: rtl;
-        }
-
-        .asTableItem {
-            display: inline-block;
-            direction: ltr;
-        }
-
-        #content {
-            width: 100%;
-            border: 0;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* 5 per page ? 210mm x 297mm */
-        .printItem {
-            max-width: 42mm !important;
-            max-height: 280mm !important;
-        }
-
-        .trombine {
-            max-height: 200px;
-            max-width: 42mm;
         }
     </style>
 {% endblock %}
@@ -82,9 +36,9 @@
                             class="fa fa-file-lines"></i>
                         Json API</a>
                     <a class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
-                       title="Imprimer PDF" href="{{ path('stats.whoswho.gn', {'gn':gn.id, 'print': 1}) }}"><i
+                       title="Imprimer PDF" href="{{ path('stats.whoswho.gn.print', {'gn':gn.id, 'renomme': app.request.query.get('renomme', 20)}) }}" target="_blank" rel="noopener"><i
                             class="fa fa-print"></i>
-                        Imprimable pour les règles</a>
+                        Version imprimable (PDF paysage)</a>
                 </div>
             </div>
         </div>
