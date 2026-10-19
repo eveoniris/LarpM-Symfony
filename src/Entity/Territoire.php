@@ -91,6 +91,24 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
     }
 
     /**
+     * Ce territoire est $zone ou en dépend, à n'importe quel niveau (nation > région > fief).
+     * Itératif et borné : une parenté circulaire ne boucle pas.
+     */
+    public function isWithin(self $zone): bool
+    {
+        $current = $this;
+        for ($niveau = 0; null !== $current && $niveau < 10; ++$niveau) {
+            if ($current === $zone || null !== $current->id && $current->id === $zone->id) {
+                return true;
+            }
+
+            $current = $current->getTerritoire();
+        }
+
+        return false;
+    }
+
+    /**
      * Fourni la culture d'un territoire ou à défaut la culture du territoire parent.
      */
     public function getCulture(): ?Culture

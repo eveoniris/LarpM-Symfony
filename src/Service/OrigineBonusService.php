@@ -30,7 +30,8 @@ class OrigineBonusService
     }
 
     /**
-     * true : un fief du groupe de la première participation est l'origine du personnage ;
+     * true : le groupe de la première participation possède au moins un territoire situé dans la nation d'origine
+     * du personnage (l'origine elle-même ou un territoire qui en dépend : nation > région > fief) ;
      * false : aucun ; null : décision impossible (pas de participation, pas de groupe ou pas d'origine).
      */
     public function isEligible(Personnage $personnage): ?bool
@@ -41,7 +42,7 @@ class OrigineBonusService
             return null;
         }
 
-        return $groupe->getTerritoires()->exists(static fn (int $key, Territoire $fief): bool => $fief->getId() === $origine->getId());
+        return $groupe->getTerritoires()->exists(static fn (int $key, Territoire $fief): bool => $fief->isWithin($origine));
     }
 
     /**
