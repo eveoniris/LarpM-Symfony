@@ -15,8 +15,11 @@ use App\Entity\Level;
 use App\Entity\OrigineBonus;
 use App\Entity\Participant;
 use App\Entity\Personnage;
+use App\Entity\PersonnageBonus;
 use App\Entity\Territoire;
+use App\Enum\BonusPeriode;
 use App\Enum\BonusType;
+use App\Enum\PersonnageBonusSource;
 use App\Enum\Status;
 use App\Service\CompetenceService;
 use App\Service\ConditionsService;
@@ -58,6 +61,8 @@ class CompetenceServiceOrigineBonusTest extends TestCase
 
         foreach ([BonusType::XP, BonusType::COMPETENCE] as $type) {
             $bonus = (new Bonus())
+                ->setId(BonusType::XP === $type ? 21 : 22)
+                ->setPeriode(BonusPeriode::NATIVE)
                 ->setType($type)
                 ->setValeur(2)
                 ->setCompetence($competence);
@@ -116,6 +121,46 @@ class CompetenceServiceOrigineBonusTest extends TestCase
         self::assertCount(0, $service->getOrigineBonusCompetences($personnage));
     }
 
+    public function testDecisionAcquiseAppliqueLeBonusMemeSiLeGroupeAUneAutreOrigine(): void
+    {
+        $competence = $this->competence();
+        $origine = $this->origineAvecBonus($competence);
+        $personnage = $this->personnageAvecPremierGroupe($origine, (new Territoire())->setId(2));
+        foreach ($origine->getOriginesBonus() as $origineBonus) {
+            $personnage->addPersonnageBonus(
+                (new PersonnageBonus())
+                    ->setBonus($origineBonus->getBonus())
+                    ->setSource(PersonnageBonusSource::ORIGINE)
+                    ->setStatus(Status::ACTIVE),
+            );
+        }
+
+        $service = $this->service()->init($personnage, $competence);
+
+        self::assertSame(2, $service->getOrigineBonusCout());
+        static::assertCount(1, $service->getOrigineBonusCompetences($personnage));
+    }
+
+    public function testDecisionRefuseeIgnoreLeBonusMemeSiLeGroupeALaMemeOrigine(): void
+    {
+        $competence = $this->competence();
+        $origine = $this->origineAvecBonus($competence);
+        $personnage = $this->personnageAvecPremierGroupe($origine, $origine);
+        foreach ($origine->getOriginesBonus() as $origineBonus) {
+            $personnage->addPersonnageBonus(
+                (new PersonnageBonus())
+                    ->setBonus($origineBonus->getBonus())
+                    ->setSource(PersonnageBonusSource::ORIGINE)
+                    ->setStatus(Status::DELETED),
+            );
+        }
+
+        $service = $this->service()->init($personnage, $competence);
+
+        static::assertSame(0, $service->getOrigineBonusCout());
+        static::assertCount(0, $service->getOrigineBonusCompetences($personnage));
+    }
+
     public function testBonusIgnoreSansAucuneParticipation(): void
     {
         $competence = $this->competence();
@@ -125,6 +170,6 @@ class CompetenceServiceOrigineBonusTest extends TestCase
 
         $service = $this->service()->init($personnage, $competence);
 
-        self::assertSame(0, $service->getOrigineBonusCout());
+        static::assertSame(0, $service->getOrigineBonusCout());
     }
 }

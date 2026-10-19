@@ -126,6 +126,6 @@ class OrigineBonusService
      */
     private function getOrigineRows(Personnage $personnage): array
     {
-        return array_values(array_filter($personnage->getPersonnageBonus()?->toArray() ?? [], static fn (PersonnageBonus $row): bool => PersonnageBonusSource::ORIGINE === $row->getSource()));
+        return $personnage->getOrigineBonusDecisions();
     }
 }
