@@ -114,6 +114,19 @@ Le port `8080` n'est plus publié : `http://localhost` (port 80) le remplace. Si
 
 ---
 
+## Dépannage : erreur ou page blanche en https
+
+Par défaut, Caddy ne sert **que du HTTP** (`auto_https off`). Une URL `https://localhost` ou `https://larpmanager.test` (favori, historique, onglet resté ouvert) ne reçoit alors aucune réponse, et la page de login semble en erreur.
+
+1. Ouvrir l'URL en `http://localhost` (taper explicitement `http://`, dans un onglet neuf).
+2. Si le navigateur repasse seul en https (HSTS mémorisé) :
+   - Chrome / Edge : `chrome://net-internals/#hsts` (ou `edge://net-internals/#hsts`), puis "Delete domain security policies" pour `localhost` et `larpmanager.test`.
+   - Firefox : Historique → Oublier ce site.
+   - Ou utiliser une fenêtre privée.
+3. Pour garder le https, activer la surcharge décrite plus haut (`cp docker/.env.dev.local.dist .env.dev.local`, puis `docker compose up -d --force-recreate webserver`).
+
+---
+
 ## Commandes utiles
 
 ```bash
