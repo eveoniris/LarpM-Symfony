@@ -25,11 +25,11 @@ class PersonnageBonus
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist', 'remove'], inversedBy: 'personnageBonus')]
+    #[ORM\ManyToOne(targetEntity: Personnage::class, cascade: ['persist'], inversedBy: 'personnageBonus')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Personnage $personnage = null;
 
-    #[ORM\ManyToOne(targetEntity: Bonus::class, cascade: ['persist', 'remove'], inversedBy: 'personnageBonus')]
+    #[ORM\ManyToOne(targetEntity: Bonus::class, cascade: ['persist'], inversedBy: 'personnageBonus')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Bonus $bonus = null;
 
