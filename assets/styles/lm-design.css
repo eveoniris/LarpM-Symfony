@@ -760,3 +760,6 @@ html[data-ui="beta"] .lm-famille, html[data-ui="beta"] .lm-classe, html[data-ui=
 
 /* Blasons : ne débordent jamais de leur colonne */
 html[data-ui="beta"] img[alt^="Blason"] { max-width: 100%; height: auto; max-height: 200px; object-fit: contain; }
+
+/* Trombinoscope (fiche personnage) : l'image reste dans sa colonne malgré le style en ligne */
+html[data-ui="beta"] .thumbnail img { max-width: 100% !important; height: auto; }

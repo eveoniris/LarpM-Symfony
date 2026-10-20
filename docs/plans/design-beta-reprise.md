@@ -1,6 +1,6 @@
 # Interface bêta et guide de style : note de reprise
 
-Document de passation pour poursuivre le chantier dans une nouvelle conversation. État au guide v0.26.
+Document de passation pour poursuivre le chantier dans une nouvelle conversation. État au guide v0.27.
 
 ## Objectif
 
@@ -64,9 +64,9 @@ Si `design-body.html` est perdu, il se reconstruit depuis `templates/index/desig
 
 Habillage bêta (navigation, menus, panneau « Actions », onglets, listes, formulaires, badges, encadrés), page `/design` et guide, détail des groupes transverses en onglets (444 requêtes ramenées à 14-19), Who's who imprimable, en-têtes de `/stats/list` par rôle, repasse des listes (pagination, filtres, actions, « Afficher plus »), cadres de rôle explicites (`data-role`) sur les blocs réservés et actions de `/gn/{id}/groupes` en boutons (suivi : `docs/plans/cadres-roles.md`), polices auto-hébergées (Cinzel, Source Sans 3, JetBrains Mono), panneau de bois en WebP en variante.
 
-## Chantiers faits depuis la note initiale (guide v0.20 à v0.26)
+## Chantiers faits depuis la note initiale (guide v0.20 à v0.27)
 
-Territoires (liste et fiche : cadres secrets, hiérarchie, ancres, « Lire la suite »), `/competence` et `/classe` (grille, onglets Classes et Affinités, matrice colorée ; suivi `docs/plans/competence-classe.md`), photo en grand en modale, mode sombre ou clair mémorisé dans `user.ui_theme`, boutons de la fiche GN, corrections mobile à 375 px, comparaison HTML hors bêta (voir `docs/plans/cadres-roles.md`).
+Territoires (liste et fiche : cadres secrets, hiérarchie, ancres, « Lire la suite »), `/competence` et `/classe` (grille, onglets Classes et Affinités, matrice colorée ; suivi `docs/plans/competence-classe.md`), photo en grand en modale, mode sombre ou clair mémorisé dans `user.ui_theme`, boutons de la fiche GN, corrections mobile à 375 px, comparaison HTML hors bêta (voir `docs/plans/cadres-roles.md`), contrôle mobile à 375 px (fiche personnage, formulaires, onglets), trombinoscope de la fiche personnage en modale (les autres photos ne sont pas des liens).
 
 Factorisation JavaScript : `assets/lm-ui.js` (« Lire la suite », copie des e-mails, modale photo) et `assets/lm-lists.js` (tableaux de liste bêta : actions de ligne, cartes mobiles, « Afficher plus »), tous deux importés par `assets/app.js`. Plus aucun script en ligne dans les gabarits concernés.
 
@@ -78,7 +78,6 @@ Factorisation JavaScript : `assets/lm-ui.js` (« Lire la suite », copie des e-m
 
 ## Chantiers restants
 
-- Tests à 375 px des fiches personnage, formulaires et onglets Postulants, Scénarisation et E-mails des groupes.
-- Autres trombinoscopes à raccorder à la modale photo (`data-lm-photo`) : `groupe/fragment`, `statistique/whoswho`, `personnage/fragment/trombinoscope`.
+- Confirmer le rendu mobile sur un appareil réel (les contrôles à 375 px ont été faits sous Chromium en émulation).
 - Découper `lm-design.css` (environ 750 lignes) par domaine, partiel Twig commun pour les en-têtes de carte à icône de rôle.
 - Mise en production sur demande : push de `main`, fusion dans `prod`, puis migration doctrine (aucune nouvelle migration dans ce chantier), `importmap:install`, `asset-map:compile`, `cache:clear --env=prod`.
