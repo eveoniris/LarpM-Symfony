@@ -34,6 +34,9 @@ abstract class BaseConnaissance
     protected ?string $description = null;
 
     #[Column(type: Types::TEXT, nullable: true)]
+    protected ?string $transmission = null;
+
+    #[Column(type: Types::TEXT, nullable: true)]
     protected ?string $contraintes = null;
 
     #[Column(name: 'documentUrl', type: Types::STRING, length: 255, nullable: true)]
@@ -88,6 +91,18 @@ abstract class BaseConnaissance
     public function getDescription(): string
     {
         return $this->description ?? '';
+    }
+
+    public function setTransmission(?string $transmission): static
+    {
+        $this->transmission = $transmission;
+
+        return $this;
+    }
+
+    public function getTransmission(): ?string
+    {
+        return $this->transmission;
     }
 
     public function setContraintes(string $contraintes): static

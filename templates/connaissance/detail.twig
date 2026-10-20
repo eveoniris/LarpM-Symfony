@@ -57,6 +57,15 @@
             </div>
         </div>
 
+        {% if connaissance.transmission %}
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h5>Transmission</h5>
+                    {{ connaissance.transmission|markdown_to_html }}
+                </div>
+            </div>
+        {% endif %}
+
         {% if connaissance.contraintes %}
             {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'title': 'Prérequis !', 'content' : connaissance.contraintes } %}
         {% endif %}

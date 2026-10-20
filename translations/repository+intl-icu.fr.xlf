@@ -41,6 +41,10 @@
         <source>Description</source>
         <target>Description</target>
       </trans-unit>
+      <trans-unit id="TrnsmSn" resname="Transmission">
+        <source>Transmission</source>
+        <target>Transmission</target>
+      </trans-unit>
       <trans-unit id="1K5Xque" resname="Bonus">
         <source>Bonus</source>
         <target>Bonus</target>

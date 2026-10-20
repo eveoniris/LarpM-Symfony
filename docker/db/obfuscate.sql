@@ -21,7 +21,7 @@ UPDATE background SET text = @LOREM, titre =  concat('Titre_', id) WHERE id > 0;
 UPDATE bonus SET description = @LOREM, titre =  concat('Titre_', id) WHERE id > 0;
 UPDATE classe SET description = @LOREM, label_feminin = concat('Classe_f_', id), label_masculin = concat('Classe_m_', id), image_m = null, image_f = null  WHERE id > 0;
 UPDATE competence SET description = @LOREM, materiel =  @LOREM_LIGHT, documentUrl = null WHERE id > 0;
-UPDATE connaissance SET label =  concat('Label_', id), description = @LOREM, contraintes = @LOREM_LIGHT, documentUrl = null WHERE id > 0;
+UPDATE connaissance SET label =  concat('Label_', id), description = @LOREM, transmission = @LOREM, contraintes = @LOREM_LIGHT, documentUrl = null WHERE id > 0;
 UPDATE construction SET label =  concat('Label_', id), description = @LOREM WHERE id > 0;
 UPDATE debriefing SET titre =  concat('Titre_', id), text = @LOREM WHERE id > 0;
 UPDATE document SET titre =  concat('Titre_', id),  auteur = concat('Auteur_', id),  statut = concat('Statut_', id), documentUrl = concat(id, '.pdf'), description = @LOREM WHERE id > 0;
