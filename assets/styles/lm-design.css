@@ -612,7 +612,7 @@ html[data-ui="beta"] .lm-page-head {
 /* En haut de liste, le pagineur n'apparaît qu'au-delà de 25 lignes affichées */
 body:has(.lm-pager-wrap[data-slot="2"]) .lm-pager-wrap[data-slot="1"][data-small] { display: none; }
 
-/* --- Colonne d'actions des listes (script _partials/lmLists.twig) --- */
+/* --- Colonne d'actions des listes (script assets/lm-lists.js) --- */
 .lm-table th.lm-col-actions, .lm-table td.lm-col-actions { width: 13rem; min-width: 13rem; text-align: right; }
 .lm-table td.lm-col-actions .lm-actions { flex-wrap: nowrap; }
 .lm-act-menu.lm-act-mobile { display: none; }

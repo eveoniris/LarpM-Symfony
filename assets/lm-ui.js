@@ -5,7 +5,10 @@
  * - Copie dans le presse-papiers : [data-gs-copy="#id"] (listes d'e-mails des groupes transverses).
  * - Photo en grand : a[data-lm-photo] ouvre l'image dans une fenêtre modale (<dialog>), le lien garde son
  *   comportement normal avec Ctrl, Cmd, Maj ou un clic autre que le principal.
+ * - Tableaux de liste en interface bêta : voir lm-lists.js.
  */
+import './lm-lists.js';
+
 let photoDialog = null;
 
 function openPhoto(link) {

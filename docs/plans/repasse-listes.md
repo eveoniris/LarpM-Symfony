@@ -21,7 +21,7 @@ Sans bêta (`app.user.uiBeta` faux), le HTML rendu reste celui d'avant (sauf les
 | Filtres de recherche | `templates/_partials/formListSearch.twig` | environ 42 gabarits (recherche + champ « type » + boutons) |
 | En-têtes triables | `thead.twig`, `orderBy.twig` | tableaux de liste |
 | Boutons d'en-tête | `btnGroup.twig` | `formListSearch` et `groupeSecondaire/list.twig` |
-| Actions de ligne | écrites dans chaque gabarit (`btn-toolbar`, `btn-group`) | traitées de façon générique par `_partials/lmLists.twig` |
+| Actions de ligne | écrites dans chaque gabarit (`btn-toolbar`, `btn-group`) | traitées de façon générique par `assets/lm-lists.js` |
 
 Pages de référence : `/groupeTransverse` (alias `/groupeSecondaire`), `/user/list`, `/personnage/list`, `/territoire/fief`.
 
@@ -35,7 +35,7 @@ Lecture de la limite par page : trois mécanismes coexistent.
 
 - **Pagination bêta** : résumé « 1 à 25 sur N », choix 25 / 50 / 100 (liens, conservés dans l'URL, retour page 1), « Précédent » / « Suivant » avec libellé, fenêtre de pages autour de la page courante (cuivre, `aria-current="page"`), champ « Aller à la page » au-delà de 10 pages, cibles de 44 px. Le pagineur du haut est masqué (CSS `:has`) quand la page affiche 25 lignes ou moins ; il est numéroté par la fonction Twig `lm_pager_slot()` (`src/Twig/ListExtension.php`).
 - **Filtres bêta** : recherche toujours visible, panneau « Filtres (n) » replié contenant le champ « rechercher dans », puces des filtres actifs, « Réinitialiser » en bouton texte, boutons d'en-tête (Ajouter, Imprimer, …) en `lm-btn`.
-- **Actions et cartes** : script `templates/_partials/lmLists.twig` (chargé par `base.html.twig` pour la bêta seulement) : tableaux avec en-tête et sans cellules fusionnées passés en `lm-table lm-table--cards` avec `data-label`; colonne « Actions » de largeur fixe (13 rem) ; 3 actions ou moins visibles, 4 ou plus : première action non destructive + menu « Actions », action destructive en rouge séparée ; sous 640 px, menu « ⋯ » regroupant toutes les actions.
+- **Actions et cartes** : script `assets/lm-lists.js` (module chargé par `assets/lm-ui.js`, actif pour la bêta seulement) : tableaux avec en-tête et sans cellules fusionnées passés en `lm-table lm-table--cards` avec `data-label`; colonne « Actions » de largeur fixe (13 rem) ; 3 actions ou moins visibles, 4 ou plus : première action non destructive + menu « Actions », action destructive en rouge séparée ; sous 640 px, menu « ⋯ » regroupant toutes les actions.
 - **Groupes transverses** : description repliée (« Lire la suite », `clamp.twig`), type en badge neutre avec icône, URL canonique `/groupeTransverse`, `/groupeSecondaire` conservé en alias (`groupeSecondaire.list.alias`), noms de routes `groupeSecondaire.*` inchangés.
 - **Afficher plus** : onglets Membres et Postulants au-delà de 25 lignes : paquets de 25, recherche côté client (sans normalisation d'accents ni requête).
 
