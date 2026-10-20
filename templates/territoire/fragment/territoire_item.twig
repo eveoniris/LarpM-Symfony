@@ -2,9 +2,11 @@
 {% set indent = '' %}
 {% if step == 1 %}{% set indent = 'ps-4' %}{% elseif step >= 2 %}{% set indent = 'ps-5' %}{% endif %}
 {% set beta = app.user is not null and app.user.uiBeta %}
-<li class="list-group-item {{ indent }}{{ beta ? ' lm-territoire-item' : '' }}">
+{% set levelIcons = ['fa-crown', 'fa-map', 'fa-location-dot'] %}
+{% set levelLabels = ['Royaume', 'Région', 'Fief'] %}
+<li class="list-group-item {{ indent }}{{ beta ? ' lm-territoire-item' : '' }}"{% if beta %} id="terr-{{ t.id }}" data-level="{{ min(step, 2) }}"{% endif %}>
     <h4 class="list-group-item-heading">
-        {{ t.nom }}
+        {% if beta %}<i class="fa {{ levelIcons[min(step, 2)] }} lm-territoire-level" title="{{ levelLabels[min(step, 2)] }}" aria-hidden="true"></i> {% endif %}{{ t.nom }}
         ({% if t.appelation %}{{ t.appelation.label }}{% else %}<span class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %})
         <div class="btn-group float-end" role="group">
             <a href="{{ path('territoire.detail', {'territoire': t.id}) }}" class="btn btn-primary" role="button">Détail</a>
@@ -29,7 +31,7 @@
     </div>
     {% if t.territoires|length > 0 %}
         <p class="list-group-item-text small text-muted">
-            Contient : {{ t.territoires|join(', ') }}
+            Contient : {% if beta %}{% for sub in t.territoires %}<a href="#terr-{{ sub.id }}">{{ sub }}</a>{{ not loop.last ? ', ' : '' }}{% endfor %}{% else %}{{ t.territoires|join(', ') }}{% endif %}
         </p>
     {% endif %}
 </li>

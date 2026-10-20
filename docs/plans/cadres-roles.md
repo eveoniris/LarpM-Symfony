@@ -44,6 +44,8 @@ Les cinq en-têtes `border-warning` portent tous l'icône espion et l'infobulle 
 
 `/territoire` : en bêta, chaque fiche (`territoire/fragment/territoire_item.twig`) porte `lm-territoire-item` (verre dépoli, comme les onglets) et la description de plus de 450 caractères est repliée avec « Lire la suite » (fragment `groupeSecondaire/fragment/clamp.twig` réutilisé). HTML inchangé hors bêta.
 
+Hiérarchie (v0.23) : bloc décalé selon le niveau (`data-level` 0 à 2, au lieu du simple retrait du texte), rail à gauche, icône couronne / carte / repère (couleurs neutres, pour ne pas empiéter sur les rôles), `id="terr-{id}"` sur chaque bloc et liens dans « Contient » (ids vérifiés uniques sur 83 blocs, aucun lien mort).
+
 ## Points ouverts
 
 - Territoires : tranché, les en-têtes `border-warning` sont des blocs secrets (icône espion), ni domaine ni attention.

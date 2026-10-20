@@ -672,3 +672,16 @@ html[data-ui="beta"] .lm-territoire-item .list-group-item-heading { font-family:
 .lm-photo-dialog form { text-align: right; margin: 0 0 var(--lm-s2); }
 .lm-photo-close { min-width: 44px; min-height: 44px; border: 1px solid var(--lm-line); border-radius: var(--lm-radius); background: var(--lm-raised); color: var(--lm-fg); font-size: 1.5rem; line-height: 1; cursor: pointer; }
 .lm-photo-caption { margin: var(--lm-s2) 0 0; font-family: var(--lm-font-display); }
+
+/* --- Hiérarchie des territoires : retrait du bloc, rail à gauche, icône par niveau --- */
+html[data-ui="beta"] .lm-territoire-item { scroll-margin-top: 5rem; padding-left: var(--lm-s3) !important; }
+html[data-ui="beta"] .lm-territoire-item[data-level="1"] { margin-left: 1.75rem; border-left: 3px solid var(--lm-muted); }
+html[data-ui="beta"] .lm-territoire-item[data-level="2"] { margin-left: 3.5rem; border-left: 3px solid var(--lm-line); }
+html[data-ui="beta"] .lm-territoire-item[data-level="0"] { border-left: 4px solid var(--lm-accent); }
+html[data-ui="beta"] .lm-territoire-item:target { outline: 2px solid var(--lm-accent); }
+html[data-ui="beta"] .lm-territoire-level { color: var(--lm-muted); font-size: .8em; width: 1.2em; text-align: center; }
+html[data-ui="beta"] .lm-territoire-item[data-level="0"] .lm-territoire-level { color: var(--lm-accent); }
+@media (max-width: 640px) {
+  html[data-ui="beta"] .lm-territoire-item[data-level="1"] { margin-left: .75rem; }
+  html[data-ui="beta"] .lm-territoire-item[data-level="2"] { margin-left: 1.5rem; }
+}
