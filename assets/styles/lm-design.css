@@ -707,6 +707,8 @@ html[data-ui="beta"] .lm-famille, html[data-ui="beta"] .lm-classe, html[data-ui=
 .lm-niveau-nom { min-width: 4.5rem; font-family: var(--lm-font-display); }
 .lm-niveau-couts { display: inline-flex; gap: var(--lm-s3); flex-wrap: wrap; }
 .lm-niveau-couts .lm-cost { font-size: .85rem; }
+/* Dans un encadré de rôle, le tarif « normal » garde la couleur du texte (et non celle du rôle de l'encadré) */
+.lm-callout .lm-cost:not([data-role]) { --role-text: var(--lm-fg); color: var(--lm-fg); }
 .lm-niveau-actions { margin-left: auto; }
 .lm-niveau .gs-clamp { margin-top: var(--lm-s2); font-size: .92rem; }
 
@@ -725,9 +727,11 @@ html[data-ui="beta"] .lm-famille, html[data-ui="beta"] .lm-classe, html[data-ui=
 .lm-matrice-classe a { display: block; writing-mode: vertical-rl; transform: rotate(180deg); margin: 0 auto; white-space: nowrap; max-height: 9rem; overflow: hidden; text-overflow: ellipsis; text-decoration: none; }
 .lm-matrice .is-mine { background: color-mix(in srgb, var(--lm-accent) 16%, var(--lm-surface)); box-shadow: inset 2px 0 var(--lm-accent), inset -2px 0 var(--lm-accent); }
 .lm-matrice td { white-space: nowrap; }
+.lm-matrice td[data-role="ok"], .lm-matrice td[data-role="gift"], .lm-matrice td[data-role="warn"] { background: color-mix(in srgb, var(--role) 20%, var(--lm-surface)); }
+.lm-matrice tbody tr:hover td, .lm-matrice tbody tr:hover th { filter: brightness(1.12); }
 .lm-aff { color: var(--role-text); display: inline-block; min-width: 1.2em; }
 
-.lm-classes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr)); gap: var(--lm-s3); align-items: start; }
+.lm-classes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr)); gap: var(--lm-s5); align-items: start; }
 .lm-classe { scroll-margin-top: 5rem; }
 .lm-classe.is-mine { border-color: var(--lm-accent); box-shadow: 0 0 0 1px var(--lm-accent); }
 .lm-classe-titre { margin: var(--lm-s3) 0 var(--lm-s1, 4px); font-weight: 700; font-size: .85rem; color: var(--lm-muted); }

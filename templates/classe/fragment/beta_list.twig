@@ -2,13 +2,23 @@
    Variables : classes, families, affinities, types, typeCounts, typeFilter, maClasse. #}
 {% set canManage = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
 
+{% set vue = app.request.query.get('vue') == 'affinites' ? 'affinites' : 'classes' %}
+{% set vueParam = vue == 'affinites' ? 'affinites' : null %}
+
 <nav class="lm-filtre-type lm-actions" aria-label="Filtrer par type de classe">
-    <a class="lm-btn lm-btn--sm{{ typeFilter is null ? ' is-active' : '' }}" href="{{ path('classe.list') }}"{{ typeFilter is null ? ' aria-current="true"' : '' }}>Toutes <span class="lm-count">{{ typeCounts|reduce((total, n) => total + n, 0) }}</span></a>
+    <a class="lm-btn lm-btn--sm{{ typeFilter is null ? ' is-active' : '' }}" href="{{ path('classe.list', {'vue': vueParam}) }}"{{ typeFilter is null ? ' aria-current="true"' : '' }}>Toutes <span class="lm-count">{{ typeCounts|reduce((total, n) => total + n, 0) }}</span></a>
     {% for type in types %}
-        <a class="lm-btn lm-btn--sm lm-type{{ typeFilter == type ? ' is-active' : '' }}" data-class="{{ type.value }}" href="{{ path('classe.list', {'type': type.value}) }}"{{ typeFilter == type ? ' aria-current="true"' : '' }}><i class="fa {{ type.icon }}" aria-hidden="true"></i> {{ type.label }} <span class="lm-count">{{ typeCounts[type.value] }}</span></a>
+        <a class="lm-btn lm-btn--sm lm-type{{ typeFilter == type ? ' is-active' : '' }}" data-class="{{ type.value }}" href="{{ path('classe.list', {'type': type.value, 'vue': vueParam}) }}"{{ typeFilter == type ? ' aria-current="true"' : '' }}><i class="fa {{ type.icon }}" aria-hidden="true"></i> {{ type.label }} <span class="lm-count">{{ typeCounts[type.value] }}</span></a>
     {% endfor %}
 </nav>
 
+<nav class="lm-tabs mb-3" data-turbo="false" aria-label="Vue des classes">
+    <a class="lm-tab" href="{{ path('classe.list', {'type': typeFilter ? typeFilter.value : null}) }}"{{ vue == 'classes' ? ' aria-current="page"' : '' }}><i class="fa fa-users" aria-hidden="true"></i>&nbsp;Classes</a>
+    <a class="lm-tab" href="{{ path('classe.list', {'type': typeFilter ? typeFilter.value : null, 'vue': 'affinites'}) }}"{{ vue == 'affinites' ? ' aria-current="page"' : '' }}><i class="fa fa-table-cells" aria-hidden="true"></i>&nbsp;Affinités par famille</a>
+</nav>
+
+
+{% if vue == 'affinites' %}
 <section class="lm-carte-verre lm-matrice-bloc" aria-labelledby="matrice-titre">
     <h3 class="lm-card-title" id="matrice-titre">Affinités par famille de compétences</h3>
     <div class="lm-actions lm-legend">
@@ -39,7 +49,7 @@
                             {% set favorite = family.id in aff.favorite %}
                             {% set normale = family.id in aff.normale %}
                             {% set meconnue = not creation and not favorite and not normale %}
-                            <td{% if maClasse and maClasse.id == classe.id %} class="is-mine"{% endif %}>
+                            <td{% if maClasse and maClasse.id == classe.id %} class="is-mine"{% endif %} data-role="{{ creation ? 'gift' : (favorite ? 'ok' : (meconnue ? 'warn' : '')) }}">
                                 {% if creation %}<span class="lm-aff" data-role="gift" title="{{ classe.labelMasculin }} : offerte à la création"><i class="fa fa-gift" aria-hidden="true"></i><span class="visually-hidden">Offerte à la création</span></span>{% endif %}
                                 {% if favorite %}<span class="lm-aff" data-role="ok" title="{{ classe.labelMasculin }} : favorite"><i class="fa fa-star" aria-hidden="true"></i><span class="visually-hidden">Favorite</span></span>{% endif %}
                                 {% if meconnue %}<span class="lm-aff" data-role="warn" title="{{ classe.labelMasculin }} : méconnue"><i class="fa fa-circle-question" aria-hidden="true"></i><span class="visually-hidden">Méconnue</span></span>{% endif %}
@@ -53,7 +63,7 @@
         </table>
     </div>
 </section>
-
+{% else %}
 <div class="lm-classes">
     {% for classe in classes %}
         {% set mine = maClasse and maClasse.id == classe.id %}
@@ -105,6 +115,7 @@
         <p class="lm-help">Aucune classe de ce type.</p>
     {% endfor %}
 </div>
+{% endif %}
 
 <script>
     // « Lire la suite » des descriptions (liée une seule fois).

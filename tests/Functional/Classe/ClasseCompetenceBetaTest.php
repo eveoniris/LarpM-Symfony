@@ -38,8 +38,10 @@ class ClasseCompetenceBetaTest extends WebTestCase
         static::assertResponseIsSuccessful();
         static::assertCount(1, $crawler->filter('article.lm-classe'));
         static::assertStringContainsString('Espion', $crawler->filter('article.lm-classe')->text());
-        // les colonnes de la matrice suivent le filtre
-        static::assertCount(1, $crawler->filter('th.lm-matrice-classe'));
+        // les colonnes de la matrice (onglet Affinités) suivent le filtre
+        $affinites = $client->request('GET', '/classe?type=social&vue=affinites');
+        static::assertCount(1, $affinites->filter('th.lm-matrice-classe'));
+        static::assertCount(0, $affinites->filter('article.lm-classe'));
         // les trois types restent proposés avec leur effectif
         static::assertCount(3, $crawler->filter('nav.lm-filtre-type a.lm-type'));
     }
@@ -66,10 +68,12 @@ class ClasseCompetenceBetaTest extends WebTestCase
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER'], 'uiTheme' => 'beta']));
         CompetenceFactory::createOne(['competenceFamily' => $famille, 'level' => LevelFactory::createOne(['index' => 1, 'label' => 'Apprenti']), 'secret' => false]);
 
-        $crawler = $client->request('GET', '/classe');
+        $crawler = $client->request('GET', '/classe?vue=affinites');
 
         static::assertResponseIsSuccessful();
-        static::assertGreaterThanOrEqual(1, $crawler->filter('.lm-matrice td .lm-aff[data-role="ok"]')->count());
+        static::assertGreaterThanOrEqual(1, $crawler->filter('.lm-matrice td[data-role="ok"] .lm-aff[data-role="ok"]')->count());
+        // la vue par défaut (onglet Classes) ne contient pas la matrice
+        static::assertCount(0, $client->request('GET', '/classe')->filter('.lm-matrice'));
     }
 
     public function testHorsBetaHtmlInchange(): void
