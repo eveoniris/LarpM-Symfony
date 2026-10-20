@@ -1,4 +1,5 @@
 import './stimulus_bootstrap.js';
+import './lm-ui.js';
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -281,6 +282,13 @@ $(document).ready(function () {
             } else {
                 document.documentElement.setAttribute('data-bs-theme', 'dark')
                 toggleTinyMCE('dark');
+            }
+            // Mémorisation sur le compte connecté (user.ui_theme)
+            if (btnSwitch.dataset.themeUrl) {
+                const body = new FormData();
+                body.append('mode', document.documentElement.getAttribute('data-bs-theme'));
+                body.append('_token', btnSwitch.dataset.themeToken);
+                fetch(btnSwitch.dataset.themeUrl, {method: 'POST', body, credentials: 'same-origin'}).catch(() => {});
             }
         })
     }

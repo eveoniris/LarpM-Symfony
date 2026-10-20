@@ -3,6 +3,67 @@
     {% set form = pagerService.getForm.createView %}
 {% endif %}
 
+{% if app.user is not null and app.user.uiBeta %}
+    {# Interface bêta : recherche toujours visible, autres critères dans un panneau « Filtres (n) » replié, puces des filtres actifs. #}
+    {% set _term = form.value.vars.value|default('') %}
+    {% set _hasType = form.type is defined %}
+    {% set _typeValue = _hasType ? form.type.vars.value|default('') : '' %}
+    {% set _typeLabel = '' %}
+    {% if _hasType %}
+        {% for choice in form.type.vars.choices %}
+            {% if choice.value is defined and choice.value == _typeValue and _typeValue != '' %}{% set _typeLabel = choice.label|trans %}{% endif %}
+        {% endfor %}
+    {% endif %}
+    {% set _active = (_term != '' ? 1 : 0) + (_typeLabel != '' ? 1 : 0) %}
+    {% set _showButtons = display is defined ? display : not (isAdmin is defined and not isAdmin) %}
+    {% set _buttons = buttons is defined ? buttons : [] %}
+    {% if print is defined and print %}
+        {% set _buttons = _buttons|merge([{'title': print.title, 'route': print.path, 'icon': 'fa-print', 'label': 'Imprimer'}]) %}
+    {% endif %}
+    <div class="lm-list-filters search" data-turbo="false" role="search">
+        {{ form_start(form, {"action": actionPath, 'attr': {'class': 'lm-filters'}}) }}
+        <div class="lm-search">{{ form_widget(form.value, {'attr': {'class': 'lm-field', 'placeholder': 'Rechercher', 'aria-label': 'Rechercher'}}) }}</div>
+        <button type="submit" class="lm-btn lm-btn--primary"><i class="fa fa-search" aria-hidden="true"></i> Rechercher</button>
+        {% if _hasType %}
+            <details class="lm-filter-panel"{% if _typeLabel != '' %} open{% endif %}>
+                <summary class="lm-btn lm-btn--sm"><i class="fa fa-sliders" aria-hidden="true"></i> Filtres ({{ _active }})</summary>
+                <div class="lm-filter-panel-body">
+                    {{ form_label(form.type, null, {'label_attr': {'class': 'lm-label'}}) }}
+                    {{ form_widget(form.type, {'attr': {'class': 'lm-field'}}) }}
+                </div>
+            </details>
+        {% endif %}
+        {% if hiddenParams is defined %}
+            {% for hiddenName, hiddenValue in hiddenParams %}
+                <input type="hidden" name="{{ hiddenName }}" value="{{ hiddenValue }}">
+            {% endfor %}
+        {% endif %}
+        {{ form_rest(form) }}
+        {{ form_end(form, {'render_rest': false}) }}
+        {% if _active > 0 or _buttons|length > 0 or (canAdd is defined and canAdd) %}
+            <div class="lm-actions">
+                {% if _active > 0 %}
+                    <ul class="lm-chips" aria-label="Filtres actifs" style="list-style:none;margin:0;padding:0">
+                        {% if _term != '' %}<li class="lm-chip">Recherche : {{ _term }}</li>{% endif %}
+                        {% if _typeLabel != '' %}<li class="lm-chip">Dans : {{ _typeLabel }}</li>{% endif %}
+                    </ul>
+                    <a class="lm-btn lm-btn--text" href="{{ actionPath }}">Réinitialiser</a>
+                {% endif %}
+                <span class="lm-actions lm-actions--end" style="margin-left:auto">
+                    {% for button in _buttons %}
+                        {% if _showButtons and (button.visible is not defined or button.visible) and (button.isAdmin is not defined or not button.isAdmin or (isAdmin is defined and isAdmin)) %}
+                            <a class="lm-btn" {% if button.title is defined %}title="{{ button.title }}"{% endif %}{% if button.target is defined %} target="{{ button.target }}"{% endif %} href="{{ button.route|default('#') }}">{% if button.icon is defined %}<i class="fa {{ button.icon }}" aria-hidden="true"></i> {% endif %}{{ button.label|default('') }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if canAdd is defined and canAdd %}
+                        <a class="lm-btn lm-btn--primary" title="{{ canAdd.title }}" href="{{ canAdd.path }}"><i class="fa fa-plus" aria-hidden="true"></i> Ajouter</a>
+                    {% endif %}
+                </span>
+            </div>
+        {% endif %}
+    </div>
+{% else %}
+
 
 <div class="d-flex justify-content-center search" data-turbo="false">
     <ul class="list-group">
@@ -60,3 +121,4 @@
         </li>
     </ul>
 </div>
+{% endif %}

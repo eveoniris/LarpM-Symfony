@@ -1,0 +1,29 @@
+{% import 'groupeSecondaire/fragment/_ui.twig' as ui %}
+{% import 'groupeSecondaire/fragment/_more.twig' as more %}
+{% set beta = app.user is not null and app.user.uiBeta %}
+
+{% if not canSeeMembres %}
+    {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : "Vous ne pouvez distinguer les membres"} %}
+{% else %}
+    <div class="{{ beta ? 'lm-card' : 'card' }}">
+        <div class="{{ beta ? 'lm-card-head' : 'card-header d-flex justify-content-between align-items-center' }}">
+            <h4 class="{{ beta ? 'lm-card-title' : 'h6 mb-0' }}">Membres <span class="{{ beta ? 'lm-count' : 'badge text-bg-secondary' }}">{{ membresRows|length }}</span></h4>
+            {% if canManage %}
+                <span class="{{ beta ? 'lm-meta' : 'small text-body-secondary' }}">
+                    {% if gn %}{{ inscriptions|length }} inscrit{{ inscriptions|length > 1 ? 's' : '' }} à {{ gn.label }}{% endif %}
+                </span>
+            {% endif %}
+        </div>
+
+        {% set paged = beta and membresRows|length > 25 %}
+        {% if paged %}<div data-lm-more="25">{{ more.start('Rechercher un membre') }}{% endif %}
+        {% for row in membresRows %}
+            {% if paged %}<div class="lm-more-row" data-lm-row>{% endif %}
+            {% include 'groupeSecondaire/fragment/membre.twig' with {'row': row} %}
+            {% if paged %}</div>{% endif %}
+        {% else %}
+            {% include '_partials/noResult.twig' %}
+        {% endfor %}
+        {% if paged %}{{ more.end() }}</div>{% endif %}
+    </div>
+{% endif %}

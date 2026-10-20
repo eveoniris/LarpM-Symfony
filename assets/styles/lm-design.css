@@ -387,7 +387,7 @@ html[data-ui="beta"] .btn-primary {
   --bs-btn-active-bg: color-mix(in srgb, var(--lm-accent) 78%, #000); --bs-btn-active-border-color: color-mix(in srgb, var(--lm-accent) 78%, #000);
   --bs-btn-active-color: var(--lm-on-accent);
 }
-html[data-ui="beta"] .btn-secondary {
+html[data-ui="beta"] .btn-secondary, html[data-ui="beta"] .btn-default {
   --bs-btn-bg: var(--lm-raised); --bs-btn-border-color: var(--lm-line); --bs-btn-color: var(--lm-fg);
   --bs-btn-hover-bg: var(--lm-raised); --bs-btn-hover-border-color: var(--lm-muted); --bs-btn-hover-color: var(--lm-fg);
   --bs-btn-active-bg: var(--lm-line); --bs-btn-active-border-color: var(--lm-muted); --bs-btn-active-color: var(--lm-fg);
@@ -538,10 +538,228 @@ html[data-ui="beta"] .card[data-role] > .card-header, html[data-ui="beta"] .card
   background: transparent; border-bottom: 0; padding-bottom: 0;
   font: 700 .78rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--role-text);
 }
+html[data-ui="beta"] .card[data-role] > .list-group-item > .card-header { background: transparent; border-bottom: 0; padding-bottom: 0; font: 700 .78rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--role-text); }
+html[data-ui="beta"] .card[data-role] > .list-group-item { background: transparent; border: 0; }
+html[data-ui="beta"] .card[data-role] > .list-group-item > .card-header i { color: var(--role-text) !important; }
 html[data-ui="beta"] .card[data-role] > .card-header i, html[data-ui="beta"] .card.border-gamemaster > .card-header i, html[data-ui="beta"] .card.border-danger:has(.fa-user-ninja) > .card-header i { color: var(--role-text) !important; }
+/* --- Cadres de rôle dont le titre est dans un .header (au lieu d'un .card-header) : même titre en petites capitales --- */
+html[data-ui="beta"] .card[data-role] > .header { padding: .5rem 1rem 0; border: 0; background: transparent; }
+html[data-ui="beta"] .card[data-role] > .header h5, html[data-ui="beta"] .card[data-role] > .header h6 {
+  margin: 0; border: 0 !important; font: 700 .78rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--role-text);
+}
+html[data-ui="beta"] .card[data-role] > .header i { color: var(--role-text) !important; }
+/* Barre d'actions dans un cadre de rôle : filet discret, boutons secondaires alignés */
+html[data-ui="beta"] .card[data-role] > .btn-toolbar { padding: .5rem 1rem; gap: .5rem; }
+html[data-ui="beta"] .card[data-role] .card { background: var(--lm-surface); }
+/* Les cartes internes d'un cadre de rôle gardent leur propre fond */
+html[data-ui="beta"] .card[data-role="secret"] { border-left-style: double !important; border-left-width: 7px !important; }
 html[data-ui="beta"] .alert { background: color-mix(in srgb, var(--role, var(--lm-line)) 10%, var(--lm-surface)); color: var(--lm-fg); border: 1px solid var(--lm-line); border-left: 4px solid var(--role, var(--lm-line)); border-radius: var(--lm-radius); }
 html[data-ui="beta"] .alert-info { --role: var(--lm-info); }
 html[data-ui="beta"] .alert-success { --role: var(--lm-ok); }
 html[data-ui="beta"] .alert-warning { --role: var(--lm-warn); }
 html[data-ui="beta"] .alert-danger { --role: var(--lm-err); }
 html[data-ui="beta"] .alert-gamemaster { --role: var(--lm-gm); }
+
+/* --- Lisibilité : voile sur la photo de fond, bandeau d'onglets, pied de page --- */
+html[data-ui="beta"] footer { background: color-mix(in srgb, var(--lm-surface) 82%, transparent); backdrop-filter: blur(6px); border-top: 1px solid var(--lm-line); margin-top: var(--lm-s6); }
+.lm-tabs { background: color-mix(in srgb, var(--lm-surface) 85%, transparent); backdrop-filter: blur(6px); border: 1px solid var(--lm-line); border-bottom-color: var(--lm-line); border-radius: var(--lm-radius) var(--lm-radius) 0 0; padding: 0 var(--lm-s2); }
+.lm-tab[data-role] { color: var(--role-text); }
+.lm-tab[data-role][aria-current="page"] { border-bottom-color: var(--role); background: color-mix(in srgb, var(--role) 14%, transparent); }
+/* Pas de second cadre quand l'onglet ne contient qu'une carte ou un tableau pleine largeur */
+html[data-ui="beta"] .tab-content:has(> .tab-pane > .lm-card:only-child),
+html[data-ui="beta"] .tab-content:has(> .tab-pane > .card:only-child) { background: none; border: 0; padding: 0; }
+
+/* --- Ligne de membre : colonnes lisibles, actions visibles à droite --- */
+.lm-member { grid-template-columns: 44px minmax(0, 1.3fr) minmax(0, 1fr) var(--lm-member-actions-w, 21rem); }
+.lm-member .gs-avatar { overflow: hidden; }
+.lm-member .gs-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.lm-member-meta { display: flex; flex-direction: column; gap: 2px; font-size: .85rem; color: var(--lm-muted); }
+.lm-member-actions { display: flex; gap: var(--lm-s2); align-items: center; justify-content: flex-end; }
+@media (max-width: 767px) {
+  .lm-member { grid-template-columns: 44px minmax(0, 1fr) auto; }
+  .lm-member-meta { grid-column: 2 / 3; }
+  .lm-member > .lm-member-actions, .lm-member > .dropdown { grid-column: 3; grid-row: 1; }
+}
+
+/* --- Pagination et « Afficher plus » --- */
+.lm-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--lm-s3); font-size: .9rem; }
+.lm-pager-summary { color: var(--lm-muted); font-variant-numeric: tabular-nums; }
+.lm-pager-pages { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.lm-pager-pages a, .lm-pager-pages span {
+  min-width: 44px; min-height: 44px; padding: 0 var(--lm-s3); display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--lm-line); border-radius: var(--lm-radius); background: var(--lm-raised); color: var(--lm-link); text-decoration: none; font-variant-numeric: tabular-nums;
+}
+.lm-pager-pages a:hover { border-color: var(--lm-muted); }
+.lm-pager-pages [aria-current="page"] { background: var(--lm-accent); border-color: var(--lm-accent); color: var(--lm-on-accent); font-weight: 700; }
+.lm-pager-pages [aria-disabled="true"] { color: var(--lm-muted); background: var(--lm-surface); }
+.lm-pager-pages .is-gap { border: 0; background: none; color: var(--lm-muted); min-width: 24px; padding: 0; }
+.lm-pager-size { display: inline-flex; align-items: center; gap: var(--lm-s2); color: var(--lm-muted); }
+.lm-pager-size .lm-field { width: auto; min-width: 72px; }
+.lm-more { display: flex; justify-content: center; padding: var(--lm-s3); border-top: 1px solid var(--lm-line); }
+
+/* --- En-tête de page sur la photo : panneau en verre dépoli (la photo reste visible, le texte reste lisible) --- */
+html[data-ui="beta"] .lm-page-head {
+  background: color-mix(in srgb, var(--lm-surface) 80%, transparent); backdrop-filter: blur(6px);
+  border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); padding: var(--lm-s3) var(--lm-s4);
+  /* backdrop-filter crée un contexte d'empilement : sans z-index, la barre d'onglets suivante recouvre les menus de l'en-tête */
+  position: relative; z-index: 5;
+}
+/* --- Pagination complète (partiel _partials/pagination.html.twig) --- */
+.lm-pager-wrap { margin: var(--lm-s3) 0; }
+.lm-pager-size .lm-btn { min-width: 44px; }
+.lm-pager-goto { display: inline-flex; align-items: center; gap: var(--lm-s2); color: var(--lm-muted); }
+.lm-pager-goto .lm-field { width: 5.5rem; }
+/* En haut de liste, le pagineur n'apparaît qu'au-delà de 25 lignes affichées */
+body:has(.lm-pager-wrap[data-slot="2"]) .lm-pager-wrap[data-slot="1"][data-small] { display: none; }
+
+/* --- Colonne d'actions des listes (script assets/lm-lists.js) --- */
+.lm-table th.lm-col-actions, .lm-table td.lm-col-actions { width: 13rem; min-width: 13rem; text-align: right; }
+.lm-table td.lm-col-actions .lm-actions { flex-wrap: nowrap; }
+.lm-act-menu.lm-act-mobile { display: none; }
+.lm-act-menu { position: relative; display: inline-block; }
+.lm-act-menu > summary { list-style: none; cursor: pointer; }
+.lm-act-menu > summary::-webkit-details-marker { display: none; }
+.lm-act-panel { position: fixed; z-index: 1080; min-width: 13rem; padding: var(--lm-s2); background: var(--lm-surface);
+                border: 1px solid var(--lm-line); border-radius: var(--lm-radius); box-shadow: 0 8px 24px rgba(0,0,0,.35); text-align: left; }
+.lm-act-panel hr { margin: var(--lm-s2) 0; border: 0; border-top: 1px solid var(--lm-line); opacity: 1; }
+.lm-act-item { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: var(--lm-s2); width: 100%; min-height: var(--lm-touch);
+               padding: 0 var(--lm-s3); border-radius: var(--lm-radius); cursor: pointer; color: var(--lm-fg); font: 400 .95rem var(--lm-font-body); }
+.lm-act-item:hover, .lm-act-item:focus-visible { background: var(--lm-raised); }
+.lm-act-item.is-danger { color: var(--lm-err-text); }
+.lm-act-panel form { margin: 0; }
+@media (max-width: 640px) {
+  .lm-act-inline { display: none !important; }
+  .lm-act-menu.lm-act-mobile { display: inline-block; }
+  .lm-table--cards td.lm-col-actions { width: 100%; min-width: 0; justify-content: flex-end; }
+  .lm-table--cards td.lm-col-actions::before { display: none; }
+}
+
+/* --- Barre de filtres des listes (partiel formListSearch) --- */
+.lm-list-filters { margin: var(--lm-s3) 0; display: grid; gap: var(--lm-s2); }
+.lm-list-filters form { display: flex; flex-wrap: wrap; gap: var(--lm-s2); align-items: center; margin: 0; }
+.lm-list-filters .lm-search { flex: 1 1 240px; }
+.lm-filter-panel { flex-basis: 100%; }
+.lm-filter-panel > summary { list-style: none; cursor: pointer; display: inline-flex; }
+.lm-filter-panel > summary::-webkit-details-marker { display: none; }
+.lm-filter-panel-body { margin-top: var(--lm-s2); padding: var(--lm-s3); background: var(--lm-surface); border: 1px solid var(--lm-line); border-radius: var(--lm-radius); }
+.lm-btn--text { background: transparent; border-color: transparent; color: var(--lm-link); text-decoration: underline; }
+.lm-list-filters .lm-chip a { color: inherit; text-decoration: none; padding: 0 6px; }
+
+/* --- Afficher plus (listes côté client) --- */
+.lm-more-tools { display: flex; flex-wrap: wrap; gap: var(--lm-s3); align-items: center; justify-content: space-between; margin-bottom: var(--lm-s3); }
+.lm-more-tools .lm-field { max-width: 22rem; }
+.lm-more-count { color: var(--lm-muted); font-size: .9rem; }
+[data-lm-row][hidden] { display: none !important; }
+
+/* Tableaux de liste posés sur la photo de fond : fond opaque pour la lisibilité */
+.lm-table-wrap > .lm-table { background: color-mix(in srgb, var(--lm-surface) 94%, transparent); border-radius: var(--lm-radius-lg); }
+.lm-pager-wrap .lm-pager { background: color-mix(in srgb, var(--lm-surface) 94%, transparent); border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); padding: var(--lm-s3); }
+.lm-more-row { display: contents; }
+.lm-more-tools { padding: var(--lm-s3) var(--lm-s4) 0; }
+.lm-more-tools[hidden], .lm-more [hidden], .lm-help[hidden] { display: none !important; }
+.lm-table .lm-cell-block { max-width: 46rem; text-align: left; }
+@media (max-width: 640px) { .lm-table--cards td > .lm-cell-block { flex: 1; min-width: 0; } }
+
+/* --- Liste des territoires : verre dépoli derrière chaque fiche (texte lisible sur la photo) --- */
+html[data-ui="beta"] .lm-territoire-item {
+  border: 1px solid var(--lm-line); border-radius: var(--lm-radius); margin-bottom: var(--lm-s2); color: var(--lm-fg);
+}
+html[data-ui="beta"] .lm-territoire-item .list-group-item-heading { font-family: var(--lm-font-display); }
+
+/* --- Photo en grand : fenêtre modale native --- */
+.lm-photo-dialog { border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); background: var(--lm-surface); color: var(--lm-fg); padding: var(--lm-s3); max-width: min(92vw, 720px); max-height: 92vh; overflow: auto; text-align: center; }
+.lm-photo-dialog::backdrop { background: rgba(0, 0, 0, .72); backdrop-filter: blur(3px); }
+.lm-photo-dialog img { max-width: 100%; max-height: 74vh; border-radius: var(--lm-radius); display: block; margin: 0 auto; }
+.lm-photo-dialog form { text-align: right; margin: 0 0 var(--lm-s2); }
+.lm-photo-close { min-width: 44px; min-height: 44px; border: 1px solid var(--lm-line); border-radius: var(--lm-radius); background: var(--lm-raised); color: var(--lm-fg); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+.lm-photo-caption { margin: var(--lm-s2) 0 0; font-family: var(--lm-font-display); }
+
+/* --- Hiérarchie des territoires : retrait du bloc, rail à gauche, icône par niveau --- */
+html[data-ui="beta"] .lm-territoire-item { scroll-margin-top: 5rem; padding-left: var(--lm-s3) !important; }
+html[data-ui="beta"] .lm-territoire-item[data-level="1"] { margin-left: 1.75rem; border-left: 3px solid var(--lm-muted); }
+html[data-ui="beta"] .lm-territoire-item[data-level="2"] { margin-left: 3.5rem; border-left: 3px solid var(--lm-line); }
+html[data-ui="beta"] .lm-territoire-item[data-level="0"] { border-left: 4px solid var(--lm-accent); }
+html[data-ui="beta"] .lm-territoire-item:target { outline: 2px solid var(--lm-accent); }
+html[data-ui="beta"] .lm-territoire-level { color: var(--lm-muted); font-size: .8em; width: 1.2em; text-align: center; }
+html[data-ui="beta"] .lm-territoire-item[data-level="0"] .lm-territoire-level { color: var(--lm-accent); }
+@media (max-width: 640px) {
+  html[data-ui="beta"] .lm-territoire-item[data-level="1"] { margin-left: .75rem; }
+  html[data-ui="beta"] .lm-territoire-item[data-level="2"] { margin-left: 1.5rem; }
+}
+
+/* Territoires : l'en-tête (titre et boutons) passe à la ligne au lieu de déborder sur mobile */
+html[data-ui="beta"] .lm-territoire-item .list-group-item-heading { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lm-s2) var(--lm-s3); }
+html[data-ui="beta"] .lm-territoire-item .list-group-item-heading .btn-group { float: none !important; flex-wrap: wrap; margin-left: auto; }
+html[data-ui="beta"] .lm-territoire-item { overflow-wrap: anywhere; min-width: 0; }
+@media (max-width: 640px) {
+  html[data-ui="beta"] .lm-territoire-item .list-group-item-heading { font-size: 1.15rem; }
+  html[data-ui="beta"] .lm-territoire-item .list-group-item-heading .btn-group { margin-left: 0; }
+}
+
+/* --- Compétences et classes : grille par famille, filtre de type, matrice des affinités --- */
+html[data-ui="beta"] .gs-clamp.lm-clamp--sm { max-height: 4.6em; }
+html[data-ui="beta"] .gs-clamp.lm-clamp--sm.is-open { max-height: none; }
+.lm-legend { margin-bottom: var(--lm-s4); }
+.lm-legend .lm-help { margin: 0 0 var(--lm-s2); }
+.lm-niveau-reserve { margin: var(--lm-s1) 0 0; font-style: italic; }
+.lm-familles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: var(--lm-s5, 1.5rem); align-items: start; }
+/* Verre dépoli commun : le texte reste lisible sur la photo de fond */
+html[data-ui="beta"] .lm-famille, html[data-ui="beta"] .lm-classe, html[data-ui="beta"] .lm-carte-verre, html[data-ui="beta"] .lm-territoire-item {
+  background: color-mix(in srgb, var(--lm-surface) 82%, transparent); backdrop-filter: blur(6px);
+  --bs-body-bg: color-mix(in srgb, var(--lm-surface) 92%, transparent);
+}
+.lm-famille { scroll-margin-top: 5rem; }
+.lm-famille:target, .lm-classe:target { outline: 2px solid var(--lm-accent); }
+.lm-niveaux { list-style: none; margin: var(--lm-s3) 0 0; padding: 0; }
+.lm-niveau { padding: var(--lm-s2) 0; border-top: 1px solid var(--lm-line); }
+.lm-niveau-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lm-s2); }
+.lm-niveau-nom { min-width: 4.5rem; font-family: var(--lm-font-display); }
+.lm-niveau-couts { display: inline-flex; gap: var(--lm-s3); flex-wrap: wrap; }
+.lm-niveau-couts .lm-cost { font-size: .85rem; }
+/* Dans un encadré de rôle, le tarif « normal » garde la couleur du texte (et non celle du rôle de l'encadré) */
+.lm-callout .lm-cost:not([data-role]) { --role-text: var(--lm-fg); color: var(--lm-fg); }
+.lm-niveau-actions { margin-left: auto; }
+.lm-niveau .gs-clamp { margin-top: var(--lm-s2); font-size: .92rem; }
+
+.lm-filtre-type { margin-bottom: var(--lm-s3); }
+.lm-btn.is-active { border-color: var(--lm-accent); background: color-mix(in srgb, var(--lm-accent) 18%, var(--lm-surface)); }
+.lm-type[data-class] { border-color: var(--role, var(--lm-line)); }
+[data-class="autre"] { --role: var(--lm-muted); --role-text: var(--lm-muted); }
+.lm-carte-verre { border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); padding: var(--lm-s4); margin-bottom: var(--lm-s4); min-width: 0; }
+.lm-matrice-wrap { position: relative; overflow-x: auto; max-width: 100%; border: 1px solid var(--lm-line); border-radius: var(--lm-radius); }
+.lm-matrice-wrap:focus-visible { outline: 2px solid var(--lm-accent); }
+.lm-matrice { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: .88rem; }
+.lm-matrice th, .lm-matrice td { border-bottom: 1px solid var(--lm-line); padding: 4px 6px; text-align: center; background: var(--lm-surface); }
+.lm-matrice .lm-matrice-famille { position: sticky; left: 0; z-index: 1; text-align: left; min-width: 9.5rem; max-width: 12rem; border-right: 1px solid var(--lm-line); white-space: normal; }
+.lm-matrice thead th { vertical-align: bottom; border-top: 3px solid var(--role, var(--lm-line)); }
+.lm-matrice-classe { width: 2.75rem; min-width: 2.75rem; }
+.lm-matrice-classe a { display: block; writing-mode: vertical-rl; transform: rotate(180deg); margin: 0 auto; white-space: nowrap; max-height: 9rem; overflow: hidden; text-overflow: ellipsis; text-decoration: none; }
+.lm-matrice .is-mine { background: color-mix(in srgb, var(--lm-accent) 16%, var(--lm-surface)); box-shadow: inset 2px 0 var(--lm-accent), inset -2px 0 var(--lm-accent); }
+.lm-matrice td { white-space: nowrap; }
+.lm-matrice td[data-role="ok"], .lm-matrice td[data-role="gift"], .lm-matrice td[data-role="warn"] { background: color-mix(in srgb, var(--role) 20%, var(--lm-surface)); }
+.lm-matrice tbody tr:hover td, .lm-matrice tbody tr:hover th { filter: brightness(1.12); }
+.lm-aff { color: var(--role-text); display: inline-block; min-width: 1.2em; }
+
+.lm-classes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr)); gap: var(--lm-s5); align-items: start; }
+.lm-classe { scroll-margin-top: 5rem; }
+.lm-classe.is-mine { border-color: var(--lm-accent); box-shadow: 0 0 0 1px var(--lm-accent); }
+.lm-classe-titre { margin: var(--lm-s3) 0 var(--lm-s1, 4px); font-weight: 700; font-size: .85rem; color: var(--lm-muted); }
+.lm-classe .lm-callout { margin-top: var(--lm-s2); }
+@media (max-width: 640px) {
+  .lm-carte-verre { padding: var(--lm-s3); }
+  .lm-matrice .lm-matrice-famille { min-width: 7.5rem; max-width: 8.5rem; font-size: .8rem; }
+  .lm-niveau-actions { margin-left: 0; }
+}
+
+/* Mobile : les barres de boutons d'en-tête passent à la ligne au lieu de déborder de la page */
+@media (max-width: 640px) {
+  html[data-ui="beta"] .btn-toolbar { max-width: 100%; }
+  html[data-ui="beta"] .btn-toolbar > .btn-group { flex-wrap: wrap; max-width: 100%; gap: var(--lm-s1); }
+  html[data-ui="beta"] .btn-toolbar > .btn-group > .btn { flex: 1 1 auto; border-radius: var(--lm-radius) !important; }
+}
+
+/* Blasons : ne débordent jamais de leur colonne */
+html[data-ui="beta"] img[alt^="Blason"] { max-width: 100%; height: auto; max-height: 200px; object-fit: contain; }
+
+/* Trombinoscope (fiche personnage) : l'image reste dans sa colonne malgré le style en ligne */
+html[data-ui="beta"] .thumbnail img { max-width: 100% !important; height: auto; }

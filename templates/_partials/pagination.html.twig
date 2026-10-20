@@ -1,3 +1,51 @@
+{% set _lmBeta = app.user is not null and app.user.uiBeta %}
+{% if _lmBeta %}
+    {% set _q = app.request.query.all %}
+    {% set _total = paginator.count %}
+    {% set _limit = max(1, paginator.getQuery.getMaxResults) %}
+    {% set _page = (paginator.getQuery.getFirstResult / _limit)|round(0, 'floor') + 1 %}
+    {% set _last = max(1, (_total / _limit)|round(0, 'ceil')) %}
+    {% set _from = _total > 0 ? paginator.getQuery.getFirstResult + 1 : 0 %}
+    {% set _to = min(_total, paginator.getQuery.getFirstResult + _limit) %}
+    {% set _base = app.request.pathInfo ~ '?' %}
+    {% set _slot = lm_pager_slot() %}
+    {% if _total > 0 %}
+        <nav class="lm-pager-wrap" aria-label="Pagination" data-slot="{{ _slot }}"{% if _to - _from < 25 %} data-small{% endif %}>
+            <div class="lm-pager">
+                <span class="lm-pager-summary">{{ _from }} à {{ _to }} sur {{ _total }}</span>
+                {% if _total > 25 %}
+                    <span class="lm-pager-size">Lignes par page
+                        {% for n in [25, 50, 100] %}
+                            <a class="lm-btn lm-btn--sm{{ n == _limit ? ' lm-btn--primary' }}" href="{{ (_base ~ (_q|merge({limit: n, page: 1})|url_encode))|e }}"{% if n == _limit %} aria-current="true"{% endif %}>{{ n }}</a>
+                        {% endfor %}
+                    </span>
+                {% endif %}
+                {% if _last > 1 %}
+                    <ul class="lm-pager-pages">
+                        <li>{% if _page > 1 %}<a href="{{ (_base ~ (_q|merge({page: _page - 1})|url_encode))|e }}" rel="prev"><i class="fa fa-chevron-left" aria-hidden="true"></i>&nbsp;Précédent</a>{% else %}<span aria-disabled="true"><i class="fa fa-chevron-left" aria-hidden="true"></i>&nbsp;Précédent</span>{% endif %}</li>
+                        {% set _nums = [1, _page - 2, _page - 1, _page, _page + 1, _page + 2, _last]|filter(n => n >= 1 and n <= _last)|sort|slice(0) %}
+                        {% for n in _nums %}
+                            {% set _prev = loop.first ? 0 : _nums[loop.index0 - 1] %}
+                            {% if n != _prev %}
+                                {% if n - _prev > 1 and not loop.first %}<li><span class="is-gap" aria-hidden="true">…</span></li>{% endif %}
+                                <li>{% if n == _page %}<a href="{{ (_base ~ (_q|merge({page: n})|url_encode))|e }}" aria-current="page">{{ n }}</a>{% else %}<a href="{{ (_base ~ (_q|merge({page: n})|url_encode))|e }}" aria-label="Page {{ n }}">{{ n }}</a>{% endif %}</li>
+                            {% endif %}
+                        {% endfor %}
+                        <li>{% if _page < _last %}<a href="{{ (_base ~ (_q|merge({page: _page + 1})|url_encode))|e }}" rel="next">Suivant&nbsp;<i class="fa fa-chevron-right" aria-hidden="true"></i></a>{% else %}<span aria-disabled="true">Suivant&nbsp;<i class="fa fa-chevron-right" aria-hidden="true"></i></span>{% endif %}</li>
+                    </ul>
+                {% endif %}
+                {% if _last > 10 %}
+                    <form class="lm-pager-goto" method="get" action="{{ app.request.pathInfo }}">
+                        {% for k, v in _q|filter((v, k) => k != 'page' and v is not iterable) %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+                        <label for="lm-goto-{{ _slot }}">Aller à la page</label>
+                        <input class="lm-field" id="lm-goto-{{ _slot }}" type="number" name="page" min="1" max="{{ _last }}" value="{{ _page }}" inputmode="numeric">
+                        <button class="lm-btn" type="submit">Aller</button>
+                    </form>
+                {% endif %}
+            </div>
+        </nav>
+    {% endif %}
+{% else %}
 {% set _currentRoute = app.request.attributes.get('_route') %}
 {% set _currentParams = app.request.query.all|merge(app.request.attributes.get('_route_params')) %}
 
@@ -57,4 +105,5 @@
             </li>
         </ul>
     </nav>
+{% endif %}
 {% endif %}

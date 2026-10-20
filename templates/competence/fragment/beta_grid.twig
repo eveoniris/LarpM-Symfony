@@ -1,0 +1,84 @@
+{# Liste des compétences en interface bêta : une carte par famille, les niveaux et leur coût en XP.
+   Variables : paginator, levels, isAdmin, canViewAdmin, groupeService, personnageService. #}
+{% set groups = {} %}
+{% for competence in paginator %}
+    {% set key = 'f' ~ competence.competenceFamily.id %}
+    {% set groups = groups|merge({(key): {'family': competence.competenceFamily, 'competences': (groups[key].competences|default([]))|merge([competence])}}) %}
+{% endfor %}
+
+<div class="lm-callout lm-legend" data-role="info" aria-label="Légende des coûts">
+    <p class="lm-callout-title"><i class="fa fa-circle-info" aria-hidden="true"></i> Coût en XP par niveau</p>
+    <p class="lm-help">Les trois tarifs de chaque niveau sont toujours affichés, quel que soit le personnage actif (ou l'absence de personnage). Le tarif appliqué à l'achat dépend de la classe du personnage pour la famille concernée.</p>
+    <div class="lm-actions">
+        <span class="lm-cost"><span>normal</span></span>
+        <span class="lm-cost" data-role="ok"><i class="fa fa-star" aria-hidden="true"></i> favorite : tarif réduit</span>
+        <span class="lm-cost" data-role="warn"><i class="fa fa-circle-question" aria-hidden="true"></i> méconnue : surcoût</span>
+    </div>
+</div>
+
+<div class="lm-familles">
+    {% for group in groups %}
+        {% set family = group.family %}
+        <article class="lm-card lm-famille" id="famille-{{ family.id }}">
+            <div class="lm-card-head"><h3 class="lm-card-title">{{ family.label }}</h3></div>
+            <div class="lm-card-body">
+                {% if family.description %}
+                    {% set familyHtml %}{{ family.description|markdown_to_html }}{% endset %}
+                    {% include 'groupeSecondaire/fragment/clamp.twig' with {'id': 'famille-desc-' ~ family.id, 'html': familyHtml, 'long': true, 'extra': 'lm-clamp--sm', 'auto': true} %}
+                {% endif %}
+                <ul class="lm-niveaux">
+                    {% for level in levels %}
+                        {% set competence = null %}
+                        {% for candidate in group.competences %}
+                            {% if candidate.level.id == level.id %}{% set competence = candidate %}{% endif %}
+                        {% endfor %}
+                        <li class="lm-niveau">
+                            <div class="lm-niveau-head">
+                                <b class="lm-niveau-nom">{{ level.label }}</b>
+                                <span class="lm-niveau-couts">
+                                    <span class="lm-cost" title="Coût normal">{{ level.cout }} xp</span>
+                                    <span class="lm-cost" data-role="ok" title="Compétence favorite de la classe"><i class="fa fa-star" aria-hidden="true"></i> {{ level.coutFavori }}</span>
+                                    <span class="lm-cost" data-role="warn" title="Compétence méconnue de la classe"><i class="fa fa-circle-question" aria-hidden="true"></i> {{ level.coutMeconu }}</span>
+                                </span>
+                                {% if competence and competence.secret %}
+                                    <span class="lm-badge" data-role="secret"><i class="fa fa-user-secret" aria-hidden="true"></i> Secrète</span>
+                                {% endif %}
+                                {% if competence and (isAdmin or canViewAdmin) %}
+                                    <span class="lm-niveau-actions lm-actions">
+                                        <a class="lm-btn lm-btn--sm" href="{{ path('competence.detail', {'competence': competence.id}) }}">Détail</a>
+                                        <span class="dropdown">
+                                            <button class="lm-btn lm-btn--sm lm-btn--icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions {{ family.label }} {{ level.label }}"><i class="fa fa-ellipsis" aria-hidden="true"></i></button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                {% if competence.documentUrl %}
+                                                    <li><a class="dropdown-item" href="{{ path('competence.document', {'competence': competence.id, 'document': competence.documentUrl}) }}"><i class="fa fa-download" aria-hidden="true"></i> Télécharger le document</a></li>
+                                                {% endif %}
+                                                {% if isAdmin %}
+                                                    <li><a class="dropdown-item" href="{{ path('competence.update', {'competence': competence.id}) }}"><i class="fa fa-pencil" aria-hidden="true"></i> Modifier</a></li>
+                                                    <li><a class="dropdown-item" href="{{ path('competence.personnages', {'competence': competence.id}) }}"><i class="fa fa-users" aria-hidden="true"></i> Personnages associés ({{ competence.personnages|length }})</a></li>
+                                                    {% if groupeService.nextSessionGn %}
+                                                        <li><a class="dropdown-item" href="{{ path('competence.personnages.gn', {'competence': competence.id, 'gn': groupeService.nextSessionGn.id}) }}"><i class="fa fa-users" aria-hidden="true"></i> Personnages sur {{ groupeService.nextSessionGn.label }} ({{ personnageService.PersonnagesCompetenceGn(competence, groupeService.nextSessionGn, true) }})</a></li>
+                                                    {% endif %}
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item text-danger" href="{{ path('competence.delete', {'competence': competence.id}) }}"><i class="fa fa-eraser" aria-hidden="true"></i> Supprimer</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </span>
+                                    </span>
+                                {% endif %}
+                            </div>
+                            {% if not competence and not (isAdmin or canViewAdmin) %}
+                                <p class="lm-help lm-niveau-reserve">Description non publique.</p>
+                            {% endif %}
+                            {% if competence and competence.description %}
+                                {% set competenceHtml %}{{ competence.description|markdown_to_html }}{% endset %}
+                                {% include 'groupeSecondaire/fragment/clamp.twig' with {'id': 'comp-desc-' ~ competence.id, 'html': competenceHtml, 'long': true, 'extra': 'lm-clamp--sm', 'auto': true} %}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </article>
+    {% else %}
+        <p class="lm-help">Aucune compétence.</p>
+    {% endfor %}
+</div>

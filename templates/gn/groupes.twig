@@ -18,6 +18,19 @@
         {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ORGA', app.user) or is_granted('ROLE_GESTION', app.user) %}
             {% set gameMasterHtml %}
                 Actions (visible uniquement par scénariste, orga ou gestion) :
+                {% if app.user.uiBeta %}
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ORGA', app.user) %}
+                            <a class="btn btn-secondary btn-sm" href="{{ path('groupe.add') }}"><i class="fa fa-plus" aria-hidden="true"></i> Ajouter un groupe</a>
+                            <a class="btn btn-secondary btn-sm" href="{{ path('gn.groupes.enveloppes',{'gn': gn.id}) }}"><i class="fa fa-print" aria-hidden="true"></i> Imprimer les enveloppes</a>
+                            <a class="btn btn-secondary btn-sm" href="{{ path('gn.cartes.alchimie',{'gn': gn.id}) }}"><i class="fa fa-print" aria-hidden="true"></i> Imprimer les cartes alchimiste / herboriste</a>
+                            <a class="btn btn-secondary btn-sm" href="{{ path('gn.groupes.backgrounds.chefs',{'gn': gn.id}) }}"><i class="fa fa-print" aria-hidden="true"></i> Imprimer les backgrounds des chefs de groupes</a>
+                            <a class="btn btn-secondary btn-sm" href="{{ path('gn.groupes.backgrounds.groupes',{'gn': gn.id}) }}"><i class="fa fa-print" aria-hidden="true"></i> Imprimer les backgrounds des groupes</a>
+                            <a class="btn btn-secondary btn-sm" href="{{ path('gn.groupes.backgrounds.membres',{'gn': gn.id}) }}"><i class="fa fa-print" aria-hidden="true"></i> Imprimer les backgrounds des membres de groupes</a>
+                        {% endif %}
+                        <a class="btn btn-secondary btn-sm" href="{{ path('groupe.all.synthese.enveloppe') }}"><i class="fa fa-cubes" aria-hidden="true"></i> Synthèse matériel de tous les groupes (prochain GN)</a>
+                    </div>
+                {% else %}
                 <ul>
                     {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ORGA', app.user) %}
                         <li><a href="{{ path('groupe.add') }}">Ajouter un groupe</a></li>
@@ -29,6 +42,7 @@
                     {% endif %}
                     <li><a href="{{ path('groupe.all.synthese.enveloppe') }}">Synthèse matériel de tous les groupes (prochain GN)</a></li>
                 </ul>
+                {% endif %}
             {% endset %}
             {% include '_partials/cardNotif.twig' with {'type': 'gamemaster', 'content' : gameMasterHtml} %}
         {% endif %}

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Classe;
+use App\Enum\TypeClasse;
 use App\Enum\Role;
 use App\Form\Classe\ClasseType;
 use App\Repository\ClasseRepository;
@@ -132,6 +133,7 @@ class ClasseController extends AbstractController
         Request $request,
         PagerService $pagerService,
         ClasseRepository $classeRepository,
+        CompetenceFamilyRepository $competenceFamilyRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($classeRepository)->setLimit(50);
 
@@ -145,10 +147,109 @@ class ClasseController extends AbstractController
             $queryBuilder = $classeRepository->creation($queryBuilder, true);
         }
 
-        return $this->render('classe/list.twig', [
+        $paginator = $classeRepository->searchPaginated($pagerService, $queryBuilder, true);
+        $parameters = [
             'pagerService' => $pagerService,
-            'paginator' => $classeRepository->searchPaginated($pagerService, $queryBuilder, true),
-        ]);
+            'paginator' => $paginator,
+        ];
+
+        // Interface bêta : filtre par type et matrice classes x familles de compétences
+        if ($this->getUser()?->isUiBeta()) {
+            $parameters += $this->betaParameters($request, $competenceFamilyRepository, $classeRepository, iterator_to_array($paginator, false));
+        }
+
+        return $this->render('classe/list.twig', $parameters);
+    }
+
+    /**
+     * Données de la liste des classes en interface bêta.
+     *
+     * @param array<int, Classe> $classes
+     *
+     * @return array<string, mixed>
+     */
+    private function betaParameters(Request $request, CompetenceFamilyRepository $competenceFamilyRepository, ClasseRepository $classeRepository, array $classes): array
+    {
+        // Charge les trois listes d'affinités en une requête (évite un N+1 par classe)
+        if ([] !== $classes) {
+            $classeRepository
+                ->createQueryBuilder('c')
+                ->select('c', 'cr', 'cf', 'cn')
+                ->leftJoin('c.competenceFamilyCreations', 'cr')
+                ->leftJoin('c.competenceFamilyFavorites', 'cf')
+                ->leftJoin('c.competenceFamilyNormales', 'cn')
+                ->where('c.id IN (:ids)')
+                ->setParameter('ids', array_map(static fn (Classe $c): ?int => $c->getId(), $classes))
+                ->getQuery()
+                ->getResult();
+        }
+
+        $typeFilter = TypeClasse::tryFrom((string) $request->query->get('type'));
+
+        $typeCounts = [];
+        foreach ($classes as $classe) {
+            $type = $classe->getType()->value;
+            $typeCounts[$type] = ($typeCounts[$type] ?? 0) + 1;
+        }
+
+        if (null !== $typeFilter) {
+            $classes = array_values(array_filter($classes, static fn (Classe $classe): bool => $classe->getType() === $typeFilter));
+        }
+
+        // Les familles uniquement composées de compétences secrètes sont réservées aux gestionnaires
+        $canSeeSecret = $this->isGranted(Role::REGLE->value) || $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::SCENARISTE->value);
+        $families = array_values(array_filter($competenceFamilyRepository->findAllOrderedByLabel(), static function ($family) use ($canSeeSecret): bool {
+            if ($canSeeSecret) {
+                return true;
+            }
+            foreach ($family->getCompetences() as $competence) {
+                if (!$competence->isSecret()) {
+                    return true;
+                }
+            }
+
+            return false;
+        }));
+
+        $affinities = [];
+        foreach ($classes as $classe) {
+            $affinities[$classe->getId()] = [
+                'creation' => $classe
+                    ->getCompetenceFamilyCreations()
+                    ->map(static fn ($f): ?int => $f->getId())
+                    ->toArray(),
+                'favorite' => $classe
+                    ->getCompetenceFamilyFavorites()
+                    ->map(static fn ($f): ?int => $f->getId())
+                    ->toArray(),
+                'normale' => $classe
+                    ->getCompetenceFamilyNormales()
+                    ->map(static fn ($f): ?int => $f->getId())
+                    ->toArray(),
+            ];
+        }
+
+        return [
+            'classes' => $classes,
+            'families' => $families,
+            'affinities' => $affinities,
+            'types' => array_filter(TypeClasse::cases(), static fn (TypeClasse $type): bool => ($typeCounts[$type->value] ?? 0) > 0),
+            'typeCounts' => $typeCounts,
+            'typeFilter' => $typeFilter,
+            'maClasse' => $this->classeDuJoueur(),
+        ];
+    }
+
+    /**
+     * Classe du personnage du joueur connecté (null sans personnage ni classe).
+     */
+    private function classeDuJoueur(): ?Classe
+    {
+        try {
+            return $this->getUser()?->getPersonnage()?->getClasse();
+        } catch (\Error) {
+            return null; // propriété classe non initialisée
+        }
     }
 
     #[Route('/{classe}/personnages', name: 'personnages', requirements: ['classe' => Requirement::DIGITS])]

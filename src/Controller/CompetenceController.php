@@ -191,6 +191,7 @@ class CompetenceController extends AbstractController
         Request $request,
         PagerService $pagerService,
         CompetenceRepository $competenceRepository,
+        LevelRepository $levelRepository,
     ): Response {
         $pagerService->setRequest($request)->setRepository($competenceRepository)->setLimit(100);
 
@@ -205,12 +206,21 @@ class CompetenceController extends AbstractController
             $queryBuilder = $competenceRepository->secret($queryBuilder, false);
         }
 
-        return $this->render('competence/list.twig', [
-            'pagerService' => $pagerService,
-            'paginator' => $competenceRepository->searchPaginated($pagerService, $queryBuilder),
+        $parameters = [
             'isAdmin' => $isAdmin,
             'canViewAdmin' => $canViewAdmin,
-        ]);
+        ];
+
+        // Interface bêta : grille par famille, tous les niveaux d'une famille sur la même page
+        if ($this->getUser()?->isUiBeta()) {
+            $pagerService->setLimit(500);
+            $parameters['levels'] = array_values(array_filter($levelRepository->findBy([], ['index' => 'ASC']), static fn ($level): bool => $level->getIndex() <= 4));
+        }
+
+        $parameters['pagerService'] = $pagerService;
+        $parameters['paginator'] = $competenceRepository->searchPaginated($pagerService, $queryBuilder);
+
+        return $this->render('competence/list.twig', $parameters);
     }
 
     /**

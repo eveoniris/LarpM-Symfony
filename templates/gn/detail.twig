@@ -31,7 +31,7 @@
 
 
     {% if is_granted('ROLE_ADMIN', app.user) %}
-        <div class="card mb-2 border-danger">
+        <div class="card mb-2 border-danger" data-role="admin">
             <div class="card-header"><i
                     class="fa fa-user-ninja text-danger"></i> Administratif
             </div>
@@ -274,8 +274,8 @@
     {% endif %}
 
     {% if is_granted('ROLE_WARGAME', app.user) %}
-        <div class="card mb-2 border-warning">
-            <div class="card-header"><i class="fa fa-shield-halved text-warning"></i> Jeu de domaine</div>
+        <div class="card mb-2 border-warning" data-role="domaine">
+            <div class="card-header"><i class="fa {{ app.user.uiBeta ? 'fa-chess-rook' : 'fa-shield-halved' }} text-warning"></i> Jeu de domaine</div>
             <div class="d-flex p-2 gap-2">
                 <a class="btn btn-secondary" href="{{ path('gn.fiche_retour.import', {'gn': gn.id}) }}">
                     <i class="fa fa-file-import"></i> Import fiches retour
@@ -297,6 +297,17 @@
                         L'accueil des joueurs débutera le {{ gn.dateInstallationJoueur|date('d-m-Y') }}
                         à {{ gn.dateInstallationJoueur|date('H:i') }} heure.</p>
 
+                    {% if app.user.uiBeta %}
+                        <div class="d-flex flex-wrap gap-2">
+                            {% if participant %}
+                                <span class="lm-badge" data-role="ok"><i class="fa fa-check" aria-hidden="true"></i> Vous participez à ce jeu</span>
+                            {% else %}
+                                <a class="btn btn-primary btn-sm" href="{{ path('user.gn.participe', {'gn': gn.id}) }}"><i class="fa fa-check" aria-hidden="true"></i> Participer !</a>
+                            {% endif %}
+                            <a class="btn btn-secondary btn-sm" href="{{ path('gn.groupes', {'gn': gn.id}) }}"><i class="fa fa-users" aria-hidden="true"></i> Liste des groupes</a>
+                            <a class="btn btn-secondary btn-sm" href="{{ path('gn.groupesPlaces', {'gn': gn.id}) }}"><i class="fa fa-user-plus" aria-hidden="true"></i> Groupes recherchant des joueur.euse.s</a>
+                        </div>
+                    {% else %}
                     <ul>
                         <li>
                             {% if participant %}
@@ -311,6 +322,7 @@
                         <li><a href="{{ path('gn.groupesPlaces', {'gn': gn.id}) }}">Liste des groupes recherchant des
                                 joueur.euse.s</a></li>
                     </ul>
+                    {% endif %}
 
                 </div>
             </div>

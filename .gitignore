@@ -79,3 +79,7 @@ docker/mailpit/
 # Screenshots de développement ad-hoc
 /*.png
 /*.jpg
+
+###> outils de travail locaux (non versionnés, conservés hors du cache et des purges)
+/.local/
+###< outils de travail locaux

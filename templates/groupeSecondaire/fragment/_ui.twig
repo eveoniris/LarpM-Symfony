@@ -1,0 +1,43 @@
+{#
+Aides d'affichage de la page détail d'un groupe transverse.
+Interface bêta (lm-design.css) : classes lm-*. Sinon : Bootstrap. `beta` vaut app.user.uiBeta.
+#}
+
+{# Classes d'un bouton. kind : primary, danger, default. #}
+{% macro btn(kind, beta, small = false) %}
+    {%- if beta -%}
+        lm-btn{% if kind == 'primary' %} lm-btn--primary{% elseif kind == 'danger' %} lm-btn--danger{% endif %}{% if small %} lm-btn--sm{% endif %}
+    {%- else -%}
+        btn {% if kind == 'primary' %}btn-secondary{% elseif kind == 'danger' %}btn-outline-danger{% else %}btn-outline-secondary{% endif %}{% if small %} btn-sm{% endif %}
+    {%- endif -%}
+{% endmacro %}
+
+{# Bouton « ⋯ » ouvrant un menu. #}
+{% macro more_button(beta, label = 'Actions') %}
+    {%- if beta -%}
+        lm-btn lm-btn--icon lm-btn--sm
+    {%- else -%}
+        btn btn-sm btn-outline-secondary
+    {%- endif -%}
+{% endmacro %}
+
+{# Pastille. role : secret, muted, ok, warn, info. #}
+{% macro badge(label, role, beta, icon = null) %}
+    {%- set bs = {'secret': 'text-bg-warning', 'muted': 'text-bg-secondary', 'ok': 'text-bg-success', 'warn': 'text-bg-warning', 'info': 'text-bg-info'} -%}
+    <span class="{% if beta %}lm-badge{% else %}badge {{ bs[role]|default('text-bg-secondary') }}{% endif %}"{% if beta %} data-role="{{ role }}"{% endif %}>{% if icon %}<i class="fa {{ icon }}" aria-hidden="true"></i> {% endif %}{{ label }}</span>
+{% endmacro %}
+
+{# Avatar 44 px : trombinoscope (lien vers la photo en grand) si disponible, sinon initiales. #}
+{% macro avatar(personnage, beta) %}
+    {%- set parts = personnage.publicName|split(' ') -%}
+    {%- set initials = (parts[0]|first ~ (parts[1]|default('')|first))|upper -%}
+    {%- set cls = (beta ? 'lm-avatar' : 'd-inline-flex align-items-center justify-content-center rounded-circle border fw-bold text-body-secondary') ~ ' gs-avatar' -%}
+    {%- if personnage.trombineUrl -%}
+        <a class="{{ cls }}" href="{{ path('personnage.trombine', {'personnage': personnage.id}) }}" target="_blank" rel="noopener"{% if beta %} data-lm-photo="{{ personnage.publicName }}"{% endif %}
+           title="Ouvrir la photo en grand" aria-label="Ouvrir la photo de {{ personnage.publicName }} en grand">
+            <img src="{{ path('personnage.trombine', {'personnage': personnage.id}) }}" alt="" loading="lazy" width="44" height="44">
+        </a>
+    {%- else -%}
+        <span class="{{ cls }}" aria-hidden="true">{{ initials }}</span>
+    {%- endif -%}
+{% endmacro %}

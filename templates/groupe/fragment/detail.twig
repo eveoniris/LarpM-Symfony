@@ -47,7 +47,7 @@
         </div>
 
         {% if canReadPrivate %}
-            <div class="card text-bg mb-3 overflow-auto">
+            <div class="card text-bg mb-3 overflow-auto" data-role="secret">
                 <div class="header">
                     <h5 class="border-warning border-bottom"><i class="fa fa-user-secret text-warning"></i> Description
                         aux membres
@@ -464,7 +464,7 @@
         </div>
 
         {% if isAdmin %}
-            <div class="card text-bg mb-3 overflow-auto border-gamemaster">
+            <div class="card text-bg mb-3 overflow-auto border-gamemaster" data-role="gm">
                 <div class="header"><h5><i class="fa fa-feather text-gamemaster"> </i> Intrigues
                     </h5></div>
                 <div class="text-body">

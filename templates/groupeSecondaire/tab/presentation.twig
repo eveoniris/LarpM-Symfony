@@ -1,0 +1,113 @@
+{% import 'groupeSecondaire/fragment/_ui.twig' as ui %}
+{% set beta = app.user is not null and app.user.uiBeta %}
+{% set chef = groupeSecondaire.responsable %}
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="{{ beta ? 'lm-stack' : 'd-grid gap-3' }}">
+
+            {# Description publique, repliée au-delà de 400 caractères #}
+            <div class="{{ beta ? 'lm-card' : 'card' }}">
+                <div class="{{ beta ? 'lm-card-body' : 'card-body' }}">
+                    {% set descriptionHtml %}{{ groupeSecondaire.description|markdown_to_html }}{% endset %}
+                    {% include 'groupeSecondaire/fragment/clamp.twig' with {
+                        'id': 'gs-description',
+                        'html': descriptionHtml,
+                        'long': groupeSecondaire.description|length > 400,
+                    } %}
+                </div>
+            </div>
+
+            {# Description secrète : bloc or avec l'icône espion #}
+            {% if canReadSecret %}
+                {% set secretHtml %}{{ groupeSecondaire.descriptionSecrete|markdown_to_html }}{% endset %}
+                {% set secretClamp %}
+                    {% include 'groupeSecondaire/fragment/clamp.twig' with {
+                        'id': 'gs-secret',
+                        'html': secretHtml,
+                        'long': groupeSecondaire.descriptionSecrete|length > 400,
+                    } %}
+                {% endset %}
+                {% if beta %}
+                    <div class="lm-callout" data-role="secret">
+                        <p class="lm-callout-title"><i class="fa fa-user-secret" aria-hidden="true"></i> Description secrète</p>
+                        {{ secretClamp }}
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning border-warning mb-0">
+                        <h6 class="border-warning border-bottom pb-1"><i class="fa fa-user-secret text-warning" aria-hidden="true"></i> Description secrète</h6>
+                        {{ secretClamp }}
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            {% if canRead %}
+                <div class="{{ beta ? 'lm-card' : 'card' }}">
+                    <div class="{{ beta ? 'lm-card-head' : 'card-header' }}">
+                        <h4 class="{{ beta ? 'lm-card-title' : 'h6 mb-0' }}"><i class="fa-brands fa-discord" aria-hidden="true"></i> Serveur Discord</h4>
+                    </div>
+                    <div class="{{ beta ? 'lm-card-body' : 'card-body' }}">
+                        {% if groupeSecondaire.discord %}
+                            {% if groupeSecondaire.showDiscord %}
+                                {{ groupeSecondaire.discord }}
+                            {% else %}
+                                <span class="text-body-secondary">Le lien du serveur n'est pas affiché.</span>
+                            {% endif %}
+                        {% else %}
+                            {% set discordInfo %}
+                                Si le groupe ne dispose pas déjà d'un serveur Discord, vous pouvez :
+                                <a href="https://discord.gg/xDYsCpuJnw" target="_blank" rel="noopener">
+                                    <i class="fa-brands fa-discord"></i>
+                                    rejoindre le discord des groupes secondaire LH7
+                                </a>
+                            {% endset %}
+                            {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : discordInfo} %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="{{ beta ? 'lm-stack' : 'd-grid gap-3' }}">
+            <div class="{{ beta ? 'lm-card' : 'card' }}">
+                <div class="{{ beta ? 'lm-card-head' : 'card-header' }}">
+                    <h4 class="{{ beta ? 'lm-card-title' : 'h6 mb-0' }}"><i class="fa fa-crown" aria-hidden="true"></i> Chef du groupe</h4>
+                </div>
+                <div class="{{ beta ? 'lm-card-body' : 'card-body' }}">
+                    {% if chef %}
+                        {% if not groupeSecondaire.private or canReadPrivate %}
+                            <p class="mb-1"><strong>{{ chef.publicName }}</strong></p>
+                            {% if isAdmin and chef.user %}
+                                <p class="mb-1 small">Joueur :
+                                    <a href="{{ path('user.view', {'user': chef.user.id}) }}">{{ chef.user.username }}</a>
+                                </p>
+                            {% endif %}
+                        {% else %}
+                            <p class="mb-1 text-body-secondary">Identité masquée</p>
+                        {% endif %}
+                        {% if canContacterChef|default(false) %}
+                            <a class="{{ ui.btn('default', beta, true) }} mt-2"
+                               href="{{ path('groupeSecondaire.contact', {'groupeSecondaire': groupeSecondaire.id}) }}">Contacter le chef</a>
+                        {% endif %}
+                    {% else %}
+                        {% include '_partials/cardNotif.twig' with {'type' : 'warning', 'content' : 'Attention, ce groupe n\'a pas de responsable !'} %}
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if isMembre and groupeSecondaire.scenariste %}
+                <div class="{{ beta ? 'lm-card' : 'card' }}">
+                    <div class="{{ beta ? 'lm-card-head' : 'card-header' }}">
+                        <h4 class="{{ beta ? 'lm-card-title' : 'h6 mb-0' }}"><i class="fa fa-feather" aria-hidden="true"></i> Scénariste</h4>
+                    </div>
+                    <div class="{{ beta ? 'lm-card-body' : 'card-body' }}">
+                        <p class="mb-1"><strong>{{ groupeSecondaire.scenariste.etatCivil }}</strong></p>
+                        <p class="mb-0 small">{{ groupeSecondaire.scenariste.email }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

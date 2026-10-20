@@ -29,7 +29,7 @@
         {% if classe.description %}
             <p>{{ classe.description|markdown_to_html }}</p>
         {% elseif is_granted('ROLE_REGLE', app.user) %}
-            <div class="card mb-2 border-warning">
+            <div class="card mb-2 border-warning" data-role="warn">
                 <div class="card-header "><i class="fa fa-warning text-warning"></i> Attention !</div>
                 <div class="card-body">
                     <p class="card-text">

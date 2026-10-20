@@ -66,6 +66,26 @@ class UserController extends AbstractController
 
     private bool $isPasswordResetEnabled = true;
 
+    /** Mémorise le mode sombre ou clair du compte connecté (appelé par le bouton du menu). */
+    #[Route('/user/theme', name: 'user.theme', methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_REMEMBERED')]
+    public function themeAction(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->isCsrfTokenValid('lm_theme', $request->request->getString('_token'))) {
+            return new Response('', Response::HTTP_FORBIDDEN);
+        }
+
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new Response('', Response::HTTP_FORBIDDEN);
+        }
+
+        $user->setUiLight('light' === $request->request->getString('mode'));
+        $entityManager->flush();
+
+        return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
     /**
      * Liste des utilisateurs.
      * Todo voir pour lien vers Personnages, Groupes et Participation (ou sur le détail).
@@ -452,7 +472,7 @@ class UserController extends AbstractController
             }
             // Interface bêta : choix personnel, réservé aux rôles qui construisent le contenu.
             if ($request->request->has('ui_theme_form') && $user->getId() === $this->getUser()?->getId() && $this->canUseBetaUi()) {
-                $user->setUiTheme($request->request->getString('ui_theme'));
+                $user->setUiBeta('beta' === $request->request->getString('ui_theme'));
             }
             if ($request->request->has('username')) {
                 $user->setUsername((string) $request->request->getString('username'));

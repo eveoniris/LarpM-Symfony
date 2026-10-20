@@ -4,6 +4,8 @@
 
 {% block body %}
 
+	{% set beta = app.user is not null and app.user.uiBeta %}
+
 	{% include '_partials/breadcrumb.twig' with {'items' :
 		[
 			{'name' : 'Liste des classes', 'route': path('classe.list') },
@@ -26,10 +28,14 @@
 		{% endif %}
 	</div>
 
-	{% include '_partials/pagination.html.twig' %}
+	{% if beta %}
+		{% include 'classe/fragment/beta_list.twig' %}
+	{% else %}
+		{% include '_partials/pagination.html.twig' %}
 
-	{% include 'classe/fragment/competenceFamilies.twig' with {'classes': paginator} %}
+		{% include 'classe/fragment/competenceFamilies.twig' with {'classes': paginator} %}
 
-	{% include '_partials/pagination.html.twig' %}
+		{% include '_partials/pagination.html.twig' %}
+	{% endif %}
 
 {% endblock %}

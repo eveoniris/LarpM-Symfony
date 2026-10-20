@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Membre;
 use App\Entity\Message;
+use App\Entity\Personnage;
 use App\Entity\Postulant;
 use App\Entity\SecondaryGroup;
 use App\Enum\Role;
@@ -301,10 +302,26 @@ class GroupeSecondaireController extends AbstractController
         ]);
     }
 
-    #[Route('/groupeSecondaire/{groupeSecondaire}/detail', name: 'groupeSecondaire.detail')]
-    #[Route('/groupeTransverse/{groupeSecondaire}/detail', name: 'groupeTransverse.detail')]
-    public function detailAction(#[MapEntity] SecondaryGroup $groupeSecondaire): Response
-    {
+    /**
+     * Onglet affiché par `groupeSecondaire.detail` (ancienne URL). Les autres : `groupeSecondaire.detail.tab`.
+     */
+    public const DETAIL_TAB_DEFAULT = 'presentation';
+
+    #[Route('/groupeSecondaire/{groupeSecondaire}/detail', name: 'groupeSecondaire.detail', defaults: ['tab' => self::DETAIL_TAB_DEFAULT])]
+    #[Route('/groupeTransverse/{groupeSecondaire}/detail', name: 'groupeTransverse.detail', defaults: ['tab' => self::DETAIL_TAB_DEFAULT])]
+    #[Route('/groupeSecondaire/{groupeSecondaire}/detail/{tab}', name: 'groupeSecondaire.detail.tab', requirements: ['tab' => 'presentation|membres|postulants|scenarisation|emails'])]
+    #[Route('/groupeTransverse/{groupeSecondaire}/detail/{tab}', name: 'groupeTransverse.detail.tab', requirements: ['tab' => 'presentation|membres|postulants|scenarisation|emails'])]
+    public function detailAction(
+        #[MapEntity]
+        SecondaryGroup $groupeSecondaire,
+        SecondaryGroupRepository $repository,
+        string $tab = self::DETAIL_TAB_DEFAULT,
+    ): Response {
+        // Les onglets qui listent les membres les chargent d'un coup (personnage et joueur), avant le calcul des accès.
+        if (\in_array($tab, ['membres', 'emails'], true)) {
+            $repository->findWithMembres($groupeSecondaire->getId(), 'membres' === $tab && $groupeSecondaire->isReligion());
+        }
+
         $this->hasAccess($groupeSecondaire);
 
         if ($groupeSecondaire->isSecret() && !$this->can(self::IS_MEMBRE)) {
@@ -313,7 +330,149 @@ class GroupeSecondaireController extends AbstractController
             return $this->redirectToRoute('groupeSecondaire.list', ['groupeSecondaire'], 303);
         }
 
-        return $this->render('groupeSecondaire/detail.twig', $this->buildContextDetailTwig($groupeSecondaire));
+        $allowedTabs = $this->getDetailTabs();
+        if (!isset($allowedTabs[$tab])) {
+            $this->addFlash('warning', "Vous n'avez pas accès à cet onglet.");
+
+            return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
+        }
+
+        $gn = GroupeManager::getGnActif($this->entityManager);
+        $canSeeMembres = $this->canSeeMembres($groupeSecondaire);
+
+        $context = [
+            'tab' => $tab,
+            'canSeeMembres' => $canSeeMembres,
+            'currentPersonnageId' => $this->getPersonnage()?->getId(),
+            'tabCounts' => [],
+        ];
+
+        $membresRows = [];
+        $inscriptions = [];
+        $membresLoaded = 'membres' === $tab || 'emails' === $tab;
+        if ($membresLoaded) {
+            $membresRows = $canSeeMembres ? $this->buildMembresRows($groupeSecondaire) : [];
+            $personnageIds = array_map(static fn (array $row): int => $row['personnage']->getId(), $membresRows);
+            $inscriptions = $gn ? $repository->findInscriptions($gn, $personnageIds) : [];
+        }
+
+        if ($canSeeMembres) {
+            $context['tabCounts']['membres'] = $membresLoaded
+                ? \count($membresRows)
+                : $repository->countMembres($groupeSecondaire);
+        }
+
+        if (isset($allowedTabs['postulants'])) {
+            $context['tabCounts']['postulants'] = $repository->countPostulants($groupeSecondaire);
+        }
+
+        switch ($tab) {
+            case 'presentation':
+                $personnage = $this->getPersonnage();
+                $isPostulant = $personnage && $repository->hasPostulant($groupeSecondaire, $personnage);
+                $context['isPostulant'] = $isPostulant;
+                $context['canPostuler'] = $personnage && !$groupeSecondaire->isSecret() && !$this->can(self::IS_MEMBRE) && !$isPostulant && !$repository->hasMembre($groupeSecondaire, $personnage);
+                $context['canContacterChef'] = $groupeSecondaire->getResponsable() && $personnage && $personnage->getId() !== $groupeSecondaire->getResponsable()->getId();
+                break;
+            case 'membres':
+                $context['membresRows'] = $membresRows;
+                $context['inscriptions'] = $inscriptions;
+                break;
+            case 'postulants':
+                $postulants = $repository->findPostulants($groupeSecondaire, $groupeSecondaire->isReligion());
+                $context['postulants'] = $postulants;
+                $context['inscriptions'] = $gn
+                    ? $repository->findInscriptions($gn, array_map(static fn (Postulant $postulant): int => $postulant->getPersonnage()->getId(), $postulants))
+                    : [];
+                break;
+            case 'scenarisation':
+                $context['intrigues'] = $repository->findIntrigues($groupeSecondaire);
+                break;
+            case 'emails':
+                // Calculés une seule fois pour les deux listes.
+                $emails = [];
+                $emailsGn = [];
+                foreach ($membresRows as $row) {
+                    $email = $row['personnage']->getUser()?->getEmail();
+                    if (!$email) {
+                        continue;
+                    }
+
+                    $emails[] = $email;
+                    if (\array_key_exists($row['personnage']->getId(), $inscriptions)) {
+                        $emailsGn[] = $email;
+                    }
+                }
+                $context['emails'] = $emails;
+                $context['emailsGn'] = $emailsGn;
+                break;
+        }
+
+        return $this->render('groupeSecondaire/detail.twig', [
+            ...$this->buildContextDetailTwig($groupeSecondaire),
+            'gn' => $gn,
+            'tabs' => $allowedTabs,
+            ...$context,
+        ]);
+    }
+
+    /**
+     * Le chef et les membres ayant accès voient les membres, sauf dans un groupe anonyme où seul le chef les voit.
+     */
+    private function canSeeMembres(SecondaryGroup $groupeSecondaire): bool
+    {
+        return $this->can(self::CAN_READ) && (!$groupeSecondaire->isPrivate() || $this->can(self::CAN_MANAGE));
+    }
+
+    /**
+     * Onglets accessibles à l'utilisateur courant (clé => libellé).
+     *
+     * @return array<string, string>
+     */
+    private function getDetailTabs(): array
+    {
+        $tabs = ['presentation' => 'Présentation', 'membres' => 'Membres'];
+
+        if ($this->can(self::CAN_MANAGE) || $this->can(self::CAN_READ_SECRET)) {
+            $tabs['postulants'] = 'Postulants';
+        }
+
+        if ($this->can(self::CAN_MANAGE)) {
+            $tabs['emails'] = 'E-mails';
+        }
+
+        // Onglet réservé (rôle scénarisation) : en dernier, pour fermer la liste.
+        if ($this->can(self::IS_ADMIN)) {
+            $tabs['scenarisation'] = 'Scénarisation';
+        }
+
+        return $tabs;
+    }
+
+    /**
+     * Lignes de la liste des membres : le chef en premier (même s'il n'est pas dans la liste des membres), puis les autres.
+     *
+     * @return list<array{personnage: Personnage, membre: ?Membre, isChef: bool}>
+     */
+    private function buildMembresRows(SecondaryGroup $groupeSecondaire): array
+    {
+        $chef = $groupeSecondaire->getResponsable();
+        $rows = [];
+        if ($chef) {
+            $rows[] = ['personnage' => $chef, 'membre' => null, 'isChef' => true];
+        }
+
+        /** @var Membre $membre */
+        foreach ($groupeSecondaire->getMembres() as $membre) {
+            $personnage = $membre->getPersonnage();
+            if ($chef && $personnage->getId() === $chef->getId()) {
+                continue;
+            }
+
+            $rows[] = ['personnage' => $personnage, 'membre' => $membre, 'isChef' => false];
+        }
+
+        return $rows;
     }
 
     /**
@@ -429,8 +588,10 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Liste des groupes secondaires (pour les orgas).
      */
-    #[Route('/groupeSecondaire', name: 'groupeSecondaire.list')]
+    // URL canonique : /groupeTransverse ; /groupeSecondaire reste valable (alias). Les noms de routes groupeSecondaire.* sont conservés.
+    #[Route('/groupeTransverse', name: 'groupeSecondaire.list')]
     #[Route('/groupeTransverse', name: 'groupeTransverse.list')]
+    #[Route('/groupeSecondaire', name: 'groupeSecondaire.list.alias')]
     public function listAction(
         Request $request,
         PagerService $pagerService,

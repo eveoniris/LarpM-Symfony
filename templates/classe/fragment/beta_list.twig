@@ -1,0 +1,118 @@
+{# Liste des classes en interface bêta : filtre par type, matrice classes x familles, cartes de classe.
+   Variables : classes, families, affinities, types, typeCounts, typeFilter, maClasse. #}
+{% set canManage = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+
+{% set vue = app.request.query.get('vue') == 'affinites' ? 'affinites' : 'classes' %}
+{% set vueParam = vue == 'affinites' ? 'affinites' : null %}
+
+<nav class="lm-filtre-type lm-actions" aria-label="Filtrer par type de classe">
+    <a class="lm-btn lm-btn--sm{{ typeFilter is null ? ' is-active' : '' }}" href="{{ path('classe.list', {'vue': vueParam}) }}"{{ typeFilter is null ? ' aria-current="true"' : '' }}>Toutes <span class="lm-count">{{ typeCounts|reduce((total, n) => total + n, 0) }}</span></a>
+    {% for type in types %}
+        <a class="lm-btn lm-btn--sm lm-type{{ typeFilter == type ? ' is-active' : '' }}" data-class="{{ type.value }}" href="{{ path('classe.list', {'type': type.value, 'vue': vueParam}) }}"{{ typeFilter == type ? ' aria-current="true"' : '' }}><i class="fa {{ type.icon }}" aria-hidden="true"></i> {{ type.label }} <span class="lm-count">{{ typeCounts[type.value] }}</span></a>
+    {% endfor %}
+</nav>
+
+<nav class="lm-tabs mb-3" data-turbo="false" aria-label="Vue des classes">
+    <a class="lm-tab" href="{{ path('classe.list', {'type': typeFilter ? typeFilter.value : null}) }}"{{ vue == 'classes' ? ' aria-current="page"' : '' }}><i class="fa fa-users" aria-hidden="true"></i>&nbsp;Classes</a>
+    <a class="lm-tab" href="{{ path('classe.list', {'type': typeFilter ? typeFilter.value : null, 'vue': 'affinites'}) }}"{{ vue == 'affinites' ? ' aria-current="page"' : '' }}><i class="fa fa-table-cells" aria-hidden="true"></i>&nbsp;Affinités par famille</a>
+</nav>
+
+
+{% if vue == 'affinites' %}
+<section class="lm-carte-verre lm-matrice-bloc" aria-labelledby="matrice-titre">
+    <h3 class="lm-card-title" id="matrice-titre">Affinités par famille de compétences</h3>
+    <div class="lm-actions lm-legend">
+        <span class="lm-badge" data-role="ok"><i class="fa fa-star" aria-hidden="true"></i> Favorite : coût réduit</span>
+        <span class="lm-badge" data-role="gift"><i class="fa fa-gift" aria-hidden="true"></i> Offerte à la création</span>
+        <span class="lm-badge" data-role="warn"><i class="fa fa-circle-question" aria-hidden="true"></i> Méconnue : surcoût</span>
+        <span class="lm-help" style="margin:0">Sans signe : coût normal.</span>
+    </div>
+    <div class="lm-matrice-wrap" tabindex="0" role="region" aria-label="Matrice des classes et des familles de compétences">
+        <table class="lm-matrice">
+            <thead>
+                <tr>
+                    <th scope="col" class="lm-matrice-famille">Famille</th>
+                    {% for classe in classes %}
+                        <th scope="col" class="lm-matrice-classe{{ maClasse and maClasse.id == classe.id ? ' is-mine' : '' }}" data-class="{{ classe.type.value }}">
+                            <a href="#classe-{{ classe.id }}"><span>{{ classe.labelMasculin }}</span></a>
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for family in families %}
+                    <tr>
+                        <th scope="row" class="lm-matrice-famille"><a href="{{ path('competenceFamily.detail', {'competenceFamily': family.id}) }}">{{ family.label }}</a></th>
+                        {% for classe in classes %}
+                            {% set aff = affinities[classe.id] %}
+                            {% set creation = family.id in aff.creation %}
+                            {% set favorite = family.id in aff.favorite %}
+                            {% set normale = family.id in aff.normale %}
+                            {% set meconnue = not creation and not favorite and not normale %}
+                            <td{% if maClasse and maClasse.id == classe.id %} class="is-mine"{% endif %} data-role="{{ creation ? 'gift' : (favorite ? 'ok' : (meconnue ? 'warn' : '')) }}">
+                                {% if creation %}<span class="lm-aff" data-role="gift" title="{{ classe.labelMasculin }} : offerte à la création"><i class="fa fa-gift" aria-hidden="true"></i><span class="visually-hidden">Offerte à la création</span></span>{% endif %}
+                                {% if favorite %}<span class="lm-aff" data-role="ok" title="{{ classe.labelMasculin }} : favorite"><i class="fa fa-star" aria-hidden="true"></i><span class="visually-hidden">Favorite</span></span>{% endif %}
+                                {% if meconnue %}<span class="lm-aff" data-role="warn" title="{{ classe.labelMasculin }} : méconnue"><i class="fa fa-circle-question" aria-hidden="true"></i><span class="visually-hidden">Méconnue</span></span>{% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% else %}
+                    <tr><td colspan="{{ classes|length + 1 }}">Aucune famille de compétences.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% else %}
+<div class="lm-classes">
+    {% for classe in classes %}
+        {% set mine = maClasse and maClasse.id == classe.id %}
+        <article class="lm-card lm-classe{{ mine ? ' is-mine' : '' }}" id="classe-{{ classe.id }}">
+            <div class="lm-card-head">
+                <h3 class="lm-card-title">{{ classe.label }}</h3>
+                <span class="lm-actions">
+                    {% if mine %}<span class="lm-badge" data-role="accent"><i class="fa fa-user" aria-hidden="true"></i> Votre classe</span>{% endif %}
+                    <span class="lm-state" data-class="{{ classe.type.value }}"><i class="fa {{ classe.type.icon }}" aria-hidden="true"></i> {{ classe.type.label }}</span>
+                </span>
+            </div>
+            <div class="lm-card-body">
+                {% if classe.description %}
+                    {% set classeHtml %}{{ classe.description|markdown_to_html }}{% endset %}
+                    {% include 'groupeSecondaire/fragment/clamp.twig' with {'id': 'classe-desc-' ~ classe.id, 'html': classeHtml, 'long': classe.description|length > 220, 'extra': 'lm-clamp--sm'} %}
+                {% elseif canManage %}
+                    <div class="lm-callout" data-role="warn"><p>Cette classe n'a pas de description.</p></div>
+                {% endif %}
+
+                {% if classe.competenceFamilyCreations|length %}
+                    <p class="lm-classe-titre"><i class="fa fa-gift" aria-hidden="true"></i> Acquises à la création</p>
+                    {% include 'classe/fragment/competenceFamiliesBadges.twig' with {'competenceFamilies': classe.competenceFamilyCreations} %}
+                {% elseif canManage %}
+                    <div class="lm-callout" data-role="err"><p>Cette classe n'a pas de famille de compétences acquise à la création.</p></div>
+                {% endif %}
+                {% if classe.competenceFamilyFavorites|length %}
+                    <p class="lm-classe-titre"><i class="fa fa-star" aria-hidden="true"></i> Favorites (coût réduit)</p>
+                    {% include 'classe/fragment/competenceFamiliesBadges.twig' with {'competenceFamilies': classe.competenceFamilyFavorites} %}
+                {% elseif canManage %}
+                    <div class="lm-callout" data-role="err"><p>Cette classe n'a pas de famille de compétences favorite.</p></div>
+                {% endif %}
+                {% if classe.competenceFamilyNormales|length %}
+                    <p class="lm-classe-titre">Normales</p>
+                    {% include 'classe/fragment/competenceFamiliesBadges.twig' with {'competenceFamilies': classe.competenceFamilyNormales} %}
+                {% elseif canManage %}
+                    <div class="lm-callout" data-role="err"><p>Cette classe n'a pas de famille de compétences normale.</p></div>
+                {% endif %}
+            </div>
+            {% if canManage %}
+                <div class="lm-card-foot lm-actions">
+                    <a class="lm-btn lm-btn--sm" href="{{ path('classe.personnages', {'classe': classe.id}) }}"><i class="fa fa-link" aria-hidden="true"></i> {{ classe.personnages|length }} personnages</a>
+                    <a class="lm-btn lm-btn--sm" href="{{ path('classe.detail', {'classe': classe.id}) }}"><i class="fa fa-eye" aria-hidden="true"></i> Détail</a>
+                    <a class="lm-btn lm-btn--sm" href="{{ path('classe.update', {'classe': classe.id}) }}"><i class="fa fa-pencil" aria-hidden="true"></i> Modifier</a>
+                    <a class="lm-btn lm-btn--sm lm-btn--danger" href="{{ path('classe.delete', {'classe': classe.id}) }}"><i class="fa fa-eraser" aria-hidden="true"></i> Supprimer</a>
+                </div>
+            {% endif %}
+        </article>
+    {% else %}
+        <p class="lm-help">Aucune classe de ce type.</p>
+    {% endfor %}
+</div>
+{% endif %}

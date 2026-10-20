@@ -1,133 +1,83 @@
-<div class="col-md-6">
-    <div class="list-group mb-3">
+{#
+Candidature : avatar, nom, statut, message, décisions (Accepter, Rejeter, menu ⋯ avec Répondre et Mettre en attente).
+Variables : postulant, et le contexte de la page.
+#}
+{% import 'groupeSecondaire/fragment/_ui.twig' as ui %}
+{% set beta = app.user is not null and app.user.uiBeta %}
+{% set personnage = postulant.personnage %}
 
-        <div class="list-group-item">
-            <div class="text-center">
-                <a href="{{ path('personnage.trombine', {'personnage': postulant.personnage.id}) }}">
-                    {% if postulant.personnage.trombineUrl %}
-                        <img class="media-object w-auto rounded-2 border border-2 border-secondary"
-                             style="max-height:250px;max-width: 250px"
-                             src="{{ path('personnage.trombine', {'personnage' : postulant.personnage.id }) }}"
-                             alt=""/>
-                    {% else %}
-                        <img class="media-object w-auto rounded-2 border-2  border-secondary"
-                             style="max-height:250px;max-width: 250px"
-                             src="{{ app.request.basepath }}/img/no_trombine.png"/>
-                    {% endif %}
-                </a>
+<div class="border-bottom">
+    <div class="{{ beta ? 'lm-member' : 'd-flex flex-wrap align-items-center gap-3 px-3 py-2' }}">
+        {{ ui.avatar(personnage, beta) }}
+
+        {# Identité #}
+        <div class="{{ beta ? 'lm-member-id' : 'flex-grow-1 min-w-0' }}">
+            <div>
+                {% if isAdmin %}
+                    <a class="link-gamemaster fw-semibold" href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">
+                        <i class="fa fa-feather" title="Lien scénariste" data-bs-toggle="tooltip" data-bs-placement="top"></i>
+                        {{ personnage.publicName }}</a>
+                {% else %}
+                    <strong>{{ personnage.publicName }}</strong>
+                {% endif %}
             </div>
+            {% if postulant.waiting %}
+                <div class="mt-1">{{ ui.badge('Mis en attente', 'info', beta) }}</div>
+            {% endif %}
         </div>
 
-        <div class="list-group-item">
-            Personnage :
+        {# Participation, date, liens et religion #}
+        <div class="{{ beta ? 'lm-member-meta' : 'd-flex flex-column small text-body-secondary' }}">
+            {% if gn %}
+                {% if inscriptions[personnage.id] is defined %}
+                    <span class="text-success">Inscrit à {{ gn.label }}</span>
+                {% else %}
+                    <span class="text-warning"><i class="fa fa-warning" aria-hidden="true"></i> Ne participe pas à {{ gn.label }}</span>
+                {% endif %}
+            {% endif %}
+            {% if postulant.date %}
+                <span>Demande du {{ postulant.date|date('d/m/Y') }}</span>
+            {% endif %}
             {% if isAdmin %}
-                <a class="link-gamemaster"
-                   href="{{ path('personnage.detail', {'personnage':postulant.personnage.id}) }}">
-                    <i class="fa fa-feather" data-toggle="tooltip"
-                       data-placement="top"
-                       title="Lien scénariste"></i> {{ postulant.personnage.publicname }}
-                </a>
-            {% else %}
-                {{ postulant.personnage.publicname }}
+                {% if personnage.groupe %}
+                    <a class="link-gamemaster" href="{{ path('groupe.detail', {'groupe': personnage.groupe.id}) }}"><i class="fa fa-feather" aria-hidden="true"></i> {{ personnage.groupe.nom }}</a>
+                {% endif %}
+                {% if personnage.user %}
+                    <a class="link-gamemaster" href="{{ path('user.view', {'user': personnage.user.id}) }}"><i class="fa fa-feather" aria-hidden="true"></i> {{ personnage.user.username }}</a>
+                {% endif %}
+            {% endif %}
+            {% if groupeSecondaire.isReligion %}
+                {% for personnageReligion in personnage.personnagesReligions %}
+                    <span>{{ personnageReligion.religion.label }} ({{ personnageReligion.religionLevel.label }})</span>
+                {% endfor %}
             {% endif %}
         </div>
 
-        {% if isAdmin %}
-            {% if postulant.personnage.groupe %}
-                <div class="list-group-item">
-                    Groupe :
-                    <a class="link-gamemaster"
-                       href="{{ path('groupe.detail', {'groupe': postulant.personnage.groupe.id}) }}">
-                        <i class="fa fa-feather" data-toggle="tooltip"
-                           data-placement="top"
-                           title="Info scénariste"></i>
-                        {{ postulant.personnage.groupe.nom }}
-                    </a>
-                </div>
-            {% endif %}
-
-            {% if postulant.personnage.user %}
-                <div class="list-group-item">
-                    Utilisateur :
-                    <a class="link-gamemaster"
-                       href="{{ path('user.view', {'user': postulant.personnage.user.id}) }}">
-                        <i class="fa fa-feather" data-toggle="tooltip"
-                           data-placement="top"
-                           title="Info scénariste"></i>
-                        {{ postulant.personnage.user.username }}
-                    </a>
-                </div>
-            {% endif %}
-        {% endif %}
-
-        {% if groupeSecondaire.secondaryGroupType.isReligion %}
-            <div class="list-group-item">
-                Religions du postulant :
-                <ul class="list-group list-group-flush w-100 m-0 p-0">
-                    {% for personnageReligion in postulant.personnage.personnagesReligions %}
-                        <li class="list-group-item w-100 m-0 p-0 d-flex justify-content-between lh-lg">
-                            <div>{{ personnageReligion.religion.label }}</div>
-                            <div>
-                                <span class="badge rounded-pill bg-secondary">{{ personnageReligion.religionLevel.label }}</span>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
-
-        {% if postulant.date %}
-            <div class="list-group-item">
-                Date de la demande
-                : {{ postulant.date|date('Y-m-d') }}
-            </div>
-        {% endif %}
-
-        {% if postulant.waiting %}
-            <div class="list-group-item">
-                Statut :
-                <span class="text-info">
-                                        Mis en attente
-                                    </span>
-            </div>
-        {% endif %}
-
-        {% if not postulant.personnage.participeTo(gn) %}
-            <div class="list-group-item">
-                Inscription :
-                <span class="text-warning">
-                                        <i class="fa fa-warning"></i> Ne participe pas à {{ gn.label }}
-                                    </span>
-            </div>
-        {% endif %}
-
-        <div class="list-group-item">
-            Message de candidature :<br/>
-            <div class="panel border border-1 rounded-2">
-                {{ postulant.explanation|markdown_to_html }}
-            </div>
-        </div>
-
+        {# Décisions : alignées à droite, dans la même colonne que les actions des membres #}
         {% if canManage %}
-            <div class="list-group-item">
-                <div class="list-group-item-text d-flex justify-content-around mt-2">
-                    <a class="btn btn-secondary"
-                       href="{{ path('groupeSecondaire.postulant.remove', {'groupeSecondaire': groupeSecondaire.id,'postulant': postulant.id}) }}">
-                        Rejeter</a>
-                    <a class="btn btn-secondary"
-                       href="{{ path('groupeSecondaire.postulant.response', {'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id }) }}">
-                        Répondre</a>
-                    {% if not postulant.waiting %}
-                        <a class="btn btn-secondary"
-                           href="{{ path('groupeSecondaire.postulant.wait', {'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id }) }}">
-                            Mettre en attente</a>
-                    {% endif %}
-                    <a class="btn btn-secondary"
-                       href="{{ path('groupeSecondaire.postulant.accept', {'groupeSecondaire': groupeSecondaire.id,'postulant': postulant.id}) }}">
-                        Accepter</a>
+            <div class="{{ beta ? 'lm-member-actions' : 'd-flex gap-2 align-items-center ms-auto' }}">
+                <a class="{{ ui.btn('primary', beta, true) }}"
+                   href="{{ path('groupeSecondaire.postulant.accept', {'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}">Accepter</a>
+                <a class="{{ ui.btn('danger', beta, true) }}"
+                   href="{{ path('groupeSecondaire.postulant.remove', {'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}">Rejeter</a>
+                <div class="dropdown">
+                    <button class="{{ ui.more_button(beta) }}" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                            aria-label="Répondre, mettre en attente"><i class="fa fa-ellipsis" aria-hidden="true"></i></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{{ path('groupeSecondaire.postulant.response', {'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}"><i class="fa fa-reply" aria-hidden="true"></i> Répondre</a></li>
+                        {% if not postulant.waiting %}
+                            <li><a class="dropdown-item" href="{{ path('groupeSecondaire.postulant.wait', {'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}"><i class="fa fa-hourglass-half" aria-hidden="true"></i> Mettre en attente</a></li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
+        {% else %}
+            <span></span>
         {% endif %}
+    </div>
 
+    <div class="px-3 pb-3">
+        <div class="small text-body-secondary">Message de candidature</div>
+        <div class="gs-prose">{{ postulant.explanation|markdown_to_html }}</div>
     </div>
 </div>

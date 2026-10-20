@@ -7,12 +7,12 @@
 {% endblock %}
 
 {% block body %}
-    {# Nécessite assets/styles/lm-design.css chargé dans base.html.twig #}
+    {# Page générée : source dans .local/design-tools/design-body.html (non versionné). #}
     <style>
 .doc{max-width:980px;margin:0 auto;background:var(--lm-bg);padding:var(--lm-s5);border:1px solid var(--lm-line);border-radius:var(--lm-radius-lg);display:flex;flex-direction:column;gap:var(--lm-s6);font:400 1rem/1.6 var(--lm-font-body);color:var(--lm-fg)}
 .doc h1,.doc h2,.doc h3,.doc h4{font-family:var(--lm-font-display);text-wrap:balance;line-height:1.25;color:var(--lm-fg)}
 .doc h1{font-size:clamp(1.7rem,5vw,2.4rem);margin:.2rem 0 .6rem;letter-spacing:.02em}
-.doc h2{font-size:1.4rem;margin:0 0 var(--lm-s4);padding-bottom:var(--lm-s2);border-bottom:1px solid var(--lm-line)}
+.doc h2{font-size:1.4rem;margin:0 0 var(--lm-s4);padding-bottom:var(--lm-s2);border-bottom:1px solid var(--lm-line);scroll-margin-top:1rem}
 .doc h3{font-size:1.05rem;margin:var(--lm-s5) 0 var(--lm-s3);letter-spacing:.04em}
 .doc-kicker{font:400 .75rem var(--lm-font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--lm-accent)}
 .doc-lead{color:var(--lm-muted);font-size:1.1rem;max-width:68ch;margin:0 0 var(--lm-s4)}
@@ -23,7 +23,13 @@
 .doc .doc-rules{margin:0;padding-left:1.2rem;display:grid;gap:var(--lm-s2);align-content:start}
 .doc .doc-sec,.doc .lm-stack{min-width:0}
 .doc h4.lm-page-title{font-size:1.4rem}
-@media (max-width:640px){.doc h2{font-size:1.2rem}}
+.doc .doc-toc{background:var(--lm-surface);border:1px solid var(--lm-line);border-radius:var(--lm-radius-lg);padding:var(--lm-s4)}
+.doc .doc-toc h2.doc-toc-title{font-size:1rem;margin:0 0 var(--lm-s3);padding:0;border:0;letter-spacing:.06em;text-transform:uppercase;color:var(--lm-muted)}
+.doc .doc-toc ol{list-style:none;margin:0;padding:0;columns:2;column-gap:var(--lm-s6)}
+.doc .doc-toc li{break-inside:avoid;margin:0}
+.doc .doc-toc a{display:block;padding:6px 0;min-height:32px;color:var(--lm-link);text-decoration:none}
+.doc .doc-toc a:hover{text-decoration:underline}
+@media (max-width:640px){.doc h2{font-size:1.2rem}.doc .doc-toc ol{columns:1}}
     </style>
 {% verbatim %}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -84,15 +90,18 @@
 <div class="doc">
 
 <header class="doc-head">
-  <div class="doc-kicker">Guide de style · v0.14 · Bootstrap 5.3</div>
+  <div class="doc-kicker">Guide de style · v0.27 · Bootstrap 5.3</div>
   <h1>Template de design LarpManager</h1>
   <p class="doc-lead">Référence unique pour les couleurs, les rôles d'information, les composants et les gabarits de page. Chaque bloc ci-dessous est utilisable tel quel avec <code>lm-design.css</code> et se transpose en widgets Flutter ou React Native à partir des mêmes tokens.</p>
   
+  
 </header>
+
+<nav class="doc-toc" id="sommaire" aria-label="Sommaire"><h2 class="doc-toc-title">Sommaire</h2><ol><li><a href="#sec-1">1. Décisions de cette version</a></li><li><a href="#sec-2">2. Couleurs et rôles</a></li><li><a href="#sec-2b">2b. Lisibilité sur la photo de fond</a></li><li><a href="#sec-3">3. Boutons et actions</a></li><li><a href="#sec-4">4. Cartes, indicateurs, fiches</a></li><li><a href="#sec-4b">4b. Compétences : affinité et coût en XP</a></li><li><a href="#sec-4c">4c. Participants : états et chaîne de personnages</a></li><li><a href="#sec-4d">4d. Jeu de domaine : conseil et indicateurs</a></li><li><a href="#sec-4e">4e. Chronologie des opus et des inter-jeux</a></li><li><a href="#sec-4f">4f. Groupes transverses</a></li><li><a href="#sec-5">5. Listes, tableaux, filtres</a></li><li><a href="#sec-5b">5b. Actions de ligne, pagination et listes longues</a></li><li><a href="#sec-6">6. Formulaires</a></li><li><a href="#sec-7">7. Gabarits de page</a></li><li><a href="#sec-8">8. Zones du site</a></li><li><a href="#sec-9">9. Correspondances avec l'existant</a></li><li><a href="#sec-10">10. Chantiers de migration vers la bêta</a></li><li><a href="#sec-11">11. Historique des versions</a></li></ol></nav>
 
 <!-- ===================== 1. DÉCISIONS ===================== -->
 <section class="doc-sec">
-  <h2>1. Décisions de cette version</h2>
+  <h2 id="sec-1">1. Décisions de cette version</h2>
   <div class="lm-table-wrap"><table class="lm-table">
     <thead><tr><th>Sujet</th><th>Constat</th><th>Décision</th></tr></thead>
     <tbody>
@@ -111,7 +120,7 @@
 
 <!-- ===================== 2. COULEURS ===================== -->
 <section class="doc-sec">
-  <h2>2. Couleurs et rôles</h2>
+  <h2 id="sec-2">2. Couleurs et rôles</h2>
   <p class="doc-note">Un rôle = une couleur + une icône + un libellé. La couleur seule ne porte jamais le sens.</p>
   <div class="lm-grid-2">
     <div class="lm-stack">
@@ -176,9 +185,29 @@
 --lm-objet-bleu #1E88E5  --lm-objet-orange #FF9800   (figés, hors thème)</pre>
 </section>
 
+<!-- ===================== 2b. LISIBILITÉ ===================== -->
+<section class="doc-sec">
+  <h2 id="sec-2b">2b. Lisibilité sur la photo de fond</h2>
+  <p class="doc-note">Constat sur la page d'un groupe transverse : le titre et les onglets, posés directement sur la photo de fond, deviennent illisibles là où l'image est claire. La règle est qu'aucun texte de navigation ou d'en-tête ne repose sans fond sur la photo. Un voile appliqué à toute l'image a été essayé puis retiré : il ternissait la photo, qui fait partie de l'identité du site.</p>
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <div class="lm-card"><div class="lm-card-body lm-stack">
+      <div class="lm-tabs" role="tablist" aria-label="Exemple" style="border-radius:6px">
+        <a class="lm-tab" aria-current="page" href="#">Présentation</a><a class="lm-tab" href="#">Membres <span class="lm-count">87</span></a><a class="lm-tab" href="#">Postulants <span class="lm-count">17</span></a><a class="lm-tab" data-role="gm" href="#"><svg class="lm-ico"><use href="#i-feather"/></svg>Scénarisation</a>
+      </div>
+      <p class="doc-note" style="margin:0">Bandeau d'onglets en verre dépoli ; l'onglet de scénarisation porte le violet et la plume et se place en dernier.</p>
+    </div></div>
+    <ul class="doc-rules">
+      <li><b>Photo de fond intacte</b> : aucun voile global. La lisibilité est assurée par des panneaux placés derrière le texte, pas par une image atténuée.</li>
+      <li><b>Verre dépoli</b> : l'en-tête de page et le bandeau d'onglets sont des panneaux translucides (<code>--lm-surface</code> à 80-85 %) avec un flou d'arrière-plan de 6 px. La photo reste visible à travers, le texte garde le contraste. Le compteur d'un onglet est une pastille.</li>
+      <li><b>Pied de page</b> en verre dépoli, avec un filet haut et une marge de 2 rem au-dessus pour le détacher du contenu.</li>
+      <li>Un onglet peut porter la couleur et l'icône d'un rôle (<code>data-role</code>) : c'est la signature du contenu qu'il ouvre (plume et violet pour la scénarisation). Un onglet à audience restreinte se place <b>en dernier</b>, après les onglets communs.</li>
+      <li>Un onglet qui ne contient qu'une carte ou un tableau pleine largeur n'est pas entouré d'un second cadre.</li>
+    </ul>
+  </div>
+</section>
 <!-- ===================== 3. BOUTONS ===================== -->
 <section class="doc-sec">
-  <h2>3. Boutons et actions</h2>
+  <h2 id="sec-3">3. Boutons et actions</h2>
   <div class="lm-grid-2">
     <div class="lm-card"><div class="lm-card-body lm-stack">
       <div class="lm-actions">
@@ -206,7 +235,7 @@
 
 <!-- ===================== 4. CARTES ===================== -->
 <section class="doc-sec">
-  <h2>4. Cartes, indicateurs, fiches</h2>
+  <h2 id="sec-4">4. Cartes, indicateurs, fiches</h2>
   <div class="lm-kpis">
     <a class="lm-kpi" href="#"><span class="lm-kpi-value">1 675</span><span class="lm-kpi-label">Inscrits</span></a>
     <a class="lm-kpi" href="#"><span class="lm-kpi-value">278</span><span class="lm-kpi-label">PNJ</span></a>
@@ -244,7 +273,7 @@
 
 <!-- ===================== 4b. AFFINITÉ ===================== -->
 <section class="doc-sec">
-  <h2>4b. Compétences : affinité et coût en XP</h2>
+  <h2 id="sec-4b">4b. Compétences : affinité et coût en XP</h2>
   <p class="doc-note">Constat sur « Ajout de compétence » : la favorite est une étoile verte (<code>text-success</code>), la méconnue un visage rouge (<code>text-danger</code>). Vert et rouge disent « réussite » et « erreur » partout ailleurs, et la méconnue n'est pas une erreur. L'offerte n'a pas d'équivalent visible dans la liste.</p>
   <div class="lm-grid-2" style="margin-top:1rem">
     <div class="lm-stack">
@@ -341,7 +370,7 @@
 
 <!-- ===================== 4c. PARTICIPATION ===================== -->
 <section class="doc-sec">
-  <h2>4c. Participants : états et chaîne de personnages</h2>
+  <h2 id="sec-4c">4c. Participants : états et chaîne de personnages</h2>
   <p class="doc-note">Constat dans le code : le PNJ (<code>search.twig</code>) et l'archétype de secours (<code>PersonnageRoleType</code>) utilisent la <b>même icône</b> (<code>fa-masks-theater</code>), et le « ancien PJ » (<code>fa-hourglass-end</code>) ressemble à la substitution (<code>fa-hourglass-half</code>). Les lettres P / S / R / A existent déjà dans l'enum : elles sont conservées comme repère commun à toutes les listes.</p>
 
   <h3>Type et état d'un participant</h3>
@@ -439,11 +468,19 @@
       <li>Dans les listes : type + nom de classe, jamais l'illustration. L'illustration en pied reste pour la fiche.</li>
       <li>La compétence acquise à la création (Torture pour le Bourreau, Vol pour le Brigand…) est un bon sous-titre de ligne.</li>
     </ul>
+
+  <h3>Grille des compétences et matrice des classes (bêta)</h3>
+  <ul class="doc-rules" style="margin-top:.5rem">
+    <li><b>/competence</b> : une carte par famille ; pour chacun des quatre niveaux, le coût normal, le coût favorite (étoile, vert) et le coût méconnue (point d'interrogation, ambre) ; description repliée avec « Lire la suite ». Un joueur voit les coûts des quatre niveaux mais seulement la description du niveau Apprenti non secret.</li>
+    <li><b>/classe</b> : filtre par type (combat, social, savoir, avec l'effectif), puis matrice familles × classes. Une case porte au plus les signes cadeau (offerte, bleu ciel), étoile (favorite, vert) ou point d'interrogation (méconnue, ambre) ; l'absence de signe signifie coût normal.</li>
+    <li>La classe du personnage du joueur est mise en évidence (colonne cuivrée et badge « Votre classe »).</li>
+    <li>Sur mobile, la matrice défile horizontalement dans son cadre, la colonne des familles restant fixe.</li>
+  </ul>
   </div></section>
 
 <!-- ===================== 4d. DOMAINE ===================== -->
 <section class="doc-sec">
-  <h2>4d. Jeu de domaine : conseil et indicateurs</h2>
+  <h2 id="sec-4d">4d. Jeu de domaine : conseil et indicateurs</h2>
   <p class="doc-note">Sur « Jeu de domaine » d'un groupe (<code>/groupe/2/detail/domaine/…</code>), tout est au même gabarit : une boîte en gros caractères par rôle ou par chiffre, avec un bouton info cyan. Un même personnage tient souvent plusieurs rôles (Nom_3545 est suzerain, intendant, éminence grise et diplomate) : ce cumul se lit difficilement d'un coup d'œil. La page affiche « Chef de guerre » là où la liste des rôles du jeu de domaine indique « stratège » : libellé à harmoniser.</p>
   <h3>Le conseil : un siège par rôle</h3>
   <div class="sample lm-stack">
@@ -476,7 +513,7 @@
 
 <!-- ===================== 4e. CHRONOLOGIE ===================== -->
 <section class="doc-sec">
-  <h2>4e. Chronologie des opus et des inter-jeux</h2>
+  <h2 id="sec-4e">4e. Chronologie des opus et des inter-jeux</h2>
   <p class="doc-note">Les opus sont LH1 à LH7 (le prochain est LH8) : environ tous les 2 ans réels, 5 ans en jeu. Entre deux opus, un inter-jeu enchaîne des actions de jeu (vieillissement, effet de sanctuaire, verrouillage des fiches, impression des enveloppes, ouverture du scanner d'objets). Aucun écran ne les situe actuellement dans le temps : la chronologie est un composant partageable entre fiche GN, groupe et personnage.</p>
   <div class="sample">
     <ol class="lm-timeline">
@@ -510,7 +547,7 @@
 
 <!-- ===================== 4f. GROUPES TRANSVERSES ===================== -->
 <section class="doc-sec">
-  <h2>4f. Groupes transverses</h2>
+  <h2 id="sec-4f">4f. Groupes transverses</h2>
   <p class="doc-note">La page <code>/groupeSecondaire/1/detail</code> empile : description publique de cinq paragraphes en pleine largeur, description secrète, serveur Discord, chef et scénariste, matériel, intrigues, liste des postulants, liste des membres en cartes-photo (avec « Ne voit pas les secrets » et deux boutons par membre), puis les listes d'e-mails. Le premier écran est occupé par du texte long, et les actions par membre occupent plus de place que l'information.</p>
   <div class="lm-grid-2" style="margin-top:1rem">
     <div class="lm-stack">
@@ -538,12 +575,17 @@
     <li>Postulants : une file de décisions, au-dessus des membres. Accepter en cuivre, Rejeter en rouge contouré, « Répondre » et « Mettre en attente » dans le menu ⋯.</li>
     <li>Membres : ligne compacte (avatar 44 px, nom, statut, accès). Contacter, Promouvoir et Retirer passent dans le menu ⋯. Les photos plein format deviennent une vue en cartes en option.</li>
     <li>Les listes d'e-mails se copient depuis un bouton « Copier les e-mails » du menu, sans occuper deux blocs.</li>
+    <li><b>Type en badge</b> : confrérie, guilde, religion ou groupe s'affichent dans un badge neutre avec une icône (livre, marteau, mains en prière, personnes), sans couleur : c'est une catégorie, pas un état. L'en-tête ne répète pas « Groupe transverse », déjà indiqué par le fil d'Ariane.</li>
+    <li><b>Ordre des onglets</b> : Présentation, Membres, Postulants, E-mails, puis Scénarisation en dernier (audience restreinte). L'onglet E-mails est réservé à ceux qui gèrent le groupe (responsable et administrateurs) ; les membres simples ne le voient pas.</li>
+    <li>Le bouton de modification s'intitule « Modifier le groupe transverse » : le terme couvre tous les types (confrérie, guilde, religion, groupe).</li>
+    <li>Les membres affichent leurs actions (Contacter, Promouvoir ou Rétrograder, Retirer) en boutons sur écran large, comme au §5b.</li>
+    <li>Donnée à vérifier : deux types « Confrérie » existent en base de développement (identifiants 1 et 2).</li>
   </ul>
 </section>
 
 <!-- ===================== 5. TABLEAUX ===================== -->
 <section class="doc-sec">
-  <h2>5. Listes, tableaux, filtres</h2>
+  <h2 id="sec-5">5. Listes, tableaux, filtres</h2>
   <div class="lm-stack">
     <div class="lm-filters">
       <label class="lm-search"><span class="sr-only" style="position:absolute;left:-9999px">Recherche</span>
@@ -575,9 +617,75 @@
   </ul>
 </section>
 
+<!-- ===================== 5b. ACTIONS, PAGINATION ===================== -->
+<section class="doc-sec">
+  <h2 id="sec-5b">5b. Actions de ligne, pagination et listes longues</h2>
+
+  <h3>Colonne d'actions</h3>
+  <div class="lm-table-wrap"><table class="lm-table lm-table--cards">
+    <thead><tr><th>Groupe</th><th>Type</th><th class="num">Membres</th><th style="text-align:right">Actions</th></tr></thead>
+    <tbody>
+      <tr><td class="lm-cell-main" data-label="Groupe"><a href="#">Confrérie du savoir</a></td><td data-label="Type">Confrérie</td><td class="num" data-label="Membres">87</td>
+        <td style="text-align:right"><div class="lm-actions lm-actions--end"><a class="lm-btn lm-btn--sm" href="#">Voir</a><a class="lm-btn lm-btn--sm" href="#">Modifier</a><a class="lm-btn lm-btn--sm lm-btn--primary" href="#">Postuler</a></div></td></tr>
+      <tr><td class="lm-cell-main" data-label="Groupe"><a href="#">Guilde des forgerons</a></td><td data-label="Type">Guilde</td><td class="num" data-label="Membres">41</td>
+        <td style="text-align:right"><div class="lm-actions lm-actions--end"><a class="lm-btn lm-btn--sm" href="#">Voir</a><button class="lm-btn lm-btn--sm" type="button">Actions <svg class="lm-ico"><use href="#i-more"/></svg></button></div></td></tr>
+    </tbody>
+  </table></div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li><b>À droite</b> : la colonne d'actions termine la ligne de lecture. À gauche, seulement une case de sélection.</li>
+    <li><b>Trois actions ou moins</b> : toutes visibles, en boutons avec libellé.</li>
+    <li><b>Quatre actions ou plus</b> : l'action principale (Voir) reste visible, les autres sont dans un bouton « Actions ». L'action destructive est toujours séparée et en rouge.</li>
+    <li><b>Mobile</b> : la ligne devient une carte et les actions passent dans un menu ⋯ (cible de 44 px).</li>
+    <li><b>Actions groupées</b> : quand des lignes sont cochées, une barre d'actions groupées apparaît au-dessus de la liste.</li>
+    <li><b>Colonnes alignées</b> : une liste de lignes riches (membres, postulants) réserve une colonne d'actions de largeur fixe. Les colonnes restent alignées d'une ligne à l'autre et les actions s'arrêtent toutes au même bord droit, quel que soit le nombre de boutons de la ligne.</li>
+    <li>Un lien d'action voisin d'un bouton devient un bouton (voir §10).</li>
+  </ul>
+
+  <h3>Pagination</h3>
+  <div class="sample lm-stack">
+    <div class="lm-pager">
+      <span class="lm-pager-summary">1 à 25 sur 5 739</span>
+      <ul class="lm-pager-pages" aria-label="Pages">
+        <li><span aria-disabled="true">Précédent</span></li>
+        <li><a href="#" aria-current="page">1</a></li><li><a href="#">2</a></li><li><a href="#">3</a></li><li><a href="#">4</a></li>
+        <li><span class="is-gap">…</span></li><li><a href="#">230</a></li>
+        <li><a href="#">Suivant</a></li>
+      </ul>
+      <label class="lm-pager-size">Lignes <select class="lm-field" id="d-pager-size"><option>25</option><option>50</option><option>100</option></select></label>
+    </div>
+  </div>
+  <p class="doc-note">Constat : les listes affichent des numéros de page centrés (1 2 3 4 … 574), en haut et en bas, sans total, sans choix du nombre de lignes et sans saut de page.</p>
+  <ul class="doc-rules" style="margin-top:.5rem">
+    <li><b>Résumé</b> toujours affiché (« 1 à 25 sur 5 739 »).</li>
+    <li><b>Nombre de lignes</b> au choix : 25, 50, 100, conservé dans l'URL.</li>
+    <li><b>Précédent et Suivant</b> avec libellé ; au-delà de 10 pages, un champ « aller à la page ».</li>
+    <li>Contrôles en bas de liste, et en haut seulement si la liste dépasse 25 lignes.</li>
+    <li>Page courante en cuivre plein (<code>aria-current="page"</code>), cibles de 44 px au minimum.</li>
+  </ul>
+
+  <h3>Textes longs et listes longues</h3>
+  <div class="lm-stack" style="margin-top:.5rem">
+    <div class="lm-card"><div class="lm-card-body lm-stack">
+      <p style="margin:0;max-width:68ch">Ils savent beaucoup de choses. Et ils le savent. Cette conscience aiguë de leur érudition est sans doute l'un des traits les plus partagés par les membres de la Confrérie du Savoir…</p>
+      <a href="#">Lire la suite</a>
+    </div></div>
+    <div class="lm-card">
+      <div class="lm-card-head"><h4 class="lm-card-title">Membres <span class="lm-count">87</span></h4><input class="lm-field" id="d-more-search" type="search" placeholder="Rechercher un membre" style="max-width:220px;min-height:34px"></div>
+      <div class="lm-member"><span class="lm-avatar">NM</span><div class="lm-member-id"><b>Nom_794</b></div><div class="lm-member-meta"><span>Inscrit à LH7</span></div><div class="lm-member-actions"><a class="lm-btn lm-btn--sm" href="#">Contacter</a></div></div>
+      <div class="lm-more"><button class="lm-btn" type="button">Afficher 25 de plus (25 sur 87)</button></div>
+    </div>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li><b>Texte long</b> : replié sur quelques lignes avec « Lire la suite », dans les listes comme dans les fiches (par exemple les descriptions de <code>/groupeSecondaire</code>).</li>
+    <li><b>Liste de plus de 25 lignes</b> dans un onglet : « Afficher plus » par paquets de 25 avec un champ de recherche, plutôt que des numéros de page. Aucune requête supplémentaire, et la recherche remplace la recherche du navigateur sur des lignes masquées.</li>
+    <li><b>Liste pleine page</b> (résultats filtrés, plusieurs milliers de lignes) : pagination serveur comme ci-dessus.</li>
+    <li><b>Ligne de membre</b> : avatar, nom, informations et actions en colonnes alignées ; elle demande une largeur d'au moins 40 rem (pleine largeur de page), en dessous elle passe en trois colonnes (sous 768 px).</li>
+    <li>Photo en miniature : lien vers la photo en grand ; une fenêtre modale est préférable à un nouvel onglet.</li>
+  </ul>
+</section>
 <!-- ===================== 6. FORMULAIRES ===================== -->
 <section class="doc-sec">
-  <h2>6. Formulaires</h2>
+  <h2 id="sec-6">6. Formulaires</h2>
   <form class="lm-card lm-card-body lm-form" onsubmit="return false">
     <div><label class="lm-label is-required" for="d-nom">Nom du territoire</label><input class="lm-field" id="d-nom" value="Aquilonie"></div>
     <div><label class="lm-label" for="d-type">Type</label>
@@ -591,7 +699,7 @@
 
 <!-- ===================== 7. GABARITS ===================== -->
 <section class="doc-sec">
-  <h2>7. Gabarits de page</h2>
+  <h2 id="sec-7">7. Gabarits de page</h2>
 
   <h3>Détail d'un personnage</h3>
   <div class="sample lm-stack">
@@ -646,7 +754,7 @@
 
 <!-- ===================== 8. ZONES ===================== -->
 <section class="doc-sec">
-  <h2>8. Zones du site</h2>
+  <h2 id="sec-8">8. Zones du site</h2>
   <p class="doc-note">Le menu actuel (<code>templates/menu.twig</code>) compte 8 entrées. La couleur d'un rôle ne teinte jamais toute une zone : elle marque seulement les blocs dont l'audience est restreinte. Une zone se reconnaît à son icône et à son titre ; ce tableau fixe l'icône et le traitement.</p>
   <div class="lm-table-wrap"><table class="lm-table lm-table--cards">
     <thead><tr><th>Entrée</th><th>Contenu</th><th>Icône</th><th>Traitement</th></tr></thead>
@@ -701,7 +809,7 @@
 
 <!-- ===================== 9. MAPPING ===================== -->
 <section class="doc-sec">
-  <h2>9. Correspondances avec l'existant</h2>
+  <h2 id="sec-9">9. Correspondances avec l'existant</h2>
   <div class="lm-table-wrap"><table class="lm-table">
     <thead><tr><th>Aujourd'hui</th><th>Remplacer par</th></tr></thead>
     <tbody>
@@ -720,31 +828,54 @@
 
 <!-- ===================== 10. CHANTIERS ===================== -->
 <section class="doc-sec">
-  <h2>10. Chantiers de migration vers la bêta</h2>
+  <h2 id="sec-10">10. Chantiers de migration vers la bêta</h2>
   <p class="doc-note">Suivi des éléments déjà couverts par l'habillage bêta et de ceux qui restent à traiter. « Habillage » signifie une règle CSS sous <code>html[data-ui="beta"]</code> sans modification de gabarit ; « Gabarit » signifie une modification de template.</p>
   <div class="lm-table-wrap"><table class="lm-table">
     <thead><tr><th>Chantier</th><th>Périmètre constaté</th><th>Moyen</th><th>État</th></tr></thead>
     <tbody>
       <tr><td><b>Menus, panneau « Actions », onglets, listes, formulaires</b></td><td>Navigation, offcanvas, tableaux, pagination, modales, badges Bootstrap</td><td>Habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
       <tr><td><b>Encadrés info, confirmation, avertissement, erreur</b></td><td><code>_partials/cardNotif.twig</code> (69 fichiers, 105 usages), <code>alert alert-*</code> (17 fichiers, 27 usages), <code>_partials/alert.twig</code></td><td>Habillage + attribut <code>data-role</code> dans <code>cardNotif.twig</code></td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> remplacement par <code>callout.twig</code> optionnel</td></tr>
-      <tr><td><b>Blocs de scénarisation</b></td><td><code>card border-gamemaster</code> (8 fichiers), <code>text-gamemaster</code> (9 fichiers), <code>alert-gamemaster</code></td><td>Habillage</td><td><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-clock"/></svg>Partiel</span> à contrôler page par page</td></tr>
-      <tr><td><b>Cadres administratifs</b></td><td><code>card border-danger</code> avec icône <code>fa-user-ninja</code> (fiche GN, fiche utilisateur). À inspecter : <code>/gn</code>, <code>/gn/7/groupes</code></td><td>Habillage (<code>:has(.fa-user-ninja)</code>) puis <code>data-role="admin"</code></td><td><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-clock"/></svg>Partiel</span></td></tr>
-      <tr><td><b>Liens d'action voisins d'un bouton</b></td><td>Règle : un lien qui déclenche une action et se trouve à proximité d'un bouton devient un bouton secondaire (<code>lm-btn</code>). À relever au fil des pages.</td><td>Gabarit</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>À faire</span></td></tr>
+      <tr><td><b>Blocs de scénarisation</b></td><td><code>card border-gamemaster</code> (8 fichiers), <code>text-gamemaster</code> (9 fichiers), <code>alert-gamemaster</code></td><td>Habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> <code>data-role="gm"</code> posé sur les cadres de la fiche groupe, de l'objet et du résumé personnage ; cadres secrets de la fiche territoire posés (v0.20) ; descriptions scénariste en texte violet laissées en l'état</td></tr>
+      <tr><td><b>Cadres administratifs</b></td><td><code>card border-danger</code> avec icône <code>fa-user-ninja</code> (fiche GN, fiche utilisateur)</td><td><code>data-role="admin"</code> explicite ; « Jeu de domaine » en rôle <code>domaine</code> (tour de château en bêta)</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>Liens d'action voisins d'un bouton</b></td><td>Règle : un lien qui déclenche une action et se trouve à proximité d'un bouton devient un bouton secondaire (<code>lm-btn</code>). Fait sur <code>/gn/{id}/groupes</code> (actions du bloc scénarisation) et sur <code>/gn/{id}</code> (Participer, listes des groupes) ; liste dans <code>docs/plans/cadres-roles.md</code>.</td><td>Gabarit</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> appliqué aux colonnes d'actions, aux boutons d'en-tête des listes et aux pages de GN ; à relever au fil des pages</td></tr>
       <tr><td><b>En-têtes de carte par rôle</b></td><td><code>/stats/list</code> (Admin, Orga, Scénarisation, Jeu de domaine)</td><td>Attribut <code>data-role</code> + habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> icônes à décider</td></tr>
       <tr><td><b>Who's who imprimable</b></td><td><code>/stats/whoswho/{gn}</code> et route <code>/print</code></td><td>Gabarit d'impression commun</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
-      <tr><td><b>Groupes transverses</b></td><td><code>/groupeSecondaire/{id}/detail</code> : onglets par route, requêtes avec jointures</td><td>Session dédiée</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>Planifié</span></td></tr>
-      <tr><td><b>Compétences, classes</b></td><td><code>/competence</code> (grille compacte, affinité de classe), <code>/classe</code> (filtre par type, matrice classes × familles)</td><td>Gabarit</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>À faire</span></td></tr>
+      <tr><td><b>Groupes transverses</b></td><td><code>/groupeSecondaire/{id}/detail</code> : onglets par route, requêtes avec jointures</td><td>Session dédiée</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>Compétences, classes</b></td><td><code>/competence</code> (grille compacte, affinité de classe), <code>/classe</code> (filtre par type, matrice classes × familles)</td><td>Gabarit</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> détails des fiches non retouchés (habillage général)</td></tr>
+          <tr><td><b>Repasse générale des listes</b></td><td>Tableaux, filtres, colonne d'actions, pagination (<code>/user/list</code>, <code>/groupeSecondaire</code>, <code>/personnage/list</code>…), selon §5 et §5b</td><td>Gabarit</td><td><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-clock"/></svg>Partiel</span> pagination, filtres, actions et cartes en bêta ; actions de ligne traitées par script (<code>lm-lists.js</code>), à contrôler liste par liste</td></tr>
+      <tr><td><b>Liste des groupes transverses</b></td><td>« Lire la suite » sur les descriptions, actions de ligne ; URL canonique <code>/groupeTransverse</code> avec <code>/groupeSecondaire</code> en alias</td><td>Gabarit et routes</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>Listes de plus de 25 lignes dans un onglet</b></td><td>« Afficher plus » et recherche (membres, postulants)</td><td>Gabarit</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>Photo en grand</b></td><td>Fenêtre modale (<code>dialog</code>) à la place du nouvel onglet : avatars des groupes transverses ; trombinoscope de la fiche personnage inclus ; les autres affichages de photos ne sont pas des liens (rien à raccorder)</td><td>Gabarit et script</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>Types de groupe en double</b></td><td>Doublon « Confrérie » (id 2, sans groupe) supprimé de la base locale et de la production</td><td>Données</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>Lisibilité sur la photo de fond</b></td><td>Verre dépoli (en-tête, onglets, pied de page), photo de fond intacte</td><td>Habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>          <tr><td><b>Badge de type dans la liste des groupes</b></td><td>Colonne « Type » de <code>/groupeSecondaire</code> : badge neutre avec icône, comme dans l'en-tête de groupe</td><td>Gabarit</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>E-mails dans l'onglet Membres</b></td><td>Décision : l'onglet E-mails dédié est conservé, pas de bloc repliable</td><td>Gabarit</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>Colonnes alignées, verre dépoli, ordre des onglets</b></td><td>Groupes transverses (membres, postulants, en-tête, onglets)</td><td>Habillage et gabarit</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>      <tr><td><b>Territoires</b></td><td><code>/territoire</code> (fiches sur verre dépoli, hiérarchie royaume / région / fief, ancres « Contient », « Lire la suite ») et fiche (cadres secrets)</td><td>Gabarit</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>Mode sombre ou clair</b></td><td>Mémorisé par compte dans <code>user.ui_theme</code> (jetons <code>beta</code> et <code>light</code>), bouton du menu</td><td>Gabarit, script, route</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
+      <tr><td><b>Mobile (375 px)</b></td><td>Contrôle de débordement horizontal : territoires, groupes transverses (tous les onglets), compétences, classes, GN, fiche personnage, formulaires (utilisateur, personnage, GN, territoire) ; corrections des barres de boutons, des blasons et du trombinoscope</td><td>Habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> contrôle automatique sous Chromium (émulation 375 px), à confirmer sur appareil réel</td></tr>
     </tbody>
   </table></div>
 </section>
 
 <!-- ===================== 11. HISTORIQUE ===================== -->
 <section class="doc-sec">
-  <h2>11. Historique des versions</h2>
-  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque publication. Version actuelle : <b>v0.14</b>.</p>
+  <h2 id="sec-11">11. Historique des versions</h2>
+  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque mise à jour de la page ; le numéro de publication de la copie en ligne peut différer. Version actuelle : <b>v0.27</b>.</p>
   <div class="lm-table-wrap"><table class="lm-table">
     <thead><tr><th>Version</th><th>Contenu</th></tr></thead>
     <tbody>
+      <tr><td>v0.27</td><td>Mobile : fiche personnage, formulaires et onglets des groupes contrôlés à 375 px ; trombinoscope de la fiche personnage (modale photo, image contenue dans sa colonne) ; doublon « Confrérie » purgé en production.</td></tr>
+      <tr><td>v0.26</td><td>Démo « Textes longs et listes longues » : la ligne de membre passe en pleine largeur (colonnes alignées) ; modules JS communs <code>lm-ui.js</code> et <code>lm-lists.js</code>.</td></tr>
+      <tr><td>v0.25</td><td>Repasse : territoires, mode sombre ou clair mémorisé, photo en grand (modale), classes en onglets (Classes, Affinités), corrections mobile, boutons de la fiche GN, état du backlog (§10) mis à jour.</td></tr>
+      <tr><td>v0.24</td><td>Pages <code>/competence</code> et <code>/classe</code> en bêta : grille compacte par famille avec les quatre niveaux et leur coût en XP (normal, favorite, méconnue), filtre de classes par type (combat, social, savoir), matrice classes × familles (favorite, offerte, méconnue) avec mise en évidence de la classe du joueur, « Lire la suite » sur les descriptions.</td></tr>
+      <tr><td>v0.23</td><td>Liste des territoires : hiérarchie visible (bloc décalé selon le niveau, rail à gauche, icône couronne / carte / repère pour royaume, région et fief) et ancres dans « Contient » vers les blocs concernés.</td></tr>
+      <tr><td>v0.22</td><td>Photo en grand dans une fenêtre modale (lien <code>data-lm-photo</code>, élément <code>dialog</code> : Échap, clic sur le fond ou bouton pour fermer ; le lien garde son comportement normal avec Ctrl ou Cmd) ; boutons <code>btn-default</code> habillés comme les boutons secondaires (bordure visible).</td></tr>
+      <tr><td>v0.21</td><td>Liste des territoires : fiches sur verre dépoli (lisibles sur la photo) et descriptions longues repliées avec « Lire la suite ».</td></tr>
+      <tr><td>v0.20</td><td>Territoires : les cadres « espion » de la fiche territoire (quêtes commerciales, jeu stratégique, statut, bonus d'origine, description secrète) passent en rôle secret ; les boutons et libellés violets restent des marques de scénarisation.</td></tr>
+      <tr><td>v0.19</td><td>Cadres de rôle (<code>data-role</code> explicite : administratif, scénarisation, secret, attention, information, domaine) ; actions des groupes en boutons.</td></tr>
+      <tr><td>v0.18</td><td>Sommaire cliquable en tête de page ; sources du guide conservées hors du dépôt (dossier local ignoré).</td></tr>
+      <tr><td>v0.17</td><td>Repasse des listes en bêta : pagination complète (résumé, 25 / 50 / 100, aller à la page), barre de filtres repliable avec puces, colonne d'actions (3 visibles, menu au-delà, menu ⋯ sur mobile), « Afficher plus » dans les onglets de groupe, liste des groupes transverses (type en badge, lire la suite, URL canonique <code>/groupeTransverse</code>).</td></tr>
+      <tr><td>v0.16</td><td>Verre dépoli à la place du voile sur la photo, colonnes alignées dans les listes de lignes, badge de type, ordre des onglets.</td></tr>
+      <tr><td>v0.15</td><td>Lisibilité sur la photo de fond, actions de ligne, pagination, listes longues, retours sur les groupes transverses.</td></tr>
       <tr><td>v0.14</td><td>Numéro de version aligné sur les publications ; historique des versions.</td></tr>
       <tr><td>v0.13</td><td>Section « Chantiers de migration vers la bêta ».</td></tr>
       <tr><td>v0.12</td><td>Reformulation sur un ton neutre et factuel.</td></tr>
@@ -764,5 +895,6 @@
 </section>
 
 </div>
+
 {% endverbatim %}
 {% endblock %}

@@ -1,0 +1,5 @@
+{# Texte long replié (« Lire la suite »), 68 caractères de large. Variables : id, html, long (bool), extra (classe), auto (bool : le lien disparaît si le texte tient dans son cadre, voir assets/lm-ui.js). #}
+<div class="gs-prose gs-clamp{% if extra is defined %} {{ extra }}{% endif %}{% if not long %} is-open{% endif %}"{% if auto|default(false) %} data-lm-clamp-auto{% endif %} id="{{ id }}">{{ html }}</div>
+{% if long %}
+    <p class="mt-2 mb-0"><a href="#{{ id }}" data-gs-toggle="#{{ id }}" aria-expanded="false" aria-controls="{{ id }}">Lire la suite</a></p>
+{% endif %}

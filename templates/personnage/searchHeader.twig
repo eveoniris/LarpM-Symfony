@@ -1,3 +1,14 @@
+{% macro choiceLabel(field) %}
+    {%- set v = field.vars.value -%}
+    {%- if v is not iterable and v is not null and v != '' -%}
+        {%- for c in field.vars.choices -%}
+            {%- if c.choices is defined -%}
+                {%- for cc in c.choices -%}{%- if cc.value == v -%}{{ cc.label|trans }}{%- endif -%}{%- endfor -%}
+            {%- elseif c.value == v -%}{{ c.label|trans }}{%- endif -%}
+        {%- endfor -%}
+    {%- endif -%}
+{% endmacro %}
+{% import _self as lmf %}
 {% set formPath = formPath is defined ? formPath : 'personnage.list' %}
 {% set formParams = formParams is defined ? formParams : {} %}
 {% set displayAdminToolbar = displayAdminToolbar is defined ? displayAdminToolbar : true %}
@@ -11,7 +22,9 @@
             <h5>Liste des personnages <small>( {{ paginator|length }} personnages )</small></h5>
         </div>
 
-        {% if displayAdminToolbar %}
+        {% if displayAdminToolbar and app.user is not null and app.user.uiBeta %}
+            <div class="lm-actions"><a class="lm-btn" title="Ajouter un personnage" href="{{ path('personnage.admin.add') }}"><i class="fa fa-plus" aria-hidden="true"></i> Ajouter</a></div>
+        {% elseif displayAdminToolbar %}
             <div class="btn-toolbar" role="toolbar" aria-label="...">
                 <div class="btn-group" role="group" aria-label="...">
                     <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
@@ -23,7 +36,43 @@
             </div>
         {% endif %}
 
-        {% if displaySearchFilter %}
+        {% if displaySearchFilter and app.user is not null and app.user.uiBeta %}
+            {# Interface bêta : recherche visible, autres filtres dans un panneau « Filtres (n) », puces des filtres actifs. #}
+            {% set _filters = {'type': 'Dans', 'religion': 'Religion', 'competence': 'Compétence', 'classe': 'Classe', 'groupe': 'Groupe', 'vivant': 'Statut', 'scenariste': 'Scénariste'} %}
+            {% set _chips = [] %}
+            {% for name, label in _filters %}
+                {% set _text = lmf.choiceLabel(attribute(form, name))|trim %}
+                {% if _text != '' %}{% set _chips = _chips|merge([label ~ ' : ' ~ _text]) %}{% endif %}
+            {% endfor %}
+            {% set _term = form.value.vars.value|default('') %}
+            <div class="lm-list-filters search" data-turbo="false" role="search">
+                {{ form_start(form, {"action": path(formPath, formParams), 'attr': {'class': 'lm-filters'}}) }}
+                {% if app.request.query.get('order_by') %}
+                    <input type="hidden" name="order_by" value="{{ app.request.query.get('order_by') }}">
+                    <input type="hidden" name="order_dir" value="{{ app.request.query.get('order_dir') }}">
+                {% endif %}
+                <div class="lm-search">{{ form_widget(form.value, {'attr': {'class': 'lm-field', 'aria-label': 'Rechercher'}}) }}</div>
+                <button type="submit" class="lm-btn lm-btn--primary"><i class="fa fa-search" aria-hidden="true"></i> Rechercher</button>
+                <details class="lm-filter-panel"{% if _chips|length > 0 %} open{% endif %}>
+                    <summary class="lm-btn lm-btn--sm"><i class="fa fa-sliders" aria-hidden="true"></i> Filtres ({{ _chips|length }})</summary>
+                    <div class="lm-filter-panel-body lm-filters">
+                        {% for name, label in _filters %}
+                            <div>{{ form_widget(attribute(form, name), {'attr': {'class': 'lm-field', 'aria-label': label}}) }}</div>
+                        {% endfor %}
+                    </div>
+                </details>
+                {{ form_end(form) }}
+                {% if _term != '' or _chips|length > 0 %}
+                    <div class="lm-actions">
+                        <ul class="lm-chips" aria-label="Filtres actifs" style="list-style:none;margin:0;padding:0">
+                            {% if _term != '' %}<li class="lm-chip">Recherche : {{ _term }}</li>{% endif %}
+                            {% for chip in _chips %}<li class="lm-chip">{{ chip }}</li>{% endfor %}
+                        </ul>
+                        <a class="lm-btn lm-btn--text" href="{{ path(formPath, formParams) }}">Réinitialiser</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% elseif displaySearchFilter %}
             <ul class="list-group search">
                 <li class="list-group-item">
                     <div class="btn-toolbar" role="toolbar" aria-label="..." data-turbo="false">

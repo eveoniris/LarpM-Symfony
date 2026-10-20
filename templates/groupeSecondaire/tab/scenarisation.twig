@@ -1,0 +1,39 @@
+{% import 'groupeSecondaire/fragment/_ui.twig' as ui %}
+{% set beta = app.user is not null and app.user.uiBeta %}
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="{{ beta ? 'lm-card' : 'card' }}">
+            <div class="{{ beta ? 'lm-card-head' : 'card-header' }}">
+                <h4 class="{{ beta ? 'lm-card-title' : 'h6 mb-0' }}"><i class="fa fa-box" aria-hidden="true"></i> Matériel</h4>
+            </div>
+            <div class="{{ beta ? 'lm-card-body' : 'card-body' }}">
+                <p class="gs-prose">{{ groupeSecondaire.materiel|default('Aucun matériel renseigné') }}</p>
+                <div class="{{ beta ? 'lm-actions' : 'd-flex flex-wrap gap-2' }}">
+                    <a href="{{ path('groupeSecondaire.materiel.update', {'groupeSecondaire': groupeSecondaire.id}) }}"
+                       class="{{ ui.btn('default', beta, true) }}">Modifier</a>
+                    <a href="{{ path('groupeSecondaire.materiel.print', {'groupeSecondaire': groupeSecondaire.id}) }}"
+                       class="{{ ui.btn('default', beta, true) }}">Impression</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="{{ beta ? 'lm-card' : 'card' }}">
+            <div class="{{ beta ? 'lm-card-head' : 'card-header' }}">
+                <h4 class="{{ beta ? 'lm-card-title' : 'h6 mb-0' }}"><i class="fa fa-scroll" aria-hidden="true"></i> Intrigues <span class="{{ beta ? 'lm-count' : 'badge text-bg-secondary' }}">{{ intrigues|length }}</span></h4>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for intrigueHasGroupeSecondaire in intrigues %}
+                    <a class="list-group-item list-group-item-action"
+                       href="{{ path('intrigue.detail', {'intrigue': intrigueHasGroupeSecondaire.intrigue.id}) }}">
+                        {{ intrigueHasGroupeSecondaire.intrigue.titre }}
+                    </a>
+                {% else %}
+                    <div class="list-group-item text-body-secondary">Aucune intrigue liée</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
