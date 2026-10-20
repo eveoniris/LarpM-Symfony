@@ -46,8 +46,25 @@ Les cinq en-têtes `border-warning` portent tous l'icône espion et l'infobulle 
 
 Hiérarchie (v0.23) : bloc décalé selon le niveau (`data-level` 0 à 2, au lieu du simple retrait du texte), rail à gauche, icône couronne / carte / repère (couleurs neutres, pour ne pas empiéter sur les rôles), `id="terr-{id}"` sur chaque bloc et liens dans « Contient » (ids vérifiés uniques sur 83 blocs, aucun lien mort).
 
+## Comparaison HTML hors bêta (2026-10-21)
+
+Méthode : compte administrateur sans bêta, 23 pages dumpées avec `curl` sur la base de développement, une fois avec les gabarits et contrôleurs de `origin/main` (avant le chantier) et une fois avec `main`, puis diff normalisé (barre de debug, jetons, horodatages et empreintes des assets retirés).
+
+| Page | Écart hors bêta |
+|---|---|
+| `/`, `/gn`, `/competence`, `/competence/1`, `/classe/12`, `/personnage/list`, `/stats/list`, `/user/list` | aucun (hors lien de menu « Groupes transverses » et bouton du thème, communs à toutes les pages) |
+| `/gn/1` | attributs `data-role` sur 2 cadres, espaces blancs |
+| `/gn/1/groupes` | espaces blancs |
+| `/territoire`, `/classe` | espaces blancs (« Contient », en-tête) |
+| `/territoire/1`, `/groupe/2`, `/personnage/4`, `/user/{id}`, `/user/{id}/edit` | attributs `data-role` seulement (sans effet visuel hors bêta) |
+| `/groupeSecondaire` | URL canonique `/groupeTransverse` (décision connue), espaces blancs |
+| `/groupeSecondaire/1/detail` | page refondue en onglets (voulu, hors périmètre de la bêta) |
+
+Communs à toutes les pages : lien de menu `/groupeTransverse` (alias `/groupeSecondaire` conservé) et `data-theme-url` / `data-theme-token` sur le bouton du thème (mémorisation sombre ou clair).
+
 ## Points ouverts
 
 - Territoires : tranché, les en-têtes `border-warning` sont des blocs secrets (icône espion), ni domaine ni attention.
 - Autres listes de liens voisins de boutons à relever au fil des pages.
+- La comparaison HTML hors bêta est faite (voir ci-dessus).
 - Vérification visuelle faite sur `/gn/7` et `/gn/7/groupes` (desktop et 375 px) ; `/gn` non modifié (déjà habillé via `cardNotif`).

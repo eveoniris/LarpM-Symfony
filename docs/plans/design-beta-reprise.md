@@ -1,6 +1,6 @@
 # Interface bêta et guide de style : note de reprise
 
-Document de passation pour poursuivre le chantier dans une nouvelle conversation. État au guide v0.22.
+Document de passation pour poursuivre le chantier dans une nouvelle conversation. État au guide v0.26.
 
 ## Objectif
 
@@ -64,12 +64,21 @@ Si `design-body.html` est perdu, il se reconstruit depuis `templates/index/desig
 
 Habillage bêta (navigation, menus, panneau « Actions », onglets, listes, formulaires, badges, encadrés), page `/design` et guide, détail des groupes transverses en onglets (444 requêtes ramenées à 14-19), Who's who imprimable, en-têtes de `/stats/list` par rôle, repasse des listes (pagination, filtres, actions, « Afficher plus »), cadres de rôle explicites (`data-role`) sur les blocs réservés et actions de `/gn/{id}/groupes` en boutons (suivi : `docs/plans/cadres-roles.md`), polices auto-hébergées (Cinzel, Source Sans 3, JetBrains Mono), panneau de bois en WebP en variante.
 
-## Chantiers restants (voir aussi section 10 du guide)
+## Chantiers faits depuis la note initiale (guide v0.20 à v0.26)
 
-- `territoire/detail.twig` : en-tête `border-warning` à classer (domaine ou attention) et blocs `text-gamemaster` ; liste à puces « Participer ! / Liste des groupes » de `gn/detail.twig` ; autres liens d'action voisins d'un bouton à relever au fil des pages ; comparaison HTML avant/après hors bêta sur `/gn` non faite.
-- Pages `/competence` et `/classe` (grille compacte, filtre par type, matrice classes et familles).
-- Photo en grand dans une fenêtre modale : faite (v0.22) pour les avatars des groupes transverses ; autres trombinoscopes (`groupe/fragment`, `whoswho`, `personnage/fragment/trombinoscope`) à raccorder au besoin avec `data-lm-photo`.
-- E-mails des groupes transverses : décision du 2026-10-20, l'onglet E-mails seul est conservé (pas de bloc repliable dans Membres).
-- Donnée : doublon « Confrérie » (id 2, 0 groupe) supprimé de la base locale ; suppression en production à faire à la main par le mainteneur (contrôler avant : `SELECT COUNT(*) FROM secondary_group WHERE secondary_group_type_id = 2`).
-- Thème sombre/clair : fait. Mémorisé dans `user.ui_theme` sous forme de jetons (`beta`, `light`, séparés par une espace), sans migration ; route `POST /user/theme` (jeton CSRF `lm_theme`), attribut `data-bs-theme` posé côté serveur.
-- Tests à faire sur mobile (375 px) pour les dernières pages.
+Territoires (liste et fiche : cadres secrets, hiérarchie, ancres, « Lire la suite »), `/competence` et `/classe` (grille, onglets Classes et Affinités, matrice colorée ; suivi `docs/plans/competence-classe.md`), photo en grand en modale, mode sombre ou clair mémorisé dans `user.ui_theme`, boutons de la fiche GN, corrections mobile à 375 px, comparaison HTML hors bêta (voir `docs/plans/cadres-roles.md`).
+
+Factorisation JavaScript : `assets/lm-ui.js` (« Lire la suite », copie des e-mails, modale photo) et `assets/lm-lists.js` (tableaux de liste bêta : actions de ligne, cartes mobiles, « Afficher plus »), tous deux importés par `assets/app.js`. Plus aucun script en ligne dans les gabarits concernés.
+
+## Décisions prises
+
+- Bloc E-mails des groupes transverses : l'onglet E-mails seul est conservé.
+- Doublon de type « Confrérie » (id 2, sans groupe) : supprimé de la base locale ; suppression en production à faire à la main (`SELECT COUNT(*) FROM secondary_group WHERE secondary_group_type_id = 2` doit renvoyer 0).
+- Messages de commit sans ligne `Co-Authored-By`.
+
+## Chantiers restants
+
+- Tests à 375 px des fiches personnage, formulaires et onglets Postulants, Scénarisation et E-mails des groupes.
+- Autres trombinoscopes à raccorder à la modale photo (`data-lm-photo`) : `groupe/fragment`, `statistique/whoswho`, `personnage/fragment/trombinoscope`.
+- Découper `lm-design.css` (environ 750 lignes) par domaine, partiel Twig commun pour les en-têtes de carte à icône de rôle.
+- Mise en production sur demande : push de `main`, fusion dans `prod`, puis migration doctrine (aucune nouvelle migration dans ce chantier), `importmap:install`, `asset-map:compile`, `cache:clear --env=prod`.
