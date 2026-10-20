@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Entity\Connaissance;
+use App\Enum\Role;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -15,6 +17,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConnaissanceType extends AbstractType
 {
+    public function __construct(
+        private readonly Security $security,
+    ) {
+    }
+
     /**
      * Construction du formulaire.
      */
@@ -53,6 +60,18 @@ class ConnaissanceType extends AbstractType
             },
             'label' => 'Secret',
         ]);
+
+        // Écriture réservée aux règles (ADMIN hérite de ROLE_REGLE), lecture seule pour les autres
+        if ($this->security->isGranted(Role::REGLE->value)) {
+            $builder->add('transmission', TextareaType::class, [
+                'required' => false,
+                'label' => 'Transmission',
+                'attr' => [
+                    'class' => 'tinymce',
+                    'rows' => 5,
+                ],
+            ]);
+        }
     }
 
     /**

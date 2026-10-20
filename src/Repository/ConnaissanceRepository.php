@@ -84,6 +84,7 @@ class ConnaissanceRepository extends BaseRepository
             ...parent::searchAttributes(),
             $alias . '.label', // => 'Libellé',
             $alias . '.description', // => 'Description',
+            $alias . '.transmission', // => 'Transmission',
             $alias . '.contraintes', // => 'Prérequis',
         ];
     }
@@ -116,6 +117,7 @@ class ConnaissanceRepository extends BaseRepository
         return [
             ...parent::translateAttributes(),
             'description' => $this->translator->trans('Description', domain: 'repository'),
+            'transmission' => $this->translator->trans('Transmission', domain: 'repository'),
             'label' => $this->translator->trans('Libellé', domain: 'repository'),
             'contraintes' => $this->translator->trans('Contraintes', domain: 'repository'),
         ];
