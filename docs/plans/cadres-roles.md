@@ -40,6 +40,10 @@ Suivi du chantier « blocs réservés » (guide v0.19). Principe : chaque bloc r
 
 Les cinq en-têtes `border-warning` portent tous l'icône espion et l'infobulle « Secret » : `data-role="secret"` posé sur la carte (liseré double or en bêta). Pour la carte « Description secrète », dont l'en-tête est dans un `.list-group-item`, trois règles CSS ajoutées. Le h6 « Description secrète » interne reste en `border-warning` (sous-titre, pas un cadre).
 
+## Liste des territoires (guide v0.21)
+
+`/territoire` : en bêta, chaque fiche (`territoire/fragment/territoire_item.twig`) porte `lm-territoire-item` (verre dépoli, comme les onglets) et la description de plus de 450 caractères est repliée avec « Lire la suite » (fragment `groupeSecondaire/fragment/clamp.twig` réutilisé). HTML inchangé hors bêta.
+
 ## Points ouverts
 
 - Territoires : tranché, les en-têtes `border-warning` sont des blocs secrets (icône espion), ni domaine ni attention.

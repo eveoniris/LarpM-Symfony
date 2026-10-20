@@ -657,3 +657,10 @@ body:has(.lm-pager-wrap[data-slot="2"]) .lm-pager-wrap[data-slot="1"][data-small
 .lm-more-tools[hidden], .lm-more [hidden], .lm-help[hidden] { display: none !important; }
 .lm-table .lm-cell-block { max-width: 46rem; text-align: left; }
 @media (max-width: 640px) { .lm-table--cards td > .lm-cell-block { flex: 1; min-width: 0; } }
+
+/* --- Liste des territoires : verre dépoli derrière chaque fiche (texte lisible sur la photo) --- */
+html[data-ui="beta"] .lm-territoire-item {
+  background: color-mix(in srgb, var(--lm-surface) 82%, transparent); backdrop-filter: blur(6px);
+  border: 1px solid var(--lm-line); border-radius: var(--lm-radius); margin-bottom: var(--lm-s2); color: var(--lm-fg); --bs-body-bg: color-mix(in srgb, var(--lm-surface) 92%, transparent);
+}
+html[data-ui="beta"] .lm-territoire-item .list-group-item-heading { font-family: var(--lm-font-display); }

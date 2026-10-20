@@ -1,7 +1,8 @@
 {% set step = t.stepCount %}
 {% set indent = '' %}
 {% if step == 1 %}{% set indent = 'ps-4' %}{% elseif step >= 2 %}{% set indent = 'ps-5' %}{% endif %}
-<li class="list-group-item {{ indent }}">
+{% set beta = app.user is not null and app.user.uiBeta %}
+<li class="list-group-item {{ indent }}{{ beta ? ' lm-territoire-item' : '' }}">
     <h4 class="list-group-item-heading">
         {{ t.nom }}
         ({% if t.appelation %}{{ t.appelation.label }}{% else %}<span class="text-warning">Attention, ce territoire n'a pas d'appelation</span>{% endif %})
@@ -17,7 +18,10 @@
         </div>
     </h4>
     <div class="list-group-item-text">
-        {% if t.description %}
+        {% if t.description and beta %}
+            {% set descriptionHtml %}{{ t.description|markdown_to_html }}{% endset %}
+            {% include 'groupeSecondaire/fragment/clamp.twig' with {'id': 'terr-desc-' ~ t.id, 'html': descriptionHtml, 'long': t.description|length > 450} %}
+        {% elseif t.description %}
             <p class="text-default">{{ t.description|markdown_to_html }}</p>
         {% else %}
             <p class="text-warning">Attention, ce territoire n'a pas de description</p>
