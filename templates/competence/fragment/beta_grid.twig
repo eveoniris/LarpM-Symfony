@@ -6,11 +6,14 @@
     {% set groups = groups|merge({(key): {'family': competence.competenceFamily, 'competences': (groups[key].competences|default([]))|merge([competence])}}) %}
 {% endfor %}
 
-<div class="lm-legend lm-actions" aria-label="Légende des coûts">
-    <span class="lm-help" style="margin:0">Coût en XP par niveau :</span>
-    <span class="lm-cost"><span>normal</span></span>
-    <span class="lm-cost" data-role="ok"><i class="fa fa-star" aria-hidden="true"></i> favorite</span>
-    <span class="lm-cost" data-role="warn"><i class="fa fa-circle-question" aria-hidden="true"></i> méconnue</span>
+<div class="lm-callout lm-legend" data-role="info" aria-label="Légende des coûts">
+    <p class="lm-callout-title"><i class="fa fa-circle-info" aria-hidden="true"></i> Coût en XP par niveau</p>
+    <p class="lm-help">Les trois tarifs de chaque niveau sont toujours affichés, quel que soit le personnage actif (ou l'absence de personnage). Le tarif appliqué à l'achat dépend de la classe du personnage pour la famille concernée.</p>
+    <div class="lm-actions">
+        <span class="lm-cost"><span>normal</span></span>
+        <span class="lm-cost" data-role="ok"><i class="fa fa-star" aria-hidden="true"></i> favorite : tarif réduit</span>
+        <span class="lm-cost" data-role="warn"><i class="fa fa-circle-question" aria-hidden="true"></i> méconnue : surcoût</span>
+    </div>
 </div>
 
 <div class="lm-familles">
@@ -63,6 +66,9 @@
                                     </span>
                                 {% endif %}
                             </div>
+                            {% if not competence and not (isAdmin or canViewAdmin) %}
+                                <p class="lm-help lm-niveau-reserve">Description non publique.</p>
+                            {% endif %}
                             {% if competence and competence.description %}
                                 {% set competenceHtml %}{{ competence.description|markdown_to_html }}{% endset %}
                                 {% include 'groupeSecondaire/fragment/clamp.twig' with {'id': 'comp-desc-' ~ competence.id, 'html': competenceHtml, 'long': competence.description|length > 220, 'extra': 'lm-clamp--sm'} %}

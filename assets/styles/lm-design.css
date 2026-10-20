@@ -691,8 +691,10 @@ html[data-ui="beta"] .lm-territoire-item[data-level="0"] .lm-territoire-level { 
 /* --- Compétences et classes : grille par famille, filtre de type, matrice des affinités --- */
 html[data-ui="beta"] .gs-clamp.lm-clamp--sm { max-height: 4.6em; }
 html[data-ui="beta"] .gs-clamp.lm-clamp--sm.is-open { max-height: none; }
-.lm-legend { margin-bottom: var(--lm-s3); }
-.lm-familles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: var(--lm-s3); align-items: start; }
+.lm-legend { margin-bottom: var(--lm-s4); }
+.lm-legend .lm-help { margin: 0 0 var(--lm-s2); }
+.lm-niveau-reserve { margin: var(--lm-s1) 0 0; font-style: italic; }
+.lm-familles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: var(--lm-s5, 1.5rem); align-items: start; }
 html[data-ui="beta"] .lm-famille, html[data-ui="beta"] .lm-classe, html[data-ui="beta"] .lm-carte-verre {
   background: color-mix(in srgb, var(--lm-surface) 82%, transparent); backdrop-filter: blur(6px);
   --bs-body-bg: color-mix(in srgb, var(--lm-surface) 92%, transparent);
