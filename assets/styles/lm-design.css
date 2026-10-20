@@ -687,6 +687,15 @@ html[data-ui="beta"] .lm-territoire-item[data-level="0"] .lm-territoire-level { 
   html[data-ui="beta"] .lm-territoire-item[data-level="2"] { margin-left: 1.5rem; }
 }
 
+/* Territoires : l'en-tête (titre et boutons) passe à la ligne au lieu de déborder sur mobile */
+html[data-ui="beta"] .lm-territoire-item .list-group-item-heading { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lm-s2) var(--lm-s3); }
+html[data-ui="beta"] .lm-territoire-item .list-group-item-heading .btn-group { float: none !important; flex-wrap: wrap; margin-left: auto; }
+html[data-ui="beta"] .lm-territoire-item { overflow-wrap: anywhere; min-width: 0; }
+@media (max-width: 640px) {
+  html[data-ui="beta"] .lm-territoire-item .list-group-item-heading { font-size: 1.15rem; }
+  html[data-ui="beta"] .lm-territoire-item .list-group-item-heading .btn-group { margin-left: 0; }
+}
+
 /* --- Compétences et classes : grille par famille, filtre de type, matrice des affinités --- */
 html[data-ui="beta"] .gs-clamp.lm-clamp--sm { max-height: 4.6em; }
 html[data-ui="beta"] .gs-clamp.lm-clamp--sm.is-open { max-height: none; }
@@ -740,15 +749,6 @@ html[data-ui="beta"] .lm-famille, html[data-ui="beta"] .lm-classe, html[data-ui=
   .lm-carte-verre { padding: var(--lm-s3); }
   .lm-matrice .lm-matrice-famille { min-width: 7.5rem; max-width: 8.5rem; font-size: .8rem; }
   .lm-niveau-actions { margin-left: 0; }
-}
-
-/* Territoires : l'en-tête (titre et boutons) passe à la ligne au lieu de déborder sur mobile */
-html[data-ui="beta"] .lm-territoire-item .list-group-item-heading { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lm-s2) var(--lm-s3); }
-html[data-ui="beta"] .lm-territoire-item .list-group-item-heading .btn-group { float: none !important; flex-wrap: wrap; margin-left: auto; }
-html[data-ui="beta"] .lm-territoire-item { overflow-wrap: anywhere; min-width: 0; }
-@media (max-width: 640px) {
-  html[data-ui="beta"] .lm-territoire-item .list-group-item-heading { font-size: 1.15rem; }
-  html[data-ui="beta"] .lm-territoire-item .list-group-item-heading .btn-group { margin-left: 0; }
 }
 
 /* Mobile : les barres de boutons d'en-tête passent à la ligne au lieu de déborder de la page */
