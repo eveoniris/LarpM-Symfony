@@ -387,7 +387,7 @@ html[data-ui="beta"] .btn-primary {
   --bs-btn-active-bg: color-mix(in srgb, var(--lm-accent) 78%, #000); --bs-btn-active-border-color: color-mix(in srgb, var(--lm-accent) 78%, #000);
   --bs-btn-active-color: var(--lm-on-accent);
 }
-html[data-ui="beta"] .btn-secondary {
+html[data-ui="beta"] .btn-secondary, html[data-ui="beta"] .btn-default {
   --bs-btn-bg: var(--lm-raised); --bs-btn-border-color: var(--lm-line); --bs-btn-color: var(--lm-fg);
   --bs-btn-hover-bg: var(--lm-raised); --bs-btn-hover-border-color: var(--lm-muted); --bs-btn-hover-color: var(--lm-fg);
   --bs-btn-active-bg: var(--lm-line); --bs-btn-active-border-color: var(--lm-muted); --bs-btn-active-color: var(--lm-fg);
@@ -664,3 +664,11 @@ html[data-ui="beta"] .lm-territoire-item {
   border: 1px solid var(--lm-line); border-radius: var(--lm-radius); margin-bottom: var(--lm-s2); color: var(--lm-fg); --bs-body-bg: color-mix(in srgb, var(--lm-surface) 92%, transparent);
 }
 html[data-ui="beta"] .lm-territoire-item .list-group-item-heading { font-family: var(--lm-font-display); }
+
+/* --- Photo en grand : fenêtre modale native --- */
+.lm-photo-dialog { border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); background: var(--lm-surface); color: var(--lm-fg); padding: var(--lm-s3); max-width: min(92vw, 720px); max-height: 92vh; overflow: auto; text-align: center; }
+.lm-photo-dialog::backdrop { background: rgba(0, 0, 0, .72); backdrop-filter: blur(3px); }
+.lm-photo-dialog img { max-width: 100%; max-height: 74vh; border-radius: var(--lm-radius); display: block; margin: 0 auto; }
+.lm-photo-dialog form { text-align: right; margin: 0 0 var(--lm-s2); }
+.lm-photo-close { min-width: 44px; min-height: 44px; border: 1px solid var(--lm-line); border-radius: var(--lm-radius); background: var(--lm-raised); color: var(--lm-fg); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+.lm-photo-caption { margin: var(--lm-s2) 0 0; font-family: var(--lm-font-display); }

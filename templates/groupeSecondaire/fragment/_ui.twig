@@ -33,7 +33,7 @@ Interface bêta (lm-design.css) : classes lm-*. Sinon : Bootstrap. `beta` vaut a
     {%- set initials = (parts[0]|first ~ (parts[1]|default('')|first))|upper -%}
     {%- set cls = (beta ? 'lm-avatar' : 'd-inline-flex align-items-center justify-content-center rounded-circle border fw-bold text-body-secondary') ~ ' gs-avatar' -%}
     {%- if personnage.trombineUrl -%}
-        <a class="{{ cls }}" href="{{ path('personnage.trombine', {'personnage': personnage.id}) }}" target="_blank" rel="noopener"
+        <a class="{{ cls }}" href="{{ path('personnage.trombine', {'personnage': personnage.id}) }}" target="_blank" rel="noopener"{% if beta %} data-lm-photo="{{ personnage.publicName }}"{% endif %}
            title="Ouvrir la photo en grand" aria-label="Ouvrir la photo de {{ personnage.publicName }} en grand">
             <img src="{{ path('personnage.trombine', {'personnage': personnage.id}) }}" alt="" loading="lazy" width="44" height="44">
         </a>

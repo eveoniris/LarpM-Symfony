@@ -1,6 +1,6 @@
 # Interface bêta et guide de style : note de reprise
 
-Document de passation pour poursuivre le chantier dans une nouvelle conversation. État au guide v0.19.
+Document de passation pour poursuivre le chantier dans une nouvelle conversation. État au guide v0.22.
 
 ## Objectif
 
@@ -68,7 +68,7 @@ Habillage bêta (navigation, menus, panneau « Actions », onglets, listes, form
 
 - `territoire/detail.twig` : en-tête `border-warning` à classer (domaine ou attention) et blocs `text-gamemaster` ; liste à puces « Participer ! / Liste des groupes » de `gn/detail.twig` ; autres liens d'action voisins d'un bouton à relever au fil des pages ; comparaison HTML avant/après hors bêta sur `/gn` non faite.
 - Pages `/competence` et `/classe` (grille compacte, filtre par type, matrice classes et familles).
-- Photo en grand dans une fenêtre modale.
+- Photo en grand dans une fenêtre modale : faite (v0.22) pour les avatars des groupes transverses ; autres trombinoscopes (`groupe/fragment`, `whoswho`, `personnage/fragment/trombinoscope`) à raccorder au besoin avec `data-lm-photo`.
 - E-mails des groupes transverses : option d'un bloc repliable dans l'onglet Membres.
 - Donnée : deux types « Confrérie » en base de développement, à contrôler en production.
 - Thème sombre/clair non mémorisé (à rattacher à `user.ui_theme`).
