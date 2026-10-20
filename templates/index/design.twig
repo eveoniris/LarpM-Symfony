@@ -90,7 +90,7 @@
 <div class="doc">
 
 <header class="doc-head">
-  <div class="doc-kicker">Guide de style · v0.19 · Bootstrap 5.3</div>
+  <div class="doc-kicker">Guide de style · v0.20 · Bootstrap 5.3</div>
   <h1>Template de design LarpManager</h1>
   <p class="doc-lead">Référence unique pour les couleurs, les rôles d'information, les composants et les gabarits de page. Chaque bloc ci-dessous est utilisable tel quel avec <code>lm-design.css</code> et se transpose en widgets Flutter ou React Native à partir des mêmes tokens.</p>
   
@@ -826,7 +826,7 @@
     <tbody>
       <tr><td><b>Menus, panneau « Actions », onglets, listes, formulaires</b></td><td>Navigation, offcanvas, tableaux, pagination, modales, badges Bootstrap</td><td>Habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
       <tr><td><b>Encadrés info, confirmation, avertissement, erreur</b></td><td><code>_partials/cardNotif.twig</code> (69 fichiers, 105 usages), <code>alert alert-*</code> (17 fichiers, 27 usages), <code>_partials/alert.twig</code></td><td>Habillage + attribut <code>data-role</code> dans <code>cardNotif.twig</code></td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> remplacement par <code>callout.twig</code> optionnel</td></tr>
-      <tr><td><b>Blocs de scénarisation</b></td><td><code>card border-gamemaster</code> (8 fichiers), <code>text-gamemaster</code> (9 fichiers), <code>alert-gamemaster</code></td><td>Habillage</td><td><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-clock"/></svg>Partiel</span> <code>data-role="gm"</code> posé sur les cadres de la fiche groupe, de l'objet et du résumé personnage ; territoires à reprendre</td></tr>
+      <tr><td><b>Blocs de scénarisation</b></td><td><code>card border-gamemaster</code> (8 fichiers), <code>text-gamemaster</code> (9 fichiers), <code>alert-gamemaster</code></td><td>Habillage</td><td><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-clock"/></svg>Partiel</span> <code>data-role="gm"</code> posé sur les cadres de la fiche groupe, de l'objet et du résumé personnage ; cadres secrets de la fiche territoire posés (v0.20) ; descriptions scénariste en texte violet laissées en l'état</td></tr>
       <tr><td><b>Cadres administratifs</b></td><td><code>card border-danger</code> avec icône <code>fa-user-ninja</code> (fiche GN, fiche utilisateur)</td><td><code>data-role="admin"</code> explicite ; « Jeu de domaine » en rôle <code>domaine</code> (tour de château en bêta)</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
       <tr><td><b>Liens d'action voisins d'un bouton</b></td><td>Règle : un lien qui déclenche une action et se trouve à proximité d'un bouton devient un bouton secondaire (<code>lm-btn</code>). Fait sur <code>/gn/{id}/groupes</code> (actions du bloc scénarisation) ; liste dans <code>docs/plans/cadres-roles.md</code>.</td><td>Gabarit</td><td><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-clock"/></svg>Partiel</span> appliqué aux colonnes d'actions et aux boutons d'en-tête des listes</td></tr>
       <tr><td><b>En-têtes de carte par rôle</b></td><td><code>/stats/list</code> (Admin, Orga, Scénarisation, Jeu de domaine)</td><td>Attribut <code>data-role</code> + habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> icônes à décider</td></tr>
@@ -847,10 +847,11 @@
 <!-- ===================== 11. HISTORIQUE ===================== -->
 <section class="doc-sec">
   <h2 id="sec-11">11. Historique des versions</h2>
-  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque mise à jour de la page ; le numéro de publication de la copie en ligne peut différer. Version actuelle : <b>v0.19</b>.</p>
+  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque mise à jour de la page ; le numéro de publication de la copie en ligne peut différer. Version actuelle : <b>v0.20</b>.</p>
   <div class="lm-table-wrap"><table class="lm-table">
     <thead><tr><th>Version</th><th>Contenu</th></tr></thead>
     <tbody>
+      <tr><td>v0.20</td><td>Territoires : les cadres « espion » de la fiche territoire (quêtes commerciales, jeu stratégique, statut, bonus d'origine, description secrète) passent en rôle secret ; les boutons et libellés violets restent des marques de scénarisation.</td></tr>
       <tr><td>v0.19</td><td>Cadres de rôle (<code>data-role</code> explicite : administratif, scénarisation, secret, attention, information, domaine) ; actions des groupes en boutons.</td></tr>
       <tr><td>v0.18</td><td>Sommaire cliquable en tête de page ; sources du guide conservées hors du dépôt (dossier local ignoré).</td></tr>
       <tr><td>v0.17</td><td>Repasse des listes en bêta : pagination complète (résumé, 25 / 50 / 100, aller à la page), barre de filtres repliable avec puces, colonne d'actions (3 visibles, menu au-delà, menu ⋯ sur mobile), « Afficher plus » dans les onglets de groupe, liste des groupes transverses (type en badge, lire la suite, URL canonique <code>/groupeTransverse</code>).</td></tr>

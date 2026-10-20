@@ -538,6 +538,9 @@ html[data-ui="beta"] .card[data-role] > .card-header, html[data-ui="beta"] .card
   background: transparent; border-bottom: 0; padding-bottom: 0;
   font: 700 .78rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--role-text);
 }
+html[data-ui="beta"] .card[data-role] > .list-group-item > .card-header { background: transparent; border-bottom: 0; padding-bottom: 0; font: 700 .78rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--role-text); }
+html[data-ui="beta"] .card[data-role] > .list-group-item { background: transparent; border: 0; }
+html[data-ui="beta"] .card[data-role] > .list-group-item > .card-header i { color: var(--role-text) !important; }
 html[data-ui="beta"] .card[data-role] > .card-header i, html[data-ui="beta"] .card.border-gamemaster > .card-header i, html[data-ui="beta"] .card.border-danger:has(.fa-user-ninja) > .card-header i { color: var(--role-text) !important; }
 /* --- Cadres de rôle dont le titre est dans un .header (au lieu d'un .card-header) : même titre en petites capitales --- */
 html[data-ui="beta"] .card[data-role] > .header { padding: .5rem 1rem 0; border: 0; background: transparent; }

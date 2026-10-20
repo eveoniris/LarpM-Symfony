@@ -19,7 +19,8 @@ Suivi du chantier « blocs réservés » (guide v0.19). Principe : chaque bloc r
 | `groupe/addTerritoire.twig`, `groupeGn/fiche_retour_edit.twig`, `classe/fragment/competenceFamily.twig` | Attention | warn | fait |
 | `message/*`, `stock/*/index.twig`, `stock/index.twig` | Information / Attention | info, warn | fait |
 | `autreMonde`, `cosmogonie`, `espece` `detail.twig` | Titre d'élément scénarisation (`border-gamemaster border-bottom`, pas un cadre) | gm | laissé en l'état |
-| `territoire/detail.twig` | `card-header border-warning` (jeu de domaine probable) et plusieurs `text-gamemaster` | à décider | ouvert |
+| `territoire/detail.twig` | 5 cartes `card-header border-warning` à icône espion et titre « Secret » (quêtes commerciales, jeu stratégique, statut, bonus d'origine, description secrète) | secret | fait |
+| `territoire/detail.twig` | `text-gamemaster` (boutons « Modifier » en plume, « Description scénariste », icône de statut) | gm | laissé en l'état (marques inline, pas des cadres) |
 | `groupeSecondaire/*` | déjà en `lm-callout` et `data-role` | gm, secret | déjà fait |
 | `statistique/list.twig`, `_partials/cardNotif.twig` | déjà en `data-role` | divers | déjà fait |
 
@@ -35,8 +36,12 @@ Suivi du chantier « blocs réservés » (guide v0.19). Principe : chaque bloc r
 - `border-danger` et `border-warning` sont départagés par `data-role`, plus par la couleur Bootstrap. Les règles `:has(.fa-user-ninja)` et `.border-gamemaster` restent pour les gabarits non encore étiquetés.
 - CSS : titres posés dans `.header` (et non `.card-header`) pris en charge ; rôle secret avec liseré double.
 
+## Territoires (guide v0.20)
+
+Les cinq en-têtes `border-warning` portent tous l'icône espion et l'infobulle « Secret » : `data-role="secret"` posé sur la carte (liseré double or en bêta). Pour la carte « Description secrète », dont l'en-tête est dans un `.list-group-item`, trois règles CSS ajoutées. Le h6 « Description secrète » interne reste en `border-warning` (sous-titre, pas un cadre).
+
 ## Points ouverts
 
-- Territoires (`territoire/detail.twig`) : choisir domaine ou attention.
+- Territoires : tranché, les en-têtes `border-warning` sont des blocs secrets (icône espion), ni domaine ni attention.
 - Autres listes de liens voisins de boutons à relever au fil des pages.
 - Vérification visuelle faite sur `/gn/7` et `/gn/7/groupes` (desktop et 375 px) ; `/gn` non modifié (déjà habillé via `cardNotif`).
