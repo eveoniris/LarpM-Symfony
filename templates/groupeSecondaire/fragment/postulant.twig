@@ -7,10 +7,11 @@ Variables : postulant, et le contexte de la page.
 {% set personnage = postulant.personnage %}
 
 <div class="border-bottom">
-    <div class="{{ beta ? 'lm-member' : 'd-flex align-items-center gap-3 px-3 py-2' }}">
+    <div class="{{ beta ? 'lm-member' : 'd-flex flex-wrap align-items-center gap-3 px-3 py-2' }}">
         {{ ui.avatar(personnage, beta) }}
 
-        <div class="{{ beta ? '' : 'flex-grow-1 min-w-0' }}">
+        {# Identité #}
+        <div class="{{ beta ? 'lm-member-id' : 'flex-grow-1 min-w-0' }}">
             <div>
                 {% if isAdmin %}
                     <a class="link-gamemaster fw-semibold" href="{{ path('personnage.detail', {'personnage': personnage.id}) }}">
@@ -20,38 +21,41 @@ Variables : postulant, et le contexte de la page.
                     <strong>{{ personnage.publicName }}</strong>
                 {% endif %}
             </div>
-            <div class="{{ beta ? 'lm-member-meta' : 'd-flex flex-wrap gap-2 align-items-center small text-body-secondary' }}">
-                {% if postulant.waiting %}
-                    {{ ui.badge('Mis en attente', 'info', beta) }}
-                {% endif %}
-                {% if gn %}
-                    {% if inscriptions[personnage.id] is defined %}
-                        <span class="text-success">Inscrit à {{ gn.label }}</span>
-                    {% else %}
-                        <span class="text-warning"><i class="fa fa-warning" aria-hidden="true"></i> Ne participe pas à {{ gn.label }}</span>
-                    {% endif %}
-                {% endif %}
-                {% if postulant.date %}
-                    <span>Demande du {{ postulant.date|date('d/m/Y') }}</span>
-                {% endif %}
-                {% if isAdmin %}
-                    {% if personnage.groupe %}
-                        <a class="link-gamemaster" href="{{ path('groupe.detail', {'groupe': personnage.groupe.id}) }}"><i class="fa fa-feather" aria-hidden="true"></i> {{ personnage.groupe.nom }}</a>
-                    {% endif %}
-                    {% if personnage.user %}
-                        <a class="link-gamemaster" href="{{ path('user.view', {'user': personnage.user.id}) }}"><i class="fa fa-feather" aria-hidden="true"></i> {{ personnage.user.username }}</a>
-                    {% endif %}
-                {% endif %}
-                {% if groupeSecondaire.isReligion %}
-                    {% for personnageReligion in personnage.personnagesReligions %}
-                        <span>{{ personnageReligion.religion.label }} ({{ personnageReligion.religionLevel.label }})</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
+            {% if postulant.waiting %}
+                <div class="mt-1">{{ ui.badge('Mis en attente', 'info', beta) }}</div>
+            {% endif %}
         </div>
 
+        {# Participation, date, liens et religion #}
+        <div class="{{ beta ? 'lm-member-meta' : 'd-flex flex-column small text-body-secondary' }}">
+            {% if gn %}
+                {% if inscriptions[personnage.id] is defined %}
+                    <span class="text-success">Inscrit à {{ gn.label }}</span>
+                {% else %}
+                    <span class="text-warning"><i class="fa fa-warning" aria-hidden="true"></i> Ne participe pas à {{ gn.label }}</span>
+                {% endif %}
+            {% endif %}
+            {% if postulant.date %}
+                <span>Demande du {{ postulant.date|date('d/m/Y') }}</span>
+            {% endif %}
+            {% if isAdmin %}
+                {% if personnage.groupe %}
+                    <a class="link-gamemaster" href="{{ path('groupe.detail', {'groupe': personnage.groupe.id}) }}"><i class="fa fa-feather" aria-hidden="true"></i> {{ personnage.groupe.nom }}</a>
+                {% endif %}
+                {% if personnage.user %}
+                    <a class="link-gamemaster" href="{{ path('user.view', {'user': personnage.user.id}) }}"><i class="fa fa-feather" aria-hidden="true"></i> {{ personnage.user.username }}</a>
+                {% endif %}
+            {% endif %}
+            {% if groupeSecondaire.isReligion %}
+                {% for personnageReligion in personnage.personnagesReligions %}
+                    <span>{{ personnageReligion.religion.label }} ({{ personnageReligion.religionLevel.label }})</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        {# Décisions : alignées à droite, dans la même colonne que les actions des membres #}
         {% if canManage %}
-            <div class="{{ beta ? 'lm-actions' : 'd-flex gap-2 align-items-center' }}">
+            <div class="{{ beta ? 'lm-member-actions' : 'd-flex gap-2 align-items-center ms-auto' }}">
                 <a class="{{ ui.btn('primary', beta, true) }}"
                    href="{{ path('groupeSecondaire.postulant.accept', {'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}">Accepter</a>
                 <a class="{{ ui.btn('danger', beta, true) }}"

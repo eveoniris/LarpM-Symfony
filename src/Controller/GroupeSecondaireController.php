@@ -443,12 +443,13 @@ class GroupeSecondaireController extends AbstractController
             $tabs['postulants'] = 'Postulants';
         }
 
-        if ($this->can(self::IS_ADMIN)) {
-            $tabs['scenarisation'] = 'Scénarisation';
-        }
-
         if ($this->can(self::CAN_MANAGE)) {
             $tabs['emails'] = 'E-mails';
+        }
+
+        // Onglet réservé (rôle scénarisation) : en dernier, pour fermer la liste.
+        if ($this->can(self::IS_ADMIN)) {
+            $tabs['scenarisation'] = 'Scénarisation';
         }
 
         return $tabs;

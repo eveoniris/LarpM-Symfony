@@ -547,12 +547,8 @@ html[data-ui="beta"] .alert-danger { --role: var(--lm-err); }
 html[data-ui="beta"] .alert-gamemaster { --role: var(--lm-gm); }
 
 /* --- Lisibilité : voile sur la photo de fond, bandeau d'onglets, pied de page --- */
-html[data-ui="beta"] body {
-  background: linear-gradient(color-mix(in srgb, var(--lm-bg) 82%, transparent), color-mix(in srgb, var(--lm-bg) 90%, transparent)),
-              url("../img/landscape2.jpg") center / cover no-repeat fixed var(--lm-bg);
-}
-html[data-ui="beta"] footer { background: var(--lm-surface); border-top: 1px solid var(--lm-line); }
-.lm-tabs { background: var(--lm-surface); border: 1px solid var(--lm-line); border-bottom-color: var(--lm-line); border-radius: var(--lm-radius) var(--lm-radius) 0 0; padding: 0 var(--lm-s2); }
+html[data-ui="beta"] footer { background: color-mix(in srgb, var(--lm-surface) 82%, transparent); backdrop-filter: blur(6px); border-top: 1px solid var(--lm-line); margin-top: var(--lm-s6); }
+.lm-tabs { background: color-mix(in srgb, var(--lm-surface) 85%, transparent); backdrop-filter: blur(6px); border: 1px solid var(--lm-line); border-bottom-color: var(--lm-line); border-radius: var(--lm-radius) var(--lm-radius) 0 0; padding: 0 var(--lm-s2); }
 .lm-tab[data-role] { color: var(--role-text); }
 .lm-tab[data-role][aria-current="page"] { border-bottom-color: var(--role); background: color-mix(in srgb, var(--role) 14%, transparent); }
 /* Pas de second cadre quand l'onglet ne contient qu'une carte ou un tableau pleine largeur */
@@ -560,7 +556,7 @@ html[data-ui="beta"] .tab-content:has(> .tab-pane > .lm-card:only-child),
 html[data-ui="beta"] .tab-content:has(> .tab-pane > .card:only-child) { background: none; border: 0; padding: 0; }
 
 /* --- Ligne de membre : colonnes lisibles, actions visibles à droite --- */
-.lm-member { grid-template-columns: 44px minmax(0, 1.3fr) minmax(0, 1fr) auto; }
+.lm-member { grid-template-columns: 44px minmax(0, 1.3fr) minmax(0, 1fr) var(--lm-member-actions-w, 21rem); }
 .lm-member .gs-avatar { overflow: hidden; }
 .lm-member .gs-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .lm-member-meta { display: flex; flex-direction: column; gap: 2px; font-size: .85rem; color: var(--lm-muted); }
@@ -568,6 +564,7 @@ html[data-ui="beta"] .tab-content:has(> .tab-pane > .card:only-child) { backgrou
 @media (max-width: 767px) {
   .lm-member { grid-template-columns: 44px minmax(0, 1fr) auto; }
   .lm-member-meta { grid-column: 2 / 3; }
+  .lm-member > .lm-member-actions, .lm-member > .dropdown { grid-column: 3; grid-row: 1; }
 }
 
 /* --- Pagination et « Afficher plus » --- */
@@ -585,3 +582,9 @@ html[data-ui="beta"] .tab-content:has(> .tab-pane > .card:only-child) { backgrou
 .lm-pager-size { display: inline-flex; align-items: center; gap: var(--lm-s2); color: var(--lm-muted); }
 .lm-pager-size .lm-field { width: auto; min-width: 72px; }
 .lm-more { display: flex; justify-content: center; padding: var(--lm-s3); border-top: 1px solid var(--lm-line); }
+
+/* --- En-tête de page sur la photo : panneau en verre dépoli (la photo reste visible, le texte reste lisible) --- */
+html[data-ui="beta"] .lm-page-head {
+  background: color-mix(in srgb, var(--lm-surface) 80%, transparent); backdrop-filter: blur(6px);
+  border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); padding: var(--lm-s3) var(--lm-s4);
+}

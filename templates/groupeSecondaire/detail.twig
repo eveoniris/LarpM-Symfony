@@ -23,7 +23,10 @@
                 {{ groupeSecondaire.label }}
             </h3>
             <div class="{{ beta ? 'lm-meta' : 'd-flex flex-wrap gap-3 text-body-secondary small' }}">
-                <span>Groupe transverse{% if groupeSecondaire.secondaryGroupType %} · {{ groupeSecondaire.secondaryGroupType.label }}{% endif %}</span>
+                {% if groupeSecondaire.secondaryGroupType %}
+                    {% set typeIcons = {'confrérie': 'fa-book-open', 'guilde': 'fa-hammer', 'religion': 'fa-hands-praying', 'groupe': 'fa-users'} %}
+                    <span>{{ ui.badge(groupeSecondaire.secondaryGroupType.label, 'muted', beta, typeIcons[groupeSecondaire.secondaryGroupType.label|lower]|default('fa-users')) }}</span>
+                {% endif %}
                 {% if groupeSecondaire.discord and groupeSecondaire.showDiscord and canRead %}
                     <span><i class="fa-brands fa-discord" aria-hidden="true"></i> Discord</span>
                 {% endif %}
