@@ -539,6 +539,17 @@ html[data-ui="beta"] .card[data-role] > .card-header, html[data-ui="beta"] .card
   font: 700 .78rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--role-text);
 }
 html[data-ui="beta"] .card[data-role] > .card-header i, html[data-ui="beta"] .card.border-gamemaster > .card-header i, html[data-ui="beta"] .card.border-danger:has(.fa-user-ninja) > .card-header i { color: var(--role-text) !important; }
+/* --- Cadres de rôle dont le titre est dans un .header (au lieu d'un .card-header) : même titre en petites capitales --- */
+html[data-ui="beta"] .card[data-role] > .header { padding: .5rem 1rem 0; border: 0; background: transparent; }
+html[data-ui="beta"] .card[data-role] > .header h5, html[data-ui="beta"] .card[data-role] > .header h6 {
+  margin: 0; border: 0 !important; font: 700 .78rem var(--lm-font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--role-text);
+}
+html[data-ui="beta"] .card[data-role] > .header i { color: var(--role-text) !important; }
+/* Barre d'actions dans un cadre de rôle : filet discret, boutons secondaires alignés */
+html[data-ui="beta"] .card[data-role] > .btn-toolbar { padding: .5rem 1rem; gap: .5rem; }
+html[data-ui="beta"] .card[data-role] .card { background: var(--lm-surface); }
+/* Les cartes internes d'un cadre de rôle gardent leur propre fond */
+html[data-ui="beta"] .card[data-role="secret"] { border-left-style: double !important; border-left-width: 7px !important; }
 html[data-ui="beta"] .alert { background: color-mix(in srgb, var(--role, var(--lm-line)) 10%, var(--lm-surface)); color: var(--lm-fg); border: 1px solid var(--lm-line); border-left: 4px solid var(--role, var(--lm-line)); border-radius: var(--lm-radius); }
 html[data-ui="beta"] .alert-info { --role: var(--lm-info); }
 html[data-ui="beta"] .alert-success { --role: var(--lm-ok); }
