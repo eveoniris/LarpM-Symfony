@@ -4,6 +4,8 @@
 
 {% block body %}
 
+    {% set beta = app.user is not null and app.user.uiBeta %}
+
     {% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Liste des compétences'}]} %}
 
     <div class="well well-sm">
@@ -24,6 +26,9 @@
             } %}
     </div>
 
+    {% if beta %}
+        {% include 'competence/fragment/beta_grid.twig' %}
+    {% else %}
     {% include '_partials/pagination.html.twig' %}
 
 
@@ -95,5 +100,6 @@
 
 
     {% include '_partials/pagination.html.twig' %}
+    {% endif %}
 
 {% endblock body %}

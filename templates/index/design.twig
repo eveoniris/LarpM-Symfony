@@ -90,7 +90,7 @@
 <div class="doc">
 
 <header class="doc-head">
-  <div class="doc-kicker">Guide de style · v0.23 · Bootstrap 5.3</div>
+  <div class="doc-kicker">Guide de style · v0.24 · Bootstrap 5.3</div>
   <h1>Template de design LarpManager</h1>
   <p class="doc-lead">Référence unique pour les couleurs, les rôles d'information, les composants et les gabarits de page. Chaque bloc ci-dessous est utilisable tel quel avec <code>lm-design.css</code> et se transpose en widgets Flutter ou React Native à partir des mêmes tokens.</p>
   
@@ -468,6 +468,14 @@
       <li>Dans les listes : type + nom de classe, jamais l'illustration. L'illustration en pied reste pour la fiche.</li>
       <li>La compétence acquise à la création (Torture pour le Bourreau, Vol pour le Brigand…) est un bon sous-titre de ligne.</li>
     </ul>
+
+  <h3>Grille des compétences et matrice des classes (bêta)</h3>
+  <ul class="doc-rules" style="margin-top:.5rem">
+    <li><b>/competence</b> : une carte par famille ; pour chacun des quatre niveaux, le coût normal, le coût favorite (étoile, vert) et le coût méconnue (point d'interrogation, ambre) ; description repliée avec « Lire la suite ». Un joueur voit les coûts des quatre niveaux mais seulement la description du niveau Apprenti non secret.</li>
+    <li><b>/classe</b> : filtre par type (combat, social, savoir, avec l'effectif), puis matrice familles × classes. Une case porte au plus les signes cadeau (offerte, bleu ciel), étoile (favorite, vert) ou point d'interrogation (méconnue, ambre) ; l'absence de signe signifie coût normal.</li>
+    <li>La classe du personnage du joueur est mise en évidence (colonne cuivrée et badge « Votre classe »).</li>
+    <li>Sur mobile, la matrice défile horizontalement dans son cadre, la colonne des familles restant fixe.</li>
+  </ul>
   </div></section>
 
 <!-- ===================== 4d. DOMAINE ===================== -->
@@ -832,7 +840,7 @@
       <tr><td><b>En-têtes de carte par rôle</b></td><td><code>/stats/list</code> (Admin, Orga, Scénarisation, Jeu de domaine)</td><td>Attribut <code>data-role</code> + habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> icônes à décider</td></tr>
       <tr><td><b>Who's who imprimable</b></td><td><code>/stats/whoswho/{gn}</code> et route <code>/print</code></td><td>Gabarit d'impression commun</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
       <tr><td><b>Groupes transverses</b></td><td><code>/groupeSecondaire/{id}/detail</code> : onglets par route, requêtes avec jointures</td><td>Session dédiée</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
-      <tr><td><b>Compétences, classes</b></td><td><code>/competence</code> (grille compacte, affinité de classe), <code>/classe</code> (filtre par type, matrice classes × familles)</td><td>Gabarit</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>À faire</span></td></tr>
+      <tr><td><b>Compétences, classes</b></td><td><code>/competence</code> (grille compacte, affinité de classe), <code>/classe</code> (filtre par type, matrice classes × familles)</td><td>Gabarit</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> détails des fiches non retouchés (habillage général)</td></tr>
           <tr><td><b>Repasse générale des listes</b></td><td>Tableaux, filtres, colonne d'actions, pagination (<code>/user/list</code>, <code>/groupeSecondaire</code>, <code>/personnage/list</code>…), selon §5 et §5b</td><td>Gabarit</td><td><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-clock"/></svg>Partiel</span> pagination, filtres, actions et cartes en bêta ; actions de ligne traitées par script (<code>lmLists.twig</code>), à contrôler liste par liste</td></tr>
       <tr><td><b>Liste des groupes transverses</b></td><td>« Lire la suite » sur les descriptions, actions de ligne ; URL canonique <code>/groupeTransverse</code> avec <code>/groupeSecondaire</code> en alias</td><td>Gabarit et routes</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
       <tr><td><b>Listes de plus de 25 lignes dans un onglet</b></td><td>« Afficher plus » et recherche (membres, postulants)</td><td>Gabarit</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
@@ -847,10 +855,11 @@
 <!-- ===================== 11. HISTORIQUE ===================== -->
 <section class="doc-sec">
   <h2 id="sec-11">11. Historique des versions</h2>
-  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque mise à jour de la page ; le numéro de publication de la copie en ligne peut différer. Version actuelle : <b>v0.23</b>.</p>
+  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque mise à jour de la page ; le numéro de publication de la copie en ligne peut différer. Version actuelle : <b>v0.24</b>.</p>
   <div class="lm-table-wrap"><table class="lm-table">
     <thead><tr><th>Version</th><th>Contenu</th></tr></thead>
     <tbody>
+      <tr><td>v0.24</td><td>Pages <code>/competence</code> et <code>/classe</code> en bêta : grille compacte par famille avec les quatre niveaux et leur coût en XP (normal, favorite, méconnue), filtre de classes par type (combat, social, savoir), matrice classes × familles (favorite, offerte, méconnue) avec mise en évidence de la classe du joueur, « Lire la suite » sur les descriptions.</td></tr>
       <tr><td>v0.23</td><td>Liste des territoires : hiérarchie visible (bloc décalé selon le niveau, rail à gauche, icône couronne / carte / repère pour royaume, région et fief) et ancres dans « Contient » vers les blocs concernés.</td></tr>
       <tr><td>v0.22</td><td>Photo en grand dans une fenêtre modale (lien <code>data-lm-photo</code>, élément <code>dialog</code> : Échap, clic sur le fond ou bouton pour fermer ; le lien garde son comportement normal avec Ctrl ou Cmd) ; boutons <code>btn-default</code> habillés comme les boutons secondaires (bordure visible).</td></tr>
       <tr><td>v0.21</td><td>Liste des territoires : fiches sur verre dépoli (lisibles sur la photo) et descriptions longues repliées avec « Lire la suite ».</td></tr>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\TypeClasse;
 use App\Repository\ClasseRepository;
 use Doctrine\ORM\Mapping\Entity;
 
@@ -91,5 +92,13 @@ class Classe extends BaseClasse
     public function getLabel(): string
     {
         return $this->getLabelFeminin() . ' / ' . $this->getLabelMasculin();
+    }
+
+    /**
+     * Type de la classe (combat, social, savoir), déduit du libellé.
+     */
+    public function getType(): TypeClasse
+    {
+        return TypeClasse::fromLabel($this->getLabelMasculin());
     }
 }
