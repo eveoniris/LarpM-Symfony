@@ -84,7 +84,7 @@
 <div class="doc">
 
 <header class="doc-head">
-  <div class="doc-kicker">Guide de style · v0.14 · Bootstrap 5.3</div>
+  <div class="doc-kicker">Guide de style · v0.15 · Bootstrap 5.3</div>
   <h1>Template de design LarpManager</h1>
   <p class="doc-lead">Référence unique pour les couleurs, les rôles d'information, les composants et les gabarits de page. Chaque bloc ci-dessous est utilisable tel quel avec <code>lm-design.css</code> et se transpose en widgets Flutter ou React Native à partir des mêmes tokens.</p>
   
@@ -176,6 +176,26 @@
 --lm-objet-bleu #1E88E5  --lm-objet-orange #FF9800   (figés, hors thème)</pre>
 </section>
 
+<!-- ===================== 2b. LISIBILITÉ ===================== -->
+<section class="doc-sec">
+  <h2>2b. Lisibilité sur la photo de fond</h2>
+  <p class="doc-note">Constat sur la page d'un groupe transverse : le titre et les onglets, posés directement sur la photo de fond, deviennent illisibles là où l'image est claire. La règle est qu'aucun texte de navigation ou d'en-tête ne repose sans fond sur la photo.</p>
+  <div class="lm-grid-2" style="margin-top:1rem">
+    <div class="lm-card"><div class="lm-card-body lm-stack">
+      <div class="lm-tabs" role="tablist" aria-label="Exemple" style="border-radius:6px">
+        <a class="lm-tab" aria-current="page" href="#">Présentation</a><a class="lm-tab" href="#">Membres <span class="lm-count">87</span></a><a class="lm-tab" href="#">Postulants <span class="lm-count">17</span></a><a class="lm-tab" data-role="gm" href="#"><svg class="lm-ico"><use href="#i-feather"/></svg>Scénarisation</a>
+      </div>
+      <p class="doc-note" style="margin:0">Bandeau d'onglets opaque ; l'onglet de scénarisation porte le violet et la plume.</p>
+    </div></div>
+    <ul class="doc-rules">
+      <li><b>Voile sur la photo</b> : en bêta, un dégradé de la couleur de fond (82 % puis 90 % d'opacité) recouvre l'image, en thème sombre comme en thème clair. L'ambiance reste visible, le texte reste lisible.</li>
+      <li><b>Bandeau d'onglets opaque</b> (<code>--lm-surface</code>), avec le compteur dans une pastille.</li>
+      <li><b>Pied de page opaque</b> avec un filet haut, au lieu d'un fond à 50 % de transparence.</li>
+      <li>Un onglet peut porter la couleur et l'icône d'un rôle (<code>data-role</code>) : c'est la signature du contenu qu'il ouvre (plume et violet pour la scénarisation).</li>
+      <li>Un onglet qui ne contient qu'une carte ou un tableau pleine largeur n'est pas entouré d'un second cadre.</li>
+    </ul>
+  </div>
+</section>
 <!-- ===================== 3. BOUTONS ===================== -->
 <section class="doc-sec">
   <h2>3. Boutons et actions</h2>
@@ -538,6 +558,9 @@
     <li>Postulants : une file de décisions, au-dessus des membres. Accepter en cuivre, Rejeter en rouge contouré, « Répondre » et « Mettre en attente » dans le menu ⋯.</li>
     <li>Membres : ligne compacte (avatar 44 px, nom, statut, accès). Contacter, Promouvoir et Retirer passent dans le menu ⋯. Les photos plein format deviennent une vue en cartes en option.</li>
     <li>Les listes d'e-mails se copient depuis un bouton « Copier les e-mails » du menu, sans occuper deux blocs.</li>
+    <li>Le bouton de modification s'intitule « Modifier le groupe transverse » : le terme couvre tous les types (confrérie, guilde, religion, groupe).</li>
+    <li>Les membres affichent leurs actions (Contacter, Promouvoir ou Rétrograder, Retirer) en boutons sur écran large, comme au §5b.</li>
+    <li>Donnée à vérifier : deux types « Confrérie » existent en base de développement (identifiants 1 et 2).</li>
   </ul>
 </section>
 
@@ -575,6 +598,70 @@
   </ul>
 </section>
 
+<!-- ===================== 5b. ACTIONS, PAGINATION ===================== -->
+<section class="doc-sec">
+  <h2>5b. Actions de ligne, pagination et listes longues</h2>
+
+  <h3>Colonne d'actions</h3>
+  <div class="lm-table-wrap"><table class="lm-table lm-table--cards">
+    <thead><tr><th>Groupe</th><th>Type</th><th class="num">Membres</th><th style="text-align:right">Actions</th></tr></thead>
+    <tbody>
+      <tr><td class="lm-cell-main" data-label="Groupe"><a href="#">Confrérie du savoir</a></td><td data-label="Type">Confrérie</td><td class="num" data-label="Membres">87</td>
+        <td style="text-align:right"><div class="lm-actions lm-actions--end"><a class="lm-btn lm-btn--sm" href="#">Voir</a><a class="lm-btn lm-btn--sm" href="#">Modifier</a><a class="lm-btn lm-btn--sm lm-btn--primary" href="#">Postuler</a></div></td></tr>
+      <tr><td class="lm-cell-main" data-label="Groupe"><a href="#">Guilde des forgerons</a></td><td data-label="Type">Guilde</td><td class="num" data-label="Membres">41</td>
+        <td style="text-align:right"><div class="lm-actions lm-actions--end"><a class="lm-btn lm-btn--sm" href="#">Voir</a><button class="lm-btn lm-btn--sm" type="button">Actions <svg class="lm-ico"><use href="#i-more"/></svg></button></div></td></tr>
+    </tbody>
+  </table></div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li><b>À droite</b> : la colonne d'actions termine la ligne de lecture. À gauche, seulement une case de sélection.</li>
+    <li><b>Trois actions ou moins</b> : toutes visibles, en boutons avec libellé.</li>
+    <li><b>Quatre actions ou plus</b> : l'action principale (Voir) reste visible, les autres sont dans un bouton « Actions ». L'action destructive est toujours séparée et en rouge.</li>
+    <li><b>Mobile</b> : la ligne devient une carte et les actions passent dans un menu ⋯ (cible de 44 px).</li>
+    <li><b>Actions groupées</b> : quand des lignes sont cochées, une barre d'actions groupées apparaît au-dessus de la liste.</li>
+    <li>Un lien d'action voisin d'un bouton devient un bouton (voir §10).</li>
+  </ul>
+
+  <h3>Pagination</h3>
+  <div class="sample lm-stack">
+    <div class="lm-pager">
+      <span class="lm-pager-summary">1 à 25 sur 5 739</span>
+      <ul class="lm-pager-pages" aria-label="Pages">
+        <li><span aria-disabled="true">Précédent</span></li>
+        <li><a href="#" aria-current="page">1</a></li><li><a href="#">2</a></li><li><a href="#">3</a></li><li><a href="#">4</a></li>
+        <li><span class="is-gap">…</span></li><li><a href="#">230</a></li>
+        <li><a href="#">Suivant</a></li>
+      </ul>
+      <label class="lm-pager-size">Lignes <select class="lm-field" id="d-pager-size"><option>25</option><option>50</option><option>100</option></select></label>
+    </div>
+  </div>
+  <p class="doc-note">Constat : les listes affichent des numéros de page centrés (1 2 3 4 … 574), en haut et en bas, sans total, sans choix du nombre de lignes et sans saut de page.</p>
+  <ul class="doc-rules" style="margin-top:.5rem">
+    <li><b>Résumé</b> toujours affiché (« 1 à 25 sur 5 739 »).</li>
+    <li><b>Nombre de lignes</b> au choix : 25, 50, 100, conservé dans l'URL.</li>
+    <li><b>Précédent et Suivant</b> avec libellé ; au-delà de 10 pages, un champ « aller à la page ».</li>
+    <li>Contrôles en bas de liste, et en haut seulement si la liste dépasse 25 lignes.</li>
+    <li>Page courante en cuivre plein (<code>aria-current="page"</code>), cibles de 44 px au minimum.</li>
+  </ul>
+
+  <h3>Textes longs et listes longues</h3>
+  <div class="lm-grid-2" style="margin-top:.5rem">
+    <div class="lm-card"><div class="lm-card-body lm-stack">
+      <p style="margin:0;max-width:68ch">Ils savent beaucoup de choses. Et ils le savent. Cette conscience aiguë de leur érudition est sans doute l'un des traits les plus partagés par les membres de la Confrérie du Savoir…</p>
+      <a href="#">Lire la suite</a>
+    </div></div>
+    <div class="lm-card">
+      <div class="lm-card-head"><h4 class="lm-card-title">Membres <span class="lm-count">87</span></h4><input class="lm-field" id="d-more-search" type="search" placeholder="Rechercher un membre" style="max-width:220px;min-height:34px"></div>
+      <div class="lm-member"><span class="lm-avatar">NM</span><div class="lm-member-id"><b>Nom_794</b></div><div class="lm-member-meta"><span>Inscrit à LH7</span></div><div class="lm-member-actions"><a class="lm-btn lm-btn--sm" href="#">Contacter</a></div></div>
+      <div class="lm-more"><button class="lm-btn" type="button">Afficher 25 de plus (25 sur 87)</button></div>
+    </div>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li><b>Texte long</b> : replié sur quelques lignes avec « Lire la suite », dans les listes comme dans les fiches (par exemple les descriptions de <code>/groupeSecondaire</code>).</li>
+    <li><b>Liste de plus de 25 lignes</b> dans un onglet : « Afficher plus » par paquets de 25 avec un champ de recherche, plutôt que des numéros de page. Aucune requête supplémentaire, et la recherche remplace la recherche du navigateur sur des lignes masquées.</li>
+    <li><b>Liste pleine page</b> (résultats filtrés, plusieurs milliers de lignes) : pagination serveur comme ci-dessus.</li>
+    <li>Photo en miniature : lien vers la photo en grand ; une fenêtre modale est préférable à un nouvel onglet.</li>
+  </ul>
+</section>
 <!-- ===================== 6. FORMULAIRES ===================== -->
 <section class="doc-sec">
   <h2>6. Formulaires</h2>
@@ -732,19 +819,25 @@
       <tr><td><b>Liens d'action voisins d'un bouton</b></td><td>Règle : un lien qui déclenche une action et se trouve à proximité d'un bouton devient un bouton secondaire (<code>lm-btn</code>). À relever au fil des pages.</td><td>Gabarit</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>À faire</span></td></tr>
       <tr><td><b>En-têtes de carte par rôle</b></td><td><code>/stats/list</code> (Admin, Orga, Scénarisation, Jeu de domaine)</td><td>Attribut <code>data-role</code> + habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> icônes à décider</td></tr>
       <tr><td><b>Who's who imprimable</b></td><td><code>/stats/whoswho/{gn}</code> et route <code>/print</code></td><td>Gabarit d'impression commun</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
-      <tr><td><b>Groupes transverses</b></td><td><code>/groupeSecondaire/{id}/detail</code> : onglets par route, requêtes avec jointures</td><td>Gabarit par onglet (<code>groupeSecondaire/tab/*.twig</code>), classes <code>lm-*</code> en bêta, Bootstrap sinon</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> 444 requêtes avant, 14 à 19 après</td></tr>
+      <tr><td><b>Groupes transverses</b></td><td><code>/groupeSecondaire/{id}/detail</code> : onglets par route, requêtes avec jointures</td><td>Session dédiée</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
       <tr><td><b>Compétences, classes</b></td><td><code>/competence</code> (grille compacte, affinité de classe), <code>/classe</code> (filtre par type, matrice classes × familles)</td><td>Gabarit</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>À faire</span></td></tr>
-    </tbody>
+          <tr><td><b>Repasse générale des listes</b></td><td>Tableaux, filtres, colonne d'actions, pagination (<code>/user/list</code>, <code>/groupeSecondaire</code>, <code>/personnage/list</code>…), selon §5 et §5b</td><td>Gabarit</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>À faire</span></td></tr>
+      <tr><td><b>Liste des groupes transverses</b></td><td>« Lire la suite » sur les descriptions, actions de ligne ; URL canonique <code>/groupeTransverse</code> avec <code>/groupeSecondaire</code> en alias</td><td>Gabarit et routes</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>À faire</span></td></tr>
+      <tr><td><b>Listes de plus de 25 lignes dans un onglet</b></td><td>« Afficher plus » et recherche (membres, postulants)</td><td>Gabarit</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>À faire</span></td></tr>
+      <tr><td><b>Photo en grand</b></td><td>Fenêtre modale à la place du nouvel onglet</td><td>Gabarit</td><td><span class="lm-badge" data-role="muted"><svg class="lm-ico"><use href="#i-clock"/></svg>À faire</span></td></tr>
+      <tr><td><b>Types de groupe en double</b></td><td>Deux « Confrérie » en base de développement, à contrôler en production</td><td>Données</td><td><span class="lm-badge" data-role="warn"><svg class="lm-ico"><use href="#i-warn"/></svg>À vérifier</span></td></tr>
+      <tr><td><b>Lisibilité sur la photo de fond</b></td><td>Voile, bandeau d'onglets et pied de page opaques</td><td>Habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>    </tbody>
   </table></div>
 </section>
 
 <!-- ===================== 11. HISTORIQUE ===================== -->
 <section class="doc-sec">
   <h2>11. Historique des versions</h2>
-  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque publication. Version actuelle : <b>v0.14</b>.</p>
+  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque publication. Version actuelle : <b>v0.15</b>.</p>
   <div class="lm-table-wrap"><table class="lm-table">
     <thead><tr><th>Version</th><th>Contenu</th></tr></thead>
     <tbody>
+      <tr><td>v0.15</td><td>Lisibilité sur la photo de fond, actions de ligne, pagination, listes longues, retours sur les groupes transverses.</td></tr>
       <tr><td>v0.14</td><td>Numéro de version aligné sur les publications ; historique des versions.</td></tr>
       <tr><td>v0.13</td><td>Section « Chantiers de migration vers la bêta ».</td></tr>
       <tr><td>v0.12</td><td>Reformulation sur un ton neutre et factuel.</td></tr>
