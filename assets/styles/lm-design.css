@@ -685,3 +685,51 @@ html[data-ui="beta"] .lm-territoire-item[data-level="0"] .lm-territoire-level { 
   html[data-ui="beta"] .lm-territoire-item[data-level="1"] { margin-left: .75rem; }
   html[data-ui="beta"] .lm-territoire-item[data-level="2"] { margin-left: 1.5rem; }
 }
+
+/* --- Compétences et classes : grille par famille, filtre de type, matrice des affinités --- */
+html[data-ui="beta"] .gs-clamp.lm-clamp--sm { max-height: 4.6em; }
+html[data-ui="beta"] .gs-clamp.lm-clamp--sm.is-open { max-height: none; }
+.lm-legend { margin-bottom: var(--lm-s3); }
+.lm-familles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: var(--lm-s3); align-items: start; }
+html[data-ui="beta"] .lm-famille, html[data-ui="beta"] .lm-classe, html[data-ui="beta"] .lm-carte-verre {
+  background: color-mix(in srgb, var(--lm-surface) 82%, transparent); backdrop-filter: blur(6px);
+  --bs-body-bg: color-mix(in srgb, var(--lm-surface) 92%, transparent);
+}
+.lm-famille { scroll-margin-top: 5rem; }
+.lm-famille:target, .lm-classe:target { outline: 2px solid var(--lm-accent); }
+.lm-niveaux { list-style: none; margin: var(--lm-s3) 0 0; padding: 0; }
+.lm-niveau { padding: var(--lm-s2) 0; border-top: 1px solid var(--lm-line); }
+.lm-niveau-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lm-s2); }
+.lm-niveau-nom { min-width: 4.5rem; font-family: var(--lm-font-display); }
+.lm-niveau-couts { display: inline-flex; gap: var(--lm-s3); flex-wrap: wrap; }
+.lm-niveau-couts .lm-cost { font-size: .85rem; }
+.lm-niveau-actions { margin-left: auto; }
+.lm-niveau .gs-clamp { margin-top: var(--lm-s2); font-size: .92rem; }
+
+.lm-filtre-type { margin-bottom: var(--lm-s3); }
+.lm-btn.is-active { border-color: var(--lm-accent); background: color-mix(in srgb, var(--lm-accent) 18%, var(--lm-surface)); }
+.lm-type[data-class] { border-color: var(--role, var(--lm-line)); }
+[data-class="autre"] { --role: var(--lm-muted); --role-text: var(--lm-muted); }
+.lm-carte-verre { border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); padding: var(--lm-s4); margin-bottom: var(--lm-s4); min-width: 0; }
+.lm-matrice-wrap { position: relative; overflow-x: auto; max-width: 100%; border: 1px solid var(--lm-line); border-radius: var(--lm-radius); }
+.lm-matrice-wrap:focus-visible { outline: 2px solid var(--lm-accent); }
+.lm-matrice { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: .88rem; }
+.lm-matrice th, .lm-matrice td { border-bottom: 1px solid var(--lm-line); padding: 4px 6px; text-align: center; background: var(--lm-surface); }
+.lm-matrice .lm-matrice-famille { position: sticky; left: 0; z-index: 1; text-align: left; min-width: 9.5rem; max-width: 12rem; border-right: 1px solid var(--lm-line); white-space: normal; }
+.lm-matrice thead th { vertical-align: bottom; border-top: 3px solid var(--role, var(--lm-line)); }
+.lm-matrice-classe { width: 2.75rem; min-width: 2.75rem; }
+.lm-matrice-classe a { display: block; writing-mode: vertical-rl; transform: rotate(180deg); margin: 0 auto; white-space: nowrap; max-height: 9rem; overflow: hidden; text-overflow: ellipsis; text-decoration: none; }
+.lm-matrice .is-mine { background: color-mix(in srgb, var(--lm-accent) 16%, var(--lm-surface)); box-shadow: inset 2px 0 var(--lm-accent), inset -2px 0 var(--lm-accent); }
+.lm-matrice td { white-space: nowrap; }
+.lm-aff { color: var(--role-text); display: inline-block; min-width: 1.2em; }
+
+.lm-classes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr)); gap: var(--lm-s3); align-items: start; }
+.lm-classe { scroll-margin-top: 5rem; }
+.lm-classe.is-mine { border-color: var(--lm-accent); box-shadow: 0 0 0 1px var(--lm-accent); }
+.lm-classe-titre { margin: var(--lm-s3) 0 var(--lm-s1, 4px); font-weight: 700; font-size: .85rem; color: var(--lm-muted); }
+.lm-classe .lm-callout { margin-top: var(--lm-s2); }
+@media (max-width: 640px) {
+  .lm-carte-verre { padding: var(--lm-s3); }
+  .lm-matrice .lm-matrice-famille { min-width: 7.5rem; max-width: 8.5rem; font-size: .8rem; }
+  .lm-niveau-actions { margin-left: 0; }
+}
