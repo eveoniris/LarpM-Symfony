@@ -588,3 +588,58 @@ html[data-ui="beta"] .lm-page-head {
   background: color-mix(in srgb, var(--lm-surface) 80%, transparent); backdrop-filter: blur(6px);
   border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); padding: var(--lm-s3) var(--lm-s4);
 }
+/* --- Pagination complète (partiel _partials/pagination.html.twig) --- */
+.lm-pager-wrap { margin: var(--lm-s3) 0; }
+.lm-pager-size .lm-btn { min-width: 44px; }
+.lm-pager-goto { display: inline-flex; align-items: center; gap: var(--lm-s2); color: var(--lm-muted); }
+.lm-pager-goto .lm-field { width: 5.5rem; }
+/* En haut de liste, le pagineur n'apparaît qu'au-delà de 25 lignes affichées */
+body:has(.lm-pager-wrap[data-slot="2"]) .lm-pager-wrap[data-slot="1"][data-small] { display: none; }
+
+/* --- Colonne d'actions des listes (script _partials/lmLists.twig) --- */
+.lm-table th.lm-col-actions, .lm-table td.lm-col-actions { width: 13rem; min-width: 13rem; text-align: right; }
+.lm-table td.lm-col-actions .lm-actions { flex-wrap: nowrap; }
+.lm-act-menu.lm-act-mobile { display: none; }
+.lm-act-menu { position: relative; display: inline-block; }
+.lm-act-menu > summary { list-style: none; cursor: pointer; }
+.lm-act-menu > summary::-webkit-details-marker { display: none; }
+.lm-act-panel { position: fixed; z-index: 1080; min-width: 13rem; padding: var(--lm-s2); background: var(--lm-surface);
+                border: 1px solid var(--lm-line); border-radius: var(--lm-radius); box-shadow: 0 8px 24px rgba(0,0,0,.35); text-align: left; }
+.lm-act-panel hr { margin: var(--lm-s2) 0; border: 0; border-top: 1px solid var(--lm-line); opacity: 1; }
+.lm-act-item { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: var(--lm-s2); width: 100%; min-height: var(--lm-touch);
+               padding: 0 var(--lm-s3); border-radius: var(--lm-radius); cursor: pointer; color: var(--lm-fg); font: 400 .95rem var(--lm-font-body); }
+.lm-act-item:hover, .lm-act-item:focus-visible { background: var(--lm-raised); }
+.lm-act-item.is-danger { color: var(--lm-err-text); }
+.lm-act-panel form { margin: 0; }
+@media (max-width: 640px) {
+  .lm-act-inline { display: none !important; }
+  .lm-act-menu.lm-act-mobile { display: inline-block; }
+  .lm-table--cards td.lm-col-actions { width: 100%; min-width: 0; justify-content: flex-end; }
+  .lm-table--cards td.lm-col-actions::before { display: none; }
+}
+
+/* --- Barre de filtres des listes (partiel formListSearch) --- */
+.lm-list-filters { margin: var(--lm-s3) 0; display: grid; gap: var(--lm-s2); }
+.lm-list-filters form { display: flex; flex-wrap: wrap; gap: var(--lm-s2); align-items: center; margin: 0; }
+.lm-list-filters .lm-search { flex: 1 1 240px; }
+.lm-filter-panel { flex-basis: 100%; }
+.lm-filter-panel > summary { list-style: none; cursor: pointer; display: inline-flex; }
+.lm-filter-panel > summary::-webkit-details-marker { display: none; }
+.lm-filter-panel-body { margin-top: var(--lm-s2); padding: var(--lm-s3); background: var(--lm-surface); border: 1px solid var(--lm-line); border-radius: var(--lm-radius); }
+.lm-btn--text { background: transparent; border-color: transparent; color: var(--lm-link); text-decoration: underline; }
+.lm-list-filters .lm-chip a { color: inherit; text-decoration: none; padding: 0 6px; }
+
+/* --- Afficher plus (listes côté client) --- */
+.lm-more-tools { display: flex; flex-wrap: wrap; gap: var(--lm-s3); align-items: center; justify-content: space-between; margin-bottom: var(--lm-s3); }
+.lm-more-tools .lm-field { max-width: 22rem; }
+.lm-more-count { color: var(--lm-muted); font-size: .9rem; }
+[data-lm-row][hidden] { display: none !important; }
+
+/* Tableaux de liste posés sur la photo de fond : fond opaque pour la lisibilité */
+.lm-table-wrap > .lm-table { background: color-mix(in srgb, var(--lm-surface) 94%, transparent); border-radius: var(--lm-radius-lg); }
+.lm-pager-wrap .lm-pager { background: color-mix(in srgb, var(--lm-surface) 94%, transparent); border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); padding: var(--lm-s3); }
+.lm-more-row { display: contents; }
+.lm-more-tools { padding: var(--lm-s3) var(--lm-s4) 0; }
+.lm-more-tools[hidden], .lm-more [hidden], .lm-help[hidden] { display: none !important; }
+.lm-table .lm-cell-block { max-width: 46rem; text-align: left; }
+@media (max-width: 640px) { .lm-table--cards td > .lm-cell-block { flex: 1; min-width: 0; } }

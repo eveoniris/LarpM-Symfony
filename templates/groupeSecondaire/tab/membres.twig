@@ -1,4 +1,5 @@
 {% import 'groupeSecondaire/fragment/_ui.twig' as ui %}
+{% import 'groupeSecondaire/fragment/_more.twig' as more %}
 {% set beta = app.user is not null and app.user.uiBeta %}
 
 {% if not canSeeMembres %}
@@ -14,10 +15,15 @@
             {% endif %}
         </div>
 
+        {% set paged = beta and membresRows|length > 25 %}
+        {% if paged %}<div data-lm-more="25">{{ more.start('Rechercher un membre') }}{% endif %}
         {% for row in membresRows %}
+            {% if paged %}<div class="lm-more-row" data-lm-row>{% endif %}
             {% include 'groupeSecondaire/fragment/membre.twig' with {'row': row} %}
+            {% if paged %}</div>{% endif %}
         {% else %}
             {% include '_partials/noResult.twig' %}
         {% endfor %}
+        {% if paged %}{{ more.end() }}</div>{% endif %}
     </div>
 {% endif %}

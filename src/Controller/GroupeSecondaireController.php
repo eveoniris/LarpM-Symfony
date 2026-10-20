@@ -594,8 +594,10 @@ class GroupeSecondaireController extends AbstractController
     /**
      * Liste des groupes secondaires (pour les orgas).
      */
-    #[Route('/groupeSecondaire', name: 'groupeSecondaire.list')]
+    // URL canonique : /groupeTransverse ; /groupeSecondaire reste valable (alias). Les noms de routes groupeSecondaire.* sont conservés.
+    #[Route('/groupeTransverse', name: 'groupeSecondaire.list')]
     #[Route('/groupeTransverse', name: 'groupeTransverse.list')]
+    #[Route('/groupeSecondaire', name: 'groupeSecondaire.list.alias')]
     public function listAction(
         Request $request,
         PagerService $pagerService,

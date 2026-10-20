@@ -195,6 +195,32 @@ class GroupeSecondaireDetailTabsTest extends WebTestCase
         static::assertSelectorExists('.lm-member');
     }
 
+    public function testBetaMembersTabOffersShowMoreBeyondTwentyFiveRows(): void
+    {
+        $group = $this->createGroup(members: 30);
+        $admin = UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_GROUPE_TRANSVERSE']]);
+        $admin->setUiTheme('beta');
+        $this->em->flush();
+        $this->client->loginUser($admin);
+
+        $crawler = $this->client->request('GET', $this->url($group, 'membres'));
+        static::assertResponseIsSuccessful();
+        static::assertSelectorExists('[data-lm-more="25"] [data-lm-more-search]');
+        static::assertSelectorExists('[data-lm-more-button]');
+        static::assertSame(31, $crawler->filter('[data-lm-row]')->count());
+    }
+
+    public function testNonBetaMembersTabHasNoShowMore(): void
+    {
+        $group = $this->createGroup(members: 30);
+        $admin = UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_GROUPE_TRANSVERSE']]);
+        $this->client->loginUser($admin);
+
+        $this->client->request('GET', $this->url($group, 'membres'));
+        static::assertResponseIsSuccessful();
+        static::assertSelectorNotExists('[data-lm-more], [data-lm-row]');
+    }
+
     public function testMembersTabQueryCountDoesNotGrowWithMemberCount(): void
     {
         $small = $this->createGroup(members: 3);

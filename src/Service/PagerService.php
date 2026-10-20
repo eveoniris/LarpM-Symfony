@@ -50,12 +50,8 @@ final class PagerService
 
         $limit = $request->query->getInt('limit', $defLimit);
 
-        $this->limit = $defLimit;
-        if (!is_numeric($limit)) {
-            return $this->limit;
-        }
-
-        // We limit between 1 and 100 if not from code
+        // Nombre de lignes choisi dans l'interface : 25, 50 ou 100 ; sinon valeur par défaut du contrôleur.
+        $this->limit = \in_array($limit, [25, 50, 100], true) ? $limit : $defLimit;
         $max = max($defLimit, 100);
         $this->limit = min($max, max(1, $this->limit));
 
@@ -64,7 +60,9 @@ final class PagerService
 
     public function setLimit(int $limit): self
     {
-        $this->limit = $limit;
+        // Le nombre de lignes choisi dans l'interface (25, 50 ou 100) prime sur la valeur par défaut du contrôleur.
+        $asked = $this->getRequest()?->query->getInt('limit') ?? 0;
+        $this->limit = \in_array($asked, [25, 50, 100], true) ? $asked : $limit;
 
         return $this;
     }

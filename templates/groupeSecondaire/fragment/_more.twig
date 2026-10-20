@@ -1,0 +1,12 @@
+{# Début et fin d'un bloc « Afficher plus » (interface bêta, au-delà de 25 lignes) : voir _partials/lmLists.twig. #}
+{% macro start(label) %}
+    <div class="lm-more-tools" data-lm-more-tools hidden>
+        <input class="lm-field" type="search" data-lm-more-search placeholder="Rechercher dans la liste" aria-label="{{ label }}" autocomplete="off">
+        <span class="lm-more-count" data-lm-more-count aria-live="polite"></span>
+    </div>
+{% endmacro %}
+
+{% macro end() %}
+    <p class="lm-help" data-lm-more-empty hidden>Aucun résultat.</p>
+    <div class="lm-more"><button type="button" class="lm-btn" data-lm-more-button hidden>Afficher plus</button></div>
+{% endmacro %}
