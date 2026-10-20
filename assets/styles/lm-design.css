@@ -601,6 +601,8 @@ html[data-ui="beta"] .tab-content:has(> .tab-pane > .card:only-child) { backgrou
 html[data-ui="beta"] .lm-page-head {
   background: color-mix(in srgb, var(--lm-surface) 80%, transparent); backdrop-filter: blur(6px);
   border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); padding: var(--lm-s3) var(--lm-s4);
+  /* backdrop-filter crée un contexte d'empilement : sans z-index, la barre d'onglets suivante recouvre les menus de l'en-tête */
+  position: relative; z-index: 5;
 }
 /* --- Pagination complète (partiel _partials/pagination.html.twig) --- */
 .lm-pager-wrap { margin: var(--lm-s3) 0; }
