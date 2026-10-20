@@ -1,6 +1,6 @@
 # Interface bêta et guide de style : note de reprise
 
-Document de passation pour poursuivre le chantier dans une nouvelle conversation. État au guide v0.18.
+Document de passation pour poursuivre le chantier dans une nouvelle conversation. État au guide v0.19.
 
 ## Objectif
 
@@ -62,11 +62,11 @@ Si `design-body.html` est perdu, il se reconstruit depuis `templates/index/desig
 
 ## Chantiers réalisés
 
-Habillage bêta (navigation, menus, panneau « Actions », onglets, listes, formulaires, badges, encadrés), page `/design` et guide, détail des groupes transverses en onglets (444 requêtes ramenées à 14-19), Who's who imprimable, en-têtes de `/stats/list` par rôle, repasse des listes (pagination, filtres, actions, « Afficher plus »), polices auto-hébergées (Cinzel, Source Sans 3, JetBrains Mono), panneau de bois en WebP en variante.
+Habillage bêta (navigation, menus, panneau « Actions », onglets, listes, formulaires, badges, encadrés), page `/design` et guide, détail des groupes transverses en onglets (444 requêtes ramenées à 14-19), Who's who imprimable, en-têtes de `/stats/list` par rôle, repasse des listes (pagination, filtres, actions, « Afficher plus »), cadres de rôle explicites (`data-role`) sur les blocs réservés et actions de `/gn/{id}/groupes` en boutons (suivi : `docs/plans/cadres-roles.md`), polices auto-hébergées (Cinzel, Source Sans 3, JetBrains Mono), panneau de bois en WebP en variante.
 
 ## Chantiers restants (voir aussi section 10 du guide)
 
-- Blocs de scénarisation et cadres administratifs non encore habillés (`/gn`, `/gn/7`, `/gn/7/groupes`) ; liens d'action voisins d'un bouton à remplacer par des boutons.
+- `territoire/detail.twig` : en-tête `border-warning` à classer (domaine ou attention) et blocs `text-gamemaster` ; liste à puces « Participer ! / Liste des groupes » de `gn/detail.twig` ; autres liens d'action voisins d'un bouton à relever au fil des pages ; comparaison HTML avant/après hors bêta sur `/gn` non faite.
 - Pages `/competence` et `/classe` (grille compacte, filtre par type, matrice classes et familles).
 - Photo en grand dans une fenêtre modale.
 - E-mails des groupes transverses : option d'un bloc repliable dans l'onglet Membres.
