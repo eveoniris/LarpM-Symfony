@@ -27,9 +27,6 @@
                 {% if groupeSecondaire.discord and groupeSecondaire.showDiscord and canRead %}
                     <span><i class="fa-brands fa-discord" aria-hidden="true"></i> Discord</span>
                 {% endif %}
-                {% if tabCounts.membres is defined %}
-                    <span>{{ ui.badge(tabCounts.membres ~ (tabCounts.membres > 1 ? ' membres' : ' membre'), 'muted', beta) }}</span>
-                {% endif %}
             </div>
         </div>
 
@@ -48,7 +45,7 @@
                             aria-label="Plus d'actions"><i class="fa fa-ellipsis" aria-hidden="true"></i></button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         {% if canManage %}
-                            <li><a class="dropdown-item" href="{{ path('groupeSecondaire.update', {'groupeSecondaire': groupeSecondaire.id}) }}"><i class="fa fa-pencil" aria-hidden="true"></i> Modifier le groupe</a></li>
+                            <li><a class="dropdown-item" href="{{ path('groupeSecondaire.update', {'groupeSecondaire': groupeSecondaire.id}) }}"><i class="fa fa-pencil" aria-hidden="true"></i> Modifier le groupe transverse</a></li>
                             <li><a class="dropdown-item" href="{{ path('groupeSecondaire.newMembre', {'groupeSecondaire': groupeSecondaire.id}) }}"><i class="fa fa-plus" aria-hidden="true"></i> Ajouter un membre</a></li>
                         {% endif %}
                         {% if isAdmin %}
@@ -89,8 +86,9 @@
         {% for key, label in tabs %}
             <a class="{{ beta ? 'lm-tab' : 'nav-link' ~ (tab == key ? ' active' : '') }}"
                {% if tab == key %}aria-current="page"{% endif %}
+               {% if key == 'scenarisation' %}data-role="gm"{% endif %}
                href="{{ path('groupeSecondaire.detail.tab', {'groupeSecondaire': groupeSecondaire.id, 'tab': key}) }}">
-                {{ label }}
+                {% if key == 'scenarisation' %}<i class="fa fa-feather" aria-hidden="true"></i> {% endif %}{{ label }}
                 {% if tabCounts[key] is defined and key in ['membres', 'postulants'] %}
                     <span class="{{ beta ? 'lm-count' : 'badge text-bg-secondary' }} ms-1">{{ tabCounts[key] }}</span>
                 {% endif %}

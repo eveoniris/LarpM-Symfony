@@ -9,10 +9,11 @@ Variables : row {personnage, membre, isChef}, et le contexte de la page.
 {% set inscrit = inscriptions[personnage.id] is defined %}
 {% set isMe = currentPersonnageId is same as(personnage.id) %}
 
-<div class="{{ beta ? 'lm-member' : 'd-flex align-items-center gap-3 px-3 py-2 border-bottom' }}">
+<div class="{{ beta ? 'lm-member' : 'd-flex flex-wrap align-items-center gap-3 px-3 py-2 border-bottom' }}">
     {{ ui.avatar(personnage, beta) }}
 
-    <div class="{{ beta ? '' : 'flex-grow-1 min-w-0' }}">
+    {# Identité : nom et niveau d'accès #}
+    <div class="{{ beta ? 'lm-member-id' : 'flex-grow-1' }}">
         <div>
             {% if personnage.vivant == 0 %}
                 <i class="fa-solid fa-skull" title="Mort" data-bs-toggle="tooltip" data-bs-placement="bottom"></i>
@@ -25,7 +26,7 @@ Variables : row {personnage, membre, isChef}, et le contexte de la page.
                 <strong>{{ personnage.publicName }}</strong>
             {% endif %}
         </div>
-        <div class="{{ beta ? 'lm-member-meta' : 'd-flex flex-wrap gap-2 align-items-center small text-body-secondary' }}">
+        <div class="mt-1">
             {% if row.isChef %}
                 {{ ui.badge('Responsable', 'secret', beta, 'fa-user-tie') }}
             {% elseif canManage and membre %}
@@ -35,24 +36,42 @@ Variables : row {personnage, membre, isChef}, et le contexte de la page.
                     {{ ui.badge('Ne voit pas les secrets', 'muted', beta) }}
                 {% endif %}
             {% endif %}
-            {% if gn %}
-                {% if inscrit %}
-                    <span class="text-success">Inscrit à {{ gn.label }}</span>
-                    {% if isAdmin %}<span>· {{ inscriptions[personnage.id]|default('groupe non identifiable') }}</span>{% endif %}
-                {% else %}
-                    <span class="text-warning">Non inscrit à {{ gn.label }}</span>
-                {% endif %}
-            {% endif %}
-            {% if groupeSecondaire.isReligion and canManage %}
-                {% for personnageReligion in personnage.personnagesReligions %}
-                    <span>{{ personnageReligion.religion.label }} ({{ personnageReligion.religionLevel.label }})</span>
-                {% endfor %}
-            {% endif %}
         </div>
     </div>
 
+    {# Participation et religion #}
+    <div class="{{ beta ? 'lm-member-meta' : 'd-flex flex-column small text-body-secondary' }}">
+        {% if gn %}
+            {% if inscrit %}
+                <span class="text-success">Inscrit à {{ gn.label }}</span>
+                {% if isAdmin %}<span>{{ inscriptions[personnage.id]|default('groupe non identifiable') }}</span>{% endif %}
+            {% else %}
+                <span class="text-warning">Non inscrit à {{ gn.label }}</span>
+            {% endif %}
+        {% endif %}
+        {% if groupeSecondaire.isReligion and canManage %}
+            {% for personnageReligion in personnage.personnagesReligions %}
+                <span>{{ personnageReligion.religion.label }} ({{ personnageReligion.religionLevel.label }})</span>
+            {% endfor %}
+        {% endif %}
+    </div>
+
     {% if canManage and not isMe %}
-        <div class="dropdown">
+        {# Écran large : les actions sont visibles (3 au plus). Écran étroit : menu ⋯. #}
+        <div class="lm-member-actions d-none d-md-flex">
+            {% if membre %}
+                <a class="{{ ui.btn('default', beta, true) }}" href="{{ path('groupeSecondaire.contact.membre', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}"><i class="fa fa-envelope" aria-hidden="true"></i> Contacter</a>
+                {% if membre.secret %}
+                    <a class="{{ ui.btn('default', beta, true) }}" href="{{ path('groupeSecondaire.secret.off', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}"><i class="fa fa-eye-slash" aria-hidden="true"></i> Rétrograder</a>
+                {% else %}
+                    <a class="{{ ui.btn('default', beta, true) }}" href="{{ path('groupeSecondaire.secret.on', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}"><i class="fa fa-eye" aria-hidden="true"></i> Promouvoir</a>
+                {% endif %}
+                <a class="{{ ui.btn('danger', beta, true) }}" href="{{ path('groupeSecondaire.member.remove', {'groupeSecondaire': groupeSecondaire.id, 'membre': membre.id}) }}"><i class="fa fa-user-minus" aria-hidden="true"></i> Retirer</a>
+            {% else %}
+                <a class="{{ ui.btn('default', beta, true) }}" href="{{ path('groupeSecondaire.contact', {'groupeSecondaire': groupeSecondaire.id}) }}"><i class="fa fa-envelope" aria-hidden="true"></i> Contacter</a>
+            {% endif %}
+        </div>
+        <div class="dropdown d-md-none">
             <button class="{{ ui.more_button(beta) }}" type="button" data-bs-toggle="dropdown" aria-expanded="false"
                     aria-label="Actions pour {{ personnage.publicName }}"><i class="fa fa-ellipsis" aria-hidden="true"></i></button>
             <ul class="dropdown-menu dropdown-menu-end">

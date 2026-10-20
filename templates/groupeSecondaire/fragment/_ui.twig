@@ -27,15 +27,17 @@ Interface bêta (lm-design.css) : classes lm-*. Sinon : Bootstrap. `beta` vaut a
     <span class="{% if beta %}lm-badge{% else %}badge {{ bs[role]|default('text-bg-secondary') }}{% endif %}"{% if beta %} data-role="{{ role }}"{% endif %}>{% if icon %}<i class="fa {{ icon }}" aria-hidden="true"></i> {% endif %}{{ label }}</span>
 {% endmacro %}
 
-{# Avatar 44 px : trombinoscope si disponible, sinon initiales. #}
+{# Avatar 44 px : trombinoscope (lien vers la photo en grand) si disponible, sinon initiales. #}
 {% macro avatar(personnage, beta) %}
     {%- set parts = personnage.publicName|split(' ') -%}
     {%- set initials = (parts[0]|first ~ (parts[1]|default('')|first))|upper -%}
-    <span class="{% if beta %}lm-avatar{% else %}d-inline-flex align-items-center justify-content-center rounded-circle border fw-bold text-body-secondary{% endif %} gs-avatar" aria-hidden="true">
-        {%- if personnage.trombineUrl -%}
+    {%- set cls = (beta ? 'lm-avatar' : 'd-inline-flex align-items-center justify-content-center rounded-circle border fw-bold text-body-secondary') ~ ' gs-avatar' -%}
+    {%- if personnage.trombineUrl -%}
+        <a class="{{ cls }}" href="{{ path('personnage.trombine', {'personnage': personnage.id}) }}" target="_blank" rel="noopener"
+           title="Ouvrir la photo en grand" aria-label="Ouvrir la photo de {{ personnage.publicName }} en grand">
             <img src="{{ path('personnage.trombine', {'personnage': personnage.id}) }}" alt="" loading="lazy" width="44" height="44">
-        {%- else -%}
-            {{ initials }}
-        {%- endif -%}
-    </span>
+        </a>
+    {%- else -%}
+        <span class="{{ cls }}" aria-hidden="true">{{ initials }}</span>
+    {%- endif -%}
 {% endmacro %}
