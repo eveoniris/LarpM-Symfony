@@ -73,7 +73,7 @@ Factorisation JavaScript : `assets/lm-ui.js` (« Lire la suite », copie des e-m
 ## Décisions prises
 
 - Bloc E-mails des groupes transverses : l'onglet E-mails seul est conservé.
-- Doublon de type « Confrérie » (id 2, sans groupe) : supprimé de la base locale ; suppression en production à faire à la main (`SELECT COUNT(*) FROM secondary_group WHERE secondary_group_type_id = 2` doit renvoyer 0).
+- Doublon de type « Confrérie » (id 2, sans groupe) : supprimé de la base locale et purgé en production par le mainteneur.
 - Messages de commit sans ligne `Co-Authored-By`.
 
 ## Chantiers restants
