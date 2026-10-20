@@ -371,14 +371,8 @@ class GroupeSecondaireController extends AbstractController
                 $personnage = $this->getPersonnage();
                 $isPostulant = $personnage && $repository->hasPostulant($groupeSecondaire, $personnage);
                 $context['isPostulant'] = $isPostulant;
-                $context['canPostuler'] = $personnage
-                    && !$groupeSecondaire->isSecret()
-                    && !$this->can(self::IS_MEMBRE)
-                    && !$isPostulant
-                    && !$repository->hasMembre($groupeSecondaire, $personnage);
-                $context['canContacterChef'] = $groupeSecondaire->getResponsable()
-                    && $personnage
-                    && $personnage->getId() !== $groupeSecondaire->getResponsable()->getId();
+                $context['canPostuler'] = $personnage && !$groupeSecondaire->isSecret() && !$this->can(self::IS_MEMBRE) && !$isPostulant && !$repository->hasMembre($groupeSecondaire, $personnage);
+                $context['canContacterChef'] = $groupeSecondaire->getResponsable() && $personnage && $personnage->getId() !== $groupeSecondaire->getResponsable()->getId();
                 break;
             case 'membres':
                 $context['membresRows'] = $membresRows;

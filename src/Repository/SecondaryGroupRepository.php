@@ -270,7 +270,8 @@ class SecondaryGroupRepository extends BaseRepository
      */
     public function findWithMembres(int $id, bool $withReligions = false): ?SecondaryGroup
     {
-        $qb = $this->createQueryBuilder('g')
+        $qb = $this
+            ->createQueryBuilder('g')
             ->addSelect('m', 'p', 'u')
             ->leftJoin('g.membres', 'm')
             ->leftJoin('m.personnage', 'p')
@@ -279,7 +280,8 @@ class SecondaryGroupRepository extends BaseRepository
             ->setParameter('id', $id);
 
         if ($withReligions) {
-            $qb->addSelect('pr', 'r', 'rl')
+            $qb
+                ->addSelect('pr', 'r', 'rl')
                 ->leftJoin('p.personnagesReligions', 'pr')
                 ->leftJoin('pr.religion', 'r')
                 ->leftJoin('pr.religionLevel', 'rl');
@@ -290,7 +292,8 @@ class SecondaryGroupRepository extends BaseRepository
 
     public function countMembres(SecondaryGroup $secondaryGroup): int
     {
-        return (int) $this->getEntityManager()
+        return (int) $this
+            ->getEntityManager()
             ->createQuery('SELECT COUNT(m.id) FROM App\Entity\Membre m WHERE m.secondaryGroup = :g')
             ->setParameter('g', $secondaryGroup->getId())
             ->getSingleScalarResult();
@@ -298,7 +301,8 @@ class SecondaryGroupRepository extends BaseRepository
 
     public function countPostulants(SecondaryGroup $secondaryGroup): int
     {
-        return (int) $this->getEntityManager()
+        return (int) $this
+            ->getEntityManager()
             ->createQuery('SELECT COUNT(po.id) FROM App\Entity\Postulant po WHERE po.secondaryGroup = :g')
             ->setParameter('g', $secondaryGroup->getId())
             ->getSingleScalarResult();
@@ -306,20 +310,26 @@ class SecondaryGroupRepository extends BaseRepository
 
     public function hasPostulant(SecondaryGroup $secondaryGroup, Personnage $personnage): bool
     {
-        return (int) $this->getEntityManager()
-            ->createQuery('SELECT COUNT(po.id) FROM App\Entity\Postulant po WHERE po.secondaryGroup = :g AND po.personnage = :p')
-            ->setParameter('g', $secondaryGroup->getId())
-            ->setParameter('p', $personnage->getId())
-            ->getSingleScalarResult() > 0;
+        return (
+            (int) $this
+                ->getEntityManager()
+                ->createQuery('SELECT COUNT(po.id) FROM App\Entity\Postulant po WHERE po.secondaryGroup = :g AND po.personnage = :p')
+                ->setParameter('g', $secondaryGroup->getId())
+                ->setParameter('p', $personnage->getId())
+                ->getSingleScalarResult() > 0
+        );
     }
 
     public function hasMembre(SecondaryGroup $secondaryGroup, Personnage $personnage): bool
     {
-        return (int) $this->getEntityManager()
-            ->createQuery('SELECT COUNT(m.id) FROM App\Entity\Membre m WHERE m.secondaryGroup = :g AND m.personnage = :p')
-            ->setParameter('g', $secondaryGroup->getId())
-            ->setParameter('p', $personnage->getId())
-            ->getSingleScalarResult() > 0;
+        return (
+            (int) $this
+                ->getEntityManager()
+                ->createQuery('SELECT COUNT(m.id) FROM App\Entity\Membre m WHERE m.secondaryGroup = :g AND m.personnage = :p')
+                ->setParameter('g', $secondaryGroup->getId())
+                ->setParameter('p', $personnage->getId())
+                ->getSingleScalarResult() > 0
+        );
     }
 
     /**
@@ -329,7 +339,9 @@ class SecondaryGroupRepository extends BaseRepository
      */
     public function findPostulants(SecondaryGroup $secondaryGroup, bool $withReligions = false): array
     {
-        $qb = $this->getEntityManager()->createQueryBuilder()
+        $qb = $this
+            ->getEntityManager()
+            ->createQueryBuilder()
             ->select('po', 'p', 'u', 'pg')
             ->from(Postulant::class, 'po')
             ->join('po.personnage', 'p')
@@ -341,7 +353,8 @@ class SecondaryGroupRepository extends BaseRepository
             ->setParameter('g', $secondaryGroup->getId());
 
         if ($withReligions) {
-            $qb->addSelect('pr', 'r', 'rl')
+            $qb
+                ->addSelect('pr', 'r', 'rl')
                 ->leftJoin('p.personnagesReligions', 'pr')
                 ->leftJoin('pr.religion', 'r')
                 ->leftJoin('pr.religionLevel', 'rl');
@@ -363,7 +376,9 @@ class SecondaryGroupRepository extends BaseRepository
             return [];
         }
 
-        $rows = $this->getEntityManager()->createQueryBuilder()
+        $rows = $this
+            ->getEntityManager()
+            ->createQueryBuilder()
             ->select('IDENTITY(pa.personnage) AS pid', 'g.nom AS groupe')
             ->from(Participant::class, 'pa')
             ->leftJoin('pa.groupeGn', 'gg')
@@ -389,7 +404,9 @@ class SecondaryGroupRepository extends BaseRepository
      */
     public function findIntrigues(SecondaryGroup $secondaryGroup): array
     {
-        return $this->getEntityManager()->createQueryBuilder()
+        return $this
+            ->getEntityManager()
+            ->createQueryBuilder()
             ->select('ih', 'i')
             ->from(IntrigueHasGroupeSecondaire::class, 'ih')
             ->join('ih.intrigue', 'i')

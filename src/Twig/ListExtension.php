@@ -16,8 +16,9 @@ final class ListExtension extends AbstractExtension
     /** @var \WeakMap<object, int> */
     private \WeakMap $slots;
 
-    public function __construct(private readonly RequestStack $requestStack)
-    {
+    public function __construct(
+        private readonly RequestStack $requestStack,
+    ) {
         $this->slots = new \WeakMap();
     }
 

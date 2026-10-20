@@ -657,10 +657,7 @@ abstract class BaseUser
      */
     public function setUiTheme(?string $uiTheme): static
     {
-        $this->uiTheme = $this->composeUiTheme(
-            \in_array('beta', $this->uiTokens($uiTheme), strict: true),
-            $this->isUiLight(),
-        );
+        $this->uiTheme = $this->composeUiTheme(\in_array('beta', $this->uiTokens($uiTheme), strict: true), $this->isUiLight());
 
         return $this;
     }

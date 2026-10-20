@@ -155,12 +155,7 @@ class ClasseController extends AbstractController
 
         // Interface bêta : filtre par type et matrice classes x familles de compétences
         if ($this->getUser()?->isUiBeta()) {
-            $parameters += $this->betaParameters(
-                $request,
-                $competenceFamilyRepository,
-                $classeRepository,
-                iterator_to_array($paginator, false),
-            );
+            $parameters += $this->betaParameters($request, $competenceFamilyRepository, $classeRepository, iterator_to_array($paginator, false));
         }
 
         return $this->render('classe/list.twig', $parameters);
@@ -177,7 +172,8 @@ class ClasseController extends AbstractController
     {
         // Charge les trois listes d'affinités en une requête (évite un N+1 par classe)
         if ([] !== $classes) {
-            $classeRepository->createQueryBuilder('c')
+            $classeRepository
+                ->createQueryBuilder('c')
                 ->select('c', 'cr', 'cf', 'cn')
                 ->leftJoin('c.competenceFamilyCreations', 'cr')
                 ->leftJoin('c.competenceFamilyFavorites', 'cf')
@@ -202,28 +198,34 @@ class ClasseController extends AbstractController
 
         // Les familles uniquement composées de compétences secrètes sont réservées aux gestionnaires
         $canSeeSecret = $this->isGranted(Role::REGLE->value) || $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::SCENARISTE->value);
-        $families = array_values(array_filter(
-            $competenceFamilyRepository->findAllOrderedByLabel(),
-            static function ($family) use ($canSeeSecret): bool {
-                if ($canSeeSecret) {
+        $families = array_values(array_filter($competenceFamilyRepository->findAllOrderedByLabel(), static function ($family) use ($canSeeSecret): bool {
+            if ($canSeeSecret) {
+                return true;
+            }
+            foreach ($family->getCompetences() as $competence) {
+                if (!$competence->isSecret()) {
                     return true;
                 }
-                foreach ($family->getCompetences() as $competence) {
-                    if (!$competence->isSecret()) {
-                        return true;
-                    }
-                }
+            }
 
-                return false;
-            },
-        ));
+            return false;
+        }));
 
         $affinities = [];
         foreach ($classes as $classe) {
             $affinities[$classe->getId()] = [
-                'creation' => $classe->getCompetenceFamilyCreations()->map(static fn ($f): ?int => $f->getId())->toArray(),
-                'favorite' => $classe->getCompetenceFamilyFavorites()->map(static fn ($f): ?int => $f->getId())->toArray(),
-                'normale' => $classe->getCompetenceFamilyNormales()->map(static fn ($f): ?int => $f->getId())->toArray(),
+                'creation' => $classe
+                    ->getCompetenceFamilyCreations()
+                    ->map(static fn ($f): ?int => $f->getId())
+                    ->toArray(),
+                'favorite' => $classe
+                    ->getCompetenceFamilyFavorites()
+                    ->map(static fn ($f): ?int => $f->getId())
+                    ->toArray(),
+                'normale' => $classe
+                    ->getCompetenceFamilyNormales()
+                    ->map(static fn ($f): ?int => $f->getId())
+                    ->toArray(),
             ];
         }
 

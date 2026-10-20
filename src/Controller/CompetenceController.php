@@ -214,10 +214,7 @@ class CompetenceController extends AbstractController
         // Interface bêta : grille par famille, tous les niveaux d'une famille sur la même page
         if ($this->getUser()?->isUiBeta()) {
             $pagerService->setLimit(500);
-            $parameters['levels'] = array_values(array_filter(
-                $levelRepository->findBy([], ['index' => 'ASC']),
-                static fn ($level): bool => $level->getIndex() <= 4,
-            ));
+            $parameters['levels'] = array_values(array_filter($levelRepository->findBy([], ['index' => 'ASC']), static fn ($level): bool => $level->getIndex() <= 4));
         }
 
         $parameters['pagerService'] = $pagerService;
