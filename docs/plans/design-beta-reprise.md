@@ -69,7 +69,7 @@ Habillage bêta (navigation, menus, panneau « Actions », onglets, listes, form
 - `territoire/detail.twig` : en-tête `border-warning` à classer (domaine ou attention) et blocs `text-gamemaster` ; liste à puces « Participer ! / Liste des groupes » de `gn/detail.twig` ; autres liens d'action voisins d'un bouton à relever au fil des pages ; comparaison HTML avant/après hors bêta sur `/gn` non faite.
 - Pages `/competence` et `/classe` (grille compacte, filtre par type, matrice classes et familles).
 - Photo en grand dans une fenêtre modale : faite (v0.22) pour les avatars des groupes transverses ; autres trombinoscopes (`groupe/fragment`, `whoswho`, `personnage/fragment/trombinoscope`) à raccorder au besoin avec `data-lm-photo`.
-- E-mails des groupes transverses : option d'un bloc repliable dans l'onglet Membres.
-- Donnée : deux types « Confrérie » en base de développement, à contrôler en production.
-- Thème sombre/clair non mémorisé (à rattacher à `user.ui_theme`).
+- E-mails des groupes transverses : décision du 2026-10-20, l'onglet E-mails seul est conservé (pas de bloc repliable dans Membres).
+- Donnée : doublon « Confrérie » (id 2, 0 groupe) supprimé de la base locale ; suppression en production à faire à la main par le mainteneur (contrôler avant : `SELECT COUNT(*) FROM secondary_group WHERE secondary_group_type_id = 2`).
+- Thème sombre/clair : fait. Mémorisé dans `user.ui_theme` sous forme de jetons (`beta`, `light`, séparés par une espace), sans migration ; route `POST /user/theme` (jeton CSRF `lm_theme`), attribut `data-bs-theme` posé côté serveur.
 - Tests à faire sur mobile (375 px) pour les dernières pages.

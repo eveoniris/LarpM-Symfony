@@ -651,17 +651,56 @@ abstract class BaseUser
         return $this->uiTheme;
     }
 
-    /** Seule la valeur 'beta' est reconnue ; toute autre valeur rétablit l'interface actuelle. */
+    /**
+     * `ui_theme` contient des jetons séparés par une espace : `beta` (interface bêta) et `light` (mode clair).
+     * Seuls ces jetons sont reconnus ; le reste est ignoré.
+     */
     public function setUiTheme(?string $uiTheme): static
     {
-        $this->uiTheme = 'beta' === $uiTheme ? 'beta' : null;
+        $this->uiTheme = $this->composeUiTheme(
+            \in_array('beta', $this->uiTokens($uiTheme), strict: true),
+            $this->isUiLight(),
+        );
 
         return $this;
     }
 
     public function isUiBeta(): bool
     {
-        return 'beta' === $this->uiTheme;
+        return \in_array('beta', $this->uiTokens($this->uiTheme), strict: true);
+    }
+
+    public function setUiBeta(bool $beta): static
+    {
+        $this->uiTheme = $this->composeUiTheme($beta, $this->isUiLight());
+
+        return $this;
+    }
+
+    /** Mode clair mémorisé pour le compte (sombre par défaut). */
+    public function isUiLight(): bool
+    {
+        return \in_array('light', $this->uiTokens($this->uiTheme), strict: true);
+    }
+
+    public function setUiLight(bool $light): static
+    {
+        $this->uiTheme = $this->composeUiTheme($this->isUiBeta(), $light);
+
+        return $this;
+    }
+
+    /** @return list<string> */
+    private function uiTokens(?string $uiTheme): array
+    {
+        return null === $uiTheme ? [] : array_values(array_filter(explode(' ', $uiTheme)));
+    }
+
+    private function composeUiTheme(bool $beta, bool $light): ?string
+    {
+        $tokens = array_filter([$beta ? 'beta' : null, $light ? 'light' : null]);
+
+        return [] === $tokens ? null : implode(' ', $tokens);
     }
 
     public function getEtatCivil(): ?EtatCivil

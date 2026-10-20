@@ -398,7 +398,7 @@
                 </div>
             {% endif %}
             <div class="d-flex">
-                <button class="btn btn-dark shadow" id="btnSwitch" data-bs-placement="bottom"
+                <button class="btn btn-dark shadow" id="btnSwitch" data-bs-placement="bottom"{% if app.user %} data-theme-url="{{ path('user.theme') }}" data-theme-token="{{ csrf_token('lm_theme') }}"{% endif %}
                         title="Changer mode sombre/claire"><i class="fa fa-toggle-on"></i></button>
             </div>
             <!-- form class="d-flex" role="search">

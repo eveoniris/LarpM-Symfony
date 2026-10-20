@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {# Interface bêta : réservée aux comptes qui l'ont activée (user.ui_theme). Le CSS bêta n'est chargé que pour eux. #}
 {% set uiBeta = app.user is not null and app.user.uiBeta %}
-<html lang="fr" data-bs-theme="dark"{% if uiBeta %} data-ui="beta"{% endif %}>
+<html lang="fr" data-bs-theme="{{ app.user is not null and app.user.uiLight ? 'light' : 'dark' }}"{% if uiBeta %} data-ui="beta"{% endif %}>
 <head>
     {% block head %}
         <meta charset="UTF-8"/>
