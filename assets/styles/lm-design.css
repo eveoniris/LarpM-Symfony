@@ -662,8 +662,7 @@ body:has(.lm-pager-wrap[data-slot="2"]) .lm-pager-wrap[data-slot="1"][data-small
 
 /* --- Liste des territoires : verre dépoli derrière chaque fiche (texte lisible sur la photo) --- */
 html[data-ui="beta"] .lm-territoire-item {
-  background: color-mix(in srgb, var(--lm-surface) 82%, transparent); backdrop-filter: blur(6px);
-  border: 1px solid var(--lm-line); border-radius: var(--lm-radius); margin-bottom: var(--lm-s2); color: var(--lm-fg); --bs-body-bg: color-mix(in srgb, var(--lm-surface) 92%, transparent);
+  border: 1px solid var(--lm-line); border-radius: var(--lm-radius); margin-bottom: var(--lm-s2); color: var(--lm-fg);
 }
 html[data-ui="beta"] .lm-territoire-item .list-group-item-heading { font-family: var(--lm-font-display); }
 
@@ -695,7 +694,8 @@ html[data-ui="beta"] .gs-clamp.lm-clamp--sm.is-open { max-height: none; }
 .lm-legend .lm-help { margin: 0 0 var(--lm-s2); }
 .lm-niveau-reserve { margin: var(--lm-s1) 0 0; font-style: italic; }
 .lm-familles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: var(--lm-s5, 1.5rem); align-items: start; }
-html[data-ui="beta"] .lm-famille, html[data-ui="beta"] .lm-classe, html[data-ui="beta"] .lm-carte-verre {
+/* Verre dépoli commun : le texte reste lisible sur la photo de fond */
+html[data-ui="beta"] .lm-famille, html[data-ui="beta"] .lm-classe, html[data-ui="beta"] .lm-carte-verre, html[data-ui="beta"] .lm-territoire-item {
   background: color-mix(in srgb, var(--lm-surface) 82%, transparent); backdrop-filter: blur(6px);
   --bs-body-bg: color-mix(in srgb, var(--lm-surface) 92%, transparent);
 }

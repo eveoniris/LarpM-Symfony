@@ -104,35 +104,4 @@
             {% include "groupeSecondaire/tab/#{tab}.twig" %}
         </div>
     </div>
-
-    <script>
-        // Délégation d'événements, liée une seule fois (la page peut être rechargée par Turbo).
-        if (!window.gsDetailBound) {
-            window.gsDetailBound = true;
-            document.addEventListener('click', function (event) {
-                const copy = event.target.closest('[data-gs-copy]');
-                if (copy) {
-                    const source = document.querySelector(copy.dataset.gsCopy);
-                    if (source && navigator.clipboard) {
-                        navigator.clipboard.writeText(source.textContent.trim());
-                        const label = copy.querySelector('.gs-copy-label');
-                        const previous = label ? label.textContent : '';
-                        if (label) { label.textContent = 'Copié'; }
-                        setTimeout(function () { if (label) { label.textContent = previous; } }, 2000);
-                    }
-                    return;
-                }
-                const toggle = event.target.closest('[data-gs-toggle]');
-                if (toggle) {
-                    event.preventDefault();
-                    const target = document.querySelector(toggle.dataset.gsToggle);
-                    if (target) {
-                        const open = target.classList.toggle('is-open');
-                        toggle.textContent = open ? 'Réduire' : 'Lire la suite';
-                        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-                    }
-                }
-            });
-        }
-    </script>
 {% endblock body %}

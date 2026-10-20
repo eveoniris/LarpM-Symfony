@@ -24,7 +24,7 @@
             <div class="lm-card-body">
                 {% if family.description %}
                     {% set familyHtml %}{{ family.description|markdown_to_html }}{% endset %}
-                    {% include 'groupeSecondaire/fragment/clamp.twig' with {'id': 'famille-desc-' ~ family.id, 'html': familyHtml, 'long': true, 'extra': 'lm-clamp--sm'} %}
+                    {% include 'groupeSecondaire/fragment/clamp.twig' with {'id': 'famille-desc-' ~ family.id, 'html': familyHtml, 'long': true, 'extra': 'lm-clamp--sm', 'auto': true} %}
                 {% endif %}
                 <ul class="lm-niveaux">
                     {% for level in levels %}
@@ -71,7 +71,7 @@
                             {% endif %}
                             {% if competence and competence.description %}
                                 {% set competenceHtml %}{{ competence.description|markdown_to_html }}{% endset %}
-                                {% include 'groupeSecondaire/fragment/clamp.twig' with {'id': 'comp-desc-' ~ competence.id, 'html': competenceHtml, 'long': true, 'extra': 'lm-clamp--sm'} %}
+                                {% include 'groupeSecondaire/fragment/clamp.twig' with {'id': 'comp-desc-' ~ competence.id, 'html': competenceHtml, 'long': true, 'extra': 'lm-clamp--sm', 'auto': true} %}
                             {% endif %}
                         </li>
                     {% endfor %}
@@ -82,34 +82,3 @@
         <p class="lm-help">Aucune compétence.</p>
     {% endfor %}
 </div>
-
-<script>
-    // « Lire la suite » des descriptions (liée une seule fois).
-    if (!window.gsListBound) {
-        window.gsListBound = true;
-        document.addEventListener('click', function (event) {
-            const toggle = event.target.closest('[data-gs-toggle]');
-            if (!toggle) { return; }
-            event.preventDefault();
-            const target = document.querySelector(toggle.dataset.gsToggle);
-            if (target) {
-                const open = target.classList.toggle('is-open');
-                toggle.textContent = open ? 'Réduire' : 'Lire la suite';
-                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-            }
-        });
-    }
-</script>
-
-<script>
-    // Textes repliés par défaut ; le lien « Lire la suite » n'est conservé que si le texte déborde réellement.
-    function lmClampCheck() {
-        document.querySelectorAll('.gs-clamp.lm-clamp--sm:not(.is-open)').forEach(function (box) {
-            if (box.scrollHeight > box.clientHeight + 2) { return; }
-            box.classList.add('is-open');
-            const link = box.nextElementSibling && box.nextElementSibling.querySelector('[data-gs-toggle]');
-            if (link) { link.parentElement.remove(); }
-        });
-    }
-    if (document.readyState === 'complete') { lmClampCheck(); } else { window.addEventListener('load', lmClampCheck); }
-</script>

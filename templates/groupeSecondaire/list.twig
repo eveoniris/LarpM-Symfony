@@ -133,24 +133,4 @@
 
     {% include '_partials/pagination.html.twig' %}
 
-    {% if beta %}
-        <script>
-            // « Lire la suite » des descriptions (liée une seule fois).
-            if (!window.gsListBound) {
-                window.gsListBound = true;
-                document.addEventListener('click', function (event) {
-                    const toggle = event.target.closest('[data-gs-toggle]');
-                    if (!toggle) { return; }
-                    event.preventDefault();
-                    const target = document.querySelector(toggle.dataset.gsToggle);
-                    if (target) {
-                        const open = target.classList.toggle('is-open');
-                        toggle.textContent = open ? 'Réduire' : 'Lire la suite';
-                        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-                    }
-                });
-            }
-        </script>
-    {% endif %}
-
 {% endblock body %}

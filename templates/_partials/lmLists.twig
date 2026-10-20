@@ -243,31 +243,6 @@ Gère aussi « Afficher plus » ([data-lm-more]) : paquets de 25 lignes et reche
         render();
     }
 
-    // Photo en grand : un lien [data-lm-photo] ouvre l'image dans une fenêtre modale (<dialog>) ;
-    // sans JavaScript, ou avec Ctrl / Cmd / clic milieu, le lien garde son comportement normal.
-    let photoDialog = null;
-    function openPhoto(link) {
-        if (!photoDialog) {
-            photoDialog = document.createElement('dialog');
-            photoDialog.className = 'lm-photo-dialog';
-            photoDialog.innerHTML = '<form method="dialog"><button class="lm-photo-close" aria-label="Fermer">&times;</button></form><img alt=""><p class="lm-photo-caption"></p>';
-            photoDialog.addEventListener('click', function (e) { if (e.target === photoDialog) { photoDialog.close(); } });
-            document.body.appendChild(photoDialog);
-        }
-        const img = photoDialog.querySelector('img');
-        img.src = link.getAttribute('href');
-        const caption = link.dataset.lmPhoto || link.getAttribute('aria-label') || '';
-        photoDialog.querySelector('.lm-photo-caption').textContent = caption;
-        img.alt = caption;
-        photoDialog.showModal();
-    }
-    document.addEventListener('click', function (e) {
-        const link = e.target.closest('a[data-lm-photo]');
-        if (!link || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0 || typeof HTMLDialogElement === 'undefined') { return; }
-        e.preventDefault();
-        openPhoto(link);
-    });
-
     function init() {
         document.querySelectorAll('#content table.table').forEach(enhance);
         document.querySelectorAll('[data-lm-more]').forEach(setupMore);
