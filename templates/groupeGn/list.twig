@@ -10,81 +10,133 @@
 		<li><a href="{{ path("groupe.detail", {'groupe': groupe.id}) }}">{{ groupe.nom }}</a></li>
 		<li class="active">Liste des sessions</li>
 	</ol>
-	
-	<div class="well well-sm">
-	
-		<div class="header">
-			<h5>Sessions de jeu</h5>
-		</div>
-		
-		<a class="btn btn-primary" href="{{ path('groupeGn.add',{'groupe': groupe.id}) }}">Ajouter une nouvelle session</a>
-		
-		<div class="table-responsive">
-		<table class="table table-sm table-bordered table-striped">
-			<thead>
-		    	<tr>
-		    		<th>Jeu</th>
-		    		<th>Responsable</th>
-		    		<th>Etat</th>
-		    		<th>Code</th>
-		    		<th>Jeu stratégique</th>
-		    		<th>Jeu maritime</th>
-		    		<th>Nombre de joueurs maximum</th>
-		    		<th>Nombre de place disponible</th>
-		    		<th>Participants</th>
-		   		 	<th />
-		    	</tr>
-		   	</thead>
-		   	<tbody>
-			{% for groupeGn in groupe.groupeGns %}
-				<tr>
-					<td>{{ groupeGn.gn.label }}</td>
-					<td>
-						{% if groupeGn.responsable %}
-							{{ groupeGn.responsable.user.etatCivil }}
-						{% endif %}
-					</td>
-					<td>{% if groupeGn.free %}Libre{% else %}Réservé{% endif %}</td>
-					<td>{{ groupeGn.code }}</td>
-					<td>{% if groupeGn.jeuStrategique %}Oui{% else %}Non{% endif %}</td>
-					<td>{% if groupeGn.jeuMaritime %}Oui{% else %}Non{% endif %}</td>
-					<td>{{ groupeGn.placeTotal }}</td>
-					<td>{{ groupeGn.placeLibre }}</td>
-					<td>
-						<ul>
-							{% for participant in groupeGn.participants %}
-								<li>{{ participant.user.etatCivil }}&nbsp;<a href="{{ path('groupeGn.participants.remove', {'groupeGn': groupeGn.id, 'participant': participant.id}) }}" data-toggle="tooltip" data-placement="top" title="Retirer sa participation"><i class="fa fa-remove"></i></a></li>
-							{% endfor %}
-						</ul>
-						<a href="{{ path('groupeGn.joueur.add', {'groupeGn': groupeGn.id}) }}" data-toggle="tooltip" data-placement="top" title="Inviter un joueur"><i class="fa fa-envelope"></i> Inviter un joueur</a>
-						{% if is_granted('ROLE_ORGA') or is_granted('ROLE_SCENARISTE') %}
-							<br/><a href="{{ path('groupeGn.participants.add', {'groupeGn': groupeGn.id}) }}" data-toggle="tooltip" data-placement="top" title="Ajouter un participant"><i class="fa fa-plus"></i> Ajouter un participant (direct)</a>
-						{% endif %}
 
-						{% set candidats = candidatures[groupeGn.id]|default([]) %}
-						{% if candidats|length > 0 %}
-							<hr/>
-							<strong><i class="fa fa-user-plus"></i> Candidatures</strong>
-							<ul>
-								{% for demande in candidats %}
-									<li>
-										{{ demande.participant.user.etatCivil }}
-										{% if demande.message %}<em>&laquo;&nbsp;{{ demande.message }}&nbsp;&raquo;</em>{% endif %}
-										<a class="text-success" href="{{ path('groupeGn.demande.accept', {'demande': demande.id}) }}" data-toggle="tooltip" data-placement="top" title="Accepter"><i class="fa fa-check"></i></a>
-										<a class="text-danger" href="{{ path('groupeGn.demande.refuse', {'demande': demande.id}) }}" data-toggle="tooltip" data-placement="top" title="Refuser"><i class="fa fa-remove"></i></a>
-									</li>
-								{% endfor %}
-							</ul>
-						{% endif %}
-					</td>
-					<td>
-						<a href="{{ path('groupeGn.update',{'groupe': groupe.id, 'groupeGn': groupeGn.id}) }}"><i class="fa fa-pencil"></i> Modifier</a><br/>
-						<a href="{{ path('groupeGn.responsable',{'groupe': groupe.id, 'groupeGn': groupeGn.id}) }}"><i class="fa fa-pencil"></i> Responsable</a>
-					</td>
-				</tr>
-			{% endfor %}
-			</tbody>
-		</table>
+	<div class="d-flex justify-content-end flex-wrap gap-2 mb-2">
+		<div class="btn-toolbar" role="toolbar" aria-label="Actions">
+			<div class="btn-group" role="group">
+				{% if is_granted('ROLE_SCENARISTE') %}
+					<a class="btn btn-secondary" href="{{ path('groupe.place', {'groupe': groupe.id}) }}"><i class="fa fa-pencil"></i> Modifier les places</a>
+				{% endif %}
+				<a class="btn btn-secondary" href="{{ path('groupeGn.add',{'groupe': groupe.id}) }}"><i class="fa fa-plus"></i> Ajouter une nouvelle session</a>
+			</div>
 		</div>
 	</div>
+
+	{% for groupeGn in groupe.groupeGns %}
+		{% set placeLibre = groupeGn.placeLibre %}
+		{% set fiefsSupplementaires = max(0, groupe.territoires|length - 1) %}
+		<div class="card text-bg mb-3 overflow-auto">
+			<div class="header">
+				<h5>
+					{{ groupeGn.gn.label }}
+					<span class="badge {{ groupeGn.free ? 'text-bg-success' : 'text-bg-secondary' }}">{{ groupeGn.free ? 'Libre' : 'Réservé' }}</span>
+				</h5>
+			</div>
+			<div class="card-body">
+
+				<div class="d-flex justify-content-end flex-wrap gap-2 mb-3">
+					<div class="btn-toolbar" role="toolbar" aria-label="Actions de la session">
+						<div class="btn-group" role="group">
+							<a class="btn btn-secondary" href="{{ path('groupeGn.update',{'groupe': groupe.id, 'groupeGn': groupeGn.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>
+							<a class="btn btn-secondary" href="{{ path('groupeGn.responsable',{'groupe': groupe.id, 'groupeGn': groupeGn.id}) }}"><i class="fa fa-user"></i> Responsable</a>
+							<a class="btn btn-secondary" href="{{ path('groupeGn.joueur.add', {'groupeGn': groupeGn.id}) }}"><i class="fa fa-envelope"></i> Inviter un joueur</a>
+							{% if is_granted('ROLE_ORGA') or is_granted('ROLE_SCENARISTE') %}
+								<a class="btn btn-secondary" href="{{ path('groupeGn.participants.add', {'groupeGn': groupeGn.id}) }}"><i class="fa fa-plus"></i> Ajouter un participant</a>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-5">
+						<dl class="mb-0">
+							<dt>Responsable</dt>
+							<dd>{% if groupeGn.responsable %}{{ groupeGn.responsable.user.etatCivil }}{% else %}<span class="text-muted">Aucun</span>{% endif %}</dd>
+
+							<dt>Code</dt>
+							<dd>{{ groupeGn.code|default('-') }}</dd>
+
+							<dt>Jeu</dt>
+							<dd>
+								<span class="badge text-bg-secondary">Stratégique : {{ groupeGn.jeuStrategique ? 'oui' : 'non' }}</span>
+								<span class="badge text-bg-secondary">Maritime : {{ groupeGn.jeuMaritime ? 'oui' : 'non' }}</span>
+							</dd>
+						</dl>
+					</div>
+
+					<div class="col-md-7">
+						<dl class="mb-0">
+							<dt>Places</dt>
+							<dd>
+								<strong>{{ groupeGn.nombreMembres }} / {{ groupeGn.placeTotal }}</strong> membres
+								{% if groupeGn.nombreAidesDeCamp > 0 %}
+									<span class="text-muted">(+ {{ groupeGn.nombreAidesDeCamp }} aide{{ groupeGn.nombreAidesDeCamp > 1 ? 's' : '' }} de camp, non compté{{ groupeGn.nombreAidesDeCamp > 1 ? 's' : '' }})</span>
+								{% endif %}
+								<br/>
+								{% if placeLibre < 0 %}
+									<span class="text-danger"><i class="fa fa-exclamation-triangle"></i> Limite dépassée de {{ -placeLibre }} place{{ placeLibre < -1 ? 's' : '' }}</span>
+								{% else %}
+									<span class="text-muted">{{ placeLibre }} place{{ placeLibre > 1 ? 's' : '' }} libre{{ placeLibre > 1 ? 's' : '' }}</span>
+								{% endif %}
+							</dd>
+
+							<dt>Origine du nombre de places</dt>
+							<dd class="text-muted">
+								{% if groupe.placesMax %}
+									Fixé manuellement à {{ groupe.placesMax }} (calcul automatique : {{ groupe.placeCalculee(groupeGn.gn) }}).
+								{% else %}
+									Calcul automatique : {{ groupeGn.gn.placesParGroupe }} places par défaut
+									{% if fiefsSupplementaires > 0 %}+ 2 x {{ fiefsSupplementaires }} fief{{ fiefsSupplementaires > 1 ? 's' : '' }} au-delà du premier{% endif %}.
+								{% endif %}
+							</dd>
+
+							<dt>Recherche de joueurs</dt>
+							<dd>{{ groupeGn.placeAvailable }} place{{ groupeGn.placeAvailable > 1 ? 's' : '' }} recherchée{{ groupeGn.placeAvailable > 1 ? 's' : '' }}</dd>
+						</dl>
+					</div>
+				</div>
+
+				<hr/>
+
+				<h6>Participants ({{ groupeGn.participants|length }})</h6>
+				{% if groupeGn.participants|length > 0 %}
+					<ul class="list-group mb-3">
+						{% for participant in groupeGn.participants %}
+							<li class="list-group-item d-flex justify-content-between align-items-center">
+								<span>
+									{{ participant.user.etatCivil }}
+									{% if participant.billet and not participant.billet.compteDansPlaces %}<span class="badge text-bg-secondary">Aide de camp</span>{% endif %}
+								</span>
+								<a class="btn btn-secondary btn-sm" href="{{ path('groupeGn.participants.remove', {'groupeGn': groupeGn.id, 'participant': participant.id}) }}" data-toggle="tooltip" data-placement="top" title="Retirer sa participation"><i class="fa fa-remove"></i></a>
+							</li>
+						{% endfor %}
+					</ul>
+				{% else %}
+					<p class="text-muted">Aucun participant pour cette session.</p>
+				{% endif %}
+
+				{% set candidats = candidatures[groupeGn.id]|default([]) %}
+				{% if candidats|length > 0 %}
+					<h6><i class="fa fa-user-plus"></i> Candidatures ({{ candidats|length }})</h6>
+					<ul class="list-group">
+						{% for demande in candidats %}
+							<li class="list-group-item d-flex justify-content-between align-items-center">
+								<span>
+									{{ demande.participant.user.etatCivil }}
+									{% if demande.message %}<em>&laquo;&nbsp;{{ demande.message }}&nbsp;&raquo;</em>{% endif %}
+								</span>
+								<span class="btn-group" role="group">
+									<a class="btn btn-secondary btn-sm text-success" href="{{ path('groupeGn.demande.accept', {'demande': demande.id}) }}" data-toggle="tooltip" data-placement="top" title="Accepter"><i class="fa fa-check"></i></a>
+									<a class="btn btn-secondary btn-sm text-danger" href="{{ path('groupeGn.demande.refuse', {'demande': demande.id}) }}" data-toggle="tooltip" data-placement="top" title="Refuser"><i class="fa fa-remove"></i></a>
+								</span>
+							</li>
+						{% endfor %}
+					</ul>
+				{% endif %}
+			</div>
+		</div>
+	{% else %}
+		<div class="alert alert-info">Ce groupe n'a encore aucune session de jeu.</div>
+	{% endfor %}
+
 {% endblock %}
