@@ -57,15 +57,32 @@ class HelloAssoDiagnose extends Command
                 $headers['X-API-KEY'] = $key;
             }
 
-            try {
-                $status = (string) $this->httpClient->request('GET', $url, ['headers' => $headers, 'timeout' => 20])->getStatusCode();
-            } catch (ExceptionInterface $exception) {
-                $status = 'erreur : ' . $exception->getMessage();
-            }
+            $io->writeln(\sprintf('%s -> %s', $label, $this->status($url, ['headers' => $headers])));
+        }
 
-            $io->writeln(\sprintf('%s -> %s', $label, $status));
+        // Variantes de la requête qui compte (attendees avec clé) pour trouver ce qui diffère d'un appel PowerShell/curl.
+        $attendees = $org . '/events/' . $eventId . '/attendees?limit=1';
+        $variants = [
+            'Accept */*' => ['headers' => ['Accept' => '*/*', 'X-API-KEY' => $key]],
+            'sans Accept' => ['headers' => ['X-API-KEY' => $key]],
+            'HTTP/1.1' => ['http_version' => '1.1', 'headers' => ['Accept' => 'application/json', 'X-API-KEY' => $key]],
+            'HTTP/1.1 + Accept */*' => ['http_version' => '1.1', 'headers' => ['Accept' => '*/*', 'X-API-KEY' => $key]],
+            'User-Agent PowerShell' => ['headers' => ['Accept' => '*/*', 'User-Agent' => 'Mozilla/5.0 (Windows NT; Windows NT 10.0; fr-FR) WindowsPowerShell/5.1', 'X-API-KEY' => $key]],
+        ];
+        foreach ($variants as $label => $options) {
+            $io->writeln(\sprintf('attendees, %s -> %s', $label, $this->status($attendees, $options)));
         }
 
         return Command::SUCCESS;
+    }
+
+    /** @param array<string, mixed> $options */
+    private function status(string $url, array $options): string
+    {
+        try {
+            return (string) $this->httpClient->request('GET', $url, [...$options, 'timeout' => 20])->getStatusCode();
+        } catch (ExceptionInterface $exception) {
+            return 'erreur : ' . $exception->getMessage();
+        }
     }
 }
