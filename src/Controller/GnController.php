@@ -484,9 +484,13 @@ class GnController extends AbstractController
             $this->personnageService->lockGnSetDefaultCharacter($gn);
             $this->personnageService->lockGnSetDefaultLangue($gn);
             $this->personnageService->lockGnSetDefaultSecondCharacter($gn);
-            $this->personnageService->lockGnGiveNoblityGnRenomme($gn);
-            $this->personnageService->lockGnGiveLiteratureGnBonus($gn);
-            $this->personnageService->lockGnGiveSanctuaireGnEffect();
+            // Ces méthodes sont des générateurs : sans itération leur corps ne s'exécute pas
+            foreach ($this->personnageService->lockGnGiveNoblityGnRenomme($gn) as $_) {
+            }
+            foreach ($this->personnageService->lockGnGiveLiteratureGnBonus($gn) as $_) {
+            }
+            foreach ($this->personnageService->lockGnGiveSanctuaireGnEffect() as $_) {
+            }
 
             $this->addFlash('success', 'Le gn a été verrouillé.');
 

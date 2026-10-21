@@ -1881,29 +1881,31 @@ class PersonnageService
         // Maitre : Vous connaissez un Sort et une Recette Alchimique de niveau Expert par GN.
         // Grand Maître: Vous connaissez un Sort et une Recette Alchimique de niveau Maître par GN.
 
+        // Niveau de la compétence => tags du sort et de la recette donnés par GN
+        $rules = [
+            [LevelType::INITIATED,    TriggerType::SORT_APPRENTI, TriggerType::ALCHIMIE_APPRENTI],
+            [LevelType::EXPERT,       TriggerType::SORT_INITIE,   TriggerType::ALCHIMIE_INITIE],
+            [LevelType::MASTER,       TriggerType::SORT_EXPERT,   TriggerType::ALCHIMIE_EXPERT],
+            [LevelType::GRAND_MASTER, TriggerType::SORT_MAITRE,   TriggerType::ALCHIMIE_MAITRE],
+        ];
+
         $i = 0;
-        $levels = [LevelType::INITIATED, LevelType::INITIATED, LevelType::MASTER, LevelType::GRAND_MASTER];
-        foreach ($levels as $level) {
+        foreach ($rules as [$level, $sortTag, $potionTag]) {
             foreach ($participantRepository->findAllByCompentenceFamilyLevel($gn, CompetenceFamilyType::LITERATURE, $level) as $participant) {
                 ++$i;
                 if (!($personnage = $participant->getPersonnage())) {
                     $this->logger->warning(\sprintf('Participant %d do not have a personnage', $participant->getId()));
+
+                    continue;
                 }
 
                 // it's only persist and do not flush data
-                $this->addPersonnageTrigger($personnage, TriggerType::SORT_APPRENTI, false);
-                $this->addPersonnageTrigger($personnage, TriggerType::ALCHIMIE_APPRENTI, true);
-                $this->logger->info(\sprintf('Add Initiated Sort and Potion choice to personnage %d', $personnage->getId()));
-                $this->entityManager->flush();
+                $this->addPersonnageTrigger($personnage, $sortTag, false);
+                $this->addPersonnageTrigger($personnage, $potionTag, true);
+                $this->logger->info(\sprintf('Add %s and %s choice to personnage %d', $sortTag->value, $potionTag->value, $personnage->getId()));
 
                 if ($asGenerator) {
                     yield $i;
-                }
-
-                // Optimize batch
-                if (0 === ($i % 50)) {
-                    // Actually cause a trouble in entity graph
-                    // $this->entityManager->clear();
                 }
             }
         }
