@@ -45,6 +45,8 @@ class HelloAssoDiagnose extends Command
         $org = self::BASE_URL . '/organizers/' . rawurlencode($this->organizerId);
         $eventId = rawurlencode((string) $input->getArgument('eventId'));
         $routes = [
+            'organisateur (avec clé)' => [$org, true],
+            'organisateur (sans clé)' => [$org, false],
             '/movements (avec clé)' => [$org . '/movements?limit=1', true],
             '/movements (sans clé)' => [$org . '/movements?limit=1', false],
             '/events/{eventId}/attendees (avec clé)' => [$org . '/events/' . $eventId . '/attendees?limit=1', true],
