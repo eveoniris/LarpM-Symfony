@@ -2263,7 +2263,7 @@ class ParticipantController extends AbstractController
             $personnage->addReligion($religion);
 
             $trigger = $personnage->getTrigger(TriggerType::PRETRISE_INITIE);
-            $this->entityManager->remove($trigger);
+            $trigger->consume((string) $religion);
 
             $this->entityManager->flush();
 

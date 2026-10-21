@@ -114,9 +114,11 @@ class LangueManagementTest extends WebTestCase
         static::assertSame('LITTERATURE', $langues[0]->getSource());
         static::assertSame('LANGUE COURANTE', $langues[0]->getTriggerTag());
 
-        // Le trigger a été consommé
+        // Le trigger a été consommé (suppression logique, avec la langue choisie en historique)
         $triggers = $em->getRepository(PersonnageTrigger::class)->findBy(['personnage' => $personnage->getId()]);
-        static::assertCount(0, $triggers);
+        static::assertCount(1, $triggers);
+        static::assertTrue($triggers[0]->isDeleted());
+        static::assertSame((string) $langue, $triggers[0]->getChoiceLabel());
     }
 
     public function testDocumentOfUnknownLangueRedirectsToDetailWithoutError(): void

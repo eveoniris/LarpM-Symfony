@@ -1899,9 +1899,18 @@ class PersonnageService
                     continue;
                 }
 
-                // it's only persist and do not flush data
-                $this->addPersonnageTrigger($personnage, $sortTag, false);
-                $this->addPersonnageTrigger($personnage, $potionTag, true);
+                // un trigger donné pour ce GN (actif ou consommé) n'est pas redonné
+                $alreadyGiven = static fn (TriggerType $tag): bool => $personnage
+                    ->getAllPersonnageTriggers()
+                    ->exists(static fn (int $key, PersonnageTrigger $trigger): bool => $trigger->getTag() === $tag && $trigger->getGn()?->getId() === $gn->getId());
+                foreach ([$sortTag, $potionTag] as $tag) {
+                    if ($alreadyGiven($tag)) {
+                        continue;
+                    }
+
+                    $this->addPersonnageTrigger($personnage, $tag, false, $gn);
+                }
+                $this->entityManager->flush();
                 $this->logger->info(\sprintf('Add %s and %s choice to personnage %d', $sortTag->value, $potionTag->value, $personnage->getId()));
 
                 if ($asGenerator) {
@@ -1916,11 +1925,14 @@ class PersonnageService
         Personnage $personnage,
         TriggerType $triggerType,
         bool $flush = false,
+        ?Gn $gn = null,
     ): PersonnageTrigger {
         $trigger = new PersonnageTrigger();
         $trigger->setPersonnage($personnage);
         $trigger->setTag($triggerType);
         $trigger->setDone(false);
+        $trigger->setGn($gn);
+        $trigger->setCreatedAt(new DateTime());
         $this->entityManager->persist($trigger);
 
         if ($flush) {
