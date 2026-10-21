@@ -1501,7 +1501,7 @@ class PersonnageController extends AbstractController
             $this->entityManager->persist($personnageLangue);
 
             if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_COURANTE)) {
-                $this->entityManager->remove($trigger);
+                $trigger->consume((string) $langue);
             }
 
             $this->log($personnageLangue, LogActionType::ADD_LANGUE);
@@ -1567,7 +1567,7 @@ class PersonnageController extends AbstractController
             $this->entityManager->persist($personnageLangue);
 
             if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_ANCIENNE)) {
-                $this->entityManager->remove($trigger);
+                $trigger->consume((string) $langue);
             }
 
             $this->log($personnageLangue, LogActionType::ADD_LANGUE);
@@ -1628,7 +1628,7 @@ class PersonnageController extends AbstractController
             $this->entityManager->persist($personnageLangue);
 
             if ($trigger = $personnage->getTrigger(TriggerType::LANGUE_COURANTE)) {
-                $this->entityManager->remove($trigger);
+                $trigger->consume((string) $langue);
             }
 
             $this->log($personnageLangue, LogActionType::ADD_LANGUE);
@@ -1825,28 +1825,28 @@ class PersonnageController extends AbstractController
                     $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_APPRENTI);
                     // May not come from trigger
                     if ($trigger) {
-                        $this->entityManager->remove($trigger);
+                        $trigger->consume(potion: $potion);
                     }
                     break;
                 case 2:
                     $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_INITIE);
                     // May not come from trigger
                     if ($trigger) {
-                        $this->entityManager->remove($trigger);
+                        $trigger->consume(potion: $potion);
                     }
                     break;
                 case 3:
                     $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_EXPERT);
                     // May not come from trigger
                     if ($trigger) {
-                        $this->entityManager->remove($trigger);
+                        $trigger->consume(potion: $potion);
                     }
                     break;
                 case 4:
                     // May not come from trigger
                     $trigger = $personnage->getTrigger(TriggerType::ALCHIMIE_MAITRE);
                     if ($trigger) {
-                        $this->entityManager->remove($trigger);
+                        $trigger->consume(potion: $potion);
                     }
                     break;
             }
@@ -1919,7 +1919,7 @@ class PersonnageController extends AbstractController
             // suppression du trigger consommé (DOMAINE_MAGIE niveau 1 ou MAGIE_EXPERT domaine supplémentaire)
             $trigger = $personnage->getTrigger(TriggerType::DOMAINE_MAGIE) ?? $personnage->getTrigger(TriggerType::MAGIE_EXPERT);
             if ($trigger) {
-                $this->entityManager->remove($trigger);
+                $trigger->consume($domaine->getLabel());
             }
 
             $logAction = new LogAction();
@@ -1960,12 +1960,16 @@ class PersonnageController extends AbstractController
 
         $niveau = $sort;
 
-        if (
-            !$personnage->hasTrigger(TriggerType::SORT_APPRENTI)
-            && !$personnage->hasTrigger(TriggerType::SORT_INITIE)
-            && !$personnage->hasTrigger(TriggerType::SORT_EXPERT)
-            && !$personnage->hasTrigger(TriggerType::SORT_MAITRE)
-        ) {
+        // Le trigger du niveau demandé est requis, sinon un sort de niveau supérieur serait offert
+        $sortTag =
+            [
+                1 => TriggerType::SORT_APPRENTI,
+                2 => TriggerType::SORT_INITIE,
+                3 => TriggerType::SORT_EXPERT,
+                4 => TriggerType::SORT_MAITRE,
+            ][$niveau] ?? null;
+
+        if (null === $sortTag || !$personnage->hasTrigger($sortTag)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de sorts supplémentaires.');
 
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
@@ -1997,22 +2001,22 @@ class PersonnageController extends AbstractController
             switch ($niveau) {
                 case 1:
                     if ($trigger = $personnage->getTrigger(TriggerType::SORT_APPRENTI)) {
-                        $this->entityManager->remove($trigger);
+                        $trigger->consume(sort: $sort);
                     }
                     break;
                 case 2:
                     if ($trigger = $personnage->getTrigger(TriggerType::SORT_INITIE)) {
-                        $this->entityManager->remove($trigger);
+                        $trigger->consume(sort: $sort);
                     }
                     break;
                 case 3:
                     if ($trigger = $personnage->getTrigger(TriggerType::SORT_EXPERT)) {
-                        $this->entityManager->remove($trigger);
+                        $trigger->consume(sort: $sort);
                     }
                     break;
                 case 4:
                     if ($trigger = $personnage->getTrigger(TriggerType::SORT_MAITRE)) {
-                        $this->entityManager->remove($trigger);
+                        $trigger->consume(sort: $sort);
                     }
                     break;
             }
@@ -2080,7 +2084,7 @@ class PersonnageController extends AbstractController
 
             // suppression du trigger
             $trigger = $personnage->getTrigger(TriggerType::TECHNOLOGIE);
-            $this->entityManager->remove($trigger);
+            $trigger?->consume((string) $technologie);
 
             $this->entityManager->flush();
 
@@ -4351,7 +4355,7 @@ class PersonnageController extends AbstractController
             $personnage->addReligion($religion);
 
             if ($trigger = $personnage->getTrigger(TriggerType::PRETRISE_INITIE)) {
-                $this->entityManager->remove($trigger);
+                $trigger->consume((string) $religion);
             }
             $this->entityManager->flush();
 
@@ -4686,7 +4690,7 @@ class PersonnageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $trigger = $form->getData();
 
-            $this->entityManager->remove($trigger);
+            $trigger->consume('Supprimé par un orga');
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Le déclencheur a été supprimé.');
@@ -4920,7 +4924,7 @@ class PersonnageController extends AbstractController
             // Pour une langue de littérature, on trace et consomme le trigger choisi
             if (LangueSourceType::LITTERATURE->value === $source && $triggerTag) {
                 if ($trigger = $personnage->getTrigger($triggerTag)) {
-                    $this->entityManager->remove($trigger);
+                    $trigger->consume((string) $langue);
                 }
             }
 

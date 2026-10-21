@@ -127,3 +127,37 @@
            </ul>
        </div>
    {% endif %}
+
+{# Historique des choix, réservé aux orgas #}
+{% if is_granted('ROLE_REGLE') or is_granted('ROLE_ADMIN') or is_granted('ROLE_SCENARISTE') %}
+    {% set consumedTriggers = personnage.allPersonnageTriggers|filter(t => t.deletedAt) %}
+    {% if consumedTriggers|length > 0 %}
+        <div class="{{ css }}">
+            <div class="header">
+                <h5>Historique des choix</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                    <tr>
+                        <th>Choix permis</th>
+                        <th>GN</th>
+                        <th>Consommé le</th>
+                        <th>Choix fait</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for trigger in consumedTriggers %}
+                        <tr>
+                            <td>{{ trigger.tag.value ?? '-' }}</td>
+                            <td>{{ trigger.gn ? trigger.gn.label : '-' }}</td>
+                            <td>{{ trigger.deletedAt|date('d/m/Y H:i') }}</td>
+                            <td>{{ trigger.choiceLabel ?? '-' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}

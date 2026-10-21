@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Enum\TriggerType;
+use DateTime;
 use Doctrine\ORM\Mapping\Entity;
 
 #[Entity]
@@ -13,6 +14,24 @@ class PersonnageTrigger extends BasePersonnageTrigger
     public function isDone(): bool
     {
         return (bool) $this->done;
+    }
+
+    public function isDeleted(): bool
+    {
+        return null !== $this->deleted_at;
+    }
+
+    /**
+     * Consomme le trigger (suppression logique) en gardant ce qui a été choisi.
+     */
+    public function consume(?string $choiceLabel = null, ?Potion $potion = null, ?Sort $sort = null): static
+    {
+        $this->deleted_at ??= new DateTime();
+        $this->potion = $potion;
+        $this->sort = $sort;
+        $this->choice_label = $choiceLabel ?? $potion?->getLabel() ?? $sort?->getLabel();
+
+        return $this;
     }
 
     /** @return array<string, mixed> */
