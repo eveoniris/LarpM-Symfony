@@ -12,10 +12,9 @@ Stack de développement basé sur [FrankenPHP](https://frankenphp.dev/) + Caddy 
 docker compose up -d
 ```
 
-Le premier démarrage exécute automatiquement (via marqueurs dans `var/`) :
-1. `composer install`
-2. `doctrine:schema:create`
-3. `doctrine:fixtures:load`
+Le premier démarrage exécute automatiquement :
+1. `composer install` (via le marqueur `var/.composer-installed`)
+2. l'initialisation de la base MySQL vide à partir des scripts SQL de `docker/db/initData/` (schéma puis données, dans l'ordre alphabétique). Il n'y a pas de `doctrine:fixtures:load`.
 
 ## Services
 
@@ -139,9 +138,9 @@ docker compose exec webserver sh
 # Forcer une réinstallation Composer (supprimer le marqueur)
 docker compose exec webserver rm var/.composer-installed && docker compose restart webserver
 
-# Recharger le schéma et les fixtures (reset complet)
-docker compose exec webserver rm -f var/.schema-created var/.fixtures-loaded
-docker compose restart webserver
+# Réinitialiser la base (reset complet : supprime le volume MySQL, les scripts initData sont rejoués)
+docker compose down -v
+docker compose up -d
 
 # Vider le cache (var/ et vendor/ sont des volumes nommés, pas visibles côté Windows)
 docker compose exec webserver php bin/console cache:clear
