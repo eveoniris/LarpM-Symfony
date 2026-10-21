@@ -66,7 +66,7 @@ class LangueType extends AbstractType
                 'expanded' => true,
                 'required' => true,
                 'class' => GroupeLangue::class,
-                'choice_label' => 'label',
+                'choice_label' => self::libelleGroupeLangue(...),
                 'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('i')->orderBy('i.label', 'ASC'),
             ])
             ->add('secret', ChoiceType::class, [
@@ -101,6 +101,31 @@ class LangueType extends AbstractType
                 'attr' => ['rows' => 5],
             ]);
         }
+    }
+
+    /**
+     * Libellé d'un groupe de langues avec la couleur de son bracelet : "🟦 Langues Hyborééennes (bracelet bleu)".
+     */
+    private static function libelleGroupeLangue(GroupeLangue $groupeLangue): string
+    {
+        $couleur = mb_strtolower(trim($groupeLangue->getCouleur()));
+        $pastille = match ($couleur) {
+            'bleu' => '🟦',
+            'jaune' => '🟨',
+            'rouge' => '🟥',
+            'noir' => '⬛',
+            'vert' => '🟩',
+            'orange' => '🟧',
+            'violet' => '🟪',
+            'blanc' => '⬜',
+            default => '',
+        };
+
+        if ('' === $couleur || 'sans' === $couleur || 'aucune' === $couleur) {
+            return $groupeLangue->getLabel() . ' (sans bracelet)';
+        }
+
+        return trim($pastille . ' ' . $groupeLangue->getLabel()) . ' (bracelet ' . $couleur . ')';
     }
 
     /**
