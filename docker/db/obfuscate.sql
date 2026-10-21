@@ -38,7 +38,7 @@ UPDATE ingredient SET label =  concat('Label_', id), description = @LOREM WHERE 
 UPDATE intrigue SET titre =  concat('Titre_', id), description = @LOREM, text = @LOREM_LIGHT, resolution = @LOREM_LIGHT WHERE id > 0;
 UPDATE item SET label =  concat('Label_', id), description = @LOREM, special = @LOREM_LIGHT, description_secrete = @LOREM, description_scenariste = @LOREM WHERE id > 0;
 UPDATE item_bak SET label =  concat('Label_', id), description = @LOREM, special = @LOREM_LIGHT WHERE id > 0;
-UPDATE langue SET label =  concat('Label_', id), description = @LOREM WHERE id > 0;
+UPDATE langue SET label =  concat('Label_', id), description = @LOREM, condition_apprentissage = @LOREM_LIGHT WHERE id > 0;
 UPDATE lieu SET nom =  concat('Nom_', id), description = @LOREM WHERE id > 0;
 UPDATE lignees SET nom =  concat('Nom_', id), description = @LOREM WHERE id > 0;
 UPDATE localisation SET label =  concat('Localisation_', id), `precision` = @LOREM WHERE id > 0;

@@ -21,6 +21,7 @@ use App\Manager\RandomColor;
 use App\Repository\QrCodeScanLogRepository;
 use App\Repository\ReligionRepository;
 use App\Security\MultiRolesExpression;
+use App\Service\LangueJoueursService;
 use App\Service\OrderBy;
 use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -493,6 +494,33 @@ class StatistiqueController extends AbstractController
     public function competencesStatsGnApiAction(#[MapEntity] Gn $gn): JsonResponse
     {
         return new JsonResponse($this->statsService->getCompetenceGn($gn)->getResult());
+    }
+
+    #[Route('/stats/langues/{gn}', name: 'stats.langues.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function languesStatsGnAction(#[MapEntity] Gn $gn, LangueJoueursService $langueJoueursService): Response
+    {
+        return $this->render('statistique/languesGn.twig', [
+            'langues' => $langueJoueursService->getRepartitionGn($gn),
+            'gn' => $gn,
+        ]);
+    }
+
+    #[Route('/stats/langues/{gn}/csv', name: 'stats.langues.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function languesCsvStatsGnAction(#[MapEntity] Gn $gn, LangueJoueursService $langueJoueursService): StreamedResponse
+    {
+        $rows = array_map(static fn (array $row): array => [$row['total'], $row['langue'], $row['secret'] ? 'secrète' : 'visible'], $langueJoueursService->getRepartitionGn($gn));
+
+        return $this->sendCsv(title: 'eveoniris_langues_gn_' . $gn->getId() . '_' . date('Ymd'), header: ['total', 'langue', 'visibilite'], dataProvider: $rows);
+    }
+
+    #[Route('/api/langues/{gn}', name: 'api.langues.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/stats/langues/{gn}/json', name: 'stats.langues.gn.json', requirements: ['gn' => Requirement::DIGITS])]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
+    public function languesStatsGnApiAction(#[MapEntity] Gn $gn, LangueJoueursService $langueJoueursService): JsonResponse
+    {
+        return new JsonResponse($langueJoueursService->getRepartitionGn($gn));
     }
 
     #[Route('/api/constructions', name: 'api.constructions')]

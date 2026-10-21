@@ -248,6 +248,12 @@
                                         Répartition du nombre d'adeptes religieux sur {{ selectedGn.label }}
                                     </a>
                                 </div>
+                                <div class="list-group-item link-offset-hover">
+                                    <a class="link-underline link-underline-opacity-0"
+                                       href="{{ path('stats.langues.gn', {'gn': selectedGn.id}) }}">
+                                        Répartition des joueurs par langue {{ selectedGn.label }}
+                                    </a>
+                                </div>
                                 {% endif %}
                             </div>
                         </div>

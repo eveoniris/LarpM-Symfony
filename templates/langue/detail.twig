@@ -34,6 +34,13 @@
                         </p>
                     </div>
 
+                    {% if langue.conditionApprentissage %}
+                        <div class="list-group-item">
+                            <h4 class="list-group-item-heading">Condition d'apprentissage</h4>
+                            <p class="list-group-item-text">{{ langue.conditionApprentissage|nl2br }}</p>
+                        </div>
+                    {% endif %}
+
                     <div class="list-group-item">
                         <h4 class="list-group-item-heading">Degré de diffusion</h4>
                         <p class="list-group-item-text">
@@ -103,6 +110,9 @@
                         <div class="btn-group" role="group" aria-label="...">
                             <a class="btn btn-primary" role="button"
                                href="{{ path('langue.update', {langue : langue.id}) }}">Modifier</a>
+                            <a class="btn btn-secondary" role="button"
+                               href="{{ path('langue.personnages', {langue : langue.id}) }}"><i
+                                        class="fa fa-users"></i> Personnages</a>
                         </div>
                     </div>
                 </div>

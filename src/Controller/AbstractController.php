@@ -677,7 +677,7 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ?callable $content = null,
         array $dataProvider = [],
     ): StreamedResponse {
-        if (!$repository && !$content && !$query && !$dataProvider) {
+        if (!$repository && !$content && !$query && !$dataProvider && !$header) {
             throw new ErrorException('Method needs a repository, queryBuilder or a callable content');
         }
 

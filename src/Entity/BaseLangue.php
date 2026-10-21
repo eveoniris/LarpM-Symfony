@@ -36,6 +36,9 @@ abstract class BaseLangue
     #[Column(type: Types::STRING, length: 450, nullable: true)]
     protected ?string $description = '';
 
+    #[Column(name: 'condition_apprentissage', type: Types::TEXT, nullable: true)]
+    protected ?string $conditionApprentissage = null;
+
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $diffusion = 0;
 
@@ -110,6 +113,18 @@ abstract class BaseLangue
     public function getLabel(): string
     {
         return $this->label ?? '';
+    }
+
+    public function setConditionApprentissage(?string $conditionApprentissage): static
+    {
+        $this->conditionApprentissage = $conditionApprentissage;
+
+        return $this;
+    }
+
+    public function getConditionApprentissage(): ?string
+    {
+        return $this->conditionApprentissage;
     }
 
     /**
