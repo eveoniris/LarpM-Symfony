@@ -1,9 +1,6 @@
 services:
     webserver:
         image: ${WEBSERVER_IMAGE:?WEBSERVER_IMAGE must be set}
-        ports:
-            - "443:443" # HTTPS
-            - "443:443/udp" # HTTP/3
         env_file:
             - .env.prod-docker
         read_only: true

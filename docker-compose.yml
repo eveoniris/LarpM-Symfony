@@ -1,6 +1,10 @@
 services:
     webserver:
         restart: unless-stopped
+        ports:
+            - "80:80" # HTTP
+            - "443:443" # HTTPS
+            - "443:443/udp" # HTTP/3
         env_file:
             - .env
             - path: .env.local
