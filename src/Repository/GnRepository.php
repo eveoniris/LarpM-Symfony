@@ -78,6 +78,23 @@ class GnRepository extends BaseRepository
     }
 
     /**
+     * GN choisi par un filtre ?gn=<id> : 'all' pour aucun filtre, une valeur absente ou invalide donne le
+     * prochain GN (à défaut le dernier).
+     */
+    public function findFromFilter(?string $param): ?Gn
+    {
+        if ('all' === $param) {
+            return null;
+        }
+
+        if (null !== $param && ctype_digit($param)) {
+            return $this->find((int) $param);
+        }
+
+        return $this->findNext() ?? $this->findOneBy([], ['date_debut' => 'DESC']);
+    }
+
+    /**
      * Recherche le précédent GN joué encore actif.
      */
     public function findCurrentActive(): ?Gn

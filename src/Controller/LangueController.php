@@ -38,21 +38,40 @@ class LangueController extends AbstractController
      * affiche la liste des langues.
      */
     #[Route('/langue', name: 'langue.index')]
-    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
+    public function indexAction(Request $request, EntityManagerInterface $entityManager, LangueJoueursService $langueJoueursService): Response
     {
         $langues = $entityManager->getRepository(Langue::class)->findAllOrderedByLabel();
         $groupeLangues = $entityManager->getRepository(GroupeLangue::class)->findAllOrderedByLabel();
+        $gnRepository = $entityManager->getRepository(Gn::class);
+        $gn = $gnRepository->findFromFilter($request->query->get('gn'));
+        $allGns = $gnRepository->findBy([], ['date_debut' => 'DESC']);
 
-        return $this->render('langue/index.twig', ['langues' => $langues, 'groupeLangues' => $groupeLangues]);
+        return $this->render('langue/index.twig', [
+            'langues' => $langues,
+            'groupeLangues' => $groupeLangues,
+            'gn' => $gn,
+            'allGns' => $allGns,
+            'effectifs' => $gn ? array_column($langueJoueursService->getRepartitionGn($gn), 'total', 'id') : [],
+        ]);
     }
 
     /**
      * Detail d'une langue.
      */
     #[Route('/langue/{langue}/detail', name: 'langue.detail')]
-    public function detailAction(Langue $langue): Response
+    public function detailAction(Request $request, Langue $langue, EntityManagerInterface $entityManager, LangueJoueursService $langueJoueursService): Response
     {
-        return $this->render('langue/detail.twig', ['langue' => $langue]);
+        $gnRepository = $entityManager->getRepository(Gn::class);
+        $gn = $gnRepository->findFromFilter($request->query->get('gn'));
+        $allGns = $gnRepository->findBy([], ['date_debut' => 'DESC']);
+        $effectifs = $gn ? array_column($langueJoueursService->getRepartitionGn($gn), 'total', 'id') : [];
+
+        return $this->render('langue/detail.twig', [
+            'langue' => $langue,
+            'gn' => $gn,
+            'allGns' => $allGns,
+            'effectif' => $gn ? $effectifs[$langue->getId()] ?? 0 : null,
+        ]);
     }
 
     /**

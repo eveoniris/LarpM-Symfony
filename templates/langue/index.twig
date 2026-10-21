@@ -51,13 +51,16 @@
 			<h5>Liste des langues <small>( {{ langues|length }} langues)</small></h5>
 		</div>
 
-		<div class="btn-toolbar" role="toolbar" aria-label="...">
-			<div class="btn-group" role="group" aria-label="...">
-				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une langue" href="{{ path('langue.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+		<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+			{% include 'langue/fragment/gn_selector.twig' with {'action': path('langue.index')} %}
+
+			<div class="btn-toolbar" role="toolbar" aria-label="...">
+				<div class="btn-group" role="group" aria-label="...">
+					<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une langue" href="{{ path('langue.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
+				</div>
 			</div>
 		</div>
-	</div>
-	
+
 	<ul class="list-group">
 	{%  for langue in langues %}
 	
@@ -100,6 +103,12 @@
 						{% endif %}
 					</p>
 
+					{% if gn %}
+					<p class="list-group-item-text">
+						<strong>Joueurs ({{ gn.label }}) : </strong>{{ effectifs[langue.id]|default(0) }}
+					</p>
+					{% endif %}
+
 					<p class="list-group-item-text">
 						{% if langue.documentUrl %}
 							<strong>Abécédaire : </strong><a href="{{ path('langue.document',{'langue': langue.id}) }}">Téléchargez</a>
@@ -111,7 +120,8 @@
 				<div class="col-md-4">
 					<div class="btn-toolbar float-end" role="toolbar" aria-label="...">
 						<div class="btn-group" role="group" aria-label="...">
-							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('langue.detail',{'langue':langue.id}) }}"><i class="fa fa-eye"></i></a>
+							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Détail" href="{{ path('langue.detail',{'langue':langue.id, 'gn': gn ? gn.id : 'all'}) }}"><i class="fa fa-eye"></i></a>
+								<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Personnages{% if gn %} ({{ gn.label }}){% endif %}" href="{{ gn ? path('langue.personnages.gn', {'langue':langue.id, 'gn': gn.id}) : path('langue.personnages', {'langue':langue.id}) }}"><i class="fa fa-users"></i></a>
 							<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Modifier" href="{{ path('langue.update',{'langue':langue.id}) }}"><i class="fa fa-pencil"></i></a>
 						</div>
 					</div>
@@ -121,5 +131,6 @@
 
 	{% endfor %}
 	</ul>
-	
+	</div>
+
 {% endblock %}

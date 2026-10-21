@@ -11,9 +11,26 @@
         ]
     } %}
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xs-12 col-md-8">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+        {% include 'langue/fragment/gn_selector.twig' with {'action': path('langue.detail', {'langue': langue.id})} %}
+
+        <div class="btn-toolbar" role="toolbar" aria-label="Actions">
+            <div class="btn-group" role="group">
+                <a class="btn btn-secondary" href="{{ path('langue.update', {langue: langue.id}) }}"><i
+                            class="fa fa-pencil"></i> Modifier</a>
+                <a class="btn btn-secondary" href="{{ path('langue.personnages', {langue: langue.id}) }}"><i
+                            class="fa fa-users"></i> Personnages</a>
+                {% if gn %}
+                    <a class="btn btn-secondary"
+                       href="{{ path('langue.personnages.gn', {langue: langue.id, gn: gn.id}) }}"><i
+                                class="fa fa-users"></i> Personnages {{ gn.label }}</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="well well-sm">
+        <div class="header"><h5>{{ langue.label }}</h5></div>
 
                 <div class="list-group">
                     {% if langue.secret %}
@@ -38,6 +55,16 @@
                         <div class="list-group-item">
                             <h4 class="list-group-item-heading">Condition d'apprentissage</h4>
                             <p class="list-group-item-text">{{ langue.conditionApprentissage|nl2br }}</p>
+                        </div>
+                    {% endif %}
+
+                    {% if gn %}
+                        <div class="list-group-item">
+                            <h4 class="list-group-item-heading">Joueurs parlant cette langue ({{ gn.label }})</h4>
+                            <p class="list-group-item-text">
+                                {{ effectif }} personnage{% if effectif > 1 %}s{% endif %}.
+                                <a href="{{ path('langue.personnages.gn', {langue: langue.id, gn: gn.id}) }}">Voir la liste</a>
+                            </p>
                         </div>
                     {% endif %}
 
@@ -106,18 +133,7 @@
                             {% endif %}
                         </p>
                     </div>
-                    <div class="list-group-item">
-                        <div class="btn-group" role="group" aria-label="...">
-                            <a class="btn btn-primary" role="button"
-                               href="{{ path('langue.update', {langue : langue.id}) }}">Modifier</a>
-                            <a class="btn btn-secondary" role="button"
-                               href="{{ path('langue.personnages', {langue : langue.id}) }}"><i
-                                        class="fa fa-users"></i> Personnages</a>
-                        </div>
-                    </div>
                 </div>
-            </div>
-        </div>
     </div>
 
 {% endblock %}
