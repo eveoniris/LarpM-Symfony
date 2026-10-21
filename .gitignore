@@ -15,7 +15,6 @@ docker/db/export
 
 # Configuration de production : contient les identifiants du serveur, de la base
 # et les clés des services externes. Ne doit jamais partir sur le dépôt.
-/.env.prod
 /.env.prod.php
 
 ###> symfony/framework-bundle ###
