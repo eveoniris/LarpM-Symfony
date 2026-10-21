@@ -385,6 +385,13 @@ class GroupeGnController extends AbstractController
             $data = $form->getData();
             $data['participant']->setGroupeGn($groupeGn);
             $this->entityManager->persist($data['participant']);
+
+            // Le personnage déjà créé reçoit la langue du pays du groupe rejoint
+            $personnageLangue = $data['participant']->getPersonnage()?->addLangueGroupe($groupeGn->getGroupe());
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
+            }
+
             $this->entityManager->flush();
 
             // NOTIFY $app['notify']->newMembre($data['participant']->getUser(), $groupeGn);
@@ -490,6 +497,12 @@ class GroupeGnController extends AbstractController
 
         $participant->setGroupeGn($groupeGn);
         $entityManager->persist($participant);
+
+        // Le personnage déjà créé reçoit la langue du pays du groupe rejoint
+        $personnageLangue = $participant->getPersonnage()?->addLangueGroupe($groupeGn->getGroupe());
+        if (null !== $personnageLangue) {
+            $entityManager->persist($personnageLangue);
+        }
 
         // Le joueur a désormais un groupe : on purge toutes ses autres demandes en attente.
         /** @var GroupeGnDemandeRepository $demandeRepository */
