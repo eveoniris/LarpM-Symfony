@@ -6,8 +6,10 @@ namespace App\Form;
 
 use App\Entity\GroupeLangue;
 use App\Entity\Langue;
+use App\Enum\Role;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -23,6 +25,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class LangueType extends AbstractType
 {
+    public function __construct(
+        private readonly Security $security,
+    ) {
+    }
+
     /**
      * Construction du formulaire.
      */
@@ -85,6 +92,15 @@ class LangueType extends AbstractType
                  * ])
                  * ],*/
             ]);
+
+        // Écriture réservée à la cohérence et aux règles (ADMIN les hérite), lecture seule pour les autres
+        if ($this->security->isGranted(Role::REGLE->value) || $this->security->isGranted(Role::COHERENCE->value)) {
+            $builder->add('conditionApprentissage', TextareaType::class, [
+                'label' => 'Condition d\'apprentissage',
+                'required' => false,
+                'attr' => ['rows' => 5],
+            ]);
+        }
     }
 
     /**

@@ -12,10 +12,9 @@ Stack de développement basé sur [FrankenPHP](https://frankenphp.dev/) + Caddy 
 docker compose up -d
 ```
 
-Le premier démarrage exécute automatiquement (via marqueurs dans `var/`) :
-1. `composer install`
-2. `doctrine:schema:create`
-3. `doctrine:fixtures:load`
+Le premier démarrage exécute automatiquement :
+1. `composer install` (via le marqueur `var/.composer-installed`)
+2. l'initialisation de la base MySQL vide à partir des scripts SQL de `docker/db/initData/` (schéma puis données, dans l'ordre alphabétique). Il n'y a pas de `doctrine:fixtures:load`.
 
 ## Services
 
@@ -139,9 +138,9 @@ docker compose exec webserver sh
 # Forcer une réinstallation Composer (supprimer le marqueur)
 docker compose exec webserver rm var/.composer-installed && docker compose restart webserver
 
-# Recharger le schéma et les fixtures (reset complet)
-docker compose exec webserver rm -f var/.schema-created var/.fixtures-loaded
-docker compose restart webserver
+# Réinitialiser la base (reset complet : supprime le volume MySQL, les scripts initData sont rejoués)
+docker compose down -v
+docker compose up -d
 
 # Vider le cache (var/ et vendor/ sont des volumes nommés, pas visibles côté Windows)
 docker compose exec webserver php bin/console cache:clear
@@ -172,3 +171,15 @@ Le stack dev charge les fichiers dans cet ordre (le dernier a priorité) :
 3. `.env.dev.local` — surcharges locales (gitignored, optionnel)
 
 Pour personnaliser votre setup sans modifier les fichiers commités, créez un `.env.dev.local`.
+
+## Deux « prod » : OVH et Docker
+
+| | Prod OVH (actuelle) | Prod Docker (`docker-compose.prod.yml`) |
+|---|---|---|
+| Déploiement | SSH via `.github/workflows/deploy.yml` | `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d` |
+| Fichiers d'environnement | `.env.prod` (commité, sans secret) + `.env.prod.local` (écrit par le workflow, gitignored), puis `composer dump-env prod` | `.env.prod-docker` (gitignored, à créer depuis `docker/.env.prod-docker.dist`) |
+| Base de données | MySQL OVH (`DATABASE_URL` de `.env.prod`) | conteneur `database` |
+
+`.env.prod` appartient donc uniquement à la prod OVH. La prod Docker ne le lit plus : si une variable manquait dans `.env.prod-docker`, l'image (qui embarque `.env.prod`) retomberait sur la base OVH, d'où le modèle complet dans `docker/.env.prod-docker.dist`.
+
+Test local de l'image prod : `docker/scripts/prod-test.sh` génère un `.env.prod-docker` avec des valeurs de test (il écrase le fichier existant).

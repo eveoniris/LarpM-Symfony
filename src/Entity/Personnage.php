@@ -19,6 +19,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 use Exception;
+use Override;
 use Stringable;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -314,12 +315,33 @@ class Personnage extends BasePersonnage implements Stringable
         return $this;
     }
 
+    /**
+     * Triggers non consommés (les triggers supprimés logiquement restent dans l'historique).
+     *
+     * @return Collection<int, PersonnageTrigger>
+     */
+    #[Override]
+    public function getPersonnageTriggers(): Collection
+    {
+        return $this->personnageTriggers->filter(static fn (PersonnageTrigger $trigger): bool => !$trigger->isDeleted());
+    }
+
+    /**
+     * Historique complet : triggers actifs et consommés.
+     *
+     * @return Collection<int, PersonnageTrigger>
+     */
+    public function getAllPersonnageTriggers(): Collection
+    {
+        return $this->personnageTriggers;
+    }
+
     /** @return ArrayCollection<int, PersonnageTrigger> */
     public function getActiveTriggers(): ArrayCollection
     {
         $all = new ArrayCollection();
         /** @var PersonnageTrigger $personnageTrigger */
-        foreach ($this->personnageTriggers as $personnageTrigger) {
+        foreach ($this->getPersonnageTriggers() as $personnageTrigger) {
             if ($personnageTrigger->isDone()) {
                 continue;
             }

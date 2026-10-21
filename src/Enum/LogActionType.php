@@ -47,4 +47,7 @@ enum LogActionType: string
      * substitution, relève ou archétype de secours.
      */
     case PERSONNAGE_ROLE_CHANGE = 'personnage_role_change';
+
+    /** Trigger de choix (potion, sort...) recréé par une commande de réparation. */
+    case TRIGGER_REPARATION = 'trigger_reparation';
 }

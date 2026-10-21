@@ -4,22 +4,32 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Gn;
 use App\Entity\GroupeLangue;
 use App\Entity\Langue;
+use App\Entity\Personnage;
+use App\Enum\Role;
 use App\Form\Groupe\GroupeLangueType;
 use App\Form\LangueType;
+use App\Security\MultiRolesExpression;
+use App\Service\LangueJoueursService;
+use App\Service\PersonnageService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_SCENARISTE')]
+#[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::COHERENCE))]
 class LangueController extends AbstractController
 {
     final public const DOC_PATH = __DIR__ . '/../../private/doc/';
@@ -43,6 +53,91 @@ class LangueController extends AbstractController
     public function detailAction(Langue $langue): Response
     {
         return $this->render('langue/detail.twig', ['langue' => $langue]);
+    }
+
+    /**
+     * Liste des personnages parlant la langue (langues de bonus comprises), éventuellement pour un GN.
+     */
+    #[Route('/langue/{langue}/personnages', name: 'langue.personnages', requirements: ['langue' => Requirement::DIGITS])]
+    #[Route('/langue/{langue}/personnages/gn/{gn}', name: 'langue.personnages.gn', requirements: [
+        'langue' => Requirement::DIGITS,
+        'gn' => Requirement::DIGITS,
+    ])]
+    public function personnagesAction(
+        Request $request,
+        PersonnageService $personnageService,
+        LangueJoueursService $langueJoueursService,
+        #[MapEntity]
+        Langue $langue,
+        #[MapEntity]
+        ?Gn $gn = null,
+    ): Response {
+        $breadcrumb = [
+            ['name' => 'Gestion des langues', 'route' => $this->generateUrl('langue.index')],
+            ['name' => $langue->getLabel(), 'route' => $this->generateUrl('langue.detail', ['langue' => $langue->getId()])],
+            ['name' => 'Personnages parlant cette langue' . ($gn ? ' (' . $gn->getLabel() . ')' : '')],
+        ];
+
+        $exportParams = ['langue' => $langue->getId()] + ($gn ? ['gn' => $gn->getId()] : []);
+
+        $viewParams = $personnageService->getSearchViewParameters(
+            $request,
+            $gn ? 'langue.personnages.gn' : 'langue.personnages',
+            $exportParams,
+            ['colId', 'colStatut', 'colNom', 'colGroupe'],
+            [
+                'langue' => $langue,
+                'title' => 'Langue ' . $langue->getLabel(),
+                'breadcrumb' => $breadcrumb,
+                'exportRoute' => $gn ? 'langue.personnages.gn.export' : 'langue.personnages.export',
+                'exportParams' => $exportParams,
+            ],
+            new ArrayCollection(),
+            $langueJoueursService->getQueryBuilder($langue, $gn),
+        );
+
+        return $this->render('personnage/sub_personnages.twig', $viewParams);
+    }
+
+    /**
+     * Export CSV (par défaut) ou JSON (?format=json) des personnages parlant la langue.
+     */
+    #[Route('/langue/{langue}/personnages/export', name: 'langue.personnages.export', requirements: ['langue' => Requirement::DIGITS])]
+    #[Route('/langue/{langue}/personnages/gn/{gn}/export', name: 'langue.personnages.gn.export', requirements: [
+        'langue' => Requirement::DIGITS,
+        'gn' => Requirement::DIGITS,
+    ])]
+    public function personnagesExportAction(
+        Request $request,
+        LangueJoueursService $langueJoueursService,
+        #[MapEntity]
+        Langue $langue,
+        #[MapEntity]
+        ?Gn $gn = null,
+    ): Response {
+        $sources = $langueJoueursService->getSourcesParPersonnage($langue, $gn);
+        $rows = [];
+        /** @var Personnage $personnage */
+        foreach ($langueJoueursService->getQueryBuilder($langue, $gn)->getQuery()->toIterable() as $personnage) {
+            $rows[] = [
+                'id' => $personnage->getId(),
+                'personnage' => $personnage->getFullName(),
+                'groupe' => $personnage->getLastParticipantGnGroupe()?->getNom() ?? '',
+                'joueur' => $personnage->getUser()?->getFullName() ?? '',
+                'vivant' => $personnage->getVivant() ? 'oui' : 'non',
+                'source' => $sources[$personnage->getId()] ?? '',
+            ];
+        }
+
+        if ('json' === $request->query->get('format')) {
+            return new JsonResponse($rows);
+        }
+
+        return $this->sendCsv(
+            title: 'eveoniris_langue_' . $langue->getId() . ($gn ? '_gn_' . $gn->getId() : '') . '_personnages_' . date('Ymd'),
+            header: ['id', 'personnage', 'groupe', 'joueur', 'vivant', 'source'],
+            dataProvider: $rows,
+        );
     }
 
     /**

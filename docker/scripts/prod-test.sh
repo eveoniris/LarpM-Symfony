@@ -1,9 +1,9 @@
 #!/bin/bash
 # This script is used to build and run the production version of the LarpM-Symfony application using Docker.
-# For local testing purposes only.
+# For local testing purposes only. Overwrites .env.prod-docker with test values.
 docker build --target prod -t larpm-symfony:local .
 
-cat << EOF > .env.prod.local
+cat << EOF > .env.prod-docker
 APP_ENV=prod
 APP_DEBUG=0
 APP_SECRET=b0248926cd06d6ba2cc16e42014d2152

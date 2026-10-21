@@ -8,6 +8,17 @@
         {% include '_partials/breadcrumb.twig' with {'items' : breadcrumb } %}
     {% endif %}
 
+    {% if exportRoute is defined %}
+        <div class="d-flex justify-content-end mb-2">
+            <div class="btn-group" role="group">
+                <a class="btn btn-sm btn-secondary" href="{{ path(exportRoute, exportParams) }}"><i
+                            class="fa fa-file-csv"></i> Télécharger (CSV)</a>
+                <a class="btn btn-sm btn-secondary" href="{{ path(exportRoute, exportParams|merge({'format': 'json'})) }}"><i
+                            class="fa fa-file-lines"></i> Json API</a>
+            </div>
+        </div>
+    {% endif %}
+
     {{ include('personnage/search.twig',
         {
             displayAdminToolbar: false,

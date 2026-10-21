@@ -658,6 +658,7 @@ class CompetenceService
                 $trigger->setPersonnage($this->getPersonnage());
                 $trigger->setTag($tagName);
                 $trigger->setDone(false);
+                $trigger->setCreatedAt(new DateTime());
                 $this->entityManager->persist($trigger);
             }
         }

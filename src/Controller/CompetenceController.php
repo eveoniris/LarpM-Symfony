@@ -8,6 +8,7 @@ use App\Entity\Competence;
 use App\Entity\CompetenceFamily;
 use App\Entity\Gn;
 use App\Entity\Level;
+use App\Entity\Personnage;
 use App\Enum\LevelType;
 use App\Enum\Role;
 use App\Form\CompetenceType;
@@ -20,6 +21,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -279,8 +281,11 @@ class CompetenceController extends AbstractController
         ]; // check if it's better in PersonnageService
         $personnages = $competence->getPersonnages();
         $competenceFamily = $competence->getCompetenceFamily();
+        $exportParams = ['competence' => $competence->getId()] + ($gn ? ['gn' => $gn->getId()] : []);
         $additionalViewParams = [
             'competence' => $competence,
+            'exportRoute' => $gn ? 'competence.personnages.gn.export' : 'competence.personnages.export',
+            'exportParams' => $exportParams,
             'title' => 'Competence',
             'extraData' => $competenceFamily?->getCompetenceFamilyType()?->value,
             'extraDataTitle' => 'Niveau de ' . $competenceFamily?->getLabel(),
@@ -311,6 +316,46 @@ class CompetenceController extends AbstractController
         );
 
         return $this->render($twigFilePath, $viewParams);
+    }
+
+    /**
+     * Export CSV (par défaut) ou JSON (?format=json) des personnages ayant la compétence.
+     */
+    #[Route('/{competence}/personnages/export', name: 'personnages.export', requirements: ['competence' => Requirement::DIGITS])]
+    #[Route('/{competence}/personnages/gn/{gn}/export', name: 'personnages.gn.export', requirements: [
+        'competence' => Requirement::DIGITS,
+        'gn' => Requirement::DIGITS,
+    ])]
+    #[IsGranted('ROLE_REGLE')]
+    public function personnagesExportAction(
+        Request $request,
+        CompetenceRepository $competenceRepository,
+        #[MapEntity]
+        Competence $competence,
+        #[MapEntity]
+        ?Gn $gn = null,
+    ): Response {
+        $rows = [];
+        /** @var Personnage $personnage */
+        foreach ($competenceRepository->getPersonnages($competence, $gn)->getQuery()->toIterable() as $personnage) {
+            $rows[] = [
+                'id' => $personnage->getId(),
+                'personnage' => $personnage->getFullName(),
+                'groupe' => $personnage->getLastParticipantGnGroupe()?->getNom() ?? '',
+                'joueur' => $personnage->getUser()?->getFullName() ?? '',
+                'vivant' => $personnage->getVivant() ? 'oui' : 'non',
+            ];
+        }
+
+        if ('json' === $request->query->get('format')) {
+            return new JsonResponse($rows);
+        }
+
+        return $this->sendCsv(
+            title: 'eveoniris_competence_' . $competence->getId() . ($gn ? '_gn_' . $gn->getId() : '') . '_personnages_' . date('Ymd'),
+            header: ['id', 'personnage', 'groupe', 'joueur', 'vivant'],
+            dataProvider: $rows,
+        );
     }
 
     /**
