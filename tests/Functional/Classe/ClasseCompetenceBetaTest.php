@@ -117,6 +117,42 @@ class ClasseCompetenceBetaTest extends WebTestCase
         static::assertStringNotContainsString('Description initie reservee', $crawler->text());
     }
 
+    public function testGrilleCompetencesBetaListeToutesLesFamillesAuDelaDeCentCompetences(): void
+    {
+        $client = static::createClient();
+        $level = LevelFactory::createOne(['index' => 1, 'label' => 'Apprenti']);
+        // 105 familles d'une compétence : le pagineur est plafonné à 100 lignes, la grille doit tout lister
+        foreach (range(1, 105) as $i) {
+            CompetenceFactory::createOne([
+                'competenceFamily' => CompetenceFamilyFactory::createOne(['label' => 'Famille ' . $i]),
+                'level' => $level,
+                'secret' => false,
+            ]);
+        }
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_ADMIN'], 'uiTheme' => 'beta']));
+
+        $crawler = $client->request('GET', '/competence');
+
+        static::assertResponseIsSuccessful();
+        static::assertCount(105, $crawler->filter('article.lm-famille'));
+    }
+
+    public function testNiveauGrandMaitreReserveAuxRolesAvecAcces(): void
+    {
+        $client = static::createClient();
+        $famille = CompetenceFamilyFactory::createOne(['label' => 'Forge']);
+        $grandMaitre = LevelFactory::createOne(['index' => 5, 'label' => 'Grand Maître']);
+        CompetenceFactory::createOne(['competenceFamily' => $famille, 'level' => $grandMaitre, 'secret' => false, 'description' => 'Description grand maitre']);
+
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_ADMIN'], 'uiTheme' => 'beta']));
+        $admin = $client->request('GET', '/competence');
+        static::assertStringContainsString('Grand Maître', $admin->filter('article.lm-famille')->text());
+
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER'], 'uiTheme' => 'beta']));
+        $joueur = $client->request('GET', '/competence');
+        static::assertStringNotContainsString('Grand Maître', $joueur->text());
+    }
+
     public function testListeCompetencesHorsBetaSansGrille(): void
     {
         $client = static::createClient();
