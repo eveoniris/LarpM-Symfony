@@ -211,13 +211,21 @@ class CompetenceController extends AbstractController
             'canViewAdmin' => $canViewAdmin,
         ];
 
-        // Interface bêta : grille par famille, tous les niveaux d'une famille sur la même page
+        $parameters['pagerService'] = $pagerService;
+
+        // Interface bêta : grille par famille, toutes les compétences sur la même page (une famille ne doit pas être coupée,
+        // et le pagineur est plafonné à 100 lignes). Le niveau Grand Maître n'est montré qu'à ceux qui y ont accès.
         if ($this->getUser()?->isUiBeta()) {
-            $pagerService->setLimit(500);
-            $parameters['levels'] = array_values(array_filter($levelRepository->findBy([], ['index' => 'ASC']), static fn ($level): bool => $level->getIndex() <= 4));
+            $maxLevel = $isAdmin || $canViewAdmin ? 5 : 4;
+            $parameters['levels'] = array_values(array_filter($levelRepository->findBy([], ['index' => 'ASC']), static fn ($level): bool => $level->getIndex() <= $maxLevel));
+            $parameters['paginator'] = $competenceRepository
+                ->search($pagerService->getSearchValue(), $pagerService->getSearchType(), $pagerService->getOrderBy(), $competenceRepository->getAlias(), $queryBuilder)
+                ->getQuery()
+                ->getResult();
+
+            return $this->render('competence/list.twig', $parameters);
         }
 
-        $parameters['pagerService'] = $pagerService;
         $parameters['paginator'] = $competenceRepository->searchPaginated($pagerService, $queryBuilder);
 
         return $this->render('competence/list.twig', $parameters);
