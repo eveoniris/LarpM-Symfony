@@ -1,0 +1,11 @@
+{# Sélecteur de GN (GET ?gn=<id> ou ?gn=all). Variables : gn (GN filtré ou null), allGns, action (URL de la page). #}
+<form action="{{ action }}" method="get" class="d-flex align-items-center gap-2 flex-wrap">
+    <label for="gn-selector" class="mb-0"><strong>GN :</strong></label>
+    <select id="gn-selector" name="gn" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+        <option value="all"{% if not gn %} selected{% endif %}>Tous les GN (sans filtre)</option>
+        {% for allGn in allGns %}
+            <option value="{{ allGn.id }}"{% if gn and gn.id == allGn.id %} selected{% endif %}>{{ allGn.label }}</option>
+        {% endfor %}
+    </select>
+    <noscript><button type="submit" class="btn btn-secondary btn-sm">Filtrer</button></noscript>
+</form>

@@ -47,6 +47,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -765,35 +766,41 @@ class GroupeController extends AbstractController
      */
 
     /**
-     * Modification du nombre de place disponibles dans un groupe.
+     * Fixe à la main le nombre de places d'un groupe (groupes PNJ ou spéciaux).
+     * Sans valeur, le nombre de places est calculé automatiquement (voir Groupe::getPlaceTotal).
      */
     #[IsGranted('ROLE_SCENARISTE')]
-    // TODO
-    public function placeAction(Request $request): RedirectResponse|Response
+    #[Route('/{groupe}/place', name: 'place', requirements: ['groupe' => Requirement::DIGITS])]
+    public function placeAction(Request $request, #[MapEntity] Groupe $groupe): RedirectResponse|Response
     {
-        $id = $request->query->get('index');
-        $groupe = $this->entityManager->find(Groupe::class, $id);
+        $gn = $groupe->getNextSession()?->getGn();
 
-        if ('POST' == $request->getMethod()) {
-            $newPlaces = (int) $request->request->get('place');
+        $form = $this
+            ->createFormBuilder(['placesMax' => $groupe->getPlacesMax()])
+            ->add('placesMax', IntegerType::class, [
+                'label' => 'Nombre de places',
+                'required' => false,
+                'attr' => ['min' => 1, 'placeholder' => (string) $groupe->getPlaceCalculee($gn)],
+                'help' => 'Laisser vide pour le calcul automatique : ' . $groupe->getPlaceCalculee($gn)
+                    . ' places (places par défaut du GN + 2 par fief au-delà du premier).',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
+            ->getForm();
 
-            /*
-             * Met à jour uniquement si la valeur à changé
-             */
-            if ($groupe->getClasseOpen() != $newPlaces) {
-                $groupe->setClasseOpen($newPlaces);
-                $this->entityManager->persist($groupe);
-            }
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $groupe->setPlacesMax($form->get('placesMax')->getData());
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Le nombre de place disponible a été mis à jour');
+            $this->addFlash('success', 'Le nombre de places du groupe a été mis à jour.');
 
-            return $this->redirectToRoute('groupe.list', [], 303);
+            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()], 303);
         }
 
         return $this->render('groupe/place.twig', [
             'groupe' => $groupe,
+            'form' => $form->createView(),
         ]);
     }
 

@@ -15,12 +15,9 @@ class Groupe extends BaseGroupe implements Stringable
 {
     /**
      * Contructeur.
-     *
-     * Défini le nombre de place disponible à 0
      */
     public function __construct()
     {
-        $this->setClasseOpen(0);
         $this->setLock(false);
         parent::__construct();
     }
@@ -469,20 +466,33 @@ class Groupe extends BaseGroupe implements Stringable
     }
 
     /**
-     * Fourni le nombre de place disponible pour un groupe
-     * en fonction des territoires qu'il controle.
+     * Nombre de places par défaut d'un groupe quand aucun GN n'est précisé.
      */
-    public function getPlaceTotal(): int
+    public const PLACES_PAR_DEFAUT = 12;
+
+    /**
+     * Places supplémentaires par fief contrôlé au-delà du premier.
+     */
+    public const PLACES_PAR_FIEF_SUPPLEMENTAIRE = 2;
+
+    /**
+     * Places calculées automatiquement : places par défaut du GN (12 sinon) + 2 par fief contrôlé au-delà du premier.
+     */
+    public function getPlaceCalculee(?Gn $gn = null): int
     {
-        return 12 + (2 * \count($this->getTerritoires()));
+        $parDefaut = $gn?->getPlacesParGroupe() ?? self::PLACES_PAR_DEFAUT;
+        $fiefsSupplementaires = max(0, \count($this->getTerritoires()) - 1);
+
+        return $parDefaut + self::PLACES_PAR_FIEF_SUPPLEMENTAIRE * $fiefsSupplementaires;
     }
 
     /**
-     * Vérifie si le groupe dispose de suffisement de place disponible.
+     * Nombre de places du groupe : la valeur fixée à la main (groupes PNJ ou spéciaux) si elle existe,
+     * sinon le calcul automatique.
      */
-    public function hasEnoughPlace(): bool
+    public function getPlaceTotal(?Gn $gn = null): int
     {
-        return $this->getClasseOpen() > \count($this->getPersonnages());
+        return $this->getPlacesMax() ?? $this->getPlaceCalculee($gn);
     }
 
     /**

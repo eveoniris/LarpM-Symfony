@@ -79,6 +79,10 @@ class BaseGn
     #[Column(name: 'helloasso_event_id', type: Types::STRING, length: 64, nullable: true)]
     protected ?string $helloassoEventId = null;
 
+    /** Nombre de places par défaut d'un groupe pour cet opus (hors fiefs supplémentaires et valeur manuelle du groupe). */
+    #[Column(name: 'places_par_groupe', type: Types::INTEGER, options: ['default' => 12])]
+    protected int $placesParGroupe = 12;
+
     /**
      * Cet opus propose-t-il un personnage de substitution pour les instances
      * hors temps / hors lieu de l'événement ?
@@ -311,6 +315,18 @@ class BaseGn
     public function getConditionsInscription(): string
     {
         return $this->conditions_inscription ?? '';
+    }
+
+    public function getPlacesParGroupe(): int
+    {
+        return $this->placesParGroupe;
+    }
+
+    public function setPlacesParGroupe(int $placesParGroupe): static
+    {
+        $this->placesParGroupe = max(0, $placesParGroupe);
+
+        return $this;
     }
 
     public function isSubstitutionActive(): bool

@@ -92,6 +92,13 @@ class GnType extends AbstractType
                     'Non' => false,
                 ],
             ])
+            ->add('placesParGroupe', IntegerType::class, [
+                'label' => "Places par défaut d'un groupe",
+                'help' => 'Nombre de joueurs par groupe pour cet opus (hors aide de camp). Chaque fief contrôlé au-delà du premier ajoute 2 places. Un scénariste peut fixer une valeur différente groupe par groupe (PNJ, groupes spéciaux).',
+                'required' => true,
+                'empty_data' => '12',
+                'attr' => ['min' => 1],
+            ])
             ->add('substitutionActive', ChoiceType::class, [
                 'label' => 'Personnage de substitution ?',
                 'help' => 'Cet opus propose-t-il de jouer un second personnage dans des instances situées hors du temps et du lieu de l\'événement ? Exemple : le jeu se déroule sur une île à explorer, les nobles restés au pays y font avancer leurs intrigues.',

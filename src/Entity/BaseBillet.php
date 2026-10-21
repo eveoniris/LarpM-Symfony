@@ -49,6 +49,10 @@ abstract class BaseBillet
     #[Column(name: 'helloasso_product_id', type: \Doctrine\DBAL\Types\Types::STRING, length: 64, nullable: true)]
     protected ?string $helloassoProductId = null;
 
+    /** Faux pour les billets qui ne comptent pas dans les places du groupe (ex. aide de camp). */
+    #[Column(name: 'compte_dans_places', type: \Doctrine\DBAL\Types\Types::BOOLEAN, options: ['default' => true])]
+    protected bool $compteDansPlaces = true;
+
     /**
      * @var Collection<int, Participant>|Participant[]
      */
@@ -144,6 +148,18 @@ abstract class BaseBillet
     public function setHelloassoProductId(?string $helloassoProductId): static
     {
         $this->helloassoProductId = '' === $helloassoProductId ? null : $helloassoProductId;
+
+        return $this;
+    }
+
+    public function isCompteDansPlaces(): bool
+    {
+        return $this->compteDansPlaces;
+    }
+
+    public function setCompteDansPlaces(bool $compteDansPlaces): static
+    {
+        $this->compteDansPlaces = $compteDansPlaces;
 
         return $this;
     }

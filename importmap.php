@@ -24,6 +24,10 @@
  */
 return [
     'app' => ['path' => './assets/app.js', 'entrypoint' => true],
+    'stats' => [
+        'path' => './assets/stats.js',
+        'entrypoint' => true,
+    ],
     '@symfony/stimulus-bundle' => ['path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js'],
     '@hotwired/stimulus' => ['version' => '3.2.2'],
     'bootstrap' => ['version' => '5.3.8'],
@@ -78,4 +82,6 @@ return [
     '@fontsource-variable/cinzel/index.css' => ['version' => '5.3.0', 'type' => 'css'],
     '@fontsource-variable/source-sans-3/index.css' => ['version' => '5.3.1', 'type' => 'css'],
     '@fontsource-variable/jetbrains-mono/index.css' => ['version' => '5.3.0', 'type' => 'css'],
+    'chart.js' => ['version' => '4.5.1'],
+    '@kurkle/color' => ['version' => '0.3.4'],
 ];
