@@ -36,9 +36,7 @@ class GroupeGn extends BaseGroupeGn
      */
     public function getParticipantsComptes(): Collection
     {
-        return $this->getParticipants()->filter(
-            static fn (Participant $participant): bool => $participant->getBillet()?->isCompteDansPlaces() ?? true,
-        );
+        return $this->getParticipants()->filter(static fn (Participant $participant): bool => $participant->getBillet()?->isCompteDansPlaces() ?? true);
     }
 
     public function getNombreMembres(): int
@@ -49,6 +47,21 @@ class GroupeGn extends BaseGroupeGn
     public function getNombreAidesDeCamp(): int
     {
         return $this->getParticipants()->count() - $this->getNombreMembres();
+    }
+
+    /**
+     * Nombre de membres que le groupe aurait si ce participant le rejoignait, quand cela dépasse la limite
+     * de places ; null sinon (aussi pour une aide de camp ou un participant déjà membre).
+     */
+    public function getMembresSiDepassement(Participant $participant): ?int
+    {
+        if ($this->getParticipants()->contains($participant) || !($participant->getBillet()?->isCompteDansPlaces() ?? true)) {
+            return null;
+        }
+
+        $apres = $this->getNombreMembres() + 1;
+
+        return $apres > $this->getPlaceTotal() ? $apres : null;
     }
 
     /**

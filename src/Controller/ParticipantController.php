@@ -582,23 +582,48 @@ class ParticipantController extends AbstractController
          * return $this->redirectToRoute('gn.detail', array('gn' => $participant->getGn()->getId())),303);
          * }
          */
+        $ancienGroupeGn = $participant->getGroupeGn();
         $form = $this->createForm(ParticipantGroupeType::class, $participant, ['gnId' => $participant->getGn()->getId()])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
 
+        $depassement = null;
         if ($form->isSubmitted() && $form->isValid()) {
             $participant = $form->getData();
-            $this->entityManager->persist($participant);
-            $this->entityManager->flush();
+            $nouveauGroupeGn = $participant->getGroupeGn();
 
-            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+            // Le groupe d'arrivée dépasserait sa limite : on demande quoi faire de la limite avant d'enregistrer.
+            $decision = $request->request->get('decision');
+            if ($nouveauGroupeGn && $nouveauGroupeGn !== $ancienGroupeGn) {
+                $depassement = $nouveauGroupeGn->getMembresSiDepassement($participant);
+            }
 
-            return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], 303);
+            if (null !== $depassement && null === $decision) {
+                $this->entityManager->refresh($participant);
+            } else {
+                if (null !== $depassement && 'update' === $decision) {
+                    $nouveauGroupeGn->getGroupe()->setPlacesMax($depassement);
+                }
+
+                if ($ancienGroupeGn && $ancienGroupeGn !== $nouveauGroupeGn && $ancienGroupeGn->getResponsable() === $participant) {
+                    $ancienGroupeGn->setResponsableNull();
+                }
+                $participant->getPersonnage()?->setGroupe($nouveauGroupeGn?->getGroupe());
+
+                $this->entityManager->persist($participant);
+                $this->entityManager->flush();
+
+                $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+
+                return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], 303);
+            }
         }
 
         return $this->render('participant/groupe.twig', [
             'participant' => $participant,
             'form' => $form->createView(),
+            'depassement' => $depassement,
+            'groupeGnDepassement' => null !== $depassement ? $form->get('groupeGn')->getData() : null,
         ]);
     }
 
