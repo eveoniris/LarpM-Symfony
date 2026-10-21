@@ -5,8 +5,7 @@ services:
             - "443:443" # HTTPS
             - "443:443/udp" # HTTP/3
         env_file:
-            - .env.prod
-            - .env.prod.local
+            - .env.prod-docker
         read_only: true
         tmpfs:
             - /tmp
@@ -18,8 +17,7 @@ services:
 
     database:
         env_file:
-            - .env.prod
-            - .env.prod.local
+            - .env.prod-docker
         volumes:
             - database_data:/var/lib/mysql
 
