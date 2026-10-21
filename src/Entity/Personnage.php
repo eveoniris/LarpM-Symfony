@@ -1667,6 +1667,21 @@ class Personnage extends BasePersonnage implements Stringable
     }
 
     /**
+     * Ajoute la langue du pays du groupe (Groupe::territoire), si le personnage ne la connait pas déjà.
+     *
+     * @return PersonnageLangues|null la ligne créée (à persister), null si rien n'a changé
+     */
+    public function addLangueGroupe(?Groupe $groupe): ?PersonnageLangues
+    {
+        $langue = $groupe?->getTerritoire()?->getLangue();
+        if (null === $langue || $this->isKnownLanguage($langue)) {
+            return null;
+        }
+
+        return $this->addLangueSource($langue, LangueSourceType::GROUPE);
+    }
+
+    /**
      * Vérifie si le personnage connait cette potion.
      */
     public function isKnownPotion(Potion $p): bool

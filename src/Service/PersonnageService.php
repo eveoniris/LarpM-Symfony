@@ -449,15 +449,9 @@ class PersonnageService
 
         // Ajout de la langue du groupe
         if ($participant && ($groupe = $participant->getGroupe())) {
-            $territoire = $groupe->getTerritoire();
-            if ($territoire) {
-                $langue = $territoire->getLangue();
-                if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
-                    if (null !== $personnageLangue) {
-                        $this->entityManager->persist($personnageLangue);
-                    }
-                }
+            $personnageLangue = $personnage->addLangueGroupe($groupe);
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
             }
         }
 
@@ -2232,16 +2226,10 @@ class PersonnageService
         }
 
         // Ajout de la langue du groupe
-        $territoire = $personnage->getGroupe()?->getTerritoire();
-        if ($territoire) {
-            $langue = $territoire->getLangue();
-            if ($langue && !$personnage->isKnownLanguage($langue)) {
-                $hasOne = true;
-                $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
-                if (null !== $personnageLangue) {
-                    $this->entityManager->persist($personnageLangue);
-                }
-            }
+        $personnageLangue = $personnage->addLangueGroupe($personnage->getGroupe());
+        if (null !== $personnageLangue) {
+            $hasOne = true;
+            $this->entityManager->persist($personnageLangue);
         }
 
         if (!$hasOne && $baseLangue) {

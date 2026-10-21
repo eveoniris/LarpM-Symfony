@@ -275,15 +275,9 @@ class ParticipantController extends AbstractController
             }
 
             // Ajout de la langue du groupe
-            $territoire = $groupe->getTerritoire();
-            if ($territoire) {
-                $langue = $territoire->getLangue();
-                if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
-                    if (null !== $personnageLangue) {
-                        $this->entityManager->persist($personnageLangue);
-                    }
-                }
+            $personnageLangue = $personnage->addLangueGroupe($groupe);
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
             }
 
             $this->entityManager->persist($personnage);
@@ -342,15 +336,9 @@ class ParticipantController extends AbstractController
             $personnage = $participant->getPersonnage();
             $this->logChangementRole($participant, PersonnageRoleType::PRINCIPAL, $avantPrincipal, $personnage?->getId());
 
-            $territoire = $groupe->getTerritoire();
-            if ($territoire) {
-                $langue = $territoire->getLangue();
-                if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
-                    if (null !== $personnageLangue) {
-                        $this->entityManager->persist($personnageLangue);
-                    }
-                }
+            $personnageLangue = $personnage->addLangueGroupe($groupe);
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
             }
 
             // Chronologie : Participation au GN courant
@@ -683,6 +671,13 @@ class ParticipantController extends AbstractController
 
             $participant->setGroupeGn($groupeGn);
             $this->entityManager->persist($participant);
+
+            // Le personnage déjà créé reçoit la langue du pays du groupe rejoint
+            $personnageLangue = $participant->getPersonnage()?->addLangueGroupe($groupeGn->getGroupe());
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
+            }
+
             $this->entityManager->flush();
 
             // envoyer une notification au chef de groupe et au scénariste
@@ -1444,15 +1439,9 @@ class ParticipantController extends AbstractController
             }
 
             // Ajout de la langue du groupe
-            $territoire = $groupe->getTerritoire();
-            if ($territoire) {
-                $langue = $territoire->getLangue();
-                if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
-                    if (null !== $personnageLangue) {
-                        $this->entityManager->persist($personnageLangue);
-                    }
-                }
+            $personnageLangue = $personnage->addLangueGroupe($groupe);
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
             }
 
             $this->entityManager->persist($personnage);
@@ -1571,15 +1560,9 @@ class ParticipantController extends AbstractController
                 $this->entityManager->persist($user);
             }
 
-            $territoire = $groupe->getTerritoire();
-            if ($territoire) {
-                $langue = $territoire->getLangue();
-                if ($langue && !$personnage->isKnownLanguage($langue)) {
-                    $personnageLangue = $personnage->addLangueSource($langue, LangueSourceType::GROUPE);
-                    if (null !== $personnageLangue) {
-                        $this->entityManager->persist($personnageLangue);
-                    }
-                }
+            $personnageLangue = $personnage->addLangueGroupe($groupe);
+            if (null !== $personnageLangue) {
+                $this->entityManager->persist($personnageLangue);
             }
 
             // Ensure any missing langue (ORIGINE/fallback) is added
