@@ -21,6 +21,44 @@ class GroupeGn extends BaseGroupeGn
         $this->bateaux ??= 0;
     }
 
+    /**
+     * Nombre de places du groupe pour ce GN (valeur manuelle du groupe ou calcul automatique).
+     */
+    public function getPlaceTotal(): int
+    {
+        return $this->getGroupe()->getPlaceTotal($this->getGn());
+    }
+
+    /**
+     * Participants qui comptent dans les places du groupe (les aides de camp sont exclus).
+     *
+     * @return Collection<int, Participant>
+     */
+    public function getParticipantsComptes(): Collection
+    {
+        return $this->getParticipants()->filter(
+            static fn (Participant $participant): bool => $participant->getBillet()?->isCompteDansPlaces() ?? true,
+        );
+    }
+
+    public function getNombreMembres(): int
+    {
+        return $this->getParticipantsComptes()->count();
+    }
+
+    public function getNombreAidesDeCamp(): int
+    {
+        return $this->getParticipants()->count() - $this->getNombreMembres();
+    }
+
+    /**
+     * Places libres (négatif si le groupe dépasse sa limite).
+     */
+    public function getPlaceLibre(): int
+    {
+        return $this->getPlaceTotal() - $this->getNombreMembres();
+    }
+
     public function addAgent(): static
     {
         ++$this->agents;

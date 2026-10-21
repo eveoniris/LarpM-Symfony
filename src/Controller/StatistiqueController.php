@@ -1366,8 +1366,8 @@ class StatistiqueController extends AbstractController
             $data[] = [
                 'numero' => $groupe->getNumero(),
                 'nom' => $groupe->getNom(),
-                'places_prises' => $currentGroupeGn?->getParticipants()->count() ?? 0,
-                'places_total' => $groupe->getPlaceTotal(),
+                'places_prises' => $currentGroupeGn?->getNombreMembres() ?? 0,
+                'places_total' => $currentGroupeGn?->getPlaceTotal() ?? $groupe->getPlaceTotal(),
                 'scenariste' => $scenarist ? $this->formatUserName($scenarist) : null,
                 'mail_scenariste' => $scenarist?->getEmail(),
                 'responsable_gn_passe' => $previousResponsable ? $this->formatUserName($previousResponsable) : null,
