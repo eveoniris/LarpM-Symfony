@@ -48,8 +48,8 @@
 					<td>{{ groupeGn.code }}</td>
 					<td>{% if groupeGn.jeuStrategique %}Oui{% else %}Non{% endif %}</td>
 					<td>{% if groupeGn.jeuMaritime %}Oui{% else %}Non{% endif %}</td>
-					<td>{{ groupe.placeTotal|default(0) }}</td>
-					<td>{{ groupe.placeTotal - groupeGn.participants|length }}</td>
+					<td>{{ groupeGn.placeTotal }}</td>
+					<td>{{ groupeGn.placeLibre }}</td>
 					<td>
 						<ul>
 							{% for participant in groupeGn.participants %}

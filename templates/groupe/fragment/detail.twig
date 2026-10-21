@@ -195,8 +195,8 @@
             <div class="card text-bg mb-3 overflow-auto">
                 <div class="header"><h5>Composition du groupe</h5></div>
                 <div class="card-body">
-                    <p class="list-group-item-text"><strong>Nombre de places ouvertes
-                            : </strong>{{ groupe.classeOpen }}
+                    <p class="list-group-item-text"><strong>Nombre de places
+                            : </strong>{{ groupe.placeTotal }}
                     </p>
 
                     {% if groupe.classes|length == 0 %}
@@ -233,9 +233,10 @@
             <div class="card text-bg mb-3 overflow-auto">
                 <div class="header"><h5>Résume pour {{ groupeGn.gn.label }}</h5></div>
                 <div class="card-body">
-                    {% set nbPlace = groupe.placeTotal|default(0) %}
-                    {% set nbMembres =  groupeGn.participants|length|default(0) %}
-                    {% set nbLibre =  nbPlace - nbMembres %}
+                    {% set nbPlace = groupeGn.placeTotal %}
+                    {% set nbMembres = groupeGn.nombreMembres %}
+                    {% set nbLibre = groupeGn.placeLibre %}
+                    {% set nbAidesDeCamp = groupeGn.nombreAidesDeCamp %}
                     {% set nbAvailable =  groupeGn.placeAvailable|default(0) %}
                     {% set lockHtml %}
                         {% if groupe.lock %}
@@ -247,13 +248,20 @@
 
                     {% include '_partials/listItems.twig'
                         with { 'items' : [
-                        {'title': 'Places totales', 'text': nbPlace ~ ' joueurs possibles dans ce groupe.'},
-                        {'title': 'Membres', 'text': nbMembres},
+                        {'title': 'Places totales', 'text': nbPlace ~ ' joueurs possibles dans ce groupe' ~ (groupe.placesMax ? ' (valeur fixée manuellement).' : '.')},
+                        {'title': 'Membres', 'text': nbMembres ~ (nbAidesDeCamp > 0 ? ' (+ ' ~ nbAidesDeCamp ~ ' aide' ~ (nbAidesDeCamp > 1 ? 's' : '') ~ ' de camp)' : '')},
                         {'title': 'Places libre', 'text': nbLibre},
                         {'title': 'Recherche de places', 'text': nbAvailable},
                         {'title': 'Etat du groupe', 'text': lockHtml},
                     ]
                     } %}
+                    {% if is_granted('ROLE_SCENARISTE', app.user) %}
+                        <div class="d-flex justify-content-end mt-2">
+                            <a class="btn btn-secondary" href="{{ path('groupe.place', {'groupe': groupe.id}) }}">
+                                <i class="fa fa-pencil"></i> Modifier les places
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         {% endif %}

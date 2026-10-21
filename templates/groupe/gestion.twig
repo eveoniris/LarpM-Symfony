@@ -45,11 +45,11 @@
                             <a href="{{ path('groupe.joueur',{'index':groupe.id}) }}">Mon personnage</a>
                         </li>
                         <li class="list-group-item">
-                            {% if groupe.classes|length - groupe.availableClasses|length >= groupe.classeOpen %}
+                            {% if groupe.classes|length - groupe.availableClasses|length >= groupe.placeTotal %}
                                 <p class="warning">Attention ! des places sont encore disponibles, mais l'état de vos
                                     paiements à eve-oniris ne permet pas aux joueurs de les selectionner</p>
                             {% endif %}
-                            <strong>Nombre de place ouverte : </strong>{{ groupe.classeOpen }}
+                            <strong>Nombre de places : </strong>{{ groupe.placeTotal }}
                             <small>(Le nombre de places ouvertes dépend de vos paiements à eve-oniris)</small>
                         </li>
                         <li class="list-group-item">

@@ -17,7 +17,23 @@
 			<fieldset>
 				<legend>Selectionnez le groupe a affecter à {{ participant.user.etatCivil.nom }} {{ participant.user.etatCivil.prenom }}</legend>
 					
-					{{ form(form) }}
+					{% if depassement %}
+						<div class="alert alert-warning">
+							Le groupe <strong>{{ groupeGnDepassement.groupe.nom }}</strong> a atteint sa limite de
+							{{ groupeGnDepassement.placeTotal }} joueur{% if groupeGnDepassement.placeTotal > 1 %}s{% endif %}.
+							Avec ce transfert il aura {{ depassement }} membres. Mettre à jour la limite avec ce nouveau transfert ?
+						</div>
+
+						{{ form_start(form, {"attr": {"action": path('participant.groupe', {'participant': participant.id}) }}) }}
+							<div class="d-none">{{ form_widget(form.groupeGn) }}</div>
+							<button type="submit" name="decision" value="update" class="btn btn-primary">Transférer et fixer la limite à {{ depassement }}</button>
+							<button type="submit" name="decision" value="keep" class="btn btn-secondary">Transférer sans modifier la limite</button>
+							<a class="btn btn-link" href="{{ path('participant.groupe', {'participant': participant.id}) }}">Annuler</a>
+							{% do form.save.setRendered %}
+						{{ form_end(form) }}
+					{% else %}
+						{{ form(form) }}
+					{% endif %}
 			</fieldset>
 		{{ form_end(form) }}
 	</div>

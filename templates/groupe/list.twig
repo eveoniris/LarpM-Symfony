@@ -53,7 +53,7 @@
 				<td>
 					<ul>
 					{% for groupeGn in groupe.groupeGns|reverse %}
-						<li><strong>{{ groupeGn.gn.label|highlight(pagerService.searchValue) }}</strong> : {{ groupeGn.participants|length }} / {{ groupe.placeTotal|default(0) }}</li>
+						<li><strong>{{ groupeGn.gn.label|highlight(pagerService.searchValue) }}</strong> : {{ groupeGn.nombreMembres }} / {{ groupeGn.placeTotal }}</li>
 					{% endfor %}
 					</ul>
 				</td>
