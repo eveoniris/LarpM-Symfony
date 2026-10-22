@@ -11,6 +11,7 @@ use App\Entity\Item;
 use App\Entity\User;
 use App\Enum\EtiquetteCouleur;
 use App\Enum\EtiquetteNature;
+use App\Enum\EtiquetteSituation;
 use App\Exception\EtiquetteInvalideException;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
@@ -40,11 +41,21 @@ readonly class DepouillementEtiquetteService
             throw new EtiquetteInvalideException('Ce dépouillement n\'est plus modifiable.');
         }
 
+        if (EtiquetteNature::BANNIERE === $saisie->nature) {
+            // Une bannière est toujours une étiquette bleue générique, seule, sans numéro ni qualité à saisir.
+            $saisie->couleur = EtiquetteCouleur::BLEUE;
+            $saisie->situation = EtiquetteSituation::SANS_OBJET;
+            $saisie->numero = null;
+            $saisie->qualite = null;
+        }
+
         $qualite = null === $saisie->qualite || '' === trim($saisie->qualite) ? null : trim($saisie->qualite);
         $this->verifierSaisie($saisie, $qualite);
 
         try {
-            $decision = $this->regles->evaluer($saisie->couleur, $qualite, $saisie->situation);
+            $decision = EtiquetteNature::BANNIERE === $saisie->nature
+                ? $this->regles->banniere($saisie->quantite)
+                : $this->regles->evaluer($saisie->couleur, $qualite, $saisie->situation);
         } catch (InvalidArgumentException $exception) {
             throw new EtiquetteInvalideException($exception->getMessage(), previous: $exception);
         }
@@ -87,6 +98,10 @@ readonly class DepouillementEtiquetteService
     {
         if ($saisie->quantite < 1 || $saisie->quantite > self::QUANTITE_MAX) {
             throw new EtiquetteInvalideException(\sprintf('La quantité doit être comprise entre 1 et %d.', self::QUANTITE_MAX));
+        }
+
+        if (EtiquetteNature::BANNIERE === $saisie->nature) {
+            return;
         }
 
         if (EtiquetteNature::OBJET === $saisie->nature && (null === $saisie->numero || $saisie->numero < 1)) {

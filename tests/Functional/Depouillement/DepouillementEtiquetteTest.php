@@ -123,6 +123,21 @@ class DepouillementEtiquetteTest extends WebTestCase
         static::assertSelectorTextContains('body', 'Des anomalies sont signalées');
     }
 
+    public function testPlusieursBannieresSontComptees(): void
+    {
+        $client = static::createClient();
+        $moi = $this->beta();
+        $depouillement = $this->depouillement($moi);
+        $client->loginUser($moi);
+
+        $this->ajouter($client, $depouillement, ['nature' => 'banniere', 'quantite' => 3]);
+        $client->followRedirect();
+
+        static::assertSelectorTextContains('body', '3 bannière(s) laissée(s) dans l\'enveloppe');
+        static::assertSelectorTextContains('body', 'Plusieurs bannières (3)');
+        static::assertSelectorTextNotContains('body', 'À prévoir pour l\'opus suivant');
+    }
+
     public function testUneEtiquetteSpecialeEstAPrevoirPourLOpusSuivant(): void
     {
         $client = static::createClient();

@@ -122,6 +122,25 @@ class EtiquetteReglesTest extends TestCase
         static::assertStringContainsString('objet est manquant', $decision->anomalies[0]);
     }
 
+    public function testUneBanniereResteDansLEnveloppeSansRienPrevoirPourLOpusSuivant(): void
+    {
+        $decision = $this->regles->banniere(1);
+
+        static::assertSame(EtiquetteDestination::ENVELOPPE, $decision->destination);
+        static::assertFalse($decision->aPrevoirProchainOpus);
+        static::assertNull($decision->actionObjet);
+        static::assertSame([], $decision->anomalies);
+    }
+
+    public function testPlusieursBannieresSignalentUnVol(): void
+    {
+        $decision = $this->regles->banniere(3);
+
+        static::assertCount(1, $decision->anomalies);
+        static::assertStringContainsString('Plusieurs bannières (3)', $decision->anomalies[0]);
+        static::assertStringContainsString('vol', $decision->anomalies[0]);
+    }
+
     public function testNatureHorsTableEstConserveeAvecAnomalie(): void
     {
         foreach (['058', '059', '060', '100'] as $qualite) {

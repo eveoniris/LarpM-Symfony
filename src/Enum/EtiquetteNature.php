@@ -14,12 +14,15 @@ enum EtiquetteNature: string
 
     case ARME = 'arme';
     case OBJET = 'objet';
+    /** Étiquette bleue générique "99" donnée une fois par groupe à chaque GN : laissée dans l'enveloppe, comptée. */
+    case BANNIERE = 'banniere';
 
     public function label(): string
     {
         return match ($this) {
             self::ARME => 'Étiquette d\'arme',
             self::OBJET => 'Étiquette d\'objet',
+            self::BANNIERE => 'Étiquette de bannière',
         };
     }
 }

@@ -225,6 +225,33 @@ class DepouillementEtiquetteServiceTest extends KernelTestCase
         static::assertSame([], $etiquette->getAnomalies());
     }
 
+    public function testUneBanniereEstUneEtiquetteBleueGeneriqueComptee(): void
+    {
+        $saisie = $this->saisie(EtiquetteNature::BANNIERE, EtiquetteCouleur::ORANGE, 99, '123', EtiquetteSituation::AVEC_OBJET);
+        $saisie->quantite = 3;
+
+        $etiquette = $this->service->ajouter($this->depouillement(), $saisie, UserFactory::createOne());
+
+        static::assertSame(EtiquetteNature::BANNIERE, $etiquette->getNature());
+        static::assertSame(EtiquetteCouleur::BLEUE, $etiquette->getCouleur());
+        static::assertSame(EtiquetteSituation::SANS_OBJET, $etiquette->getSituation());
+        static::assertSame(3, $etiquette->getQuantite());
+        static::assertNull($etiquette->getNumero());
+        static::assertNull($etiquette->getQualite());
+        static::assertNull($etiquette->getItem());
+        static::assertSame(EtiquetteDestination::ENVELOPPE, $etiquette->getDestination());
+        static::assertFalse($etiquette->isAPrevoirProchainOpus());
+        static::assertStringContainsString('Plusieurs bannières (3)', $etiquette->getAnomalies()[0]);
+    }
+
+    public function testUneSeuleBanniereNeSignaleRien(): void
+    {
+        $etiquette = $this->service->ajouter($this->depouillement(), $this->saisie(EtiquetteNature::BANNIERE, EtiquetteCouleur::BLEUE, null, null), UserFactory::createOne());
+
+        static::assertSame([], $etiquette->getAnomalies());
+        static::assertSame(1, $etiquette->getQuantite());
+    }
+
     public function testUneEtiquetteDObjetCompteToujoursPourUne(): void
     {
         $this->objet(5008, 2, '63');
