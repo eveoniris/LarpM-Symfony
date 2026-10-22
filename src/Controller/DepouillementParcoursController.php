@@ -8,8 +8,11 @@ use App\Entity\Depouillement;
 use App\Entity\Gn;
 use App\Enum\DepouillementEtape;
 use App\Enum\DepouillementType;
+use App\Form\Depouillement\DepouillementEtiquetteType;
 use App\Form\Depouillement\DepouillementRemarquesType;
 use App\Service\DepouillementService;
+use App\Service\EtiquetteSaisie;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -97,6 +100,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             'etapes' => DepouillementEtape::cases(),
             'modifiable' => $modifiable,
             'form' => $form,
+            'formEtiquette' => $this->formulaireEtiquette($depouillement, $etape),
             'avertissementGroupe' => $this->avertissementGroupe($depouillement, $depouillementService),
         ]);
     }
@@ -125,6 +129,20 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         $this->addFlash('success', 'Dépouillement terminé : il est en attente de validation.');
 
         return $redirection;
+    }
+
+    /**
+     * Formulaire d'ajout d'une étiquette, pour l'étape Contenu d'un dépouillement encore modifiable.
+     */
+    private function formulaireEtiquette(Depouillement $depouillement, DepouillementEtape $etape): ?FormInterface
+    {
+        if (DepouillementEtape::CONTENU !== $etape || !$depouillement->getStatut()->isEditable()) {
+            return null;
+        }
+
+        return $this->createForm(DepouillementEtiquetteType::class, new EtiquetteSaisie(), [
+            'action' => $this->generateUrl('depouillement.etiquette.add', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()]),
+        ]);
     }
 
     /**

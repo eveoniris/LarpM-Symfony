@@ -122,7 +122,64 @@
 					<p class="text-muted mb-0">Aucune photo pour l'instant.</p>
 				{% endif %}
 			{% elseif etape.value == 'contenu' %}
-				<p class="text-muted mb-0">Cette étape permettra de saisir le contenu constaté de l'enveloppe (ressources, objets et étiquettes, sorts, potions, recettes...). Elle sera disponible prochainement.</p>
+				<h6>Étiquettes d'objets et d'armes</h6>
+				<p class="text-muted small">Pour chaque étiquette, lisez le numéro en haut à gauche et la qualité (trois chiffres) en haut à droite. Une étiquette bleue est celle d'un objet de l'association, une orange celle d'un objet de joueur : en retour de jeu il ne doit y avoir que des étiquettes orange, sans objet.</p>
+
+				{% if formEtiquette %}
+					{{ form_start(formEtiquette) }}
+					{{ form_widget(formEtiquette) }}
+					{{ form_end(formEtiquette) }}
+					<hr>
+				{% endif %}
+
+				{% set etiquettes = depouillement.etiquettes %}
+				{% set generiques = etiquettes|filter(e => e.destination.value == 'stock')|reduce((total, e) => total + e.quantite, 0) %}
+
+				{% if etiquettes|length > 0 %}
+					<div class="table-responsive">
+						<table class="table table-sm table-bordered align-middle">
+							<thead>
+								<tr><th>Étiquette</th><th>N°</th><th>Qualité</th><th>Constat</th><th>Objet connu</th><th>Destination</th><th></th></tr>
+							</thead>
+							<tbody>
+								{% for e in etiquettes %}
+									<tr class="{{ e.anomalies|length > 0 ? 'table-warning' : '' }}">
+										<td>{{ e.nature.label }}, {{ e.couleur.value }}{% if e.quantite > 1 %} (x{{ e.quantite }}){% endif %}{% if e.speciale %} <span class="badge text-bg-info">spéciale</span>{% endif %}</td>
+										<td>{{ e.numero ?? '-' }}</td>
+										<td>{{ e.qualite ?? '-' }}</td>
+										<td>{{ e.situation.label }}</td>
+										<td>{{ e.item ? e.item.label : '-' }}</td>
+										<td>
+											{{ e.destination.label }}
+											{% if e.actionObjet %}<br><strong>{{ e.actionObjet.label }}</strong>{% endif %}
+											{% if e.aPrevoirProchainOpus %}<br><span class="badge text-bg-secondary">À prévoir pour l'opus suivant</span>{% endif %}
+											{% for anomalie in e.anomalies %}<div class="small text-danger"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
+											{% if e.remarque %}<div class="small text-muted">{{ e.remarque }}</div>{% endif %}
+										</td>
+										<td class="text-nowrap">
+											{% if modifiable %}
+												<form method="post" action="{{ path('depouillement.etiquette.delete', {'gn': gn.id, 'depouillement': depouillement.id, 'etiquette': e.id}) }}" onsubmit="return confirm('Supprimer cette étiquette ?');">
+													<input type="hidden" name="_token" value="{{ csrf_token('depouillement_etiquette_' ~ e.id) }}">
+													<button type="submit" class="btn btn-sm btn-danger" title="Supprimer cette étiquette"><i class="fa fa-trash"></i></button>
+												</form>
+											{% endif %}
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<p class="mb-0 small">
+						<strong>{{ generiques }}</strong> étiquette(s) remise(s) au stock,
+						<strong>{{ etiquettes|filter(e => e.aPrevoirProchainOpus)|length }}</strong> ligne(s) à prévoir pour l'enveloppe de l'opus suivant.
+						{% if etiquettes|filter(e => e.anomalies|length > 0)|length > 0 %}
+							<span class="text-danger">Des anomalies sont signalées : sollicitez un orga expert et/ou consignez-les dans les remarques.</span>
+						{% endif %}
+					</p>
+				{% else %}
+					<p class="text-muted mb-0">Aucune étiquette saisie.</p>
+				{% endif %}
+				<p class="text-muted small mt-3 mb-0">Les autres éléments du contenu (ressources, sorts, potions, recettes...) arriveront dans la suite du parcours.</p>
 			{% elseif etape.value == 'remarques' %}
 				{% if form %}
 					{{ form_start(form) }}

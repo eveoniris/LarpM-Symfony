@@ -94,8 +94,14 @@ class Depouillement
     #[ORM\OrderBy(['id' => 'ASC'])]
     private Collection $photos;
 
+    /** @var Collection<int, DepouillementEtiquette> */
+    #[ORM\OneToMany(mappedBy: 'depouillement', targetEntity: DepouillementEtiquette::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['id' => 'ASC'])]
+    private Collection $etiquettes;
+
     public function __construct()
     {
+        $this->etiquettes = new ArrayCollection();
         $this->photos = new ArrayCollection();
         $this->createdAt = new DateTime();
         $this->updatedAt = new DateTime();
@@ -272,6 +278,29 @@ class Depouillement
     public function getHistories(): Collection
     {
         return $this->histories;
+    }
+
+    /** @return Collection<int, DepouillementEtiquette> */
+    public function getEtiquettes(): Collection
+    {
+        return $this->etiquettes;
+    }
+
+    public function addEtiquette(DepouillementEtiquette $etiquette): static
+    {
+        if (!$this->etiquettes->contains($etiquette)) {
+            $this->etiquettes->add($etiquette);
+            $etiquette->setDepouillement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEtiquette(DepouillementEtiquette $etiquette): static
+    {
+        $this->etiquettes->removeElement($etiquette);
+
+        return $this;
     }
 
     /** @return Collection<int, DepouillementPhoto> */
