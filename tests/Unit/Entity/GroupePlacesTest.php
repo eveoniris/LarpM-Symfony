@@ -39,23 +39,23 @@ class GroupePlacesTest extends TestCase
         self::assertSame(12, $this->groupeAvecFiefs(0)->getPlaceTotal());
     }
 
-    public function testLePremierFiefNeDonnePasDePlaceSupplementaire(): void
+    public function testLePremierFiefDonneDejaDeuxPlaces(): void
     {
-        self::assertSame(12, $this->groupeAvecFiefs(1)->getPlaceTotal());
+        self::assertSame(14, $this->groupeAvecFiefs(1)->getPlaceTotal());
     }
 
-    public function testChaqueFiefAuDelaDuPremierAjouteDeuxPlaces(): void
+    public function testChaqueFiefAjouteDeuxPlaces(): void
     {
-        self::assertSame(14, $this->groupeAvecFiefs(2)->getPlaceTotal());
-        self::assertSame(18, $this->groupeAvecFiefs(4)->getPlaceTotal());
+        self::assertSame(16, $this->groupeAvecFiefs(2)->getPlaceTotal());
+        self::assertSame(20, $this->groupeAvecFiefs(4)->getPlaceTotal());
     }
 
     public function testLesPlacesParDefautVientDuGn(): void
     {
         $gn = (new Gn())->setPlacesParGroupe(10);
 
-        self::assertSame(10, $this->groupeAvecFiefs(1)->getPlaceTotal($gn));
-        self::assertSame(14, $this->groupeAvecFiefs(3)->getPlaceTotal($gn));
+        self::assertSame(12, $this->groupeAvecFiefs(1)->getPlaceTotal($gn));
+        self::assertSame(16, $this->groupeAvecFiefs(3)->getPlaceTotal($gn));
     }
 
     public function testLaLimiteManuelleDeLaSessionPrimeSurLeCalcul(): void
@@ -68,9 +68,9 @@ class GroupePlacesTest extends TestCase
         $groupeGn->getGroupe()->addGroupeGn($groupeGn);
 
         self::assertSame(30, $groupeGn->getPlaceTotal());
-        self::assertSame(16, $groupeGn->getGroupe()->getPlaceCalculee($groupeGn->getGn()));
+        self::assertSame(18, $groupeGn->getGroupe()->getPlaceCalculee($groupeGn->getGn()));
         self::assertSame(30, $groupeGn->getGroupe()->getPlaceTotal($gn));
-        self::assertSame(16, $groupeGn->getGroupe()->getPlaceTotal(new Gn()));
+        self::assertSame(18, $groupeGn->getGroupe()->getPlaceTotal(new Gn()));
     }
 
     public function testUneValeurNulleOuNegativeRetablitLeCalculAutomatique(): void
@@ -81,7 +81,7 @@ class GroupePlacesTest extends TestCase
             ->setPlacesMax(0);
 
         self::assertNull($groupeGn->getPlacesMax());
-        self::assertSame(14, $groupeGn->getPlaceTotal());
+        self::assertSame(16, $groupeGn->getPlaceTotal());
 
         $groupeGn->setPlacesMax(-3);
         self::assertNull($groupeGn->getPlacesMax());
@@ -98,10 +98,10 @@ class GroupePlacesTest extends TestCase
 
         $groupeGn->setPlacesMax(10);
         self::assertLessThan($groupeGn->getGroupe()->getPlaceCalculee($groupeGn->getGn()), $groupeGn->getPlaceTotal());
-        self::assertSame(24, $groupeGn->getGroupe()->getPlaceCalculee($groupeGn->getGn()));
+        self::assertSame(26, $groupeGn->getGroupe()->getPlaceCalculee($groupeGn->getGn()));
 
         $groupeGn->setPlacesMax(null);
-        self::assertSame(24, $groupeGn->getPlaceTotal());
+        self::assertSame(26, $groupeGn->getPlaceTotal());
     }
 
     public function testSeulsLesTerritoiresFinauxCompteCommeFiefs(): void
@@ -125,7 +125,7 @@ class GroupePlacesTest extends TestCase
         }
 
         self::assertCount(2, $groupe->getFiefs());
-        self::assertSame(14, $groupe->getPlaceCalculee());
+        self::assertSame(16, $groupe->getPlaceCalculee());
     }
 
     public function testLesAidesDeCampNeComptentPasDansLesMembres(): void

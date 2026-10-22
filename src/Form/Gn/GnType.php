@@ -94,7 +94,7 @@ class GnType extends AbstractType
             ])
             ->add('placesParGroupe', IntegerType::class, [
                 'label' => "Places par défaut d'un groupe",
-                'help' => 'Nombre de joueurs par groupe pour cet opus (hors aide de camp). Chaque fief contrôlé au-delà du premier ajoute 2 places. Un scénariste peut fixer une valeur différente groupe par groupe (PNJ, groupes spéciaux).',
+                'help' => 'Nombre de joueurs par groupe pour cet opus (hors aide de camp). Chaque fief contrôlé ajoute 2 places. Un scénariste peut fixer une valeur différente groupe par groupe (PNJ, groupes spéciaux).',
                 'required' => true,
                 'empty_data' => '12',
                 'attr' => ['min' => 1],

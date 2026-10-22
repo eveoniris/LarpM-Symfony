@@ -602,7 +602,7 @@ class GroupeGnController extends AbstractController
                 'label' => 'Nombre de places',
                 'required' => false,
                 'attr' => ['min' => 1, 'placeholder' => (string) $calculee],
-                'help' => 'Laisser vide pour le calcul automatique : ' . $calculee . ' places (places par défaut du GN + 2 par fief au-delà du premier).',
+                'help' => 'Laisser vide pour le calcul automatique : ' . $calculee . ' places (places par défaut du GN + 2 par fief).',
             ])
             ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
             ->getForm();

@@ -21,7 +21,7 @@
 
 	{% for groupeGn in groupe.groupeGns %}
 		{% set placeLibre = groupeGn.placeLibre %}
-		{% set fiefsSupplementaires = max(0, groupe.fiefs|length - 1) %}
+		{% set nbFiefs = groupe.fiefs|length %}
 		<div class="card text-bg mb-3 overflow-auto">
 			<div class="header">
 				<h5>
@@ -97,7 +97,7 @@
 									{% endif %}
 								{% else %}
 									Calcul automatique : {{ groupeGn.gn.placesParGroupe }} places par défaut
-									{% if fiefsSupplementaires > 0 %}+ 2 x {{ fiefsSupplementaires }} fief{{ fiefsSupplementaires > 1 ? 's' : '' }} au-delà du premier{% endif %}.
+									{% if nbFiefs > 0 %}+ 2 x {{ nbFiefs }} fief{{ nbFiefs > 1 ? 's' : '' }}{% endif %}.
 								{% endif %}
 							</dd>
 
