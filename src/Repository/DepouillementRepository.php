@@ -11,6 +11,16 @@ use App\Enum\DepouillementType;
 class DepouillementRepository extends BaseRepository
 {
     /**
+     * Le findAll() de BaseRepository trie par label, que cette entité n'a pas.
+     *
+     * @return array<int, object>
+     */
+    public function findAll(): array
+    {
+        return $this->findBy([], ['id' => 'ASC']);
+    }
+
+    /**
      * Dépouillement réel (hors simulation) déjà ouvert pour une enveloppe : sert à avertir d'une reprise ou d'un doublon.
      */
     public function findReelByEnveloppe(Gn $gn, DepouillementType $type, string $numero): ?Depouillement
@@ -27,13 +37,20 @@ class DepouillementRepository extends BaseRepository
     }
 
     /**
-     * Supprime toutes les simulations (leur historique part en cascade). Retourne le nombre supprimé.
+     * Supprime les simulations (toutes, ou celles d'un GN), leur historique part en cascade. Retourne le nombre supprimé.
      */
-    public function purgeSimulations(): int
+    public function purgeSimulations(?Gn $gn = null): int
     {
-        return (int) $this
+        $query = $this
             ->getEntityManager()
-            ->createQuery('DELETE FROM ' . Depouillement::class . ' d WHERE d.simulation = true')
-            ->execute();
+            ->createQueryBuilder()
+            ->delete(Depouillement::class, 'd')
+            ->where('d.simulation = true');
+
+        if (null !== $gn) {
+            $query->andWhere('d.gn = :gn')->setParameter('gn', $gn);
+        }
+
+        return (int) $query->getQuery()->execute();
     }
 }

@@ -4,17 +4,58 @@
 
 {% block body %}
 
-	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Dépouillement des enveloppes'}]} %}
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'GN ' ~ gn.label, 'route' : path('gn.detail', {'gn': gn.id})}, {'name' : 'Dépouillement des enveloppes'}]} %}
 
 	<div class="alert alert-warning">
-		Fonctionnalité en cours de test, réservée aux bêta-testeurs.
+		Fonctionnalité en cours de test, réservée aux bêta-testeurs. Pour l'instant seules les <strong>simulations</strong> sont possibles : elles n'ont aucun effet sur les joueurs ni sur les groupes et peuvent être supprimées à tout moment.
+	</div>
+
+	<div class="card mb-3">
+		<div class="card-header">Nouvelle simulation</div>
+		<div class="card-body">
+			{{ form_start(form) }}
+			{{ form_widget(form) }}
+			{{ form_end(form) }}
+		</div>
 	</div>
 
 	<div class="well well-sm">
 		<div class="header">
-			<h5>Dépouillement des enveloppes</h5>
+			<h5>Simulations de ce GN <small>({{ simulations|length }})</small></h5>
 		</div>
-		<p class="mb-0">Les étapes de dépouillement (enveloppe joueur ou groupe) seront ajoutées ici.</p>
+		{% if simulations|length > 0 %}
+			<form method="post" action="{{ path('depouillement.purge', {'gn': gn.id}) }}" onsubmit="return confirm('Supprimer toutes les simulations de ce GN ?');">
+				<input type="hidden" name="_token" value="{{ csrf_token('depouillement_purge_' ~ gn.id) }}">
+				<button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> Purger les simulations</button>
+			</form>
+		{% endif %}
+	</div>
+
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+					<th>Enveloppe</th>
+					<th>Numéro</th>
+					<th>Statut</th>
+					<th>Dépouilleur</th>
+					<th>Créée le</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for simulation in simulations %}
+					<tr>
+						<td>{{ simulation.type.label }}</td>
+						<td>{{ simulation.numero }}</td>
+						<td>{{ simulation.statut.label }}</td>
+						<td>{{ simulation.depouilleur ? simulation.depouilleur.username : '-' }}</td>
+						<td>{{ simulation.createdAt|date('d/m/Y H:i') }}</td>
+					</tr>
+				{% else %}
+					<tr><td colspan="5" class="text-muted">Aucune simulation.</td></tr>
+				{% endfor %}
+			</tbody>
+		</table>
 	</div>
 
 {% endblock body %}

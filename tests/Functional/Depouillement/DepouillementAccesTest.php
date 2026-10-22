@@ -19,9 +19,10 @@ class DepouillementAccesTest extends WebTestCase
     public function testBetaTesteurAccede(): void
     {
         $client = static::createClient();
+        $gn = GnFactory::createOne();
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_BETA_TEST']]));
 
-        $client->request('GET', '/depouillement');
+        $client->request('GET', '/depouillement/gn/' . $gn->getId());
 
         static::assertResponseIsSuccessful();
     }
@@ -29,9 +30,10 @@ class DepouillementAccesTest extends WebTestCase
     public function testSuperAdminAccede(): void
     {
         $client = static::createClient();
+        $gn = GnFactory::createOne();
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_SUPER_ADMIN']]));
 
-        $client->request('GET', '/depouillement');
+        $client->request('GET', '/depouillement/gn/' . $gn->getId());
 
         static::assertResponseIsSuccessful();
     }
@@ -54,11 +56,14 @@ class DepouillementAccesTest extends WebTestCase
     public function testAutresRolesRefuses(array $roles): void
     {
         $client = static::createClient();
+        $gn = GnFactory::createOne();
         $client->loginUser(UserFactory::createOne(['roles' => $roles]));
 
-        $client->request('GET', '/depouillement');
-
+        $client->request('GET', '/depouillement/gn/' . $gn->getId());
         // L'application redirige vers /access_denied au lieu de renvoyer un 403.
+        static::assertResponseRedirects('/access_denied');
+
+        $client->request('POST', '/depouillement/gn/' . $gn->getId() . '/purge');
         static::assertResponseRedirects('/access_denied');
     }
 
@@ -66,23 +71,25 @@ class DepouillementAccesTest extends WebTestCase
     {
         $client = static::createClient();
         $gn = GnFactory::createOne();
+        $lien = 'a[href="/depouillement/gn/' . $gn->getId() . '"]';
 
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER']]));
         $client->request('GET', '/gn/' . $gn->getId());
         static::assertResponseIsSuccessful();
-        static::assertSelectorNotExists('a[href="/depouillement"]');
+        static::assertSelectorNotExists($lien);
 
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_BETA_TEST']]));
         $client->request('GET', '/gn/' . $gn->getId());
         static::assertResponseIsSuccessful();
-        static::assertSelectorExists('a[href="/depouillement"]');
+        static::assertSelectorExists($lien);
     }
 
     public function testAnonymeRedirigeVersLaConnexion(): void
     {
         $client = static::createClient();
+        $gn = GnFactory::createOne();
 
-        $client->request('GET', '/depouillement');
+        $client->request('GET', '/depouillement/gn/' . $gn->getId());
 
         static::assertResponseRedirects();
     }
