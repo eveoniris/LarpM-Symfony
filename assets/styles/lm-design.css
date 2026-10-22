@@ -771,3 +771,6 @@ html[data-ui="beta"] .progress {
   background: var(--lm-raised); border: 1px solid var(--lm-line); border-radius: var(--lm-radius);
 }
 html[data-ui="beta"] .progress-bar { background-color: var(--lm-accent); color: var(--lm-on-accent); font-weight: 600; overflow: hidden; white-space: nowrap; }
+
+/* Bouton « Raccourcis » de la fiche personnage : contour cuivre (action), le bouton d'onglets reste neutre */
+html[data-ui="beta"] .personnage-actions-btn { --bs-btn-color: var(--lm-accent); --bs-btn-border-color: var(--lm-accent); --bs-btn-hover-bg: var(--lm-accent); --bs-btn-hover-border-color: var(--lm-accent); --bs-btn-hover-color: var(--lm-on-accent); --bs-btn-active-bg: var(--lm-accent); --bs-btn-active-border-color: var(--lm-accent); --bs-btn-active-color: var(--lm-on-accent); }
