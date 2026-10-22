@@ -471,7 +471,7 @@ class Groupe extends BaseGroupe implements Stringable
     public const PLACES_PAR_DEFAUT = 12;
 
     /**
-     * Places supplémentaires par fief contrôlé au-delà du premier.
+     * Places supplémentaires par fief contrôlé.
      */
     public const PLACES_PAR_FIEF_SUPPLEMENTAIRE = 2;
 
@@ -486,14 +486,13 @@ class Groupe extends BaseGroupe implements Stringable
     }
 
     /**
-     * Places calculées automatiquement : places par défaut du GN (12 sinon) + 2 par fief contrôlé au-delà du premier.
+     * Places calculées automatiquement : places par défaut du GN (12 sinon) + 2 par fief contrôlé.
      */
     public function getPlaceCalculee(?Gn $gn = null): int
     {
         $parDefaut = $gn?->getPlacesParGroupe() ?? self::PLACES_PAR_DEFAUT;
-        $fiefsSupplementaires = max(0, $this->getFiefs()->count() - 1);
 
-        return $parDefaut + (self::PLACES_PAR_FIEF_SUPPLEMENTAIRE * $fiefsSupplementaires);
+        return $parDefaut + (self::PLACES_PAR_FIEF_SUPPLEMENTAIRE * $this->getFiefs()->count());
     }
 
     /**

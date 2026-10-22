@@ -16,7 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Repère les groupes PJ dont les membres dépassent déjà les places calculées automatiquement
- * (places par défaut du GN + 2 par fief au-delà du premier) et fixe leur limite manuelle au nombre
+ * (places par défaut du GN + 2 par fief) et fixe leur limite manuelle au nombre
  * de membres actuel. Les autres groupes gardent le calcul automatique.
  */
 #[AsCommand(name: 'app:groupes:places-reprise', description: 'Fixe la limite de places des groupes dont les membres dépassent le calcul automatique (simulation par défaut)')]
