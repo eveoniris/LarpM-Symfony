@@ -7,9 +7,12 @@ namespace App\Service;
 use App\Entity\Depouillement;
 use App\Entity\DepouillementHistory;
 use App\Entity\Gn;
+use App\Entity\GroupeGn;
+use App\Entity\Participant;
 use App\Entity\User;
 use App\Enum\DepouillementStatut;
 use App\Enum\DepouillementType;
+use App\Exception\EnveloppeIntrouvableException;
 use App\Repository\DepouillementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -24,15 +27,25 @@ readonly class DepouillementService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private DepouillementRepository $depouillementRepository,
+        private DepouillementEnveloppeResolver $resolver,
     ) {
     }
 
+    /**
+     * Crée une simulation en retrouvant la session de groupe ou le participant à partir du numéro saisi et du GN.
+     *
+     * @throws EnveloppeIntrouvableException si aucun groupe ou personnage de ce GN ne porte ce numéro
+     */
     public function creerSimulation(Gn $gn, DepouillementType $type, string $numero, User $depouilleur): Depouillement
     {
+        $numero = $this->resolver->normaliserNumero($numero);
+        $cible = $this->resolver->resoudre($gn, $type, $numero);
         $depouillement = (new Depouillement())
             ->setGn($gn)
             ->setType($type)
-            ->setNumero(trim($numero))
+            ->setNumero($numero)
+            ->setGroupeGn($cible instanceof GroupeGn ? $cible : null)
+            ->setParticipant($cible instanceof Participant ? $cible : null)
             ->setSimulation(true)
             ->setDepouilleur($depouilleur);
 
@@ -55,7 +68,7 @@ readonly class DepouillementService
      */
     public function trouverSimulation(Gn $gn, DepouillementType $type, string $numero): ?Depouillement
     {
-        return $this->depouillementRepository->findByEnveloppe($gn, $type, trim($numero), true);
+        return $this->depouillementRepository->findByEnveloppe($gn, $type, $this->resolver->normaliserNumero($numero), true);
     }
 
     /**
@@ -135,12 +148,16 @@ readonly class DepouillementService
     }
 
     /**
-     * Nombre d'enveloppes de joueurs encore en cours de dépouillement. L'enveloppe de groupe doit être traitée
-     * en dernier : elle récupère le reliquat des enveloppes de joueurs.
+     * Nombre d'enveloppes de joueurs du groupe encore en cours de dépouillement. L'enveloppe de groupe doit être
+     * traitée en dernier : elle récupère le reliquat des enveloppes de joueurs.
      */
-    public function nombreEnveloppesJoueursEnCours(Gn $gn, bool $simulation): int
+    public function nombreEnveloppesJoueursEnCours(Depouillement $enveloppeGroupe): int
     {
-        return $this->depouillementRepository->countEnCours($gn, DepouillementType::JOUEUR, $simulation);
+        $groupeGn = $enveloppeGroupe->getGroupeGn();
+
+        return $groupeGn instanceof GroupeGn
+            ? $this->depouillementRepository->countJoueursEnCours($groupeGn, $enveloppeGroupe->isSimulation())
+            : 0;
     }
 
     /**

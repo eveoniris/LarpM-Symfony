@@ -37,6 +37,7 @@
 				<tr>
 					<th>Enveloppe</th>
 					<th>Numéro</th>
+					<th>Concerne</th>
 					<th>Statut</th>
 					<th>Dépouilleur</th>
 					<th>Créée le</th>
@@ -48,6 +49,9 @@
 					<tr>
 						<td>{{ simulation.type.label }}</td>
 						<td>{{ simulation.numero }}</td>
+						<td>
+							{% if simulation.groupeGn %}{{ simulation.groupeGn.groupe.nom }}{% elseif simulation.participant and simulation.participant.user %}{{ simulation.participant.user.username }}{% else %}-{% endif %}
+						</td>
 						<td>{{ simulation.statut.label }}</td>
 						<td>{{ simulation.depouilleur ? simulation.depouilleur.username : '-' }}</td>
 						<td>{{ simulation.createdAt|date('d/m/Y H:i') }}</td>
@@ -60,7 +64,7 @@
 						</td>
 					</tr>
 				{% else %}
-					<tr><td colspan="6" class="text-muted">Aucune simulation.</td></tr>
+					<tr><td colspan="7" class="text-muted">Aucune simulation.</td></tr>
 				{% endfor %}
 			</tbody>
 		</table>

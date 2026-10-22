@@ -7,6 +7,7 @@ namespace App\Tests\Functional\Depouillement;
 use App\Entity\Depouillement;
 use App\Enum\DepouillementType;
 use App\Tests\Factory\GnFactory;
+use App\Tests\Factory\GroupeGnFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
@@ -22,13 +23,14 @@ class DepouillementSimulationTest extends WebTestCase
     {
         $client = static::createClient();
         $gn = GnFactory::createOne();
+        $numero = (string) GroupeGnFactory::createOne(['gn' => $gn])->getGroupe()->getNumero();
         $beta = UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_BETA_TEST']]);
         $client->loginUser($beta);
 
         $client->request('GET', '/gn/' . $gn->getId() . '/depouillement');
         $client->submitForm('Démarrer une simulation', [
             'depouillement_simulation[type]' => DepouillementType::GROUPE->value,
-            'depouillement_simulation[numero]' => '21',
+            'depouillement_simulation[numero]' => $numero,
         ]);
 
         static::assertResponseRedirects();
@@ -37,14 +39,14 @@ class DepouillementSimulationTest extends WebTestCase
         $depouillements = $em->getRepository(Depouillement::class)->findBy([], ['id' => 'ASC']);
         static::assertCount(1, $depouillements);
         static::assertTrue($depouillements[0]->isSimulation());
-        static::assertSame('21', $depouillements[0]->getNumero());
+        static::assertSame($numero, $depouillements[0]->getNumero());
         static::assertSame(DepouillementType::GROUPE, $depouillements[0]->getType());
         static::assertSame($beta->getId(), $depouillements[0]->getDepouilleur()?->getId());
         static::assertCount(1, $depouillements[0]->getHistories());
 
         $client->followRedirect();
         static::assertSelectorTextContains('body', 'Enveloppe de groupe');
-        static::assertSelectorTextContains('body', '21');
+        static::assertSelectorTextContains('body', $numero);
     }
 
     public function testNumeroObligatoire(): void

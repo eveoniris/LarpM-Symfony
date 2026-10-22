@@ -6,6 +6,8 @@ namespace App\Repository;
 
 use App\Entity\Depouillement;
 use App\Entity\Gn;
+use App\Entity\GroupeGn;
+use App\Entity\Participant;
 use App\Enum\DepouillementStatut;
 use App\Enum\DepouillementType;
 
@@ -54,22 +56,64 @@ class DepouillementRepository extends BaseRepository
     }
 
     /**
-     * Nombre de dépouillements d'un type encore en cours de saisie pour un GN (réels ou simulations).
+     * Nombre d'enveloppes de joueurs encore en cours de saisie pour une session de groupe (réelles ou simulations).
      */
-    public function countEnCours(Gn $gn, DepouillementType $type, bool $simulation): int
+    public function countJoueursEnCours(GroupeGn $groupeGn, bool $simulation): int
     {
         return (int) $this
             ->getEntityManager()
             ->createQueryBuilder()
             ->select('COUNT(d.id)')
             ->from(Depouillement::class, 'd')
-            ->where('d.gn = :gn AND d.type = :type AND d.simulation = :simulation AND d.statut = :statut')
-            ->setParameter('gn', $gn)
-            ->setParameter('type', $type)
+            ->join('d.participant', 'p')
+            ->where('d.gn = :gn AND d.type = :type AND d.simulation = :simulation AND d.statut = :statut AND p.groupeGn = :groupeGn')
+            ->setParameter('gn', $groupeGn->getGn())
+            ->setParameter('type', DepouillementType::JOUEUR)
             ->setParameter('simulation', $simulation)
             ->setParameter('statut', DepouillementStatut::EN_DEPOUILLEMENT)
+            ->setParameter('groupeGn', $groupeGn)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * Session d'un groupe pour un GN, à partir du numéro de groupe que connaît le dépouilleur.
+     */
+    public function findGroupeGnParNumero(Gn $gn, int $numeroGroupe): ?GroupeGn
+    {
+        return $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('gg')
+            ->from(GroupeGn::class, 'gg')
+            ->join('gg.groupe', 'g')
+            ->where('gg.gn = :gn AND g.numero = :numero')
+            ->setParameter('gn', $gn)
+            ->setParameter('numero', $numeroGroupe)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * Participant d'un GN à partir du numéro de personnage (son identifiant, imprimé sur l'enveloppe).
+     * Le personnage peut être le principal, la substitution ou la relève du participant.
+     */
+    public function findParticipantParPersonnage(Gn $gn, int $numeroPersonnage): ?Participant
+    {
+        return $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('p')
+            ->from(Participant::class, 'p')
+            ->where('p.gn = :gn')
+            ->andWhere('IDENTITY(p.personnage) = :id OR IDENTITY(p.personnageSubstitution) = :id OR IDENTITY(p.personnageReleve) = :id')
+            ->setParameter('gn', $gn)
+            ->setParameter('id', $numeroPersonnage)
+            ->orderBy('p.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**

@@ -136,6 +136,6 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             return 0;
         }
 
-        return $depouillementService->nombreEnveloppesJoueursEnCours($depouillement->getGn(), $depouillement->isSimulation());
+        return $depouillementService->nombreEnveloppesJoueursEnCours($depouillement);
     }
 }

@@ -54,6 +54,16 @@
 					<dd class="col-sm-8">{{ depouillement.type.label }}</dd>
 					<dt class="col-sm-4">Numéro</dt>
 					<dd class="col-sm-8">{{ depouillement.numero }}</dd>
+					{% if depouillement.groupeGn %}
+						<dt class="col-sm-4">Groupe</dt>
+						<dd class="col-sm-8">{{ depouillement.groupeGn.groupe.nom }}</dd>
+					{% endif %}
+					{% if depouillement.participant %}
+						<dt class="col-sm-4">Joueur</dt>
+						<dd class="col-sm-8">{{ depouillement.participant.user ? depouillement.participant.user.username : '-' }}</dd>
+						<dt class="col-sm-4">Groupe du joueur</dt>
+						<dd class="col-sm-8">{{ depouillement.participant.groupeGn ? depouillement.participant.groupeGn.groupe.nom : '-' }}</dd>
+					{% endif %}
 					<dt class="col-sm-4">Statut</dt>
 					<dd class="col-sm-8">{{ depouillement.statut.label }}</dd>
 					<dt class="col-sm-4">Dépouilleur</dt>

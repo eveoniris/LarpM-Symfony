@@ -24,7 +24,8 @@ class DepouillementSimulationType extends AbstractType
                 'choice_label' => static fn (DepouillementType $type): string => $type->label(),
             ])
             ->add('numero', TextType::class, [
-                'label' => 'Numéro de l\'enveloppe (joueur ou groupe)',
+                'label' => 'Numéro du groupe ou du personnage',
+                'help' => 'Le numéro inscrit sur l\'enveloppe : numéro du groupe, ou numéro du personnage. Le GN est celui de cette page.',
                 'constraints' => [new NotBlank(), new Length(max: 30)],
             ])
             ->add('submit', SubmitType::class, ['label' => 'Démarrer une simulation']);

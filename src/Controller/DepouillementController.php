@@ -8,8 +8,10 @@ use App\Entity\Depouillement;
 use App\Entity\Gn;
 use App\Enum\DepouillementEtape;
 use App\Enum\DepouillementType;
+use App\Exception\EnveloppeIntrouvableException;
 use App\Form\Depouillement\DepouillementSimulationType;
 use App\Service\DepouillementService;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -37,15 +39,12 @@ final class DepouillementController extends AbstractDepouillementController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var array{type: DepouillementType, numero: string} $data */
             $data = $form->getData();
-            $existant = $depouillementService->trouverSimulation($gn, $data['type'], $data['numero']);
 
-            if ($existant instanceof Depouillement) {
-                return $this->ouvrir($existant);
+            try {
+                return $this->demarrer($gn, $data['type'], $data['numero'], $depouillementService);
+            } catch (EnveloppeIntrouvableException $exception) {
+                $form->get('numero')->addError(new FormError($exception->getMessage()));
             }
-
-            $depouillement = $depouillementService->creerSimulation($gn, $data['type'], $data['numero'], $this->utilisateur());
-
-            return $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::IDENTIFICATION), 303);
         }
 
         return $this->render('depouillement/index.twig', [
@@ -98,6 +97,24 @@ final class DepouillementController extends AbstractDepouillementController
         $this->addFlash('success', 'La simulation a été supprimée.');
 
         return $redirection;
+    }
+
+    /**
+     * Ouvre l'enveloppe si elle l'est déjà, sinon en démarre une nouvelle.
+     *
+     * @throws EnveloppeIntrouvableException si le numéro ne correspond à rien dans ce GN
+     */
+    private function demarrer(Gn $gn, DepouillementType $type, string $numero, DepouillementService $depouillementService): Response
+    {
+        $existant = $depouillementService->trouverSimulation($gn, $type, $numero);
+
+        if ($existant instanceof Depouillement) {
+            return $this->ouvrir($existant);
+        }
+
+        $depouillement = $depouillementService->creerSimulation($gn, $type, $numero, $this->utilisateur());
+
+        return $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::IDENTIFICATION), 303);
     }
 
     /**
