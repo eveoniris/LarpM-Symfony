@@ -61,6 +61,10 @@ abstract class BasePersonnageTrigger
     #[Column(type: Types::STRING, length: 255, nullable: true)]
     protected ?string $choice_label = null;
 
+    /** Origine du trigger (ex. achat de la compétence), null pour un don par GN */
+    #[Column(type: Types::STRING, length: 30, nullable: true)]
+    protected ?string $source = null;
+
     /**
      * Get the value of done.
      */
@@ -147,6 +151,18 @@ abstract class BasePersonnageTrigger
     public function setGn(?Gn $gn): static
     {
         $this->gn = $gn;
+
+        return $this;
+    }
+
+    public function getSource(): ?string
+    {
+        return $this->source;
+    }
+
+    public function setSource(?string $source): static
+    {
+        $this->source = $source;
 
         return $this;
     }

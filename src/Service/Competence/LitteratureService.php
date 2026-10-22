@@ -5,17 +5,42 @@ declare(strict_types=1);
 namespace App\Service\Competence;
 
 use App\Entity\Level;
+use App\Entity\PersonnageTrigger;
 use App\Enum\TriggerType;
+use DateTime;
 use App\Service\CompetenceService;
 
 class LitteratureService extends CompetenceService
 {
+    /**
+     * Index du niveau de Littérature => tags du sort et de la potion donnés (à l'achat, puis par GN joué).
+     *
+     * @var array<int, array{TriggerType, TriggerType}>
+     */
+    public const array CHOICE_TAGS = [
+        Level::NIVEAU_2 => [TriggerType::SORT_APPRENTI, TriggerType::ALCHIMIE_APPRENTI],
+        Level::NIVEAU_3 => [TriggerType::SORT_INITIE, TriggerType::ALCHIMIE_INITIE],
+        Level::NIVEAU_4 => [TriggerType::SORT_EXPERT, TriggerType::ALCHIMIE_EXPERT],
+        Level::NIVEAU_5 => [TriggerType::SORT_MAITRE, TriggerType::ALCHIMIE_MAITRE],
+    ];
+
     protected bool $hasBonus = true;
 
     public function give(): void
     {
         // Todo filter if personnage know all of them or will reach more than exists
         $this->applyRules($this->getRules());
+
+        // Sort et potion du niveau acheté, absorbés ensuite par le premier GN joué (lockGnGiveLiteratureGnBonus)
+        foreach (self::CHOICE_TAGS[$this->getCompetence()->getLevel()?->getIndex()] ?? [] as $tag) {
+            $trigger = new PersonnageTrigger();
+            $trigger->setPersonnage($this->getPersonnage());
+            $trigger->setTag($tag);
+            $trigger->setDone(false);
+            $trigger->setSource(PersonnageTrigger::SOURCE_ACHAT);
+            $trigger->setCreatedAt(new DateTime());
+            $this->entityManager->persist($trigger);
+        }
     }
 
     /** @return array<int, array<string, int>> */
@@ -59,5 +84,13 @@ class LitteratureService extends CompetenceService
     public function remove(): void
     {
         $this->removeRules($this->getRules());
+
+        // Retire le sort et la potion d'achat restés intacts (ni consommés ni absorbés par un GN)
+        $tags = self::CHOICE_TAGS[$this->getCompetence()->getLevel()?->getIndex()] ?? [];
+        foreach ($this->getPersonnage()->getPersonnageTriggers() as $trigger) {
+            if ($trigger->isAchatNonRattache() && \in_array($trigger->getTag(), $tags, true)) {
+                $trigger->consume('Compétence retirée')->setSource(null);
+            }
+        }
     }
 }

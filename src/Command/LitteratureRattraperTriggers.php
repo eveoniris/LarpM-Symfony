@@ -7,6 +7,7 @@ namespace App\Command;
 use App\Entity\Gn;
 use App\Entity\LogAction;
 use App\Entity\Personnage;
+use App\Entity\PersonnageTrigger;
 use App\Enum\LogActionType;
 use App\Enum\TriggerType;
 use App\Repository\GnRepository;
@@ -38,6 +39,7 @@ class LitteratureRattraperTriggers extends Command
         $this
             ->addArgument('gn', InputArgument::OPTIONAL, 'Id du GN si ce n\'est pas le prochain', default: null)
             ->addOption('depuis', null, InputOption::VALUE_REQUIRED, 'Un choix déjà fait depuis cette date (Y-m-d) compte comme consommé (défaut : fin du GN précédent)')
+            ->addOption('achats', null, InputOption::VALUE_NONE, 'Donne le trigger d\'achat (sans GN) à tous les porteurs vivants, inscrits ou non, au lieu des inscrits au GN')
             ->addOption('apply', null, InputOption::VALUE_NONE, 'Crée réellement les triggers (sinon simulation)');
     }
 
@@ -67,11 +69,17 @@ class LitteratureRattraperTriggers extends Command
 
         $skipped = ['trigger' => 0, 'choix' => 0];
         $rows = [];
-        foreach ($this->rattrapage->findMissing($gn, $since, $skipped) as [$personnage, $level, $tag]) {
+        $achats = (bool) $input->getOption('achats');
+        $missing = $achats ? $this->rattrapage->findMissingAchats($since, $skipped) : $this->rattrapage->findMissing($gn, $since, $skipped);
+        foreach ($missing as [$personnage, $level, $tag]) {
             $rows[] = [$personnage->getId(), (string) $personnage->getNom(), $level->value, $tag->value];
 
             if ($apply) {
-                $this->personnageService->addPersonnageTrigger($personnage, $tag, false, $gn);
+                // trigger d'achat : sans GN, il sera absorbé par le premier GN joué
+                $trigger = $this->personnageService->addPersonnageTrigger($personnage, $tag, false, $achats ? null : $gn);
+                if ($achats) {
+                    $trigger->setSource(PersonnageTrigger::SOURCE_ACHAT);
+                }
                 $this->log($personnage, $tag, $gn);
             }
         }

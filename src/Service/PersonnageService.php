@@ -57,6 +57,7 @@ use App\Enum\Role;
 use App\Enum\TriggerType;
 use App\Form\PersonnageFindType;
 use App\Repository\ParticipantRepository;
+use App\Service\Competence\LitteratureService;
 use App\Repository\PersonnageRepository;
 use App\Repository\ReligionRepository;
 use App\Repository\RenommeHistoryRepository;
@@ -1876,15 +1877,9 @@ class PersonnageService
         // Grand Maître: Vous connaissez un Sort et une Recette Alchimique de niveau Maître par GN.
 
         // Niveau de la compétence => tags du sort et de la recette donnés par GN
-        $rules = [
-            [LevelType::INITIATED,    TriggerType::SORT_APPRENTI, TriggerType::ALCHIMIE_APPRENTI],
-            [LevelType::EXPERT,       TriggerType::SORT_INITIE,   TriggerType::ALCHIMIE_INITIE],
-            [LevelType::MASTER,       TriggerType::SORT_EXPERT,   TriggerType::ALCHIMIE_EXPERT],
-            [LevelType::GRAND_MASTER, TriggerType::SORT_MAITRE,   TriggerType::ALCHIMIE_MAITRE],
-        ];
-
         $i = 0;
-        foreach ($rules as [$level, $sortTag, $potionTag]) {
+        foreach (LitteratureService::CHOICE_TAGS as $levelIndex => [$sortTag, $potionTag]) {
+            $level = LevelType::getFromIndex($levelIndex);
             foreach ($participantRepository->findAllByCompentenceFamilyLevel($gn, CompetenceFamilyType::LITERATURE, $level) as $participant) {
                 ++$i;
                 if (!($personnage = $participant->getPersonnage())) {
@@ -1899,6 +1894,16 @@ class PersonnageService
                     ->exists(static fn (int $key, PersonnageTrigger $trigger): bool => $trigger->getTag() === $tag && $trigger->getGn()?->getId() === $gn->getId());
                 foreach ([$sortTag, $potionTag] as $tag) {
                     if ($alreadyGiven($tag)) {
+                        continue;
+                    }
+
+                    // le trigger donné à l'achat (consommé ou non) tient lieu de premier GN joué
+                    $achat = $personnage
+                        ->getAllPersonnageTriggers()
+                        ->findFirst(static fn (int $key, PersonnageTrigger $trigger): bool => $trigger->getTag() === $tag && $trigger->isAchatNonRattache());
+                    if ($achat instanceof PersonnageTrigger) {
+                        $achat->setGn($gn);
+
                         continue;
                     }
 
