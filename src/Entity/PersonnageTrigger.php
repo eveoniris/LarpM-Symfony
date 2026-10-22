@@ -11,6 +11,14 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity]
 class PersonnageTrigger extends BasePersonnageTrigger
 {
+    /** Trigger donné à l'achat d'une compétence, absorbé par le premier GN joué */
+    public const string SOURCE_ACHAT = 'ACHAT_COMPETENCE';
+
+    public function isAchatNonRattache(): bool
+    {
+        return self::SOURCE_ACHAT === $this->source && null === $this->gn;
+    }
+
     public function isDone(): bool
     {
         return (bool) $this->done;
