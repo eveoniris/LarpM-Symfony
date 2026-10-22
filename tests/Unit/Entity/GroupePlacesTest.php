@@ -89,7 +89,9 @@ class GroupePlacesTest extends TestCase
 
     public function testLaLimiteSousLeCalculSeDetecteParLaComparaisonDesPlaces(): void
     {
-        $groupeGn = (new GroupeGn())->setGroupe($this->groupeAvecFiefs(7))->setGn(new Gn());
+        $groupeGn = (new GroupeGn())
+            ->setGroupe($this->groupeAvecFiefs(7))
+            ->setGn(new Gn());
         $groupeGn->getGroupe()->addGroupeGn($groupeGn);
 
         self::assertSame($groupeGn->getGroupe()->getPlaceCalculee($groupeGn->getGn()), $groupeGn->getPlaceTotal());
