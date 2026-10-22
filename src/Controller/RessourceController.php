@@ -6,6 +6,8 @@ namespace App\Controller;
 
 use App\Entity\Ressource;
 use App\Form\RessourceType;
+use App\Repository\RessourceRepository;
+use App\Service\PagerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -39,12 +41,17 @@ class RessourceController extends AbstractController
      * Liste des ressources.
      */
     #[Route('/ressource', name: 'ressource.index')]
-    public function indexAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $repo = $entityManager->getRepository('\\' . Ressource::class);
-        $ressources = $repo->findAll();
+    public function indexAction(
+        Request $request,
+        PagerService $pagerService,
+        RessourceRepository $ressourceRepository,
+    ): Response {
+        $pagerService->setRequest($request)->setRepository($ressourceRepository)->setLimit(50);
 
-        return $this->render('ressource/index.twig', ['ressources' => $ressources]);
+        return $this->render('ressource/index.twig', [
+            'pagerService' => $pagerService,
+            'paginator' => $ressourceRepository->searchPaginated($pagerService),
+        ]);
     }
 
     /**

@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormError;
@@ -30,6 +31,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -582,6 +584,64 @@ class GroupeGnController extends AbstractController
         if ($destinataire) {
             $this->mailer->newMessage($destinataire, $texte, $sujet, $this->getUser());
         }
+    }
+
+    /**
+     * Fixe à la main le nombre de places de cette session (groupes PNJ, spéciaux ou arrangement avec les orgas).
+     * Sans valeur, le nombre de places est calculé automatiquement et suit les fiefs du groupe.
+     */
+    #[Route('/groupeGn/{groupeGn}/place', name: 'groupeGn.place', requirements: ['groupeGn' => Requirement::DIGITS])]
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function placesMaxAction(Request $request, EntityManagerInterface $entityManager, GroupeGn $groupeGn): RedirectResponse|Response
+    {
+        $calculee = $groupeGn->getGroupe()->getPlaceCalculee($groupeGn->getGn());
+
+        $form = $this
+            ->createFormBuilder(['placesMax' => $groupeGn->getPlacesMax()])
+            ->add('placesMax', IntegerType::class, [
+                'label' => 'Nombre de places',
+                'required' => false,
+                'attr' => ['min' => 1, 'placeholder' => (string) $calculee],
+                'help' => 'Laisser vide pour le calcul automatique : ' . $calculee . ' places (places par défaut du GN + 2 par fief au-delà du premier).',
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $groupeGn->setPlacesMax($form->get('placesMax')->getData());
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le nombre de places de la session a été mis à jour.');
+
+            return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()], 303);
+        }
+
+        return $this->render('groupeGn/place.twig', [
+            'groupe' => $groupeGn->getGroupe(),
+            'groupeGn' => $groupeGn,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Retire la limite manuelle de la session : le nombre de places repasse au calcul automatique (il suit alors les fiefs).
+     */
+    #[Route('/groupeGn/{groupeGn}/place/auto', name: 'groupeGn.place.auto', requirements: ['groupeGn' => Requirement::DIGITS], methods: ['POST'])]
+    #[IsGranted('ROLE_SCENARISTE')]
+    public function placesMaxAutoAction(Request $request, EntityManagerInterface $entityManager, GroupeGn $groupeGn): RedirectResponse
+    {
+        if (!$this->isCsrfTokenValid('place_auto_' . $groupeGn->getId(), (string) $request->request->get('_token'))) {
+            throw new AccessDeniedException('Jeton CSRF invalide.');
+        }
+
+        $groupeGn->setPlacesMax(null);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le nombre de places de la session suit de nouveau le calcul automatique : ' . $groupeGn->getPlaceTotal() . ' places.');
+
+        return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()], 303);
     }
 
     /**

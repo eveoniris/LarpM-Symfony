@@ -41,6 +41,10 @@ abstract class BaseGroupeGn
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $place_available = 0;
 
+    /** Nombre de places fixé à la main pour cette session. Null : calcul automatique (voir GroupeGn::getPlaceTotal). */
+    #[Column(name: 'places_max', type: Types::INTEGER, nullable: true)]
+    protected ?int $places_max = null;
+
     #[Column(type: Types::INTEGER)]
     protected int $agents = 0;
 
@@ -454,6 +458,24 @@ abstract class BaseGroupeGn
     public function getParticipants(): Collection
     {
         return $this->participants;
+    }
+
+    /**
+     * Nombre de places fixé à la main pour cette session, ou null si le calcul automatique s'applique.
+     */
+    public function getPlacesMax(): ?int
+    {
+        return $this->places_max;
+    }
+
+    /**
+     * Fixe le nombre de places de la session à la main ; null ou une valeur <= 0 rétablit le calcul automatique.
+     */
+    public function setPlacesMax(?int $places_max): static
+    {
+        $this->places_max = null !== $places_max && $places_max > 0 ? $places_max : null;
+
+        return $this;
     }
 
     /**

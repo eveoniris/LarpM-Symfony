@@ -69,7 +69,7 @@ class GroupesPlacesReprise extends Command
             $groupe = $groupeGn->getGroupe();
             $membres = $groupeGn->getNombreMembres();
             $calculee = $groupe->getPlaceCalculee($gn);
-            $manuelle = $groupe->getPlacesMax();
+            $manuelle = $groupeGn->getPlacesMax();
 
             if (null !== $manuelle) {
                 ++$dejaManuels;
@@ -88,7 +88,7 @@ class GroupesPlacesReprise extends Command
             $rows[] = [$groupe->getNumero(), $groupe->getNom(), $calculee, '-', $membres, 'fixer la limite à ' . $membres];
 
             if ($apply) {
-                $groupe->setPlacesMax($membres);
+                $groupeGn->setPlacesMax($membres);
             }
         }
 

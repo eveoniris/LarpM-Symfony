@@ -774,3 +774,10 @@ html[data-ui="beta"] .progress-bar { background-color: var(--lm-accent); color: 
 
 /* Bouton « Raccourcis » de la fiche personnage : contour cuivre (action), le bouton d'onglets reste neutre */
 html[data-ui="beta"] .personnage-actions-btn { --bs-btn-color: var(--lm-accent); --bs-btn-border-color: var(--lm-accent); --bs-btn-hover-bg: var(--lm-accent); --bs-btn-hover-border-color: var(--lm-accent); --bs-btn-hover-color: var(--lm-on-accent); --bs-btn-active-bg: var(--lm-accent); --bs-btn-active-border-color: var(--lm-accent); --bs-btn-active-color: var(--lm-on-accent); }
+
+/* Listes de fiches posées directement sur la page (ul.list-group hors cadre) : verre dépoli derrière chaque ligne.
+   Sans cela, le texte se pose sur la photo de fond (ex. /ressource, /ingredient). */
+html[data-ui="beta"] .list-group:not(.card .list-group, .well .list-group, .panel .list-group, .offcanvas .list-group, .dropdown-menu .list-group, .modal .list-group, .tab-content .list-group, .lm-card .list-group, .lm-carte-verre .list-group) > .list-group-item {
+  background: color-mix(in srgb, var(--lm-surface) 82%, transparent); backdrop-filter: blur(6px);
+  border: 1px solid var(--lm-line); color: var(--lm-fg); margin-bottom: var(--lm-s2); border-radius: var(--lm-radius);
+}

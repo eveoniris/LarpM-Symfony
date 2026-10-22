@@ -80,6 +80,18 @@ Factorisation JavaScript : `assets/lm-ui.js` (« Lire la suite », copie des e-m
 
 L'interrupteur est visible pour tout compte connecté. Conséquence : les pages vues par les joueurs ordinaires (fiche personnage, inscriptions, groupes, messagerie) passent en bêta pour ceux qui l'activent ; les pages réservées aux rôles de gestion ont été revues en priorité, celles des joueurs ont reçu les contrôles à 375 px décrits plus haut. Un retour en arrière individuel reste possible depuis le profil.
 
+## Audit de style (repérer les pages sans fond)
+
+Test Playwright `tests/playwright/style-audit.spec.ts` : charge chaque page de `tests/playwright/style-audit-urls.json` (routes GET sans paramètre) avec un compte en interface bêta et échoue si du texte est posé directement sur la photo de fond (aucun ancêtre avec fond d'alpha 0,45 minimum ni image de fond). Le message donne le nombre d'éléments et des exemples (balise, classes, début du texte).
+
+```bash
+BASE_URL=http://localhost TEST_USER=test@test.com TEST_PASSWORD=azerty npx playwright test style-audit --project=desktop --timeout=120000
+```
+
+- Les pages d'impression (sans habillage bêta) sont ignorées automatiquement.
+- Régénérer la liste des URL quand des routes sont ajoutées (`php bin/console debug:router --format=json`, routes GET sans `{}`, hors suppression, export, installation).
+- Premier balayage (2026-10-22, 110 pages) : 10 pages avec texte sur la photo (`/appelation`, `/genre`, `/loi`, `/religion/level`, `/ressource`, `/stock/localisation`, `/stock/rangement`, `/stock/tag`, `/competence/competence/materiel`, `/mail`). Cause commune : `ul.list-group` posés hors cadre, dont les lignes sont transparentes en bêta. Correctif : règle CSS générique de verre dépoli sur les `.list-group-item` hors cadre, plus habillage de la page matériel des compétences.
+
 ## Chantiers restants
 
 - Confirmer le rendu mobile sur un appareil réel (les contrôles à 375 px ont été faits sous Chromium en émulation).

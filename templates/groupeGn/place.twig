@@ -8,17 +8,19 @@
 		<li><a href="{{ path('homepage') }}">Accueil</a></li>
 		<li><a href="{{ path("groupe.list") }}">Liste des groupes</a></li>
 		<li><a href="{{ path('groupe.detail', {'groupe': groupe.id}) }}">{{ groupe.numero|default('?') }} - {{ groupe.nom }}</a></li>
+		<li><a href="{{ path('groupeGn.list', {'groupe': groupe.id}) }}">Sessions</a></li>
 		<li class="active">Places</li>
 	</ol>
 
 	<div class="well bs-component">
 		{{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
 		<fieldset>
-			<legend>Places du groupe {{ groupe.numero|default('?') }} - {{ groupe.nom }}</legend>
+			<legend>Places du groupe {{ groupe.numero|default('?') }} - {{ groupe.nom }}, {{ groupeGn.gn.label }}</legend>
 
 			<p>
-				Utile pour les groupes de PNJ ou les groupes spéciaux. Pour un groupe classique, ne rien saisir : le nombre
-				de places suit automatiquement le GN et les fiefs contrôlés.
+				Utile pour les groupes de PNJ, les groupes spéciaux ou un arrangement avec les orgas. Pour un groupe classique,
+				ne rien saisir : le nombre de places suit automatiquement le GN et les fiefs du groupe. Une valeur saisie ici est
+				figée pour cette session : elle ne suit plus les conquêtes de fiefs jusqu'au début du GN.
 			</p>
 
 			{{ form_row(form.placesMax) }}

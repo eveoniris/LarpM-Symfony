@@ -52,10 +52,6 @@ class BaseGroupe
     #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $jeu_strategique = null;
 
-    /** Nombre de places fixé à la main (groupes PNJ ou spéciaux). Null ou 0 : calcul automatique (voir Groupe::getPlaceTotal). */
-    #[Column(name: 'places_max', type: Types::INTEGER, nullable: true)]
-    protected ?int $places_max = null;
-
     #[Column(type: Types::BOOLEAN, nullable: true)]
     protected ?bool $pj = null;
 
@@ -368,24 +364,6 @@ class BaseGroupe
     public function getBackgrounds(): Collection
     {
         return $this->backgrounds;
-    }
-
-    /**
-     * Nombre de places fixé à la main, ou null si le calcul automatique s'applique.
-     */
-    public function getPlacesMax(): ?int
-    {
-        return $this->places_max;
-    }
-
-    /**
-     * Fixe le nombre de places à la main ; null ou une valeur <= 0 rétablit le calcul automatique.
-     */
-    public function setPlacesMax(?int $places_max): static
-    {
-        $this->places_max = null !== $places_max && $places_max > 0 ? $places_max : null;
-
-        return $this;
     }
 
     /**

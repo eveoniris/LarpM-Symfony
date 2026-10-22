@@ -8,7 +8,7 @@
 
 <div class="well well-sm">
 	<div class="header">
-		<h5>Gestion des ressources <small>( {{ ressources|length }} ressources)</small></h5>
+		<h5>Gestion des ressources <small>( {{ paginator|length }} ressources)</small></h5>
 	</div>
 
 	<div class="btn-toolbar" role="toolbar" aria-label="...">
@@ -16,10 +16,14 @@
 			<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter une ressource" href="{{ path('ressource.add') }}"><i class="fa fa-plus"></i> Ajouter</a>
 		</div>
 	</div>
+
+	{% include '_partials/formListSearch.twig' with {'actionPath': path('ressource.index')} %}
 </div>
-			
+
+{% include '_partials/pagination.html.twig' %}
+
 <ul class="list-group">
-	{%  for ressource in ressources %}
+	{%  for ressource in paginator %}
 	<li class="list-group-item">
 		<div class="row">
 			<div class="col-md-8">
@@ -56,5 +60,7 @@
 	</li>
 	{% endfor %}
 </ul>
-	
+
+{% include '_partials/pagination.html.twig' %}
+
 {% endblock %}
