@@ -1,0 +1,133 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Dépouillement {{ depouillement.type.label }} {{ depouillement.numero }}{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : [
+		{'name' : 'GN ' ~ gn.label, 'route' : path('gn.detail', {'gn': gn.id})},
+		{'name' : 'Dépouillement des enveloppes', 'route' : path('depouillement.index', {'gn': gn.id})},
+		{'name' : depouillement.type.label ~ ' ' ~ depouillement.numero}
+	]} %}
+
+	{% if depouillement.simulation %}
+		<div class="alert alert-info">
+			<i class="fa fa-flask"></i> <strong>Simulation</strong> : rien de ce que vous saisissez ici n'est appliqué aux joueurs ni aux groupes.
+		</div>
+	{% endif %}
+
+	{% if avertissementGroupe > 0 %}
+		<div class="alert alert-warning">
+			<i class="fa fa-triangle-exclamation"></i>
+			{{ avertissementGroupe }} enveloppe(s) de joueur sont encore en cours de dépouillement. L'enveloppe de groupe se traite en dernier : elle récupère le reliquat des enveloppes de joueurs pour le score d'initiative.
+		</div>
+	{% endif %}
+
+	{% if not modifiable %}
+		<div class="alert alert-secondary">
+			Ce dépouillement est <strong>{{ depouillement.statut.label|lower }}</strong> : il n'est plus modifiable.
+		</div>
+	{% endif %}
+
+	{# Indicateur d'étapes : défile horizontalement sur petit écran #}
+	<div class="progress mb-2" role="progressbar" aria-valuemin="0" aria-valuemax="{{ etapes|length }}" aria-valuenow="{{ etape.position }}" style="height: .5rem;">
+		<div class="progress-bar" style="width: {{ (etape.position / etapes|length * 100)|round }}%"></div>
+	</div>
+	<ul class="nav nav-pills flex-nowrap overflow-auto mb-3 pb-1">
+		{% for e in etapes %}
+			<li class="nav-item">
+				<a class="nav-link text-nowrap {{ e == etape ? 'active' : '' }}"
+				   href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': e.value}) }}"
+				   {% if e == etape %}aria-current="step"{% endif %}>
+					{{ e.position }}. {{ e.label }}
+				</a>
+			</li>
+		{% endfor %}
+	</ul>
+
+	<div class="card mb-3">
+		<div class="card-header">Étape {{ etape.position }} sur {{ etapes|length }} : {{ etape.label }}</div>
+		<div class="card-body">
+			{% if etape.value == 'identification' %}
+				<dl class="row mb-0">
+					<dt class="col-sm-4">Nature de l'enveloppe</dt>
+					<dd class="col-sm-8">{{ depouillement.type.label }}</dd>
+					<dt class="col-sm-4">Numéro</dt>
+					<dd class="col-sm-8">{{ depouillement.numero }}</dd>
+					<dt class="col-sm-4">Statut</dt>
+					<dd class="col-sm-8">{{ depouillement.statut.label }}</dd>
+					<dt class="col-sm-4">Dépouilleur</dt>
+					<dd class="col-sm-8">{{ depouillement.depouilleur ? depouillement.depouilleur.username : '-' }}</dd>
+				</dl>
+			{% elseif etape.value == 'photos' %}
+				<p class="text-muted mb-0">Cette étape permettra de prendre ou déposer une photo du contenu de l'enveloppe. Elle sera disponible prochainement.</p>
+			{% elseif etape.value == 'contenu' %}
+				<p class="text-muted mb-0">Cette étape permettra de saisir le contenu constaté de l'enveloppe (ressources, objets et étiquettes, sorts, potions, recettes...). Elle sera disponible prochainement.</p>
+			{% elseif etape.value == 'remarques' %}
+				{% if form %}
+					{{ form_start(form) }}
+					{{ form_widget(form) }}
+					{{ form_end(form) }}
+				{% else %}
+					<p class="mb-0">{{ depouillement.remarques ? depouillement.remarques|nl2br : 'Aucune remarque.' }}</p>
+				{% endif %}
+			{% else %}
+				<dl class="row">
+					<dt class="col-sm-4">Enveloppe</dt>
+					<dd class="col-sm-8">{{ depouillement.type.label }} n° {{ depouillement.numero }}</dd>
+					<dt class="col-sm-4">Statut</dt>
+					<dd class="col-sm-8">{{ depouillement.statut.label }}</dd>
+					<dt class="col-sm-4">Dépouilleur</dt>
+					<dd class="col-sm-8">{{ depouillement.depouilleur ? depouillement.depouilleur.username : '-' }}</dd>
+					<dt class="col-sm-4">Remarques</dt>
+					<dd class="col-sm-8">{{ depouillement.remarques ? depouillement.remarques|nl2br : '-' }}</dd>
+				</dl>
+
+				<h6>Historique</h6>
+				<div class="table-responsive">
+					<table class="table table-sm table-bordered mb-3">
+						<thead>
+							<tr><th>Date</th><th>Qui</th><th>Action</th><th>Détail</th></tr>
+						</thead>
+						<tbody>
+							{% for h in depouillement.histories %}
+								<tr>
+									<td class="text-nowrap">{{ h.actionDate|date('d/m/Y H:i') }}</td>
+									<td>{{ h.user ? h.user.username : '-' }}</td>
+									<td>{{ constant('App\\Entity\\DepouillementHistory::ACTIONS')[h.actionType]|default(h.actionType) }}</td>
+									<td>
+										{% if h.statutApres and h.statutAvant != h.statutApres %}{{ h.statutAvant ? h.statutAvant.label ~ ' → ' : '' }}{{ h.statutApres.label }}{% endif %}
+										{% if h.motif %}{{ h.motif }}{% endif %}
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+
+				{% if modifiable %}
+					<form method="post" action="{{ path('depouillement.terminer', {'gn': gn.id, 'depouillement': depouillement.id}) }}" onsubmit="return confirm('Terminer ce dépouillement ? Il ne sera plus modifiable et passera en attente de validation.');">
+						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_terminer_' ~ depouillement.id) }}">
+						<button type="submit" class="btn btn-success w-100 w-md-auto"><i class="fa fa-check"></i> Terminer le dépouillement</button>
+					</form>
+				{% endif %}
+			{% endif %}
+		</div>
+	</div>
+
+	<div class="d-flex justify-content-between gap-2 mb-3">
+		{% if etape.precedente %}
+			<a class="btn btn-secondary" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': etape.precedente.value}) }}">
+				<i class="fa fa-arrow-left"></i> Précédent
+			</a>
+		{% else %}
+			<a class="btn btn-secondary" href="{{ path('depouillement.index', {'gn': gn.id}) }}"><i class="fa fa-list"></i> Liste</a>
+		{% endif %}
+		{% if etape.suivante and not (etape.value == 'remarques' and form) %}
+			<a class="btn btn-primary" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': etape.suivante.value}) }}">
+				Suivant <i class="fa fa-arrow-right"></i>
+			</a>
+		{% endif %}
+	</div>
+
+{% endblock body %}

@@ -8,6 +8,7 @@ use App\Entity\Depouillement;
 use App\Entity\DepouillementHistory;
 use App\Entity\Gn;
 use App\Entity\User;
+use App\Enum\DepouillementStatut;
 use App\Enum\DepouillementType;
 use App\Repository\DepouillementRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,6 +48,99 @@ readonly class DepouillementService
         $this->entityManager->flush();
 
         return $depouillement;
+    }
+
+    /**
+     * Simulation déjà ouverte pour cette enveloppe, quel que soit son statut (sert à avertir d'une reprise).
+     */
+    public function trouverSimulation(Gn $gn, DepouillementType $type, string $numero): ?Depouillement
+    {
+        return $this->depouillementRepository->findByEnveloppe($gn, $type, trim($numero), true);
+    }
+
+    /**
+     * Le dépouilleur prend la suite d'un dépouillement en cours. L'ancien dépouilleur reste dans l'historique.
+     * Sans effet (retourne false) si la saisie n'est plus modifiable.
+     */
+    public function reprendre(Depouillement $depouillement, User $nouveauDepouilleur): bool
+    {
+        if (!$depouillement->getStatut()->isEditable()) {
+            return false;
+        }
+
+        $ancien = $depouillement->getDepouilleur();
+        if ($ancien?->getId() === $nouveauDepouilleur->getId()) {
+            return true;
+        }
+
+        $depouillement->setDepouilleur($nouveauDepouilleur)->touch();
+        $depouillement->addHistory(
+            (new DepouillementHistory())
+                ->setUser($nouveauDepouilleur)
+                ->setActionType(DepouillementHistory::ACTION_REPRISE)
+                ->setStatutAvant($depouillement->getStatut())
+                ->setStatutApres($depouillement->getStatut())
+                ->setMotif(null === $ancien ? 'Reprise' : \sprintf('Reprise du dépouillement de %s', $ancien->getUsername())),
+        );
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    /**
+     * Enregistre les remarques du dépouilleur (consigne aussi l'avant/après dans l'historique si elles ont changé).
+     */
+    public function enregistrerRemarques(Depouillement $depouillement, ?string $remarques, User $utilisateur): bool
+    {
+        if (!$depouillement->getStatut()->isEditable()) {
+            return false;
+        }
+
+        $remarques = null === $remarques || '' === trim($remarques) ? null : trim($remarques);
+        if ($remarques === $depouillement->getRemarques()) {
+            return true;
+        }
+
+        $depouillement->addHistory((new DepouillementHistory())
+            ->setUser($utilisateur)
+            ->setActionType(DepouillementHistory::ACTION_MISE_A_JOUR)
+            ->setDataBefore(['remarques' => $depouillement->getRemarques()])
+            ->setDataAfter(['remarques' => $remarques]));
+        $depouillement->setRemarques($remarques)->touch();
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    /**
+     * Fin de saisie : passe en "à valider". Retourne false si le dépouillement n'est plus en cours de dépouillement.
+     */
+    public function terminerSaisie(Depouillement $depouillement, User $utilisateur): bool
+    {
+        if (!$depouillement->getStatut()->isEditable()) {
+            return false;
+        }
+
+        $depouillement->addHistory(
+            (new DepouillementHistory())
+                ->setUser($utilisateur)
+                ->setActionType(DepouillementHistory::ACTION_STATUT)
+                ->setStatutAvant($depouillement->getStatut())
+                ->setStatutApres(DepouillementStatut::A_VALIDER),
+        );
+        $depouillement->setStatut(DepouillementStatut::A_VALIDER)->touch();
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    /**
+     * Nombre d'enveloppes de joueurs encore en cours de dépouillement. L'enveloppe de groupe doit être traitée
+     * en dernier : elle récupère le reliquat des enveloppes de joueurs.
+     */
+    public function nombreEnveloppesJoueursEnCours(Gn $gn, bool $simulation): int
+    {
+        return $this->depouillementRepository->countEnCours($gn, DepouillementType::JOUEUR, $simulation);
     }
 
     /**

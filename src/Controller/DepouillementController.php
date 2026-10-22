@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Depouillement;
 use App\Entity\Gn;
+use App\Enum\DepouillementEtape;
 use App\Enum\DepouillementType;
 use App\Form\Depouillement\DepouillementSimulationType;
 use App\Service\DepouillementService;
@@ -15,15 +16,17 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Dépouillement des enveloppes de retour de jeu (joueur et groupe).
+ * Dépouillement des enveloppes de retour de jeu : page de travail d'un GN (liste, démarrage, suppression).
+ * Le parcours par étapes est dans DepouillementParcoursController.
  *
  * Fonctionnalité en cours de développement : réservée à ROLE_BETA_TEST (voir docs/plans/role-beta-test.md).
  */
 #[IsGranted('ROLE_BETA_TEST', message: 'Fonctionnalité en cours de test.')]
-final class DepouillementController extends AbstractController
+final class DepouillementController extends AbstractDepouillementController
 {
     /**
-     * Page de travail d'un GN : simulations en cours, création et purge.
+     * Page de travail d'un GN : simulations en cours, démarrage d'un dépouillement et purge.
+     * Si l'enveloppe est déjà ouverte, on propose de la reprendre au lieu d'en créer une seconde.
      */
     #[Route('/gn/{gn}/depouillement', name: 'depouillement.index', requirements: ['gn' => '\d+'], methods: ['GET', 'POST'])]
     public function indexAction(Request $request, Gn $gn, DepouillementService $depouillementService): Response
@@ -34,11 +37,15 @@ final class DepouillementController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var array{type: DepouillementType, numero: string} $data */
             $data = $form->getData();
-            $depouillementService->creerSimulation($gn, $data['type'], $data['numero'], $this->getUser());
+            $existant = $depouillementService->trouverSimulation($gn, $data['type'], $data['numero']);
 
-            $this->addFlash('success', 'La simulation a été créée.');
+            if ($existant instanceof Depouillement) {
+                return $this->ouvrir($existant);
+            }
 
-            return $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
+            $depouillement = $depouillementService->creerSimulation($gn, $data['type'], $data['numero'], $this->utilisateur());
+
+            return $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::IDENTIFICATION), 303);
         }
 
         return $this->render('depouillement/index.twig', [
@@ -54,32 +61,26 @@ final class DepouillementController extends AbstractController
     #[Route('/gn/{gn}/depouillement/purge', name: 'depouillement.purge', requirements: ['gn' => '\d+'], methods: ['POST'])]
     public function purgeAction(Request $request, Gn $gn, DepouillementService $depouillementService): Response
     {
+        $redirection = $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
+
         if (!$this->isCsrfTokenValid('depouillement_purge_' . $gn->getId(), $request->request->getString('_token'))) {
             $this->addFlash('error', 'Jeton de sécurité invalide.');
 
-            return $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
+            return $redirection;
         }
 
-        $nombre = $depouillementService->purgerSimulations($gn);
-        $this->addFlash('success', \sprintf('%d simulation(s) supprimée(s).', $nombre));
+        $this->addFlash('success', \sprintf('%d simulation(s) supprimée(s).', $depouillementService->purgerSimulations($gn)));
 
-        return $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
+        return $redirection;
     }
 
     /**
      * Supprime une seule simulation. Un dépouillement réel ne peut jamais être supprimé ici.
      */
     #[Route('/gn/{gn}/depouillement/{depouillement}/supprimer', name: 'depouillement.delete', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
-    public function deleteAction(
-        Request $request,
-        Gn $gn,
-        Depouillement $depouillement,
-        DepouillementService $depouillementService,
-    ): Response {
-        if ($depouillement->getGn()->getId() !== $gn->getId()) {
-            throw $this->createNotFoundException();
-        }
-
+    public function deleteAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementService $depouillementService): Response
+    {
+        $this->verifier($gn, $depouillement);
         $redirection = $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
 
         if (!$this->isCsrfTokenValid('depouillement_delete_' . $depouillement->getId(), $request->request->getString('_token'))) {
@@ -97,5 +98,23 @@ final class DepouillementController extends AbstractController
         $this->addFlash('success', 'La simulation a été supprimée.');
 
         return $redirection;
+    }
+
+    /**
+     * Ouvre une enveloppe déjà ouverte : demande de reprise si un autre dépouilleur l'a en cours,
+     * sinon le récapitulatif si elle n'est plus modifiable, sinon l'identification.
+     */
+    private function ouvrir(Depouillement $depouillement): Response
+    {
+        $autreDepouilleur = $depouillement->getDepouilleur()?->getId() !== $this->utilisateur()->getId();
+        $modifiable = $depouillement->getStatut()->isEditable();
+
+        if ($modifiable && $autreDepouilleur) {
+            return $this->redirectToRoute('depouillement.reprise', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()], 303);
+        }
+
+        $etape = $modifiable ? DepouillementEtape::IDENTIFICATION : DepouillementEtape::RECAPITULATIF;
+
+        return $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, $etape), 303);
     }
 }

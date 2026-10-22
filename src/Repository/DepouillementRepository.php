@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Depouillement;
 use App\Entity\Gn;
+use App\Enum\DepouillementStatut;
 use App\Enum\DepouillementType;
 
 class DepouillementRepository extends BaseRepository
@@ -34,6 +35,41 @@ class DepouillementRepository extends BaseRepository
                 'numero' => $numero,
                 'simulation' => false,
             ]);
+    }
+
+    /**
+     * Dépouillement déjà ouvert pour cette enveloppe (réel ou simulation), quel que soit son statut.
+     */
+    public function findByEnveloppe(Gn $gn, DepouillementType $type, string $numero, bool $simulation): ?Depouillement
+    {
+        return $this
+            ->getEntityManager()
+            ->getRepository(Depouillement::class)
+            ->findOneBy([
+                'gn' => $gn,
+                'type' => $type,
+                'numero' => $numero,
+                'simulation' => $simulation,
+            ]);
+    }
+
+    /**
+     * Nombre de dépouillements d'un type encore en cours de saisie pour un GN (réels ou simulations).
+     */
+    public function countEnCours(Gn $gn, DepouillementType $type, bool $simulation): int
+    {
+        return (int) $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('COUNT(d.id)')
+            ->from(Depouillement::class, 'd')
+            ->where('d.gn = :gn AND d.type = :type AND d.simulation = :simulation AND d.statut = :statut')
+            ->setParameter('gn', $gn)
+            ->setParameter('type', $type)
+            ->setParameter('simulation', $simulation)
+            ->setParameter('statut', DepouillementStatut::EN_DEPOUILLEMENT)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**

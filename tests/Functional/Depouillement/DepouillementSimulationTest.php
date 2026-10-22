@@ -31,7 +31,7 @@ class DepouillementSimulationTest extends WebTestCase
             'depouillement_simulation[numero]' => '21',
         ]);
 
-        static::assertResponseRedirects('/gn/' . $gn->getId() . '/depouillement');
+        static::assertResponseRedirects();
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $em->clear();
         $depouillements = $em->getRepository(Depouillement::class)->findBy([], ['id' => 'ASC']);
@@ -43,7 +43,8 @@ class DepouillementSimulationTest extends WebTestCase
         static::assertCount(1, $depouillements[0]->getHistories());
 
         $client->followRedirect();
-        static::assertSelectorTextContains('table', '21');
+        static::assertSelectorTextContains('body', 'Enveloppe de groupe');
+        static::assertSelectorTextContains('body', '21');
     }
 
     public function testNumeroObligatoire(): void
