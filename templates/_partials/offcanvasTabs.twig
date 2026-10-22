@@ -5,8 +5,9 @@
     {% set triggerLabel = title %}
 {% endif %}
 
-{# Bouton déclencheur - mobile uniquement #}
-<div class="d-md-none mb-2">
+{# Bouton déclencheur - mobile uniquement. Option triggerInline : le bouton se place dans une barre
+   (le conteneur porte d-md-none) et prend la largeur restante ; triggerPrefix : texte devant le titre courant. #}
+<div class="{{ triggerInline|default(false) ? 'flex-grow-1 min-w-0' : 'd-md-none mb-2' }}">
     <button class="btn btn-dark w-100 d-flex align-items-center gap-2"
             type="button"
             data-bs-toggle="offcanvas"
@@ -16,7 +17,7 @@
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
             <i class="fa fa-bars" aria-hidden="true"></i>
         </span>
-        <span class="flex-grow-1 text-start">{{ triggerLabel }}</span>
+        <span class="flex-grow-1 text-start text-truncate">{% if triggerPrefix is defined %}<span class="opacity-75">{{ triggerPrefix }}</span>{% endif %}{{ triggerLabel }}</span>
     </button>
 </div>
 

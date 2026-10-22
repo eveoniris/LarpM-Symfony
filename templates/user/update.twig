@@ -67,7 +67,7 @@
                 </div>
             </div>
 
-            {% if user.id == app.user.id and (is_granted('ROLE_ADMIN') or is_granted('ROLE_SCENARISTE') or is_granted('ROLE_ORGA') or is_granted('ROLE_REGLE') or is_granted('ROLE_STOCK')) %}
+            {% if user.id == app.user.id %}
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-ui-theme">Interface bêta</label>
                     <div class="col-sm-8">

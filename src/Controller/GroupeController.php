@@ -781,8 +781,7 @@ class GroupeController extends AbstractController
                 'label' => 'Nombre de places',
                 'required' => false,
                 'attr' => ['min' => 1, 'placeholder' => (string) $groupe->getPlaceCalculee($gn)],
-                'help' => 'Laisser vide pour le calcul automatique : ' . $groupe->getPlaceCalculee($gn)
-                    . ' places (places par défaut du GN + 2 par fief au-delà du premier).',
+                'help' => 'Laisser vide pour le calcul automatique : ' . $groupe->getPlaceCalculee($gn) . ' places (places par défaut du GN + 2 par fief au-delà du premier).',
             ])
             ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
             ->getForm();

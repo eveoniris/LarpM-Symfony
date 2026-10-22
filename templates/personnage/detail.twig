@@ -41,7 +41,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div>
-                    <div class="personnage-actions">
+                    <div class="personnage-actions d-none d-md-block">
                         <div class="btn-toolbar justify-content-end flex-wrap gap-1" role="toolbar" aria-label="Actions personnage">
                             <div class="btn-group flex-wrap" role="group" aria-label="Actions principales">
                                 {% if personnage %}
@@ -100,12 +100,48 @@
                             {'path': path('personnage.detail.tab', app.request.query.all|merge({'personnage': personnage.id, 'tab': 'enveloppe'})), 'label': 'Enveloppe', 'active': tab == 'enveloppe'},
                         ]) %}
                     {% endif %}
-                    {% include '_partials/offcanvasTabs.twig' with {
-                        'offcanvasId': 'offcanvasPersonnageTabs',
-                        'title': 'Navigation',
-                        'triggerLabel': tabLabels[tab]|default('Navigation'),
-                        'groups': [{'items': personnageTabItems}]
-                    } %}
+                    {# Barre mobile : onglets à gauche (avec le titre courant), actions à droite ; le panneau des actions sort de la droite #}
+                    <div class="personnage-mobile-bar d-flex d-md-none align-items-stretch gap-2 mb-2">
+                        {% include '_partials/offcanvasTabs.twig' with {
+                            'offcanvasId': 'offcanvasPersonnageTabs',
+                            'title': 'Navigation',
+                            'triggerLabel': tabLabels[tab]|default('Navigation'),
+                            'triggerPrefix': 'Onglet : ',
+                            'triggerInline': true,
+                            'groups': [{'items': personnageTabItems}]
+                        } %}
+                        <button class="btn btn-outline-primary personnage-actions-btn d-flex align-items-center gap-2 flex-shrink-0" type="button"
+                                data-bs-toggle="offcanvas" data-bs-target="#offcanvasPersonnageActions"
+                                aria-controls="offcanvasPersonnageActions">
+                            <span class="position-relative d-flex align-items-center">
+                                <i class="fa fa-bolt" aria-hidden="true"></i>
+                                {% if personnage.isBraceletSetted == false %}
+                                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"><span class="visually-hidden">À compléter</span></span>
+                                {% endif %}
+                            </span>
+                            <span>Raccourcis</span>
+                            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <div class="offcanvas offcanvas-end d-md-none" tabindex="-1" id="offcanvasPersonnageActions" aria-labelledby="offcanvasPersonnageActionsLabel">
+                        <div class="offcanvas-header border-bottom">
+                            <h5 class="offcanvas-title d-flex align-items-center gap-2" id="offcanvasPersonnageActionsLabel"><i class="fa fa-bolt" aria-hidden="true"></i>Raccourcis</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"></button>
+                        </div>
+                        <div class="offcanvas-body p-2">
+                            <div class="list-group list-group-flush mb-1">
+                                <a class="list-group-item list-group-item-action" data-turbo="false" href="{{ path('personnage.religion.add', {'personnage': personnage.id}) }}"><i class="fa fa-cloud fa-fw me-2" aria-hidden="true"></i> Choisir une nouvelle religion</a>
+                                <a class="list-group-item list-group-item-action" data-turbo="false" href="{{ path('personnage.add.competence', {'personnage': personnage.id}) }}"><i class="fa fa-graduation-cap fa-fw me-2" aria-hidden="true"></i> Acheter une compétence</a>
+                                <a class="list-group-item list-group-item-action" data-turbo="false" href="{{ path('personnage.update', {'personnage': personnage.id}) }}"><i class="fa fa-pencil fa-fw me-2" aria-hidden="true"></i> Modifier le personnage{% if personnage.isBraceletSetted == false %} <span class="badge text-bg-danger">à compléter</span>{% endif %}</a>
+                                {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::MAGIC')) %}
+                                    <a class="list-group-item list-group-item-action" data-turbo="false" href="{{ path('personnage.magie', {'personnage': personnage.id}) }}"><i class="fa fa-magic fa-fw me-2" aria-hidden="true"></i> Découvrir la magie</a>
+                                {% endif %}
+                                <a class="list-group-item list-group-item-action" data-turbo="false" href="{{ path('personnage.export', {'personnage': personnage.id}) }}"><i class="fa fa-print fa-fw me-2" aria-hidden="true"></i> Imprimer le personnage</a>
+                                <a class="list-group-item list-group-item-action" data-turbo="false" href="{{ path('personnage.export', {'personnage': personnage.id, 'qrCode': 1}) }}"><i class="fa fa-qrcode fa-fw me-2" aria-hidden="true"></i> Imprimer avec QR Code</a>
+                            </div>
+                        </div>
+                    </div>
 
                     {# Onglets desktop (cachés sur mobile) #}
                     <ul class="nav nav-tabs d-none d-md-flex" data-turbo="false">

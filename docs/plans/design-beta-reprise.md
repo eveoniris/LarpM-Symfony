@@ -8,11 +8,11 @@ Moderniser l'interface (thème sombre « charbon et cuivre », compatible web et
 
 ## Mécanisme de la bêta
 
-- Champ `user.ui_theme` (`beta` ou nul), migration `Version20261018120000`. Interrupteur « Interface bêta » dans `/user/{id}/edit`, réservé aux rôles admin, scénariste, orga, règles et stock.
+- Champ `user.ui_theme` (jetons `beta` et `light`, séparés par une espace, ou nul), migration `Version20261018120000`. Interrupteur « Interface bêta » dans `/user/{id}/edit`, ouvert à tous les comptes (depuis le 2026-10-22), sur son propre profil seulement.
 - `templates/base.html.twig` : `data-ui="beta"` sur `<html>` et chargement de `lm-design.css` pour ces comptes seulement.
 - `assets/styles/lm-design.css` : jetons (`--lm-*`), composants (`lm-*`) et habillage des pages existantes sous `html[data-ui="beta"]`.
 - Les gabarits modifiés doivent rendre un HTML inchangé hors bêta (classes conditionnées par `app.user.uiBeta`).
-- `/design` (`IndexController::designAction`) : réservé aux mêmes rôles.
+- `/design` (`IndexController::designAction`) : toujours réservé aux rôles admin, scénariste, orga, règles et stock.
 
 ## Fichiers de référence
 
@@ -75,6 +75,10 @@ Factorisation JavaScript : `assets/lm-ui.js` (« Lire la suite », copie des e-m
 - Bloc E-mails des groupes transverses : l'onglet E-mails seul est conservé.
 - Doublon de type « Confrérie » (id 2, sans groupe) : supprimé de la base locale et purgé en production par le mainteneur.
 - Messages de commit sans ligne `Co-Authored-By`.
+
+## Ouverture de la bêta à tous (2026-10-22)
+
+L'interrupteur est visible pour tout compte connecté. Conséquence : les pages vues par les joueurs ordinaires (fiche personnage, inscriptions, groupes, messagerie) passent en bêta pour ceux qui l'activent ; les pages réservées aux rôles de gestion ont été revues en priorité, celles des joueurs ont reçu les contrôles à 375 px décrits plus haut. Un retour en arrière individuel reste possible depuis le profil.
 
 ## Chantiers restants
 

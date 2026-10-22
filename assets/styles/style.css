@@ -373,3 +373,8 @@ th.rotate > div > span {
 .gs-avatar { width: 44px; height: 44px; flex: none; overflow: hidden; }
 .gs-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .gs-emails { word-break: break-word; user-select: all; }
+
+/* Fiche personnage sur mobile : barre « Onglet » (gauche, prend la place restante) et « Raccourcis » (droite) */
+.personnage-mobile-bar > div:first-child { flex: 1 1 0; min-width: 0; }
+.personnage-mobile-bar .btn { min-height: 44px; }
+.personnage-mobile-bar .personnage-actions-btn { padding-left: .6rem; padding-right: .6rem; }
