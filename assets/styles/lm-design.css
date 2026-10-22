@@ -659,7 +659,12 @@ body:has(.lm-pager-wrap[data-slot="2"]) .lm-pager-wrap[data-slot="1"][data-small
 .lm-more-tools { padding: var(--lm-s3) var(--lm-s4) 0; }
 .lm-more-tools[hidden], .lm-more [hidden], .lm-help[hidden] { display: none !important; }
 .lm-table .lm-cell-block { max-width: 46rem; text-align: left; }
-@media (max-width: 640px) { .lm-table--cards td > .lm-cell-block { flex: 1; min-width: 0; } }
+@media (max-width: 640px) { .lm-table--cards td > .lm-cell-block, .lm-table--cards td > .lm-cell-value { flex: 1; min-width: 0; } }
+@media (max-width: 640px) {
+  /* valeurs alignées à droite en carte, même si la cellule d'origine est centrée (text-center) */
+  .lm-table--cards td > .lm-cell-value { text-align: right; }
+  .lm-table--cards td.lm-cell-main > .lm-cell-value { text-align: left; }
+}
 
 /* --- Liste des territoires : verre dépoli derrière chaque fiche (texte lisible sur la photo) --- */
 html[data-ui="beta"] .lm-territoire-item {
@@ -781,3 +786,15 @@ html[data-ui="beta"] .list-group:not(.card .list-group, .well .list-group, .pane
   background: color-mix(in srgb, var(--lm-surface) 82%, transparent); backdrop-filter: blur(6px);
   border: 1px solid var(--lm-line); color: var(--lm-fg); margin-bottom: var(--lm-s2); border-radius: var(--lm-radius);
 }
+
+/* Tableaux de liste : le cadre arrondi est le conteneur, il découpe le contenu (dernière ligne, survol) et porte la bordure ;
+   la dernière ligne n'a pas de filet carré qui dépasse des coins arrondis. Sous 640 px les lignes deviennent des cartes. */
+@media (min-width: 641px) {
+  .lm-table-wrap { border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); overflow: auto; }
+  .lm-table-wrap > .lm-table { border-radius: 0; }
+  .lm-table-wrap > .lm-table > tbody > tr:last-child > td,
+  .lm-table-wrap > .lm-table > tbody > tr:last-child > th { border-bottom: 0; }
+}
+/* Gabarits historiques qui mettent des <th> dans le corps du tableau : même aspect qu'une cellule, légèrement en gras */
+.lm-table tbody th { font: 600 inherit var(--lm-font-body); font-size: inherit; letter-spacing: 0; text-transform: none; color: var(--lm-fg); white-space: normal;
+                     border-bottom: 1px solid var(--lm-line); text-align: left; }

@@ -115,6 +115,19 @@ function buildActions(cell) {
     cell.classList.add('lm-col-actions');
 }
 
+/** Regroupe le contenu d'une cellule dans un seul bloc : en carte mobile, icône et texte restent côte à côte (sinon chaque enfant devient un élément flex écarté). */
+function wrapCell(td) {
+    if (!td.firstChild || (td.children.length === 1 && td.firstElementChild.classList.contains('lm-cell-block'))) {
+        return;
+    }
+    const box = document.createElement('div');
+    box.className = 'lm-cell-value';
+    while (td.firstChild) {
+        box.appendChild(td.firstChild);
+    }
+    td.appendChild(box);
+}
+
 function enhance(table) {
     const head = table.tHead;
     if (!head || head.rows.length !== 1 || table.querySelector('[colspan], [rowspan]') || table.closest('form')) {
@@ -146,6 +159,9 @@ function enhance(table) {
                 td.setAttribute('data-label', labels[i]);
                 if (i === mainIdx) {
                     td.classList.add('lm-cell-main');
+                }
+                if (i !== actionIdx) {
+                    wrapCell(td);
                 }
             });
             if (actionIdx >= 0) {
