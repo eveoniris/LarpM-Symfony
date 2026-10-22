@@ -90,7 +90,7 @@
 <div class="doc">
 
 <header class="doc-head">
-  <div class="doc-kicker">Guide de style · v0.28 · Bootstrap 5.3</div>
+  <div class="doc-kicker">Guide de style · v0.29 · Bootstrap 5.3</div>
   <h1>Template de design LarpManager</h1>
   <p class="doc-lead">Référence unique pour les couleurs, les rôles d'information, les composants et les gabarits de page. Chaque bloc ci-dessous est utilisable tel quel avec <code>lm-design.css</code> et se transpose en widgets Flutter ou React Native à partir des mêmes tokens.</p>
   
@@ -852,6 +852,7 @@
       <tr><td><b>Colonnes alignées, verre dépoli, ordre des onglets</b></td><td>Groupes transverses (membres, postulants, en-tête, onglets)</td><td>Habillage et gabarit</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>      <tr><td><b>Territoires</b></td><td><code>/territoire</code> (fiches sur verre dépoli, hiérarchie royaume / région / fief, ancres « Contient », « Lire la suite ») et fiche (cadres secrets)</td><td>Gabarit</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
       <tr><td><b>Mode sombre ou clair</b></td><td>Mémorisé par compte dans <code>user.ui_theme</code> (jetons <code>beta</code> et <code>light</code>), bouton du menu</td><td>Gabarit, script, route</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span></td></tr>
       <tr><td><b>Mobile (375 px)</b></td><td>Contrôle de débordement horizontal : territoires, groupes transverses (tous les onglets), compétences, classes, GN, fiche personnage, formulaires (utilisateur, personnage, GN, territoire) ; corrections des barres de boutons, des blasons et du trombinoscope</td><td>Habillage</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> contrôle automatique sous Chromium (émulation 375 px), à confirmer sur appareil réel</td></tr>
+      <tr><td><b>Audit de style</b></td><td>Test <code>tests/playwright/style-audit.spec.ts</code> : échoue si du texte est posé directement sur la photo de fond ; premier balayage sur 110 pages, 10 pages corrigées</td><td>Test Playwright</td><td><span class="lm-badge" data-role="ok"><svg class="lm-ico"><use href="#i-ok"/></svg>Fait</span> à relancer après chaque ajout de page</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -859,10 +860,11 @@
 <!-- ===================== 11. HISTORIQUE ===================== -->
 <section class="doc-sec">
   <h2 id="sec-11">11. Historique des versions</h2>
-  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque mise à jour de la page ; le numéro de publication de la copie en ligne peut différer. Version actuelle : <b>v0.28</b>.</p>
+  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque mise à jour de la page ; le numéro de publication de la copie en ligne peut différer. Version actuelle : <b>v0.29</b>.</p>
   <div class="lm-table-wrap"><table class="lm-table">
     <thead><tr><th>Version</th><th>Contenu</th></tr></thead>
     <tbody>
+      <tr><td>v0.29</td><td>Listes de fiches posées sur la page (<code>ul.list-group</code> hors cadre) sur verre dépoli, comme les territoires ; recherche sur les ressources et les ingrédients ; audit de style Playwright qui repère les pages dont le texte est posé sur la photo.</td></tr>
       <tr><td>v0.28</td><td>Fiche personnage sur mobile : barre « Onglet » (gauche, avec le titre courant) et « Raccourcis » (droite, contour cuivre, panneau latéral droit) à la place de la rangée de boutons carrés ; bloc « Important » de la page des règles en rôle attention ; interface bêta activable par tout compte depuis son profil.</td></tr>
       <tr><td>v0.27</td><td>Mobile : fiche personnage, formulaires et onglets des groupes contrôlés à 375 px ; trombinoscope de la fiche personnage (modale photo, image contenue dans sa colonne) ; doublon « Confrérie » purgé en production.</td></tr>
       <tr><td>v0.26</td><td>Démo « Textes longs et listes longues » : la ligne de membre passe en pleine largeur (colonnes alignées) ; modules JS communs <code>lm-ui.js</code> et <code>lm-lists.js</code>.</td></tr>

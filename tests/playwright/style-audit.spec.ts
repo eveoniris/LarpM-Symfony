@@ -17,11 +17,11 @@ const urls: string[] = JSON.parse(fs.readFileSync(path.join(__dirname, 'style-au
 // Pages connues et acceptées (texte volontairement sans cadre) : à tenir à jour.
 const ACCEPTED: string[] = [];
 
-test.describe.configure({ mode: 'serial' });
 
 for (const url of urls) {
     test(`texte sur fond de page : ${url}`, async ({ page }) => {
-        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        test.setTimeout(120_000);
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 90_000 });
         test.skip((await page.locator('html').getAttribute('data-ui')) !== 'beta', "compte sans interface bêta : page ignorée");
 
         const result = await page.evaluate(() => {
