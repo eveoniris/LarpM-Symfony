@@ -26,6 +26,7 @@ enum Role: string
     case ROLE_GROUPE_TRANSVERSE = 'ROLE_GROUPE_TRANSVERSE';
     case INTER_JEU = 'ROLE_INTER_JEU';
     case STATISTIQUE = 'ROLE_STATISTIQUE';
+    case BETA_TEST = 'ROLE_BETA_TEST';
 
     public function getLabel(): string
     {
@@ -54,6 +55,23 @@ enum Role: string
             self::INTER_JEU->value => 'Gestion des inter-jeux',
             self::GESTION->value => 'Gestion des données',
             self::STATISTIQUE->value => 'Accès au module Statistique',
+            self::BETA_TEST->value => 'Bêta-testeur : accès aux développements en cours (attribué par le super admin uniquement)',
         ];
+    }
+
+    /**
+     * Rôles que seul un super admin peut attribuer ou retirer.
+     *
+     * @return list<self>
+     */
+    public static function reservedToSuperAdmin(): array
+    {
+        return [self::SUPER_ADMIN, self::BETA_TEST];
+    }
+
+    /** @return list<string> */
+    public static function reservedToSuperAdminValues(): array
+    {
+        return array_map(static fn (self $role): string => $role->value, self::reservedToSuperAdmin());
     }
 }
