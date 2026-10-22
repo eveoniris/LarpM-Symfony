@@ -130,6 +130,12 @@
                                            {% if user.hasRole(role) %}checked{% endif %}> {{ role }}&nbsp;- {{ label }}
                                 </label><br/>
                             {% endfor %}
+                            {% for role, label in reserved_roles|default({}) %}
+                                <label class="control-label text-body-secondary">
+                                    <input type="checkbox" checked disabled> {{ role }}&nbsp;- {{ label }}
+                                    <small>(réservé au super admin, conservé)</small>
+                                </label><br/>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

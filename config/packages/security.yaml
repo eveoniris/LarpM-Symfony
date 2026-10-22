@@ -63,7 +63,9 @@ security:
         # ROLE_ADMIN hérite de ROLE_STATISTIQUE : l'administrateur accède au module
         # Larp > Statistique sans qu'on ait à lui attribuer explicitement le rôle.
         ROLE_ADMIN: [ ROLE_USER, ROLE_SCENARISTE, ROLE_ORGA, ROLE_GESTION, ROLE_REGLE, ROLE_STOCK, ROLE_REDACTEUR, ROLE_INTER_JEU, ROLE_COHERENCE, ROLE_STATISTIQUE ]
-        ROLE_SUPER_ADMIN: [ ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH ]
+        # ROLE_BETA_TEST : accès aux développements en cours. Seul le super admin l'attribue ; ROLE_ADMIN ne l'hérite pas,
+        # le super admin (et donc ROLE_DEV) l'a d'office pour tester.
+        ROLE_SUPER_ADMIN: [ ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH, ROLE_BETA_TEST ]
         ROLE_DEV: [ ROLE_SUPER_ADMIN ]
         ROLE_REGLE: [ ROLE_WARGAME, ROLE_TERRITOIRE ]
         # ROLE_SCENARISTE n'hérite plus de ROLE_CARTOGRAPHE : un scénariste n'a plus d'écriture

@@ -493,6 +493,7 @@ class UserController extends AbstractController
 
             $roles = $request->request->all('roles');
             if (!empty($roles) && $this->isGranted(User::ROLE_ADMIN)) {
+                $roles = $this->sanitizeAssignedRoles($user, $roles);
                 $user->setRoles($roles);
 
                 $log = new LogAction();
@@ -523,15 +524,48 @@ class UserController extends AbstractController
         }
 
         $availableLabels = Role::getLabels();
+        $reservedRoles = [];
         if (!$this->isGranted(Role::SUPER_ADMIN->value)) {
-            unset($availableLabels[Role::SUPER_ADMIN->value]);
+            // Rôles réservés au super admin : non proposés à la saisie, affichés en lecture seule s'ils sont déjà attribués.
+            foreach (Role::reservedToSuperAdminValues() as $reserved) {
+                unset($availableLabels[$reserved]);
+                if ($user->hasRole($reserved)) {
+                    $reservedRoles[$reserved] = Role::from($reserved)->getLabel();
+                }
+            }
         }
 
         return $this->render('user/update.twig', [
             'error' => implode("\n", $errors),
             'user' => $user,
             'available_roles' => $availableLabels,
+            'reserved_roles' => $reservedRoles,
         ]);
+    }
+
+    /**
+     * Un éditeur qui n'est pas super admin ne peut ni attribuer ni retirer les rôles réservés (super admin, bêta-testeur) :
+     * ils sont écartés de la saisie et ceux que l'utilisateur possède déjà sont conservés.
+     *
+     * @param array<int, string> $roles
+     *
+     * @return list<string>
+     */
+    private function sanitizeAssignedRoles(User $user, array $roles): array
+    {
+        if ($this->isGranted(Role::SUPER_ADMIN->value)) {
+            return array_values($roles);
+        }
+
+        $reserved = Role::reservedToSuperAdminValues();
+        $kept = array_values(array_filter($roles, static fn (string $role): bool => !\in_array($role, $reserved, true)));
+        foreach ($reserved as $reservedRole) {
+            if ($user->hasRole($reservedRole)) {
+                $kept[] = $reservedRole;
+            }
+        }
+
+        return $kept;
     }
 
     /** @param array<int, Role> $roles */
