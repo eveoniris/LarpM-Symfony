@@ -4,10 +4,21 @@
 
 {% block body %}
 
-<a href="{{ path("competence.list") }}">Retour à la liste des compétences</a>
+{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Liste des compétences', 'route': path('competence.list')}, {'name' : 'Matériel des compétences'}]} %}
+
+<div class="well well-sm">
+	<div class="header">
+		<h5>Matériel des compétences</h5>
+	</div>
+	<div class="btn-toolbar" role="toolbar">
+		<div class="btn-group" role="group">
+			<a class="btn btn-secondary" href="{{ path('competence.list') }}"><i class="fa fa-list"></i> Retour à la liste des compétences</a>
+		</div>
+	</div>
+</div>
 
 <div class="table-responsive">
-<table>
+<table class="table table-striped table-bordered table-sm">
 <thead>
 	<tr>
 		<th>Compétence</th>

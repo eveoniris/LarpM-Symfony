@@ -16,6 +16,8 @@
 				<a class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Ajouter un ingrédient" href="{{ path('ingredient.add') }}"><i class="fa fa-add"></i> Ajouter</a>
 			</div>
 		</div>
+
+		{% include '_partials/formListSearch.twig' with {'actionPath': path('ingredient.list')} %}
 	</div>
 
 	{% include '_partials/pagination.html.twig' %}
