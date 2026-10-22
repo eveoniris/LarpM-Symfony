@@ -6,7 +6,10 @@
  * - Photo en grand : a[data-lm-photo] ouvre l'image dans une fenêtre modale (<dialog>), le lien garde son
  *   comportement normal avec Ctrl, Cmd, Maj ou un clic autre que le principal.
  * - Tableaux de liste en interface bêta : voir lm-lists.js.
+ * - Menus déroulants dans un tableau défilant (.table-responsive, .lm-table-wrap) : position fixe, sinon le conteneur
+ *   (overflow) les rogne, surtout quand le tableau n'a qu'une ligne.
  */
+import { Dropdown } from 'bootstrap';
 import './lm-lists.js';
 
 let photoDialog = null;
@@ -69,6 +72,13 @@ function checkAutoClamps() {
     });
 }
 
+/** Les menus des tableaux défilants sortent du conteneur en position fixe (Popper strategy: fixed). */
+function initTableDropdowns() {
+    document.querySelectorAll('.table-responsive [data-bs-toggle="dropdown"], .lm-table-wrap [data-bs-toggle="dropdown"]').forEach((toggle) => {
+        Dropdown.getOrCreateInstance(toggle, {popperConfig: (defaultConfig) => ({...defaultConfig, strategy: 'fixed'})});
+    });
+}
+
 if (!window.lmUiBound) {
     window.lmUiBound = true;
 
@@ -96,4 +106,11 @@ if (!window.lmUiBound) {
     } else {
         window.addEventListener('load', checkAutoClamps);
     }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTableDropdowns);
+    } else {
+        initTableDropdowns();
+    }
+    document.addEventListener('turbo:load', initTableDropdowns);
 }
