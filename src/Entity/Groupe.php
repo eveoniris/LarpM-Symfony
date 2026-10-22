@@ -483,7 +483,7 @@ class Groupe extends BaseGroupe implements Stringable
         $parDefaut = $gn?->getPlacesParGroupe() ?? self::PLACES_PAR_DEFAUT;
         $fiefsSupplementaires = max(0, \count($this->getTerritoires()) - 1);
 
-        return $parDefaut + self::PLACES_PAR_FIEF_SUPPLEMENTAIRE * $fiefsSupplementaires;
+        return $parDefaut + (self::PLACES_PAR_FIEF_SUPPLEMENTAIRE * $fiefsSupplementaires);
     }
 
     /**
