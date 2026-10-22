@@ -68,15 +68,11 @@ class LitteratureTriggerRattrapage
         /** @var ParticipantRepository $participantRepository */
         $participantRepository = $this->entityManager->getRepository(Participant::class);
 
-        // Niveau de Littérature => niveau du choix, tag du sort, tag de la potion
-        $rules = [
-            [LevelType::INITIATED,    1, TriggerType::SORT_APPRENTI, TriggerType::ALCHIMIE_APPRENTI],
-            [LevelType::EXPERT,       2, TriggerType::SORT_INITIE,   TriggerType::ALCHIMIE_INITIE],
-            [LevelType::MASTER,       3, TriggerType::SORT_EXPERT,   TriggerType::ALCHIMIE_EXPERT],
-            [LevelType::GRAND_MASTER, 4, TriggerType::SORT_MAITRE,   TriggerType::ALCHIMIE_MAITRE],
-        ];
+        // Niveau de Littérature => niveau du choix (celui de la compétence moins un), tag du sort, tag de la potion
+        foreach (LitteratureService::CHOICE_TAGS as $levelIndex => [$sortTag, $potionTag]) {
+            $level = LevelType::getFromIndex($levelIndex);
+            $niveau = $levelIndex - 1;
 
-        foreach ($rules as [$level, $niveau, $sortTag, $potionTag]) {
             foreach ($participantRepository->findAllByCompentenceFamilyLevel($gn, CompetenceFamilyType::LITERATURE, $level) as $participant) {
                 $personnage = $participant->getPersonnage();
                 if (!$personnage instanceof Personnage) {
@@ -105,9 +101,61 @@ class LitteratureTriggerRattrapage
         }
     }
 
+    /**
+     * Personnages vivants avec Littérature Initié ou plus, sans aucun trigger (actif, consommé ou d'achat) du tag
+     * attendu et sans choix déjà fait depuis la date : le trigger d'achat leur est dû.
+     *
+     * @param array{trigger: int, choix: int} $skipped compteurs des cas ignorés, remplis au passage
+     *
+     * @return iterable<array{Personnage, LevelType, TriggerType}>
+     */
+    public function findMissingAchats(?DateTime $since, array &$skipped): iterable
+    {
+        $rows = $this->entityManager
+            ->createQuery(<<<'DQL'
+                SELECT pe AS personnage, l.index AS idx FROM App\Entity\Personnage pe
+                INNER JOIN pe.competences c
+                INNER JOIN c.competenceFamily cf
+                INNER JOIN c.level l
+                WHERE cf.id = :cfid AND l.index IN (:idx) AND pe.vivant = true
+                ORDER BY pe.id, l.index
+                DQL)
+            ->setParameter('cfid', CompetenceFamilyType::LITERATURE->getId())
+            ->setParameter('idx', array_keys(LitteratureService::CHOICE_TAGS))
+            ->getResult();
+
+        foreach ($rows as $row) {
+            /** @var Personnage $personnage */
+            $personnage = $row['personnage'];
+            $levelIndex = (int) $row['idx'];
+            [$sortTag, $potionTag] = LitteratureService::CHOICE_TAGS[$levelIndex];
+
+            foreach ([
+                [$sortTag,   LogActionType::ADD_SORT],
+                [$potionTag, LogActionType::ADD_POTION],
+            ] as [$tag, $logType]) {
+                if ($personnage->getAllPersonnageTriggers()->exists(static fn (int $key, PersonnageTrigger $trigger): bool => $trigger->getTag() === $tag)) {
+                    ++$skipped['trigger'];
+
+                    continue;
+                }
+
+                if ($this->hasChosenSince($personnage, $logType, $levelIndex - 1, $since)) {
+                    ++$skipped['choix'];
+
+                    continue;
+                }
+
+                yield [$personnage, LevelType::getFromIndex($levelIndex), $tag];
+            }
+        }
+    }
+
     private function hasTriggerForGn(Personnage $personnage, TriggerType $tag, Gn $gn): bool
     {
-        return $personnage->getAllPersonnageTriggers()->exists(static fn (int $key, PersonnageTrigger $trigger): bool => $trigger->getTag() === $tag && $trigger->getGn()?->getId() === $gn->getId());
+        return $personnage
+            ->getAllPersonnageTriggers()
+            ->exists(static fn (int $key, PersonnageTrigger $trigger): bool => $trigger->getTag() === $tag && ($trigger->getGn()?->getId() === $gn->getId() || $trigger->isAchatNonRattache()));
     }
 
     /** Cherche dans log_action un choix de ce niveau fait par le personnage depuis la date donnée. */
