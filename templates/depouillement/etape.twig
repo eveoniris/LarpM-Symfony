@@ -70,7 +70,57 @@
 					<dd class="col-sm-8">{{ depouillement.depouilleur ? depouillement.depouilleur.username : '-' }}</dd>
 				</dl>
 			{% elseif etape.value == 'photos' %}
-				<p class="text-muted mb-0">Cette étape permettra de prendre ou déposer une photo du contenu de l'enveloppe. Elle sera disponible prochainement.</p>
+				<p class="text-muted">Photographiez le contenu de l'enveloppe (ressources, objets, ingrédients, documents). Elles servent de preuve en cas de question. Elles ne sont visibles que des organisateurs et des dépouilleurs, sauf partage explicite avec le propriétaire de l'enveloppe.</p>
+
+				{% if modifiable %}
+					<form method="post" enctype="multipart/form-data" action="{{ path('depouillement.photo.add', {'gn': gn.id, 'depouillement': depouillement.id}) }}" class="mb-3">
+						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_photos_' ~ depouillement.id) }}">
+						<label for="depouillement-photos" class="form-label">Prendre ou choisir des photos</label>
+						<input id="depouillement-photos" class="form-control mb-2" type="file" name="photos[]" multiple required accept="image/jpeg,image/png,image/webp">
+						<div class="form-text mb-2">JPEG, PNG ou WebP, 10 Mo maximum par photo.</div>
+						<button type="submit" class="btn btn-primary w-100 w-md-auto"><i class="fa fa-camera"></i> Envoyer les photos</button>
+					</form>
+				{% endif %}
+
+				{% if depouillement.photos|length > 0 %}
+					<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2">
+						{% for photo in depouillement.photos %}
+							{% set photoUrl = path('depouillement.photo.show', {'gn': gn.id, 'depouillement': depouillement.id, 'photo': photo.id}) %}
+							<div class="col">
+								<div class="card h-100">
+									<a href="{{ photoUrl }}" target="_blank" rel="noopener">
+										<img src="{{ photoUrl }}" alt="{{ photo.nomOriginal }}" loading="lazy" class="card-img-top" style="max-height: 14rem; object-fit: cover;">
+									</a>
+									<div class="card-body p-2">
+										<div class="small text-break">{{ photo.nomOriginal }}</div>
+										<div class="small text-muted">
+											{{ photo.televersePar ? photo.televersePar.username : '-' }}, {{ photo.televerseAt|date('d/m/Y H:i') }}
+											{% if photo.partage %}<span class="badge text-bg-info">Partagée</span>{% endif %}
+										</div>
+									</div>
+									{% if is_granted('DEPOUILLEMENT_PHOTO_MANAGE', photo) %}
+										<div class="card-footer d-flex gap-2 p-2">
+											<form method="post" action="{{ path('depouillement.photo.share', {'gn': gn.id, 'depouillement': depouillement.id, 'photo': photo.id}) }}">
+												<input type="hidden" name="_token" value="{{ csrf_token('depouillement_photo_' ~ photo.id) }}">
+												<button type="submit" class="btn btn-sm btn-outline-secondary" title="Le propriétaire de l'enveloppe (joueur ou chef de groupe) pourra voir cette photo">
+													<i class="fa fa-share"></i> {{ photo.partage ? 'Retirer le partage' : 'Partager' }}
+												</button>
+											</form>
+											{% if modifiable %}
+												<form method="post" action="{{ path('depouillement.photo.delete', {'gn': gn.id, 'depouillement': depouillement.id, 'photo': photo.id}) }}" onsubmit="return confirm('Supprimer cette photo ?');">
+													<input type="hidden" name="_token" value="{{ csrf_token('depouillement_photo_' ~ photo.id) }}">
+													<button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i> Supprimer</button>
+												</form>
+											{% endif %}
+										</div>
+									{% endif %}
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				{% else %}
+					<p class="text-muted mb-0">Aucune photo pour l'instant.</p>
+				{% endif %}
 			{% elseif etape.value == 'contenu' %}
 				<p class="text-muted mb-0">Cette étape permettra de saisir le contenu constaté de l'enveloppe (ressources, objets et étiquettes, sorts, potions, recettes...). Elle sera disponible prochainement.</p>
 			{% elseif etape.value == 'remarques' %}

@@ -28,6 +28,7 @@ readonly class DepouillementService
         private EntityManagerInterface $entityManager,
         private DepouillementRepository $depouillementRepository,
         private DepouillementEnveloppeResolver $resolver,
+        private DepouillementPhotoService $photoService,
     ) {
     }
 
@@ -165,6 +166,11 @@ readonly class DepouillementService
      */
     public function purgerSimulations(?Gn $gn = null): int
     {
+        // Les lignes partent en cascade, pas les fichiers des photos : on les supprime d'abord.
+        foreach ($this->depouillementRepository->findBy($gn instanceof Gn ? ['simulation' => true, 'gn' => $gn] : ['simulation' => true]) as $simulation) {
+            $this->photoService->supprimerFichiers($simulation);
+        }
+
         return $this->depouillementRepository->purgeSimulations($gn);
     }
 
@@ -177,6 +183,7 @@ readonly class DepouillementService
             return false;
         }
 
+        $this->photoService->supprimerFichiers($depouillement);
         $this->entityManager->remove($depouillement);
         $this->entityManager->flush();
 

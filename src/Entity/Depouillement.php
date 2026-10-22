@@ -89,8 +89,14 @@ class Depouillement
     #[ORM\OrderBy(['actionDate' => 'DESC'])]
     private Collection $histories;
 
+    /** @var Collection<int, DepouillementPhoto> */
+    #[ORM\OneToMany(mappedBy: 'depouillement', targetEntity: DepouillementPhoto::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['id' => 'ASC'])]
+    private Collection $photos;
+
     public function __construct()
     {
+        $this->photos = new ArrayCollection();
         $this->createdAt = new DateTime();
         $this->updatedAt = new DateTime();
         $this->histories = new ArrayCollection();
@@ -266,6 +272,29 @@ class Depouillement
     public function getHistories(): Collection
     {
         return $this->histories;
+    }
+
+    /** @return Collection<int, DepouillementPhoto> */
+    public function getPhotos(): Collection
+    {
+        return $this->photos;
+    }
+
+    public function addPhoto(DepouillementPhoto $photo): static
+    {
+        if (!$this->photos->contains($photo)) {
+            $this->photos->add($photo);
+            $photo->setDepouillement($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhoto(DepouillementPhoto $photo): static
+    {
+        $this->photos->removeElement($photo);
+
+        return $this;
     }
 
     public function addHistory(DepouillementHistory $history): static
