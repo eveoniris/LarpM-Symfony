@@ -25,13 +25,13 @@ class DepouillementSimulationTest extends WebTestCase
         $beta = UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_BETA_TEST']]);
         $client->loginUser($beta);
 
-        $client->request('GET', '/depouillement/gn/' . $gn->getId());
+        $client->request('GET', '/gn/' . $gn->getId() . '/depouillement');
         $client->submitForm('Démarrer une simulation', [
             'depouillement_simulation[type]' => DepouillementType::GROUPE->value,
             'depouillement_simulation[numero]' => '21',
         ]);
 
-        static::assertResponseRedirects('/depouillement/gn/' . $gn->getId());
+        static::assertResponseRedirects('/gn/' . $gn->getId() . '/depouillement');
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $em->clear();
         $depouillements = $em->getRepository(Depouillement::class)->findBy([], ['id' => 'ASC']);
@@ -52,7 +52,7 @@ class DepouillementSimulationTest extends WebTestCase
         $gn = GnFactory::createOne();
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_BETA_TEST']]));
 
-        $client->request('GET', '/depouillement/gn/' . $gn->getId());
+        $client->request('GET', '/gn/' . $gn->getId() . '/depouillement');
         $client->submitForm('Démarrer une simulation', ['depouillement_simulation[numero]' => '']);
 
         $em = static::getContainer()->get(EntityManagerInterface::class);
@@ -78,14 +78,67 @@ class DepouillementSimulationTest extends WebTestCase
         }
         $em->flush();
 
-        $crawler = $client->request('GET', '/depouillement/gn/' . $gn->getId());
+        $crawler = $client->request('GET', '/gn/' . $gn->getId() . '/depouillement');
         $client->submit($crawler->filter('form[action$="/purge"]')->form());
 
-        static::assertResponseRedirects('/depouillement/gn/' . $gn->getId());
+        static::assertResponseRedirects('/gn/' . $gn->getId() . '/depouillement');
         $em->clear();
         static::assertCount(1, $em->getRepository(Depouillement::class)->findBy(['gn' => $gn->getId()]));
         static::assertCount(1, $em->getRepository(Depouillement::class)->findBy(['gn' => $autreGn->getId()]));
         static::assertFalse($em->getRepository(Depouillement::class)->findOneBy(['gn' => $gn->getId()])->isSimulation());
+    }
+
+    public function testSuppressionDUneSeuleSimulation(): void
+    {
+        $client = static::createClient();
+        $gn = GnFactory::createOne();
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_BETA_TEST']]));
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $cible = (new Depouillement())
+            ->setGn($gn)
+            ->setType(DepouillementType::JOUEUR)
+            ->setNumero('1')
+            ->setSimulation(true);
+        $autre = (new Depouillement())
+            ->setGn($gn)
+            ->setType(DepouillementType::JOUEUR)
+            ->setNumero('2')
+            ->setSimulation(true);
+        $em->persist($cible);
+        $em->persist($autre);
+        $em->flush();
+        $idAutre = $autre->getId();
+
+        $crawler = $client->request('GET', '/gn/' . $gn->getId() . '/depouillement');
+        $client->submit($crawler->filter('form[action$="/' . $cible->getId() . '/supprimer"]')->form());
+
+        static::assertResponseRedirects('/gn/' . $gn->getId() . '/depouillement');
+        $em->clear();
+        $restants = $em->getRepository(Depouillement::class)->findAll();
+        static::assertCount(1, $restants);
+        static::assertSame($idAutre, $restants[0]->getId());
+    }
+
+    public function testSuppressionRefuseSiLeDepouillementEstDUnAutreGn(): void
+    {
+        $client = static::createClient();
+        $gn = GnFactory::createOne();
+        $autreGn = GnFactory::createOne();
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_BETA_TEST']]));
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $simulation = (new Depouillement())
+            ->setGn($autreGn)
+            ->setType(DepouillementType::JOUEUR)
+            ->setNumero('3')
+            ->setSimulation(true);
+        $em->persist($simulation);
+        $em->flush();
+
+        $client->request('POST', '/gn/' . $gn->getId() . '/depouillement/' . $simulation->getId() . '/supprimer');
+
+        static::assertResponseStatusCodeSame(404);
+        $em->clear();
+        static::assertCount(1, $em->getRepository(Depouillement::class)->findAll());
     }
 
     public function testPurgeRefuseSansJetonValide(): void
@@ -104,9 +157,9 @@ class DepouillementSimulationTest extends WebTestCase
         $em->flush();
 
         // @mago-expect lint:no-literal-password
-        $client->request('POST', '/depouillement/gn/' . $gn->getId() . '/purge', ['_token' => 'faux']);
+        $client->request('POST', '/gn/' . $gn->getId() . '/depouillement/purge', ['_token' => 'faux']);
 
-        static::assertResponseRedirects('/depouillement/gn/' . $gn->getId());
+        static::assertResponseRedirects('/gn/' . $gn->getId() . '/depouillement');
         $em->clear();
         static::assertCount(1, $em->getRepository(Depouillement::class)->findBy([], ['id' => 'ASC']));
     }

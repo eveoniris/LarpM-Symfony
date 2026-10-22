@@ -9,6 +9,7 @@ use App\Entity\DepouillementHistory;
 use App\Enum\DepouillementStatut;
 use App\Enum\DepouillementType;
 use App\Repository\DepouillementRepository;
+use App\Service\DepouillementService;
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -84,6 +85,22 @@ class DepouillementTest extends KernelTestCase
         $historique = $recharge->getHistories()->first();
         static::assertSame(DepouillementStatut::A_VALIDER, $historique->getStatutApres());
         static::assertSame($depouilleur->getId(), $historique->getUser()?->getId());
+    }
+
+    public function testSupprimerSimulationRefuseUnDepouillementReel(): void
+    {
+        $service = static::getContainer()->get(DepouillementService::class);
+        $reel = $this->creer(DepouillementType::JOUEUR, '7', false);
+        $simulation = $this->creer(DepouillementType::JOUEUR, '8', true);
+        $idReel = $reel->getId();
+        $idSimulation = $simulation->getId();
+
+        static::assertFalse($service->supprimerSimulation($reel));
+        static::assertTrue($service->supprimerSimulation($simulation));
+
+        $this->em->clear();
+        static::assertNotNull($this->repository->find($idReel));
+        static::assertNull($this->repository->find($idSimulation));
     }
 
     public function testFindReelIgnoreLesSimulations(): void

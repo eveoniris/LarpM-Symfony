@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Depouillement;
 use App\Entity\Gn;
 use App\Enum\DepouillementType;
 use App\Form\Depouillement\DepouillementSimulationType;
@@ -19,13 +20,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * Fonctionnalité en cours de développement : réservée à ROLE_BETA_TEST (voir docs/plans/role-beta-test.md).
  */
 #[IsGranted('ROLE_BETA_TEST', message: 'Fonctionnalité en cours de test.')]
-#[Route('/depouillement')]
 final class DepouillementController extends AbstractController
 {
     /**
      * Page de travail d'un GN : simulations en cours, création et purge.
      */
-    #[Route('/gn/{gn}', name: 'depouillement.index', requirements: ['gn' => '\d+'], methods: ['GET', 'POST'])]
+    #[Route('/gn/{gn}/depouillement', name: 'depouillement.index', requirements: ['gn' => '\d+'], methods: ['GET', 'POST'])]
     public function indexAction(Request $request, Gn $gn, DepouillementService $depouillementService): Response
     {
         $form = $this->createForm(DepouillementSimulationType::class);
@@ -51,7 +51,7 @@ final class DepouillementController extends AbstractController
     /**
      * Supprime les simulations du GN (les dépouillements réels ne sont jamais touchés).
      */
-    #[Route('/gn/{gn}/purge', name: 'depouillement.purge', requirements: ['gn' => '\d+'], methods: ['POST'])]
+    #[Route('/gn/{gn}/depouillement/purge', name: 'depouillement.purge', requirements: ['gn' => '\d+'], methods: ['POST'])]
     public function purgeAction(Request $request, Gn $gn, DepouillementService $depouillementService): Response
     {
         if (!$this->isCsrfTokenValid('depouillement_purge_' . $gn->getId(), $request->request->getString('_token'))) {
@@ -64,5 +64,38 @@ final class DepouillementController extends AbstractController
         $this->addFlash('success', \sprintf('%d simulation(s) supprimée(s).', $nombre));
 
         return $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
+    }
+
+    /**
+     * Supprime une seule simulation. Un dépouillement réel ne peut jamais être supprimé ici.
+     */
+    #[Route('/gn/{gn}/depouillement/{depouillement}/supprimer', name: 'depouillement.delete', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
+    public function deleteAction(
+        Request $request,
+        Gn $gn,
+        Depouillement $depouillement,
+        DepouillementService $depouillementService,
+    ): Response {
+        if ($depouillement->getGn()->getId() !== $gn->getId()) {
+            throw $this->createNotFoundException();
+        }
+
+        $redirection = $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
+
+        if (!$this->isCsrfTokenValid('depouillement_delete_' . $depouillement->getId(), $request->request->getString('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+
+            return $redirection;
+        }
+
+        if (!$depouillementService->supprimerSimulation($depouillement)) {
+            $this->addFlash('error', 'Seule une simulation peut être supprimée.');
+
+            return $redirection;
+        }
+
+        $this->addFlash('success', 'La simulation a été supprimée.');
+
+        return $redirection;
     }
 }

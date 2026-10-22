@@ -40,6 +40,7 @@
 					<th>Statut</th>
 					<th>Dépouilleur</th>
 					<th>Créée le</th>
+					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -50,9 +51,15 @@
 						<td>{{ simulation.statut.label }}</td>
 						<td>{{ simulation.depouilleur ? simulation.depouilleur.username : '-' }}</td>
 						<td>{{ simulation.createdAt|date('d/m/Y H:i') }}</td>
+						<td>
+							<form method="post" action="{{ path('depouillement.delete', {'gn': gn.id, 'depouillement': simulation.id}) }}" onsubmit="return confirm('Supprimer cette simulation ?');">
+								<input type="hidden" name="_token" value="{{ csrf_token('depouillement_delete_' ~ simulation.id) }}">
+								<button type="submit" class="btn btn-sm btn-danger" title="Supprimer cette simulation"><i class="fa fa-trash"></i> Supprimer</button>
+							</form>
+						</td>
 					</tr>
 				{% else %}
-					<tr><td colspan="5" class="text-muted">Aucune simulation.</td></tr>
+					<tr><td colspan="6" class="text-muted">Aucune simulation.</td></tr>
 				{% endfor %}
 			</tbody>
 		</table>

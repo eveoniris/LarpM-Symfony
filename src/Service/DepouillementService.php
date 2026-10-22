@@ -58,6 +58,21 @@ readonly class DepouillementService
     }
 
     /**
+     * Supprime une simulation. Refuse (retourne false) tout dépouillement réel.
+     */
+    public function supprimerSimulation(Depouillement $depouillement): bool
+    {
+        if (!$depouillement->isSimulation()) {
+            return false;
+        }
+
+        $this->entityManager->remove($depouillement);
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    /**
      * @return list<Depouillement>
      */
     public function listerSimulations(Gn $gn): array

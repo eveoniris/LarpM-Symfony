@@ -22,7 +22,7 @@ class DepouillementAccesTest extends WebTestCase
         $gn = GnFactory::createOne();
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_BETA_TEST']]));
 
-        $client->request('GET', '/depouillement/gn/' . $gn->getId());
+        $client->request('GET', '/gn/' . $gn->getId() . '/depouillement');
 
         static::assertResponseIsSuccessful();
     }
@@ -33,7 +33,7 @@ class DepouillementAccesTest extends WebTestCase
         $gn = GnFactory::createOne();
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_SUPER_ADMIN']]));
 
-        $client->request('GET', '/depouillement/gn/' . $gn->getId());
+        $client->request('GET', '/gn/' . $gn->getId() . '/depouillement');
 
         static::assertResponseIsSuccessful();
     }
@@ -59,11 +59,11 @@ class DepouillementAccesTest extends WebTestCase
         $gn = GnFactory::createOne();
         $client->loginUser(UserFactory::createOne(['roles' => $roles]));
 
-        $client->request('GET', '/depouillement/gn/' . $gn->getId());
+        $client->request('GET', '/gn/' . $gn->getId() . '/depouillement');
         // L'application redirige vers /access_denied au lieu de renvoyer un 403.
         static::assertResponseRedirects('/access_denied');
 
-        $client->request('POST', '/depouillement/gn/' . $gn->getId() . '/purge');
+        $client->request('POST', '/gn/' . $gn->getId() . '/depouillement/purge');
         static::assertResponseRedirects('/access_denied');
     }
 
@@ -71,7 +71,7 @@ class DepouillementAccesTest extends WebTestCase
     {
         $client = static::createClient();
         $gn = GnFactory::createOne();
-        $lien = 'a[href="/depouillement/gn/' . $gn->getId() . '"]';
+        $lien = 'a[href="/gn/' . $gn->getId() . '/depouillement"]';
 
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER']]));
         $client->request('GET', '/gn/' . $gn->getId());
@@ -89,7 +89,7 @@ class DepouillementAccesTest extends WebTestCase
         $client = static::createClient();
         $gn = GnFactory::createOne();
 
-        $client->request('GET', '/depouillement/gn/' . $gn->getId());
+        $client->request('GET', '/gn/' . $gn->getId() . '/depouillement');
 
         static::assertResponseRedirects();
     }
