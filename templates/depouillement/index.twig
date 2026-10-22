@@ -1,0 +1,20 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Dépouillement des enveloppes{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Dépouillement des enveloppes'}]} %}
+
+	<div class="alert alert-warning">
+		Fonctionnalité en cours de test, réservée aux bêta-testeurs.
+	</div>
+
+	<div class="well well-sm">
+		<div class="header">
+			<h5>Dépouillement des enveloppes</h5>
+		</div>
+		<p class="mb-0">Les étapes de dépouillement (enveloppe joueur ou groupe) seront ajoutées ici.</p>
+	</div>
+
+{% endblock body %}
