@@ -1,0 +1,105 @@
+{# Contenu constaté dans une enveloppe de joueur, d'après la fiche "Instructions Retour de jeu JOUEUR".
+   Variables : contenuJoueur, formContenuJoueur (null si non modifiable), resultatsActions, anomaliesContenu, actionsFinOpus #}
+
+<h6>Contenu de l'enveloppe de joueur</h6>
+<p class="text-muted small">
+	Seuls les pièces, ressources, potions et ingrédients conservés ou utilisés dans les six actions ci-dessous doivent être dans l'enveloppe du joueur. <strong>Tout le reste est du surplus à mettre dans l'enveloppe de groupe</strong> (il sert au calcul de l'initiative du groupe).
+</p>
+
+{% if anomaliesContenu|length > 0 %}
+	<div class="alert alert-warning small">
+		<strong><i class="fa fa-triangle-exclamation"></i> À signaler ou à vérifier :</strong>
+		<ul class="mb-0">
+			{% for anomalie in anomaliesContenu %}<li>{{ anomalie }}</li>{% endfor %}
+		</ul>
+	</div>
+{% endif %}
+
+{% if formContenuJoueur %}
+	{% set f = formContenuJoueur %}
+	{{ form_start(f) }}
+
+	<fieldset class="mb-3">
+		<legend class="h6">Pièces jointes à l'enveloppe</legend>
+		<div class="row row-cols-1 row-cols-md-2 g-1">
+			{% for nom in ['fichePersonnage', 'ficheRetour', 'ficheSort', 'fichePriere', 'carteAlchimiste', 'copiesRecettesSorts'] %}
+				<div class="col">{{ form_row(f[nom]) }}</div>
+			{% endfor %}
+			{% for nom in ['corruptionOuvertes', 'corruptionNonOuvertes', 'pincesALinge'] %}
+				<div class="col">{{ form_row(f[nom]) }}</div>
+			{% endfor %}
+		</div>
+		{{ form_row(f.documentsNumerotes) }}
+	</fieldset>
+
+	<fieldset class="mb-3">
+		<legend class="h6">Appris pendant le jeu</legend>
+		{{ form_row(f.sorts) }}
+		{{ form_row(f.prieres) }}
+		{{ form_row(f.recettes) }}
+		{{ form_row(f.introuvables) }}
+	</fieldset>
+
+	<fieldset class="mb-3">
+		<legend class="h6">Actions de fin d'Opus <small class="text-muted">(une fois par GN chacune)</small></legend>
+		{% set champs = {
+			'fruits_legumes': ['fruitsUtilise', 'fruitsJointes', null],
+			'soie': ['soieUtilise', 'soieJointes', null],
+			'gemme': ['gemmeUtilise', 'gemmeJointes', 'gemmePieces'],
+			'sel': ['selUtilise', 'selJointes', 'selIngredients'],
+			'fourrure': ['fourrureUtilise', 'fourrureJointes', 'fourrureRessources'],
+			'ivoire': ['ivoireUtilise', 'ivoireJointes', 'ivoirePotions']
+		} %}
+		{% for a in actionsFinOpus %}
+			{% set c = champs[a.value] %}
+			{% set resultat = resultatsActions[a.value] %}
+			<div class="card mb-2">
+				<div class="card-header py-1 d-flex justify-content-between align-items-center flex-wrap gap-1">
+					<span>{{ a.label }}</span>
+					<span class="badge {{ resultat.statut.value == 'acceptee' ? 'text-bg-success' : (resultat.statut.value == 'refusee' ? 'text-bg-danger' : 'text-bg-secondary') }}">{{ resultat.statut.label }}</span>
+				</div>
+				<div class="card-body py-2">
+					<div class="small text-muted mb-1">Consomme {{ a.quantiteRessource }} {{ a.ressource }} : {{ a.effet }}.</div>
+					{{ form_row(f[c[0]]) }}
+					{{ form_row(f[c[1]]) }}
+					{% if c[2] %}{{ form_row(f[c[2]]) }}{% endif %}
+					{% for anomalie in resultat.anomalies %}<div class="small text-danger"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
+				</div>
+			</div>
+		{% endfor %}
+	</fieldset>
+
+	<details class="mb-3">
+		<summary class="h6">Surplus trouvé dans l'enveloppe (à mettre dans l'enveloppe de groupe)</summary>
+		<p class="text-muted small">Indiquez les quantités à reverser. Rien n'est perdu : tout le reliquat est crédité au groupe pour son initiative.</p>
+		<div class="row row-cols-2 row-cols-md-3 g-1">
+			{% for champ in f.surplus %}
+				<div class="col">{{ form_row(champ) }}</div>
+			{% endfor %}
+		</div>
+	</details>
+
+	{{ form_widget(f.submit, {'attr': {'class': 'btn btn-primary w-100 w-md-auto'}}) }}
+	{{ form_end(f) }}
+{% else %}
+	<h6>Actions de fin d'Opus</h6>
+	<ul>
+		{% for a in actionsFinOpus %}
+			{% set resultat = resultatsActions[a.value] %}
+			{% if resultat.statut.value != 'non_utilisee' %}
+				<li>
+					{{ a.label }} : <strong>{{ resultat.statut.label }}</strong>{% if resultat.effet %} ({{ resultat.effet }}){% endif %}
+				</li>
+			{% endif %}
+		{% endfor %}
+	</ul>
+	<h6>Appris pendant le jeu</h6>
+	<p class="mb-1">Sorts : {{ contenuJoueur.sorts|map(s => s.label)|join(', ') ?: '-' }}</p>
+	<p class="mb-1">Prières : {{ contenuJoueur.prieres|map(p => p.label)|join(', ') ?: '-' }}</p>
+	<p class="mb-1">Recettes : {{ contenuJoueur.recettes ?: '-' }}</p>
+	<h6 class="mt-2">Surplus pour l'enveloppe de groupe</h6>
+	<p class="mb-0">
+		{% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}-{% endfor %}
+	</p>
+{% endif %}
+<hr>

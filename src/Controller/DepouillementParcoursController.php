@@ -8,8 +8,12 @@ use App\Entity\Depouillement;
 use App\Entity\Gn;
 use App\Enum\DepouillementEtape;
 use App\Enum\DepouillementType;
+use App\Enum\ActionFinOpus;
+use App\Form\Depouillement\ContenuJoueurType;
 use App\Form\Depouillement\DepouillementEtiquetteType;
 use App\Form\Depouillement\DepouillementRemarquesType;
+use App\Service\CompteursEnveloppe;
+use App\Service\DepouillementContenuService;
 use App\Service\DepouillementService;
 use App\Service\EtiquetteSaisie;
 use Symfony\Component\Form\FormInterface;
@@ -23,6 +27,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  *
  * Fonctionnalité en cours de développement : réservée à ROLE_BETA_TEST (voir docs/plans/role-beta-test.md).
  */
+// @mago-expect lint:cyclomatic-complexity
 #[IsGranted('ROLE_BETA_TEST', message: 'Fonctionnalité en cours de test.')]
 final class DepouillementParcoursController extends AbstractDepouillementController
 {
@@ -65,8 +70,9 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
     }
 
     /**
-     * Une étape du parcours. Les étapes photos et contenu sont des emplacements pour l'instant.
+     * Une étape du parcours : identification, photos, contenu (étiquettes et enveloppe de joueur), remarques, récapitulatif.
      */
+    // @mago-expect lint:excessive-parameter-list
     #[Route('/gn/{gn}/depouillement/{depouillement}/etape/{etape}', name: 'depouillement.etape', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['GET', 'POST'])]
     public function etapeAction(
         Request $request,
@@ -74,6 +80,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         Depouillement $depouillement,
         DepouillementEtape $etape,
         DepouillementService $depouillementService,
+        DepouillementContenuService $contenuService,
     ): Response {
         $this->verifier($gn, $depouillement);
 
@@ -102,6 +109,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             'form' => $form,
             'formEtiquette' => $this->formulaireEtiquette($depouillement, $etape),
             'avertissementGroupe' => $this->avertissementGroupe($depouillement, $depouillementService),
+            ...$this->contenuJoueur($depouillement, $etape, $contenuService),
         ]);
     }
 
@@ -129,6 +137,34 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         $this->addFlash('success', 'Dépouillement terminé : il est en attente de validation.');
 
         return $redirection;
+    }
+
+    /**
+     * Variables de l'étape Contenu d'une enveloppe de joueur : contenu enregistré, formulaire (si modifiable) et contrôle des
+     * six actions de fin d'Opus.
+     *
+     * @return array<string, mixed>
+     */
+    private function contenuJoueur(Depouillement $depouillement, DepouillementEtape $etape, DepouillementContenuService $contenuService): array
+    {
+        if (DepouillementEtape::CONTENU !== $etape || DepouillementType::JOUEUR !== $depouillement->getType()) {
+            return [];
+        }
+
+        $contenu = $contenuService->lireContenuJoueur($depouillement);
+
+        return [
+            'contenuJoueur' => $contenu,
+            'formContenuJoueur' => $depouillement->getStatut()->isEditable()
+                ? $this->createForm(ContenuJoueurType::class, $contenu, [
+                    'action' => $this->generateUrl('depouillement.contenu_joueur', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()]),
+                ])
+                : null,
+            'surplusLibelles' => CompteursEnveloppe::nonNulles($contenu->surplus),
+            'resultatsActions' => $contenuService->evaluerActions($contenu),
+            'anomaliesContenu' => $contenuService->anomalies($contenu),
+            'actionsFinOpus' => ActionFinOpus::cases(),
+        ];
     }
 
     /**
