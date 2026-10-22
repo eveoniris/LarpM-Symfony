@@ -20,10 +20,18 @@ class GroupePlacesTest extends TestCase
     {
         $groupe = new Groupe();
         for ($i = 0; $i < $nombreFiefs; ++$i) {
-            $groupe->addTerritoire(new Territoire());
+            $groupe->addTerritoire($this->fief());
         }
 
         return $groupe;
+    }
+
+    private function fief(): Territoire
+    {
+        $fief = new Territoire();
+        $fief->setTerritoire(new Territoire());
+
+        return $fief;
     }
 
     public function testSansFiefLeGroupeADesPlacesParDefaut(): void
@@ -50,23 +58,72 @@ class GroupePlacesTest extends TestCase
         self::assertSame(14, $this->groupeAvecFiefs(3)->getPlaceTotal($gn));
     }
 
-    public function testLaValeurManuelleDuGroupePrimeSurLeCalcul(): void
+    public function testLaLimiteManuelleDeLaSessionPrimeSurLeCalcul(): void
     {
-        $groupe = $this->groupeAvecFiefs(3)->setPlacesMax(30);
+        $gn = new Gn();
+        $groupeGn = (new GroupeGn())
+            ->setGroupe($this->groupeAvecFiefs(3))
+            ->setGn($gn)
+            ->setPlacesMax(30);
+        $groupeGn->getGroupe()->addGroupeGn($groupeGn);
 
-        self::assertSame(30, $groupe->getPlaceTotal());
-        self::assertSame(16, $groupe->getPlaceCalculee());
+        self::assertSame(30, $groupeGn->getPlaceTotal());
+        self::assertSame(16, $groupeGn->getGroupe()->getPlaceCalculee($groupeGn->getGn()));
+        self::assertSame(30, $groupeGn->getGroupe()->getPlaceTotal($gn));
+        self::assertSame(16, $groupeGn->getGroupe()->getPlaceTotal(new Gn()));
     }
 
     public function testUneValeurNulleOuNegativeRetablitLeCalculAutomatique(): void
     {
-        $groupe = $this->groupeAvecFiefs(2)->setPlacesMax(0);
+        $groupeGn = (new GroupeGn())
+            ->setGroupe($this->groupeAvecFiefs(2))
+            ->setGn(new Gn())
+            ->setPlacesMax(0);
 
-        self::assertNull($groupe->getPlacesMax());
-        self::assertSame(14, $groupe->getPlaceTotal());
+        self::assertNull($groupeGn->getPlacesMax());
+        self::assertSame(14, $groupeGn->getPlaceTotal());
 
-        $groupe->setPlacesMax(-3);
-        self::assertNull($groupe->getPlacesMax());
+        $groupeGn->setPlacesMax(-3);
+        self::assertNull($groupeGn->getPlacesMax());
+    }
+
+    public function testLaLimiteSousLeCalculSeDetecteParLaComparaisonDesPlaces(): void
+    {
+        $groupeGn = (new GroupeGn())->setGroupe($this->groupeAvecFiefs(7))->setGn(new Gn());
+        $groupeGn->getGroupe()->addGroupeGn($groupeGn);
+
+        self::assertSame($groupeGn->getGroupe()->getPlaceCalculee($groupeGn->getGn()), $groupeGn->getPlaceTotal());
+
+        $groupeGn->setPlacesMax(10);
+        self::assertLessThan($groupeGn->getGroupe()->getPlaceCalculee($groupeGn->getGn()), $groupeGn->getPlaceTotal());
+        self::assertSame(24, $groupeGn->getGroupe()->getPlaceCalculee($groupeGn->getGn()));
+
+        $groupeGn->setPlacesMax(null);
+        self::assertSame(24, $groupeGn->getPlaceTotal());
+    }
+
+    public function testSeulsLesTerritoiresFinauxCompteCommeFiefs(): void
+    {
+        $nation = new Territoire();
+        $region = (new Territoire())->setTerritoire($nation);
+        $fiefDeRegion = (new Territoire())->setTerritoire($region);
+        $fiefDeNation = (new Territoire())->setTerritoire($nation);
+        $nation->addTerritoire($region);
+        $nation->addTerritoire($fiefDeNation);
+        $region->addTerritoire($fiefDeRegion);
+
+        self::assertFalse($nation->isFief());
+        self::assertFalse($region->isFief());
+        self::assertTrue($fiefDeRegion->isFief());
+        self::assertTrue($fiefDeNation->isFief());
+
+        $groupe = new Groupe();
+        foreach ([$nation, $region, $fiefDeRegion, $fiefDeNation] as $territoire) {
+            $groupe->addTerritoire($territoire);
+        }
+
+        self::assertCount(2, $groupe->getFiefs());
+        self::assertSame(14, $groupe->getPlaceCalculee());
     }
 
     public function testLesAidesDeCampNeComptentPasDansLesMembres(): void

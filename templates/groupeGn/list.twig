@@ -14,9 +14,6 @@
 	<div class="d-flex justify-content-end flex-wrap gap-2 mb-2">
 		<div class="btn-toolbar" role="toolbar" aria-label="Actions">
 			<div class="btn-group" role="group">
-				{% if is_granted('ROLE_SCENARISTE') %}
-					<a class="btn btn-secondary" href="{{ path('groupe.place', {'groupe': groupe.id}) }}"><i class="fa fa-pencil"></i> Modifier les places</a>
-				{% endif %}
 				<a class="btn btn-secondary" href="{{ path('groupeGn.add',{'groupe': groupe.id}) }}"><i class="fa fa-plus"></i> Ajouter une nouvelle session</a>
 			</div>
 		</div>
@@ -24,7 +21,7 @@
 
 	{% for groupeGn in groupe.groupeGns %}
 		{% set placeLibre = groupeGn.placeLibre %}
-		{% set fiefsSupplementaires = max(0, groupe.territoires|length - 1) %}
+		{% set fiefsSupplementaires = max(0, groupe.fiefs|length - 1) %}
 		<div class="card text-bg mb-3 overflow-auto">
 			<div class="header">
 				<h5>
@@ -40,6 +37,9 @@
 							<a class="btn btn-secondary" href="{{ path('groupeGn.update',{'groupe': groupe.id, 'groupeGn': groupeGn.id}) }}"><i class="fa fa-pencil"></i> Modifier</a>
 							<a class="btn btn-secondary" href="{{ path('groupeGn.responsable',{'groupe': groupe.id, 'groupeGn': groupeGn.id}) }}"><i class="fa fa-user"></i> Responsable</a>
 							<a class="btn btn-secondary" href="{{ path('groupeGn.joueur.add', {'groupeGn': groupeGn.id}) }}"><i class="fa fa-envelope"></i> Inviter un joueur</a>
+							{% if is_granted('ROLE_SCENARISTE') %}
+								<a class="btn btn-secondary" href="{{ path('groupeGn.place', {'groupeGn': groupeGn.id}) }}"><i class="fa fa-pencil"></i> Modifier les places</a>
+							{% endif %}
 							{% if is_granted('ROLE_ORGA') or is_granted('ROLE_SCENARISTE') %}
 								<a class="btn btn-secondary" href="{{ path('groupeGn.participants.add', {'groupeGn': groupeGn.id}) }}"><i class="fa fa-plus"></i> Ajouter un participant</a>
 							{% endif %}
@@ -82,8 +82,19 @@
 
 							<dt>Origine du nombre de places</dt>
 							<dd class="text-muted">
-								{% if groupe.placesMax %}
-									Fixé manuellement à {{ groupe.placesMax }} (calcul automatique : {{ groupe.placeCalculee(groupeGn.gn) }}).
+								{% if groupeGn.placesMax %}
+									Fixé manuellement à {{ groupeGn.placesMax }} pour cette session (calcul automatique : {{ groupeGn.groupe.placeCalculee(groupeGn.gn) }}).
+									{% if (groupeGn.placeTotal < groupeGn.groupe.placeCalculee(groupeGn.gn)) and is_granted('ROLE_SCENARISTE') %}
+										<div class="alert alert-warning mt-2 mb-0">
+											<i class="fa fa-exclamation-triangle"></i>
+											Selon la règle, ce groupe devrait avoir <strong>{{ groupeGn.groupe.placeCalculee(groupeGn.gn) }}</strong> places ({{ groupe.fiefs|length }} fief{{ groupe.fiefs|length > 1 ? 's' : '' }}),
+											la limite manuelle est de {{ groupeGn.placesMax }}. Le groupe a peut-être gagné des fiefs depuis.
+											<form method="post" action="{{ path('groupeGn.place.auto', {'groupeGn': groupeGn.id}) }}" class="mt-2">
+												<input type="hidden" name="_token" value="{{ csrf_token('place_auto_' ~ groupeGn.id) }}">
+												<button type="submit" class="btn btn-sm btn-warning"><i class="fa fa-refresh"></i> Revenir au calcul automatique ({{ groupeGn.groupe.placeCalculee(groupeGn.gn) }} places)</button>
+											</form>
+										</div>
+									{% endif %}
 								{% else %}
 									Calcul automatique : {{ groupeGn.gn.placesParGroupe }} places par défaut
 									{% if fiefsSupplementaires > 0 %}+ 2 x {{ fiefsSupplementaires }} fief{{ fiefsSupplementaires > 1 ? 's' : '' }} au-delà du premier{% endif %}.

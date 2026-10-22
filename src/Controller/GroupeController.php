@@ -47,7 +47,6 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -765,44 +764,6 @@ class GroupeController extends AbstractController
      * Imprimmer toutes les enveloppes de tous les groupes.
      */
 
-    /**
-     * Fixe à la main le nombre de places d'un groupe (groupes PNJ ou spéciaux).
-     * Sans valeur, le nombre de places est calculé automatiquement (voir Groupe::getPlaceTotal).
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    #[Route('/{groupe}/place', name: 'place', requirements: ['groupe' => Requirement::DIGITS])]
-    public function placeAction(Request $request, #[MapEntity] Groupe $groupe): RedirectResponse|Response
-    {
-        $gn = $groupe->getNextSession()?->getGn();
-
-        $form = $this
-            ->createFormBuilder(['placesMax' => $groupe->getPlacesMax()])
-            ->add('placesMax', IntegerType::class, [
-                'label' => 'Nombre de places',
-                'required' => false,
-                'attr' => ['min' => 1, 'placeholder' => (string) $groupe->getPlaceCalculee($gn)],
-                'help' => 'Laisser vide pour le calcul automatique : ' . $groupe->getPlaceCalculee($gn) . ' places (places par défaut du GN + 2 par fief au-delà du premier).',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Enregistrer'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $groupe->setPlacesMax($form->get('placesMax')->getData());
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Le nombre de places du groupe a été mis à jour.');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()], 303);
-        }
-
-        return $this->render('groupe/place.twig', [
-            'groupe' => $groupe,
-            'form' => $form->createView(),
-        ]);
-    }
-
     /** @deprecated:  see GnController* */
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/print', name: 'print')]
@@ -1253,12 +1214,20 @@ class GroupeController extends AbstractController
             ->add('territoire', EntityType::class, [
                 'required' => true,
                 'class' => Territoire::class,
-                'choice_label' => 'nomComplet',
-                'label' => 'choisissez le territoire',
+                'choice_label' => static function (Territoire $territoire): string {
+                    $parents = array_reverse(array_map(static fn (Territoire $parent): string => $parent->getNom(), $territoire->getAncestors()->toArray()));
+
+                    return ([] === $parents ? '' : implode(' > ', $parents) . ' > ') . $territoire->getNomComplet();
+                },
+                'label' => 'choisissez le fief',
                 'expanded' => true,
+                // Seuls les fiefs (territoires finaux) peuvent être possédés : une nation ou une région est une appartenance
                 'query_builder' => static function (TerritoireRepository $er) {
                     $qb = $er->createQueryBuilder('t');
-                    $qb->orderBy('t.nom', 'ASC');
+                    $qb
+                        ->where('t.territoire IS NOT NULL')
+                        ->andWhere('NOT EXISTS (SELECT 1 FROM App\Entity\Territoire child WHERE child.territoire = t)')
+                        ->orderBy('t.nom', 'ASC');
 
                     return $qb;
                 },
