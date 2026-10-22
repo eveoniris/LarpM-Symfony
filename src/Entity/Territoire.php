@@ -91,6 +91,15 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
     }
 
     /**
+     * Un fief est un territoire final : il dépend d'un autre territoire et n'en contient aucun.
+     * Un territoire qui a des enfants (nation, région) est une appartenance, pas une possession réelle.
+     */
+    public function isFief(): bool
+    {
+        return null !== $this->getTerritoire() && $this->getTerritoires()->isEmpty();
+    }
+
+    /**
      * Ce territoire est $zone ou en dépend, à n'importe quel niveau (nation > région > fief).
      * Itératif et borné : une parenté circulaire ne boucle pas.
      */

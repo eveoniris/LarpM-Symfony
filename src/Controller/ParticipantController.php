@@ -590,7 +590,7 @@ class ParticipantController extends AbstractController
                 $this->entityManager->refresh($participant);
             } else {
                 if (null !== $depassement && 'update' === $decision) {
-                    $nouveauGroupeGn->getGroupe()->setPlacesMax($depassement);
+                    $nouveauGroupeGn->setPlacesMax($depassement);
                 }
 
                 if ($ancienGroupeGn && $ancienGroupeGn !== $nouveauGroupeGn && $ancienGroupeGn->getResponsable() === $participant) {

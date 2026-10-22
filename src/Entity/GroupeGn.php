@@ -22,7 +22,7 @@ class GroupeGn extends BaseGroupeGn
     }
 
     /**
-     * Nombre de places du groupe pour ce GN (valeur manuelle du groupe ou calcul automatique).
+     * Nombre de places de la session : la limite manuelle si elle existe, sinon le calcul automatique (voir Groupe::getPlaceTotal).
      */
     public function getPlaceTotal(): int
     {

@@ -248,7 +248,7 @@
 
                     {% include '_partials/listItems.twig'
                         with { 'items' : [
-                        {'title': 'Places totales', 'text': nbPlace ~ ' joueurs possibles dans ce groupe' ~ (groupe.placesMax ? ' (valeur fixée manuellement).' : '.')},
+                        {'title': 'Places totales', 'text': nbPlace ~ ' joueurs possibles dans ce groupe' ~ (groupeGn.placesMax ? ' (valeur fixée manuellement' ~ ((groupeGn.placeTotal < groupeGn.groupe.placeCalculee(groupeGn.gn)) ? ', inférieure au calcul automatique : ' ~ groupeGn.groupe.placeCalculee(groupeGn.gn) : '') ~ ').' : '.')},
                         {'title': 'Membres', 'text': nbMembres ~ (nbAidesDeCamp > 0 ? ' (+ ' ~ nbAidesDeCamp ~ ' aide' ~ (nbAidesDeCamp > 1 ? 's' : '') ~ ' de camp)' : '')},
                         {'title': 'Places libre', 'text': nbLibre},
                         {'title': 'Recherche de places', 'text': nbAvailable},
@@ -257,7 +257,7 @@
                     } %}
                     {% if is_granted('ROLE_SCENARISTE', app.user) %}
                         <div class="d-flex justify-content-end mt-2">
-                            <a class="btn btn-secondary" href="{{ path('groupe.place', {'groupe': groupe.id}) }}">
+                            <a class="btn btn-secondary" href="{{ path('groupeGn.place', {'groupeGn': groupeGn.id}) }}">
                                 <i class="fa fa-pencil"></i> Modifier les places
                             </a>
                         </div>

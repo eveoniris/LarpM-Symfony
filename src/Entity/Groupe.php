@@ -476,23 +476,35 @@ class Groupe extends BaseGroupe implements Stringable
     public const PLACES_PAR_FIEF_SUPPLEMENTAIRE = 2;
 
     /**
+     * Fiefs possédés par le groupe : les territoires finaux (voir Territoire::isFief).
+     *
+     * @return Collection<int, Territoire>
+     */
+    public function getFiefs(): Collection
+    {
+        return $this->getTerritoires()->filter(static fn (Territoire $territoire): bool => $territoire->isFief());
+    }
+
+    /**
      * Places calculées automatiquement : places par défaut du GN (12 sinon) + 2 par fief contrôlé au-delà du premier.
      */
     public function getPlaceCalculee(?Gn $gn = null): int
     {
         $parDefaut = $gn?->getPlacesParGroupe() ?? self::PLACES_PAR_DEFAUT;
-        $fiefsSupplementaires = max(0, \count($this->getTerritoires()) - 1);
+        $fiefsSupplementaires = max(0, $this->getFiefs()->count() - 1);
 
         return $parDefaut + (self::PLACES_PAR_FIEF_SUPPLEMENTAIRE * $fiefsSupplementaires);
     }
 
     /**
-     * Nombre de places du groupe : la valeur fixée à la main (groupes PNJ ou spéciaux) si elle existe,
+     * Nombre de places du groupe pour ce GN : la limite fixée à la main sur la session du groupe si elle existe,
      * sinon le calcul automatique.
      */
     public function getPlaceTotal(?Gn $gn = null): int
     {
-        return $this->getPlacesMax() ?? $this->getPlaceCalculee($gn);
+        $session = null === $gn ? null : $this->getGroupeGns()->findFirst(static fn (int $key, GroupeGn $groupeGn): bool => $groupeGn->getGn() === $gn);
+
+        return $session?->getPlacesMax() ?? $this->getPlaceCalculee($gn);
     }
 
     /**
