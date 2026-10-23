@@ -14,9 +14,10 @@
 				<strong>{{ c.parent1.nom }}</strong> (n°{{ c.parent1.id }}) et <strong>{{ c.parent2.nom }}</strong> (n°{{ c.parent2.id }})
 				<span class="badge text-bg-secondary">{{ c.statut.label }}</span>
 				{% if c.tirage is not null %}<div class="small">Tirage : <strong>{{ c.tirage }}</strong>, {{ c.issue.label }}</div>{% endif %}
-				{% for anomalie in c.anomalies %}<div class="small text-danger"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
+				{% if c.note %}<div class="small">Note des joueurs : {{ c.note|nl2br }}</div>{% endif %}
+				{% for anomalie in c.anomalies %}<div class="small lm-anomalie"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
 				{% if modifiable and c.statut.value == 'en_attente' %}
-					<form method="post" action="{{ path('depouillement.conception.delete', {'gn': gn.id, 'depouillement': depouillement.id, 'conception': c.id}) }}" onsubmit="return confirm('Retirer cette conception ?');">
+					<form method="post" action="{{ path('depouillement.conception.delete', {'gn': gn.id, 'depouillement': depouillement.id, 'conception': c.id}) }}" data-lm-confirm="Retirer cette conception ?" data-lm-confirm-danger data-lm-confirm-label="Retirer">
 						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_conception_' ~ c.id) }}">
 						<button type="submit" class="btn btn-sm btn-outline-danger">Retirer</button>
 					</form>
@@ -29,13 +30,17 @@
 {% endif %}
 
 {% if modifiable %}
-	<form method="post" action="{{ path('depouillement.conception.add', {'gn': gn.id, 'depouillement': depouillement.id}) }}" class="row g-2 align-items-end">
+	<form method="post" action="{{ path('depouillement.conception.add', {'gn': gn.id, 'depouillement': depouillement.id}) }}" class="row g-2">
 		<input type="hidden" name="_token" value="{{ csrf_token('depouillement_conception_add_' ~ depouillement.id) }}">
-		<div class="col-auto">
+		<div class="col-12 col-md-4">
 			<label for="conception-partenaire" class="form-label">N° de personnage du partenaire</label>
 			<input type="text" id="conception-partenaire" name="partenaire" class="form-control" inputmode="numeric" required>
 		</div>
-		<div class="col-auto">
+		<div class="col-12 col-md-8">
+			<label for="conception-note" class="form-label">Note complémentaire des joueurs pour cette conception <span class="text-muted">(facultative)</span></label>
+			<textarea id="conception-note" name="note" class="form-control" rows="2" maxlength="2000" placeholder="Ce que les joueurs précisent (circonstances, souhaits, rappel utile au scénariste)"></textarea>
+		</div>
+		<div class="col-12">
 			<button type="submit" class="btn btn-outline-primary">Enregistrer la conception</button>
 		</div>
 	</form>

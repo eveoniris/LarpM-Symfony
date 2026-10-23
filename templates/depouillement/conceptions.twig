@@ -31,7 +31,8 @@
 				<p class="mb-1">
 					{% if c.tirage is not null %}Tirage : <strong>{{ c.tirage }}</strong>, {{ c.issue.label }}{% else %}Pas de tirage (âge d'un parent){% endif %}
 				</p>
-				{% for anomalie in c.anomalies %}<div class="small text-danger"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
+				{% if c.note %}<p class="mb-1">Note des joueurs : {{ c.note|nl2br }}</p>{% endif %}
+				{% for anomalie in c.anomalies %}<div class="small lm-anomalie"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
 				{% if c.remarque %}<p class="mb-1">Remarque : {{ c.remarque|nl2br }}</p>{% endif %}
 				{% if c.heritiers|length > 0 %}
 					<p class="mb-1">Héritiers créés : {% for id in c.heritiers %}<a href="{{ path('personnage.detail', {'personnage': id}) }}">n°{{ id }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</p>

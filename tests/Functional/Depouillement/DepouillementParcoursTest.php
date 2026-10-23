@@ -300,9 +300,28 @@ class DepouillementParcoursTest extends WebTestCase
         $depouillement = $this->demarrer($gn, DepouillementType::JOUEUR, $moi);
         $client->loginUser($moi);
 
-        foreach (['identification', 'photos', 'contenu', 'remarques', 'recapitulatif'] as $etape) {
+        foreach (['identification', 'photos', 'etiquettes', 'contenu', 'actions', 'conceptions', 'remarques', 'recapitulatif'] as $etape) {
             $client->request('GET', $this->url($depouillement, '/etape/' . $etape));
             static::assertResponseIsSuccessful($etape);
+        }
+    }
+
+    public function testLEnveloppeDeGroupeNAPasLesEtapesActionsEtConceptions(): void
+    {
+        $client = static::createClient();
+        $gn = GnFactory::createOne();
+        $moi = $this->utilisateur('moi');
+        $depouillement = $this->demarrer($gn, DepouillementType::GROUPE, $moi);
+        $client->loginUser($moi);
+
+        foreach (['identification', 'photos', 'etiquettes', 'contenu', 'remarques', 'recapitulatif'] as $etape) {
+            $client->request('GET', $this->url($depouillement, '/etape/' . $etape));
+            static::assertResponseIsSuccessful($etape);
+        }
+
+        foreach (['actions', 'conceptions'] as $etape) {
+            $client->request('GET', $this->url($depouillement, '/etape/' . $etape));
+            static::assertResponseStatusCodeSame(404, $etape);
         }
     }
 }

@@ -29,7 +29,7 @@ final class DepouillementEtiquetteController extends AbstractDepouillementContro
     public function addAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementEtiquetteService $etiquetteService): Response
     {
         $this->verifier($gn, $depouillement);
-        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::CONTENU), 303);
+        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::ETIQUETTES), 303);
 
         $form = $this->createForm(DepouillementEtiquetteType::class, new EtiquetteSaisie());
         $form->handleRequest($request);
@@ -66,7 +66,7 @@ final class DepouillementEtiquetteController extends AbstractDepouillementContro
             throw $this->createNotFoundException();
         }
 
-        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::CONTENU), 303);
+        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::ETIQUETTES), 303);
 
         if (!$this->jetonValide($request, 'depouillement_etiquette_' . $etiquette->getId())) {
             return $retour;

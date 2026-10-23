@@ -7,7 +7,8 @@ namespace App\Enum;
 /**
  * Étapes du parcours de dépouillement (formulaire par étapes, mobile et web).
  *
- * Les étapes photos et contenu sont des emplacements : leur contenu arrive avec les étapes 5 à 7 du plan.
+ * L'enveloppe de groupe n'a pas les étapes « Actions de fin d'Opus » et « Conceptions », propres aux joueurs : la position et
+ * l'étape suivante ou précédente dépendent donc du type d'enveloppe.
  */
 enum DepouillementEtape: string
 {
@@ -15,7 +16,10 @@ enum DepouillementEtape: string
 
     case IDENTIFICATION = 'identification';
     case PHOTOS = 'photos';
+    case ETIQUETTES = 'etiquettes';
     case CONTENU = 'contenu';
+    case ACTIONS = 'actions';
+    case CONCEPTIONS = 'conceptions';
     case REMARQUES = 'remarques';
     case RECAPITULATIF = 'recapitulatif';
 
@@ -24,25 +28,46 @@ enum DepouillementEtape: string
         return match ($this) {
             self::IDENTIFICATION => 'Enveloppe',
             self::PHOTOS => 'Photos',
+            self::ETIQUETTES => 'Étiquettes',
             self::CONTENU => 'Contenu',
+            self::ACTIONS => 'Actions de fin d\'Opus',
+            self::CONCEPTIONS => 'Conceptions',
             self::REMARQUES => 'Remarques',
             self::RECAPITULATIF => 'Récapitulatif',
         };
     }
 
-    /** Position de l'étape dans le parcours, à partir de 1. */
-    public function position(): int
+    /** Étape propre aux enveloppes de joueurs. */
+    public function estReserveeAuxJoueurs(): bool
     {
-        return (int) array_search($this, self::cases(), strict: true) + 1;
+        return \in_array($this, [self::ACTIONS, self::CONCEPTIONS], strict: true);
     }
 
-    public function precedente(): ?self
+    /**
+     * Étapes du parcours d'un type d'enveloppe, dans l'ordre.
+     *
+     * @return list<self>
+     */
+    public static function pourType(DepouillementType $type): array
     {
-        return self::cases()[$this->position() - 2] ?? null;
+        return array_values(array_filter(self::cases(), static fn (self $etape): bool => DepouillementType::JOUEUR === $type || !$etape->estReserveeAuxJoueurs()));
     }
 
-    public function suivante(): ?self
+    /** Position de l'étape dans le parcours de ce type d'enveloppe, à partir de 1 (0 si l'étape n'en fait pas partie). */
+    public function position(DepouillementType $type): int
     {
-        return self::cases()[$this->position()] ?? null;
+        $position = array_search($this, self::pourType($type), strict: true);
+
+        return false === $position ? 0 : $position + 1;
+    }
+
+    public function precedente(DepouillementType $type): ?self
+    {
+        return self::pourType($type)[$this->position($type) - 2] ?? null;
+    }
+
+    public function suivante(DepouillementType $type): ?self
+    {
+        return self::pourType($type)[$this->position($type)] ?? null;
     }
 }

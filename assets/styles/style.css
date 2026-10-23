@@ -378,3 +378,15 @@ th.rotate > div > span {
 .personnage-mobile-bar > div:first-child { flex: 1 1 0; min-width: 0; }
 .personnage-mobile-bar .btn { min-height: 44px; }
 .personnage-mobile-bar .personnage-actions-btn { padding-left: .6rem; padding-right: .6rem; }
+
+/* Fenêtre de confirmation (<dialog>, voir lm-ui.js) : à la place du confirm() du navigateur */
+.lm-confirm-dialog { border: 1px solid var(--lm-line, rgba(128, 128, 128, .4)); border-radius: var(--lm-radius-lg, .6rem);
+  background: var(--lm-surface, var(--bs-body-bg, #fff)); color: var(--lm-fg, var(--bs-body-color, #212529));
+  padding: 1.25rem; width: min(92vw, 28rem); }
+.lm-confirm-dialog::backdrop { background: rgba(0, 0, 0, .65); backdrop-filter: blur(3px); }
+.lm-confirm-dialog form { margin: 0; }
+.lm-confirm-message { margin: 0 0 1rem; font-size: 1.05rem; }
+.lm-confirm-actions { display: flex; justify-content: flex-end; gap: .5rem; flex-wrap: wrap; }
+.lm-confirm-actions .btn { min-height: 44px; }
+/* Anomalie non bloquante, hors interface bêta (la version bêta la redéfinit dans lm-design.css) */
+html:not([data-ui="beta"]) .lm-anomalie { color: #8a5a00; }

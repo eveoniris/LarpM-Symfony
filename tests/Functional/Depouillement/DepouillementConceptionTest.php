@@ -52,7 +52,7 @@ class DepouillementConceptionTest extends WebTestCase
 
     private function contenu(Depouillement $depouillement): string
     {
-        return '/gn/' . $depouillement->getGn()->getId() . '/depouillement/' . $depouillement->getId() . '/etape/contenu';
+        return '/gn/' . $depouillement->getGn()->getId() . '/depouillement/' . $depouillement->getId() . '/etape/conceptions';
     }
 
     public function testEnregistrerUneConceptionPuisLaRetirer(): void
@@ -73,6 +73,21 @@ class DepouillementConceptionTest extends WebTestCase
         $client->submit($crawler->selectButton('Retirer')->form());
         $client->followRedirect();
         static::assertSelectorTextContains('body', 'Aucune conception signalée');
+    }
+
+    public function testLaNoteComplementaireDesJoueursEstEnregistreeEtAffichee(): void
+    {
+        $client = static::createClient();
+        [$depouillement, $numeroPartenaire, $moi] = $this->scene();
+        $client->loginUser($moi);
+
+        $crawler = $client->request('GET', $this->contenu($depouillement));
+        $client->submit($crawler->selectButton('Enregistrer la conception')->form(['partenaire' => (string) $numeroPartenaire, 'note' => '  Souhaite une fille  ']));
+        $client->followRedirect();
+
+        static::assertSelectorTextContains('body', 'Note des joueurs : Souhaite une fille');
+        $conception = static::getContainer()->get(EntityManagerInterface::class)->getRepository(Conception::class)->findOneBy([]);
+        static::assertSame('Souhaite une fille', $conception?->getNote());
     }
 
     public function testUnPartenaireInconnuAfficheUneErreur(): void

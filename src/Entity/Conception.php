@@ -61,6 +61,10 @@ class Conception
     #[ORM\Column(type: Types::JSON)]
     private array $anomalies = [];
 
+    /** Note complémentaire précisée par les joueurs pour cette conception (saisie par le dépouilleur). */
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $note = null;
+
     /** Raison ou note du scénariste (par exemple pourquoi il gère la création plus tard). */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $remarque = null;
@@ -199,6 +203,18 @@ class Conception
     public function setAnomalies(array $anomalies): static
     {
         $this->anomalies = $anomalies;
+
+        return $this;
+    }
+
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note): static
+    {
+        $this->note = $note;
 
         return $this;
     }

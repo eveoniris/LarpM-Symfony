@@ -36,10 +36,11 @@ readonly class ConceptionService
     /**
      * @param string                         $numeroPartenaire numéro de personnage du partenaire, tel que saisi
      * @param (callable(int, int): int)|null $sourceTirage     source de nombres du d20 (tests)
+     * @param string|null $note note complémentaire précisée par les joueurs pour cette conception
      *
      * @throws ConceptionInvalideException
      */
-    public function enregistrer(Depouillement $depouillement, string $numeroPartenaire, User $utilisateur, ?callable $sourceTirage = null): Conception
+    public function enregistrer(Depouillement $depouillement, string $numeroPartenaire, User $utilisateur, ?callable $sourceTirage = null, ?string $note = null): Conception
     {
         if (DepouillementType::JOUEUR !== $depouillement->getType()) {
             throw new ConceptionInvalideException('Une conception se signale dans une enveloppe de joueur.');
@@ -74,6 +75,7 @@ readonly class ConceptionService
             ->setParent2($parent2)
             ->setSimulation($depouillement->isSimulation())
             ->setAnomalies($anomalies)
+            ->setNote(null === $note || '' === trim($note) ? null : trim($note))
             ->setCreePar($utilisateur);
 
         // Parent non humain : échec d'office, sans tirage.

@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  * Contenu d'une enveloppe de joueur dans l'étape Contenu : formulaire, six actions, surplus, introuvables.
  */
 #[Group('functional')]
+// @mago-expect lint:too-many-methods
 class DepouillementContenuJoueurTest extends WebTestCase
 {
     private function beta(): User
@@ -45,6 +46,11 @@ class DepouillementContenuJoueurTest extends WebTestCase
         return '/gn/' . $depouillement->getGn()->getId() . '/depouillement/' . $depouillement->getId() . '/etape/contenu';
     }
 
+    private function actions(Depouillement $depouillement): string
+    {
+        return str_replace('/etape/contenu', replace: '/etape/actions', subject: $this->contenu($depouillement));
+    }
+
     public function testLEtapeContenuAfficheLeFormulaireDeLEnveloppeDeJoueur(): void
     {
         $client = static::createClient();
@@ -56,10 +62,16 @@ class DepouillementContenuJoueurTest extends WebTestCase
 
         static::assertResponseIsSuccessful();
         static::assertSelectorExists('form[name="contenu_joueur"]');
+        static::assertSelectorTextContains('body', 'Ressources et pièces trouvées dans l\'enveloppe');
+        static::assertSelectorCount(24, 'details input[type=number]');
+        static::assertSelectorTextNotContains('body', 'Action utilisée');
+
+        $client->request('GET', $this->actions($depouillement));
+        static::assertResponseIsSuccessful();
+        static::assertSelectorExists('form[name="contenu_joueur"]');
         static::assertSelectorTextContains('body', 'Fruits et légumes : prolonger l\'âge maximal');
         static::assertSelectorTextContains('body', 'Ivoire : conserver des potions');
-        static::assertSelectorTextContains('body', 'Surplus trouvé dans l\'enveloppe');
-        static::assertSelectorCount(24, 'details input[type=number]');
+        static::assertSelectorNotExists('details input[type=number]');
     }
 
     public function testUneEnveloppeDeGroupeNAPasCeFormulaire(): void
@@ -85,25 +97,34 @@ class DepouillementContenuJoueurTest extends WebTestCase
         $crawler = $client->request('GET', $this->contenu($depouillement));
         $form = $crawler->selectButton('Enregistrer le contenu')->form();
         $form['contenu_joueur[fichePersonnage]']->tick();
-        $form['contenu_joueur[fruitsUtilise]']->tick();
-        $form['contenu_joueur[soieUtilise]']->tick();
-        $form['contenu_joueur[soieJointes]']->tick();
         $form['contenu_joueur[surplus][bois]'] = '4';
         $form['contenu_joueur[introuvables]'] = 'Sort de feu inconnu';
         $client->submit($form);
-
         static::assertResponseRedirects($this->contenu($depouillement));
+        $client->followRedirect();
+        static::assertSelectorTextContains('body', 'introuvables dans les listes');
+
+        // L'étape des actions ne touche pas au contenu déjà enregistré.
+        $crawler = $client->request('GET', $this->actions($depouillement));
+        $form = $crawler->selectButton('Enregistrer les actions')->form();
+        $form['contenu_joueur[fruitsUtilise]']->tick();
+        $form['contenu_joueur[soieUtilise]']->tick();
+        $form['contenu_joueur[soieJointes]']->tick();
+        $client->submit($form);
+
+        static::assertResponseRedirects($this->actions($depouillement));
         $client->followRedirect();
         static::assertSelectorTextContains('body', 'Contenu enregistré : 1 action(s) de fin d\'Opus acceptée(s).');
         static::assertSelectorTextContains('body', 'Refusée');
         static::assertSelectorTextContains('body', 'Acceptée');
         static::assertSelectorTextContains('body', 'les 5 ressource(s) exigée(s) ne sont pas dans l\'enveloppe');
-        static::assertSelectorTextContains('body', 'introuvables dans les listes');
+        static::assertSelectorTextContains('body', 'sans effet, non bloquant');
 
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $em->clear();
         $relu = $em->find(Depouillement::class, $depouillement->getId());
         static::assertSame(4, $relu->getDonnees()['contenu_joueur']['surplus']['bois']);
+        static::assertTrue($relu->getDonnees()['contenu_joueur']['pieces']['fiche_personnage']);
         static::assertStringContainsString('[Introuvable] Sort de feu inconnu', (string) $relu->getRemarques());
     }
 
@@ -114,8 +135,8 @@ class DepouillementContenuJoueurTest extends WebTestCase
         $depouillement = $this->depouillement($moi);
         $client->loginUser($moi);
 
-        $crawler = $client->request('GET', $this->contenu($depouillement));
-        $form = $crawler->selectButton('Enregistrer le contenu')->form();
+        $crawler = $client->request('GET', $this->actions($depouillement));
+        $form = $crawler->selectButton('Enregistrer les actions')->form();
         $form['contenu_joueur[gemmeUtilise]']->tick();
         $form['contenu_joueur[gemmeJointes]']->tick();
         $form['contenu_joueur[gemmePieces]'] = '9';
@@ -135,8 +156,8 @@ class DepouillementContenuJoueurTest extends WebTestCase
         $depouillement = $this->depouillement($moi);
         $client->loginUser($moi);
 
-        $crawler = $client->request('GET', $this->contenu($depouillement));
-        $form = $crawler->selectButton('Enregistrer le contenu')->form();
+        $crawler = $client->request('GET', $this->actions($depouillement));
+        $form = $crawler->selectButton('Enregistrer les actions')->form();
         $form['contenu_joueur[soieUtilise]']->tick();
         $form['contenu_joueur[soieJointes]']->tick();
         $client->submit($form);
@@ -146,7 +167,7 @@ class DepouillementContenuJoueurTest extends WebTestCase
         $em->find(Depouillement::class, $depouillement->getId())->setStatut(DepouillementStatut::A_VALIDER);
         $em->flush();
 
-        $client->request('GET', $this->contenu($depouillement));
+        $client->request('GET', $this->actions($depouillement));
         static::assertSelectorNotExists('form[name="contenu_joueur"]');
         static::assertSelectorTextContains('body', 'Soie : augmenter la renommée : Acceptée');
     }
@@ -160,10 +181,13 @@ class DepouillementContenuJoueurTest extends WebTestCase
 
         $crawler = $client->request('GET', $this->contenu($depouillement));
         $form = $crawler->selectButton('Enregistrer le contenu')->form();
+        $form['contenu_joueur[surplus][bois]'] = '4';
+        $client->submit($form);
+        $crawler = $client->request('GET', $this->actions($depouillement));
+        $form = $crawler->selectButton('Enregistrer les actions')->form();
         $form['contenu_joueur[soieUtilise]']->tick();
         $form['contenu_joueur[soieJointes]']->tick();
         $form['contenu_joueur[fruitsUtilise]']->tick();
-        $form['contenu_joueur[surplus][bois]'] = '4';
         $client->submit($form);
 
         $client->request('GET', str_replace('/etape/contenu', replace: '/etape/recapitulatif', subject: $this->contenu($depouillement)));

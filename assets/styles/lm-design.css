@@ -798,3 +798,46 @@ html[data-ui="beta"] .list-group:not(.card .list-group, .well .list-group, .pane
 /* Gabarits historiques qui mettent des <th> dans le corps du tableau : même aspect qu'une cellule, légèrement en gras */
 .lm-table tbody th { font: 600 inherit var(--lm-font-body); font-size: inherit; letter-spacing: 0; text-transform: none; color: var(--lm-fg); white-space: normal;
                      border-bottom: 1px solid var(--lm-line); text-align: left; }
+
+/* --- Boutons Bootstrap « contour » et pleins (succès, alerte, danger) : fond de verre et couleurs du design ---
+   Sans cela un contour bleu Bootstrap, sans fond, se lit mal sur la photo sombre. */
+html[data-ui="beta"] .btn-outline-primary   { --lm-btn: var(--lm-accent); --lm-btn-text: var(--lm-accent); }
+html[data-ui="beta"] .btn-outline-secondary { --lm-btn: var(--lm-muted);  --lm-btn-text: var(--lm-fg); }
+html[data-ui="beta"] .btn-outline-success   { --lm-btn: var(--lm-ok);     --lm-btn-text: var(--lm-ok-text); }
+html[data-ui="beta"] .btn-outline-warning   { --lm-btn: var(--lm-warn);   --lm-btn-text: var(--lm-warn-text); }
+html[data-ui="beta"] .btn-outline-danger    { --lm-btn: var(--lm-err);    --lm-btn-text: var(--lm-err-text); }
+html[data-ui="beta"] .btn-outline-info      { --lm-btn: var(--lm-domaine); --lm-btn-text: var(--lm-domaine-text); }
+html[data-ui="beta"] :is(.btn-outline-primary, .btn-outline-secondary, .btn-outline-success, .btn-outline-warning, .btn-outline-danger, .btn-outline-info) {
+  --bs-btn-color: var(--lm-btn-text); --bs-btn-border-color: var(--lm-btn);
+  --bs-btn-bg: color-mix(in srgb, var(--lm-surface) 82%, transparent);
+  --bs-btn-hover-color: var(--lm-btn-text); --bs-btn-hover-border-color: var(--lm-btn);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--lm-btn) 22%, var(--lm-surface));
+  --bs-btn-active-color: var(--lm-btn-text); --bs-btn-active-border-color: var(--lm-btn);
+  --bs-btn-active-bg: color-mix(in srgb, var(--lm-btn) 32%, var(--lm-surface));
+  --bs-btn-disabled-color: var(--lm-muted); --bs-btn-disabled-border-color: var(--lm-line);
+  --bs-btn-disabled-bg: color-mix(in srgb, var(--lm-surface) 82%, transparent);
+  backdrop-filter: blur(4px);
+}
+html[data-ui="beta"] .btn-success, html[data-ui="beta"] .btn-warning {
+  --lm-btn: var(--lm-ok); --bs-btn-color: var(--lm-on-accent); --bs-btn-hover-color: var(--lm-on-accent); --bs-btn-active-color: var(--lm-on-accent);
+  --bs-btn-bg: var(--lm-btn); --bs-btn-border-color: var(--lm-btn);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--lm-btn) 86%, #fff); --bs-btn-hover-border-color: color-mix(in srgb, var(--lm-btn) 86%, #fff);
+  --bs-btn-active-bg: color-mix(in srgb, var(--lm-btn) 78%, #000); --bs-btn-active-border-color: color-mix(in srgb, var(--lm-btn) 78%, #000);
+}
+html[data-ui="beta"] .btn-warning { --lm-btn: var(--lm-warn); }
+html[data-ui="beta"] .btn-danger {
+  --bs-btn-color: #fff; --bs-btn-hover-color: #fff; --bs-btn-active-color: #fff;
+  --bs-btn-bg: var(--lm-err); --bs-btn-border-color: var(--lm-err);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--lm-err) 86%, #fff); --bs-btn-hover-border-color: color-mix(in srgb, var(--lm-err) 86%, #fff);
+  --bs-btn-active-bg: color-mix(in srgb, var(--lm-err) 78%, #000); --bs-btn-active-border-color: color-mix(in srgb, var(--lm-err) 78%, #000);
+}
+
+/* Une carte en verre dépoli forme son propre empilement (backdrop-filter) : la carte suivante recouvrirait la liste déroulante
+   d'un champ à choix multiple. La carte qui contient le focus passe au-dessus. */
+.lm-carte-verre:focus-within { position: relative; z-index: 20; }
+
+/* Anomalies du dépouillement : à vérifier, jamais bloquantes (orange, pas rouge) */
+html[data-ui="beta"] .lm-anomalie { color: var(--lm-warn-text); }
+.lm-anomalie .fa, .lm-anomalie .fa-solid { margin-right: .25rem; }
+.lm-table tr.lm-row-anomalie > td { background: color-mix(in srgb, var(--lm-warn) 12%, transparent); }
+.lm-table tr.lm-row-anomalie > td:first-child { box-shadow: inset 3px 0 0 var(--lm-warn); }

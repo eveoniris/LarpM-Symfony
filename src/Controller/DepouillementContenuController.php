@@ -31,9 +31,16 @@ final class DepouillementContenuController extends AbstractDepouillementControll
     public function joueurAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementContenuService $contenuService): Response
     {
         $this->verifier($gn, $depouillement);
-        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::CONTENU), 303);
+        $portion = $request->query->getString('portion', ContenuJoueurType::PORTION_TOUT);
+        if (!\in_array($portion, [ContenuJoueurType::PORTION_TOUT, ContenuJoueurType::PORTION_CONTENU, ContenuJoueurType::PORTION_ACTIONS], strict: true)) {
+            throw $this->createNotFoundException();
+        }
 
-        $form = $this->createForm(ContenuJoueurType::class, new ContenuJoueur());
+        $etape = ContenuJoueurType::PORTION_ACTIONS === $portion ? DepouillementEtape::ACTIONS : DepouillementEtape::CONTENU;
+        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, $etape), 303);
+
+        // Le formulaire d'une étape ne touche que ses champs : on part du contenu déjà enregistré pour ne pas effacer le reste.
+        $form = $this->createForm(ContenuJoueurType::class, $contenuService->lireContenuJoueur($depouillement), ['portion' => $portion]);
         $form->handleRequest($request);
 
         if (!$form->isSubmitted() || !$form->isValid()) {
