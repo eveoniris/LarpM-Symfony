@@ -108,8 +108,8 @@ class DepouillementTest extends KernelTestCase
         $simulation = $this->creer(DepouillementType::JOUEUR, '100', true);
         $reel = $this->creer(DepouillementType::JOUEUR, '100', false);
 
-        static::assertSame($reel->getId(), $this->repository->findReelByEnveloppe($reel->getGn(), DepouillementType::JOUEUR, '100')?->getId());
-        static::assertNull($this->repository->findReelByEnveloppe($simulation->getGn(), DepouillementType::JOUEUR, '100'));
+        static::assertSame($reel->getId(), $this->repository->findByEnveloppe($reel->getGn(), DepouillementType::JOUEUR, '100', simulation: false)?->getId());
+        static::assertNull($this->repository->findByEnveloppe($simulation->getGn(), DepouillementType::JOUEUR, '100', simulation: false));
     }
 
     public function testPurgeSupprimeLesSimulationsEtLeurHistoriqueSeulement(): void

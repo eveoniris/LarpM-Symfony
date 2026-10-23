@@ -158,6 +158,5 @@ class ActionsFinOpusReglesTest extends TestCase
         static::assertSame(0, $normalisees['vin']);
         static::assertArrayNotHasKey('inconnu', $normalisees);
         static::assertSame(['Bois' => 4], CompteursEnveloppe::nonNulles(['bois' => 4, 'sel' => 0]));
-        static::assertSame(7, CompteursEnveloppe::total(['bois' => 4, 'pierre' => 3]));
     }
 }

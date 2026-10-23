@@ -195,6 +195,6 @@ readonly class DepouillementService
      */
     public function listerSimulations(Gn $gn): array
     {
-        return $this->depouillementRepository->findBy(['gn' => $gn, 'simulation' => true], ['createdAt' => 'DESC']);
+        return $this->depouillementRepository->findSimulationsAvecContexte($gn);
     }
 }

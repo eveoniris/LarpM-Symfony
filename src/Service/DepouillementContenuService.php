@@ -42,7 +42,7 @@ readonly class DepouillementContenuService
         }
 
         if (!$depouillement->getStatut()->isEditable()) {
-            throw new ContenuInvalideException('Ce dépouillement n\'est plus modifiable.');
+            throw new ContenuInvalideException(Depouillement::MESSAGE_NON_MODIFIABLE);
         }
 
         $contenu->surplus = CompteursEnveloppe::normaliser($contenu->surplus);

@@ -14,7 +14,6 @@ use App\Service\ContenuGroupe;
 use App\Service\ContenuJoueur;
 use App\Service\DepouillementContenuService;
 use App\Service\DepouillementGroupeService;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -38,9 +37,7 @@ final class DepouillementContenuController extends AbstractDepouillementControll
         $form->handleRequest($request);
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            foreach ($form->getErrors(true) as $erreur) {
-                $this->addFlash('error', $erreur instanceof FormError ? $erreur->getMessage() : 'Saisie invalide.');
-            }
+            $this->flashErreurs($form);
 
             return $retour;
         }
@@ -71,9 +68,7 @@ final class DepouillementContenuController extends AbstractDepouillementControll
         $form->handleRequest($request);
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            foreach ($form->getErrors(true) as $erreur) {
-                $this->addFlash('error', $erreur instanceof FormError ? $erreur->getMessage() : 'Saisie invalide.');
-            }
+            $this->flashErreurs($form);
 
             return $retour;
         }

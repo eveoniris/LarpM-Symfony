@@ -36,11 +36,6 @@ enum DepouillementEtape: string
         return (int) array_search($this, self::cases(), strict: true) + 1;
     }
 
-    public static function total(): int
-    {
-        return \count(self::cases());
-    }
-
     public function precedente(): ?self
     {
         return self::cases()[$this->position() - 2] ?? null;

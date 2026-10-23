@@ -59,14 +59,6 @@ final class CompteursEnveloppe
     }
 
     /**
-     * @param array<string, mixed> $valeurs
-     */
-    public static function total(array $valeurs): int
-    {
-        return array_sum(self::normaliser($valeurs));
-    }
-
-    /**
      * Cases non nulles seulement, avec leur libellé, pour l'affichage.
      *
      * @param array<string, mixed> $valeurs

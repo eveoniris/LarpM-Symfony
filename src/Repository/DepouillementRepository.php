@@ -24,35 +24,43 @@ class DepouillementRepository extends BaseRepository
     }
 
     /**
-     * Dépouillement réel (hors simulation) déjà ouvert pour une enveloppe : sert à avertir d'une reprise ou d'un doublon.
-     */
-    public function findReelByEnveloppe(Gn $gn, DepouillementType $type, string $numero): ?Depouillement
-    {
-        return $this
-            ->getEntityManager()
-            ->getRepository(Depouillement::class)
-            ->findOneBy([
-                'gn' => $gn,
-                'type' => $type,
-                'numero' => $numero,
-                'simulation' => false,
-            ]);
-    }
-
-    /**
-     * Dépouillement déjà ouvert pour cette enveloppe (réel ou simulation), quel que soit son statut.
+     * Dépouillement déjà ouvert pour cette enveloppe (réel ou simulation), quel que soit son statut : sert à avertir d'une
+     * reprise ou d'un doublon.
      */
     public function findByEnveloppe(Gn $gn, DepouillementType $type, string $numero, bool $simulation): ?Depouillement
     {
-        return $this
-            ->getEntityManager()
-            ->getRepository(Depouillement::class)
-            ->findOneBy([
-                'gn' => $gn,
-                'type' => $type,
-                'numero' => $numero,
-                'simulation' => $simulation,
-            ]);
+        return $this->findOneBy([
+            'gn' => $gn,
+            'type' => $type,
+            'numero' => $numero,
+            'simulation' => $simulation,
+        ]);
+    }
+
+    /**
+     * Simulations d'un GN, de la plus récente à la plus ancienne, avec ce que la liste affiche (groupe, joueur, dépouilleur)
+     * chargé en une seule requête.
+     *
+     * @return list<Depouillement>
+     */
+    public function findSimulationsAvecContexte(Gn $gn): array
+    {
+        return array_values(
+            $this
+                ->createQueryBuilder('d')
+                ->addSelect('gg', 'g', 'p', 'u', 'dep')
+                ->leftJoin('d.groupeGn', 'gg')
+                ->leftJoin('gg.groupe', 'g')
+                ->leftJoin('d.participant', 'p')
+                ->leftJoin('p.user', 'u')
+                ->leftJoin('d.depouilleur', 'dep')
+                ->where('d.gn = :gn AND d.simulation = true')
+                ->setParameter('gn', $gn)
+                ->orderBy('d.createdAt', 'DESC')
+                ->addOrderBy('d.id', 'DESC')
+                ->getQuery()
+                ->getResult(),
+        );
     }
 
     /**
@@ -61,10 +69,8 @@ class DepouillementRepository extends BaseRepository
     public function countJoueursEnCours(GroupeGn $groupeGn, bool $simulation): int
     {
         return (int) $this
-            ->getEntityManager()
-            ->createQueryBuilder()
+            ->createQueryBuilder('d')
             ->select('COUNT(d.id)')
-            ->from(Depouillement::class, 'd')
             ->join('d.participant', 'p')
             ->where('d.gn = :gn AND d.type = :type AND d.simulation = :simulation AND d.statut = :statut AND p.groupeGn = :groupeGn')
             ->setParameter('gn', $groupeGn->getGn())
@@ -86,10 +92,7 @@ class DepouillementRepository extends BaseRepository
     {
         return array_values(
             $this
-                ->getEntityManager()
-                ->createQueryBuilder()
-                ->select('d')
-                ->from(Depouillement::class, 'd')
+                ->createQueryBuilder('d')
                 ->join('d.participant', 'p')
                 ->where('d.gn = :gn AND d.type = :type AND d.simulation = :simulation AND p.groupeGn = :groupeGn')
                 ->setParameter('gn', $groupeGn->getGn())
@@ -147,11 +150,7 @@ class DepouillementRepository extends BaseRepository
      */
     public function purgeSimulations(?Gn $gn = null): int
     {
-        $query = $this
-            ->getEntityManager()
-            ->createQueryBuilder()
-            ->delete(Depouillement::class, 'd')
-            ->where('d.simulation = true');
+        $query = $this->createQueryBuilder('d')->delete()->where('d.simulation = true');
 
         if (null !== $gn) {
             $query->andWhere('d.gn = :gn')->setParameter('gn', $gn);

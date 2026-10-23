@@ -28,6 +28,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(columns: ['simulation'], name: 'idx_depouillement_simulation')]
 class Depouillement
 {
+    /** Message affiché (ou levé) quand on tente de modifier un dépouillement qui n'est plus en cours de saisie. */
+    public const string MESSAGE_NON_MODIFIABLE = 'Ce dépouillement n\'est plus modifiable.';
+
     #[ORM\Id, ORM\Column(type: Types::INTEGER), ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id = null;
 
@@ -84,8 +87,13 @@ class Depouillement
     #[ORM\JoinColumn(name: 'validated_by_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?User $validatedBy = null;
 
-    /** @var Collection<int, DepouillementHistory> */
-    #[ORM\OneToMany(mappedBy: 'depouillement', targetEntity: DepouillementHistory::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    /**
+     * EXTRA_LAZY : chaque action ajoute une ligne d'historique (avec le brouillon avant et après) sans avoir besoin de relire
+     * toutes les précédentes.
+     *
+     * @var Collection<int, DepouillementHistory>
+     */
+    #[ORM\OneToMany(mappedBy: 'depouillement', targetEntity: DepouillementHistory::class, cascade: ['persist', 'remove'], orphanRemoval: true, fetch: 'EXTRA_LAZY')]
     #[ORM\OrderBy(['actionDate' => 'DESC'])]
     private Collection $histories;
 

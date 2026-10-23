@@ -57,9 +57,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         $this->verifier($gn, $depouillement);
         $liste = $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
 
-        if (!$this->isCsrfTokenValid('depouillement_reprendre_' . $depouillement->getId(), $request->request->getString('_token'))) {
-            $this->addFlash('error', 'Jeton de sécurité invalide.');
-
+        if (!$this->jetonValide($request, 'depouillement_reprendre_' . $depouillement->getId())) {
             return $liste;
         }
 
@@ -127,9 +125,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         $this->verifier($gn, $depouillement);
         $redirection = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::RECAPITULATIF), 303);
 
-        if (!$this->isCsrfTokenValid('depouillement_terminer_' . $depouillement->getId(), $request->request->getString('_token'))) {
-            $this->addFlash('error', 'Jeton de sécurité invalide.');
-
+        if (!$this->jetonValide($request, 'depouillement_terminer_' . $depouillement->getId())) {
             return $redirection;
         }
 

@@ -43,9 +43,7 @@ final class DepouillementPhotoController extends AbstractDepouillementController
             return $retour;
         }
 
-        if (!$this->isCsrfTokenValid('depouillement_photos_' . $depouillement->getId(), $request->request->getString('_token'))) {
-            $this->addFlash('error', 'Jeton de sécurité invalide.');
-
+        if (!$this->jetonValide($request, 'depouillement_photos_' . $depouillement->getId())) {
             return $retour;
         }
 
@@ -108,14 +106,12 @@ final class DepouillementPhotoController extends AbstractDepouillementController
         $this->denyAccessUnlessGranted(DepouillementPhotoVoter::MANAGE, $photo);
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::PHOTOS), 303);
 
-        if (!$this->isCsrfTokenValid('depouillement_photo_' . $photo->getId(), $request->request->getString('_token'))) {
-            $this->addFlash('error', 'Jeton de sécurité invalide.');
-
+        if (!$this->jetonValide($request, 'depouillement_photo_' . $photo->getId())) {
             return $retour;
         }
 
         if (!$depouillement->getStatut()->isEditable()) {
-            $this->addFlash('error', 'Ce dépouillement n\'est plus modifiable.');
+            $this->addFlash('error', Depouillement::MESSAGE_NON_MODIFIABLE);
 
             return $retour;
         }
@@ -141,9 +137,7 @@ final class DepouillementPhotoController extends AbstractDepouillementController
         $this->denyAccessUnlessGranted(DepouillementPhotoVoter::MANAGE, $photo);
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::PHOTOS), 303);
 
-        if (!$this->isCsrfTokenValid('depouillement_photo_' . $photo->getId(), $request->request->getString('_token'))) {
-            $this->addFlash('error', 'Jeton de sécurité invalide.');
-
+        if (!$this->jetonValide($request, 'depouillement_photo_' . $photo->getId())) {
             return $retour;
         }
 

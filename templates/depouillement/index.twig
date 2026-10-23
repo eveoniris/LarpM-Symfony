@@ -64,7 +64,7 @@
 						<td>{{ simulation.depouilleur ? simulation.depouilleur.username : '-' }}</td>
 						<td>{{ simulation.createdAt|date('d/m/Y H:i') }}</td>
 						<td class="text-nowrap">
-							<a class="btn btn-sm btn-primary" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': simulation.id, 'etape': (simulation.statut.value == 'en_depouillement' ? 'identification' : 'recapitulatif')}) }}"><i class="fa fa-folder-open"></i> Ouvrir</a>
+							<a class="btn btn-sm btn-primary" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': simulation.id, 'etape': (simulation.statut.editable ? 'identification' : 'recapitulatif')}) }}"><i class="fa fa-folder-open"></i> Ouvrir</a>
 							<form class="d-inline" method="post" action="{{ path('depouillement.delete', {'gn': gn.id, 'depouillement': simulation.id}) }}" onsubmit="return confirm('Supprimer cette simulation ?');">
 								<input type="hidden" name="_token" value="{{ csrf_token('depouillement_delete_' ~ simulation.id) }}">
 								<button type="submit" class="btn btn-sm btn-danger" title="Supprimer cette simulation"><i class="fa fa-trash"></i> Supprimer</button>

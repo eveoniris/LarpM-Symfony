@@ -62,9 +62,7 @@ final class DepouillementController extends AbstractDepouillementController
     {
         $redirection = $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
 
-        if (!$this->isCsrfTokenValid('depouillement_purge_' . $gn->getId(), $request->request->getString('_token'))) {
-            $this->addFlash('error', 'Jeton de sécurité invalide.');
-
+        if (!$this->jetonValide($request, 'depouillement_purge_' . $gn->getId())) {
             return $redirection;
         }
 
@@ -82,9 +80,7 @@ final class DepouillementController extends AbstractDepouillementController
         $this->verifier($gn, $depouillement);
         $redirection = $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
 
-        if (!$this->isCsrfTokenValid('depouillement_delete_' . $depouillement->getId(), $request->request->getString('_token'))) {
-            $this->addFlash('error', 'Jeton de sécurité invalide.');
-
+        if (!$this->jetonValide($request, 'depouillement_delete_' . $depouillement->getId())) {
             return $redirection;
         }
 

@@ -45,7 +45,7 @@ readonly class DepouillementPhotoService
     public function ajouter(Depouillement $depouillement, UploadedFile $fichier, User $utilisateur): DepouillementPhoto
     {
         if (!$depouillement->getStatut()->isEditable()) {
-            throw new PhotoInvalideException('Ce dépouillement n\'est plus modifiable.');
+            throw new PhotoInvalideException(Depouillement::MESSAGE_NON_MODIFIABLE);
         }
 
         $nom = $this->nomAffichable($fichier);

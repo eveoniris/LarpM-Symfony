@@ -12,7 +12,6 @@ use App\Exception\EtiquetteInvalideException;
 use App\Form\Depouillement\DepouillementEtiquetteType;
 use App\Service\DepouillementEtiquetteService;
 use App\Service\EtiquetteSaisie;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -36,9 +35,7 @@ final class DepouillementEtiquetteController extends AbstractDepouillementContro
         $form->handleRequest($request);
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            foreach ($form->getErrors(true) as $erreur) {
-                $this->addFlash('error', $erreur instanceof FormError ? $erreur->getMessage() : 'Saisie invalide.');
-            }
+            $this->flashErreurs($form);
 
             return $retour;
         }
@@ -71,14 +68,12 @@ final class DepouillementEtiquetteController extends AbstractDepouillementContro
 
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::CONTENU), 303);
 
-        if (!$this->isCsrfTokenValid('depouillement_etiquette_' . $etiquette->getId(), $request->request->getString('_token'))) {
-            $this->addFlash('error', 'Jeton de sécurité invalide.');
-
+        if (!$this->jetonValide($request, 'depouillement_etiquette_' . $etiquette->getId())) {
             return $retour;
         }
 
         if (!$depouillement->getStatut()->isEditable()) {
-            $this->addFlash('error', 'Ce dépouillement n\'est plus modifiable.');
+            $this->addFlash('error', Depouillement::MESSAGE_NON_MODIFIABLE);
 
             return $retour;
         }

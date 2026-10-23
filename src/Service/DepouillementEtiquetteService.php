@@ -38,7 +38,7 @@ readonly class DepouillementEtiquetteService
     public function ajouter(Depouillement $depouillement, EtiquetteSaisie $saisie, User $utilisateur): DepouillementEtiquette
     {
         if (!$depouillement->getStatut()->isEditable()) {
-            throw new EtiquetteInvalideException('Ce dépouillement n\'est plus modifiable.');
+            throw new EtiquetteInvalideException(Depouillement::MESSAGE_NON_MODIFIABLE);
         }
 
         if (EtiquetteNature::BANNIERE === $saisie->nature) {

@@ -31,9 +31,7 @@ final class DepouillementValidationController extends AbstractDepouillementContr
         $this->denyAccessUnlessGranted(DepouillementVoter::VALIDER, $depouillement);
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::RECAPITULATIF), 303);
 
-        if (!$this->isCsrfTokenValid('depouillement_valider_' . $depouillement->getId(), $request->request->getString('_token'))) {
-            $this->addFlash('error', 'Jeton de sécurité invalide.');
-
+        if (!$this->jetonValide($request, 'depouillement_valider_' . $depouillement->getId())) {
             return $retour;
         }
 
@@ -57,9 +55,7 @@ final class DepouillementValidationController extends AbstractDepouillementContr
         $this->denyAccessUnlessGranted(DepouillementVoter::VALIDER, $depouillement);
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::RECAPITULATIF), 303);
 
-        if (!$this->isCsrfTokenValid('depouillement_renvoyer_' . $depouillement->getId(), $request->request->getString('_token'))) {
-            $this->addFlash('error', 'Jeton de sécurité invalide.');
-
+        if (!$this->jetonValide($request, 'depouillement_renvoyer_' . $depouillement->getId())) {
             return $retour;
         }
 

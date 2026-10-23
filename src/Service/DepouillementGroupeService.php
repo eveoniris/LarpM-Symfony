@@ -40,7 +40,7 @@ readonly class DepouillementGroupeService
         }
 
         if (!$depouillement->getStatut()->isEditable()) {
-            throw new ContenuInvalideException('Ce dépouillement n\'est plus modifiable.');
+            throw new ContenuInvalideException(Depouillement::MESSAGE_NON_MODIFIABLE);
         }
 
         $avant = $depouillement->getDonnees()[self::CLE] ?? null;

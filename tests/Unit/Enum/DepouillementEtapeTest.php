@@ -15,7 +15,6 @@ class DepouillementEtapeTest extends TestCase
     {
         static::assertSame(1, DepouillementEtape::IDENTIFICATION->position());
         static::assertSame(5, DepouillementEtape::RECAPITULATIF->position());
-        static::assertSame(5, DepouillementEtape::total());
     }
 
     public function testNavigationPrecedenteEtSuivante(): void
