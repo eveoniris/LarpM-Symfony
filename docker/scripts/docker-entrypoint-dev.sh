@@ -1,24 +1,42 @@
 #!/bin/sh
 set -e
 
-COMPOSER_MARKER="var/.composer-installed"
+mkdir -p var
 
-if [ ! -f "$COMPOSER_MARKER" ]; then
-    echo "No composer marker found: installing dependencies."
-    composer install --no-interaction --optimize-autoloader
-    touch "$COMPOSER_MARKER"
-else
-    echo "Composer marker found: skipping composer install."
+# Composer
+COMPOSER_HASH=$(md5sum composer.lock 2>/dev/null | cut -d' ' -f1)
+if [ ! -f "vendor/autoload.php" ] || [ "$(cat var/.composer.hash 2>/dev/null)" != "$COMPOSER_HASH" ]; then
+    echo "Installing Composer dependencies..."
+    composer install --no-interaction
+    echo "$COMPOSER_HASH" > var/.composer.hash
 fi
 
+# AssetMapper
+if [ -f "importmap.php" ]; then
+    IMPORTMAP_HASH=$(md5sum importmap.php | cut -d' ' -f1)
+    if [ "$(cat var/.importmap.hash 2>/dev/null)" != "$IMPORTMAP_HASH" ]; then
+        echo "Updating importmap assets..."
+        php bin/console importmap:install
+        echo "$IMPORTMAP_HASH" > var/.importmap.hash
+    fi
+fi
+
+# Wait 60s for database
 echo "Waiting for database..."
+tries=0
 until php bin/console dbal:run-sql "SELECT 1" > /dev/null 2>&1; do
+    tries=$((tries + 1))
+    if [ "$tries" -gt 30 ]; then
+        echo "ERROR: Timed out waiting for database." >&2
+        exit 1
+    fi
     sleep 2
 done
 echo "Database is ready."
 
-# If no migrations are recorded, the DB was just initialized from SQL files.
-# Mark all existing migrations as done so only future ones will run.
+# Migrations
+## If no migrations are recorded, the DB was just initialized from SQL files.
+## Mark all existing migrations as done so only future ones will run.
 MIGRATION_COUNT=$(php bin/console dbal:run-sql "SELECT COUNT(*) FROM doctrine_migration_versions" 2>/dev/null | grep -oE '[0-9]+' | head -1 || echo "0")
 if [ -z "$MIGRATION_COUNT" ] || [ "$MIGRATION_COUNT" = "0" ]; then
     echo "No migrations recorded: syncing metadata and marking all as applied."
@@ -28,12 +46,5 @@ fi
 
 echo "Running pending migrations..."
 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
-
-if [ ! -d "var/cache/dev" ]; then
-    echo "Warming up Symfony cache..."
-    php bin/console cache:warmup
-else
-    echo "Symfony cache found: skipping warmup."
-fi
 
 exec docker-php-entrypoint "$@"

@@ -23,4 +23,4 @@ EOF
 
 export WEBSERVER_IMAGE=larpm-symfony:local
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-docker compose exec webserver php bin/console doctrine:schema:create --no-interaction
+docker compose exec webserver php bin/console migrations:migrate --no-interaction
