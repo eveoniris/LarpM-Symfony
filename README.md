@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/img/logo_eve.png" alt="Logo de l'association Eve-Oniris" width="200">
+</p>
+
 # LarpManager
 
 Outil de gestion de jeux de rôle grandeur nature (GN), développé par et pour l'association [Eveoniris](https://github.com/eveoniris).
@@ -13,6 +17,21 @@ Il sert plus de 1 500 participants sur plusieurs saisons de jeu.
 - **Groupes et monde** : groupes et groupes secondaires, territoires, constructions, économie et ressources, intrigues, rumeurs, chronologie, lois.
 - **Organisation** : stock d'objets (localisation, rangement, état, étiquettes), génération de QR codes, documents à imprimer, messagerie et notifications, statistiques et exports.
 - **Administration** : gestion des droits par rôle, règles du jeu, intégration Discord, API pour les joueurs.
+
+## Aperçu
+
+![Carte interactive du monde de jeu, avec ses royaumes et territoires](docs/images/carte-du-monde.jpg)
+
+<table>
+  <tr>
+    <td width="72%"><img src="docs/images/fiche-personnage.jpg" alt="Fiche d'un personnage : compétences, expérience, jetons et déclencheurs"></td>
+    <td width="28%"><img src="docs/images/mobile-fiche-personnage.jpg" alt="La même fiche de personnage sur mobile"></td>
+  </tr>
+  <tr>
+    <td align="center"><em>Fiche de personnage (bureau)</em></td>
+    <td align="center"><em>La même fiche sur mobile</em></td>
+  </tr>
+</table>
 
 ## Pile technique
 
