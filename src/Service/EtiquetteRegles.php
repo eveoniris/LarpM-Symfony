@@ -38,13 +38,12 @@ final class EtiquetteRegles
 
     /**
      * Bannière : chaque groupe en reçoit une, renouvelée à chaque GN. On la laisse dans l'enveloppe sans rien prévoir pour
-     * l'opus suivant, mais on consigne le nombre : plusieurs bannières signalent un vol.
+     * l'opus suivant, et on consigne le nombre. Voler des bannières fait partie du jeu (diplomatie et vol) : plusieurs
+     * bannières ne sont donc PAS une anomalie, juste une statistique.
      */
-    public function banniere(int $quantite): EtiquetteDecision
+    public function banniere(): EtiquetteDecision
     {
-        $anomalies = $quantite > 1 ? [\sprintf('Plusieurs bannières (%d) : un vol est probable, à signaler au scénariste.', $quantite)] : [];
-
-        return new EtiquetteDecision(EtiquetteDestination::ENVELOPPE, null, false, new EtiquetteQualite(false, null, null, $anomalies));
+        return new EtiquetteDecision(EtiquetteDestination::ENVELOPPE, null, false, new EtiquetteQualite(false, null, null, []));
     }
 
     /**

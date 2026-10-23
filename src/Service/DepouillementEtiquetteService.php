@@ -54,7 +54,7 @@ readonly class DepouillementEtiquetteService
 
         try {
             $decision = EtiquetteNature::BANNIERE === $saisie->nature
-                ? $this->regles->banniere($saisie->quantite)
+                ? $this->regles->banniere()
                 : $this->regles->evaluer($saisie->couleur, $qualite, $saisie->situation);
         } catch (InvalidArgumentException $exception) {
             throw new EtiquetteInvalideException($exception->getMessage(), previous: $exception);

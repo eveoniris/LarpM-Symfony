@@ -175,7 +175,7 @@
 					</div>
 					<p class="mb-0 small">
 						{% set bannieres = etiquettes|filter(e => e.nature.value == 'banniere')|reduce((total, e) => total + e.quantite, 0) %}
-						{% if bannieres > 0 %}<strong>{{ bannieres }}</strong> bannière(s) laissée(s) dans l'enveloppe,{% endif %}
+						{% if bannieres > 0 %}<strong>{{ bannieres }}</strong> bannière(s) laissée(s) dans l'enveloppe{% if bannieres > 1 %} (dont {{ bannieres - 1 }} prise(s) à d'autres groupes ?){% endif %},{% endif %}
 						<strong>{{ generiques }}</strong> étiquette(s) remise(s) au stock,
 						<strong>{{ etiquettes|filter(e => e.aPrevoirProchainOpus)|length }}</strong> ligne(s) à prévoir pour l'enveloppe de l'opus suivant.
 						{% if etiquettes|filter(e => e.anomalies|length > 0)|length > 0 %}

@@ -241,7 +241,7 @@ class DepouillementEtiquetteServiceTest extends KernelTestCase
         static::assertNull($etiquette->getItem());
         static::assertSame(EtiquetteDestination::ENVELOPPE, $etiquette->getDestination());
         static::assertFalse($etiquette->isAPrevoirProchainOpus());
-        static::assertStringContainsString('Plusieurs bannières (3)', $etiquette->getAnomalies()[0]);
+        static::assertSame([], $etiquette->getAnomalies());
     }
 
     public function testUneSeuleBanniereNeSignaleRien(): void

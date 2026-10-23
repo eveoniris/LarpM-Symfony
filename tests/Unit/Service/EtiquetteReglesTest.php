@@ -124,21 +124,13 @@ class EtiquetteReglesTest extends TestCase
 
     public function testUneBanniereResteDansLEnveloppeSansRienPrevoirPourLOpusSuivant(): void
     {
-        $decision = $this->regles->banniere(1);
+        $decision = $this->regles->banniere();
 
         static::assertSame(EtiquetteDestination::ENVELOPPE, $decision->destination);
         static::assertFalse($decision->aPrevoirProchainOpus);
         static::assertNull($decision->actionObjet);
+        // Voler des bannières fait partie du jeu : même en nombre, ce n'est jamais une anomalie.
         static::assertSame([], $decision->anomalies);
-    }
-
-    public function testPlusieursBannieresSignalentUnVol(): void
-    {
-        $decision = $this->regles->banniere(3);
-
-        static::assertCount(1, $decision->anomalies);
-        static::assertStringContainsString('Plusieurs bannières (3)', $decision->anomalies[0]);
-        static::assertStringContainsString('vol', $decision->anomalies[0]);
     }
 
     public function testNatureHorsTableEstConserveeAvecAnomalie(): void
