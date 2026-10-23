@@ -22,6 +22,13 @@ class DepouillementEtiquetteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('recherche', TextType::class, [
+                'label' => 'Chercher un objet par son nom ou son numéro',
+                'mapped' => false,
+                'required' => false,
+                'help' => 'Facultatif : choisissez l\'objet dans la liste, le numéro, la qualité et la couleur se remplissent. Un objet de l\'association peut aussi être une bannière.',
+                'attr' => ['autocomplete' => 'off', 'list' => 'lm-objets-suggestions', 'data-lm-objet-recherche' => $options['recherche_url'], 'placeholder' => 'Ex. bannière, 256...'],
+            ])
             ->add('nature', EnumType::class, [
                 'label' => 'Type d\'étiquette',
                 'class' => EtiquetteNature::class,
@@ -65,6 +72,7 @@ class DepouillementEtiquetteType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => EtiquetteSaisie::class]);
+        $resolver->setDefaults(['data_class' => EtiquetteSaisie::class, 'recherche_url' => '']);
+        $resolver->setAllowedTypes('recherche_url', 'string');
     }
 }

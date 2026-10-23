@@ -228,6 +228,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         }
 
         return $this->createForm(DepouillementEtiquetteType::class, new EtiquetteSaisie(), [
+            'recherche_url' => $this->generateUrl('depouillement.etiquette.recherche', ['gn' => $depouillement->getGn()->getId()]),
             'action' => $this->generateUrl('depouillement.etiquette.add', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()]),
         ]);
     }

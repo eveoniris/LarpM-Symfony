@@ -8,6 +8,10 @@
  * - Confirmation d'une action : [data-lm-confirm="message"] sur un formulaire ou sur son bouton d'envoi ouvre une fenêtre
  *   modale (<dialog>) à la place du confirm() du navigateur ; [data-lm-confirm-label] change le texte du bouton de
  *   confirmation et [data-lm-confirm-danger] le colore en rouge. Sans <dialog>, repli sur confirm().
+ * - Saisie non enregistrée : un formulaire [data-lm-unsaved] modifié puis abandonné (lien suivi, onglet fermé) demande
+ *   confirmation avant de perdre la saisie.
+ * - Recherche d'objet d'une étiquette : [data-lm-objet-recherche="url"] propose des objets par nom ou numéro et reporte
+ *   numéro, qualité et couleur choisis.
  * - Tableaux de liste en interface bêta : voir lm-lists.js.
  * - Menus déroulants dans un tableau défilant (.table-responsive, .lm-table-wrap) : position fixe, sinon le conteneur
  *   (overflow) les rogne, surtout quand le tableau n'a qu'une ligne.
@@ -26,14 +30,12 @@ function resubmit(form, submitter) {
 }
 
 /**
- * Demande confirmation dans une fenêtre modale puis renvoie le formulaire.
+ * Demande confirmation dans une fenêtre modale puis exécute onOk. Options : message, label (bouton de confirmation), danger.
  */
-function askConfirmation(form, submitter) {
-    const source = submitter && submitter.dataset.lmConfirm !== undefined ? submitter : form;
-    const message = source.dataset.lmConfirm;
+function openConfirm({ message, label = 'Confirmer', danger = false }, onOk) {
     if (typeof HTMLDialogElement === 'undefined') {
         if (window.confirm(message)) {
-            resubmit(form, submitter);
+            onOk();
         }
         return;
     }
@@ -48,16 +50,110 @@ function askConfirmation(form, submitter) {
     }
     confirmDialog.querySelector('.lm-confirm-message').textContent = message;
     const ok = confirmDialog.querySelector('.lm-confirm-ok');
-    ok.textContent = source.dataset.lmConfirmLabel || 'Confirmer';
-    ok.className = 'btn lm-confirm-ok ' + (source.dataset.lmConfirmDanger !== undefined ? 'btn-danger' : 'btn-primary');
+    ok.textContent = label;
+    ok.className = 'btn lm-confirm-ok ' + (danger ? 'btn-danger' : 'btn-primary');
     confirmDialog.returnValue = '';
     confirmDialog.onclose = () => {
         if (confirmDialog.returnValue === 'ok') {
-            resubmit(form, submitter);
+            onOk();
         }
     };
     confirmDialog.showModal();
     confirmDialog.querySelector('.lm-confirm-cancel').focus();
+}
+
+/** Confirmation d'un formulaire ([data-lm-confirm] sur lui ou sur son bouton d'envoi), puis renvoi. */
+function askConfirmation(form, submitter) {
+    const source = submitter && submitter.dataset.lmConfirm !== undefined ? submitter : form;
+    openConfirm({
+        message: source.dataset.lmConfirm,
+        label: source.dataset.lmConfirmLabel || 'Confirmer',
+        danger: source.dataset.lmConfirmDanger !== undefined,
+    }, () => resubmit(form, submitter));
+}
+
+/** Formulaire marqué [data-lm-unsaved] dont la saisie a été modifiée sans être envoyée. */
+function dirtyForm() {
+    return document.querySelector('form[data-lm-unsaved][data-lm-dirty="1"]');
+}
+
+/**
+ * Un lien est suivi alors qu'une saisie n'est pas enregistrée : on demande avant de la perdre.
+ */
+function guardLeavingLink(event) {
+    const link = event.target.closest ? event.target.closest('a[href]') : null;
+    if (!link || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || !dirtyForm()) {
+        return;
+    }
+    const href = link.getAttribute('href');
+    if (link.target === '_blank' || link.hasAttribute('download') || href.startsWith('#') || href.startsWith('javascript:') || link.dataset.lmPhoto !== undefined || link.closest('dialog')) {
+        return;
+    }
+    event.preventDefault();
+    openConfirm({
+        message: 'Vous n\'avez pas enregistré votre saisie. Continuer et la perdre ?',
+        label: 'Continuer sans enregistrer',
+        danger: true,
+    }, () => {
+        document.querySelectorAll('form[data-lm-unsaved]').forEach((form) => delete form.dataset.lmDirty);
+        window.location.assign(link.href);
+    });
+}
+
+/**
+ * Recherche d'un objet par nom ou numéro (étiquette) : propose des suggestions et reporte numéro, qualité et couleur choisis.
+ */
+function initObjetRecherche() {
+    const champ = document.querySelector('[data-lm-objet-recherche]');
+    if (!champ || champ.dataset.lmReady === '1') {
+        return;
+    }
+    champ.dataset.lmReady = '1';
+    const liste = document.createElement('datalist');
+    liste.id = champ.getAttribute('list');
+    champ.after(liste);
+    let objets = new Map();
+    let minuteur = null;
+
+    const reporter = (objet) => {
+        const form = champ.form;
+        const numero = form.querySelector('[name$="[numero]"]');
+        const qualite = form.querySelector('[name$="[qualite]"]');
+        const nature = form.querySelector('[name$="[nature]"][value="objet"]');
+        const couleur = form.querySelector('[name$="[couleur]"][value="' + objet.couleur + '"]');
+        if (numero) { numero.value = objet.numero; }
+        if (qualite) { qualite.value = objet.qualite; }
+        if (nature) { nature.checked = true; }
+        if (couleur) { couleur.checked = true; }
+    };
+
+    champ.addEventListener('input', () => {
+        const valeur = champ.value.trim();
+        if (objets.has(valeur)) {
+            reporter(objets.get(valeur));
+            return;
+        }
+        window.clearTimeout(minuteur);
+        if (valeur.length < 2) {
+            return;
+        }
+        minuteur = window.setTimeout(() => {
+            fetch(champ.dataset.lmObjetRecherche + '?q=' + encodeURIComponent(valeur), { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+                .then((reponse) => (reponse.ok ? reponse.json() : []))
+                .then((resultats) => {
+                    objets = new Map();
+                    liste.replaceChildren();
+                    resultats.forEach((objet) => {
+                        const libelle = objet.numero + ' - ' + objet.label + ' (' + objet.couleur + ', qualité ' + objet.qualite + ')';
+                        objets.set(libelle, objet);
+                        const option = document.createElement('option');
+                        option.value = libelle;
+                        liste.appendChild(option);
+                    });
+                })
+                .catch(() => {});
+        }, 250);
+    });
 }
 
 function openPhoto(link) {
@@ -147,10 +243,29 @@ if (!window.lmUiBound) {
         }
     });
 
+    // Saisie non enregistrée : un formulaire [data-lm-unsaved] modifié puis abandonné demande confirmation.
+    const markDirty = (event) => {
+        const form = event.target.closest ? event.target.closest('form[data-lm-unsaved]') : null;
+        if (form) {
+            form.dataset.lmDirty = '1';
+        }
+    };
+    document.addEventListener('input', markDirty);
+    document.addEventListener('change', markDirty);
+    document.addEventListener('click', guardLeavingLink, true);
+    window.addEventListener('beforeunload', (event) => {
+        if (dirtyForm()) {
+            event.preventDefault();
+        }
+    });
+
     document.addEventListener('submit', (event) => {
         const form = event.target;
         if (!(form instanceof HTMLFormElement) || form.dataset.lmConfirmed === '1') {
             return;
+        }
+        if (form.hasAttribute('data-lm-unsaved') && form.dataset.lmConfirm === undefined && !(event.submitter && event.submitter.dataset.lmConfirm !== undefined)) {
+            delete form.dataset.lmDirty;
         }
         const submitter = event.submitter;
         if (form.dataset.lmConfirm === undefined && !(submitter && submitter.dataset.lmConfirm !== undefined)) {
@@ -168,8 +283,11 @@ if (!window.lmUiBound) {
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initTableDropdowns);
+        document.addEventListener('DOMContentLoaded', initObjetRecherche);
     } else {
         initTableDropdowns();
+        initObjetRecherche();
     }
     document.addEventListener('turbo:load', initTableDropdowns);
+    document.addEventListener('turbo:load', initObjetRecherche);
 }

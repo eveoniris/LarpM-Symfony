@@ -6,7 +6,7 @@
 
 {% if formContenuJoueur %}
 	{% set f = formContenuJoueur %}
-	{{ form_start(f) }}
+	{{ form_start(f, {'attr': {'data-lm-unsaved': ''}}) }}
 
 	{% set champs = {
 		'fruits_legumes': ['fruitsUtilise', 'fruitsJointes', null],

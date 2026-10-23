@@ -84,7 +84,7 @@
 						<dt class="col-sm-4">Joueur</dt>
 						<dd class="col-sm-8">{{ depouillement.participant.user ? depouillement.participant.user.username : '-' }}</dd>
 						<dt class="col-sm-4">Groupe du joueur</dt>
-						<dd class="col-sm-8">{{ depouillement.participant.groupeGn ? depouillement.participant.groupeGn.groupe.nom : '-' }}</dd>
+						<dd class="col-sm-8">{% if depouillement.participant.groupeGn %}n° {{ depouillement.participant.groupeGn.groupe.numero }} - {{ depouillement.participant.groupeGn.groupe.nom }}{% else %}-{% endif %}</dd>
 					{% endif %}
 					<dt class="col-sm-4">Statut</dt>
 					<dd class="col-sm-8">{{ depouillement.statut.label }}</dd>
@@ -144,11 +144,12 @@
 					<p class="text-muted mb-0">Aucune photo pour l'instant.</p>
 				{% endif %}
 			{% elseif etape.value == 'etiquettes' %}
-				<h6>Étiquettes d'objets et d'armes</h6>
+				<h6>Étiquettes d'objets et d'armes <span class="badge text-bg-secondary">facultatif</span></h6>
+				<p class="small text-muted">Cette étape n'est pas obligatoire : s'il n'y a aucune étiquette dans l'enveloppe, passez directement à l'étape suivante.</p>
 				<p class="text-muted small">Pour chaque étiquette, lisez le numéro en haut à gauche et la qualité (trois chiffres) en haut à droite. Une étiquette bleue est celle d'un objet de l'association, une orange celle d'un objet de joueur : en retour de jeu il ne doit y avoir que des étiquettes orange, sans objet.</p>
 
 				{% if formEtiquette %}
-					{{ form_start(formEtiquette) }}
+					{{ form_start(formEtiquette, {'attr': {'data-lm-unsaved': ''}}) }}
 					{{ form_widget(formEtiquette) }}
 					{{ form_end(formEtiquette) }}
 					<hr>
@@ -216,7 +217,7 @@
 				{% include 'depouillement/_conceptions.twig' %}
 			{% elseif etape.value == 'remarques' %}
 				{% if form %}
-					{{ form_start(form) }}
+					{{ form_start(form, {'attr': {'data-lm-unsaved': ''}}) }}
 					{{ form_widget(form) }}
 					{{ form_end(form) }}
 				{% else %}
