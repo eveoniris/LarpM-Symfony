@@ -48,8 +48,8 @@
 	Collecté par le groupe, plus le surplus déclaré dans les enveloppes de ses joueurs déjà dépouillées ({{ reliquat.enveloppesJoueurs }} enveloppe(s) de joueur). Ces quantités serviront au calcul de l'initiative, dont la formule n'est pas encore figée.
 </p>
 {% if reliquat.lignes|length > 0 %}
-	<div class="table-responsive">
-		<table class="table table-sm table-bordered w-auto">
+	<div class="{{ beta ? 'lm-table-wrap' : 'table-responsive' }}">
+		<table class="{{ beta ? 'lm-table' : 'table table-sm table-bordered w-auto' }}">
 			<thead>
 				<tr><th>Élément</th><th class="text-end">Groupe</th><th class="text-end">Surplus des joueurs</th><th class="text-end">Total</th></tr>
 			</thead>

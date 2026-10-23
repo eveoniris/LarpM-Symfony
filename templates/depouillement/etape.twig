@@ -1,5 +1,8 @@
 {% extends "base.html.twig" %}
 
+{# Interface bêta (lm-design) : les composants lm-* s'ajoutent à Bootstrap, les autres comptes gardent le rendu Bootstrap. #}
+{% set beta = app.user is not null and app.user.uiBeta %}
+
 {% block title %}Dépouillement {{ depouillement.type.label }} {{ depouillement.numero }}{% endblock title %}
 
 {% block body %}
@@ -9,6 +12,14 @@
 		{'name' : 'Dépouillement des enveloppes', 'route' : path('depouillement.index', {'gn': gn.id})},
 		{'name' : depouillement.type.label ~ ' ' ~ depouillement.numero}
 	]} %}
+
+	<header class="lm-page-head mb-3">
+		<h1 class="lm-page-title h4 mb-1">{{ depouillement.type.label }} n° {{ depouillement.numero }}</h1>
+		<p class="lm-meta mb-0">
+			{{ depouillement.statut.label }}{% if depouillement.simulation %} · simulation{% endif %}
+			{% if depouillement.depouilleur %} · dépouilleur : {{ depouillement.depouilleur.username }}{% endif %}
+		</p>
+	</header>
 
 	{% if depouillement.simulation %}
 		<div class="alert alert-info">
@@ -33,19 +44,30 @@
 	<div class="progress mb-2" role="progressbar" aria-valuemin="0" aria-valuemax="{{ etapes|length }}" aria-valuenow="{{ etape.position }}" style="height: .5rem;">
 		<div class="progress-bar" style="width: {{ (etape.position / etapes|length * 100)|round }}%"></div>
 	</div>
-	<ul class="nav nav-pills flex-nowrap overflow-auto mb-3 pb-1">
-		{% for e in etapes %}
-			<li class="nav-item">
-				<a class="nav-link text-nowrap {{ e == etape ? 'active' : '' }}"
-				   href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': e.value}) }}"
-				   {% if e == etape %}aria-current="step"{% endif %}>
+	{% if beta %}
+		<nav class="lm-tabs mb-3" aria-label="Étapes du dépouillement">
+			{% for e in etapes %}
+				<a class="lm-tab" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': e.value}) }}"
+				   {% if e == etape %}aria-current="page"{% endif %}>
 					{{ e.position }}. {{ e.label }}
 				</a>
-			</li>
-		{% endfor %}
-	</ul>
+			{% endfor %}
+		</nav>
+	{% else %}
+		<ul class="nav nav-pills flex-nowrap overflow-auto mb-3 pb-1">
+			{% for e in etapes %}
+				<li class="nav-item">
+					<a class="nav-link text-nowrap {{ e == etape ? 'active' : '' }}"
+					   href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': e.value}) }}"
+					   {% if e == etape %}aria-current="step"{% endif %}>
+						{{ e.position }}. {{ e.label }}
+					</a>
+				</li>
+			{% endfor %}
+		</ul>
+	{% endif %}
 
-	<div class="card mb-3">
+	<div class="card mb-3 lm-carte-verre">
 		<div class="card-header">Étape {{ etape.position }} sur {{ etapes|length }} : {{ etape.label }}</div>
 		<div class="card-body">
 			{% if etape.value == 'identification' %}
@@ -87,7 +109,7 @@
 						{% for photo in depouillement.photos %}
 							{% set photoUrl = path('depouillement.photo.show', {'gn': gn.id, 'depouillement': depouillement.id, 'photo': photo.id}) %}
 							<div class="col">
-								<div class="card h-100">
+								<div class="card h-100 lm-carte-verre">
 									<a href="{{ photoUrl }}" target="_blank" rel="noopener">
 										<img src="{{ photoUrl }}" alt="{{ photo.nomOriginal }}" loading="lazy" class="card-img-top" style="max-height: 14rem; object-fit: cover;">
 									</a>
@@ -143,8 +165,8 @@
 				{% set generiques = etiquettes|filter(e => e.destination.value == 'stock')|reduce((total, e) => total + e.quantite, 0) %}
 
 				{% if etiquettes|length > 0 %}
-					<div class="table-responsive">
-						<table class="table table-sm table-bordered align-middle">
+					<div class="{{ beta ? 'lm-table-wrap' : 'table-responsive' }}">
+						<table class="{{ beta ? 'lm-table' : 'table table-sm table-bordered align-middle' }}">
 							<thead>
 								<tr><th>Étiquette</th><th>N°</th><th>Qualité</th><th>Constat</th><th>Objet connu</th><th>Destination</th><th></th></tr>
 							</thead>
@@ -214,8 +236,8 @@
 				</dl>
 
 				<h6>Historique</h6>
-				<div class="table-responsive">
-					<table class="table table-sm table-bordered mb-3">
+				<div class="{{ beta ? 'lm-table-wrap' : 'table-responsive' }}">
+					<table class="{{ beta ? 'lm-table' : 'table table-sm table-bordered mb-3' }}">
 						<thead>
 							<tr><th>Date</th><th>Qui</th><th>Action</th><th>Détail</th></tr>
 						</thead>
@@ -243,7 +265,7 @@
 				{% endif %}
 
 				{% if depouillement.statut.value == 'a_valider' and is_granted('DEPOUILLEMENT_VALIDER', depouillement) %}
-					<div class="card border-primary">
+					<div class="card border-primary lm-carte-verre">
 						<div class="card-header">Validation</div>
 						<div class="card-body">
 							<p class="small text-muted">

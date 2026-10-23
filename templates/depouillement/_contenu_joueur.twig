@@ -53,7 +53,7 @@
 		{% for a in actionsFinOpus %}
 			{% set c = champs[a.value] %}
 			{% set resultat = resultatsActions[a.value] %}
-			<div class="card mb-2">
+			<div class="card mb-2 lm-carte-verre">
 				<div class="card-header py-1 d-flex justify-content-between align-items-center flex-wrap gap-1">
 					<span>{{ a.label }}</span>
 					<span class="badge {{ resultat.statut.value == 'acceptee' ? 'text-bg-success' : (resultat.statut.value == 'refusee' ? 'text-bg-danger' : 'text-bg-secondary') }}">{{ resultat.statut.label }}</span>
