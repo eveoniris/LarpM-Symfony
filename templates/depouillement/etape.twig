@@ -205,6 +205,10 @@
 					<dd class="col-sm-8">{{ depouillement.statut.label }}</dd>
 					<dt class="col-sm-4">Dépouilleur</dt>
 					<dd class="col-sm-8">{{ depouillement.depouilleur ? depouillement.depouilleur.username : '-' }}</dd>
+					{% if depouillement.validatedAt %}
+						<dt class="col-sm-4">Validé</dt>
+						<dd class="col-sm-8">par {{ depouillement.validatedBy ? depouillement.validatedBy.username : '-' }} le {{ depouillement.validatedAt|date('d/m/Y H:i') }}</dd>
+					{% endif %}
 					<dt class="col-sm-4">Remarques</dt>
 					<dd class="col-sm-8">{{ depouillement.remarques ? depouillement.remarques|nl2br : '-' }}</dd>
 				</dl>
@@ -236,6 +240,28 @@
 						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_terminer_' ~ depouillement.id) }}">
 						<button type="submit" class="btn btn-success w-100 w-md-auto"><i class="fa fa-check"></i> Terminer le dépouillement</button>
 					</form>
+				{% endif %}
+
+				{% if depouillement.statut.value == 'a_valider' and is_granted('DEPOUILLEMENT_VALIDER', depouillement) %}
+					<div class="card border-primary">
+						<div class="card-header">Validation</div>
+						<div class="card-body">
+							<p class="small text-muted">
+								Relisez le contenu, les photos et les remarques. Une fois validé, le dépouillement <strong>ne peut plus être rouvert</strong>.
+								{% if depouillement.simulation %}C'est une simulation : la validation n'a aucun effet.{% endif %}
+							</p>
+							<form method="post" class="mb-3" action="{{ path('depouillement.valider', {'gn': gn.id, 'depouillement': depouillement.id}) }}" onsubmit="return confirm('Valider ce dépouillement ? Il ne pourra plus être rouvert.');">
+								<input type="hidden" name="_token" value="{{ csrf_token('depouillement_valider_' ~ depouillement.id) }}">
+								<button type="submit" class="btn btn-success w-100 w-md-auto"><i class="fa fa-check-double"></i> Valider le dépouillement</button>
+							</form>
+							<form method="post" action="{{ path('depouillement.renvoyer', {'gn': gn.id, 'depouillement': depouillement.id}) }}">
+								<input type="hidden" name="_token" value="{{ csrf_token('depouillement_renvoyer_' ~ depouillement.id) }}">
+								<label for="depouillement-motif" class="form-label">Ou renvoyer au dépouilleur pour correction</label>
+								<textarea id="depouillement-motif" name="motif" class="form-control mb-2" rows="2" required placeholder="Ce qu'il faut corriger ou vérifier"></textarea>
+								<button type="submit" class="btn btn-warning w-100 w-md-auto"><i class="fa fa-rotate-left"></i> Renvoyer au dépouilleur</button>
+							</form>
+						</div>
+					</div>
 				{% endif %}
 			{% endif %}
 		</div>
