@@ -260,7 +260,7 @@
 						</li>
 						<li>Appris : {{ contenuJoueur.sorts|length }} sort(s), {{ contenuJoueur.prieres|length }} prière(s), {{ contenuJoueur.potions|length }} potion(s)</li>
 						{% if contenuJoueur.personnageMort %}
-							<li class="lm-anomalie"><i class="fa fa-skull"></i> Le personnage est mort pendant cet opus{% if contenuJoueur.circonstancesMort %} ({{ contenuJoueur.circonstancesMort }}){% endif %} : à enregistrer sur la fiche par un scénariste.</li>
+							<li class="lm-anomalie"><i class="fa fa-skull"></i> Le personnage est mort pendant cet opus{% if contenuJoueur.circonstancesMort %} ({{ contenuJoueur.circonstancesMort }}){% endif %} : le personnage sera marqué mort sur sa fiche à la validation.</li>
 						{% endif %}
 						<li>Surplus à reverser au groupe (trouvé moins consommé par les actions) : {% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}</li>
 					{% endif %}

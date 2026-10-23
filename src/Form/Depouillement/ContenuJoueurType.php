@@ -49,7 +49,7 @@ class ContenuJoueurType extends AbstractType
                 ->add('personnageMort', CheckboxType::class, [
                     'label' => 'Le personnage est mort pendant cet opus',
                     'required' => false,
-                    'help' => 'Information pour le scénariste : la mort n\'est pas appliquée automatiquement à la fiche.',
+                    'help' => 'À la validation, le personnage sera marqué mort sur sa fiche (avec une ligne dans sa chronologie) et rien ne sera reporté dans l\'enveloppe du GN suivant.',
                 ])
                 ->add('circonstancesMort', TextareaType::class, [
                     'label' => 'Circonstances de la mort (facultatif)',

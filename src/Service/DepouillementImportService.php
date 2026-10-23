@@ -115,6 +115,13 @@ readonly class DepouillementImportService
         }
 
         $personnage = $this->personnage($depouillement);
+        if (null !== $personnage && !$personnage->getVivant()) {
+            // Un personnage mort ne joue pas le GN suivant : les objets et étiquettes à récupérer sont gérés par un scénariste.
+            $resultat->anomalies[] = 'Le personnage est mort : rien n\'est reporté dans l\'enveloppe du GN suivant (étiquettes, objets et potions de l\'ivoire à gérer par un scénariste).';
+
+            return $resultat;
+        }
+
         $gnSuivant = $this->gnRepository->findSuivant($depouillement->getGn());
         $participant = null === $personnage || null === $gnSuivant ? null : $this->depouillementRepository->findParticipantParPersonnage($gnSuivant, (int) $personnage->getId());
 
