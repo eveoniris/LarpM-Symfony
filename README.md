@@ -25,11 +25,11 @@ Il sert plus de 1 500 participants sur plusieurs saisons de jeu.
 <table>
   <tr>
     <td width="72%"><img src="docs/images/fiche-personnage.jpg" alt="Fiche d'un personnage : compétences, expérience, jetons et déclencheurs"></td>
-    <td width="28%"><img src="docs/images/mobile-liste-gn.jpg" alt="Liste des grandeurs natures sur mobile"></td>
+    <td width="28%"><img src="docs/images/mobile-fiche-personnage.jpg" alt="La même fiche de personnage sur mobile"></td>
   </tr>
   <tr>
-    <td align="center"><em>Fiche de personnage</em></td>
-    <td align="center"><em>Version mobile</em></td>
+    <td align="center"><em>Fiche de personnage (bureau)</em></td>
+    <td align="center"><em>La même fiche sur mobile</em></td>
   </tr>
 </table>
 
