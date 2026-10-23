@@ -23,6 +23,14 @@ final class ConceptionRegles
     /** Libellé de la tranche d'âge des héritiers nés en jeu (0 an). */
     public const string AGE_HERITIER = 'Enfant héritier';
 
+    /** Identifiants des genres de référence (le troisième, « Ambigu », signale un genre à renseigner). */
+    public const int GENRE_MASCULIN = 1;
+
+    public const int GENRE_FEMININ = 2;
+
+    /** Seule espèce non humaine qui peut encore concevoir (comparée en minuscules). */
+    public const string ESPECE_AUTORISEE = 'ombrelin';
+
     public const int TIRAGE_MIN = 1;
 
     public const int TIRAGE_MAX = 20;
@@ -75,6 +83,39 @@ final class ConceptionRegles
         }
 
         return \sprintf('%s a %d ans : on ne peut plus concevoir à partir de %d ans (âge mûr).', $parent, $ageReel, self::AGE_LIMITE);
+    }
+
+    /**
+     * Il faut un père (genre 1) et une mère (genre 2). Un genre inconnu ou « Ambigu » (3) doit être vérifié et renseigné.
+     */
+    public function anomalieGenres(string $parent1, ?int $genre1, string $parent2, ?int $genre2): ?string
+    {
+        foreach ([[$parent1, $genre1], [$parent2, $genre2]] as [$parent, $genre]) {
+            if (self::GENRE_MASCULIN !== $genre && self::GENRE_FEMININ !== $genre) {
+                return \sprintf('Le genre de %s n\'est pas connu (ambigu) : à vérifier et à renseigner sur sa fiche, il faut un père et une mère.', $parent);
+            }
+        }
+
+        if ($genre1 === $genre2) {
+            return \sprintf('%s et %s sont du même genre : il faut un père et une mère, à vérifier.', $parent1, $parent2);
+        }
+
+        return null;
+    }
+
+    /**
+     * Pour le moment la conception échoue quoi qu'il arrive dès qu'un parent n'est pas humain (sans espèce), sauf les Ombrelins.
+     *
+     * @param list<string> $especes noms des espèces du personnage
+     */
+    public function anomalieEspece(string $parent, array $especes): ?string
+    {
+        $bloquantes = array_filter($especes, static fn (string $nom): bool => self::ESPECE_AUTORISEE !== mb_strtolower(trim($nom)));
+        if ([] === $bloquantes) {
+            return null;
+        }
+
+        return \sprintf('%s n\'est pas humain (%s) : la conception échoue d\'office pour le moment (seuls les Ombrelins font exception).', $parent, implode(', ', $bloquantes));
     }
 
     private function verifierTirage(int $tirage): int

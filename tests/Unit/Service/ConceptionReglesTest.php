@@ -129,4 +129,28 @@ class ConceptionReglesTest extends TestCase
         static::assertNull($this->regles->anomalieAge('Conan', 30));
         static::assertSame('Conan a 47 ans : on ne peut plus concevoir à partir de 45 ans (âge mûr).', $this->regles->anomalieAge('Conan', 47));
     }
+
+    public function testUnPereEtUneMereSontNecessaires(): void
+    {
+        static::assertNull($this->regles->anomalieGenres('Conan', 1, 'Belit', 2));
+        static::assertNull($this->regles->anomalieGenres('Belit', 2, 'Conan', 1));
+        static::assertStringContainsString('même genre', (string) $this->regles->anomalieGenres('Conan', 1, 'Bêlit', 1));
+        static::assertStringContainsString('même genre', (string) $this->regles->anomalieGenres('A', 2, 'B', 2));
+    }
+
+    public function testUnGenreAmbiguOuInconnuDoitEtreRenseigne(): void
+    {
+        static::assertStringContainsString('Conan', (string) $this->regles->anomalieGenres('Conan', 3, 'Belit', 2));
+        static::assertStringContainsString('à vérifier et à renseigner', (string) $this->regles->anomalieGenres('Conan', 1, 'Belit', 3));
+        static::assertNotNull($this->regles->anomalieGenres('Conan', null, 'Belit', 2));
+    }
+
+    public function testSeulsLesOmbrelinsNonHumainsPeuventConcevoir(): void
+    {
+        static::assertNull($this->regles->anomalieEspece('Conan', []));
+        static::assertNull($this->regles->anomalieEspece('Conan', ['Ombrelin']));
+        static::assertNull($this->regles->anomalieEspece('Conan', [' OMBRELIN ']));
+        static::assertStringContainsString('Nain', (string) $this->regles->anomalieEspece('Conan', ['Nain']));
+        static::assertStringContainsString('Nain', (string) $this->regles->anomalieEspece('Conan', ['Ombrelin', 'Nain']));
+    }
 }

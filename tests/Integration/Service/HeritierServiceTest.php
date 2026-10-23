@@ -21,7 +21,7 @@ use App\Service\HeritierSaisie;
 use App\Service\HeritierService;
 use App\Tests\Factory\AgeFactory;
 use App\Tests\Factory\ClasseFactory;
-use App\Tests\Factory\GenreFactory;
+use App\Tests\Factory\GenresDeReference;
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\LangueFactory;
 use App\Tests\Factory\PersonnageFactory;
@@ -78,9 +78,7 @@ class HeritierServiceTest extends KernelTestCase
 
     private function genre(int $id): Genre
     {
-        $genre = $this->em->getRepository(Genre::class)->find($id);
-
-        return $genre ?? GenreFactory::createOne();
+        return GenresDeReference::genre($this->em, $id);
     }
 
     private function saisie(string $nom = 'Petit Conan', ?Langue $langueParents = null): HeritierSaisie
@@ -117,7 +115,6 @@ class HeritierServiceTest extends KernelTestCase
         $conception = $this->conception();
         $heritier = $this->service->creer($conception, [$this->saisie()], UserFactory::createOne())[0];
         $this->em->clear();
-        $genresDeReference = null !== $this->em->getRepository(Genre::class)->find(1) && null !== $this->em->getRepository(Genre::class)->find(2);
 
         $naissance = $this->em->getRepository(PersonnageChronologie::class)->findOneBy(['personnage' => $heritier->getId()]);
         static::assertSame('Naissance', $naissance?->getEvenement());
@@ -127,11 +124,9 @@ class HeritierServiceTest extends KernelTestCase
         $lignee = $this->em->getRepository(PersonnageLignee::class)->findOneBy(['personnage' => $heritier->getId()]);
         static::assertNotNull($lignee->getParent1());
         static::assertNotNull($lignee->getParent2());
-        if ($genresDeReference) {
-            // Le père (genre 1) est remis en premier parent.
-            static::assertSame(1, $lignee->getParent1()->getGenre()->getId());
-            static::assertSame(2, $lignee->getParent2()->getGenre()->getId());
-        }
+        // Le père (genre 1) est remis en premier parent.
+        static::assertSame(1, $lignee->getParent1()->getGenre()->getId());
+        static::assertSame(2, $lignee->getParent2()->getGenre()->getId());
     }
 
     public function testLaLangueDesParentsEstTransmiseEnSourceParents(): void

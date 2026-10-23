@@ -9,6 +9,7 @@ use App\Entity\Depouillement;
 use App\Entity\Participant;
 use App\Entity\User;
 use App\Enum\DepouillementType;
+use App\Tests\Factory\GenresDeReference;
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\ParticipantFactory;
 use App\Tests\Factory\PersonnageFactory;
@@ -30,12 +31,12 @@ class DepouillementConceptionTest extends WebTestCase
     {
         $moi = UserFactory::createOne(['username' => 'moi', 'roles' => ['ROLE_USER', 'ROLE_BETA_TEST']]);
         $gn = GnFactory::createOne();
-        $parent = PersonnageFactory::createOne();
-        $partenaire = PersonnageFactory::createOne();
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $parent = PersonnageFactory::createOne(['genre' => GenresDeReference::genre($em, 1)]);
+        $partenaire = PersonnageFactory::createOne(['genre' => GenresDeReference::genre($em, 2)]);
         ParticipantFactory::createOne(['gn' => $gn, 'user' => UserFactory::createOne(), 'personnage' => $parent]);
         ParticipantFactory::createOne(['gn' => $gn, 'user' => UserFactory::createOne(), 'personnage' => $partenaire]);
 
-        $em = static::getContainer()->get(EntityManagerInterface::class);
         $depouillement = (new Depouillement())
             ->setGn($gn)
             ->setType(DepouillementType::JOUEUR)

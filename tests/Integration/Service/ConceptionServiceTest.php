@@ -14,6 +14,8 @@ use App\Enum\DepouillementStatut;
 use App\Enum\DepouillementType;
 use App\Exception\ConceptionInvalideException;
 use App\Service\ConceptionService;
+use App\Tests\Factory\EspeceFactory;
+use App\Tests\Factory\GenresDeReference;
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\ParticipantFactory;
 use App\Tests\Factory\PersonnageFactory;
@@ -40,9 +42,9 @@ class ConceptionServiceTest extends KernelTestCase
         $this->service = static::getContainer()->get(ConceptionService::class);
     }
 
-    private function inscrit(Gn $gn, ?int $ageReel = null): Personnage
+    private function inscrit(Gn $gn, ?int $ageReel = null, int $genre = 1): Personnage
     {
-        $personnage = PersonnageFactory::createOne();
+        $personnage = PersonnageFactory::createOne(['genre' => GenresDeReference::genre($this->em, $genre)]);
         if (null !== $ageReel) {
             $personnage->setAgeReel($ageReel);
             $this->em->flush();
@@ -72,7 +74,7 @@ class ConceptionServiceTest extends KernelTestCase
     {
         $gn = GnFactory::createOne();
         $moi = $this->inscrit($gn);
-        $autre = $this->inscrit($gn);
+        $autre = $this->inscrit($gn, genre: 2);
         $depouillement = $this->enveloppe($gn, $moi);
 
         $conception = $this->service->enregistrer($depouillement, (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 20);
@@ -92,7 +94,7 @@ class ConceptionServiceTest extends KernelTestCase
     {
         $gn = GnFactory::createOne();
         $moi = $this->inscrit($gn);
-        $autre = $this->inscrit($gn);
+        $autre = $this->inscrit($gn, genre: 2);
 
         $conception = $this->service->enregistrer($this->enveloppe($gn, $moi, false), (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 7);
 
@@ -104,7 +106,7 @@ class ConceptionServiceTest extends KernelTestCase
     {
         $gn = GnFactory::createOne();
         $moi = $this->inscrit($gn, 45);
-        $autre = $this->inscrit($gn, 30);
+        $autre = $this->inscrit($gn, 30, 2);
 
         $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne());
 
@@ -114,11 +116,57 @@ class ConceptionServiceTest extends KernelTestCase
         static::assertStringContainsString('45 ans', $conception->getAnomalies()[0]);
     }
 
+    public function testUnParentNonHumainFaitEchouerLaConceptionSansTirage(): void
+    {
+        $gn = GnFactory::createOne();
+        $moi = $this->inscrit($gn);
+        $autre = $this->inscrit($gn, genre: 2);
+        $autre->addEspece(EspeceFactory::createOne(['nom' => 'Nain']));
+        $this->em->flush();
+
+        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne());
+
+        static::assertNull($conception->getTirage());
+        static::assertSame(ConceptionIssue::ECHEC, $conception->getIssue());
+        static::assertStringContainsString('pas humain', $conception->getAnomalies()[0]);
+    }
+
+    public function testUnOmbrelinPeutConcevoir(): void
+    {
+        $gn = GnFactory::createOne();
+        $moi = $this->inscrit($gn);
+        $autre = $this->inscrit($gn, genre: 2);
+        $autre->addEspece(EspeceFactory::createOne(['nom' => 'Ombrelin']));
+        $this->em->flush();
+
+        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 12);
+
+        static::assertSame(12, $conception->getTirage());
+        static::assertSame([], $conception->getAnomalies());
+    }
+
+    public function testDeuxParentsDuMemeGenreOuUnGenreAmbiguNeSontPasTires(): void
+    {
+        $gn = GnFactory::createOne();
+        $moi = $this->inscrit($gn);
+        $memeGenre = $this->inscrit($gn);
+        $ambigu = $this->inscrit($gn, genre: 3);
+        $service = $this->service;
+
+        $deux = $service->enregistrer($this->enveloppe($gn, $moi), (string) $memeGenre->getId(), UserFactory::createOne());
+        $trois = $service->enregistrer($this->enveloppe($gn, $moi), (string) $ambigu->getId(), UserFactory::createOne());
+
+        static::assertNull($deux->getTirage());
+        static::assertStringContainsString('même genre', $deux->getAnomalies()[0]);
+        static::assertNull($trois->getTirage());
+        static::assertStringContainsString('à vérifier et à renseigner', $trois->getAnomalies()[0]);
+    }
+
     public function testLePartenaireTolereUnNumeroAvecDesZerosOuUnNom(): void
     {
         $gn = GnFactory::createOne();
         $moi = $this->inscrit($gn);
-        $autre = $this->inscrit($gn);
+        $autre = $this->inscrit($gn, genre: 2);
 
         $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), '00' . $autre->getId() . ' Conan', UserFactory::createOne(), static fn (): int => 12);
 
@@ -129,7 +177,7 @@ class ConceptionServiceTest extends KernelTestCase
     {
         $gn = GnFactory::createOne();
         $moi = $this->inscrit($gn);
-        $autre = $this->inscrit($gn);
+        $autre = $this->inscrit($gn, genre: 2);
         $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 8);
 
         $this->expectException(ConceptionInvalideException::class);
@@ -171,7 +219,7 @@ class ConceptionServiceTest extends KernelTestCase
     {
         $gn = GnFactory::createOne();
         $moi = $this->inscrit($gn);
-        $autre = $this->inscrit($gn);
+        $autre = $this->inscrit($gn, genre: 2);
         $depouillement = $this->enveloppe($gn, $moi)->setStatut(DepouillementStatut::A_VALIDER);
         $this->em->flush();
 
@@ -199,7 +247,7 @@ class ConceptionServiceTest extends KernelTestCase
     {
         $gn = GnFactory::createOne();
         $moi = $this->inscrit($gn);
-        $autre = $this->inscrit($gn);
+        $autre = $this->inscrit($gn, genre: 2);
         $depouillement = $this->enveloppe($gn, $moi);
         $conception = $this->service->enregistrer($depouillement, (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 8);
 
@@ -213,7 +261,7 @@ class ConceptionServiceTest extends KernelTestCase
     {
         $gn = GnFactory::createOne();
         $moi = $this->inscrit($gn);
-        $autre = $this->inscrit($gn);
+        $autre = $this->inscrit($gn, genre: 2);
         $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 8);
         $conception->setStatut(ConceptionStatut::A_GERER_PLUS_TARD);
 

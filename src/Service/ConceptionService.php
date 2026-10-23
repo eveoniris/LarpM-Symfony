@@ -7,6 +7,8 @@ namespace App\Service;
 use App\Entity\Conception;
 use App\Entity\Depouillement;
 use App\Entity\DepouillementHistory;
+use App\Entity\Espece;
+use App\Enum\ConceptionIssue;
 use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\User;
@@ -58,9 +60,12 @@ readonly class ConceptionService
             throw new ConceptionInvalideException('Cette conception est déjà enregistrée pour ce couple (l\'autre joueur l\'a signalée).');
         }
 
+        $anomaliesEspece = array_values(array_filter([$this->anomalieEspece($parent1), $this->anomalieEspece($parent2)]));
         $anomalies = array_values(array_filter([
             $this->regles->anomalieAge($this->nom($parent1), $parent1->getAgeReel()),
             $this->regles->anomalieAge($this->nom($parent2), $parent2->getAgeReel()),
+            $this->regles->anomalieGenres($this->nom($parent1), $parent1->getGenreOrNull()?->getId(), $this->nom($parent2), $parent2->getGenreOrNull()?->getId()),
+            ...$anomaliesEspece,
         ]));
 
         $conception = (new Conception())
@@ -70,6 +75,11 @@ readonly class ConceptionService
             ->setSimulation($depouillement->isSimulation())
             ->setAnomalies($anomalies)
             ->setCreePar($utilisateur);
+
+        // Parent non humain : échec d'office, sans tirage.
+        if ([] !== $anomaliesEspece) {
+            $conception->setIssue(ConceptionIssue::ECHEC);
+        }
 
         if ([] === $anomalies) {
             $tirage = $this->regles->tirer($sourceTirage);
@@ -156,6 +166,16 @@ readonly class ConceptionService
         }
 
         return null;
+    }
+
+    private function anomalieEspece(Personnage $personnage): ?string
+    {
+        $noms = array_values(array_filter(
+            array_map(static fn (Espece $espece): ?string => $espece->getNom(), $personnage->getEspeces()->toArray()),
+            static fn (?string $nom): bool => null !== $nom && '' !== trim($nom),
+        ));
+
+        return $this->regles->anomalieEspece($this->nom($personnage), $noms);
     }
 
     private function nom(Personnage $personnage): string
