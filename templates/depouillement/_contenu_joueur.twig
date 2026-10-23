@@ -8,7 +8,7 @@
 
 {% if anomaliesContenu|length > 0 %}
 	<div class="alert alert-warning small">
-		<strong><i class="fa fa-triangle-exclamation"></i> À signaler ou à vérifier :</strong>
+		<strong><i class="fa fa-triangle-exclamation"></i> À signaler ou à vérifier (non bloquant) :</strong>
 		<ul class="mb-0">
 			{% for anomalie in anomaliesContenu %}<li>{{ anomalie }}</li>{% endfor %}
 		</ul>
@@ -42,6 +42,7 @@
 
 	<fieldset class="mb-3">
 		<legend class="h6">Actions de fin d'Opus <small class="text-muted">(une fois par GN chacune)</small></legend>
+		<p class="small text-muted">Cochez « Action utilisée » si le joueur a joué l'action, puis « Ressources jointes » si les ressources exigées sont bien dans l'enveloppe. Une action <strong>refusée</strong> (ressources absentes) est simplement sans effet : rien n'est bloqué, l'enregistrement et la suite du parcours restent possibles. Les remarques en orange sont à vérifier, jamais bloquantes.</p>
 		{% set champs = {
 			'fruits_legumes': ['fruitsUtilise', 'fruitsJointes', null],
 			'soie': ['soieUtilise', 'soieJointes', null],
@@ -56,14 +57,14 @@
 			<div class="card mb-2 lm-carte-verre">
 				<div class="card-header py-1 d-flex justify-content-between align-items-center flex-wrap gap-1">
 					<span>{{ a.label }}</span>
-					<span class="badge {{ resultat.statut.value == 'acceptee' ? 'text-bg-success' : (resultat.statut.value == 'refusee' ? 'text-bg-danger' : 'text-bg-secondary') }}">{{ resultat.statut.label }}</span>
+					<span class="badge {{ resultat.statut.value == 'acceptee' ? 'text-bg-success' : (resultat.statut.value == 'refusee' ? 'text-bg-warning' : 'text-bg-secondary') }}"{% if resultat.statut.value == 'refusee' %} title="Cette action n'aura pas d'effet. Cela ne bloque pas l'enregistrement."{% endif %}>{{ resultat.statut.label }}{% if resultat.statut.value == 'refusee' %} : sans effet, non bloquant{% endif %}</span>
 				</div>
 				<div class="card-body py-2">
 					<div class="small text-muted mb-1">Consomme {{ a.quantiteRessource }} {{ a.ressource }} : {{ a.effet }}.</div>
 					{{ form_row(f[c[0]]) }}
 					{{ form_row(f[c[1]]) }}
 					{% if c[2] %}{{ form_row(f[c[2]]) }}{% endif %}
-					{% for anomalie in resultat.anomalies %}<div class="small text-danger"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
+					{% for anomalie in resultat.anomalies %}<div class="small lm-anomalie"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
 				</div>
 			</div>
 		{% endfor %}

@@ -18,10 +18,6 @@
 		Fonctionnalité en cours de test, réservée aux bêta-testeurs. Pour l'instant seules les <strong>simulations</strong> sont possibles : elles n'ont aucun effet sur les joueurs ni sur les groupes et peuvent être supprimées à tout moment.
 	</div>
 
-	{% if is_granted('DEPOUILLEMENT_VALIDER', gn) %}
-		<p><a href="{{ path('depouillement.conceptions', {'gn': gn.id}) }}" class="btn btn-outline-primary"><i class="fa fa-baby"></i> Conceptions d'héritier</a></p>
-	{% endif %}
-
 	<div class="card mb-3 lm-carte-verre">
 		<div class="card-header">Nouvelle simulation</div>
 		<div class="card-body">
@@ -36,7 +32,7 @@
 			<h5 class="{{ beta ? 'lm-card-title' : '' }}">Simulations de ce GN <small>({{ simulations|length }})</small></h5>
 		</div>
 		{% if simulations|length > 0 %}
-			<form method="post" action="{{ path('depouillement.purge', {'gn': gn.id}) }}" onsubmit="return confirm('Supprimer toutes les simulations de ce GN ?');">
+			<form method="post" action="{{ path('depouillement.purge', {'gn': gn.id}) }}" data-lm-confirm="Supprimer toutes les simulations de ce GN ?" data-lm-confirm-danger data-lm-confirm-label="Supprimer">
 				<input type="hidden" name="_token" value="{{ csrf_token('depouillement_purge_' ~ gn.id) }}">
 				<button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> Purger les simulations</button>
 			</form>
@@ -69,7 +65,7 @@
 						<td>{{ simulation.createdAt|date('d/m/Y H:i') }}</td>
 						<td class="text-nowrap">
 							<a class="btn btn-sm btn-primary" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': simulation.id, 'etape': (simulation.statut.editable ? 'identification' : 'recapitulatif')}) }}"><i class="fa fa-folder-open"></i> Ouvrir</a>
-							<form class="d-inline" method="post" action="{{ path('depouillement.delete', {'gn': gn.id, 'depouillement': simulation.id}) }}" onsubmit="return confirm('Supprimer cette simulation ?');">
+							<form class="d-inline" method="post" action="{{ path('depouillement.delete', {'gn': gn.id, 'depouillement': simulation.id}) }}" data-lm-confirm="Supprimer cette simulation ?" data-lm-confirm-danger data-lm-confirm-label="Supprimer">
 								<input type="hidden" name="_token" value="{{ csrf_token('depouillement_delete_' ~ simulation.id) }}">
 								<button type="submit" class="btn btn-sm btn-danger" title="Supprimer cette simulation"><i class="fa fa-trash"></i> Supprimer</button>
 							</form>

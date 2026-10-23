@@ -75,6 +75,21 @@ class DepouillementConceptionTest extends WebTestCase
         static::assertSelectorTextContains('body', 'Aucune conception signalée');
     }
 
+    public function testLaNoteComplementaireDesJoueursEstEnregistreeEtAffichee(): void
+    {
+        $client = static::createClient();
+        [$depouillement, $numeroPartenaire, $moi] = $this->scene();
+        $client->loginUser($moi);
+
+        $crawler = $client->request('GET', $this->contenu($depouillement));
+        $client->submit($crawler->selectButton('Enregistrer la conception')->form(['partenaire' => (string) $numeroPartenaire, 'note' => '  Souhaite une fille  ']));
+        $client->followRedirect();
+
+        static::assertSelectorTextContains('body', 'Note des joueurs : Souhaite une fille');
+        $conception = static::getContainer()->get(EntityManagerInterface::class)->getRepository(Conception::class)->findOneBy([]);
+        static::assertSame('Souhaite une fille', $conception?->getNote());
+    }
+
     public function testUnPartenaireInconnuAfficheUneErreur(): void
     {
         $client = static::createClient();

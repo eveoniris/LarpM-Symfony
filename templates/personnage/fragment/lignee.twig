@@ -10,14 +10,17 @@
         </div>
 
         {% if isAdmin is defined and isAdmin %}
+            {% set actionsLignee = [{'path': path('personnage.add.lignee', {'personnage': personnage.id}), 'label': 'Ajouter une lignée'}] %}
+            {# Héritiers : écran du scénariste (bêta du dépouillement), pour le dernier GN du personnage #}
+            {% if participant is defined and participant and is_granted('ROLE_BETA_TEST') and is_granted('DEPOUILLEMENT_VALIDER', participant.gn) %}
+                {% set actionsLignee = actionsLignee|merge([{'path': path('depouillement.conceptions', {'gn': participant.gn.id}), 'label': "Conceptions d'héritier du GN " ~ participant.gn.label}]) %}
+            {% endif %}
             {% include '_partials/offcanvasActions.twig' with {
                 'offcanvasId': 'offcanvasLignee',
                 'isAdmin': true,
                 'title': 'Actions',
                 'groups': [
-                    {'label': 'Lignée', 'actions': [
-                        {'path': path('personnage.add.lignee', {'personnage': personnage.id}), 'label': 'Ajouter une lignée'},
-                    ]},
+                    {'label': 'Lignée', 'actions': actionsLignee},
                 ]
             } %}
             {% if personnage.personnageLignee|length > 0 %}

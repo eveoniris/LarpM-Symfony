@@ -34,7 +34,7 @@ final class DepouillementConceptionController extends AbstractDepouillementContr
         }
 
         try {
-            $conception = $conceptionService->enregistrer($depouillement, $request->request->getString('partenaire'), $this->utilisateur());
+            $conception = $conceptionService->enregistrer($depouillement, $request->request->getString('partenaire'), $this->utilisateur(), note: $request->request->getString('note'));
         } catch (ConceptionInvalideException $exception) {
             $this->addFlash('error', $exception->getMessage());
 

@@ -5,6 +5,9 @@
  * - Copie dans le presse-papiers : [data-gs-copy="#id"] (listes d'e-mails des groupes transverses).
  * - Photo en grand : a[data-lm-photo] ouvre l'image dans une fenêtre modale (<dialog>), le lien garde son
  *   comportement normal avec Ctrl, Cmd, Maj ou un clic autre que le principal.
+ * - Confirmation d'une action : [data-lm-confirm="message"] sur un formulaire ou sur son bouton d'envoi ouvre une fenêtre
+ *   modale (<dialog>) à la place du confirm() du navigateur ; [data-lm-confirm-label] change le texte du bouton de
+ *   confirmation et [data-lm-confirm-danger] le colore en rouge. Sans <dialog>, repli sur confirm().
  * - Tableaux de liste en interface bêta : voir lm-lists.js.
  * - Menus déroulants dans un tableau défilant (.table-responsive, .lm-table-wrap) : position fixe, sinon le conteneur
  *   (overflow) les rogne, surtout quand le tableau n'a qu'une ligne.
@@ -13,6 +16,49 @@ import { Dropdown } from 'bootstrap';
 import './lm-lists.js';
 
 let photoDialog = null;
+let confirmDialog = null;
+
+/** Renvoie un formulaire déjà confirmé, avec son bouton d'envoi d'origine (donc son éventuel formaction). */
+function resubmit(form, submitter) {
+    form.dataset.lmConfirmed = '1';
+    form.requestSubmit(submitter || undefined);
+    delete form.dataset.lmConfirmed;
+}
+
+/**
+ * Demande confirmation dans une fenêtre modale puis renvoie le formulaire.
+ */
+function askConfirmation(form, submitter) {
+    const source = submitter && submitter.dataset.lmConfirm !== undefined ? submitter : form;
+    const message = source.dataset.lmConfirm;
+    if (typeof HTMLDialogElement === 'undefined') {
+        if (window.confirm(message)) {
+            resubmit(form, submitter);
+        }
+        return;
+    }
+    if (!confirmDialog) {
+        confirmDialog = document.createElement('dialog');
+        confirmDialog.className = 'lm-confirm-dialog';
+        confirmDialog.setAttribute('aria-labelledby', 'lm-confirm-message');
+        confirmDialog.innerHTML = '<form method="dialog"><p id="lm-confirm-message" class="lm-confirm-message"></p>'
+            + '<div class="lm-confirm-actions"><button type="submit" value="cancel" class="btn btn-secondary lm-confirm-cancel">Annuler</button>'
+            + '<button type="submit" value="ok" class="btn lm-confirm-ok"></button></div></form>';
+        document.body.appendChild(confirmDialog);
+    }
+    confirmDialog.querySelector('.lm-confirm-message').textContent = message;
+    const ok = confirmDialog.querySelector('.lm-confirm-ok');
+    ok.textContent = source.dataset.lmConfirmLabel || 'Confirmer';
+    ok.className = 'btn lm-confirm-ok ' + (source.dataset.lmConfirmDanger !== undefined ? 'btn-danger' : 'btn-primary');
+    confirmDialog.returnValue = '';
+    confirmDialog.onclose = () => {
+        if (confirmDialog.returnValue === 'ok') {
+            resubmit(form, submitter);
+        }
+    };
+    confirmDialog.showModal();
+    confirmDialog.querySelector('.lm-confirm-cancel').focus();
+}
 
 function openPhoto(link) {
     if (!photoDialog) {
@@ -99,6 +145,19 @@ if (!window.lmUiBound) {
             event.preventDefault();
             openPhoto(photo);
         }
+    });
+
+    document.addEventListener('submit', (event) => {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement) || form.dataset.lmConfirmed === '1') {
+            return;
+        }
+        const submitter = event.submitter;
+        if (form.dataset.lmConfirm === undefined && !(submitter && submitter.dataset.lmConfirm !== undefined)) {
+            return;
+        }
+        event.preventDefault();
+        askConfirmation(form, submitter);
     });
 
     if (document.readyState === 'complete') {

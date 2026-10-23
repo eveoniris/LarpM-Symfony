@@ -129,7 +129,7 @@
 												</button>
 											</form>
 											{% if modifiable %}
-												<form method="post" action="{{ path('depouillement.photo.delete', {'gn': gn.id, 'depouillement': depouillement.id, 'photo': photo.id}) }}" onsubmit="return confirm('Supprimer cette photo ?');">
+												<form method="post" action="{{ path('depouillement.photo.delete', {'gn': gn.id, 'depouillement': depouillement.id, 'photo': photo.id}) }}" data-lm-confirm="Supprimer cette photo ?" data-lm-confirm-danger data-lm-confirm-label="Supprimer">
 													<input type="hidden" name="_token" value="{{ csrf_token('depouillement_photo_' ~ photo.id) }}">
 													<button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i> Supprimer</button>
 												</form>
@@ -175,7 +175,7 @@
 							</thead>
 							<tbody>
 								{% for e in etiquettes %}
-									<tr class="{{ e.anomalies|length > 0 ? 'table-warning' : '' }}">
+									<tr class="{{ e.anomalies|length > 0 ? (beta ? 'lm-row-anomalie' : 'table-warning') : '' }}">
 										<td>{{ e.nature.label }}, {{ e.couleur.value }}{% if e.quantite > 1 %} (x{{ e.quantite }}){% endif %}{% if e.speciale %} <span class="badge text-bg-info">spéciale</span>{% endif %}</td>
 										<td>{{ e.numero ?? '-' }}</td>
 										<td>{{ e.qualite ?? '-' }}</td>
@@ -185,12 +185,12 @@
 											{{ e.destination.label }}
 											{% if e.actionObjet %}<br><strong>{{ e.actionObjet.label }}</strong>{% endif %}
 											{% if e.aPrevoirProchainOpus %}<br><span class="badge text-bg-secondary">À prévoir pour l'opus suivant</span>{% endif %}
-											{% for anomalie in e.anomalies %}<div class="small text-danger"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
+											{% for anomalie in e.anomalies %}<div class="small lm-anomalie"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
 											{% if e.remarque %}<div class="small text-muted">{{ e.remarque }}</div>{% endif %}
 										</td>
 										<td class="text-nowrap">
 											{% if modifiable %}
-												<form method="post" action="{{ path('depouillement.etiquette.delete', {'gn': gn.id, 'depouillement': depouillement.id, 'etiquette': e.id}) }}" onsubmit="return confirm('Supprimer cette étiquette ?');">
+												<form method="post" action="{{ path('depouillement.etiquette.delete', {'gn': gn.id, 'depouillement': depouillement.id, 'etiquette': e.id}) }}" data-lm-confirm="Supprimer cette étiquette ?" data-lm-confirm-danger data-lm-confirm-label="Supprimer">
 													<input type="hidden" name="_token" value="{{ csrf_token('depouillement_etiquette_' ~ e.id) }}">
 													<button type="submit" class="btn btn-sm btn-danger" title="Supprimer cette étiquette"><i class="fa fa-trash"></i></button>
 												</form>
@@ -207,7 +207,7 @@
 						<strong>{{ generiques }}</strong> étiquette(s) remise(s) au stock,
 						<strong>{{ etiquettes|filter(e => e.aPrevoirProchainOpus)|length }}</strong> ligne(s) à prévoir pour l'enveloppe de l'opus suivant.
 						{% if etiquettes|filter(e => e.anomalies|length > 0)|length > 0 %}
-							<span class="text-danger">Des anomalies sont signalées : sollicitez un orga expert et/ou consignez-les dans les remarques.</span>
+							<span class="lm-anomalie">Des anomalies sont signalées : sollicitez un orga expert et/ou consignez-les dans les remarques.</span>
 						{% endif %}
 					</p>
 				{% else %}
@@ -244,18 +244,18 @@
 					<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'photos'}) }}">Photos</a> : {{ depouillement.photos|length }}</li>
 					<li>
 						<a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Étiquettes</a> : {{ depouillement.etiquettes|length }}
-						{% if etiquettesAnomalies > 0 %}<span class="text-danger">({{ etiquettesAnomalies }} avec anomalie)</span>{% endif %}
+						{% if etiquettesAnomalies > 0 %}<span class="lm-anomalie">({{ etiquettesAnomalies }} avec anomalie)</span>{% endif %}
 					</li>
 					{% if contenuJoueur is defined %}
 						{% set acceptees = resultatsActions|filter(r => r.statut.value == 'acceptee')|map(r => r.action.ressource) %}
 						{% set refusees = resultatsActions|filter(r => r.statut.value == 'refusee')|map(r => r.action.ressource) %}
 						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Actions de fin d'Opus</a> :
 							acceptées : {{ acceptees|join(', ') ?: 'aucune' }}
-							{% if refusees|length > 0 %}<span class="text-danger">; refusées : {{ refusees|join(', ') }}</span>{% endif %}
+							{% if refusees|length > 0 %}<span class="lm-anomalie">; refusées : {{ refusees|join(', ') }}</span>{% endif %}
 						</li>
 						{% set anomaliesConceptions = depouillement.conceptions|filter(c => c.anomalies|length > 0)|length %}
 						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Conceptions d'héritier</a> : {{ depouillement.conceptions|length }}
-							{% if anomaliesConceptions > 0 %}<span class="text-danger">({{ anomaliesConceptions }} avec anomalie)</span>{% endif %}
+							{% if anomaliesConceptions > 0 %}<span class="lm-anomalie">({{ anomaliesConceptions }} avec anomalie)</span>{% endif %}
 						</li>
 						<li>Appris : {{ contenuJoueur.sorts|length }} sort(s), {{ contenuJoueur.prieres|length }} prière(s), {{ contenuJoueur.potions|length }} potion(s)</li>
 						<li>Surplus à reverser au groupe : {% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}</li>
@@ -297,7 +297,7 @@
 				</div>
 
 				{% if modifiable %}
-					<form method="post" action="{{ path('depouillement.terminer', {'gn': gn.id, 'depouillement': depouillement.id}) }}" onsubmit="return confirm('Terminer ce dépouillement ? Il ne sera plus modifiable et passera en attente de validation.');">
+					<form method="post" action="{{ path('depouillement.terminer', {'gn': gn.id, 'depouillement': depouillement.id}) }}" data-lm-confirm="Terminer ce dépouillement ? Il ne sera plus modifiable et passera en attente de validation." data-lm-confirm-label="Terminer le dépouillement">
 						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_terminer_' ~ depouillement.id) }}">
 						<button type="submit" class="btn btn-success w-100 w-md-auto"><i class="fa fa-check"></i> Terminer le dépouillement</button>
 					</form>
@@ -324,9 +324,10 @@
 						<div class="card-body">
 							<p class="small text-muted">
 								Relisez le contenu, les photos et les remarques. Une fois validé, le dépouillement <strong>ne peut plus être rouvert</strong>.
+								{% if depouillement.conceptions|length > 0 %}<a href="{{ path('depouillement.conceptions', {'gn': gn.id}) }}">Voir les conceptions d'héritier du GN</a>.{% endif %}
 								{% if depouillement.simulation %}C'est une simulation : la validation n'a aucun effet.{% endif %}
 							</p>
-							<form method="post" class="mb-3" action="{{ path('depouillement.valider', {'gn': gn.id, 'depouillement': depouillement.id}) }}" onsubmit="return confirm('Valider ce dépouillement ? Il ne pourra plus être rouvert.');">
+							<form method="post" class="mb-3" action="{{ path('depouillement.valider', {'gn': gn.id, 'depouillement': depouillement.id}) }}" data-lm-confirm="Valider ce dépouillement ? Il ne pourra plus être rouvert." data-lm-confirm-label="Valider">
 								<input type="hidden" name="_token" value="{{ csrf_token('depouillement_valider_' ~ depouillement.id) }}">
 								<button type="submit" class="btn btn-success w-100 w-md-auto"><i class="fa fa-check-double"></i> Valider le dépouillement</button>
 							</form>
