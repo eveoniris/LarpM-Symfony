@@ -1,0 +1,42 @@
+{# Conceptions d'héritier signalées dans une enveloppe de joueur. Le tirage (d20) est fait à l'enregistrement et jamais refait ;
+   le scénariste décide ensuite de la suite. Formulaires séparés du formulaire de contenu (pas d'imbrication).
+   Variables : depouillement, gn, modifiable #}
+
+<h6>Conceptions d'héritier</h6>
+<p class="text-muted small">
+	Si le joueur déclare une conception, saisissez le numéro de personnage de son partenaire. Le tirage est fait une seule fois, le scénariste décide ensuite de la création de l'héritier.
+</p>
+
+{% if depouillement.conceptions|length > 0 %}
+	<ul class="list-unstyled">
+		{% for c in depouillement.conceptions %}
+			<li class="mb-2">
+				<strong>{{ c.parent1.nom }}</strong> (n°{{ c.parent1.id }}) et <strong>{{ c.parent2.nom }}</strong> (n°{{ c.parent2.id }})
+				<span class="badge text-bg-secondary">{{ c.statut.label }}</span>
+				{% if c.tirage is not null %}<div class="small">Tirage : <strong>{{ c.tirage }}</strong>, {{ c.issue.label }}</div>{% endif %}
+				{% for anomalie in c.anomalies %}<div class="small text-danger"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
+				{% if modifiable and c.statut.value == 'en_attente' %}
+					<form method="post" action="{{ path('depouillement.conception.delete', {'gn': gn.id, 'depouillement': depouillement.id, 'conception': c.id}) }}" onsubmit="return confirm('Retirer cette conception ?');">
+						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_conception_' ~ c.id) }}">
+						<button type="submit" class="btn btn-sm btn-outline-danger">Retirer</button>
+					</form>
+				{% endif %}
+			</li>
+		{% endfor %}
+	</ul>
+{% else %}
+	<p class="text-muted">Aucune conception signalée.</p>
+{% endif %}
+
+{% if modifiable %}
+	<form method="post" action="{{ path('depouillement.conception.add', {'gn': gn.id, 'depouillement': depouillement.id}) }}" class="row g-2 align-items-end">
+		<input type="hidden" name="_token" value="{{ csrf_token('depouillement_conception_add_' ~ depouillement.id) }}">
+		<div class="col-auto">
+			<label for="conception-partenaire" class="form-label">N° de personnage du partenaire</label>
+			<input type="text" id="conception-partenaire" name="partenaire" class="form-control" inputmode="numeric" required>
+		</div>
+		<div class="col-auto">
+			<button type="submit" class="btn btn-outline-primary">Enregistrer la conception</button>
+		</div>
+	</form>
+{% endif %}
