@@ -151,6 +151,31 @@ class DepouillementContenuJoueurTest extends WebTestCase
         static::assertSelectorTextContains('body', 'Soie : augmenter la renommée : Acceptée');
     }
 
+    public function testLeRecapitulatifResumeLeContenuPourLeValideur(): void
+    {
+        $client = static::createClient();
+        $moi = $this->beta();
+        $depouillement = $this->depouillement($moi);
+        $client->loginUser($moi);
+
+        $crawler = $client->request('GET', $this->contenu($depouillement));
+        $form = $crawler->selectButton('Enregistrer le contenu')->form();
+        $form['contenu_joueur[soieUtilise]']->tick();
+        $form['contenu_joueur[soieJointes]']->tick();
+        $form['contenu_joueur[fruitsUtilise]']->tick();
+        $form['contenu_joueur[surplus][bois]'] = '4';
+        $client->submit($form);
+
+        $client->request('GET', str_replace('/etape/contenu', replace: '/etape/recapitulatif', subject: $this->contenu($depouillement)));
+
+        static::assertSelectorTextContains('body', 'Résumé à relire');
+        static::assertSelectorTextContains('body', 'acceptées : Soie');
+        static::assertSelectorTextContains('body', 'refusées : Fruits et légumes');
+        static::assertSelectorTextContains('body', 'Surplus à reverser au groupe : Bois : 4');
+        static::assertSelectorTextContains('body', 'Photos : 0');
+        static::assertSelectorNotExists('form[name="contenu_joueur"]');
+    }
+
     public function testSansLeRoleBetaOnNEnregistreRien(): void
     {
         $client = static::createClient();

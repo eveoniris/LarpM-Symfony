@@ -80,8 +80,15 @@ class ContenuJoueurType extends AbstractType
     private function ajouterApprentissages(FormBuilderInterface $builder): void
     {
         $builder
-            ->add('sorts', EntityType::class, $this->liste(Sort::class, 'Sorts appris pendant le jeu'))
-            ->add('prieres', EntityType::class, $this->liste(Priere::class, 'Prières apprises pendant le jeu'))
+            // Plusieurs niveaux d'un même domaine portent le même nom : on affiche domaine et niveau pour les distinguer.
+            ->add('sorts', EntityType::class, [
+                ...$this->liste(Sort::class, 'Sorts appris pendant le jeu'),
+                'choice_label' => static fn (Sort $sort): string => \sprintf('%s - %s (niveau %d)', $sort->getDomaine()->getLabel(), $sort->getLabel(), $sort->getNiveau()),
+            ])
+            ->add('prieres', EntityType::class, [
+                ...$this->liste(Priere::class, 'Prières apprises pendant le jeu'),
+                'choice_label' => static fn (Priere $priere): string => \sprintf('%s - %s (niveau %d)', $priere->getSphere()?->getLabel() ?? 'Sans sphère', $priere->getLabel(), $priere->getNiveau()),
+            ])
             ->add('recettes', TextareaType::class, [
                 'label' => 'Recettes apprises',
                 'required' => false,
@@ -119,7 +126,11 @@ class ContenuJoueurType extends AbstractType
                 'constraints' => [new Range(min: 0, max: 3, notInRangeMessage: 'Entre 0 et 3 pièces d\'or.')],
                 'attr' => ['inputmode' => 'numeric', 'min' => 0, 'max' => 3],
             ])
-            ->add('selIngredients', EntityType::class, $this->liste(Ingredient::class, 'Ingrédients conservés (6 maximum)', 6))
+            // La fiche demande le nom et la couleur de chaque ingrédient.
+            ->add('selIngredients', EntityType::class, [
+                ...$this->liste(Ingredient::class, 'Ingrédients conservés (6 maximum)', 6),
+                'choice_label' => static fn (Ingredient $ingredient): string => $ingredient->getLabel() . ' - ' . $ingredient->getColor(),
+            ])
             ->add('fourrureRessources', EntityType::class, $this->liste(Ressource::class, 'Ressources conservées (3 maximum)', 3))
             ->add('ivoirePotions', EntityType::class, [
                 ...$this->liste(Potion::class, 'Potions conservées (3 maximum, par numéro)', 3),

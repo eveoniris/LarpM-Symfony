@@ -111,6 +111,25 @@ class DepouillementContenuGroupeTest extends WebTestCase
         static::assertTrue($relu->getDonnees()['contenu_groupe']['fiche_retour']);
     }
 
+    public function testLeRecapitulatifDuGroupeResumeLeReliquat(): void
+    {
+        $client = static::createClient();
+        $moi = $this->beta();
+        $depouillement = $this->enveloppeGroupe($moi);
+        $client->loginUser($moi);
+
+        $crawler = $client->request('GET', $this->contenu($depouillement));
+        $form = $crawler->selectButton('Enregistrer le contenu du groupe')->form();
+        $form['contenu_groupe[compteurs][bois]'] = '5';
+        $client->submit($form);
+
+        $client->request('GET', str_replace('/etape/contenu', replace: '/etape/recapitulatif', subject: $this->contenu($depouillement)));
+
+        static::assertSelectorTextContains('body', 'Résumé à relire');
+        static::assertSelectorTextContains('body', 'Reliquat du groupe : Bois : 5');
+        static::assertSelectorNotExists('form[name="contenu_groupe"]');
+    }
+
     public function testQuandLaSaisieEstTermineeLeContenuDuGroupeEstEnLectureSeule(): void
     {
         $client = static::createClient();

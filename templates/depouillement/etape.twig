@@ -152,6 +152,9 @@
 				{% endif %}
 
 				<h6>Étiquettes d'objets et d'armes</h6>
+				{% if modifiable and (contenuJoueur is defined or contenuGroupe is defined) %}
+					<p class="small text-warning mb-1"><i class="fa fa-circle-info"></i> Les étiquettes s'ajoutent séparément du contenu ci-dessus : cliquez d'abord sur « Enregistrer le contenu », sinon la page rechargée perd ce qui n'est pas enregistré.</p>
+				{% endif %}
 				<p class="text-muted small">Pour chaque étiquette, lisez le numéro en haut à gauche et la qualité (trois chiffres) en haut à droite. Une étiquette bleue est celle d'un objet de l'association, une orange celle d'un objet de joueur : en retour de jeu il ne doit y avoir que des étiquettes orange, sans objet.</p>
 
 				{% if formEtiquette %}
@@ -234,6 +237,38 @@
 					<dt class="col-sm-4">Remarques</dt>
 					<dd class="col-sm-8">{{ depouillement.remarques ? depouillement.remarques|nl2br : '-' }}</dd>
 				</dl>
+
+				<h6>Résumé à relire</h6>
+				{% set etiquettesAnomalies = depouillement.etiquettes|filter(e => e.anomalies|length > 0)|length %}
+				<ul class="mb-3">
+					<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'photos'}) }}">Photos</a> : {{ depouillement.photos|length }}</li>
+					<li>
+						<a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Étiquettes</a> : {{ depouillement.etiquettes|length }}
+						{% if etiquettesAnomalies > 0 %}<span class="text-danger">({{ etiquettesAnomalies }} avec anomalie)</span>{% endif %}
+					</li>
+					{% if contenuJoueur is defined %}
+						{% set acceptees = resultatsActions|filter(r => r.statut.value == 'acceptee')|map(r => r.action.ressource) %}
+						{% set refusees = resultatsActions|filter(r => r.statut.value == 'refusee')|map(r => r.action.ressource) %}
+						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Actions de fin d'Opus</a> :
+							acceptées : {{ acceptees|join(', ') ?: 'aucune' }}
+							{% if refusees|length > 0 %}<span class="text-danger">; refusées : {{ refusees|join(', ') }}</span>{% endif %}
+						</li>
+						<li>Appris : {{ contenuJoueur.sorts|length }} sort(s), {{ contenuJoueur.prieres|length }} prière(s){% if contenuJoueur.recettes %}, recettes : {{ contenuJoueur.recettes }}{% endif %}</li>
+						<li>Surplus à reverser au groupe : {% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}</li>
+					{% endif %}
+					{% if contenuGroupe is defined %}
+						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Reliquat du groupe</a> :
+							{% for libelle, ligne in reliquat.lignes %}{{ libelle }} : {{ ligne.total }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}
+							({{ reliquat.enveloppesJoueurs }} enveloppe(s) de joueur dépouillée(s))
+						</li>
+					{% endif %}
+				</ul>
+				{% if anomaliesContenu is defined and anomaliesContenu|length > 0 %}
+					<div class="alert alert-warning small">
+						<strong>À vérifier :</strong>
+						<ul class="mb-0">{% for anomalie in anomaliesContenu %}<li>{{ anomalie }}</li>{% endfor %}</ul>
+					</div>
+				{% endif %}
 
 				<h6>Historique</h6>
 				<div class="{{ beta ? 'lm-table-wrap' : 'table-responsive' }}">

@@ -148,7 +148,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
      */
     private function contenuJoueur(Depouillement $depouillement, DepouillementEtape $etape, DepouillementContenuService $contenuService): array
     {
-        if (DepouillementEtape::CONTENU !== $etape || DepouillementType::JOUEUR !== $depouillement->getType()) {
+        if (!in_array($etape, [DepouillementEtape::CONTENU, DepouillementEtape::RECAPITULATIF], strict: true) || DepouillementType::JOUEUR !== $depouillement->getType()) {
             return [];
         }
 
@@ -156,7 +156,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
 
         return [
             'contenuJoueur' => $contenu,
-            'formContenuJoueur' => $depouillement->getStatut()->isEditable()
+            'formContenuJoueur' => DepouillementEtape::CONTENU === $etape && $depouillement->getStatut()->isEditable()
                 ? $this->createForm(ContenuJoueurType::class, $contenu, [
                     'action' => $this->generateUrl('depouillement.contenu_joueur', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()]),
                 ])
@@ -175,7 +175,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
      */
     private function contenuGroupe(Depouillement $depouillement, DepouillementEtape $etape, DepouillementGroupeService $groupeService): array
     {
-        if (DepouillementEtape::CONTENU !== $etape || DepouillementType::GROUPE !== $depouillement->getType()) {
+        if (!in_array($etape, [DepouillementEtape::CONTENU, DepouillementEtape::RECAPITULATIF], strict: true) || DepouillementType::GROUPE !== $depouillement->getType()) {
             return [];
         }
 
@@ -183,7 +183,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
 
         return [
             'contenuGroupe' => $contenu,
-            'formContenuGroupe' => $depouillement->getStatut()->isEditable()
+            'formContenuGroupe' => DepouillementEtape::CONTENU === $etape && $depouillement->getStatut()->isEditable()
                 ? $this->createForm(ContenuGroupeType::class, $contenu, [
                     'action' => $this->generateUrl('depouillement.contenu_groupe', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()]),
                 ])
