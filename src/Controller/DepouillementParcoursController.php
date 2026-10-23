@@ -9,7 +9,10 @@ use App\Entity\Gn;
 use App\Enum\DepouillementEtape;
 use App\Enum\DepouillementType;
 use App\Enum\ActionFinOpus;
+use App\Form\Depouillement\ContenuGroupeType;
 use App\Form\Depouillement\ContenuJoueurType;
+use App\Service\ContenuGroupe;
+use App\Service\DepouillementGroupeService;
 use App\Form\Depouillement\DepouillementEtiquetteType;
 use App\Form\Depouillement\DepouillementRemarquesType;
 use App\Service\CompteursEnveloppe;
@@ -81,6 +84,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         DepouillementEtape $etape,
         DepouillementService $depouillementService,
         DepouillementContenuService $contenuService,
+        DepouillementGroupeService $groupeService,
     ): Response {
         $this->verifier($gn, $depouillement);
 
@@ -110,6 +114,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             'formEtiquette' => $this->formulaireEtiquette($depouillement, $etape),
             'avertissementGroupe' => $this->avertissementGroupe($depouillement, $depouillementService),
             ...$this->contenuJoueur($depouillement, $etape, $contenuService),
+            ...$this->contenuGroupe($depouillement, $etape, $groupeService),
         ]);
     }
 
@@ -164,6 +169,31 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             'resultatsActions' => $contenuService->evaluerActions($contenu),
             'anomaliesContenu' => $contenuService->anomalies($contenu),
             'actionsFinOpus' => ActionFinOpus::cases(),
+        ];
+    }
+
+    /**
+     * Variables de l'étape Contenu d'une enveloppe de groupe : contenu enregistré, formulaire (si modifiable) et reliquat.
+     *
+     * @return array<string, mixed>
+     */
+    private function contenuGroupe(Depouillement $depouillement, DepouillementEtape $etape, DepouillementGroupeService $groupeService): array
+    {
+        if (DepouillementEtape::CONTENU !== $etape || DepouillementType::GROUPE !== $depouillement->getType()) {
+            return [];
+        }
+
+        $contenu = $groupeService->lireContenuGroupe($depouillement);
+
+        return [
+            'contenuGroupe' => $contenu,
+            'formContenuGroupe' => $depouillement->getStatut()->isEditable()
+                ? $this->createForm(ContenuGroupeType::class, $contenu, [
+                    'action' => $this->generateUrl('depouillement.contenu_groupe', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()]),
+                ])
+                : null,
+            'reliquat' => $groupeService->reliquat($depouillement),
+            'materielGroupe' => ContenuGroupe::MATERIEL,
         ];
     }
 

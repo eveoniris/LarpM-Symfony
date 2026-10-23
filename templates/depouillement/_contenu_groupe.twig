@@ -1,0 +1,71 @@
+{# Contenu constaté dans une enveloppe de groupe, d'après la fiche "Instructions Retour de jeu GROUPE".
+   Variables : contenuGroupe, formContenuGroupe (null si non modifiable), reliquat, materielGroupe #}
+
+<h6>Contenu de l'enveloppe de groupe</h6>
+<p class="text-muted small">
+	Pièces, ressources, ingrédients et potions <strong>collectés par le groupe</strong> (et non conservés par des joueurs), plus le matériel de jeu individuel que les joueurs n'ont pas gardé. Les ressources seront vérifiées puis utilisées selon les ordres du jeu de domaine ; tout le reliquat est crédité pour l'initiative. La liste des objets à étiquette bleue remis au PC joueur se saisit avec les étiquettes ci-dessous.
+</p>
+
+{% if formContenuGroupe %}
+	{% set f = formContenuGroupe %}
+	{{ form_start(f) }}
+
+	{{ form_row(f.ficheRetour) }}
+
+	<fieldset class="mb-3">
+		<legend class="h6">Matériel de jeu individuel non gardé par les joueurs</legend>
+		<div class="row row-cols-2 row-cols-md-3 g-1">
+			{% for champ in f.materiel %}
+				<div class="col">{{ form_row(champ) }}</div>
+			{% endfor %}
+		</div>
+		{{ form_row(f.autreMateriel) }}
+	</fieldset>
+
+	<fieldset class="mb-3">
+		<legend class="h6">Pièces, ingrédients, potions et ressources collectés par le groupe</legend>
+		<div class="row row-cols-2 row-cols-md-3 g-1">
+			{% for champ in f.compteurs %}
+				<div class="col">{{ form_row(champ) }}</div>
+			{% endfor %}
+		</div>
+	</fieldset>
+
+	{{ form_widget(f.submit, {'attr': {'class': 'btn btn-primary w-100 w-md-auto'}}) }}
+	{{ form_end(f) }}
+{% else %}
+	<p class="mb-1">Fiche de retour groupe remplie : <strong>{{ contenuGroupe.ficheRetour ? 'oui' : 'non' }}</strong></p>
+	<p class="mb-1">
+		Matériel individuel :
+		{% set materielPresent = contenuGroupe.materielNormalise|filter(quantite => quantite > 0) %}
+		{% for cle, quantite in materielPresent %}{{ materielGroupe[cle] }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}-{% endfor %}
+	</p>
+	{% if contenuGroupe.autreMateriel %}<p class="mb-1">Autre matériel : {{ contenuGroupe.autreMateriel }}</p>{% endif %}
+{% endif %}
+
+<h6 class="mt-3">Reliquat du groupe</h6>
+<p class="text-muted small">
+	Collecté par le groupe, plus le surplus déclaré dans les enveloppes de ses joueurs déjà dépouillées ({{ reliquat.enveloppesJoueurs }} enveloppe(s) de joueur). Ces quantités serviront au calcul de l'initiative, dont la formule n'est pas encore figée.
+</p>
+{% if reliquat.lignes|length > 0 %}
+	<div class="table-responsive">
+		<table class="table table-sm table-bordered w-auto">
+			<thead>
+				<tr><th>Élément</th><th class="text-end">Groupe</th><th class="text-end">Surplus des joueurs</th><th class="text-end">Total</th></tr>
+			</thead>
+			<tbody>
+				{% for libelle, ligne in reliquat.lignes %}
+					<tr>
+						<td>{{ libelle }}</td>
+						<td class="text-end">{{ ligne.groupe }}</td>
+						<td class="text-end">{{ ligne.joueurs }}</td>
+						<td class="text-end fw-bold">{{ ligne.total }}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% else %}
+	<p class="text-muted">Aucun reliquat pour l'instant.</p>
+{% endif %}
+<hr>

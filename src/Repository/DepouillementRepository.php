@@ -77,6 +77,32 @@ class DepouillementRepository extends BaseRepository
     }
 
     /**
+     * Dépouillements des enveloppes de joueurs d'une session de groupe, réels ou simulations selon la nature du dépouillement du
+     * groupe (une simulation ne mélange jamais ses totaux avec des dépouillements réels).
+     *
+     * @return list<Depouillement>
+     */
+    public function findJoueursDuGroupe(GroupeGn $groupeGn, bool $simulation): array
+    {
+        return array_values(
+            $this
+                ->getEntityManager()
+                ->createQueryBuilder()
+                ->select('d')
+                ->from(Depouillement::class, 'd')
+                ->join('d.participant', 'p')
+                ->where('d.gn = :gn AND d.type = :type AND d.simulation = :simulation AND p.groupeGn = :groupeGn')
+                ->setParameter('gn', $groupeGn->getGn())
+                ->setParameter('type', DepouillementType::JOUEUR)
+                ->setParameter('simulation', $simulation)
+                ->setParameter('groupeGn', $groupeGn)
+                ->orderBy('d.id', 'ASC')
+                ->getQuery()
+                ->getResult(),
+        );
+    }
+
+    /**
      * Session d'un groupe pour un GN, à partir du numéro de groupe que connaît le dépouilleur.
      */
     public function findGroupeGnParNumero(Gn $gn, int $numeroGroupe): ?GroupeGn

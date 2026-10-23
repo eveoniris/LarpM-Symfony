@@ -125,6 +125,9 @@
 				{% if contenuJoueur is defined %}
 					{% include 'depouillement/_contenu_joueur.twig' %}
 				{% endif %}
+				{% if contenuGroupe is defined %}
+					{% include 'depouillement/_contenu_groupe.twig' %}
+				{% endif %}
 
 				<h6>Étiquettes d'objets et d'armes</h6>
 				<p class="text-muted small">Pour chaque étiquette, lisez le numéro en haut à gauche et la qualité (trois chiffres) en haut à droite. Une étiquette bleue est celle d'un objet de l'association, une orange celle d'un objet de joueur : en retour de jeu il ne doit y avoir que des étiquettes orange, sans objet.</p>

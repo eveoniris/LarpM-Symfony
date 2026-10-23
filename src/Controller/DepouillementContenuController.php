@@ -8,9 +8,12 @@ use App\Entity\Depouillement;
 use App\Entity\Gn;
 use App\Enum\DepouillementEtape;
 use App\Exception\ContenuInvalideException;
+use App\Form\Depouillement\ContenuGroupeType;
 use App\Form\Depouillement\ContenuJoueurType;
+use App\Service\ContenuGroupe;
 use App\Service\ContenuJoueur;
 use App\Service\DepouillementContenuService;
+use App\Service\DepouillementGroupeService;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,6 +57,36 @@ final class DepouillementContenuController extends AbstractDepouillementControll
         }
 
         $this->addFlash('success', \sprintf('Contenu enregistré : %d action(s) de fin d\'Opus acceptée(s).', $contenuService->compterAcceptees($contenu)));
+
+        return $retour;
+    }
+
+    #[Route('/gn/{gn}/depouillement/{depouillement}/contenu-groupe', name: 'depouillement.contenu_groupe', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
+    public function groupeAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementGroupeService $groupeService): Response
+    {
+        $this->verifier($gn, $depouillement);
+        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::CONTENU), 303);
+
+        $form = $this->createForm(ContenuGroupeType::class, new ContenuGroupe());
+        $form->handleRequest($request);
+
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            foreach ($form->getErrors(true) as $erreur) {
+                $this->addFlash('error', $erreur instanceof FormError ? $erreur->getMessage() : 'Saisie invalide.');
+            }
+
+            return $retour;
+        }
+
+        try {
+            $groupeService->enregistrerContenuGroupe($depouillement, $form->getData(), $this->utilisateur());
+        } catch (ContenuInvalideException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $retour;
+        }
+
+        $this->addFlash('success', 'Contenu de l\'enveloppe de groupe enregistré.');
 
         return $retour;
     }
