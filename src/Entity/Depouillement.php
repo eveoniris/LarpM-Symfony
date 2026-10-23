@@ -102,6 +102,11 @@ class Depouillement
     #[ORM\OrderBy(['id' => 'ASC'])]
     private Collection $photos;
 
+    /** @var Collection<int, Conception> conceptions d'héritier signalées dans ce retour de jeu */
+    #[ORM\OneToMany(mappedBy: 'depouillement', targetEntity: Conception::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['id' => 'ASC'])]
+    private Collection $conceptions;
+
     /** @var Collection<int, DepouillementEtiquette> */
     #[ORM\OneToMany(mappedBy: 'depouillement', targetEntity: DepouillementEtiquette::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['id' => 'ASC'])]
@@ -109,6 +114,7 @@ class Depouillement
 
     public function __construct()
     {
+        $this->conceptions = new ArrayCollection();
         $this->etiquettes = new ArrayCollection();
         $this->photos = new ArrayCollection();
         $this->createdAt = new DateTime();
@@ -286,6 +292,29 @@ class Depouillement
     public function getHistories(): Collection
     {
         return $this->histories;
+    }
+
+    /** @return Collection<int, Conception> */
+    public function getConceptions(): Collection
+    {
+        return $this->conceptions;
+    }
+
+    public function addConception(Conception $conception): static
+    {
+        if (!$this->conceptions->contains($conception)) {
+            $this->conceptions->add($conception);
+            $conception->setDepouillement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConception(Conception $conception): static
+    {
+        $this->conceptions->removeElement($conception);
+
+        return $this;
     }
 
     /** @return Collection<int, DepouillementEtiquette> */
