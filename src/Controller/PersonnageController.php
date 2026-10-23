@@ -9,6 +9,7 @@ use App\Entity\Classe;
 use App\Entity\Competence;
 use App\Entity\Connaissance;
 use App\Entity\Document;
+use App\Entity\EnveloppeLigne;
 use App\Entity\Domaine;
 use App\Entity\Espece;
 use App\Entity\ExperienceGain;
@@ -3745,6 +3746,7 @@ class PersonnageController extends AbstractController
             'langueMateriel' => $personnage->getLangueMateriel(),
             'participant' => $personnage->getLastParticipant(),
             'tab' => $tab,
+            'enveloppeLignes' => 'enveloppe' === $tab ? $this->entityManager->getRepository(EnveloppeLigne::class)->findParPersonnage($personnage) : [],
         ]);
     }
 
@@ -3793,6 +3795,7 @@ class PersonnageController extends AbstractController
         return $this->render('personnage/enveloppe.twig', [
             'personnage' => $personnage,
             'langueMateriel' => $personnage->getLangueMateriel(),
+            'enveloppeLignes' => $this->entityManager->getRepository(EnveloppeLigne::class)->findParPersonnage($personnage),
         ]);
     }
 

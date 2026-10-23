@@ -46,6 +46,8 @@ class PersonnageOldFindType extends AbstractType
                     ->createQueryBuilder('p')
                     ->leftJoin('p.participants', 'part')
                     ->where('p.vivant = :vivant')
+                    // Un héritier garde sa classe secrète tant qu'elle n'est pas changée : il ne peut pas être repris.
+                    ->andWhere('p.classe NOT IN (SELECT c.id FROM App\Entity\Classe c WHERE c.secrete = true)')
                     ->andWhere('p.user = :uid OR part.user = :uid')
                     ->setParameter('vivant', true)
                     ->setParameter('uid', $participant->getUser()?->getId())

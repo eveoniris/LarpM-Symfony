@@ -138,3 +138,9 @@ WHERE gn_id = 7 AND user_id IN (
 UPDATE larpm.participant
 SET groupe_gn_id = (SELECT id FROM larpm.groupe_gn WHERE groupe_id = (SELECT id FROM larpm.groupe WHERE nom = 'Groupe Rival Titres') AND gn_id = 7)
 WHERE gn_id = 7 AND user_id = (SELECT id FROM larpm.user WHERE email = 'rival@test.com');
+
+-- Tranche d age des heritiers nes en jeu (voir migration Version20261030100000) : idempotent.
+INSERT INTO larpm.age (label, description, bonus, enableCreation, discr, minimumValue)
+SELECT 'Enfant héritier', 'Héritier né en jeu, de 0 à 14 ans. Pas jouable en adulte avant d''être attribué (distinct des enfants de la partie enfants).', 0, 0, 'extended', 0
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM larpm.age WHERE label = 'Enfant héritier');

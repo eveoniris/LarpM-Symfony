@@ -1202,6 +1202,7 @@ class Personnage extends BasePersonnage implements Stringable
                 LangueSourceType::ORIGINE->value,
                 LangueSourceType::GROUPE->value,
                 LangueSourceType::ORIGINE_ET_GROUPE->value,
+                LangueSourceType::PARENTS->value,
             ];
             if (\in_array($source, $baseSources)) {
                 ++$maxLangueConnue;

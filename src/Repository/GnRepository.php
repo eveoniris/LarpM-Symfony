@@ -78,6 +78,26 @@ class GnRepository extends BaseRepository
     }
 
     /**
+     * Le GN actif qui suit celui-ci : le plus proche dont le début est postérieur à la fin du GN donné (null sans date de fin ou sans suivant).
+     */
+    public function findSuivant(Gn $gn): ?Gn
+    {
+        if (null === $gn->getDateFin()) {
+            return null;
+        }
+
+        return $this
+            ->createQueryBuilder('g')
+            ->where('g.actif = true')
+            ->andWhere('g.date_debut > :fin')
+            ->setParameter('fin', $gn->getDateFin())
+            ->orderBy('g.date_debut', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * GN choisi par un filtre ?gn=<id> : 'all' pour aucun filtre, une valeur absente ou invalide donne le
      * prochain GN (à défaut le dernier).
      */

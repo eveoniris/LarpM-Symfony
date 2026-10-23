@@ -36,6 +36,12 @@ enum LogActionType: string
     /** Validation d'un participant HelloAsso dans le rapprochement de la billetterie. */
     case BILLETTERIE_SYNC = 'billetterie_sync';
 
+    /**
+     * Validation ou renvoi d'un dépouillement d'enveloppe. Événement sommaire : les données et le détail sont dans
+     * l'historique du dépouillement (DepouillementHistory), que `data` référence.
+     */
+    case DEPOUILLEMENT = 'depouillement';
+
     /** Verrouillage d'un groupe : bloque la modification de ses personnages. */
     case GROUPE_LOCK = 'groupe_lock';
 

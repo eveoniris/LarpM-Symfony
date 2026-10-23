@@ -49,6 +49,10 @@ abstract class BaseClasse
     #[Column(name: 'creation', type: Types::BOOLEAN, nullable: true)]
     protected ?bool $creation = false;
 
+    /** Classe provisoire des héritiers nés en jeu : jamais proposée à la création, à changer avant la reprise par un joueur. */
+    #[Column(name: 'secrete', type: Types::BOOLEAN, options: ['default' => false])]
+    protected bool $secrete = false;
+
     /**
      * @var Collection<int, GroupeClasse>|GroupeClasse[]
      */
@@ -169,6 +173,18 @@ abstract class BaseClasse
     public function getCompetenceFamilyNormales(): Collection
     {
         return $this->competenceFamilyNormales;
+    }
+
+    public function isSecrete(): bool
+    {
+        return $this->secrete;
+    }
+
+    public function setSecrete(bool $secrete): static
+    {
+        $this->secrete = $secrete;
+
+        return $this;
     }
 
     public function getCreation(): bool

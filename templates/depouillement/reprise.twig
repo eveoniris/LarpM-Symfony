@@ -1,0 +1,36 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Reprise d'un dépouillement{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : [
+		{'name' : 'GN ' ~ gn.label, 'route' : path('gn.detail', {'gn': gn.id})},
+		{'name' : 'Dépouillement des enveloppes', 'route' : path('depouillement.index', {'gn': gn.id})},
+		{'name' : 'Reprise'}
+	]} %}
+
+	<header class="lm-page-head mb-3">
+		<h1 class="lm-page-title h4 mb-1">Reprise d'un dépouillement</h1>
+		<p class="lm-meta mb-0">{{ depouillement.type.label }} n° {{ depouillement.numero }}</p>
+	</header>
+
+	<div class="alert alert-warning">
+		<h5 class="alert-heading"><i class="fa fa-triangle-exclamation"></i> Dépouillement déjà en cours</h5>
+		<p class="mb-1">
+			L'enveloppe <strong>{{ depouillement.type.label|lower }} n° {{ depouillement.numero }}</strong> est déjà en cours de dépouillement
+			par <strong>{{ depouillement.depouilleur ? depouillement.depouilleur.username : 'un autre utilisateur' }}</strong>
+			(dernière modification le {{ depouillement.updatedAt|date('d/m/Y à H:i') }}).
+		</p>
+		<p class="mb-0">Si vous continuez, vous prenez la suite : votre nom remplace le sien comme dépouilleur, et il reste dans l'historique.</p>
+	</div>
+
+	<div class="d-flex gap-2">
+		<a class="btn btn-secondary" href="{{ path('depouillement.index', {'gn': gn.id}) }}">Annuler</a>
+		<form method="post" action="{{ path('depouillement.reprendre', {'gn': gn.id, 'depouillement': depouillement.id}) }}">
+			<input type="hidden" name="_token" value="{{ csrf_token('depouillement_reprendre_' ~ depouillement.id) }}">
+			<button type="submit" class="btn btn-primary"><i class="fa fa-play"></i> Reprendre ce dépouillement</button>
+		</form>
+	</div>
+
+{% endblock body %}

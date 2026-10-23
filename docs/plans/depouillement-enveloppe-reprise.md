@@ -1,0 +1,139 @@
+# Dépouillement d'enveloppes : document de reprise
+
+Écrit le 2026-10-23 pour reprendre le chantier dans une conversation neuve. Le suivi détaillé, étape par étape, avec toutes les
+décisions de l'utilisateur, est dans la mémoire du projet : `fiche-retour-groupe-plan.md` (dossier mémoire de Claude Code,
+indexé par `MEMORY.md`). Ce document en est la version courte, orientée "par où reprendre".
+
+## But
+
+Remplacer le dépouillement papier des enveloppes de retour de jeu (une enveloppe par joueur, une par groupe) par un parcours
+guidé dans LarpManager : saisie par étapes, photos, étiquettes d'objets, contenu, validation par un scénariste. Les formulaires
+Google (apprentissages, titres, constructions...) restent HORS périmètre.
+
+Tout est réservé au rôle `ROLE_BETA_TEST` (attribué par le super admin). Un mode simulation (purgeable, sans aucun effet) permet
+de tester sans toucher aux données réelles.
+
+## État au 2026-10-23
+
+- Branche : `feat/depouillement-enveloppe`, créée depuis `origin/main`. NON POUSSÉE, NON MERGÉE.
+- 18 commits de code, le dernier est `7a086f0a`, suivis d'un commit de documentation (ce fichier et le prompt de reprise).
+- Suite complète : 824 tests verts, mago (format et lint) propre sur les fichiers de la branche.
+- Fichier non suivi `public/i.php` : il n'est pas de nous, ne pas l'ajouter ni le supprimer sans demander.
+
+### Fait (étapes 0 à 8 du plan, plus extras)
+
+| Étape | Contenu | Où regarder |
+|-------|---------|-------------|
+| 1 | Accès `ROLE_BETA_TEST`, lien depuis le détail d'un GN | `DepouillementController`, `templates/gn/detail.twig` |
+| 2 | Entités `Depouillement`, `DepouillementHistory`, statuts, types | `src/Entity/Depouillement*.php`, `src/Enum/Depouillement*.php` |
+| 3 | Mode simulation, purge (bouton et commande) | `DepouillementService`, `app:depouillement:purger-simulations` |
+| 4 | Parcours en 5 étapes, reprise avec avertissement, groupe en dernier | `DepouillementParcoursController` |
+| 5 | Photos (stockage hors public, droits par voter, partage au propriétaire) | `DepouillementPhoto*`, `DepouillementPhotoVoter` |
+| 6 | Étiquettes orange et bleues, bannières, objet retrouvé par numéro et qualité | `EtiquetteRegles`, `DepouillementEtiquetteService` |
+| 7 | Contenu joueur (6 actions de fin d'Opus, apprentissages, surplus) et groupe (24 cases, reliquat) | `ActionsFinOpusRegles`, `DepouillementContenuService`, `DepouillementGroupeService` |
+| 8 | Validation définitive, renvoi motivé, événement dans `log_action` | `DepouillementValidationService` |
+| extra | Style lm-design (verre poli) conditionnel à l'interface bêta | `templates/depouillement/*.twig` |
+| extra | Résumé à relire dans le récapitulatif | `templates/depouillement/etape.twig` |
+| extra | `/simplify` appliqué (CSRF factorisé, N+1, code mort) | commit `f2f8c1a7` |
+
+Vérifié de bout en bout dans le navigateur local (compte de test du projet) : joueur, groupe, photo, validation.
+
+### Fait pour l'étape 11 (héritier), partiellement
+
+- Tranche d'âge « Enfant héritier » (0 an, non choisissable à la création) : migration de données `Version20261030100000` et
+  graine `docker/db/initData/4-newData.sql`. Sans elle un nouveau-né n'est jamais vieilli (les tranches de départ commencent à 15 ans).
+- Source de langue `LangueSourceType::PARENTS` (priorité de l'origine secondaire, comptée comme langue de base).
+- Règles pures du tirage et de l'âge : `ConceptionRegles`, enum `ConceptionIssue` (testés).
+- Entité `Conception` + `ConceptionRepository` + `ConceptionStatut` + migration `Version20261031100000`.
+- 11a FAIT (commit 74825c90) : `ConceptionService`, `DepouillementConceptionController`, `_conceptions.twig`, ligne dans le résumé.
+- 11b FAIT (commit c27a07ee) : migration `Version20261101100000` (colonne `classe.secrete` et classe « Secret/Secrète »),
+  `HeritierService`, `DepouillementHeritierController` (`/gn/{gn}/conceptions`), formulaires `HeritierType`/`HeritiersType`,
+  `conceptions.twig`, garde à la reprise dans `PersonnageOldFindType`. Héritier créé sans groupe (nullable), à confirmer.
+
+
+## Décisions fonctionnelles de l'étape 11 (ne pas les redemander)
+
+- Vocabulaire : toujours « héritier », jamais « enfant » seul (les enfants de la partie enfants ont leur jeu, leurs fiches et
+  leur groupe distincts ; aucun enfant n'est jouable en adulte).
+- Tirage : un d20, de 1 à 20, pas de 0. 1 = conséquence pour les parents (le scénariste décide) ; 2 à 4 = échec ; 5 à 10 = fille ;
+  10 à 15 = garçon (10 vaut pour les deux, le scénariste choisit) ; 16 à 19 = réussite, genre au choix ; 20 = jumeaux (une fille
+  et un garçon). C'est une SUGGESTION : le scénariste confirme la création de la fiche, ou gère la création lui-même plus tard
+  dans le jeu, et son choix est consigné. Le tirage est persisté, jamais re-tiré.
+- Âge : on ne peut plus concevoir à partir de 45 ans (tranche « Mûr »). Aucune borne basse précisée.
+- Création : par un écran du scénariste à la validation. Une simulation ne crée jamais d'héritier.
+- Héritier créé : sans joueur (`user` nul), vieillit comme les autres, XP de création dès la naissance (le scénariste ajuste
+  ensuite, comme pour un transfert après la mort d'un personnage), origine et langue des parents choisies par le scénariste.
+- Classe « secrète » : non proposée à la création, impossible à conserver quand l'héritier participe (il faut la changer pour
+  « reprendre le personnage »), modifiable ensuite.
+- Attribution à un joueur : manuelle, par un orga ou un scénariste.
+
+## Reste à faire, dans l'ordre
+
+### Étape 11 : terminée (voir ci-dessus), les anciennes sections 11a et 11b ont été retirées
+
+### 3. Étape 12 : dispatch réel (à cadrer avec l'utilisateur)
+
+12a FAIT (commit 7fb2d37e) : sorts, prières et potions appliqués à la validation (`DepouillementApprentissageService`, ajout direct
+sans trigger, doublons ignorés, incohérences signalées sans bloquer, simulation sans écriture, potions choisies dans une liste).
+Pas de log ADD_SORT/ADD_POTION (la commande de rattrapage Littérature les lit pour détecter un trigger consommé).
+12b FAIT (commit 202a1359) : fruits (chronologie), soie (renommée +1), gemme (richesse, 1 Po = 10 Pa), sel (ingrédients), fourrure
+(ressources) appliqués à la validation (`DepouillementFinOpusService`) ; ivoire (potions de départ) et étiquettes/objets reportés vers
+l'enveloppe du GN suivant (`DepouillementImportService`, table `enveloppe_ligne`, statut `EN_ATTENTE_IMPORT`, bouton « Réessayer
+l'import » et commande `app:depouillement:importer`). GN suivant = premier GN actif commençant après la fin du GN du dépouillement.
+Pas fait : étiquettes de groupe (bannières), contrôle « objet en X exemplaires annoncé par X+1 joueurs ».
+
+### 4. En attente de l'utilisateur
+
+- Étape 9 : rôle de dépouilleur et page de création de compte avec identité complète. À faire après la bêta.
+- Étape 10 : constructions. L'utilisateur doit d'abord obtenir les règles finales de coût et de nature.
+- Étape 13 : score d'initiative. Règles connues (à confirmer) : 1 point par pièce d'argent, 5 par ingrédient, 10 par ressource,
+  une carte Poisson compte 2 ; le reliquat du groupe est déjà additionné, aucune formule n'est codée.
+
+### 5. Merge
+
+L'utilisateur veut un merge direct sur `main` (sans pull request) une fois l'étape 11 faite. Demander s'il faut aussi pousser `main`.
+
+## Avant la mise en production
+
+- Migrations à exécuter dans l'ordre : `Version20261026100000` (vient de main), `Version20261027100000`, `Version20261028100000`,
+  `Version20261029100000`, `Version20261030100000` (DONNÉES : tranche d'âge), `Version20261031100000`, `Version20261101100000` (colonne + classe secrète), `Version20261102100000` (table enveloppe_ligne).
+- Réglages PHP sur OVH : `upload_max_filesize` d'au moins 12M et `post_max_size` d'au moins 64M (déjà dans `docker/php/php.ini` en local).
+- `var/uploads` doit être inscriptible et survivre aux déploiements (photos des enveloppes).
+- Tests de la base de TEST : ne PAS y exécuter la migration de données de la tranche d'âge (la base de test n'a aucune tranche, les
+  tests créent les leurs). Les migrations de schéma s'y exécutent une par une avec `doctrine:migrations:execute --up`,
+  car cette base n'est pas construite par les migrations.
+
+## Pièges techniques déjà rencontrés
+
+- `#[IsGranted]` placé sur une classe parente n'est PAS hérité par Symfony : chaque contrôleur concret doit porter l'attribut
+  (`DepouillementAccesTest` le vérifie).
+- `phpunit` : toujours `php -d memory_limit=2G ./vendor/bin/phpunit` sur un gros lot, sinon mémoire saturée.
+- `BaseRepository::findAll()` trie par `label` : les repositories de ce module (sans `label`) le surchargent.
+- Twig : pas de `{% for x in y if cond %}`, pas de fonction fléchée dans `set` ; utiliser `filter(x => ...)` et `map`.
+- L'outil Bash retire les antislashs dans certains `sed` : modifier les fichiers avec l'outil d'édition quand le texte contient `\`
+  (espaces de noms PHP). Un `sed` mal échappé avait cassé des `use`.
+- mago : les dépassements de taille (méthodes, propriétés, complexité) se traitent par `// @mago-expect lint:<règle>` juste au-dessus
+  de l'attribut ou de la méthode concernée ; une exception inutile est elle-même signalée.
+- Pas de factories pour `Item`, `Objet`, `Quality` : les créer à la main (un `Objet` exige `Rangement` et `Localisation`, avec `precision`
+  renseigné, et `Quality::getQualityValeurs()->clear()`).
+- Le navigateur intégré : après un clic de connexion, attendre quelques secondes avant de naviguer, sinon la session n'est pas posée.
+- Un `form.submit()` en JavaScript contourne les `confirm()` des formulaires.
+
+## Commandes utiles
+
+```bash
+docker compose exec webserver php -d memory_limit=2G ./vendor/bin/phpunit
+docker compose exec webserver ./vendor/bin/mago format <fichiers>
+docker compose exec webserver ./vendor/bin/mago lint <fichiers>
+docker compose exec webserver php bin/console doctrine:migrations:status
+docker compose exec webserver php bin/console app:depouillement:purger-simulations --gn=7
+git log --oneline origin/main..HEAD
+```
+
+Application locale : http://localhost (compte de test du projet, voir la mémoire `feedback-test-credentials.md`). Le GN de test est
+le numéro 7 (LH7). Un personnage de ce GN : 5789, un groupe : 330.
+
+## Données personnelles
+
+Les exports des formulaires Google (PJ et groupe) et les fiches Word reçues contiennent des noms et des e-mails de joueurs réels.
+Ne jamais les copier dans le dépôt ni dans la mémoire : seule leur structure est notée dans le plan.

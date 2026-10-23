@@ -1,0 +1,361 @@
+{% extends "base.html.twig" %}
+
+{# Interface bêta (lm-design) : les composants lm-* s'ajoutent à Bootstrap, les autres comptes gardent le rendu Bootstrap. #}
+{% set beta = app.user is not null and app.user.uiBeta %}
+
+{% block title %}Dépouillement {{ depouillement.type.label }} {{ depouillement.numero }}{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : [
+		{'name' : 'GN ' ~ gn.label, 'route' : path('gn.detail', {'gn': gn.id})},
+		{'name' : 'Dépouillement des enveloppes', 'route' : path('depouillement.index', {'gn': gn.id})},
+		{'name' : depouillement.type.label ~ ' ' ~ depouillement.numero}
+	]} %}
+
+	<header class="lm-page-head mb-3">
+		<h1 class="lm-page-title h4 mb-1">{{ depouillement.type.label }} n° {{ depouillement.numero }}</h1>
+		<p class="lm-meta mb-0">
+			{{ depouillement.statut.label }}{% if depouillement.simulation %} · simulation{% endif %}
+			{% if depouillement.depouilleur %} · dépouilleur : {{ depouillement.depouilleur.username }}{% endif %}
+		</p>
+	</header>
+
+	{% if depouillement.simulation %}
+		<div class="alert alert-info">
+			<i class="fa fa-flask"></i> <strong>Simulation</strong> : rien de ce que vous saisissez ici n'est appliqué aux joueurs ni aux groupes.
+		</div>
+	{% endif %}
+
+	{% if avertissementGroupe > 0 %}
+		<div class="alert alert-warning">
+			<i class="fa fa-triangle-exclamation"></i>
+			{{ avertissementGroupe }} enveloppe(s) de joueur sont encore en cours de dépouillement. L'enveloppe de groupe se traite en dernier : elle récupère le reliquat des enveloppes de joueurs pour le score d'initiative.
+		</div>
+	{% endif %}
+
+	{% if not modifiable %}
+		<div class="alert alert-secondary">
+			Ce dépouillement est <strong>{{ depouillement.statut.label|lower }}</strong> : il n'est plus modifiable.
+		</div>
+	{% endif %}
+
+	{# Indicateur d'étapes : défile horizontalement sur petit écran #}
+	<div class="progress mb-2" role="progressbar" aria-valuemin="0" aria-valuemax="{{ etapes|length }}" aria-valuenow="{{ etape.position }}" style="height: .5rem;">
+		<div class="progress-bar" style="width: {{ (etape.position / etapes|length * 100)|round }}%"></div>
+	</div>
+	{% if beta %}
+		<nav class="lm-tabs mb-3" aria-label="Étapes du dépouillement">
+			{% for e in etapes %}
+				<a class="lm-tab" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': e.value}) }}"
+				   {% if e == etape %}aria-current="page"{% endif %}>
+					{{ e.position }}. {{ e.label }}
+				</a>
+			{% endfor %}
+		</nav>
+	{% else %}
+		<ul class="nav nav-pills flex-nowrap overflow-auto mb-3 pb-1">
+			{% for e in etapes %}
+				<li class="nav-item">
+					<a class="nav-link text-nowrap {{ e == etape ? 'active' : '' }}"
+					   href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': e.value}) }}"
+					   {% if e == etape %}aria-current="step"{% endif %}>
+						{{ e.position }}. {{ e.label }}
+					</a>
+				</li>
+			{% endfor %}
+		</ul>
+	{% endif %}
+
+	<div class="card mb-3 lm-carte-verre">
+		<div class="card-header">Étape {{ etape.position }} sur {{ etapes|length }} : {{ etape.label }}</div>
+		<div class="card-body">
+			{% if etape.value == 'identification' %}
+				<dl class="row mb-0">
+					<dt class="col-sm-4">Nature de l'enveloppe</dt>
+					<dd class="col-sm-8">{{ depouillement.type.label }}</dd>
+					<dt class="col-sm-4">Numéro</dt>
+					<dd class="col-sm-8">{{ depouillement.numero }}</dd>
+					{% if depouillement.groupeGn %}
+						<dt class="col-sm-4">Groupe</dt>
+						<dd class="col-sm-8">{{ depouillement.groupeGn.groupe.nom }}</dd>
+					{% endif %}
+					{% if depouillement.participant %}
+						<dt class="col-sm-4">Joueur</dt>
+						<dd class="col-sm-8">{{ depouillement.participant.user ? depouillement.participant.user.username : '-' }}</dd>
+						<dt class="col-sm-4">Groupe du joueur</dt>
+						<dd class="col-sm-8">{{ depouillement.participant.groupeGn ? depouillement.participant.groupeGn.groupe.nom : '-' }}</dd>
+					{% endif %}
+					<dt class="col-sm-4">Statut</dt>
+					<dd class="col-sm-8">{{ depouillement.statut.label }}</dd>
+					<dt class="col-sm-4">Dépouilleur</dt>
+					<dd class="col-sm-8">{{ depouillement.depouilleur ? depouillement.depouilleur.username : '-' }}</dd>
+				</dl>
+			{% elseif etape.value == 'photos' %}
+				<p class="text-muted">Photographiez le contenu de l'enveloppe (ressources, objets, ingrédients, documents). Elles servent de preuve en cas de question. Elles ne sont visibles que des organisateurs et des dépouilleurs, sauf partage explicite avec le propriétaire de l'enveloppe.</p>
+
+				{% if modifiable %}
+					<form method="post" enctype="multipart/form-data" action="{{ path('depouillement.photo.add', {'gn': gn.id, 'depouillement': depouillement.id}) }}" class="mb-3">
+						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_photos_' ~ depouillement.id) }}">
+						<label for="depouillement-photos" class="form-label">Prendre ou choisir des photos</label>
+						<input id="depouillement-photos" class="form-control mb-2" type="file" name="photos[]" multiple required accept="image/jpeg,image/png,image/webp">
+						<div class="form-text mb-2">JPEG, PNG ou WebP, 10 Mo maximum par photo.</div>
+						<button type="submit" class="btn btn-primary w-100 w-md-auto"><i class="fa fa-camera"></i> Envoyer les photos</button>
+					</form>
+				{% endif %}
+
+				{% if depouillement.photos|length > 0 %}
+					<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2">
+						{% for photo in depouillement.photos %}
+							{% set photoUrl = path('depouillement.photo.show', {'gn': gn.id, 'depouillement': depouillement.id, 'photo': photo.id}) %}
+							<div class="col">
+								<div class="card h-100 lm-carte-verre">
+									<a href="{{ photoUrl }}" target="_blank" rel="noopener">
+										<img src="{{ photoUrl }}" alt="{{ photo.nomOriginal }}" loading="lazy" class="card-img-top" style="max-height: 14rem; object-fit: cover;">
+									</a>
+									<div class="card-body p-2">
+										<div class="small text-break">{{ photo.nomOriginal }}</div>
+										<div class="small text-muted">
+											{{ photo.televersePar ? photo.televersePar.username : '-' }}, {{ photo.televerseAt|date('d/m/Y H:i') }}
+											{% if photo.partage %}<span class="badge text-bg-info">Partagée</span>{% endif %}
+										</div>
+									</div>
+									{% if is_granted('DEPOUILLEMENT_PHOTO_MANAGE', photo) %}
+										<div class="card-footer d-flex gap-2 p-2">
+											<form method="post" action="{{ path('depouillement.photo.share', {'gn': gn.id, 'depouillement': depouillement.id, 'photo': photo.id}) }}">
+												<input type="hidden" name="_token" value="{{ csrf_token('depouillement_photo_' ~ photo.id) }}">
+												<button type="submit" class="btn btn-sm btn-outline-secondary" title="Le propriétaire de l'enveloppe (joueur ou chef de groupe) pourra voir cette photo">
+													<i class="fa fa-share"></i> {{ photo.partage ? 'Retirer le partage' : 'Partager' }}
+												</button>
+											</form>
+											{% if modifiable %}
+												<form method="post" action="{{ path('depouillement.photo.delete', {'gn': gn.id, 'depouillement': depouillement.id, 'photo': photo.id}) }}" onsubmit="return confirm('Supprimer cette photo ?');">
+													<input type="hidden" name="_token" value="{{ csrf_token('depouillement_photo_' ~ photo.id) }}">
+													<button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i> Supprimer</button>
+												</form>
+											{% endif %}
+										</div>
+									{% endif %}
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				{% else %}
+					<p class="text-muted mb-0">Aucune photo pour l'instant.</p>
+				{% endif %}
+			{% elseif etape.value == 'contenu' %}
+				{% if contenuJoueur is defined %}
+					{% include 'depouillement/_contenu_joueur.twig' %}
+				{% endif %}
+				{% if contenuGroupe is defined %}
+					{% include 'depouillement/_contenu_groupe.twig' %}
+				{% endif %}
+
+				<h6>Étiquettes d'objets et d'armes</h6>
+				{% if modifiable and (contenuJoueur is defined or contenuGroupe is defined) %}
+					<p class="small text-warning mb-1"><i class="fa fa-circle-info"></i> Les étiquettes s'ajoutent séparément du contenu ci-dessus : cliquez d'abord sur « Enregistrer le contenu », sinon la page rechargée perd ce qui n'est pas enregistré.</p>
+				{% endif %}
+				<p class="text-muted small">Pour chaque étiquette, lisez le numéro en haut à gauche et la qualité (trois chiffres) en haut à droite. Une étiquette bleue est celle d'un objet de l'association, une orange celle d'un objet de joueur : en retour de jeu il ne doit y avoir que des étiquettes orange, sans objet.</p>
+
+				{% if formEtiquette %}
+					{{ form_start(formEtiquette) }}
+					{{ form_widget(formEtiquette) }}
+					{{ form_end(formEtiquette) }}
+					<hr>
+				{% endif %}
+
+				{% set etiquettes = depouillement.etiquettes %}
+				{% set generiques = etiquettes|filter(e => e.destination.value == 'stock')|reduce((total, e) => total + e.quantite, 0) %}
+
+				{% if etiquettes|length > 0 %}
+					<div class="{{ beta ? 'lm-table-wrap' : 'table-responsive' }}">
+						<table class="{{ beta ? 'lm-table' : 'table table-sm table-bordered align-middle' }}">
+							<thead>
+								<tr><th>Étiquette</th><th>N°</th><th>Qualité</th><th>Constat</th><th>Objet connu</th><th>Destination</th><th></th></tr>
+							</thead>
+							<tbody>
+								{% for e in etiquettes %}
+									<tr class="{{ e.anomalies|length > 0 ? 'table-warning' : '' }}">
+										<td>{{ e.nature.label }}, {{ e.couleur.value }}{% if e.quantite > 1 %} (x{{ e.quantite }}){% endif %}{% if e.speciale %} <span class="badge text-bg-info">spéciale</span>{% endif %}</td>
+										<td>{{ e.numero ?? '-' }}</td>
+										<td>{{ e.qualite ?? '-' }}</td>
+										<td>{{ e.situation.label }}</td>
+										<td>{{ e.item ? e.item.label : '-' }}</td>
+										<td>
+											{{ e.destination.label }}
+											{% if e.actionObjet %}<br><strong>{{ e.actionObjet.label }}</strong>{% endif %}
+											{% if e.aPrevoirProchainOpus %}<br><span class="badge text-bg-secondary">À prévoir pour l'opus suivant</span>{% endif %}
+											{% for anomalie in e.anomalies %}<div class="small text-danger"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
+											{% if e.remarque %}<div class="small text-muted">{{ e.remarque }}</div>{% endif %}
+										</td>
+										<td class="text-nowrap">
+											{% if modifiable %}
+												<form method="post" action="{{ path('depouillement.etiquette.delete', {'gn': gn.id, 'depouillement': depouillement.id, 'etiquette': e.id}) }}" onsubmit="return confirm('Supprimer cette étiquette ?');">
+													<input type="hidden" name="_token" value="{{ csrf_token('depouillement_etiquette_' ~ e.id) }}">
+													<button type="submit" class="btn btn-sm btn-danger" title="Supprimer cette étiquette"><i class="fa fa-trash"></i></button>
+												</form>
+											{% endif %}
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<p class="mb-0 small">
+						{% set bannieres = etiquettes|filter(e => e.nature.value == 'banniere')|reduce((total, e) => total + e.quantite, 0) %}
+						{% if bannieres > 0 %}<strong>{{ bannieres }}</strong> bannière(s) laissée(s) dans l'enveloppe{% if bannieres > 1 %} (dont {{ bannieres - 1 }} prise(s) à d'autres groupes ?){% endif %},{% endif %}
+						<strong>{{ generiques }}</strong> étiquette(s) remise(s) au stock,
+						<strong>{{ etiquettes|filter(e => e.aPrevoirProchainOpus)|length }}</strong> ligne(s) à prévoir pour l'enveloppe de l'opus suivant.
+						{% if etiquettes|filter(e => e.anomalies|length > 0)|length > 0 %}
+							<span class="text-danger">Des anomalies sont signalées : sollicitez un orga expert et/ou consignez-les dans les remarques.</span>
+						{% endif %}
+					</p>
+				{% else %}
+					<p class="text-muted mb-0">Aucune étiquette saisie.</p>
+				{% endif %}
+				<p class="text-muted small mt-3 mb-0">Les autres éléments du contenu (ressources, sorts, potions, recettes...) arriveront dans la suite du parcours.</p>
+			{% elseif etape.value == 'remarques' %}
+				{% if form %}
+					{{ form_start(form) }}
+					{{ form_widget(form) }}
+					{{ form_end(form) }}
+				{% else %}
+					<p class="mb-0">{{ depouillement.remarques ? depouillement.remarques|nl2br : 'Aucune remarque.' }}</p>
+				{% endif %}
+			{% else %}
+				<dl class="row">
+					<dt class="col-sm-4">Enveloppe</dt>
+					<dd class="col-sm-8">{{ depouillement.type.label }} n° {{ depouillement.numero }}</dd>
+					<dt class="col-sm-4">Statut</dt>
+					<dd class="col-sm-8">{{ depouillement.statut.label }}</dd>
+					<dt class="col-sm-4">Dépouilleur</dt>
+					<dd class="col-sm-8">{{ depouillement.depouilleur ? depouillement.depouilleur.username : '-' }}</dd>
+					{% if depouillement.validatedAt %}
+						<dt class="col-sm-4">Validé</dt>
+						<dd class="col-sm-8">par {{ depouillement.validatedBy ? depouillement.validatedBy.username : '-' }} le {{ depouillement.validatedAt|date('d/m/Y H:i') }}</dd>
+					{% endif %}
+					<dt class="col-sm-4">Remarques</dt>
+					<dd class="col-sm-8">{{ depouillement.remarques ? depouillement.remarques|nl2br : '-' }}</dd>
+				</dl>
+
+				<h6>Résumé à relire</h6>
+				{% set etiquettesAnomalies = depouillement.etiquettes|filter(e => e.anomalies|length > 0)|length %}
+				<ul class="mb-3">
+					<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'photos'}) }}">Photos</a> : {{ depouillement.photos|length }}</li>
+					<li>
+						<a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Étiquettes</a> : {{ depouillement.etiquettes|length }}
+						{% if etiquettesAnomalies > 0 %}<span class="text-danger">({{ etiquettesAnomalies }} avec anomalie)</span>{% endif %}
+					</li>
+					{% if contenuJoueur is defined %}
+						{% set acceptees = resultatsActions|filter(r => r.statut.value == 'acceptee')|map(r => r.action.ressource) %}
+						{% set refusees = resultatsActions|filter(r => r.statut.value == 'refusee')|map(r => r.action.ressource) %}
+						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Actions de fin d'Opus</a> :
+							acceptées : {{ acceptees|join(', ') ?: 'aucune' }}
+							{% if refusees|length > 0 %}<span class="text-danger">; refusées : {{ refusees|join(', ') }}</span>{% endif %}
+						</li>
+						{% set anomaliesConceptions = depouillement.conceptions|filter(c => c.anomalies|length > 0)|length %}
+						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Conceptions d'héritier</a> : {{ depouillement.conceptions|length }}
+							{% if anomaliesConceptions > 0 %}<span class="text-danger">({{ anomaliesConceptions }} avec anomalie)</span>{% endif %}
+						</li>
+						<li>Appris : {{ contenuJoueur.sorts|length }} sort(s), {{ contenuJoueur.prieres|length }} prière(s), {{ contenuJoueur.potions|length }} potion(s)</li>
+						<li>Surplus à reverser au groupe : {% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}</li>
+					{% endif %}
+					{% if contenuGroupe is defined %}
+						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Reliquat du groupe</a> :
+							{% for libelle, ligne in reliquat.lignes %}{{ libelle }} : {{ ligne.total }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}
+							({{ reliquat.enveloppesJoueurs }} enveloppe(s) de joueur dépouillée(s))
+						</li>
+					{% endif %}
+				</ul>
+				{% if anomaliesContenu is defined and anomaliesContenu|length > 0 %}
+					<div class="alert alert-warning small">
+						<strong>À vérifier :</strong>
+						<ul class="mb-0">{% for anomalie in anomaliesContenu %}<li>{{ anomalie }}</li>{% endfor %}</ul>
+					</div>
+				{% endif %}
+
+				<h6>Historique</h6>
+				<div class="{{ beta ? 'lm-table-wrap' : 'table-responsive' }}">
+					<table class="{{ beta ? 'lm-table' : 'table table-sm table-bordered mb-3' }}">
+						<thead>
+							<tr><th>Date</th><th>Qui</th><th>Action</th><th>Détail</th></tr>
+						</thead>
+						<tbody>
+							{% for h in depouillement.histories %}
+								<tr>
+									<td class="text-nowrap">{{ h.actionDate|date('d/m/Y H:i') }}</td>
+									<td>{{ h.user ? h.user.username : '-' }}</td>
+									<td>{{ constant('App\\Entity\\DepouillementHistory::ACTIONS')[h.actionType]|default(h.actionType) }}</td>
+									<td>
+										{% if h.statutApres and h.statutAvant != h.statutApres %}{{ h.statutAvant ? h.statutAvant.label ~ ' → ' : '' }}{{ h.statutApres.label }}{% endif %}
+										{% if h.motif %}{{ h.motif }}{% endif %}
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+
+				{% if modifiable %}
+					<form method="post" action="{{ path('depouillement.terminer', {'gn': gn.id, 'depouillement': depouillement.id}) }}" onsubmit="return confirm('Terminer ce dépouillement ? Il ne sera plus modifiable et passera en attente de validation.');">
+						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_terminer_' ~ depouillement.id) }}">
+						<button type="submit" class="btn btn-success w-100 w-md-auto"><i class="fa fa-check"></i> Terminer le dépouillement</button>
+					</form>
+				{% endif %}
+
+				{% if depouillement.statut.value == 'en_attente_import' and is_granted('DEPOUILLEMENT_VALIDER', depouillement) %}
+					<div class="card border-warning lm-carte-verre">
+						<div class="card-header">En attente d'import</div>
+						<div class="card-body">
+							<p class="small text-muted">
+								Les étiquettes à réinsérer, les objets au PC joueur et les potions de départ de l'ivoire seront reportés dans l'enveloppe du GN suivant dès que celui-ci est ouvert et que le personnage y est inscrit.
+							</p>
+							<form method="post" action="{{ path('depouillement.importer', {'gn': gn.id, 'depouillement': depouillement.id}) }}">
+								<input type="hidden" name="_token" value="{{ csrf_token('depouillement_importer_' ~ depouillement.id) }}">
+								<button type="submit" class="btn btn-warning w-100 w-md-auto"><i class="fa fa-arrows-rotate"></i> Réessayer l'import</button>
+							</form>
+						</div>
+					</div>
+				{% endif %}
+
+				{% if depouillement.statut.value == 'a_valider' and is_granted('DEPOUILLEMENT_VALIDER', depouillement) %}
+					<div class="card border-primary lm-carte-verre">
+						<div class="card-header">Validation</div>
+						<div class="card-body">
+							<p class="small text-muted">
+								Relisez le contenu, les photos et les remarques. Une fois validé, le dépouillement <strong>ne peut plus être rouvert</strong>.
+								{% if depouillement.simulation %}C'est une simulation : la validation n'a aucun effet.{% endif %}
+							</p>
+							<form method="post" class="mb-3" action="{{ path('depouillement.valider', {'gn': gn.id, 'depouillement': depouillement.id}) }}" onsubmit="return confirm('Valider ce dépouillement ? Il ne pourra plus être rouvert.');">
+								<input type="hidden" name="_token" value="{{ csrf_token('depouillement_valider_' ~ depouillement.id) }}">
+								<button type="submit" class="btn btn-success w-100 w-md-auto"><i class="fa fa-check-double"></i> Valider le dépouillement</button>
+							</form>
+							<form method="post" action="{{ path('depouillement.renvoyer', {'gn': gn.id, 'depouillement': depouillement.id}) }}">
+								<input type="hidden" name="_token" value="{{ csrf_token('depouillement_renvoyer_' ~ depouillement.id) }}">
+								<label for="depouillement-motif" class="form-label">Ou renvoyer au dépouilleur pour correction</label>
+								<textarea id="depouillement-motif" name="motif" class="form-control mb-2" rows="2" required placeholder="Ce qu'il faut corriger ou vérifier"></textarea>
+								<button type="submit" class="btn btn-warning w-100 w-md-auto"><i class="fa fa-rotate-left"></i> Renvoyer au dépouilleur</button>
+							</form>
+						</div>
+					</div>
+				{% endif %}
+			{% endif %}
+		</div>
+	</div>
+
+	<div class="d-flex justify-content-between gap-2 mb-3">
+		{% if etape.precedente %}
+			<a class="btn btn-secondary" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': etape.precedente.value}) }}">
+				<i class="fa fa-arrow-left"></i> Précédent
+			</a>
+		{% else %}
+			<a class="btn btn-secondary" href="{{ path('depouillement.index', {'gn': gn.id}) }}"><i class="fa fa-list"></i> Liste</a>
+		{% endif %}
+		{% if etape.suivante and not (etape.value == 'remarques' and form) %}
+			<a class="btn btn-primary" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': etape.suivante.value}) }}">
+				Suivant <i class="fa fa-arrow-right"></i>
+			</a>
+		{% endif %}
+	</div>
+
+{% endblock body %}

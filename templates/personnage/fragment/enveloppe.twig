@@ -170,6 +170,16 @@
     {% endfor %}
 </ul>
 
+{# Reporté du dernier retour de jeu (dépouillement validé) #}
+{% if enveloppeLignes is defined and enveloppeLignes|length > 0 %}
+    <strong>Reporté du dernier retour de jeu</strong>
+    <ul>
+        {% for ligne in enveloppeLignes %}
+            <li>{{ ligne.nature.label }} : {{ ligne.libelle }}{% if ligne.quantite > 1 %} (x{{ ligne.quantite }}){% endif %} <small>({{ ligne.gn.label }})</small></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 {% if personnage.isSensible %}
     <strong>Personnage sensible</strong>
     <ul>
