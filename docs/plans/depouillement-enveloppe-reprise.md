@@ -73,7 +73,12 @@ Vérifié de bout en bout dans le navigateur local (compte de test du projet) : 
 
 ### 3. Étape 12 : dispatch réel (à cadrer avec l'utilisateur)
 
-Appliquer à la validation ce qui est saisi : sorts, prières, potions, apprentissages sur la fiche du joueur ; étiquettes à réinsérer
+12a FAIT (commit 7fb2d37e) : sorts, prières et potions appliqués à la validation (`DepouillementApprentissageService`, ajout direct
+sans trigger, doublons ignorés, incohérences signalées sans bloquer, simulation sans écriture, potions choisies dans une liste).
+Pas de log ADD_SORT/ADD_POTION (la commande de rattrapage Littérature les lit pour détecter un trigger consommé).
+Reste 12b ci-dessous, à cadrer :
+
+Appliquer à la validation ce qui est saisi : ~~sorts, prières, potions~~, apprentissages sur la fiche du joueur ; étiquettes à réinsérer
 et objets au PC joueur vers la zone enveloppe du personnage de l'opus suivant (`personnage/{id}/detail/enveloppe`) ; renommée (+1
 par 3 Soie) ; consommation de fruits et légumes (la commande de vieillissement n'en compte que deux au maximum, à vérifier
 dans `PersonnageService::checkDieOfOldAge`). Prévoir un statut intermédiaire quand la session suivante n'est pas encore ouverte
