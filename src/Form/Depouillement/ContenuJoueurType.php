@@ -27,20 +27,39 @@ use Symfony\Component\Validator\Constraints\Range;
  */
 class ContenuJoueurType extends AbstractType
 {
+    /** Tout le formulaire. */
+    public const string PORTION_TOUT = 'tout';
+
+    /** Étape « Contenu » : pièces jointes, ressources trouvées, apprentissages. */
+    public const string PORTION_CONTENU = 'contenu';
+
+    /** Étape « Actions de fin d'Opus ». */
+    public const string PORTION_ACTIONS = 'actions';
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $this->ajouterPiecesJointes($builder);
-        $this->ajouterApprentissages($builder);
-        $this->ajouterActions($builder);
+        $portion = $options['portion'];
 
-        $builder
-            ->add('surplus', CompteursEnveloppeType::class)
-            ->add('submit', SubmitType::class, ['label' => 'Enregistrer le contenu']);
+        if (self::PORTION_ACTIONS !== $portion) {
+            $this->ajouterPiecesJointes($builder);
+            $this->ajouterApprentissages($builder);
+            $builder->add('surplus', CompteursEnveloppeType::class);
+        }
+
+        if (self::PORTION_CONTENU !== $portion) {
+            $this->ajouterActions($builder);
+        }
+
+        $builder->add('submit', SubmitType::class, ['label' => self::PORTION_ACTIONS === $portion ? 'Enregistrer les actions' : 'Enregistrer le contenu']);
     }
 
+    /**
+     * Le formulaire d'une étape ne modifie que ses propres champs : il reçoit le contenu déjà enregistré.
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => ContenuJoueur::class]);
+        $resolver->setDefaults(['data_class' => ContenuJoueur::class, 'portion' => self::PORTION_TOUT]);
+        $resolver->setAllowedValues('portion', [self::PORTION_TOUT, self::PORTION_CONTENU, self::PORTION_ACTIONS]);
     }
 
     private function ajouterPiecesJointes(FormBuilderInterface $builder): void

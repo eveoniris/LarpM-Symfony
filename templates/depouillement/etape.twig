@@ -41,15 +41,15 @@
 	{% endif %}
 
 	{# Indicateur d'étapes : défile horizontalement sur petit écran #}
-	<div class="progress mb-2" role="progressbar" aria-valuemin="0" aria-valuemax="{{ etapes|length }}" aria-valuenow="{{ etape.position }}" style="height: .5rem;">
-		<div class="progress-bar" style="width: {{ (etape.position / etapes|length * 100)|round }}%"></div>
+	<div class="progress mb-2" role="progressbar" aria-valuemin="0" aria-valuemax="{{ etapes|length }}" aria-valuenow="{{ position }}" style="height: .5rem;">
+		<div class="progress-bar" style="width: {{ (position / etapes|length * 100)|round }}%"></div>
 	</div>
 	{% if beta %}
 		<nav class="lm-tabs mb-3" aria-label="Étapes du dépouillement">
 			{% for e in etapes %}
 				<a class="lm-tab" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': e.value}) }}"
 				   {% if e == etape %}aria-current="page"{% endif %}>
-					{{ e.position }}. {{ e.label }}
+					{{ loop.index }}. {{ e.label }}
 				</a>
 			{% endfor %}
 		</nav>
@@ -60,7 +60,7 @@
 					<a class="nav-link text-nowrap {{ e == etape ? 'active' : '' }}"
 					   href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': e.value}) }}"
 					   {% if e == etape %}aria-current="step"{% endif %}>
-						{{ e.position }}. {{ e.label }}
+						{{ loop.index }}. {{ e.label }}
 					</a>
 				</li>
 			{% endfor %}
@@ -68,7 +68,7 @@
 	{% endif %}
 
 	<div class="card mb-3 lm-carte-verre">
-		<div class="card-header">Étape {{ etape.position }} sur {{ etapes|length }} : {{ etape.label }}</div>
+		<div class="card-header">Étape {{ position }} sur {{ etapes|length }} : {{ etape.label }}</div>
 		<div class="card-body">
 			{% if etape.value == 'identification' %}
 				<dl class="row mb-0">
@@ -143,18 +143,8 @@
 				{% else %}
 					<p class="text-muted mb-0">Aucune photo pour l'instant.</p>
 				{% endif %}
-			{% elseif etape.value == 'contenu' %}
-				{% if contenuJoueur is defined %}
-					{% include 'depouillement/_contenu_joueur.twig' %}
-				{% endif %}
-				{% if contenuGroupe is defined %}
-					{% include 'depouillement/_contenu_groupe.twig' %}
-				{% endif %}
-
+			{% elseif etape.value == 'etiquettes' %}
 				<h6>Étiquettes d'objets et d'armes</h6>
-				{% if modifiable and (contenuJoueur is defined or contenuGroupe is defined) %}
-					<p class="small text-warning mb-1"><i class="fa fa-circle-info"></i> Les étiquettes s'ajoutent séparément du contenu ci-dessus : cliquez d'abord sur « Enregistrer le contenu », sinon la page rechargée perd ce qui n'est pas enregistré.</p>
-				{% endif %}
 				<p class="text-muted small">Pour chaque étiquette, lisez le numéro en haut à gauche et la qualité (trois chiffres) en haut à droite. Une étiquette bleue est celle d'un objet de l'association, une orange celle d'un objet de joueur : en retour de jeu il ne doit y avoir que des étiquettes orange, sans objet.</p>
 
 				{% if formEtiquette %}
@@ -213,7 +203,17 @@
 				{% else %}
 					<p class="text-muted mb-0">Aucune étiquette saisie.</p>
 				{% endif %}
-				<p class="text-muted small mt-3 mb-0">Les autres éléments du contenu (ressources, sorts, potions, recettes...) arriveront dans la suite du parcours.</p>
+			{% elseif etape.value == 'contenu' %}
+				{% if contenuJoueur is defined %}
+					{% include 'depouillement/_contenu_joueur.twig' %}
+				{% endif %}
+				{% if contenuGroupe is defined %}
+					{% include 'depouillement/_contenu_groupe.twig' %}
+				{% endif %}
+			{% elseif etape.value == 'actions' %}
+				{% include 'depouillement/_actions_joueur.twig' %}
+			{% elseif etape.value == 'conceptions' %}
+				{% include 'depouillement/_conceptions.twig' %}
 			{% elseif etape.value == 'remarques' %}
 				{% if form %}
 					{{ form_start(form) }}
@@ -243,18 +243,18 @@
 				<ul class="mb-3">
 					<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'photos'}) }}">Photos</a> : {{ depouillement.photos|length }}</li>
 					<li>
-						<a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Étiquettes</a> : {{ depouillement.etiquettes|length }}
+						<a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'etiquettes'}) }}">Étiquettes</a> : {{ depouillement.etiquettes|length }}
 						{% if etiquettesAnomalies > 0 %}<span class="lm-anomalie">({{ etiquettesAnomalies }} avec anomalie)</span>{% endif %}
 					</li>
 					{% if contenuJoueur is defined %}
 						{% set acceptees = resultatsActions|filter(r => r.statut.value == 'acceptee')|map(r => r.action.ressource) %}
 						{% set refusees = resultatsActions|filter(r => r.statut.value == 'refusee')|map(r => r.action.ressource) %}
-						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Actions de fin d'Opus</a> :
+						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'actions'}) }}">Actions de fin d'Opus</a> :
 							acceptées : {{ acceptees|join(', ') ?: 'aucune' }}
 							{% if refusees|length > 0 %}<span class="lm-anomalie">; refusées : {{ refusees|join(', ') }}</span>{% endif %}
 						</li>
 						{% set anomaliesConceptions = depouillement.conceptions|filter(c => c.anomalies|length > 0)|length %}
-						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Conceptions d'héritier</a> : {{ depouillement.conceptions|length }}
+						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'conceptions'}) }}">Conceptions d'héritier</a> : {{ depouillement.conceptions|length }}
 							{% if anomaliesConceptions > 0 %}<span class="lm-anomalie">({{ anomaliesConceptions }} avec anomalie)</span>{% endif %}
 						</li>
 						<li>Appris : {{ contenuJoueur.sorts|length }} sort(s), {{ contenuJoueur.prieres|length }} prière(s), {{ contenuJoueur.potions|length }} potion(s)</li>
@@ -345,15 +345,15 @@
 	</div>
 
 	<div class="d-flex justify-content-between gap-2 mb-3">
-		{% if etape.precedente %}
-			<a class="btn btn-secondary" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': etape.precedente.value}) }}">
+		{% if precedente %}
+			<a class="btn btn-secondary" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': precedente.value}) }}">
 				<i class="fa fa-arrow-left"></i> Précédent
 			</a>
 		{% else %}
 			<a class="btn btn-secondary" href="{{ path('depouillement.index', {'gn': gn.id}) }}"><i class="fa fa-list"></i> Liste</a>
 		{% endif %}
-		{% if etape.suivante and not (etape.value == 'remarques' and form) %}
-			<a class="btn btn-primary" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': etape.suivante.value}) }}">
+		{% if suivante and not (etape.value == 'remarques' and form) %}
+			<a class="btn btn-primary" href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': suivante.value}) }}">
 				Suivant <i class="fa fa-arrow-right"></i>
 			</a>
 		{% endif %}

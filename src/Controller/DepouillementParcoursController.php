@@ -19,6 +19,7 @@ use App\Service\CompteursEnveloppe;
 use App\Service\DepouillementContenuService;
 use App\Service\DepouillementService;
 use App\Service\EtiquetteSaisie;
+use App\Service\ContenuJoueur;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -86,6 +87,11 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
     ): Response {
         $this->verifier($gn, $depouillement);
 
+        $etapes = DepouillementEtape::pourType($depouillement->getType());
+        if (!\in_array($etape, $etapes, strict: true)) {
+            throw $this->createNotFoundException();
+        }
+
         $modifiable = $depouillement->getStatut()->isEditable();
         $form = null;
 
@@ -98,7 +104,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
                 $data = $form->getData();
                 $depouillementService->enregistrerRemarques($depouillement, $data['remarques'], $this->utilisateur());
 
-                return $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, $etape->suivante() ?? $etape), 303);
+                return $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, $etape->suivante($depouillement->getType()) ?? $etape), 303);
             }
         }
 
@@ -106,7 +112,10 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             'gn' => $gn,
             'depouillement' => $depouillement,
             'etape' => $etape,
-            'etapes' => DepouillementEtape::cases(),
+            'etapes' => $etapes,
+            'position' => $etape->position($depouillement->getType()),
+            'precedente' => $etape->precedente($depouillement->getType()),
+            'suivante' => $etape->suivante($depouillement->getType()),
             'modifiable' => $modifiable,
             'form' => $form,
             'formEtiquette' => $this->formulaireEtiquette($depouillement, $etape),
@@ -148,7 +157,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
      */
     private function contenuJoueur(Depouillement $depouillement, DepouillementEtape $etape, DepouillementContenuService $contenuService): array
     {
-        if (!in_array($etape, [DepouillementEtape::CONTENU, DepouillementEtape::RECAPITULATIF], strict: true) || DepouillementType::JOUEUR !== $depouillement->getType()) {
+        if (!in_array($etape, [DepouillementEtape::CONTENU, DepouillementEtape::ACTIONS, DepouillementEtape::RECAPITULATIF], strict: true) || DepouillementType::JOUEUR !== $depouillement->getType()) {
             return [];
         }
 
@@ -156,16 +165,32 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
 
         return [
             'contenuJoueur' => $contenu,
-            'formContenuJoueur' => DepouillementEtape::CONTENU === $etape && $depouillement->getStatut()->isEditable()
-                ? $this->createForm(ContenuJoueurType::class, $contenu, [
-                    'action' => $this->generateUrl('depouillement.contenu_joueur', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()]),
-                ])
-                : null,
+            'formContenuJoueur' => $this->formulaireContenuJoueur($depouillement, $etape, $contenu),
             'surplusLibelles' => CompteursEnveloppe::nonNulles($contenu->surplus),
             'resultatsActions' => $contenuService->evaluerActions($contenu),
             'anomaliesContenu' => $contenuService->anomalies($contenu),
             'actionsFinOpus' => ActionFinOpus::cases(),
         ];
+    }
+
+    /**
+     * Formulaire de l'étape Contenu ou Actions de fin d'Opus (chacune ne modifie que ses champs), si la saisie est modifiable.
+     */
+    private function formulaireContenuJoueur(Depouillement $depouillement, DepouillementEtape $etape, ContenuJoueur $contenu): ?FormInterface
+    {
+        $portion = match ($etape) {
+            DepouillementEtape::CONTENU => ContenuJoueurType::PORTION_CONTENU,
+            DepouillementEtape::ACTIONS => ContenuJoueurType::PORTION_ACTIONS,
+            default => null,
+        };
+        if (null === $portion || !$depouillement->getStatut()->isEditable()) {
+            return null;
+        }
+
+        return $this->createForm(ContenuJoueurType::class, $contenu, [
+            'portion' => $portion,
+            'action' => $this->generateUrl('depouillement.contenu_joueur', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId(), 'portion' => $portion]),
+        ]);
     }
 
     /**
@@ -198,7 +223,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
      */
     private function formulaireEtiquette(Depouillement $depouillement, DepouillementEtape $etape): ?FormInterface
     {
-        if (DepouillementEtape::CONTENU !== $etape || !$depouillement->getStatut()->isEditable()) {
+        if (DepouillementEtape::ETIQUETTES !== $etape || !$depouillement->getStatut()->isEditable()) {
             return null;
         }
 

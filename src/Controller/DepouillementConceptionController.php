@@ -27,7 +27,7 @@ final class DepouillementConceptionController extends AbstractDepouillementContr
     public function addAction(Request $request, Gn $gn, Depouillement $depouillement, ConceptionService $conceptionService): Response
     {
         $this->verifier($gn, $depouillement);
-        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::CONTENU), 303);
+        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::CONCEPTIONS), 303);
 
         if (!$this->jetonValide($request, 'depouillement_conception_add_' . $depouillement->getId())) {
             return $retour;
@@ -64,7 +64,7 @@ final class DepouillementConceptionController extends AbstractDepouillementContr
             throw $this->createNotFoundException();
         }
 
-        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::CONTENU), 303);
+        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::CONCEPTIONS), 303);
 
         if (!$this->jetonValide($request, 'depouillement_conception_' . $conception->getId())) {
             return $retour;

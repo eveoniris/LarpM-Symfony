@@ -46,7 +46,7 @@ class DepouillementEtiquetteTest extends WebTestCase
 
     private function contenu(Depouillement $depouillement): string
     {
-        return '/gn/' . $depouillement->getGn()->getId() . '/depouillement/' . $depouillement->getId() . '/etape/contenu';
+        return '/gn/' . $depouillement->getGn()->getId() . '/depouillement/' . $depouillement->getId() . '/etape/etiquettes';
     }
 
     /**
