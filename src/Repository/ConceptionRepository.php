@@ -21,6 +21,25 @@ class ConceptionRepository extends BaseRepository
     }
 
     /**
+     * Conceptions d'un GN pour l'écran du scénariste : celles en attente d'abord, puis les plus récentes.
+     *
+     * @return list<Conception>
+     */
+    public function findParGn(Gn $gn): array
+    {
+        return array_values(
+            $this
+                ->createQueryBuilder('c')
+                ->where('c.gn = :gn')
+                ->setParameter('gn', $gn)
+                ->orderBy("CASE WHEN c.statut = 'en_attente' THEN 0 ELSE 1 END", 'ASC')
+                ->addOrderBy('c.id', 'DESC')
+                ->getQuery()
+                ->getResult(),
+        );
+    }
+
+    /**
      * Conception déjà enregistrée pour ce couple de parents dans ce GN, quel que soit l'ordre (réelle ou simulation selon l'indicateur).
      * Évite qu'un même couple signalé deux fois (les deux joueurs le déclarent) donne deux tirages.
      */

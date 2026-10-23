@@ -18,6 +18,10 @@
 		Fonctionnalité en cours de test, réservée aux bêta-testeurs. Pour l'instant seules les <strong>simulations</strong> sont possibles : elles n'ont aucun effet sur les joueurs ni sur les groupes et peuvent être supprimées à tout moment.
 	</div>
 
+	{% if is_granted('DEPOUILLEMENT_VALIDER', gn) %}
+		<p><a href="{{ path('depouillement.conceptions', {'gn': gn.id}) }}" class="btn btn-outline-primary"><i class="fa fa-baby"></i> Conceptions d'héritier</a></p>
+	{% endif %}
+
 	<div class="card mb-3 lm-carte-verre">
 		<div class="card-header">Nouvelle simulation</div>
 		<div class="card-body">

@@ -20,6 +20,9 @@ final class ConceptionRegles
     /** Âge réel à partir duquel un personnage ne peut plus concevoir (tranche « Mûr »). */
     public const int AGE_LIMITE = 45;
 
+    /** Libellé de la tranche d'âge des héritiers nés en jeu (0 an). */
+    public const string AGE_HERITIER = 'Enfant héritier';
+
     public const int TIRAGE_MIN = 1;
 
     public const int TIRAGE_MAX = 20;
