@@ -96,6 +96,43 @@ final class DepouillementController extends AbstractDepouillementController
     }
 
     /**
+     * Recommence une simulation de zéro : l'ancienne est supprimée (avec ses photos) et une nouvelle est ouverte pour la même
+     * enveloppe. Réservé aux simulations : un dépouillement réel ne se recommence jamais.
+     */
+    #[Route('/gn/{gn}/depouillement/{depouillement}/recommencer', name: 'depouillement.recommencer', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
+    public function recommencerAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementService $depouillementService): Response
+    {
+        $this->verifier($gn, $depouillement);
+        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::RECAPITULATIF), 303);
+
+        if (!$this->jetonValide($request, 'depouillement_recommencer_' . $depouillement->getId())) {
+            return $retour;
+        }
+
+        if (!$depouillement->isSimulation()) {
+            $this->addFlash('error', 'Seule une simulation peut être recommencée.');
+
+            return $retour;
+        }
+
+        $type = $depouillement->getType();
+        $numero = $depouillement->getNumero();
+        $depouillementService->supprimerSimulation($depouillement);
+
+        try {
+            $nouveau = $depouillementService->creerSimulation($gn, $type, $numero, $this->utilisateur());
+        } catch (EnveloppeIntrouvableException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
+        }
+
+        $this->addFlash('success', 'Simulation recommencée de zéro.');
+
+        return $this->redirectToRoute('depouillement.etape', $this->parametres($nouveau, DepouillementEtape::IDENTIFICATION), 303);
+    }
+
+    /**
      * Ouvre l'enveloppe si elle l'est déjà, sinon en démarre une nouvelle.
      *
      * @throws EnveloppeIntrouvableException si le numéro ne correspond à rien dans ce GN

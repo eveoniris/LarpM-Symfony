@@ -51,6 +51,12 @@
 		{{ form_row(f.introuvables) }}
 	</fieldset>
 
+	<fieldset class="mb-3">
+		<legend class="h6">État du personnage</legend>
+		{{ form_row(f.personnageMort) }}
+		{{ form_row(f.circonstancesMort) }}
+	</fieldset>
+
 	{{ form_widget(f.submit, {'attr': {'class': 'btn btn-primary w-100 w-md-auto'}}) }}
 	{{ form_end(f) }}
 {% else %}
@@ -58,8 +64,9 @@
 	<p class="mb-1">Sorts : {{ contenuJoueur.sorts|map(s => s.label)|join(', ') ?: '-' }}</p>
 	<p class="mb-1">Prières : {{ contenuJoueur.prieres|map(p => p.label)|join(', ') ?: '-' }}</p>
 	<p class="mb-1">Potions : {{ contenuJoueur.potions|map(p => p.label)|join(", ") ?: "-" }}</p>
-	<h6 class="mt-2">Ressources et pièces trouvées (surplus pour l'enveloppe de groupe)</h6>
-	<p class="mb-0">
-		{% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}-{% endfor %}
+	<h6 class="mt-2">Ressources et pièces trouvées</h6>
+	<p class="mb-1">
+		{% for libelle, quantite in trouveLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}-{% endfor %}
 	</p>
+	<p class="mb-0">Personnage mort pendant cet opus : <strong>{{ contenuJoueur.personnageMort ? 'oui' : 'non' }}</strong>{% if contenuJoueur.personnageMort and contenuJoueur.circonstancesMort %} ({{ contenuJoueur.circonstancesMort }}){% endif %}</p>
 {% endif %}

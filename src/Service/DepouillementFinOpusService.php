@@ -48,6 +48,14 @@ readonly class DepouillementFinOpusService
         }
 
         $contenu = $this->contenuService->lireContenuJoueur($depouillement);
+        if ($contenu->personnageMort) {
+            // La mort n'est jamais appliquée automatiquement (conséquences sur la fiche, les héritiers, le groupe) : elle est signalée.
+            $resultat->anomalies[] =
+                'Décès déclaré pour ce personnage'
+                . (null === $contenu->circonstancesMort || '' === trim($contenu->circonstancesMort) ? '' : ' (' . trim($contenu->circonstancesMort) . ')')
+                . ' : à enregistrer sur la fiche par un scénariste.';
+        }
+
         $acceptees = array_filter($this->contenuService->evaluerActions($contenu), static fn (ActionFinOpusResultat $action): bool => ActionStatut::ACCEPTEE === $action->statut);
         if ([] === $acceptees) {
             return $resultat;

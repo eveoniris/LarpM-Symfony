@@ -47,6 +47,9 @@ readonly class ContenuJoueurSerialiseur
             'prieres' => $this->ids($contenu->prieres),
             'potions' => $this->ids($contenu->potions),
             'introuvables' => $contenu->introuvables,
+            'actions_decidees' => $contenu->actionsDecidees,
+            'personnage_mort' => $contenu->personnageMort,
+            'circonstances_mort' => $contenu->circonstancesMort,
             'actions' => [
                 'fruits_legumes' => ['utilise' => $contenu->fruitsUtilise, 'jointes' => $contenu->fruitsJointes],
                 'soie' => ['utilise' => $contenu->soieUtilise, 'jointes' => $contenu->soieJointes],
@@ -86,6 +89,9 @@ readonly class ContenuJoueurSerialiseur
         $contenu->prieres = $this->entites(Priere::class, $donnees['prieres'] ?? []);
         $contenu->potions = $this->entites(Potion::class, $donnees['potions'] ?? []);
         $contenu->introuvables = $donnees['introuvables'] ?? null;
+        $contenu->actionsDecidees = (bool) ($donnees['actions_decidees'] ?? false);
+        $contenu->personnageMort = (bool) ($donnees['personnage_mort'] ?? false);
+        $contenu->circonstancesMort = $donnees['circonstances_mort'] ?? null;
         $contenu->surplus = CompteursEnveloppe::normaliser($donnees['surplus'] ?? []);
 
         $contenu->fruitsUtilise = (bool) ($actions['fruits_legumes']['utilise'] ?? false);

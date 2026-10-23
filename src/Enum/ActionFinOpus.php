@@ -44,6 +44,19 @@ enum ActionFinOpus: string
         };
     }
 
+    /** Case du compteur « ressources trouvées » de l'enveloppe (CompteursEnveloppe) qui contient la ressource de l'action. */
+    public function compteur(): string
+    {
+        return match ($this) {
+            self::FRUITS_LEGUMES => 'fruits_legumes',
+            self::SOIE => 'soie',
+            self::GEMME => 'gemmes',
+            self::SEL => 'sel',
+            self::FOURRURE => 'fourrures',
+            self::IVOIRE => 'ivoire',
+        };
+    }
+
     /** Nombre de ressources à joindre à l'enveloppe pour faire l'action. */
     public function quantiteRessource(): int
     {

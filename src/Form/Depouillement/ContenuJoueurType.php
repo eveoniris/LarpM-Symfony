@@ -9,10 +9,12 @@ use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Ressource;
 use App\Entity\Sort;
+use App\Enum\ActionFinOpus;
 use App\Service\ContenuJoueur;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -43,7 +45,18 @@ class ContenuJoueurType extends AbstractType
         if (self::PORTION_ACTIONS !== $portion) {
             $this->ajouterPiecesJointes($builder);
             $this->ajouterApprentissages($builder);
-            $builder->add('surplus', CompteursEnveloppeType::class);
+            $builder
+                ->add('personnageMort', CheckboxType::class, [
+                    'label' => 'Le personnage est mort pendant cet opus',
+                    'required' => false,
+                    'help' => 'Information pour le scénariste : la mort n\'est pas appliquée automatiquement à la fiche.',
+                ])
+                ->add('circonstancesMort', TextareaType::class, [
+                    'label' => 'Circonstances de la mort (facultatif)',
+                    'required' => false,
+                    'attr' => ['rows' => 2],
+                ])
+                ->add('surplus', CompteursEnveloppeType::class);
         }
 
         if (self::PORTION_CONTENU !== $portion) {
@@ -122,17 +135,24 @@ class ContenuJoueurType extends AbstractType
 
     private function ajouterActions(FormBuilderInterface $builder): void
     {
+        // Un seul choix par action, pré-sélectionné d'après les ressources trouvées : aucune, validée ou souhaitée sans assez de ressources.
         foreach ([
-            'fruits' => 'Fruits et légumes (5)',
-            'soie' => 'Soie (3)',
-            'gemme' => 'Gemme (1)',
-            'sel' => 'Sel (1)',
-            'fourrure' => 'Fourrure (1)',
-            'ivoire' => 'Ivoire (1)',
-        ] as $action => $ressource) {
-            $builder
-                ->add($action . 'Utilise', CheckboxType::class, ['label' => 'Action utilisée', 'required' => false])
-                ->add($action . 'Jointes', CheckboxType::class, ['label' => 'Ressources jointes à l\'enveloppe : ' . $ressource, 'required' => false]);
+            'fruits' => ActionFinOpus::FRUITS_LEGUMES,
+            'soie' => ActionFinOpus::SOIE,
+            'gemme' => ActionFinOpus::GEMME,
+            'sel' => ActionFinOpus::SEL,
+            'fourrure' => ActionFinOpus::FOURRURE,
+            'ivoire' => ActionFinOpus::IVOIRE,
+        ] as $champ => $action) {
+            $builder->add($champ . 'Decision', ChoiceType::class, [
+                'label' => false,
+                'expanded' => true,
+                'choices' => [
+                    'Aucune action : ne rien faire' => ContenuJoueur::DECISION_AUCUNE,
+                    \sprintf('Action validée : consomme %d %s', $action->quantiteRessource(), mb_strtolower($action->ressource())) => ContenuJoueur::DECISION_VALIDEE,
+                    'Le joueur a souhaité l\'action mais n\'a pas assez de ressources (sans effet, non bloquant)' => ContenuJoueur::DECISION_INSUFFISANT,
+                ],
+            ]);
         }
 
         $builder

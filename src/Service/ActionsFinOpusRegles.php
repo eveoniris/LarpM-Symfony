@@ -13,8 +13,31 @@ use App\Enum\ActionStatut;
  * Une action cochée dont les ressources exigées sont jointes est acceptée. Si elles manquent elle est refusée : sans effet, et
  * ce qu'elle devait préserver n'est pas préservé (cela va dans le reliquat de l'enveloppe de groupe).
  */
+// @mago-expect lint:kan-defect
 final class ActionsFinOpusRegles
 {
+    /**
+     * Ressources et pièces trouvées moins ce que les actions acceptées consomment : c'est ce qui est reversé au groupe.
+     *
+     * @param array<string, int>    $trouve  compteurs de l'enveloppe (CompteursEnveloppe)
+     * @param array<string, string> $statuts statut de chaque action (valeur de ActionFinOpus => valeur de ActionStatut)
+     *
+     * @return array<string, int>
+     */
+    public static function surplusNet(array $trouve, array $statuts): array
+    {
+        foreach ($statuts as $valeur => $statut) {
+            $action = ActionFinOpus::tryFrom($valeur);
+            if (null === $action || ActionStatut::ACCEPTEE->value !== $statut) {
+                continue;
+            }
+
+            $trouve[$action->compteur()] = max(0, ($trouve[$action->compteur()] ?? 0) - $action->quantiteRessource());
+        }
+
+        return $trouve;
+    }
+
     /**
      * @return array<string, ActionFinOpusResultat> indexé par la valeur de ActionFinOpus
      */

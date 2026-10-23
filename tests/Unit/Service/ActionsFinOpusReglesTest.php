@@ -159,4 +159,46 @@ class ActionsFinOpusReglesTest extends TestCase
         static::assertArrayNotHasKey('inconnu', $normalisees);
         static::assertSame(['Bois' => 4], CompteursEnveloppe::nonNulles(['bois' => 4, 'sel' => 0]));
     }
+
+    public function testLeSurplusNetRetireCeQueLesActionsAccepteesConsomment(): void
+    {
+        $trouve = ['soie' => 5, 'fruits_legumes' => 5, 'gemmes' => 0, 'bois' => 3];
+        $statuts = ['soie' => 'acceptee', 'fruits_legumes' => 'refusee', 'gemme' => 'acceptee', 'sel' => 'non_utilisee', 'inconnue' => 'acceptee'];
+
+        $net = ActionsFinOpusRegles::surplusNet($trouve, $statuts);
+
+        // Soie acceptée : -3. Fruits refusés : rien n'est consommé. Gemme acceptée sans gemme trouvée : jamais négatif.
+        static::assertSame(2, $net['soie']);
+        static::assertSame(5, $net['fruits_legumes']);
+        static::assertSame(0, $net['gemmes']);
+        static::assertSame(3, $net['bois']);
+    }
+
+    public function testLaPreselectionDesActionsSuitLesRessourcesTrouvees(): void
+    {
+        $contenu = new ContenuJoueur();
+        $contenu->surplus = ['soie' => 3, 'fruits_legumes' => 2, 'sel' => 0, 'gemmes' => 1];
+
+        $contenu->preselectionnerActions();
+
+        static::assertSame(ContenuJoueur::DECISION_VALIDEE, $contenu->getSoieDecision());
+        static::assertSame(ContenuJoueur::DECISION_INSUFFISANT, $contenu->getFruitsDecision());
+        static::assertSame(ContenuJoueur::DECISION_AUCUNE, $contenu->getSelDecision());
+        static::assertSame(ContenuJoueur::DECISION_VALIDEE, $contenu->getGemmeDecision());
+        static::assertTrue($contenu->soieUtilise && $contenu->soieJointes);
+        static::assertTrue($contenu->fruitsUtilise && !$contenu->fruitsJointes);
+    }
+
+    public function testUneDecisionSeRangeDansLesDeuxCasesHistoriques(): void
+    {
+        $contenu = new ContenuJoueur();
+
+        $contenu->setIvoireDecision(ContenuJoueur::DECISION_INSUFFISANT);
+        static::assertTrue($contenu->ivoireUtilise);
+        static::assertFalse($contenu->ivoireJointes);
+
+        $contenu->setIvoireDecision(ContenuJoueur::DECISION_AUCUNE);
+        static::assertFalse($contenu->ivoireUtilise);
+        static::assertSame(ContenuJoueur::DECISION_AUCUNE, $contenu->getIvoireDecision());
+    }
 }

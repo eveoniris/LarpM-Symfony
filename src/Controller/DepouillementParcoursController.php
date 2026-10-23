@@ -19,6 +19,8 @@ use App\Service\CompteursEnveloppe;
 use App\Service\DepouillementContenuService;
 use App\Service\DepouillementService;
 use App\Service\EtiquetteSaisie;
+use App\Service\ActionFinOpusResultat;
+use App\Service\ActionsFinOpusRegles;
 use App\Service\ContenuJoueur;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -163,11 +165,24 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
 
         $contenu = $contenuService->lireContenuJoueur($depouillement);
 
+        // Première visite de l'étape des actions : les choix sont proposés d'après les ressources trouvées, le dépouilleur vérifie.
+        $preselection = DepouillementEtape::ACTIONS === $etape && $depouillement->getStatut()->isEditable() && !$contenu->actionsDecidees;
+        if ($preselection) {
+            $contenu->preselectionnerActions();
+        }
+
+        $resultats = $contenuService->evaluerActions($contenu);
+
         return [
             'contenuJoueur' => $contenu,
             'formContenuJoueur' => $this->formulaireContenuJoueur($depouillement, $etape, $contenu),
-            'surplusLibelles' => CompteursEnveloppe::nonNulles($contenu->surplus),
-            'resultatsActions' => $contenuService->evaluerActions($contenu),
+            'trouveLibelles' => CompteursEnveloppe::nonNulles($contenu->surplus),
+            'surplusLibelles' => CompteursEnveloppe::nonNulles(ActionsFinOpusRegles::surplusNet(
+                $contenu->surplus,
+                array_map(static fn (ActionFinOpusResultat $resultat): string => $resultat->statut->value, $resultats),
+            )),
+            'actionsPreselectionnees' => $preselection,
+            'resultatsActions' => $resultats,
             'anomaliesContenu' => $contenuService->anomalies($contenu),
             'actionsFinOpus' => ActionFinOpus::cases(),
         ];

@@ -1,20 +1,24 @@
 {# Étape « Actions de fin d'Opus » d'une enveloppe de joueur : les six actions, une fois par GN chacune.
-   Variables : contenuJoueur, formContenuJoueur (null si non modifiable), resultatsActions, actionsFinOpus #}
+   Un seul choix par action, pré-sélectionné d'après les ressources trouvées à l'étape Contenu.
+   Variables : contenuJoueur, formContenuJoueur (null si non modifiable), resultatsActions, actionsFinOpus, actionsPreselectionnees #}
 
 <h6>Actions de fin d'Opus <small class="text-muted">(une fois par GN chacune)</small></h6>
-<p class="small text-muted">Cochez « Action utilisée » si le joueur a joué l'action, puis « Ressources jointes » si les ressources exigées sont bien dans l'enveloppe. Une action <strong>refusée</strong> (ressources absentes) est simplement sans effet : rien n'est bloqué, l'enregistrement et la suite du parcours restent possibles. Les remarques en orange sont à vérifier, jamais bloquantes.</p>
+<p class="small text-muted">Pour chaque action, indiquez ce que le joueur a décidé. « Action validée » consomme les ressources de l'enveloppe ; « souhaitée mais pas assez de ressources » est simplement sans effet : rien n'est bloqué, l'enregistrement et la suite du parcours restent possibles. Les remarques en orange sont à vérifier, jamais bloquantes.</p>
 
 {% if formContenuJoueur %}
+	{% if actionsPreselectionnees %}
+		<div class="alert alert-info small"><i class="fa fa-wand-magic-sparkles"></i> Les choix sont <strong>pré-sélectionnés d'après les ressources trouvées</strong> à l'étape Contenu : vérifiez-les avec ce que le joueur a décidé, puis enregistrez.</div>
+	{% endif %}
 	{% set f = formContenuJoueur %}
 	{{ form_start(f, {'attr': {'data-lm-unsaved': ''}}) }}
 
 	{% set champs = {
-		'fruits_legumes': ['fruitsUtilise', 'fruitsJointes', null],
-		'soie': ['soieUtilise', 'soieJointes', null],
-		'gemme': ['gemmeUtilise', 'gemmeJointes', 'gemmePieces'],
-		'sel': ['selUtilise', 'selJointes', 'selIngredients'],
-		'fourrure': ['fourrureUtilise', 'fourrureJointes', 'fourrureRessources'],
-		'ivoire': ['ivoireUtilise', 'ivoireJointes', 'ivoirePotions']
+		'fruits_legumes': ['fruitsDecision', null],
+		'soie': ['soieDecision', null],
+		'gemme': ['gemmeDecision', 'gemmePieces'],
+		'sel': ['selDecision', 'selIngredients'],
+		'fourrure': ['fourrureDecision', 'fourrureRessources'],
+		'ivoire': ['ivoireDecision', 'ivoirePotions']
 	} %}
 	{% for a in actionsFinOpus %}
 		{% set c = champs[a.value] %}
@@ -25,10 +29,9 @@
 				<span class="badge {{ resultat.statut.value == 'acceptee' ? 'text-bg-success' : (resultat.statut.value == 'refusee' ? 'text-bg-warning' : 'text-bg-secondary') }}"{% if resultat.statut.value == 'refusee' %} title="Cette action n'aura pas d'effet. Cela ne bloque pas l'enregistrement."{% endif %}>{{ resultat.statut.label }}{% if resultat.statut.value == 'refusee' %} : sans effet, non bloquant{% endif %}</span>
 			</div>
 			<div class="card-body py-2">
-				<div class="small text-muted mb-1">Consomme {{ a.quantiteRessource }} {{ a.ressource }} : {{ a.effet }}.</div>
+				<div class="small text-muted mb-1">Consomme {{ a.quantiteRessource }} {{ a.ressource|lower }} : {{ a.effet }}.</div>
 				{{ form_row(f[c[0]]) }}
-				{{ form_row(f[c[1]]) }}
-				{% if c[2] %}{{ form_row(f[c[2]]) }}{% endif %}
+				{% if c[1] %}{{ form_row(f[c[1]]) }}{% endif %}
 				{% for anomalie in resultat.anomalies %}<div class="small lm-anomalie"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
 			</div>
 		</div>

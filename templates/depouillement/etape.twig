@@ -259,7 +259,10 @@
 							{% if anomaliesConceptions > 0 %}<span class="lm-anomalie">({{ anomaliesConceptions }} avec anomalie)</span>{% endif %}
 						</li>
 						<li>Appris : {{ contenuJoueur.sorts|length }} sort(s), {{ contenuJoueur.prieres|length }} prière(s), {{ contenuJoueur.potions|length }} potion(s)</li>
-						<li>Surplus à reverser au groupe : {% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}</li>
+						{% if contenuJoueur.personnageMort %}
+							<li class="lm-anomalie"><i class="fa fa-skull"></i> Le personnage est mort pendant cet opus{% if contenuJoueur.circonstancesMort %} ({{ contenuJoueur.circonstancesMort }}){% endif %} : à enregistrer sur la fiche par un scénariste.</li>
+						{% endif %}
+						<li>Surplus à reverser au groupe (trouvé moins consommé par les actions) : {% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}</li>
 					{% endif %}
 					{% if contenuGroupe is defined %}
 						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Reliquat du groupe</a> :
@@ -301,6 +304,13 @@
 					<form method="post" action="{{ path('depouillement.terminer', {'gn': gn.id, 'depouillement': depouillement.id}) }}" data-lm-confirm="Terminer ce dépouillement ? Il ne sera plus modifiable et passera en attente de validation." data-lm-confirm-label="Terminer le dépouillement">
 						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_terminer_' ~ depouillement.id) }}">
 						<button type="submit" class="btn btn-success w-100 w-md-auto"><i class="fa fa-check"></i> Terminer le dépouillement</button>
+					</form>
+				{% endif %}
+
+				{% if depouillement.simulation %}
+					<form method="post" class="mb-3" action="{{ path('depouillement.recommencer', {'gn': gn.id, 'depouillement': depouillement.id}) }}" data-lm-confirm="Recommencer cette simulation de zéro ? Tout ce qui a été saisi (étiquettes, photos, contenu) sera effacé." data-lm-confirm-danger data-lm-confirm-label="Recommencer">
+						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_recommencer_' ~ depouillement.id) }}">
+						<button type="submit" class="btn btn-outline-danger"><i class="fa fa-rotate-right"></i> Recommencer cette simulation</button>
 					</form>
 				{% endif %}
 
