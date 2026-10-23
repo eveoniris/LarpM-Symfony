@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service;
 
+use App\Entity\Competence;
 use App\Entity\Depouillement;
 use App\Entity\Domaine;
 use App\Entity\Participant;
 use App\Entity\Personnage;
+use App\Entity\PersonnageApprentissage;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Sort;
@@ -16,10 +18,14 @@ use App\Enum\DepouillementType;
 use App\Service\ContenuJoueur;
 use App\Service\DepouillementApprentissageService;
 use App\Service\DepouillementContenuService;
+use App\Service\DepouillementEnveloppeResolver;
+use App\Service\PersonnageService;
+use App\Tests\Factory\CompetenceFactory;
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\ParticipantFactory;
 use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\UserFactory;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -29,6 +35,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  * simulation sans effet sur la fiche.
  */
 #[Group('integration')]
+// @mago-expect lint:too-many-methods
 class DepouillementApprentissageServiceTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
@@ -103,6 +110,82 @@ class DepouillementApprentissageServiceTest extends KernelTestCase
         static::getContainer()->get(DepouillementContenuService::class)->enregistrerContenuJoueur($depouillement, $contenu, UserFactory::createOne());
 
         return [$depouillement, $personnage];
+    }
+
+    /**
+     * Enveloppe d'un élève qui déclare avoir appris une compétence auprès du personnage n° $numeroEnseignant.
+     *
+     * @return array{0: Depouillement, 1: Personnage, 2: Competence}
+     */
+    private function enveloppeAvecApprentissage(?int $numeroEnseignant, bool $simulation = false): array
+    {
+        $competence = CompetenceFactory::createOne();
+        $contenu = new ContenuJoueur();
+        $contenu->competenceApprise = $competence;
+        $contenu->enseignantNumero = $numeroEnseignant;
+        [$depouillement, $eleve] = $this->enveloppe($contenu, $simulation);
+
+        return [$depouillement, $eleve, $competence];
+    }
+
+    /** Service avec un PersonnageService qui accepte tout enseignant et toute compétence (les règles d'expertise ont leurs propres tests). */
+    private function serviceQuiAutoriseLEnseignement(Competence $competence): DepouillementApprentissageService
+    {
+        $personnageService = $this->createStub(PersonnageService::class);
+        $personnageService->method('canTeachCompetence')->willReturn(true);
+        $personnageService->method('getApprentissageCompetences')->willReturn(new ArrayCollection([$competence]));
+
+        return new DepouillementApprentissageService(
+            static::getContainer()->get(DepouillementContenuService::class),
+            new DepouillementEnveloppeResolver($this->em->getRepository(Depouillement::class)),
+            $this->em,
+            $personnageService,
+            $this->em->getRepository(PersonnageApprentissage::class),
+        );
+    }
+
+    public function testUnEnseignantIntrouvableOuQuiNePeutPasEnseignerRefuseLApprentissage(): void
+    {
+        [$depouillement, $eleve] = $this->enveloppeAvecApprentissage(99_999_999);
+        $resultat = $this->service->appliquer($depouillement);
+        static::assertSame([], $resultat->ajoutes);
+        static::assertStringContainsString('introuvable parmi les personnages inscrits', $resultat->anomalies[0]);
+
+        // Un personnage inscrit au GN mais sans la compétence au niveau expert ne peut pas enseigner.
+        $enseignant = PersonnageFactory::createOne();
+        ParticipantFactory::createOne(['gn' => $depouillement->getGn(), 'user' => UserFactory::createOne(), 'personnage' => $enseignant]);
+        [$autre] = $this->enveloppeAvecApprentissage($enseignant->getId());
+        ParticipantFactory::createOne(['gn' => $autre->getGn(), 'user' => UserFactory::createOne(), 'personnage' => $enseignant]);
+        $resultat = $this->service->appliquer($autre);
+        static::assertStringContainsString('au moins au niveau expert', $resultat->anomalies[0]);
+        static::assertCount(0, $this->em->getRepository(PersonnageApprentissage::class)->findBy(['personnage' => $eleve]));
+    }
+
+    public function testUnApprentissageValideEstEnregistreUneSeuleFoisParGn(): void
+    {
+        [$depouillement, $eleve, $competence] = $this->enveloppeAvecApprentissage(null);
+        $enseignant = PersonnageFactory::createOne();
+        ParticipantFactory::createOne(['gn' => $depouillement->getGn(), 'user' => UserFactory::createOne(), 'personnage' => $enseignant]);
+        $contenu = new ContenuJoueur();
+        $contenu->competenceApprise = $competence;
+        $contenu->enseignantNumero = $enseignant->getId();
+        static::getContainer()->get(DepouillementContenuService::class)->enregistrerContenuJoueur($depouillement, $contenu, UserFactory::createOne());
+        $service = $this->serviceQuiAutoriseLEnseignement($competence);
+
+        $resultat = $service->appliquer($depouillement);
+        $this->em->flush();
+
+        static::assertTrue($resultat->applique);
+        static::assertCount(1, $resultat->ajoutes);
+        $apprentissages = $this->em->getRepository(PersonnageApprentissage::class)->findBy(['personnage' => $eleve]);
+        static::assertCount(1, $apprentissages);
+        static::assertSame($enseignant->getId(), $apprentissages[0]->getEnseignant()->getId());
+        static::assertSame(800, $apprentissages[0]->getDateEnseignement());
+
+        // Un second passage ne crée pas de doublon pour la même fenêtre de GN.
+        $resultat = $service->appliquer($depouillement);
+        static::assertSame([], $resultat->ajoutes);
+        static::assertStringContainsString('déjà un apprentissage enregistré', $resultat->ignores[0]);
     }
 
     public function testAjouteSortsPrieresEtPotionsALaFiche(): void

@@ -258,7 +258,7 @@
 						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'conceptions'}) }}">Conceptions d'héritier</a> : {{ depouillement.conceptions|length }}
 							{% if anomaliesConceptions > 0 %}<span class="lm-anomalie">({{ anomaliesConceptions }} avec anomalie)</span>{% endif %}
 						</li>
-						<li>Appris : {{ contenuJoueur.sorts|length }} sort(s), {{ contenuJoueur.prieres|length }} prière(s), {{ contenuJoueur.potions|length }} potion(s)</li>
+						<li>Appris : {{ contenuJoueur.sorts|length }} sort(s), {{ contenuJoueur.prieres|length }} prière(s), {{ contenuJoueur.potions|length }} potion(s){% if contenuJoueur.competenceApprise %}, compétence {{ contenuJoueur.competenceApprise.label }} (enseignant n° {{ contenuJoueur.enseignantNumero ?: '?' }}){% endif %}</li>
 						{% if contenuJoueur.personnageMort %}
 							<li class="lm-anomalie"><i class="fa fa-skull"></i> Le personnage est mort pendant cet opus{% if contenuJoueur.circonstancesMort %} ({{ contenuJoueur.circonstancesMort }}){% endif %} : le personnage sera marqué mort sur sa fiche à la validation.</li>
 						{% endif %}

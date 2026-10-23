@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Competence;
 use App\Entity\Ingredient;
 use App\Entity\Potion;
 use App\Entity\Priere;
@@ -50,6 +51,12 @@ final class ContenuJoueur
 
     /** @var list<Potion> potions (recettes) apprises pendant le jeu */
     public array $potions = [];
+
+    /** Compétence apprise auprès d'un autre personnage pendant l'opus (un apprentissage au plus entre deux GN), avec son enseignant. */
+    public ?Competence $competenceApprise = null;
+
+    /** Numéro de personnage de l'enseignant de la compétence apprise. */
+    public ?int $enseignantNumero = null;
 
     /** Ce que le dépouilleur n'a pas trouvé dans les listes : un orga sera sollicité. */
     public ?string $introuvables = null;

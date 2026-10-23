@@ -48,6 +48,10 @@
 		{{ form_row(f.sorts) }}
 		{{ form_row(f.prieres) }}
 		{{ form_row(f.potions) }}
+		<div class="row g-2">
+			<div class="col-12 col-md-8">{{ form_row(f.competenceApprise) }}</div>
+			<div class="col-12 col-md-4">{{ form_row(f.enseignantNumero) }}</div>
+		</div>
 		{{ form_row(f.introuvables) }}
 	</fieldset>
 
@@ -60,10 +64,22 @@
 	{{ form_widget(f.submit, {'attr': {'class': 'btn btn-primary w-100 w-md-auto'}}) }}
 	{{ form_end(f) }}
 {% else %}
-	<h6>Appris pendant le jeu</h6>
+	<h6>Pièces jointes à l'enveloppe</h6>
+	{% set pieces = {
+		'Fiche de personnage': contenuJoueur.fichePersonnage,
+		'Fiche de retour joueur remplie': contenuJoueur.ficheRetour,
+		'Fiche de sort': contenuJoueur.ficheSort,
+		'Fiche de prière': contenuJoueur.fichePriere,
+		'Carte alchimiste ou herboriste': contenuJoueur.carteAlchimiste,
+		'Copies des recettes et des sorts appris': contenuJoueur.copiesRecettesSorts
+	} %}
+	<p class="mb-1">{{ pieces|filter(p => p)|keys|join(', ') ?: 'Aucune pièce cochée.' }}</p>
+	<p class="mb-1">Enveloppes de corruption : {{ contenuJoueur.corruptionOuvertes }} ouverte(s), {{ contenuJoueur.corruptionNonOuvertes }} non ouverte(s) ; pinces à linge : {{ contenuJoueur.pincesALinge }}{% if contenuJoueur.documentsNumerotes %} ; documents numérotés : {{ contenuJoueur.documentsNumerotes }}{% endif %}</p>
+	<h6 class="mt-2">Appris pendant le jeu</h6>
 	<p class="mb-1">Sorts : {{ contenuJoueur.sorts|map(s => s.label)|join(', ') ?: '-' }}</p>
 	<p class="mb-1">Prières : {{ contenuJoueur.prieres|map(p => p.label)|join(', ') ?: '-' }}</p>
 	<p class="mb-1">Potions : {{ contenuJoueur.potions|map(p => p.label)|join(", ") ?: "-" }}</p>
+	<p class="mb-1">Compétence apprise : {% if contenuJoueur.competenceApprise %}{{ contenuJoueur.competenceApprise.label }}, enseignée par le personnage n° {{ contenuJoueur.enseignantNumero ?: '?' }}{% else %}-{% endif %}</p>
 	<h6 class="mt-2">Ressources et pièces trouvées</h6>
 	<p class="mb-1">
 		{% for libelle, quantite in trouveLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}-{% endfor %}

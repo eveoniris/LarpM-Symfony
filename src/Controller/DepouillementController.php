@@ -142,6 +142,13 @@ final class DepouillementController extends AbstractDepouillementController
         $existant = $depouillementService->trouverSimulation($gn, $type, $numero);
 
         if ($existant instanceof Depouillement) {
+            // Un seul dépouillement par enveloppe et par GN : on reprend l'existant, rien n'est créé ni écrasé.
+            $this->addFlash('info', \sprintf(
+                'Cette enveloppe était déjà ouverte (%s, dernière modification le %s) : vous reprenez le dépouillement existant, rien n\'a été créé ni écrasé.',
+                mb_strtolower($existant->getStatut()->label()),
+                $existant->getUpdatedAt()->format('d/m/Y à H:i'),
+            ));
+
             return $this->ouvrir($existant);
         }
 

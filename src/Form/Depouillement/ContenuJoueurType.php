@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Depouillement;
 
+use App\Entity\Competence;
 use App\Entity\Ingredient;
 use App\Entity\Potion;
 use App\Entity\Priere;
@@ -124,6 +125,20 @@ class ContenuJoueurType extends AbstractType
             ->add('potions', EntityType::class, [
                 ...$this->liste(Potion::class, 'Potions (recettes) apprises pendant le jeu'),
                 'choice_label' => static fn (Potion $potion): string => \sprintf('%s - %s (niveau %d)', $potion->getNumero(), $potion->getLabel(), $potion->getNiveau()),
+            ])
+            ->add('competenceApprise', EntityType::class, [
+                'class' => Competence::class,
+                'label' => 'Compétence apprise auprès d\'un enseignant',
+                'choice_label' => 'label',
+                'required' => false,
+                'autocomplete' => true,
+                'placeholder' => '- Aucune -',
+                'help' => 'Un apprentissage au plus entre deux GN. L\'enseignant doit connaître la compétence au moins au niveau expert.',
+            ])
+            ->add('enseignantNumero', IntegerType::class, [
+                'label' => 'Numéro de personnage de l\'enseignant',
+                'required' => false,
+                'attr' => ['inputmode' => 'numeric', 'min' => 1],
             ])
             ->add('introuvables', TextareaType::class, [
                 'label' => 'Je ne trouve pas',
