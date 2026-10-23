@@ -76,13 +76,11 @@ Vérifié de bout en bout dans le navigateur local (compte de test du projet) : 
 12a FAIT (commit 7fb2d37e) : sorts, prières et potions appliqués à la validation (`DepouillementApprentissageService`, ajout direct
 sans trigger, doublons ignorés, incohérences signalées sans bloquer, simulation sans écriture, potions choisies dans une liste).
 Pas de log ADD_SORT/ADD_POTION (la commande de rattrapage Littérature les lit pour détecter un trigger consommé).
-Reste 12b ci-dessous, à cadrer :
-
-Appliquer à la validation ce qui est saisi : ~~sorts, prières, potions~~, apprentissages sur la fiche du joueur ; étiquettes à réinsérer
-et objets au PC joueur vers la zone enveloppe du personnage de l'opus suivant (`personnage/{id}/detail/enveloppe`) ; renommée (+1
-par 3 Soie) ; consommation de fruits et légumes (la commande de vieillissement n'en compte que deux au maximum, à vérifier
-dans `PersonnageService::checkDieOfOldAge`). Prévoir un statut intermédiaire quand la session suivante n'est pas encore ouverte
-(`DepouillementStatut::EN_ATTENTE_IMPORT` existe déjà). Contrôle futur : un objet qui existe en X exemplaires annoncé par X+1 joueurs.
+12b FAIT (commit 202a1359) : fruits (chronologie), soie (renommée +1), gemme (richesse, 1 Po = 10 Pa), sel (ingrédients), fourrure
+(ressources) appliqués à la validation (`DepouillementFinOpusService`) ; ivoire (potions de départ) et étiquettes/objets reportés vers
+l'enveloppe du GN suivant (`DepouillementImportService`, table `enveloppe_ligne`, statut `EN_ATTENTE_IMPORT`, bouton « Réessayer
+l'import » et commande `app:depouillement:importer`). GN suivant = premier GN actif commençant après la fin du GN du dépouillement.
+Pas fait : étiquettes de groupe (bannières), contrôle « objet en X exemplaires annoncé par X+1 joueurs ».
 
 ### 4. En attente de l'utilisateur
 
@@ -98,7 +96,7 @@ L'utilisateur veut un merge direct sur `main` (sans pull request) une fois l'ét
 ## Avant la mise en production
 
 - Migrations à exécuter dans l'ordre : `Version20261026100000` (vient de main), `Version20261027100000`, `Version20261028100000`,
-  `Version20261029100000`, `Version20261030100000` (DONNÉES : tranche d'âge), `Version20261031100000`, `Version20261101100000` (colonne + classe secrète).
+  `Version20261029100000`, `Version20261030100000` (DONNÉES : tranche d'âge), `Version20261031100000`, `Version20261101100000` (colonne + classe secrète), `Version20261102100000` (table enveloppe_ligne).
 - Réglages PHP sur OVH : `upload_max_filesize` d'au moins 12M et `post_max_size` d'au moins 64M (déjà dans `docker/php/php.ini` en local).
 - `var/uploads` doit être inscriptible et survivre aux déploiements (photos des enveloppes).
 - Tests de la base de TEST : ne PAS y exécuter la migration de données de la tranche d'âge (la base de test n'a aucune tranche, les
