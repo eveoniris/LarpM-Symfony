@@ -303,6 +303,21 @@
 					</form>
 				{% endif %}
 
+				{% if depouillement.statut.value == 'en_attente_import' and is_granted('DEPOUILLEMENT_VALIDER', depouillement) %}
+					<div class="card border-warning lm-carte-verre">
+						<div class="card-header">En attente d'import</div>
+						<div class="card-body">
+							<p class="small text-muted">
+								Les étiquettes à réinsérer, les objets au PC joueur et les potions de départ de l'ivoire seront reportés dans l'enveloppe du GN suivant dès que celui-ci est ouvert et que le personnage y est inscrit.
+							</p>
+							<form method="post" action="{{ path('depouillement.importer', {'gn': gn.id, 'depouillement': depouillement.id}) }}">
+								<input type="hidden" name="_token" value="{{ csrf_token('depouillement_importer_' ~ depouillement.id) }}">
+								<button type="submit" class="btn btn-warning w-100 w-md-auto"><i class="fa fa-arrows-rotate"></i> Réessayer l'import</button>
+							</form>
+						</div>
+					</div>
+				{% endif %}
+
 				{% if depouillement.statut.value == 'a_valider' and is_granted('DEPOUILLEMENT_VALIDER', depouillement) %}
 					<div class="card border-primary lm-carte-verre">
 						<div class="card-header">Validation</div>

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 /**
- * Ce que l'application des sorts, prières et potions d'une enveloppe a fait (ou ferait pour une simulation).
+ * Ce que l'application d'une partie du retour de jeu (sorts, prières et potions, ou actions de fin d'Opus) a fait, ou ferait pour une simulation.
  */
 final class ResultatApprentissages
 {
@@ -20,6 +20,12 @@ final class ResultatApprentissages
 
     /** Faux pour une simulation : rien n'a été écrit sur la fiche. */
     public bool $applique = false;
+
+    public function __construct(
+        private readonly string $intitule = 'Sorts, prières et potions',
+        private readonly string $messageVide = 'Aucun sort, prière ni potion à appliquer.',
+    ) {
+    }
 
     public function estVide(): bool
     {
@@ -44,7 +50,7 @@ final class ResultatApprentissages
             $parties[] = 'à vérifier : ' . implode(' ; ', $this->anomalies);
         }
 
-        return [] === $parties ? 'Aucun sort, prière ni potion à appliquer.' : 'Sorts, prières et potions : ' . implode(' | ', $parties);
+        return [] === $parties ? $this->messageVide : $this->intitule . ' : ' . implode(' | ', $parties);
     }
 
     /**

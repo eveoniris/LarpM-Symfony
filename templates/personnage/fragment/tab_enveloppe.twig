@@ -121,6 +121,15 @@
                 </div>
 
                 <div class="list-group-item">
+                    <h6 class="list-group-item-heading">Reporté du dernier retour de jeu :</h6>
+                    {% for ligne in enveloppeLignes|default([]) %}
+                        <div class="list-group-item-text">{{ ligne.nature.label }} : {{ ligne.libelle }}{% if ligne.quantite > 1 %} (x{{ ligne.quantite }}){% endif %} <small>({{ ligne.gn.label }})</small></div>
+                    {% else %}
+                        <div class="list-group-item-text">Aucun</div>
+                    {% endfor %}
+                </div>
+
+                <div class="list-group-item">
                     <h6 class="list-group-item-heading">Ingrédients :</h6>
                     {% for personnageIngredient in personnageService.allIngredient(personnage) %}
                         <div class="list-group-item-text">{{ personnageIngredient.nombre }} {{ personnageIngredient.ingredient }}

@@ -9,6 +9,7 @@ use App\Entity\Gn;
 use App\Enum\DepouillementEtape;
 use App\Exception\ValidationInvalideException;
 use App\Security\Voter\DepouillementVoter;
+use App\Service\DepouillementImportService;
 use App\Service\DepouillementValidationService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,8 +45,8 @@ final class DepouillementValidationController extends AbstractDepouillementContr
         }
 
         $this->addFlash('success', 'Dépouillement validé. Il ne peut plus être rouvert.');
-        if (!$apprentissages->estVide()) {
-            $this->addFlash([] === $apprentissages->anomalies ? 'info' : 'warning', $apprentissages->resume());
+        foreach ($apprentissages->parties() as $partie) {
+            $this->addFlash([] === $partie->anomalies ? 'info' : 'warning', $partie->resume());
         }
 
         return $retour;
@@ -71,6 +72,33 @@ final class DepouillementValidationController extends AbstractDepouillementContr
         }
 
         $this->addFlash('success', 'Dépouillement renvoyé au dépouilleur pour correction.');
+
+        return $retour;
+    }
+
+    /**
+     * Retente le report vers l'enveloppe du GN suivant (ivoire et étiquettes) d'un dépouillement validé ou en attente d'import.
+     */
+    #[Route('/gn/{gn}/depouillement/{depouillement}/importer', name: 'depouillement.importer', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
+    public function importerAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementImportService $importService): Response
+    {
+        $this->verifier($gn, $depouillement);
+        $this->denyAccessUnlessGranted(DepouillementVoter::VALIDER, $depouillement);
+        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::RECAPITULATIF), 303);
+
+        if (!$this->jetonValide($request, 'depouillement_importer_' . $depouillement->getId())) {
+            return $retour;
+        }
+
+        try {
+            $resultat = $importService->importer($depouillement, $this->utilisateur());
+        } catch (ValidationInvalideException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $retour;
+        }
+
+        $this->addFlash([] === $resultat->anomalies ? 'success' : 'warning', $resultat->resume());
 
         return $retour;
     }

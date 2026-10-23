@@ -125,6 +125,25 @@ class DepouillementRepository extends BaseRepository
     }
 
     /**
+     * Dépouillements réels validés dont l'import vers l'enveloppe du GN suivant est en attente.
+     *
+     * @return list<Depouillement>
+     */
+    public function findEnAttenteImport(?Gn $gn = null): array
+    {
+        $qb = $this
+            ->createQueryBuilder('d')
+            ->where('d.statut = :statut AND d.simulation = false')
+            ->setParameter('statut', DepouillementStatut::EN_ATTENTE_IMPORT)
+            ->orderBy('d.id', 'ASC');
+        if (null !== $gn) {
+            $qb->andWhere('d.gn = :gn')->setParameter('gn', $gn);
+        }
+
+        return array_values($qb->getQuery()->getResult());
+    }
+
+    /**
      * Participant d'un GN à partir du numéro de personnage (son identifiant, imprimé sur l'enveloppe).
      * Le personnage peut être le principal, la substitution ou la relève du participant.
      */

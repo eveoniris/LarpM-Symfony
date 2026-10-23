@@ -26,23 +26,28 @@ readonly class DepouillementValidationService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private DepouillementApprentissageService $apprentissages,
+        private DepouillementFinOpusService $finOpus,
+        private DepouillementImportService $import,
     ) {
     }
 
     /**
+     * Valide, applique apprentissages et actions de fin d'Opus, puis reporte vers l'enveloppe suivante (ou met en attente d'import).
+     *
      * @throws ValidationInvalideException si le dépouillement n'est pas en attente de validation
      */
-    public function valider(Depouillement $depouillement, User $validateur): ResultatApprentissages
+    public function valider(Depouillement $depouillement, User $validateur): ResultatValidation
     {
         $this->verifierAValider($depouillement);
         $apprentissages = $this->apprentissages->appliquer($depouillement);
+        $finOpus = $this->finOpus->appliquer($depouillement);
 
         $historique = (new DepouillementHistory())
             ->setUser($validateur)
             ->setActionType(DepouillementHistory::ACTION_VALIDATION)
             ->setStatutAvant($depouillement->getStatut())
             ->setStatutApres(DepouillementStatut::VALIDE)
-            ->setMotif($this->motif($depouillement, $apprentissages));
+            ->setMotif($this->motif($depouillement, new ResultatValidation($apprentissages, $finOpus, new ResultatApprentissages())));
 
         $depouillement
             ->setStatut(DepouillementStatut::VALIDE)
@@ -52,9 +57,12 @@ readonly class DepouillementValidationService
         $depouillement->touch();
 
         $this->entityManager->flush();
-        $this->journaliser($depouillement, $historique, $validateur, 'validation', $apprentissages);
+        // Le report vers l'enveloppe suivante change le statut (terminé ou en attente d'import) et ne concerne jamais une simulation.
+        $enveloppeSuivante = $this->import->importer($depouillement, $validateur);
+        $resultat = new ResultatValidation($apprentissages, $finOpus, $enveloppeSuivante);
+        $this->journaliser($depouillement, $historique, $validateur, 'validation', $resultat);
 
-        return $apprentissages;
+        return $resultat;
     }
 
     /**
@@ -89,11 +97,11 @@ readonly class DepouillementValidationService
         $this->journaliser($depouillement, $historique, $validateur, 'renvoi');
     }
 
-    private function motif(Depouillement $depouillement, ResultatApprentissages $apprentissages): ?string
+    private function motif(Depouillement $depouillement, ResultatValidation $resultat): ?string
     {
         $parties = array_filter([
             $depouillement->isSimulation() ? 'Validation d\'une simulation (aucun effet)' : null,
-            $apprentissages->estVide() ? null : $apprentissages->resume(),
+            $resultat->estVide() ? null : $resultat->resume(),
         ]);
 
         return [] === $parties ? null : implode('. ', $parties);
@@ -109,7 +117,7 @@ readonly class DepouillementValidationService
     /**
      * Événement sommaire dans log_action, qui renvoie à l'entrée d'historique du dépouillement. Les simulations n'y figurent pas.
      */
-    private function journaliser(Depouillement $depouillement, DepouillementHistory $historique, User $utilisateur, string $action, ?ResultatApprentissages $apprentissages = null): void
+    private function journaliser(Depouillement $depouillement, DepouillementHistory $historique, User $utilisateur, string $action, ?ResultatValidation $resultat = null): void
     {
         if ($depouillement->isSimulation()) {
             return;
@@ -123,7 +131,8 @@ readonly class DepouillementValidationService
                 'action' => $action,
                 'depouillement_id' => $depouillement->getId(),
                 'depouillement_history_id' => $historique->getId(),
-                ...(null === $apprentissages || $apprentissages->estVide() ? [] : ['apprentissages' => $apprentissages->versTableau()]),
+                ...(null === $resultat || $resultat->apprentissages->estVide() ? [] : ['apprentissages' => $resultat->apprentissages->versTableau()]),
+                ...(null === $resultat || $resultat->finOpus->estVide() ? [] : ['fin_opus' => $resultat->finOpus->versTableau()]),
             ]);
 
         $this->entityManager->persist($log);

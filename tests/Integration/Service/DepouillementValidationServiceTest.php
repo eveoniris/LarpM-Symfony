@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Service;
 
 use App\Entity\Depouillement;
+use App\Entity\DepouillementEtiquette;
 use App\Entity\DepouillementHistory;
+use App\Enum\EtiquetteCouleur;
+use App\Enum\EtiquetteDestination;
+use App\Enum\EtiquetteNature;
+use App\Enum\EtiquetteSituation;
 use App\Entity\Domaine;
 use App\Entity\Participant;
 use App\Entity\Sort;
@@ -216,9 +221,44 @@ class DepouillementValidationServiceTest extends KernelTestCase
 
         $resultat = $this->service->valider($depouillement, UserFactory::createOne());
 
-        static::assertCount(1, $resultat->ajoutes);
+        static::assertCount(1, $resultat->apprentissages->ajoutes);
         static::assertCount(1, $personnage->getSorts());
         static::assertStringContainsString('Flamme', (string) $depouillement->getHistories()->last()->getMotif());
         static::assertSame(['Sort Flamme (niveau 1)'], array_map('ucfirst', $this->logs()[0]->getData()['apprentissages']['ajoutes']));
+    }
+
+    public function testLaValidationMetEnAttenteDImportQuandLeGnSuivantNEstPasOuvert(): void
+    {
+        $depouillement = $this->aValider(simulation: false);
+        $depouillement->setParticipant($this->participantDe($depouillement));
+        $etiquette = (new DepouillementEtiquette())
+            ->setNature(EtiquetteNature::OBJET)
+            ->setCouleur(EtiquetteCouleur::ORANGE)
+            ->setNumero(5)
+            ->setQualite('812')
+            ->setQuantite(1)
+            ->setSituation(EtiquetteSituation::SANS_OBJET)
+            ->setDestination(EtiquetteDestination::ENVELOPPE)
+            ->setSpeciale(true)
+            ->setAPrevoirProchainOpus(true);
+        $depouillement->addEtiquette($etiquette);
+        $this->em->persist($etiquette);
+        $this->em->flush();
+
+        $resultat = $this->service->valider($depouillement, UserFactory::createOne());
+
+        static::assertSame(DepouillementStatut::EN_ATTENTE_IMPORT, $depouillement->getStatut());
+        static::assertNotNull($depouillement->getValidatedAt());
+        static::assertStringContainsString('Aucun GN actif', $resultat->enveloppeSuivante->anomalies[0]);
+        static::assertCount(2, $depouillement->getHistories());
+    }
+
+    private function participantDe(Depouillement $depouillement): Participant
+    {
+        $personnage = PersonnageFactory::createOne();
+        $participant = ParticipantFactory::createOne(['gn' => $depouillement->getGn(), 'user' => UserFactory::createOne(), 'personnage' => $personnage]);
+        $depouillement->setNumero((string) $personnage->getId());
+
+        return $this->em->getRepository(Participant::class)->find($participant->getId());
     }
 }
