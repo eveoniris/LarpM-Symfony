@@ -20,11 +20,18 @@ Il sert plus de 1 500 participants sur plusieurs saisons de jeu.
 
 ## Aperçu
 
-| Accueil d'un joueur | Liste des grandeurs natures |
-| --- | --- |
-| ![Page d'accueil de LarpManager](docs/images/accueil.jpg) | ![Liste des GN avec participants et billets vendus](docs/images/liste-gn.jpg) |
+![Carte interactive du monde de jeu, avec ses royaumes et territoires](docs/images/carte-du-monde.jpg)
 
-*Captures réalisées sur la base de développement anonymisée.*
+<table>
+  <tr>
+    <td width="72%"><img src="docs/images/fiche-personnage.jpg" alt="Fiche d'un personnage : compétences, expérience, jetons et déclencheurs"></td>
+    <td width="28%"><img src="docs/images/mobile-liste-gn.jpg" alt="Liste des grandeurs natures sur mobile"></td>
+  </tr>
+  <tr>
+    <td align="center"><em>Fiche de personnage</em></td>
+    <td align="center"><em>Version mobile</em></td>
+  </tr>
+</table>
 
 ## Pile technique
 
