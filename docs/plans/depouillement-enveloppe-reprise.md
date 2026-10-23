@@ -45,7 +45,11 @@ Vérifié de bout en bout dans le navigateur local (compte de test du projet) : 
 - Source de langue `LangueSourceType::PARENTS` (priorité de l'origine secondaire, comptée comme langue de base).
 - Règles pures du tirage et de l'âge : `ConceptionRegles`, enum `ConceptionIssue` (testés).
 - Entité `Conception` + `ConceptionRepository` + `ConceptionStatut` + migration `Version20261031100000`.
-  La collection `Depouillement::getConceptions()` existe. RIEN d'autre : pas de service, pas de contrôleur, pas d'écran.
+- 11a FAIT (commit 74825c90) : `ConceptionService`, `DepouillementConceptionController`, `_conceptions.twig`, ligne dans le résumé.
+- 11b FAIT (commit c27a07ee) : migration `Version20261101100000` (colonne `classe.secrete` et classe « Secret/Secrète »),
+  `HeritierService`, `DepouillementHeritierController` (`/gn/{gn}/conceptions`), formulaires `HeritierType`/`HeritiersType`,
+  `conceptions.twig`, garde à la reprise dans `PersonnageOldFindType`. Héritier créé sans groupe (nullable), à confirmer.
+
 
 ## Décisions fonctionnelles de l'étape 11 (ne pas les redemander)
 
@@ -65,34 +69,7 @@ Vérifié de bout en bout dans le navigateur local (compte de test du projet) : 
 
 ## Reste à faire, dans l'ordre
 
-### 1. Étape 11a : enregistrer les conceptions
-
-- `ConceptionService` : enregistrer depuis une enveloppe de joueur (le personnage de l'enveloppe est identifié par son numéro,
-  le partenaire est saisi par son numéro de personnage). Contrôles : joueur seulement, saisie modifiable, partenaire inscrit
-  à ce GN (réutiliser `DepouillementEnveloppeResolver::resoudre`), deux personnages différents, couple déjà enregistré refusé
-  (`ConceptionRepository::findParCouple`, car les deux joueurs peuvent le déclarer). Âge : anomalie via `ConceptionRegles::anomalieAge`,
-  et pas de tirage si un parent a 45 ans ou plus. Sinon tirer une fois (`ConceptionRegles::tirer`) et stocker tirage et issue.
-  Consigner dans l'historique du dépouillement. `simulation` de la conception = celle du dépouillement.
-- Contrôleur (même modèle que `DepouillementEtiquetteController`, `#[IsGranted('ROLE_BETA_TEST')]` sur la classe concrète),
-  section « Conceptions » dans `templates/depouillement/_contenu_joueur.twig`, ligne dans le « Résumé à relire ».
-- Tests : service (intégration), fonctionnel (formulaire), garde-fous (âge, doublon, saisie terminée).
-
-### 2. Étape 11b : écran du scénariste et création de l'héritier
-
-- Écran listant les conceptions en attente du GN (statut `EN_ATTENTE`), tirage et issue suggérée, anomalies.
-  Actions : créer l'héritier (ou les deux), « gérer plus tard » (remarque obligatoire), clôturer (échec ou conséquence).
-  Réservé aux rôles qui valident (`DepouillementVoter`) et bêta. Jamais d'héritier pour une simulation.
-- NE PAS réutiliser `PersonnageService::createNewPersonnage` tel quel : `empty($ageReel)` traite 0 comme vide, il retombe sur
-  `getNextSessionGn()`, ajoute un événement « Participation » et appelle `addClasseCompetencesFamilyCreation`. Écrire un chemin dédié.
-- Champs obligatoires du personnage (NOT NULL) : `classe`, `age`, `genre`, `nom`. `territoire` (origine) est nullable en base mais typé non nul.
-- À la création : âge = tranche « Enfant héritier », `ageReel` = 0, `user` nul, classe secrète, genre et nom choisis, territoire
-  choisi par le scénariste ; XP = `Gn::getXpCreation()` avec les `ExperienceGain` (voir `PersonnageService` autour de la ligne 396) ;
-  chronologie « Naissance » avec l'année de jeu du GN ; `PersonnageLignee` (parent1 de genre 1 ou 3, parent2 de genre 2 ou 3, lignée
-  facultative, via la logique de `PersonnageController::addLigneeAction`) ; langue des parents avec `addLangueSource(..., LangueSourceType::PARENTS)`.
-- Classe secrète : créer la classe, la masquer des choix à la création (`PersonnageType`, `enableCreation` ou équivalent à
-  vérifier sur `Classe`), ajouter la garde à la reprise ou à la participation. À étudier : `PersonnageOldFindType` permet-il de
-  choisir un personnage SANS user pour le rattacher ?
-- Conserver dans `Conception` : statut, `decidePar`, `decideAt`, `heritiers` (identifiants créés), `remarque`.
+### Étape 11 : terminée (voir ci-dessus), les anciennes sections 11a et 11b ont été retirées
 
 ### 3. Étape 12 : dispatch réel (à cadrer avec l'utilisateur)
 
@@ -116,7 +93,7 @@ L'utilisateur veut un merge direct sur `main` (sans pull request) une fois l'ét
 ## Avant la mise en production
 
 - Migrations à exécuter dans l'ordre : `Version20261026100000` (vient de main), `Version20261027100000`, `Version20261028100000`,
-  `Version20261029100000`, `Version20261030100000` (DONNÉES : tranche d'âge), `Version20261031100000`.
+  `Version20261029100000`, `Version20261030100000` (DONNÉES : tranche d'âge), `Version20261031100000`, `Version20261101100000` (colonne + classe secrète).
 - Réglages PHP sur OVH : `upload_max_filesize` d'au moins 12M et `post_max_size` d'au moins 64M (déjà dans `docker/php/php.ini` en local).
 - `var/uploads` doit être inscriptible et survivre aux déploiements (photos des enveloppes).
 - Tests de la base de TEST : ne PAS y exécuter la migration de données de la tranche d'âge (la base de test n'a aucune tranche, les
