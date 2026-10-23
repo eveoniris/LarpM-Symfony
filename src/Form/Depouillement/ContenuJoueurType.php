@@ -89,11 +89,9 @@ class ContenuJoueurType extends AbstractType
                 ...$this->liste(Priere::class, 'Prières apprises pendant le jeu'),
                 'choice_label' => static fn (Priere $priere): string => \sprintf('%s - %s (niveau %d)', $priere->getSphere()?->getLabel() ?? 'Sans sphère', $priere->getLabel(), $priere->getNiveau()),
             ])
-            ->add('recettes', TextareaType::class, [
-                'label' => 'Recettes apprises',
-                'required' => false,
-                'help' => 'Souvent une potion (recette d\'alchimie) : nom et façon de la réaliser. À vérifier par un orga.',
-                'attr' => ['rows' => 3],
+            ->add('potions', EntityType::class, [
+                ...$this->liste(Potion::class, 'Potions (recettes) apprises pendant le jeu'),
+                'choice_label' => static fn (Potion $potion): string => \sprintf('%s - %s (niveau %d)', $potion->getNumero(), $potion->getLabel(), $potion->getNiveau()),
             ])
             ->add('introuvables', TextareaType::class, [
                 'label' => 'Je ne trouve pas',

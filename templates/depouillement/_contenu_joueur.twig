@@ -36,7 +36,7 @@
 		<legend class="h6">Appris pendant le jeu</legend>
 		{{ form_row(f.sorts) }}
 		{{ form_row(f.prieres) }}
-		{{ form_row(f.recettes) }}
+		{{ form_row(f.potions) }}
 		{{ form_row(f.introuvables) }}
 	</fieldset>
 
@@ -96,7 +96,7 @@
 	<h6>Appris pendant le jeu</h6>
 	<p class="mb-1">Sorts : {{ contenuJoueur.sorts|map(s => s.label)|join(', ') ?: '-' }}</p>
 	<p class="mb-1">Prières : {{ contenuJoueur.prieres|map(p => p.label)|join(', ') ?: '-' }}</p>
-	<p class="mb-1">Recettes : {{ contenuJoueur.recettes ?: '-' }}</p>
+	<p class="mb-1">Potions : {{ contenuJoueur.potions|map(p => p.label)|join(", ") ?: "-" }}</p>
 	<h6 class="mt-2">Surplus pour l'enveloppe de groupe</h6>
 	<p class="mb-0">
 		{% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}-{% endfor %}

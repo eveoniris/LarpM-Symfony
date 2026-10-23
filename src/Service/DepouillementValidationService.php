@@ -17,29 +17,32 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * Validation d'un dépouillement par un scénariste, un wargame ou un admin, ou renvoi au dépouilleur pour correction.
  *
- * Un dépouillement validé ne peut PAS être rouvert. Cette étape ne fait aucun dispatch : l'application aux joueurs et aux
- * groupes est l'étape suivante du plan. Les simulations se valident comme les autres mais n'écrivent pas dans log_action.
+ * Un dépouillement validé ne peut PAS être rouvert. La validation applique les sorts, prières et potions appris sur la fiche du
+ * joueur (DepouillementApprentissageService), dans la même transaction. Les simulations se valident comme les autres mais
+ * n'écrivent ni sur les fiches ni dans log_action.
  */
 readonly class DepouillementValidationService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private DepouillementApprentissageService $apprentissages,
     ) {
     }
 
     /**
      * @throws ValidationInvalideException si le dépouillement n'est pas en attente de validation
      */
-    public function valider(Depouillement $depouillement, User $validateur): void
+    public function valider(Depouillement $depouillement, User $validateur): ResultatApprentissages
     {
         $this->verifierAValider($depouillement);
+        $apprentissages = $this->apprentissages->appliquer($depouillement);
 
         $historique = (new DepouillementHistory())
             ->setUser($validateur)
             ->setActionType(DepouillementHistory::ACTION_VALIDATION)
             ->setStatutAvant($depouillement->getStatut())
             ->setStatutApres(DepouillementStatut::VALIDE)
-            ->setMotif($depouillement->isSimulation() ? 'Validation d\'une simulation (aucun effet)' : null);
+            ->setMotif($this->motif($depouillement, $apprentissages));
 
         $depouillement
             ->setStatut(DepouillementStatut::VALIDE)
@@ -49,7 +52,9 @@ readonly class DepouillementValidationService
         $depouillement->touch();
 
         $this->entityManager->flush();
-        $this->journaliser($depouillement, $historique, $validateur, 'validation');
+        $this->journaliser($depouillement, $historique, $validateur, 'validation', $apprentissages);
+
+        return $apprentissages;
     }
 
     /**
@@ -84,6 +89,16 @@ readonly class DepouillementValidationService
         $this->journaliser($depouillement, $historique, $validateur, 'renvoi');
     }
 
+    private function motif(Depouillement $depouillement, ResultatApprentissages $apprentissages): ?string
+    {
+        $parties = array_filter([
+            $depouillement->isSimulation() ? 'Validation d\'une simulation (aucun effet)' : null,
+            $apprentissages->estVide() ? null : $apprentissages->resume(),
+        ]);
+
+        return [] === $parties ? null : implode('. ', $parties);
+    }
+
     private function verifierAValider(Depouillement $depouillement): void
     {
         if (DepouillementStatut::A_VALIDER !== $depouillement->getStatut()) {
@@ -94,7 +109,7 @@ readonly class DepouillementValidationService
     /**
      * Événement sommaire dans log_action, qui renvoie à l'entrée d'historique du dépouillement. Les simulations n'y figurent pas.
      */
-    private function journaliser(Depouillement $depouillement, DepouillementHistory $historique, User $utilisateur, string $action): void
+    private function journaliser(Depouillement $depouillement, DepouillementHistory $historique, User $utilisateur, string $action, ?ResultatApprentissages $apprentissages = null): void
     {
         if ($depouillement->isSimulation()) {
             return;
@@ -108,6 +123,7 @@ readonly class DepouillementValidationService
                 'action' => $action,
                 'depouillement_id' => $depouillement->getId(),
                 'depouillement_history_id' => $historique->getId(),
+                ...(null === $apprentissages || $apprentissages->estVide() ? [] : ['apprentissages' => $apprentissages->versTableau()]),
             ]);
 
         $this->entityManager->persist($log);

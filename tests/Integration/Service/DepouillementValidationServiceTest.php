@@ -6,6 +6,11 @@ namespace App\Tests\Integration\Service;
 
 use App\Entity\Depouillement;
 use App\Entity\DepouillementHistory;
+use App\Entity\Domaine;
+use App\Entity\Participant;
+use App\Entity\Sort;
+use App\Service\ContenuJoueur;
+use App\Service\DepouillementContenuService;
 use App\Entity\LogAction;
 use App\Enum\DepouillementStatut;
 use App\Enum\DepouillementType;
@@ -14,6 +19,8 @@ use App\Exception\ValidationInvalideException;
 use App\Service\DepouillementService;
 use App\Service\DepouillementValidationService;
 use App\Tests\Factory\GnFactory;
+use App\Tests\Factory\ParticipantFactory;
+use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
@@ -176,5 +183,42 @@ class DepouillementValidationServiceTest extends KernelTestCase
         static::assertSame(DepouillementStatut::VALIDE, $depouillement->getStatut());
         // Renvoi, fin de saisie, validation.
         static::assertCount(3, $depouillement->getHistories());
+    }
+
+    public function testLaValidationAppliqueLesApprentissagesEtLesConsigne(): void
+    {
+        $gn = GnFactory::createOne();
+        $personnage = PersonnageFactory::createOne();
+        ParticipantFactory::createOne(['gn' => $gn, 'user' => UserFactory::createOne(), 'personnage' => $personnage]);
+        $domaine = (new Domaine())
+            ->setLabel('Feu')
+            ->setDescription('Test');
+        $sort = (new Sort())
+            ->setLabel('Flamme')
+            ->setNiveau(1)
+            ->setDomaine($domaine)
+            ->setSecret(false);
+        $this->em->persist($domaine);
+        $this->em->persist($sort);
+        $depouillement = (new Depouillement())
+            ->setGn($gn)
+            ->setType(DepouillementType::JOUEUR)
+            ->setNumero((string) $personnage->getId())
+            ->setParticipant($this->em->getRepository(Participant::class)->findOneBy(['gn' => $gn, 'personnage' => $personnage]))
+            ->setSimulation(false);
+        $this->em->persist($depouillement);
+        $this->em->flush();
+        $contenu = new ContenuJoueur();
+        $contenu->sorts = [$sort];
+        static::getContainer()->get(DepouillementContenuService::class)->enregistrerContenuJoueur($depouillement, $contenu, UserFactory::createOne());
+        $depouillement->setStatut(DepouillementStatut::A_VALIDER);
+        $this->em->flush();
+
+        $resultat = $this->service->valider($depouillement, UserFactory::createOne());
+
+        static::assertCount(1, $resultat->ajoutes);
+        static::assertCount(1, $personnage->getSorts());
+        static::assertStringContainsString('Flamme', (string) $depouillement->getHistories()->last()->getMotif());
+        static::assertSame(['Sort Flamme (niveau 1)'], array_map('ucfirst', $this->logs()[0]->getData()['apprentissages']['ajoutes']));
     }
 }

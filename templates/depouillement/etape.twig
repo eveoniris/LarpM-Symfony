@@ -257,7 +257,7 @@
 						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Conceptions d'héritier</a> : {{ depouillement.conceptions|length }}
 							{% if anomaliesConceptions > 0 %}<span class="text-danger">({{ anomaliesConceptions }} avec anomalie)</span>{% endif %}
 						</li>
-						<li>Appris : {{ contenuJoueur.sorts|length }} sort(s), {{ contenuJoueur.prieres|length }} prière(s){% if contenuJoueur.recettes %}, recettes : {{ contenuJoueur.recettes }}{% endif %}</li>
+						<li>Appris : {{ contenuJoueur.sorts|length }} sort(s), {{ contenuJoueur.prieres|length }} prière(s), {{ contenuJoueur.potions|length }} potion(s)</li>
 						<li>Surplus à reverser au groupe : {% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}</li>
 					{% endif %}
 					{% if contenuGroupe is defined %}

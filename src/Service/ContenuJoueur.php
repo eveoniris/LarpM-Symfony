@@ -46,8 +46,8 @@ final class ContenuJoueur
     /** @var list<Priere> */
     public array $prieres = [];
 
-    /** Recettes (souvent une potion, avec la façon de la réaliser) : texte libre à vérifier par un orga. */
-    public ?string $recettes = null;
+    /** @var list<Potion> potions (recettes) apprises pendant le jeu */
+    public array $potions = [];
 
     /** Ce que le dépouilleur n'a pas trouvé dans les listes : un orga sera sollicité. */
     public ?string $introuvables = null;

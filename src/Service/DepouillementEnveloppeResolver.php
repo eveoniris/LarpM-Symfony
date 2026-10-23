@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\Gn;
 use App\Entity\GroupeGn;
 use App\Entity\Participant;
+use App\Entity\Personnage;
 use App\Enum\DepouillementType;
 use App\Exception\EnveloppeIntrouvableException;
 use App\Repository\DepouillementRepository;
@@ -36,6 +37,20 @@ readonly class DepouillementEnveloppeResolver
         $sansZeros = ltrim($correspondances[1], characters: '0');
 
         return '' === $sansZeros ? '0' : $sansZeros;
+    }
+
+    /**
+     * Le personnage dont le numéro est inscrit sur l'enveloppe (le participant peut avoir un personnage, une substitution ou un relève).
+     */
+    public function personnageDuNumero(Participant $participant, int $numero): ?Personnage
+    {
+        foreach ([$participant->getPersonnage(), $participant->getPersonnageSubstitution(), $participant->getPersonnageReleve()] as $personnage) {
+            if ($personnage instanceof Personnage && $personnage->getId() === $numero) {
+                return $personnage;
+            }
+        }
+
+        return null;
     }
 
     /**

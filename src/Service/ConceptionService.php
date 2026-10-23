@@ -138,7 +138,7 @@ readonly class ConceptionService
             throw new ConceptionInvalideException('Cette enveloppe n\'est rattachée à aucun personnage.');
         }
 
-        return $this->personnageDuNumero($participant, (int) $depouillement->getNumero()) ?? throw new ConceptionInvalideException('Le personnage de cette enveloppe est introuvable.');
+        return $this->resolver->personnageDuNumero($participant, (int) $depouillement->getNumero()) ?? throw new ConceptionInvalideException('Le personnage de cette enveloppe est introuvable.');
     }
 
     private function partenaire(Depouillement $depouillement, string $saisie): Personnage
@@ -154,18 +154,7 @@ readonly class ConceptionService
             throw new ConceptionInvalideException('Le partenaire doit être un personnage inscrit à ce GN.');
         }
 
-        return $this->personnageDuNumero($participant, (int) $numero) ?? throw new ConceptionInvalideException(\sprintf('Le personnage n°%s est introuvable.', $numero));
-    }
-
-    private function personnageDuNumero(Participant $participant, int $numero): ?Personnage
-    {
-        foreach ([$participant->getPersonnage(), $participant->getPersonnageSubstitution(), $participant->getPersonnageReleve()] as $personnage) {
-            if ($personnage instanceof Personnage && $personnage->getId() === $numero) {
-                return $personnage;
-            }
-        }
-
-        return null;
+        return $this->resolver->personnageDuNumero($participant, (int) $numero) ?? throw new ConceptionInvalideException(\sprintf('Le personnage n°%s est introuvable.', $numero));
     }
 
     private function anomalieEspece(Personnage $personnage): ?string

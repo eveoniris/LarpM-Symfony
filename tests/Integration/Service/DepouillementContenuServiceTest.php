@@ -80,7 +80,7 @@ class DepouillementContenuServiceTest extends KernelTestCase
         $contenu->fichePersonnage = true;
         $contenu->pincesALinge = 4;
         $contenu->documentsNumerotes = '12, 45';
-        $contenu->recettes = 'Philtre de soin, macérer 3 jours';
+        $contenu->potions = [$this->potion('P99')];
         $contenu->gemmeUtilise = true;
         $contenu->gemmeJointes = true;
         $contenu->gemmePieces = 2;
@@ -102,7 +102,7 @@ class DepouillementContenuServiceTest extends KernelTestCase
         static::assertTrue($relu->fichePersonnage);
         static::assertSame(4, $relu->pincesALinge);
         static::assertSame('12, 45', $relu->documentsNumerotes);
-        static::assertSame('Philtre de soin, macérer 3 jours', $relu->recettes);
+        static::assertCount(1, $relu->potions);
         static::assertSame(2, $relu->gemmePieces);
         static::assertCount(1, $relu->selIngredients);
         static::assertSame('Mandragore', $relu->selIngredients[0]->getLabel());

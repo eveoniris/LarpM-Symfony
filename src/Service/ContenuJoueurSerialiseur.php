@@ -45,7 +45,7 @@ readonly class ContenuJoueurSerialiseur
             ],
             'sorts' => $this->ids($contenu->sorts),
             'prieres' => $this->ids($contenu->prieres),
-            'recettes' => $contenu->recettes,
+            'potions' => $this->ids($contenu->potions),
             'introuvables' => $contenu->introuvables,
             'actions' => [
                 'fruits_legumes' => ['utilise' => $contenu->fruitsUtilise, 'jointes' => $contenu->fruitsJointes],
@@ -84,7 +84,7 @@ readonly class ContenuJoueurSerialiseur
         $contenu->copiesRecettesSorts = (bool) ($pieces['copies_recettes_sorts'] ?? false);
         $contenu->sorts = $this->entites(Sort::class, $donnees['sorts'] ?? []);
         $contenu->prieres = $this->entites(Priere::class, $donnees['prieres'] ?? []);
-        $contenu->recettes = $donnees['recettes'] ?? null;
+        $contenu->potions = $this->entites(Potion::class, $donnees['potions'] ?? []);
         $contenu->introuvables = $donnees['introuvables'] ?? null;
         $contenu->surplus = CompteursEnveloppe::normaliser($donnees['surplus'] ?? []);
 

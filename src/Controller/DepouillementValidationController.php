@@ -36,7 +36,7 @@ final class DepouillementValidationController extends AbstractDepouillementContr
         }
 
         try {
-            $validationService->valider($depouillement, $this->utilisateur());
+            $apprentissages = $validationService->valider($depouillement, $this->utilisateur());
         } catch (ValidationInvalideException $exception) {
             $this->addFlash('error', $exception->getMessage());
 
@@ -44,6 +44,9 @@ final class DepouillementValidationController extends AbstractDepouillementContr
         }
 
         $this->addFlash('success', 'Dépouillement validé. Il ne peut plus être rouvert.');
+        if (!$apprentissages->estVide()) {
+            $this->addFlash([] === $apprentissages->anomalies ? 'info' : 'warning', $apprentissages->resume());
+        }
 
         return $retour;
     }
