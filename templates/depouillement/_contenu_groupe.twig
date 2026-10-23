@@ -8,7 +8,7 @@
 
 {% if formContenuGroupe %}
 	{% set f = formContenuGroupe %}
-	{{ form_start(f) }}
+	{{ form_start(f, {'attr': {'data-lm-unsaved': ''}}) }}
 
 	{{ form_row(f.ficheRetour) }}
 

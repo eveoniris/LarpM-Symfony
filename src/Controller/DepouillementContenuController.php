@@ -51,6 +51,10 @@ final class DepouillementContenuController extends AbstractDepouillementControll
 
         /** @var ContenuJoueur $contenu */
         $contenu = $form->getData();
+        if (ContenuJoueurType::PORTION_CONTENU !== $portion) {
+            // Les décisions sur les actions sont enregistrées : elles ne sont plus pré-sélectionnées d'après les ressources.
+            $contenu->actionsDecidees = true;
+        }
 
         try {
             $contenuService->enregistrerContenuJoueur($depouillement, $contenu, $this->utilisateur());

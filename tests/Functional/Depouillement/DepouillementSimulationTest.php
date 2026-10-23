@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Depouillement;
 
 use App\Entity\Depouillement;
+use App\Enum\DepouillementStatut;
 use App\Enum\DepouillementType;
+use App\Service\DepouillementService;
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\GroupeGnFactory;
+use App\Tests\Factory\ParticipantFactory;
+use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
@@ -120,6 +124,36 @@ class DepouillementSimulationTest extends WebTestCase
         $restants = $em->getRepository(Depouillement::class)->findAll();
         static::assertCount(1, $restants);
         static::assertSame($idAutre, $restants[0]->getId());
+    }
+
+    public function testRecommencerUneSimulationLaRemplacePuisRepartDeZero(): void
+    {
+        $client = static::createClient();
+        $gn = GnFactory::createOne();
+        $moi = UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_BETA_TEST']]);
+        $personnage = PersonnageFactory::createOne();
+        ParticipantFactory::createOne(['gn' => $gn, 'user' => UserFactory::createOne(), 'personnage' => $personnage]);
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $ancien = static::getContainer()
+            ->get(DepouillementService::class)
+            ->creerSimulation($gn, DepouillementType::JOUEUR, (string) $personnage->getId(), $moi);
+        $ancien->setRemarques('Ancienne saisie')->setStatut(DepouillementStatut::A_VALIDER);
+        $em->flush();
+        $idAncien = $ancien->getId();
+        $client->loginUser($moi);
+
+        $crawler = $client->request('GET', '/gn/' . $gn->getId() . '/depouillement/' . $idAncien . '/etape/recapitulatif');
+        static::assertSelectorTextContains('body', 'Recommencer cette simulation');
+        $client->submit($crawler->filter('form[action$="/recommencer"]')->form());
+
+        static::assertResponseRedirects();
+        static::assertStringEndsWith('/etape/identification', (string) $client->getResponse()->headers->get('Location'));
+        $em->clear();
+        static::assertNull($em->find(Depouillement::class, $idAncien));
+        $nouveaux = $em->getRepository(Depouillement::class)->findAll();
+        static::assertCount(1, $nouveaux);
+        static::assertSame(DepouillementStatut::EN_DEPOUILLEMENT, $nouveaux[0]->getStatut());
+        static::assertNull($nouveaux[0]->getRemarques());
     }
 
     public function testSuppressionRefuseSiLeDepouillementEstDUnAutreGn(): void

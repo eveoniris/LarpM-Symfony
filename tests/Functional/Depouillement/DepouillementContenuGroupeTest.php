@@ -85,7 +85,7 @@ class DepouillementContenuGroupeTest extends WebTestCase
             ->setNumero('1')
             ->setParticipant($participant)
             ->setSimulation(true)
-            ->setDonnees(['contenu_joueur' => ['surplus' => ['bois' => 2]]]));
+            ->setDonnees(['contenu_joueur' => ['surplus' => ['bois' => 2, 'soie' => 5], 'statuts' => ['soie' => 'acceptee']]]));
         $em->flush();
         $client->loginUser($moi);
 
@@ -102,8 +102,12 @@ class DepouillementContenuGroupeTest extends WebTestCase
         static::assertSelectorTextContains('body', 'Contenu de l\'enveloppe de groupe enregistré');
         static::assertSelectorTextContains('body', '1 enveloppe(s) de joueur');
         static::assertSelectorTextContains('table.w-auto', 'Bois');
-        // Ligne du reliquat : 5 (groupe) + 2 (surplus du joueur) = 7.
-        static::assertSame('Bois 5 2 7', preg_replace('/\s+/', replacement: ' ', subject: trim($client->getCrawler()->filter('table.w-auto tbody tr')->first()->text())));
+        // Reliquat : bois 5 (groupe) + 2 (surplus du joueur) = 7 ; soie 5 trouvées moins 3 consommées par une action acceptée = 2.
+        $lignes = $client
+            ->getCrawler()
+            ->filter('table.w-auto tbody tr')
+            ->each(static fn ($ligne): string => preg_replace('/\s+/', replacement: ' ', subject: trim($ligne->text())));
+        static::assertSame(['Soie 0 2 2', 'Bois 5 2 7'], $lignes);
 
         $em->clear();
         $relu = $em->find(Depouillement::class, $depouillement->getId());

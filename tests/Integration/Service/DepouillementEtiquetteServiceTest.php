@@ -153,6 +153,51 @@ class DepouillementEtiquetteServiceTest extends KernelTestCase
         static::assertStringContainsString('a la qualité 621 en base, l\'étiquette indique 711', $etiquette->getAnomalies()[0]);
     }
 
+    public function testSansQualiteUnNumeroUniqueDonneLaQualiteEtLaCouleurDeLObjet(): void
+    {
+        $item = $this->objet(5010, 9, '35', 'bleu');
+
+        // Couleur orange par défaut dans le formulaire : l'objet 5010 étant bleu, c'est lui qui fait foi.
+        $etiquette = $this->service->ajouter(
+            $this->depouillement(),
+            $this->saisie(EtiquetteNature::OBJET, EtiquetteCouleur::ORANGE, 5010, null, EtiquetteSituation::AVEC_OBJET),
+            UserFactory::createOne(),
+        );
+
+        static::assertSame('935', $etiquette->getQualite());
+        static::assertSame(EtiquetteCouleur::BLEUE, $etiquette->getCouleur());
+        static::assertSame($item->getId(), $etiquette->getItem()?->getId());
+        static::assertSame([], $etiquette->getAnomalies());
+    }
+
+    public function testSansQualiteUnNumeroAmbiguOuInconnuEstRefuse(): void
+    {
+        $this->objet(5011, 3, '63');
+        $this->objet(5011, 6, '21');
+
+        foreach ([5011, 5012] as $numero) {
+            try {
+                $this->service->ajouter($this->depouillement(), $this->saisie(EtiquetteNature::OBJET, EtiquetteCouleur::ORANGE, $numero, null), UserFactory::createOne());
+                static::fail('La qualité est obligatoire quand le numéro ne désigne pas un seul objet.');
+            } catch (EtiquetteInvalideException $exception) {
+                static::assertStringContainsString('qualité', $exception->getMessage());
+            }
+        }
+    }
+
+    public function testRechercheDObjetsParNomOuNumero(): void
+    {
+        $this->objet(5020, 9, '35', 'bleu');
+        $this->objet(5021, 3, '10');
+
+        $parNom = $this->service->rechercherObjets('Objet 5020');
+        $parNumero = $this->service->rechercherObjets('5021');
+
+        static::assertSame([['numero' => 5020, 'label' => 'Objet 5020', 'couleur' => 'bleue', 'qualite' => '935']], $parNom);
+        static::assertSame(5021, $parNumero[0]['numero']);
+        static::assertSame([], $this->service->rechercherObjets('a'));
+    }
+
     public function testLaQualiteDepartageLesObjetsQuiPartagentUnNumero(): void
     {
         $this->objet(5003, 3, '63');

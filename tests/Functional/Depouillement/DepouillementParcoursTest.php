@@ -170,6 +170,28 @@ class DepouillementParcoursTest extends WebTestCase
         static::assertResponseRedirects($this->url($existant, '/etape/identification'));
         $em = static::getContainer()->get(EntityManagerInterface::class);
         static::assertCount(1, $em->getRepository(Depouillement::class)->findBy([], ['id' => 'ASC']));
+
+        $client->followRedirect();
+        static::assertSelectorTextContains('body', 'vous reprenez le dépouillement existant, rien n\'a été créé ni écrasé');
+    }
+
+    public function testLeContenuEnregistreEstReaffichePourLaReprise(): void
+    {
+        $client = static::createClient();
+        $gn = GnFactory::createOne();
+        $moi = $this->utilisateur('moi');
+        $existant = $this->demarrer($gn, DepouillementType::JOUEUR, $moi);
+        $client->loginUser($moi);
+
+        $crawler = $client->request('GET', $this->url($existant, '/etape/contenu'));
+        $client->submit($crawler->selectButton('Enregistrer le contenu')->form(['contenu_joueur[pincesALinge]' => '4', 'contenu_joueur[surplus][bois]' => '7']));
+
+        // En revenant avec le même numéro, la saisie est préremplie, pas vierge.
+        $this->soumettreDemarrage($client, $gn, DepouillementType::JOUEUR, $existant->getNumero());
+        $crawler = $client->request('GET', $this->url($existant, '/etape/contenu'));
+        $valeurs = $crawler->selectButton('Enregistrer le contenu')->form()->getValues();
+        static::assertSame('4', $valeurs['contenu_joueur[pincesALinge]']);
+        static::assertSame('7', $valeurs['contenu_joueur[surplus][bois]']);
     }
 
     public function testUnAutreDepouilleurEstAvertiPuisPrendLaSuite(): void

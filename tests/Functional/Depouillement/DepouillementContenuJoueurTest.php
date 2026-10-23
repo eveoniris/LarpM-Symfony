@@ -64,11 +64,14 @@ class DepouillementContenuJoueurTest extends WebTestCase
         static::assertSelectorExists('form[name="contenu_joueur"]');
         static::assertSelectorTextContains('body', 'Ressources et pièces trouvées dans l\'enveloppe');
         static::assertSelectorCount(24, 'details input[type=number]');
-        static::assertSelectorTextNotContains('body', 'Action utilisée');
+        static::assertSelectorTextNotContains('body', 'Action validée');
+        static::assertSelectorExists('input[name="contenu_joueur[personnageMort]"]');
 
         $client->request('GET', $this->actions($depouillement));
         static::assertResponseIsSuccessful();
         static::assertSelectorExists('form[name="contenu_joueur"]');
+        static::assertSelectorTextContains('body', 'Action validée : consomme 3 soie');
+        static::assertSelectorNotExists('input[name="contenu_joueur[personnageMort]"]');
         static::assertSelectorTextContains('body', 'Fruits et légumes : prolonger l\'âge maximal');
         static::assertSelectorTextContains('body', 'Ivoire : conserver des potions');
         static::assertSelectorNotExists('details input[type=number]');
@@ -107,9 +110,8 @@ class DepouillementContenuJoueurTest extends WebTestCase
         // L'étape des actions ne touche pas au contenu déjà enregistré.
         $crawler = $client->request('GET', $this->actions($depouillement));
         $form = $crawler->selectButton('Enregistrer les actions')->form();
-        $form['contenu_joueur[fruitsUtilise]']->tick();
-        $form['contenu_joueur[soieUtilise]']->tick();
-        $form['contenu_joueur[soieJointes]']->tick();
+        $form['contenu_joueur[fruitsDecision]']->select('insuffisant');
+        $form['contenu_joueur[soieDecision]']->select('validee');
         $client->submit($form);
 
         static::assertResponseRedirects($this->actions($depouillement));
@@ -128,6 +130,58 @@ class DepouillementContenuJoueurTest extends WebTestCase
         static::assertStringContainsString('[Introuvable] Sort de feu inconnu', (string) $relu->getRemarques());
     }
 
+    public function testLesActionsSontPreselectionneesDApresLesRessourcesTrouvees(): void
+    {
+        $client = static::createClient();
+        $moi = $this->beta();
+        $depouillement = $this->depouillement($moi);
+        $client->loginUser($moi);
+
+        // Contenu : 3 soie, 2 fruits (sur 5), pas de sel.
+        $crawler = $client->request('GET', $this->contenu($depouillement));
+        $form = $crawler->selectButton('Enregistrer le contenu')->form();
+        $form['contenu_joueur[surplus][soie]'] = '3';
+        $form['contenu_joueur[surplus][fruits_legumes]'] = '2';
+        $client->submit($form);
+
+        $crawler = $client->request('GET', $this->actions($depouillement));
+        static::assertSelectorTextContains('body', 'pré-sélectionnés d\'après les ressources trouvées');
+        $valeurs = $crawler->selectButton('Enregistrer les actions')->form()->getValues();
+        static::assertSame('validee', $valeurs['contenu_joueur[soieDecision]']);
+        static::assertSame('insuffisant', $valeurs['contenu_joueur[fruitsDecision]']);
+        static::assertSame('aucune', $valeurs['contenu_joueur[selDecision]']);
+
+        // Une fois enregistrées, les décisions ne sont plus recalculées.
+        $client->submit($crawler->selectButton('Enregistrer les actions')->form(['contenu_joueur[soieDecision]' => 'aucune']));
+        $client->followRedirect();
+        $crawler = $client->request('GET', $this->actions($depouillement));
+        static::assertSelectorTextNotContains('body', 'pré-sélectionnés');
+        static::assertSame('aucune', $crawler->selectButton('Enregistrer les actions')->form()->getValues()['contenu_joueur[soieDecision]']);
+    }
+
+    public function testLeRecapitulatifDonneLeSurplusNetEtSignaleUnDeces(): void
+    {
+        $client = static::createClient();
+        $moi = $this->beta();
+        $depouillement = $this->depouillement($moi);
+        $client->loginUser($moi);
+
+        $crawler = $client->request('GET', $this->contenu($depouillement));
+        $form = $crawler->selectButton('Enregistrer le contenu')->form();
+        $form['contenu_joueur[surplus][soie]'] = '5';
+        $form['contenu_joueur[personnageMort]']->tick();
+        $form['contenu_joueur[circonstancesMort]'] = 'Tué par un ours';
+        $client->submit($form);
+        $crawler = $client->request('GET', $this->actions($depouillement));
+        $client->submit($crawler->selectButton('Enregistrer les actions')->form(['contenu_joueur[soieDecision]' => 'validee']));
+
+        $client->request('GET', str_replace('/etape/contenu', replace: '/etape/recapitulatif', subject: $this->contenu($depouillement)));
+
+        // 5 soie trouvées moins 3 consommées par l'action validée.
+        static::assertSelectorTextContains('body', 'trouvé moins consommé par les actions) : Soie : 2');
+        static::assertSelectorTextContains('body', 'Le personnage est mort pendant cet opus (Tué par un ours)');
+    }
+
     public function testUnNombreDePiecesDOrAuDelaDeTroisEstRefuse(): void
     {
         $client = static::createClient();
@@ -137,8 +191,7 @@ class DepouillementContenuJoueurTest extends WebTestCase
 
         $crawler = $client->request('GET', $this->actions($depouillement));
         $form = $crawler->selectButton('Enregistrer les actions')->form();
-        $form['contenu_joueur[gemmeUtilise]']->tick();
-        $form['contenu_joueur[gemmeJointes]']->tick();
+        $form['contenu_joueur[gemmeDecision]']->select('validee');
         $form['contenu_joueur[gemmePieces]'] = '9';
         $client->submit($form);
         $client->followRedirect();
@@ -158,8 +211,7 @@ class DepouillementContenuJoueurTest extends WebTestCase
 
         $crawler = $client->request('GET', $this->actions($depouillement));
         $form = $crawler->selectButton('Enregistrer les actions')->form();
-        $form['contenu_joueur[soieUtilise]']->tick();
-        $form['contenu_joueur[soieJointes]']->tick();
+        $form['contenu_joueur[soieDecision]']->select('validee');
         $client->submit($form);
 
         $em = static::getContainer()->get(EntityManagerInterface::class);
@@ -185,9 +237,8 @@ class DepouillementContenuJoueurTest extends WebTestCase
         $client->submit($form);
         $crawler = $client->request('GET', $this->actions($depouillement));
         $form = $crawler->selectButton('Enregistrer les actions')->form();
-        $form['contenu_joueur[soieUtilise]']->tick();
-        $form['contenu_joueur[soieJointes]']->tick();
-        $form['contenu_joueur[fruitsUtilise]']->tick();
+        $form['contenu_joueur[soieDecision]']->select('validee');
+        $form['contenu_joueur[fruitsDecision]']->select('insuffisant');
         $client->submit($form);
 
         $client->request('GET', str_replace('/etape/contenu', replace: '/etape/recapitulatif', subject: $this->contenu($depouillement)));
@@ -195,7 +246,7 @@ class DepouillementContenuJoueurTest extends WebTestCase
         static::assertSelectorTextContains('body', 'Résumé à relire');
         static::assertSelectorTextContains('body', 'acceptées : Soie');
         static::assertSelectorTextContains('body', 'refusées : Fruits et légumes');
-        static::assertSelectorTextContains('body', 'Surplus à reverser au groupe : Bois : 4');
+        static::assertSelectorTextContains('body', 'Surplus à reverser au groupe (trouvé moins consommé par les actions) : Bois : 4');
         static::assertSelectorTextContains('body', 'Photos : 0');
         static::assertSelectorNotExists('form[name="contenu_joueur"]');
     }

@@ -40,6 +40,7 @@ readonly class DepouillementFinOpusService
     ) {
     }
 
+    // @mago-expect lint:halstead
     public function appliquer(Depouillement $depouillement): ResultatApprentissages
     {
         $resultat = new ResultatApprentissages('Actions de fin d\'Opus', 'Aucune action de fin d\'Opus à appliquer.');
@@ -49,19 +50,23 @@ readonly class DepouillementFinOpusService
 
         $contenu = $this->contenuService->lireContenuJoueur($depouillement);
         $acceptees = array_filter($this->contenuService->evaluerActions($contenu), static fn (ActionFinOpusResultat $action): bool => ActionStatut::ACCEPTEE === $action->statut);
-        if ([] === $acceptees) {
+        if ([] === $acceptees && !$contenu->personnageMort) {
             return $resultat;
         }
 
         $participant = $depouillement->getParticipant();
         $personnage = null === $participant ? null : $this->resolver->personnageDuNumero($participant, (int) $depouillement->getNumero());
         if (null === $personnage) {
-            $resultat->anomalies[] = 'Personnage de l\'enveloppe introuvable : aucune action de fin d\'Opus appliquée.';
+            $resultat->anomalies[] = 'Personnage de l\'enveloppe introuvable : rien n\'a été appliqué (actions de fin d\'Opus, décès).';
 
             return $resultat;
         }
 
         $resultat->applique = !$depouillement->isSimulation();
+        if ($contenu->personnageMort) {
+            $this->deces($depouillement, $personnage, $contenu->circonstancesMort, $resultat);
+        }
+
         foreach (array_keys($acceptees) as $action) {
             match ($action) {
                 ActionFinOpus::FRUITS_LEGUMES->value => $this->fruits($depouillement, $personnage, $resultat),
@@ -74,6 +79,36 @@ readonly class DepouillementFinOpusService
         }
 
         return $resultat;
+    }
+
+    /**
+     * Le personnage est mort pendant cet opus : il est marqué mort sur sa fiche et l'événement entre dans sa chronologie. Un personnage
+     * déjà mort est ignoré. Rien n'est reporté dans l'enveloppe du GN suivant pour un mort (voir DepouillementImportService).
+     */
+    private function deces(Depouillement $depouillement, Personnage $personnage, ?string $circonstances, ResultatApprentissages $resultat): void
+    {
+        if (!$personnage->getVivant()) {
+            $resultat->ignores[] = 'décès (le personnage est déjà mort)';
+
+            return;
+        }
+
+        $circonstances = null === $circonstances ? '' : trim($circonstances);
+        $resultat->ajoutes[] = 'décès du personnage' . ('' === $circonstances ? '' : ' (' . $circonstances . ')');
+        if (!$resultat->applique) {
+            return;
+        }
+
+        $personnage->setVivant(false);
+        $annee = $depouillement->getGn()->getDateJeu();
+        if (null !== $annee) {
+            $this->entityManager->persist(
+                (new PersonnageChronologie())
+                    ->setAnnee($annee)
+                    ->setEvenement('' === $circonstances ? 'Mort' : 'Mort : ' . $circonstances)
+                    ->setPersonnage($personnage),
+            );
+        }
     }
 
     private function fruits(Depouillement $depouillement, Personnage $personnage, ResultatApprentissages $resultat): void

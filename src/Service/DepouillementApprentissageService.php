@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Competence;
 use App\Entity\Depouillement;
+use App\Entity\Participant;
 use App\Entity\Personnage;
+use App\Entity\PersonnageApprentissage;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Sort;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\DepouillementType;
+use App\Exception\EnveloppeIntrouvableException;
+use App\Repository\PersonnageApprentissageRepository;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Applique sur la fiche du joueur les sorts, prières et potions appris en jeu et saisis dans son enveloppe, à la validation.
@@ -21,11 +28,15 @@ use App\Enum\DepouillementType;
  */
 // @mago-expect lint:cyclomatic-complexity
 // @mago-expect lint:kan-defect
+// @mago-expect lint:too-many-methods
 readonly class DepouillementApprentissageService
 {
     public function __construct(
         private DepouillementContenuService $contenuService,
         private DepouillementEnveloppeResolver $resolver,
+        private EntityManagerInterface $entityManager,
+        private PersonnageService $personnageService,
+        private PersonnageApprentissageRepository $apprentissageRepository,
     ) {
     }
 
@@ -37,7 +48,7 @@ readonly class DepouillementApprentissageService
         }
 
         $contenu = $this->contenuService->lireContenuJoueur($depouillement);
-        if ([] === $contenu->sorts && [] === $contenu->prieres && [] === $contenu->potions) {
+        if ([] === $contenu->sorts && [] === $contenu->prieres && [] === $contenu->potions && null === $contenu->competenceApprise) {
             return $resultat;
         }
 
@@ -62,7 +73,75 @@ readonly class DepouillementApprentissageService
             $this->potion($personnage, $potion, $resultat);
         }
 
+        if (null !== $contenu->competenceApprise) {
+            $this->competence($depouillement, $personnage, $contenu->competenceApprise, $contenu->enseignantNumero, $resultat);
+        }
+
         return $resultat;
+    }
+
+    /**
+     * Apprentissage d'une compétence auprès d'un enseignant (même règles que la saisie d'un orga : enseignant inscrit à ce GN,
+     * niveau expert au moins, compétence accessible, un apprentissage au plus entre deux GN). Un apprentissage qui ne respecte
+     * pas ces règles n'est pas enregistré et est signalé. Il ne donne pas la compétence : il réduit son coût à l'achat.
+     */
+    private function competence(Depouillement $depouillement, Personnage $personnage, Competence $competence, ?int $numeroEnseignant, ResultatApprentissages $resultat): void
+    {
+        $libelle = 'compétence ' . $competence->getLabel();
+        $enseignant = $this->enseignant($depouillement, $numeroEnseignant);
+        $refus = match (true) {
+            null === $enseignant => \sprintf('l\'enseignant n°%s est introuvable parmi les personnages inscrits à ce GN', $numeroEnseignant ?? '?'),
+            $enseignant->getId() === $personnage->getId() => 'un personnage ne peut pas s\'enseigner à lui-même',
+            !$this->personnageService->canTeachCompetence($enseignant, $competence) => \sprintf(
+                '%s doit connaître cette compétence au moins au niveau expert pour l\'enseigner',
+                $enseignant->getNom(),
+            ),
+            !$this->personnageService->getApprentissageCompetences($personnage)->contains($competence) => \sprintf(
+                'elle ne fait pas partie des compétences actuellement accessibles pour %s',
+                $personnage->getNom(),
+            ),
+            default => null,
+        };
+        if (null !== $refus || null === $enseignant) {
+            $resultat->anomalies[] = \sprintf('Apprentissage de la %s non enregistré : %s.', $libelle, $refus);
+
+            return;
+        }
+
+        $annee = $depouillement->getGn()->getDateJeu();
+        if (null !== $annee && $this->apprentissageRepository->hasApprentissage($personnage, $annee, $annee + 1)) {
+            $resultat->ignores[] = $libelle . ' (déjà un apprentissage enregistré pour ce GN)';
+
+            return;
+        }
+
+        $resultat->ajoutes[] = \sprintf('%s (enseignant : %s)', $libelle, $enseignant->getNom());
+        if ($resultat->applique) {
+            $this->entityManager->persist(
+                (new PersonnageApprentissage())
+                    ->setPersonnage($personnage)
+                    ->setEnseignant($enseignant)
+                    ->setCompetence($competence)
+                    ->setCreatedAt(new DateTime())
+                    ->setDateEnseignement($annee),
+            );
+        }
+    }
+
+    /** L'enseignant est un personnage inscrit à ce GN, retrouvé par son numéro. */
+    private function enseignant(Depouillement $depouillement, ?int $numero): ?Personnage
+    {
+        if (null === $numero || $numero < 1) {
+            return null;
+        }
+
+        try {
+            $participant = $this->resolver->resoudre($depouillement->getGn(), DepouillementType::JOUEUR, (string) $numero);
+        } catch (EnveloppeIntrouvableException) {
+            return null;
+        }
+
+        return $participant instanceof Participant ? $this->resolver->personnageDuNumero($participant, $numero) : null;
     }
 
     private function personnage(Depouillement $depouillement): ?Personnage

@@ -22,6 +22,7 @@ use TypeError;
  * qualité (droite), et consigne les anomalies à signaler à un orga expert.
  */
 // @mago-expect lint:cyclomatic-complexity
+// @mago-expect lint:too-many-methods
 readonly class DepouillementEtiquetteService
 {
     public const int QUANTITE_MAX = 999;
@@ -49,6 +50,7 @@ readonly class DepouillementEtiquetteService
             $saisie->qualite = null;
         }
 
+        $this->completerDepuisLObjet($saisie);
         $qualite = null === $saisie->qualite || '' === trim($saisie->qualite) ? null : trim($saisie->qualite);
         $this->verifierSaisie($saisie, $qualite);
 
@@ -92,6 +94,60 @@ readonly class DepouillementEtiquetteService
     }
 
     /**
+     * Objets connus dont le numéro ou le nom correspond à la recherche, pour aider à lire une étiquette dont on ne connaît que le nom.
+     *
+     * @return list<array{numero: int, label: string, couleur: string, qualite: string}>
+     */
+    public function rechercherObjets(string $recherche, int $limite = 15): array
+    {
+        $recherche = trim($recherche);
+        if (mb_strlen($recherche) < 2 && !ctype_digit($recherche)) {
+            return [];
+        }
+
+        $qb = $this->entityManager->getRepository(Item::class)->createQueryBuilder('i');
+        $qb->where('i.label LIKE :motif')->setParameter('motif', '%' . addcslashes($recherche, characters: '%_') . '%');
+        if (ctype_digit($recherche)) {
+            $qb->orWhere('i.numero = :numero')->setParameter('numero', (int) $recherche);
+        }
+
+        /** @var list<Item> $objets */
+        $objets = $qb->orderBy('i.numero', 'ASC')->setMaxResults($limite)->getQuery()->getResult();
+
+        return array_map(fn (Item $objet): array => [
+            'numero' => $objet->getNumero(),
+            'label' => $objet->getLabel(),
+            'couleur' => 'bleu' === strtolower($objet->getCouleur()) ? EtiquetteCouleur::BLEUE->value : EtiquetteCouleur::ORANGE->value,
+            'qualite' => $this->qualident($objet),
+        ], $objets);
+    }
+
+    /**
+     * Un numéro d'objet qui n'en désigne qu'un seul rend la qualité et la couleur inutiles à saisir : elles sont reprises de l'objet
+     * (le numéro est unique, donc la couleur de l'étiquette est celle de l'objet). Sans qualité saisie seulement : une qualité
+     * saisie reste vérifiée contre l'objet comme avant.
+     */
+    private function completerDepuisLObjet(EtiquetteSaisie $saisie): void
+    {
+        if (EtiquetteNature::OBJET !== $saisie->nature || null === $saisie->numero || $saisie->numero < 1) {
+            return;
+        }
+
+        if (null !== $saisie->qualite && '' !== trim($saisie->qualite)) {
+            return;
+        }
+
+        /** @var list<Item> $objets */
+        $objets = $this->entityManager->getRepository(Item::class)->findBy(['numero' => $saisie->numero], ['id' => 'ASC']);
+        if (1 !== \count($objets)) {
+            return;
+        }
+
+        $saisie->qualite = $this->qualident($objets[0]);
+        $saisie->couleur = 'bleu' === strtolower($objets[0]->getCouleur()) ? EtiquetteCouleur::BLEUE : EtiquetteCouleur::ORANGE;
+    }
+
+    /**
      * Étiquette d'objet : numéro et qualité obligatoires. Étiquette d'arme : la qualité peut manquer pour un lot générique.
      */
     private function verifierSaisie(EtiquetteSaisie $saisie, ?string $qualite): void
@@ -109,7 +165,9 @@ readonly class DepouillementEtiquetteService
         }
 
         if (null === $qualite && (EtiquetteNature::OBJET === $saisie->nature || EtiquetteCouleur::BLEUE === $saisie->couleur)) {
-            throw new EtiquetteInvalideException('La qualité (trois chiffres, en haut à droite de l\'étiquette) est obligatoire.');
+            throw new EtiquetteInvalideException(
+                'La qualité (trois chiffres, en haut à droite de l\'étiquette) est obligatoire, sauf quand le numéro ne désigne qu\'un seul objet connu : plusieurs objets portent ce numéro ou il est inconnu.',
+            );
         }
     }
 

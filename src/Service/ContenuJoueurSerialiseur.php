@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Competence;
 use App\Entity\Ingredient;
 use App\Entity\Potion;
 use App\Entity\Priere;
@@ -46,7 +47,12 @@ readonly class ContenuJoueurSerialiseur
             'sorts' => $this->ids($contenu->sorts),
             'prieres' => $this->ids($contenu->prieres),
             'potions' => $this->ids($contenu->potions),
+            'competence_apprise' => $contenu->competenceApprise?->getId(),
+            'enseignant_numero' => $contenu->enseignantNumero,
             'introuvables' => $contenu->introuvables,
+            'actions_decidees' => $contenu->actionsDecidees,
+            'personnage_mort' => $contenu->personnageMort,
+            'circonstances_mort' => $contenu->circonstancesMort,
             'actions' => [
                 'fruits_legumes' => ['utilise' => $contenu->fruitsUtilise, 'jointes' => $contenu->fruitsJointes],
                 'soie' => ['utilise' => $contenu->soieUtilise, 'jointes' => $contenu->soieJointes],
@@ -85,7 +91,13 @@ readonly class ContenuJoueurSerialiseur
         $contenu->sorts = $this->entites(Sort::class, $donnees['sorts'] ?? []);
         $contenu->prieres = $this->entites(Priere::class, $donnees['prieres'] ?? []);
         $contenu->potions = $this->entites(Potion::class, $donnees['potions'] ?? []);
+        $competence = null === ($donnees['competence_apprise'] ?? null) ? [] : $this->entites(Competence::class, [$donnees['competence_apprise']]);
+        $contenu->competenceApprise = $competence[0] ?? null;
+        $contenu->enseignantNumero = null === ($donnees['enseignant_numero'] ?? null) ? null : (int) $donnees['enseignant_numero'];
         $contenu->introuvables = $donnees['introuvables'] ?? null;
+        $contenu->actionsDecidees = (bool) ($donnees['actions_decidees'] ?? false);
+        $contenu->personnageMort = (bool) ($donnees['personnage_mort'] ?? false);
+        $contenu->circonstancesMort = $donnees['circonstances_mort'] ?? null;
         $contenu->surplus = CompteursEnveloppe::normaliser($donnees['surplus'] ?? []);
 
         $contenu->fruitsUtilise = (bool) ($actions['fruits_legumes']['utilise'] ?? false);

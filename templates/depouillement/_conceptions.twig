@@ -30,7 +30,7 @@
 {% endif %}
 
 {% if modifiable %}
-	<form method="post" action="{{ path('depouillement.conception.add', {'gn': gn.id, 'depouillement': depouillement.id}) }}" class="row g-2">
+	<form method="post" action="{{ path('depouillement.conception.add', {'gn': gn.id, 'depouillement': depouillement.id}) }}" class="row g-2" data-lm-unsaved>
 		<input type="hidden" name="_token" value="{{ csrf_token('depouillement_conception_add_' ~ depouillement.id) }}">
 		<div class="col-12 col-md-4">
 			<label for="conception-partenaire" class="form-label">N° de personnage du partenaire</label>

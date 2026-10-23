@@ -12,6 +12,7 @@ use App\Exception\EtiquetteInvalideException;
 use App\Form\Depouillement\DepouillementEtiquetteType;
 use App\Service\DepouillementEtiquetteService;
 use App\Service\EtiquetteSaisie;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,6 +26,15 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_BETA_TEST', message: 'Fonctionnalité en cours de test.')]
 final class DepouillementEtiquetteController extends AbstractDepouillementController
 {
+    /**
+     * Recherche d'un objet connu par son nom ou son numéro, pour remplir le numéro et la qualité d'une étiquette.
+     */
+    #[Route('/gn/{gn}/depouillement/objets/recherche', name: 'depouillement.etiquette.recherche', requirements: ['gn' => '\d+'], methods: ['GET'])]
+    public function rechercheAction(Request $request, Gn $gn, DepouillementEtiquetteService $etiquetteService): JsonResponse
+    {
+        return new JsonResponse($etiquetteService->rechercherObjets($request->query->getString('q')));
+    }
+
     #[Route('/gn/{gn}/depouillement/{depouillement}/etiquettes', name: 'depouillement.etiquette.add', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
     public function addAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementEtiquetteService $etiquetteService): Response
     {

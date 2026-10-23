@@ -86,6 +86,22 @@ class DepouillementEtiquetteTest extends WebTestCase
         static::assertResponseIsSuccessful();
         static::assertSelectorExists('form[name="depouillement_etiquette"]');
         static::assertSelectorTextContains('body', 'Aucune étiquette saisie');
+        static::assertSelectorTextContains('body', 'facultatif');
+        static::assertSelectorExists('input[data-lm-objet-recherche]');
+        static::assertSelectorExists('form[data-lm-unsaved]');
+    }
+
+    public function testLaRechercheDObjetsRepondEnJsonEtIgnoreLesRecherchesTropCourtes(): void
+    {
+        $client = static::createClient();
+        $moi = $this->beta();
+        $depouillement = $this->depouillement($moi);
+        $client->loginUser($moi);
+
+        $client->request('GET', '/gn/' . $depouillement->getGn()->getId() . '/depouillement/objets/recherche?q=a');
+
+        static::assertResponseIsSuccessful();
+        static::assertSame([], json_decode((string) $client->getResponse()->getContent(), associative: true));
     }
 
     public function testUnLotDEtiquettesDArmesGeneriquesEstCompteAuStock(): void

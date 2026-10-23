@@ -81,7 +81,10 @@ readonly class DepouillementGroupeService
         $collecte = $this->lireContenuGroupe($enveloppeGroupe)->compteurs;
         $surplusJoueurs = array_fill_keys(array_keys(CompteursEnveloppe::CHAMPS), value: 0);
         foreach ($joueurs as $joueur) {
-            foreach (CompteursEnveloppe::normaliser($joueur->getDonnees()['contenu_joueur']['surplus'] ?? []) as $cle => $quantite) {
+            // Ce que les actions acceptées du joueur consomment ne revient pas au groupe : trouvé moins consommé.
+            $contenuJoueur = $joueur->getDonnees()['contenu_joueur'] ?? [];
+            $net = ActionsFinOpusRegles::surplusNet(CompteursEnveloppe::normaliser($contenuJoueur['surplus'] ?? []), $contenuJoueur['statuts'] ?? []);
+            foreach ($net as $cle => $quantite) {
                 $surplusJoueurs[$cle] += $quantite;
             }
         }

@@ -30,6 +30,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  * Actions de fin d'Opus acceptées appliquées à la fiche : fruits (chronologie), soie (renommée), gemme (richesse), sel, fourrure.
  */
 #[Group('integration')]
+// @mago-expect lint:too-many-methods
 class DepouillementFinOpusServiceTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
@@ -169,6 +170,40 @@ class DepouillementFinOpusServiceTest extends KernelTestCase
 
         static::assertTrue($resultat->estVide());
         static::assertCount(0, $personnage->getRenommeHistories());
+    }
+
+    public function testUnDecesDeclareMarqueLePersonnageMortEtLInscritALaChronologie(): void
+    {
+        $contenu = new ContenuJoueur();
+        $contenu->personnageMort = true;
+        $contenu->circonstancesMort = 'Tué par un ours';
+        [$depouillement, $personnage] = $this->enveloppe($contenu);
+
+        $resultat = $this->service->appliquer($depouillement);
+        $this->em->flush();
+        $this->em->clear();
+
+        static::assertTrue($resultat->applique);
+        static::assertContains('décès du personnage (Tué par un ours)', $resultat->ajoutes);
+        static::assertFalse($this->em->find(Personnage::class, $personnage->getId())->getVivant());
+        $mort = $this->em->getRepository(PersonnageChronologie::class)->findOneBy(['personnage' => $personnage->getId(), 'evenement' => 'Mort : Tué par un ours']);
+        static::assertSame(1300, $mort?->getAnnee());
+    }
+
+    public function testUnPersonnageDejaMortOuUneSimulationNeChangeRien(): void
+    {
+        $contenu = new ContenuJoueur();
+        $contenu->personnageMort = true;
+        [$simulation, $vivant] = $this->enveloppe($contenu, true);
+
+        $resultat = $this->service->appliquer($simulation);
+        static::assertFalse($resultat->applique);
+        static::assertTrue($vivant->getVivant());
+
+        [$reel, $mort] = $this->enveloppe($contenu);
+        $mort->setVivant(false);
+        $resultat = $this->service->appliquer($reel);
+        static::assertContains('décès (le personnage est déjà mort)', $resultat->ignores);
     }
 
     public function testUneSimulationNEcritRien(): void

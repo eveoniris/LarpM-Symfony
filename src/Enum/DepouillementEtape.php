@@ -28,7 +28,7 @@ enum DepouillementEtape: string
         return match ($this) {
             self::IDENTIFICATION => 'Enveloppe',
             self::PHOTOS => 'Photos',
-            self::ETIQUETTES => 'Étiquettes',
+            self::ETIQUETTES => 'Étiquettes (si présentes)',
             self::CONTENU => 'Contenu',
             self::ACTIONS => 'Actions de fin d\'Opus',
             self::CONCEPTIONS => 'Conceptions',
