@@ -78,22 +78,26 @@ class ContenuJoueurType extends AbstractType
 
     private function ajouterPiecesJointes(FormBuilderInterface $builder): void
     {
-        foreach ([
-            'fichePersonnage' => 'Fiche de personnage',
-            'ficheRetour' => 'Fiche de retour joueur remplie',
-            'ficheSort' => 'Fiche de sort',
-            'fichePriere' => 'Fiche de prière',
-            'carteAlchimiste' => 'Carte alchimiste ou herboriste',
-            'copiesRecettesSorts' => 'Copies des recettes et des sorts appris',
-        ] as $nom => $libelle) {
+        foreach (
+            [
+                'fichePersonnage' => 'Fiche de personnage',
+                'ficheRetour' => 'Fiche de retour joueur remplie',
+                'ficheSort' => 'Fiche de sort',
+                'fichePriere' => 'Fiche de prière',
+                'carteAlchimiste' => 'Carte alchimiste ou herboriste',
+                'copiesRecettesSorts' => 'Copies des recettes et des sorts appris',
+            ] as $nom => $libelle
+        ) {
             $builder->add($nom, CheckboxType::class, ['label' => $libelle, 'required' => false]);
         }
 
-        foreach ([
-            'corruptionOuvertes' => 'Enveloppes de corruption ouvertes',
-            'corruptionNonOuvertes' => 'Enveloppes de corruption non ouvertes',
-            'pincesALinge' => 'Pinces à linge',
-        ] as $nom => $libelle) {
+        foreach (
+            [
+                'corruptionOuvertes' => 'Enveloppes de corruption ouvertes',
+                'corruptionNonOuvertes' => 'Enveloppes de corruption non ouvertes',
+                'pincesALinge' => 'Pinces à linge',
+            ] as $nom => $libelle
+        ) {
             $builder->add($nom, IntegerType::class, [
                 'label' => $libelle,
                 'required' => false,
@@ -151,14 +155,16 @@ class ContenuJoueurType extends AbstractType
     private function ajouterActions(FormBuilderInterface $builder): void
     {
         // Un seul choix par action, pré-sélectionné d'après les ressources trouvées : aucune, validée ou souhaitée sans assez de ressources.
-        foreach ([
-            'fruits' => ActionFinOpus::FRUITS_LEGUMES,
-            'soie' => ActionFinOpus::SOIE,
-            'gemme' => ActionFinOpus::GEMME,
-            'sel' => ActionFinOpus::SEL,
-            'fourrure' => ActionFinOpus::FOURRURE,
-            'ivoire' => ActionFinOpus::IVOIRE,
-        ] as $champ => $action) {
+        foreach (
+            [
+                'fruits' => ActionFinOpus::FRUITS_LEGUMES,
+                'soie' => ActionFinOpus::SOIE,
+                'gemme' => ActionFinOpus::GEMME,
+                'sel' => ActionFinOpus::SEL,
+                'fourrure' => ActionFinOpus::FOURRURE,
+                'ivoire' => ActionFinOpus::IVOIRE,
+            ] as $champ => $action
+        ) {
             $builder->add($champ . 'Decision', ChoiceType::class, [
                 'label' => false,
                 'expanded' => true,

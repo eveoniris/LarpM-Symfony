@@ -150,10 +150,12 @@ class DepouillementValidationServiceTest extends KernelTestCase
         $validateur = UserFactory::createOne();
         $this->service->valider($depouillement, $validateur);
 
-        foreach ([
-            fn () => $this->service->renvoyer($depouillement, $validateur, 'Je me suis trompé'),
-            fn () => $this->service->valider($depouillement, $validateur),
-        ] as $action) {
+        foreach (
+            [
+                fn () => $this->service->renvoyer($depouillement, $validateur, 'Je me suis trompé'),
+                fn () => $this->service->valider($depouillement, $validateur),
+            ] as $action
+        ) {
             try {
                 $action();
                 static::fail('Une exception était attendue.');
