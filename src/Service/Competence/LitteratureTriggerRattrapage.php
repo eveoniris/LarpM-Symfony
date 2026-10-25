@@ -132,12 +132,12 @@ class LitteratureTriggerRattrapage
             $levelIndex = (int) $row['idx'];
             [$sortTag, $potionTag] = LitteratureService::CHOICE_TAGS[$levelIndex];
 
-            foreach (
-                [
-                    [$sortTag,   LogActionType::ADD_SORT],
-                    [$potionTag, LogActionType::ADD_POTION],
-                ]  as [$tag, $logType]
-            ) {
+            $args = [
+                [$sortTag,   LogActionType::ADD_SORT],
+                [$potionTag, LogActionType::ADD_POTION],
+            ];
+
+            foreach ($args as [$tag, $logType]) {
                 if ($personnage->getAllPersonnageTriggers()->exists(static fn (int $key, PersonnageTrigger $trigger): bool => $trigger->getTag() === $tag)) {
                     ++$skipped['trigger'];
 
