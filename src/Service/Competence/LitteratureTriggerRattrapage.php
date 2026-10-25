@@ -79,12 +79,12 @@ class LitteratureTriggerRattrapage
                     continue;
                 }
 
-                foreach (
-                    [
-                        [$sortTag,   LogActionType::ADD_SORT],
-                        [$potionTag, LogActionType::ADD_POTION],
-                    ] as [$tag, $logType]
-                ) {
+                $tags = [
+                    [$sortTag,   LogActionType::ADD_SORT],
+                    [$potionTag, LogActionType::ADD_POTION],
+                ];
+
+                foreach ($tags as [$tag, $logType]) {
                     if ($this->hasTriggerForGn($personnage, $tag, $gn)) {
                         ++$skipped['trigger'];
 

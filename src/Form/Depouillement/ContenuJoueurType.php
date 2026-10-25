@@ -155,7 +155,7 @@ class ContenuJoueurType extends AbstractType
     private function ajouterActions(FormBuilderInterface $builder): void
     {
         // Un seul choix par action, pré-sélectionné d'après les ressources trouvées : aucune, validée ou souhaitée sans assez de ressources.
-        $actions =  [
+        $actions = [
            'fruits' => ActionFinOpus::FRUITS_LEGUMES,
            'soie' => ActionFinOpus::SOIE,
            'gemme' => ActionFinOpus::GEMME,
