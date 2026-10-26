@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Gn;
 use App\Entity\Technologie;
 use App\Entity\TechnologiesRessources;
 use App\Enum\Role;
@@ -152,8 +153,11 @@ class TechnologieController extends AbstractController
             return false;
         });
 
+        $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::REGLE->value) || $this->isGranted(Role::SCENARISTE->value);
+
         return $this->render('technologie\detail.twig', [
             'technologie' => $technologie,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -199,6 +203,10 @@ class TechnologieController extends AbstractController
      * Liste des personnages ayant cette technologie.
      */
     #[Route('/{technologie}/personnages', name: 'personnages', requirements: ['technologie' => Requirement::DIGITS])]
+    #[Route('/{technologie}/personnages/gn/{gn}', name: 'personnages.gn', requirements: [
+        'technologie' => Requirement::DIGITS,
+        'gn' => Requirement::DIGITS,
+    ])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function personnagesAction(
         Request $request,
@@ -206,14 +214,18 @@ class TechnologieController extends AbstractController
         Technologie $technologie,
         PersonnageService $personnageService,
         TechnologieRepository $technologieRepository,
+        #[MapEntity]
+        ?Gn $gn = null,
     ): Response {
-        $routeName = 'technologie.personnages';
-        $routeParams = ['technologie' => $technologie->getId()];
+        $routeName = $gn ? 'technologie.personnages.gn' : 'technologie.personnages';
+        $routeParams = ['technologie' => $technologie->getId()] + ($gn ? ['gn' => $gn->getId()] : []);
         $twigFilePath = 'technologie/personnages.twig';
         $columnKeys = ['colId', 'colStatut', 'colNom', 'colClasse', 'colGroupe', 'colUser'];
         $personnages = $technologie->getPersonnages();
         $additionalViewParams = [
             'technologie' => $technologie,
+            'gn' => $gn,
+            'gns' => $this->entityManager->getRepository(Gn::class)->findBy([], ['date_debut' => 'DESC']),
         ];
 
         $viewParams = $personnageService->getSearchViewParameters(
@@ -223,7 +235,7 @@ class TechnologieController extends AbstractController
             $columnKeys,
             $additionalViewParams,
             $personnages,
-            $technologieRepository->getPersonnages($technologie),
+            $technologieRepository->getPersonnages($technologie, $gn),
         );
 
         return $this->render($twigFilePath, $viewParams);

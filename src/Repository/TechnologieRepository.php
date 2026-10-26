@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Gn;
 use App\Entity\Personnage;
 use App\Entity\Technologie;
 use App\Enum\CompetenceFamilyType;
@@ -108,11 +109,17 @@ class TechnologieRepository extends BaseRepository
         ];
     }
 
-    public function getPersonnages(Technologie $technologie): QueryBuilder
+    public function getPersonnages(Technologie $technologie, ?Gn $gn = null): QueryBuilder
     {
         /** @var PersonnageRepository $personnageRepository */
         $personnageRepository = $this->entityManager->getRepository(Personnage::class);
 
-        return $personnageRepository->createQueryBuilder('perso')->innerJoin('perso.technologies', 't')->where('t.id = :tid')->setParameter('tid', $technologie->getId());
+        $q = $personnageRepository->createQueryBuilder('perso')->innerJoin('perso.technologies', 't')->where('t.id = :tid')->setParameter('tid', $technologie->getId());
+
+        if ($gn) {
+            $q->innerJoin('perso.participants', 'pt')->andWhere('pt.gn = :gnid')->setParameter('gnid', $gn->getId());
+        }
+
+        return $q;
     }
 }
