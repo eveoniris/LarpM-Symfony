@@ -426,16 +426,17 @@ class GroupeGnController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // si le participant est le chef de groupe
-            if ($groupeGn->getResponsable() == $participant) {
-                $groupeGn->setResponsableNull();
-            }
+            // si le participant est le chef de groupe, il perd ce droit
+            $groupeGn->retirerResponsableSi($participant);
 
             $participant->setGroupeGnNull();
             $entityManager->persist($participant);
             $entityManager->flush();
 
             $this->addFlash('success', 'Le joueur a été retiré de cette session.');
+            if (!$groupeGn->hasResponsable()) {
+                $this->addFlash('warning', 'Attention, il n\'y a plus de responsable administratif pour ce groupe, merci d\'en nommer un.');
+            }
 
             return $this->redirectToRoute('groupeGn.list', ['groupe' => $groupeGn->getGroupe()->getId()]);
         }

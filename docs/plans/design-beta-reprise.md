@@ -1,6 +1,6 @@
 # Interface bêta et guide de style : note de reprise
 
-Document de passation pour poursuivre le chantier dans une nouvelle conversation. État au guide v0.27.
+Document de passation pour poursuivre le chantier dans une nouvelle conversation. État au guide v0.30 (mis à jour le 2026-10-26 : la bêta, y compris compétences/classes, cadres de rôle et listes, est dans `main` et `prod`).
 
 ## Objectif
 
@@ -97,3 +97,6 @@ BASE_URL=http://localhost TEST_USER=test@test.com TEST_PASSWORD=azerty npx playw
 - Confirmer le rendu mobile sur un appareil réel (les contrôles à 375 px ont été faits sous Chromium en émulation).
 - Découper `lm-design.css` (environ 750 lignes) par domaine, partiel Twig commun pour les en-têtes de carte à icône de rôle.
 - Mise en production sur demande : push de `main`, fusion dans `prod`, puis migration doctrine (aucune nouvelle migration dans ce chantier), `importmap:install`, `asset-map:compile`, `cache:clear --env=prod`.
+- **Boutons contour (outline)** : ceux de la branche dépouillement (boutons contour et pleins au style lm-design, fond de verre) sont à reporter dans le guide `/design`.
+- **Règle pour les ajouts futurs** : tout nouvel écran bêta se base sur le modèle du guide `/design` (composants `lm-*`, couleurs par rôle, verre dépoli, 375 px) et le guide est mis à jour en même temps.
+- **Rôle `ROLE_BETA_TEST`** : voir `role-beta-test.md` (en place, à fusionner ici si l'on veut un seul document).

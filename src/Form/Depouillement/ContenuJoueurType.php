@@ -156,12 +156,12 @@ class ContenuJoueurType extends AbstractType
     {
         // Un seul choix par action, pré-sélectionné d'après les ressources trouvées : aucune, validée ou souhaitée sans assez de ressources.
         $actions = [
-           'fruits' => ActionFinOpus::FRUITS_LEGUMES,
-           'soie' => ActionFinOpus::SOIE,
-           'gemme' => ActionFinOpus::GEMME,
-           'sel' => ActionFinOpus::SEL,
-           'fourrure' => ActionFinOpus::FOURRURE,
-           'ivoire' => ActionFinOpus::IVOIRE,
+            'fruits' => ActionFinOpus::FRUITS_LEGUMES,
+            'soie' => ActionFinOpus::SOIE,
+            'gemme' => ActionFinOpus::GEMME,
+            'sel' => ActionFinOpus::SEL,
+            'fourrure' => ActionFinOpus::FOURRURE,
+            'ivoire' => ActionFinOpus::IVOIRE,
         ];
 
         foreach ($actions as $champ => $action) {

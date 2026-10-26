@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\GroupeGnRepository;
+use App\Trait\GroupeGnResponsableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
@@ -12,6 +13,8 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity(repositoryClass: GroupeGnRepository::class)]
 class GroupeGn extends BaseGroupeGn
 {
+    use GroupeGnResponsableTrait;
+
     public function __construct()
     {
         parent::__construct();
@@ -183,6 +186,8 @@ class GroupeGn extends BaseGroupeGn
     public function setResponsable(?Participant $participant = null): static
     {
         $this->setParticipant($participant);
+        // Le droit de responsable est aussi porté par le groupe : il suit le nouveau responsable.
+        $this->synchroniserResponsableGroupe($participant);
 
         return $this;
     }
@@ -192,6 +197,6 @@ class GroupeGn extends BaseGroupeGn
      */
     public function setResponsableNull(): static
     {
-        return $this->setParticipant();
+        return $this->setResponsable();
     }
 }
