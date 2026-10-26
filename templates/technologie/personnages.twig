@@ -9,9 +9,21 @@
         [
             {'name' : 'Liste des technologie', 'route': path('technologie.list') },
             {'name' : technologie.label , 'route': path('technologie.detail', {'technologie': technologie.id}) },
-            {'name' : "Personnages ayant la technologie #{technologie.label}" },
+            {'name' : "Personnages ayant la technologie #{technologie.label}" ~ (gn ? " sur #{gn.label}" : '') },
         ]
     } %}
+
+    <div class="mb-3">
+        <span class="fw-bold me-2">Session GN :</span>
+        <div class="btn-group btn-group-sm flex-wrap" role="group">
+            <a class="btn {{ gn ? 'btn-outline-secondary' : 'btn-secondary' }}"
+               href="{{ path('technologie.personnages', {'technologie': technologie.id}) }}">Toutes</a>
+            {% for session in gns %}
+                <a class="btn {{ gn and gn.id == session.id ? 'btn-secondary' : 'btn-outline-secondary' }}"
+                   href="{{ path('technologie.personnages.gn', {'technologie': technologie.id, 'gn': session.id}) }}">{{ session.label }}</a>
+            {% endfor %}
+        </div>
+    </div>
 
     {{ include('personnage/search.twig',
         {

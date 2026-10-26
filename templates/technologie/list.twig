@@ -110,13 +110,19 @@
                                         class="fa fa-pencil"></i> Modifier</a>
                             {% endif %}
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="D�tail"
+                               title="Détail"
                                href="{{ path('technologie.detail',{'technologie':technologie.id}) }}"><i
-                                    class="fa fa-eye"></i> Detail</a>
+                                    class="fa fa-eye"></i> Détail</a>
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Personnages associ�s"
+                               title="Personnages associés"
                                href="{{ path('technologie.personnages',{'technologie':technologie.id}) }}"><i
                                     class="fa fa-users"></i> Personnages ({{ technologie.personnages|length }})</a>
+                            {% if groupeService.nextSessionGn %}
+                                <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                   title="Personnages associés sur {{ groupeService.nextSessionGn.label }}"
+                                   href="{{ path('technologie.personnages.gn',{'technologie':technologie.id, 'gn':groupeService.nextSessionGn.id}) }}"><i
+                                        class="fa fa-users"></i> {{ groupeService.nextSessionGn.label }}</a>
+                            {% endif %}
                             {% if is_granted('ROLE_REGLE') or is_granted('ROLE_ORGA') or is_granted('ROLE_ADMIN') %}
                                 <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                    title="Supprimer"
