@@ -593,8 +593,9 @@ class ParticipantController extends AbstractController
                     $nouveauGroupeGn->setPlacesMax($depassement);
                 }
 
-                if ($ancienGroupeGn && $ancienGroupeGn !== $nouveauGroupeGn && $ancienGroupeGn->getResponsable() === $participant) {
-                    $ancienGroupeGn->setResponsableNull();
+                $groupeSansResponsable = null;
+                if ($ancienGroupeGn && $ancienGroupeGn !== $nouveauGroupeGn && $ancienGroupeGn->retirerResponsableSi($participant)) {
+                    $groupeSansResponsable = $ancienGroupeGn;
                 }
                 $participant->getPersonnage()?->setGroupe($nouveauGroupeGn?->getGroupe());
 
@@ -602,6 +603,12 @@ class ParticipantController extends AbstractController
                 $this->entityManager->flush();
 
                 $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+                if ($groupeSansResponsable && !$groupeSansResponsable->hasResponsable()) {
+                    $this->addFlash('warning', \sprintf(
+                        'Attention, il n\'y a plus de responsable administratif pour le groupe %s, merci d\'en nommer un.',
+                        $groupeSansResponsable->getGroupe()?->getNom(),
+                    ));
+                }
 
                 return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], 303);
             }
@@ -2349,12 +2356,22 @@ class ParticipantController extends AbstractController
             $participant = $form->getData();
 
             // si l'utilisateur est responsable d'un ou de plusieurs groupes, il faut mettre à jour ces groupes
-            if ($participant->getGroupeGns()) {
-                $groupeGns = $participant->getGroupeGns();
-                foreach ($groupeGns as $groupeGn) {
-                    $groupeGn->setResponsableNull();
-                    $this->entityManager->persist($groupeGn);
+            $groupesSansResponsable = [];
+            $sessions = $participant->getGroupeGns()->toArray();
+            if ($participant->getGroupeGn()) {
+                $sessions[] = $participant->getGroupeGn();
+            }
+            $sessionsUniques = [];
+            foreach ($sessions as $session) {
+                $sessionsUniques[spl_object_id($session)] = $session;
+            }
+            foreach ($sessionsUniques as $groupeGn) {
+                if (!$groupeGn->retirerResponsableSi($participant)) {
+                    continue;
                 }
+
+                $this->entityManager->persist($groupeGn);
+                $groupesSansResponsable[] = $groupeGn;
             }
 
             // on retire toutes les restauration liés à cet utilisateur.
@@ -2376,6 +2393,13 @@ class ParticipantController extends AbstractController
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Vos modifications ont été enregistrées.');
+            foreach ($groupesSansResponsable as $groupeGn) {
+                if ($groupeGn->hasResponsable()) {
+                    continue;
+                }
+
+                $this->addFlash('warning', \sprintf('Attention, il n\'y a plus de responsable administratif pour le groupe %s, merci d\'en nommer un.', $groupeGn->getGroupe()?->getNom()));
+            }
 
             return $this->redirectToRoute('gn.participants', ['gn' => $participant->getGn()->getId()], 303);
         }

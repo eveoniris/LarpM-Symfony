@@ -246,6 +246,14 @@
                         {% endif %}
                     </ul>
 
+                    {% set sessionAlerte = groupeGn ?? (groupe.groupeGns|length > 0 ? groupe.groupeGns|last : null) %}
+                    {% if sessionAlerte is not null and not sessionAlerte.hasResponsable %}
+                        <div class="alert alert-warning mt-3" role="alert">
+                            Attention, il n'y a plus de responsable administratif pour ce groupe, merci d'en nommer un.
+                            <a class="alert-link" href="{{ path('groupeGn.responsable', {'groupe': groupe.id, 'groupeGn': sessionAlerte.id}) }}">Nommer un responsable</a>
+                        </div>
+                    {% endif %}
+
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" role="tabpanel">
