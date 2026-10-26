@@ -452,7 +452,6 @@ class UserController extends AbstractController
         Request $request,
         #[MapEntity]
         ?User $user,
-        UserPasswordHasherInterface $passwordHasher,
         UserRepository $repository,
     ): Response {
         $errors = [];
@@ -476,19 +475,6 @@ class UserController extends AbstractController
             }
             if ($request->request->has('username')) {
                 $user->setUsername((string) $request->request->getString('username'));
-            }
-
-            $password = $request->request->getString('password');
-            if ($password) {
-                $hashedPassword = $passwordHasher->hashPassword($user, $password);
-
-                if ($password !== $request->request->get('confirm_password')) {
-                    $errors['password'] = "Passwords don't match.";
-                } elseif ($error = $user->validatePasswordStrength($password)) {
-                    $errors['password'] = $error;
-                } else {
-                    $user->setPassword($hashedPassword);
-                }
             }
 
             $roles = $request->request->all('roles');
@@ -518,8 +504,7 @@ class UserController extends AbstractController
             if ([] === $errors) {
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
-                $msg = 'Saved account information.' . ($request->request->get('password') ? ' Changed password.' : '');
-                $this->addFlash('alert', $msg);
+                $this->addFlash('alert', 'Saved account information.');
             }
         }
 
@@ -541,6 +526,78 @@ class UserController extends AbstractController
             'available_roles' => $availableLabels,
             'reserved_roles' => $reservedRoles,
         ]);
+    }
+
+    /**
+     * Changement de mot de passe, isolé de l'édition du compte (évite le préremplissage par les gestionnaires de mots de passe).
+     * Sur son propre compte le mot de passe actuel est exigé ; un ORGA/ADMIN peut le définir pour un autre compte.
+     */
+    #[IsGranted('ROLE_USER', message: 'You are not allowed to access to this.')]
+    #[Route('/user/{user}/password', name: 'user.password', requirements: ['user' => Requirement::DIGITS])]
+    public function passwordAction(
+        Request $request,
+        #[MapEntity]
+        ?User $user,
+        UserPasswordHasherInterface $passwordHasher,
+    ): Response {
+        if (!$user) {
+            throw new NotFoundHttpException('No User was found with that ID.');
+        }
+
+        $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
+
+        $isSelf = $user->getId() === $this->getUser()?->getId();
+        $errors = [];
+
+        if ($request->isMethod('POST')) {
+            $password = $request->request->getString('password');
+            $error = $this->validateNewPassword($request, $user, $passwordHasher);
+            if (null !== $error) {
+                $errors[] = $error;
+            }
+
+            if ([] === $errors) {
+                $user->setPassword($passwordHasher->hashPassword($user, $password));
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+                $this->addFlash('success', 'Mot de passe modifié.');
+
+                return $this->redirectToRoute('user.view', ['user' => $user->getId()]);
+            }
+        }
+
+        return $this->render('user/password.twig', [
+            'error' => implode("\n", $errors),
+            'user' => $user,
+            'is_self' => $isSelf,
+        ]);
+    }
+
+    /**
+     * Retourne le premier message d'erreur de la saisie de changement de mot de passe, ou null si elle est valide.
+     */
+    private function validateNewPassword(Request $request, User $user, UserPasswordHasherInterface $passwordHasher): ?string
+    {
+        $password = $request->request->getString('password');
+        $isSelf = $user->getId() === $this->getUser()?->getId();
+
+        if (!$this->isCsrfTokenValid('user-password-' . (string) $user->getId(), $request->request->getString('_token'))) {
+            return 'Jeton de sécurité invalide, veuillez réessayer.';
+        }
+
+        if ($isSelf && !$passwordHasher->isPasswordValid($user, $request->request->getString('current_password'))) {
+            return 'Le mot de passe actuel est incorrect.';
+        }
+
+        if ('' === $password) {
+            return 'Le nouveau mot de passe est obligatoire.';
+        }
+
+        if ($password !== $request->request->getString('confirm_password')) {
+            return 'Les mots de passe ne correspondent pas.';
+        }
+
+        return $user->validatePasswordStrength($password) ?: null;
     }
 
     /**
