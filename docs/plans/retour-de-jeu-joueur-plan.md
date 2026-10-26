@@ -150,3 +150,12 @@ Deux exports, accessibles depuis la page du GN pour `ROLE_WARGAME` :
 - Faut-il le formulaire groupe (titres et constructions) dans la même session, ou seulement le formulaire joueur ?
 - Format exact attendu par le wargame à l'export joueur : les colonnes ci-dessus sont déduites du formulaire PJ, pas d'un fichier réel.
 - Maladies, folies, constructions : texte libre acceptable pour une première version ?
+
+## Ajouts demandés le 2026-10-26
+
+- **Lien fiche PJ <-> retour PJ** : la fiche du personnage pointe vers son retour de jeu du GN et le retour renvoie vers la fiche.
+- **Même lien côté retour de groupe** : à faire à partir de la fiche de retour du groupe, par le chef de groupe, avec la liste des retours de ses membres.
+- **Compteur de retours attendus par groupe** : nombre de participants du GN connu, donc « reçus / attendus » affiché sur le groupe.
+- **Clôture d'un groupe incomplet** : statut « pas de retour » ou « n'a pas participé » pour un participant, avec motif, afin de pouvoir clôturer un groupe
+  dont tous les retours ne viendront pas (le compteur compte ces cas comme traités).
+- Le suivi du dépouillement (page paginée avec recherche) est décrit dans `depouillement-enveloppe-reprise.md` et doit partager le même compteur.

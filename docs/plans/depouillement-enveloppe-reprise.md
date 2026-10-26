@@ -137,3 +137,13 @@ le numéro 7 (LH7). Un personnage de ce GN : 5789, un groupe : 330.
 
 Les exports des formulaires Google (PJ et groupe) et les fiches Word reçues contiennent des noms et des e-mails de joueurs réels.
 Ne jamais les copier dans le dépôt ni dans la mémoire : seule leur structure est notée dans le plan.
+
+## Évolutions demandées le 2026-10-26 (à cadrer avant de coder)
+
+- **Suivi du dépouillement sur une page à part** : liste de suivi (groupes et personnages dépouillés, statuts) sortie de la page d'accueil,
+  paginée et avec recherche (même mécanique que les autres listes bêta, voir `design-beta-reprise.md`).
+- **Compteur de retours attendus par groupe** : le nombre total de participants du groupe au GN est connu, afficher « retours reçus / attendus ».
+- **Clôture d'un groupe incomplet** : pouvoir indiquer « pas de retour » ou « n'a pas participé » pour un participant, afin de clôturer un groupe
+  dont tous les retours ne viendront pas (statut explicite par participant, avec motif, pour que le compteur puisse atteindre le total).
+- **Lien fiche PJ <-> retour PJ** : depuis la fiche du personnage vers son retour (et inversement), voir `retour-de-jeu-joueur-plan.md`.
+- **Fiche de retour de groupe, saisie par le chef de groupe** : même lien avec les retours des membres, à faire depuis la fiche de retour du groupe.
