@@ -9,6 +9,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -34,12 +35,18 @@ class HelloAssoDiagnose extends Command
     protected function configure(): void
     {
         $this->addArgument('eventId', InputArgument::REQUIRED, 'Identifiant d\'évènement HelloAsso (champ du GN)');
+        $this->addOption('structure', null, InputOption::VALUE_REQUIRED, 'Affiche la structure (champs et types, sans valeurs personnelles) d\'une ressource : attendees, products, formresponses...');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $key = trim($this->apiKey);
+
+        $resource = $input->getOption('structure');
+        if (\is_string($resource) && '' !== $resource) {
+            return $this->showStructure($io, $key, (string) $input->getArgument('eventId'), $resource);
+        }
         $io->writeln(\sprintf('Clé chargée : longueur %d, empreinte %s, organizerId %s', \strlen($key), substr(hash('sha256', $key), 0, 8), $this->organizerId));
 
         $org = self::BASE_URL . '/organizers/' . rawurlencode($this->organizerId);
@@ -76,6 +83,47 @@ class HelloAssoDiagnose extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    private function showStructure(SymfonyStyle $io, string $key, string $eventId, string $resource): int
+    {
+        $url = \sprintf('%s/organizers/%s/events/%s/%s', self::BASE_URL, rawurlencode($this->organizerId), rawurlencode($eventId), rawurlencode($resource));
+
+        try {
+            $response = $this->httpClient->request('GET', $url, ['headers' => ['X-API-KEY' => $key, 'Accept' => 'application/json'], 'query' => ['limit' => 1], 'timeout' => 20]);
+            $status = $response->getStatusCode();
+            $data = $response->toArray(false);
+        } catch (ExceptionInterface $exception) {
+            $io->error($exception->getMessage());
+
+            return Command::FAILURE;
+        }
+
+        $io->writeln(\sprintf('%s -> %d', $resource, $status));
+        $first = \is_array($data['data'] ?? null) && [] !== $data['data'] ? $data['data'][0] : $data;
+        $io->writeln(json_encode($this->shape($first, $resource), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '');
+
+        return Command::SUCCESS;
+    }
+
+    /** Remplace les valeurs par leur type ; seuls les libellés techniques (label, title, type, name des produits) sont conservés. */
+    private function shape(mixed $value, string $resource, string $name = ''): mixed
+    {
+        if (\is_array($value)) {
+            $out = [];
+            foreach ($value as $k => $v) {
+                $out[$k] = $this->shape($v, $resource, (string) $k);
+            }
+
+            return $out;
+        }
+
+        $showable = \in_array($name, ['label', 'title', 'type', 'fieldType', 'productType'], true) || 'name' === $name && 'products' === $resource;
+        if (\is_string($value)) {
+            return $showable ? mb_substr($value, 0, 60) : 'string(' . mb_strlen($value) . ')';
+        }
+
+        return get_debug_type($value);
     }
 
     /** @param array<string, mixed> $options */
