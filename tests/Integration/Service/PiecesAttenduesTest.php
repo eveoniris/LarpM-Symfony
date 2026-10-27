@@ -85,6 +85,16 @@ class PiecesAttenduesTest extends KernelTestCase
         }
     }
 
+    public function testUnPersonnageAvecLitteratureAttendLesCopiesDeRecettesEtDeSorts(): void
+    {
+        $profil = $this->service->pourPersonnage($this->personnageAvecFamille('Littérature'));
+
+        static::assertTrue($profil['pieces']['copiesRecettesSorts']);
+        static::assertFalse($profil['pieces']['corruptionOuvertes']);
+        static::assertFalse($profil['pieces']['carteAlchimiste']);
+        static::assertSame('littérature', $profil['profil']);
+    }
+
     public function testUnPretreAttendLaFicheDePriere(): void
     {
         $profil = $this->service->pourPersonnage($this->personnageAvecFamille('Prêtrise'));

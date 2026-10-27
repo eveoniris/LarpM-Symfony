@@ -28,6 +28,9 @@ readonly class PiecesAttendues
     /** Familles de compétence qui font d'un personnage un alchimiste ou un herboriste. */
     public const array FAMILLES_ALCHIMIE = [CompetenceFamilyType::ALCHEMY, CompetenceFamilyType::HERBALISM];
 
+    /** Familles de compétence qui permettent de copier recettes et sorts (la Littérature). */
+    public const array FAMILLES_LITTERATURE = [CompetenceFamilyType::LITERATURE];
+
     /** Familles de compétence qui font d'un personnage un prêtre (la connaissance d'une prière le fait aussi). */
     public const array FAMILLES_PRETRISE = [CompetenceFamilyType::PRIESTHOOD];
 
@@ -53,7 +56,7 @@ readonly class PiecesAttendues
     public function pourPersonnage(?Personnage $personnage): array
     {
         if (null === $personnage) {
-            return ['pieces' => $this->pieces(true, true, true), 'profil' => 'personnage inconnu : toutes les pièces sont proposées'];
+            return ['pieces' => $this->pieces(true, true, true, true), 'profil' => 'personnage inconnu : toutes les pièces sont proposées'];
         }
 
         $familles = [];
@@ -67,19 +70,25 @@ readonly class PiecesAttendues
         $magie = $this->connait($familles, self::FAMILLES_MAGIE) || !$personnage->getSorts()->isEmpty();
         $alchimie = $this->connait($familles, self::FAMILLES_ALCHIMIE);
         $pretre = $this->connait($familles, self::FAMILLES_PRETRISE) || !$personnage->getPrieres()->isEmpty();
+        $copiste = $this->connait($familles, self::FAMILLES_LITTERATURE);
 
-        $profil = array_filter([$magie ? 'magie' : null, $alchimie ? 'alchimie ou herboristerie' : null, $pretre ? 'prêtrise' : null]);
+        $profil = array_filter([
+            $magie ? 'magie' : null,
+            $alchimie ? 'alchimie ou herboristerie' : null,
+            $pretre ? 'prêtrise' : null,
+            $copiste ? 'littérature' : null,
+        ]);
 
         return [
-            'pieces' => $this->pieces($magie, $alchimie, $pretre),
-            'profil' => [] === $profil ? 'ni magie, ni alchimie, ni herboristerie, ni prêtrise' : implode(', ', $profil),
+            'pieces' => $this->pieces($magie, $alchimie, $pretre, $copiste),
+            'profil' => [] === $profil ? 'ni magie, ni alchimie, ni herboristerie, ni prêtrise, ni littérature' : implode(', ', $profil),
         ];
     }
 
     /**
      * @return array<string, bool>
      */
-    private function pieces(bool $magie, bool $alchimie, bool $pretre): array
+    private function pieces(bool $magie, bool $alchimie, bool $pretre, bool $copiste): array
     {
         return [
             'fichePersonnage' => true,
@@ -89,7 +98,7 @@ readonly class PiecesAttendues
             'ficheSort' => $magie,
             'corruptionOuvertes' => $magie,
             'corruptionNonOuvertes' => $magie,
-            'copiesRecettesSorts' => $magie || $alchimie,
+            'copiesRecettesSorts' => $magie || $alchimie || $copiste,
             'carteAlchimiste' => $alchimie,
             'fichePriere' => $pretre,
         ];
