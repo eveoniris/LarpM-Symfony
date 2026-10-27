@@ -170,6 +170,12 @@ LEFT JOIN p2.participants pa2
             $qb->andWhere('gr.id = :groupeId')->setParameter('groupeId', $criteria['groupe']);
         }
 
+        if (\array_key_exists('gn', $criteria)) {
+            // participation du personnage (billet) à ce GN, quel que soit son dernier participant
+            $qb->andWhere('EXISTS (SELECT 1 FROM App\Entity\Participant pgn WHERE pgn.personnage = p AND pgn.gn = :gnId AND pgn.billet IS NOT NULL)')
+                ->setParameter('gnId', $criteria['gn']);
+        }
+
         if (\array_key_exists('scenariste', $criteria)) {
             $qb->andWhere('gr.userRelatedByScenaristeId = :scenaristeId')->setParameter('scenaristeId', $criteria['scenariste']);
         }

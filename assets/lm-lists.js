@@ -196,7 +196,8 @@ function onToggle(event) {
 }
 
 
-// « Afficher plus » : [data-lm-more] contient les lignes ([data-lm-row]) ; paquets de 25 + recherche côté client.
+// « Afficher plus » : [data-lm-more] contient les lignes ([data-lm-row]) ; paquets de 25 + recherche côté client
+// et filtre optionnel [data-lm-more-gn] (ids de GN dans data-gn de chaque ligne).
 function setupMore(box) {
     if (box.dataset.lmMoreReady) {
         return;
@@ -204,11 +205,13 @@ function setupMore(box) {
     box.dataset.lmMoreReady = '1';
     const rows = Array.from(box.querySelectorAll('[data-lm-row]'));
     const step = parseInt(box.dataset.lmMore, 10) || 25;
-    if (rows.length <= step) {
+    const gnSelect = box.querySelector('[data-lm-more-gn]');
+    if (rows.length <= step && !gnSelect) {
         return;
     }
     let shown = step;
     let query = '';
+    let gn = '';
     const search = box.querySelector('[data-lm-more-search]');
     const button = box.querySelector('[data-lm-more-button]');
     const count = box.querySelector('[data-lm-more-count]');
@@ -217,17 +220,21 @@ function setupMore(box) {
         return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
     }
     function render() {
-        const matching = rows.filter(function (r) { return query === '' || norm(r.textContent).includes(query); });
+        const filtering = query !== '' || gn !== '';
+        const matching = rows.filter(function (r) {
+            return (query === '' || norm(r.textContent).includes(query))
+                && (gn === '' || (r.dataset.gn || '').split(' ').includes(gn));
+        });
         rows.forEach(function (r) { r.hidden = true; });
-        const visible = query === '' ? matching.slice(0, shown) : matching;
+        const visible = filtering ? matching : matching.slice(0, shown);
         visible.forEach(function (r) { r.hidden = false; });
         if (count) {
-            count.textContent = query === ''
+            count.textContent = !filtering
                 ? visible.length + ' affichés sur ' + rows.length
                 : matching.length + ' résultat' + (matching.length > 1 ? 's' : '') + ' sur ' + rows.length;
         }
         if (button) {
-            button.hidden = query !== '' || visible.length >= rows.length;
+            button.hidden = filtering || visible.length >= rows.length;
         }
         if (empty) {
             empty.hidden = matching.length > 0;
@@ -236,6 +243,12 @@ function setupMore(box) {
     if (search) {
         search.addEventListener('input', function () {
             query = norm(search.value.trim());
+            render();
+        });
+    }
+    if (gnSelect) {
+        gnSelect.addEventListener('change', function () {
+            gn = gnSelect.value;
             render();
         });
     }

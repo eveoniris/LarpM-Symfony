@@ -377,6 +377,9 @@ class GroupeSecondaireController extends AbstractController
             case 'membres':
                 $context['membresRows'] = $membresRows;
                 $context['inscriptions'] = $inscriptions;
+                $participationsGn = $repository->findParticipationsGn(array_map(static fn (array $row): int => $row['personnage']->getId(), $membresRows));
+                $context['participationsGn'] = $participationsGn['participations'];
+                $context['gnsFiltre'] = $participationsGn['gns'];
                 break;
             case 'postulants':
                 $postulants = $repository->findPostulants($groupeSecondaire, $groupeSecondaire->isReligion());

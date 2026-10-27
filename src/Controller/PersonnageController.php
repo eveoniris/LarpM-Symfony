@@ -4093,6 +4093,9 @@ class PersonnageController extends AbstractController
         $groupe = isset($formData['groupe'])
             ? $this->entityManager->find('App\Entity\Groupe', $formData['groupe'])
             : null;
+        $gnFiltre = isset($formData['gn'])
+            ? $this->entityManager->find(\App\Entity\Gn::class, $formData['gn'])
+            : null;
         $scenariste = isset($formData['scenariste'])
             ? $this->entityManager->find('App\Entity\User', $formData['scenariste'])
             : null;
@@ -4109,6 +4112,7 @@ class PersonnageController extends AbstractController
                 'classe' => $classe,
                 'competence' => $competence,
                 'groupe' => $groupe,
+                'gn' => $gnFiltre,
                 'scenariste' => $scenariste,
                 'vivant' => $vivant,
             ],
@@ -4142,6 +4146,9 @@ class PersonnageController extends AbstractController
         }
         if ($groupe) {
             $criteria['groupe'] = $groupe->getId();
+        }
+        if ($gnFiltre) {
+            $criteria['gn'] = $gnFiltre->getId();
         }
         if ($scenariste) {
             $criteria['scenariste'] = $scenariste->getId();

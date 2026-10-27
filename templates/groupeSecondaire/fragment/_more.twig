@@ -1,7 +1,14 @@
 {# Début et fin d'un bloc « Afficher plus » (interface bêta, au-delà de 25 lignes) : voir assets/lm-lists.js. #}
-{% macro start(label) %}
+{# gns : id du GN => libellé ; ajoute un filtre « participation au GN » (lignes marquées data-gn="id id"). #}
+{% macro start(label, gns = {}) %}
     <div class="lm-more-tools" data-lm-more-tools hidden>
         <input class="lm-field" type="search" data-lm-more-search placeholder="Rechercher dans la liste" aria-label="{{ label }}" autocomplete="off">
+        {% if gns|length > 0 %}
+            <select class="lm-field" data-lm-more-gn aria-label="Participation à un GN">
+                <option value="">Tous les GN</option>
+                {% for id, gnLabel in gns %}<option value="{{ id }}">Participe à {{ gnLabel }}</option>{% endfor %}
+            </select>
+        {% endif %}
         <span class="lm-more-count" data-lm-more-count aria-live="polite"></span>
     </div>
 {% endmacro %}
