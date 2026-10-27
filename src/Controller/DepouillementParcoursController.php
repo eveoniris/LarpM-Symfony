@@ -183,7 +183,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             )),
             'actionsPreselectionnees' => $preselection,
             'resultatsActions' => $resultats,
-            'anomaliesContenu' => $contenuService->anomalies($contenu),
+            'anomaliesContenu' => $contenuService->anomalies($contenu, $depouillement),
             'actionsFinOpus' => ActionFinOpus::cases(),
         ];
     }
