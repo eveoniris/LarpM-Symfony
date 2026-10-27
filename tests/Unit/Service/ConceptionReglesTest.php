@@ -145,9 +145,14 @@ class ConceptionReglesTest extends TestCase
         static::assertNotNull($this->regles->anomalieGenres('Conan', null, 'Belit', 2));
     }
 
-    public function testSeulsLesOmbrelinsNonHumainsPeuventConcevoir(): void
+    public function testSeulsLesHumainsEtLesOmbrelinsPeuventConcevoir(): void
     {
         static::assertNull($this->regles->anomalieEspece('Conan', []));
+        // La fiche attribue d'office l'espèce « Humain » à un personnage sans espèce : elle ne doit jamais bloquer.
+        static::assertNull($this->regles->anomalieEspece('Conan', ['Humain']));
+        static::assertNull($this->regles->anomalieEspece('Conan', [' humain ']));
+        static::assertNull($this->regles->anomalieEspece('Conan', ['Humain', 'Ombrelin']));
+        static::assertStringContainsString('Nain', (string) $this->regles->anomalieEspece('Conan', ['Humain', 'Nain']));
         static::assertNull($this->regles->anomalieEspece('Conan', ['Ombrelin']));
         static::assertNull($this->regles->anomalieEspece('Conan', [' OMBRELIN ']));
         static::assertStringContainsString('Nain', (string) $this->regles->anomalieEspece('Conan', ['Nain']));

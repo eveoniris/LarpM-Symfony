@@ -18,6 +18,7 @@ use App\Form\Depouillement\DepouillementRemarquesType;
 use App\Service\CompteursEnveloppe;
 use App\Service\DepouillementContenuService;
 use App\Service\DepouillementService;
+use App\Service\PiecesAttendues;
 use App\Service\EtiquetteSaisie;
 use App\Service\ActionFinOpusResultat;
 use App\Service\ActionsFinOpusRegles;
@@ -86,6 +87,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         DepouillementService $depouillementService,
         DepouillementContenuService $contenuService,
         DepouillementGroupeService $groupeService,
+        PiecesAttendues $piecesAttendues,
     ): Response {
         $this->verifier($gn, $depouillement);
 
@@ -122,7 +124,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             'form' => $form,
             'formEtiquette' => $this->formulaireEtiquette($depouillement, $etape),
             'avertissementGroupe' => $this->avertissementGroupe($depouillement, $depouillementService),
-            ...$this->contenuJoueur($depouillement, $etape, $contenuService),
+            ...$this->contenuJoueur($depouillement, $etape, $contenuService, $piecesAttendues),
             ...$this->contenuGroupe($depouillement, $etape, $groupeService),
         ]);
     }
@@ -157,7 +159,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
      *
      * @return array<string, mixed>
      */
-    private function contenuJoueur(Depouillement $depouillement, DepouillementEtape $etape, DepouillementContenuService $contenuService): array
+    private function contenuJoueur(Depouillement $depouillement, DepouillementEtape $etape, DepouillementContenuService $contenuService, PiecesAttendues $piecesAttendues): array
     {
         if (!in_array($etape, [DepouillementEtape::CONTENU, DepouillementEtape::ACTIONS, DepouillementEtape::RECAPITULATIF], strict: true) || DepouillementType::JOUEUR !== $depouillement->getType()) {
             return [];
@@ -172,8 +174,11 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         }
 
         $resultats = $contenuService->evaluerActions($contenu);
+        $profil = DepouillementEtape::CONTENU === $etape ? $piecesAttendues->pour($depouillement) : ['pieces' => [], 'profil' => ''];
 
         return [
+            'piecesAttendues' => $profil['pieces'],
+            'profilPersonnage' => $profil['profil'],
             'contenuJoueur' => $contenu,
             'formContenuJoueur' => $this->formulaireContenuJoueur($depouillement, $etape, $contenu),
             'trouveLibelles' => CompteursEnveloppe::nonNulles($contenu->surplus),
@@ -183,7 +188,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             )),
             'actionsPreselectionnees' => $preselection,
             'resultatsActions' => $resultats,
-            'anomaliesContenu' => $contenuService->anomalies($contenu),
+            'anomaliesContenu' => $contenuService->anomalies($contenu, $depouillement),
             'actionsFinOpus' => ActionFinOpus::cases(),
         ];
     }
