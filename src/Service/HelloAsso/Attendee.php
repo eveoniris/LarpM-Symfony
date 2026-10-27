@@ -33,7 +33,9 @@ final readonly class Attendee
      */
     public static function fromArray(array $data): self
     {
-        $nom = trim(\sprintf('%s %s', self::str($data['firstName'] ?? null), self::str($data['lastName'] ?? null)));
+        // Le prénom et le nom sont dans clientDetails pour /attendees, à la racine pour /movements.
+        $details = \is_array($data['clientDetails'] ?? null) ? $data['clientDetails'] : $data;
+        $nom = trim(\sprintf('%s %s', self::str($details['firstName'] ?? null), self::str($details['lastName'] ?? null)));
 
         return new self(
             id: self::str($data['_id'] ?? $data['id'] ?? null),

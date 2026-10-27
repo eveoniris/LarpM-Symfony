@@ -8,6 +8,7 @@ use App\Entity\Billet;
 use App\Entity\BilletSync;
 use App\Entity\Gn;
 use App\Entity\User;
+use App\Enum\SyncConfiance;
 use App\Enum\SyncEtat;
 use App\Repository\BilletSyncRepository;
 use App\Service\HelloAsso\BilletSyncService;
@@ -86,15 +87,60 @@ final class BilletterieSyncController extends SymfonyAbstractController
     {
         $this->assertEnabled();
 
-        $etat = SyncEtat::tryFrom((string) $request->query->get('etat', SyncEtat::A_VALIDER->value));
+        $etatParam = (string) $request->query->get('etat', SyncEtat::A_VALIDER->value);
+        $etat = SyncEtat::tryFrom($etatParam);
+        $confiance = SyncConfiance::tryFrom((string) $request->query->get('confiance', ''));
+        $status = trim((string) $request->query->get('status', ''));
+        $productId = trim((string) $request->query->get('produit', ''));
+        $search = trim((string) $request->query->get('q', ''));
+        $limit = $request->query->getInt('limit', 50);
+        $limit = \in_array($limit, [25, 50, 100], true) ? $limit : 50;
+        $page = max(1, $request->query->getInt('page', 1));
+
+        $productNames = $this->syncService->productNames($gn);
+        $productCounts = $this->billetSyncRepository->countBy($gn, 'productId');
 
         return $this->render('gn/billetterie_rapprochement.twig', [
             'gn' => $gn,
             'etat' => $etat,
             'etats' => SyncEtat::cases(),
-            'syncs' => $this->billetSyncRepository->findByGnAndEtat($gn, $etat),
+            'confiance' => $confiance,
+            'confiances' => SyncConfiance::cases(),
+            'status' => $status,
+            'produit' => $productId,
+            'q' => $search,
+            'paginator' => $this->billetSyncRepository->paginate($gn, $etat, $confiance, $status, $productId, $search, $limit, $page),
+            'compteEtats' => $this->billetSyncRepository->countBy($gn, 'etat'),
+            'compteConfiances' => $this->billetSyncRepository->countBy($gn, 'confiance', $etat),
+            'compteStatuts' => $this->billetSyncRepository->countBy($gn, 'status', $etat),
+            'produits' => $productCounts,
+            'nomsProduits' => $productNames,
             'billets' => $this->entityManager->getRepository(Billet::class)->findBy(['gn' => $gn], ['label' => 'ASC']),
         ]);
+    }
+
+    /**
+     * Associe les produits HelloAsso aux billets du GN, puis recalcule les propositions des lignes à valider.
+     */
+    #[Route('/rapprochement/produits', name: 'produits', methods: ['POST'])]
+    public function produitsAction(Request $request, #[MapEntity] Gn $gn): RedirectResponse
+    {
+        $this->assertEnabled();
+        $this->assertCsrf($request, $gn);
+
+        $billetByProduct = [];
+        foreach ($request->request->all('produit') as $productId => $billetId) {
+            $billetByProduct[(string) $productId] = (int) $billetId;
+        }
+
+        try {
+            $count = $this->syncService->associateProducts($gn, $billetByProduct);
+            $this->addFlash('success', 'Produits associés, ' . $count . ' proposition(s) de billet recalculée(s).');
+        } catch (InvalidArgumentException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+        }
+
+        return $this->redirectToRapprochement($gn);
     }
 
     #[Route('/rapprochement/{sync}/valider', name: 'valider', methods: ['POST'])]

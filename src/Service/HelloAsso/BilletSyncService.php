@@ -151,6 +151,76 @@ class BilletSyncService
         return $count;
     }
 
+    /**
+     * Nom des produits HelloAsso de l'évènement du GN (vide si la route n'est pas accessible).
+     *
+     * @return array<string, string>
+     */
+    public function productNames(Gn $gn): array
+    {
+        $eventId = $gn->getHelloassoEventId();
+
+        return null === $eventId ? [] : $this->client->listProducts($eventId);
+    }
+
+    /**
+     * Associe des produits HelloAsso à des billets du GN (un produit par billet), puis recalcule les propositions
+     * des lignes encore « à valider ». Les lignes déjà rapprochées ou ignorées ne bougent pas.
+     *
+     * @param array<string, int> $billetByProduct identifiant de produit => identifiant de billet (0 pour dissocier)
+     *
+     * @return int nombre de lignes dont le billet proposé a été recalculé
+     *
+     * @throws InvalidArgumentException si un billet est choisi pour plusieurs produits ou n'appartient pas au GN
+     */
+    public function associateProducts(Gn $gn, array $billetByProduct): int
+    {
+        $billets = [];
+        foreach ($gn->getBillets() as $billet) {
+            $billets[(int) $billet->getId()] = $billet;
+        }
+
+        $chosen = array_filter($billetByProduct, static fn (int $id): bool => $id > 0);
+        if (\count($chosen) !== \count(array_unique($chosen))) {
+            throw new InvalidArgumentException('Un billet ne peut être associé qu\'à un seul produit HelloAsso.');
+        }
+        foreach ($chosen as $billetId) {
+            if (!isset($billets[$billetId])) {
+                throw new InvalidArgumentException('Billet introuvable pour ce GN.');
+            }
+        }
+
+        // On libère d'abord les produits concernés, puis on pose les nouveaux liens.
+        foreach ($billets as $billet) {
+            if (\array_key_exists((string) $billet->getHelloassoProductId(), $billetByProduct)) {
+                $billet->setHelloassoProductId(null);
+            }
+        }
+        $this->entityManager->flush();
+        foreach ($chosen as $productId => $billetId) {
+            $billets[$billetId]->setHelloassoProductId((string) $productId);
+        }
+        $this->entityManager->flush();
+
+        $count = 0;
+        foreach ($this->billetSyncRepository->findByGnAndEtat($gn, SyncEtat::A_VALIDER) as $sync) {
+            $billet = null;
+            foreach ($billets as $candidate) {
+                if (null !== $sync->getProductId() && $candidate->getHelloassoProductId() === $sync->getProductId()) {
+                    $billet = $candidate;
+                    break;
+                }
+            }
+            if ($sync->getBillet() !== $billet) {
+                $sync->setBillet($billet);
+                ++$count;
+            }
+        }
+        $this->entityManager->flush();
+
+        return $count;
+    }
+
     public function ignore(BilletSync $sync): void
     {
         $sync->setEtat(SyncEtat::IGNORE);

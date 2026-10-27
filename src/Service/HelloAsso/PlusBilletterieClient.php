@@ -55,6 +55,33 @@ class PlusBilletterieClient implements PlusBilletterieClientInterface
         return [...$this->page($items, \count($attendees), $response, $skip, $limit), 'source' => 'attendees', 'statutAttendees' => null];
     }
 
+    public function listProducts(string $eventId): array
+    {
+        $url = \sprintf('%s/organizers/%s/events/%s/products', self::BASE_URL, rawurlencode($this->organizerId), rawurlencode($eventId));
+        $names = [];
+
+        try {
+            // Quelques pages suffisent : un évènement a une poignée de produits.
+            for ($skip = 0; $skip < 500; $skip += 100) {
+                $refused = null;
+                $response = $this->get($url, ['limit' => 100, 'skip' => $skip], [401, 403, 404], $refused);
+                $products = \is_array($response['data'] ?? null) ? $response['data'] : [];
+                foreach ($products as $product) {
+                    if (\is_array($product) && \is_scalar($product['_id'] ?? null) && \is_scalar($product['name'] ?? null)) {
+                        $names[(string) $product['_id']] = (string) $product['name'];
+                    }
+                }
+                if (\count($products) < 100) {
+                    break;
+                }
+            }
+        } catch (PlusBilletterieException) {
+            return $names;
+        }
+
+        return $names;
+    }
+
     /**
      * Teste en lecture seule les routes utiles et renvoie le statut HTTP de chacune (jamais la clé ni le corps).
      */
