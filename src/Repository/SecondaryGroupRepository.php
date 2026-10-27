@@ -400,6 +400,41 @@ class SecondaryGroupRepository extends BaseRepository
     }
 
     /**
+     * GN auxquels les personnages donnés ont participé (participant avec billet).
+     *
+     * @param list<int> $personnageIds
+     *
+     * @return array{participations: array<int, list<int>>, gns: array<int, string>} id du personnage => ids des GN, et id du GN => libellé
+     */
+    public function findParticipationsGn(array $personnageIds): array
+    {
+        $result = ['participations' => [], 'gns' => []];
+        if ([] === $personnageIds) {
+            return $result;
+        }
+
+        $rows = $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('IDENTITY(pa.personnage) AS pid', 'gn.id AS gnId', 'gn.label AS gnLabel')
+            ->from(Participant::class, 'pa')
+            ->join('pa.gn', 'gn')
+            ->where('pa.billet IS NOT NULL')
+            ->andWhere('pa.personnage IN (:ids)')
+            ->setParameter('ids', $personnageIds)
+            ->orderBy('gn.id', 'DESC')
+            ->getQuery()
+            ->getArrayResult();
+
+        foreach ($rows as $row) {
+            $result['participations'][(int) $row['pid']][] = (int) $row['gnId'];
+            $result['gns'][(int) $row['gnId']] = $row['gnLabel'];
+        }
+
+        return $result;
+    }
+
+    /**
      * @return list<IntrigueHasGroupeSecondaire>
      */
     public function findIntrigues(SecondaryGroup $secondaryGroup): array

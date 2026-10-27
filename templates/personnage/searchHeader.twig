@@ -38,7 +38,7 @@
 
         {% if displaySearchFilter and app.user is not null and app.user.uiBeta %}
             {# Interface bêta : recherche visible, autres filtres dans un panneau « Filtres (n) », puces des filtres actifs. #}
-            {% set _filters = {'type': 'Dans', 'religion': 'Religion', 'competence': 'Compétence', 'classe': 'Classe', 'groupe': 'Groupe', 'vivant': 'Statut', 'scenariste': 'Scénariste'} %}
+            {% set _filters = {'type': 'Dans', 'religion': 'Religion', 'competence': 'Compétence', 'classe': 'Classe', 'groupe': 'Groupe', 'gn': 'GN', 'vivant': 'Statut', 'scenariste': 'Scénariste'} %}
             {% set _chips = [] %}
             {% for name, label in _filters %}
                 {% set _text = lmf.choiceLabel(attribute(form, name))|trim %}

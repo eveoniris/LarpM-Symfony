@@ -15,10 +15,10 @@
             {% endif %}
         </div>
 
-        {% set paged = beta and membresRows|length > 25 %}
-        {% if paged %}<div data-lm-more="25">{{ more.start('Rechercher un membre') }}{% endif %}
+        {% set paged = beta and (membresRows|length > 25 or gnsFiltre|length > 0) %}
+        {% if paged %}<div data-lm-more="25">{{ more.start('Rechercher un membre', gnsFiltre) }}{% endif %}
         {% for row in membresRows %}
-            {% if paged %}<div class="lm-more-row" data-lm-row>{% endif %}
+            {% if paged %}<div class="lm-more-row" data-lm-row data-gn="{{ (participationsGn[row.personnage.id] ?? [])|join(' ') }}">{% endif %}
             {% include 'groupeSecondaire/fragment/membre.twig' with {'row': row} %}
             {% if paged %}</div>{% endif %}
         {% else %}

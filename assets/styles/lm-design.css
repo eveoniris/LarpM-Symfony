@@ -657,7 +657,7 @@ body:has(.lm-pager-wrap[data-slot="2"]) .lm-pager-wrap[data-slot="1"][data-small
 .lm-pager-wrap .lm-pager { background: color-mix(in srgb, var(--lm-surface) 94%, transparent); border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg); padding: var(--lm-s3); }
 .lm-more-row { display: contents; }
 .lm-more-tools { padding: var(--lm-s3) var(--lm-s4) 0; }
-.lm-more-tools[hidden], .lm-more [hidden], .lm-help[hidden] { display: none !important; }
+.lm-more-tools[hidden], .lm-more-row[hidden], .lm-more [hidden], .lm-help[hidden] { display: none !important; }
 .lm-table .lm-cell-block { max-width: 46rem; text-align: left; }
 @media (max-width: 640px) { .lm-table--cards td > .lm-cell-block, .lm-table--cards td > .lm-cell-value { flex: 1; min-width: 0; } }
 @media (max-width: 640px) {

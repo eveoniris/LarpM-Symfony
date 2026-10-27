@@ -6,6 +6,7 @@ namespace App\Form;
 
 use App\Entity\Classe;
 use App\Entity\Competence;
+use App\Entity\Gn;
 use App\Entity\Groupe;
 use App\Entity\Religion;
 use App\Entity\User;
@@ -14,6 +15,7 @@ use App\Repository\CompetenceRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\ReligionRepository;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -86,6 +88,14 @@ class PersonnageFindType extends AbstractType
                 'class' => Groupe::class,
                 'choice_label' => 'nom',
                 'query_builder' => static fn (GroupeRepository $gr) => $gr->createQueryBuilder('gr')->orderBy('gr.nom', 'ASC'),
+            ])
+            ->add('gn', EntityType::class, [
+                'required' => false,
+                'label' => 'Par participation à un GN : ',
+                'placeholder' => 'Participation à un GN',
+                'class' => Gn::class,
+                'choice_label' => 'label',
+                'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('gn')->orderBy('gn.id', 'DESC'),
             ])
             ->add('vivant', ChoiceType::class, [
                 'required' => false,
