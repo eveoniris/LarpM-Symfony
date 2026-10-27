@@ -26,6 +26,19 @@ final readonly class Attendee
     ) {
     }
 
+    /** Identifiant de la réponse au formulaire HelloAsso (billet, puis commande, puis article). */
+    public function formResponseId(): ?string
+    {
+        foreach (['formResponseId', 'sellingItemFormResponseId', 'orderFormResponseId'] as $key) {
+            $id = self::nullableStr($this->raw[$key] ?? null);
+            if (null !== $id) {
+                return $id;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Construit un Attendee depuis un élément JSON de l'API. Tolérant : les champs absents restent null.
      *

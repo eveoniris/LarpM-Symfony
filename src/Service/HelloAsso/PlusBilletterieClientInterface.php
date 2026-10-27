@@ -27,6 +27,14 @@ interface PlusBilletterieClientInterface
     public function listProducts(string $eventId): array;
 
     /**
+     * E-mail du compte LarpManager déclaré par chaque participant dans le champ « EMAIL LARPMANAGER » du formulaire
+     * HelloAsso, indexé par identifiant de réponse de formulaire (formResponseId). Vide si la route n'est pas accessible.
+     *
+     * @return array<string, string>
+     */
+    public function declaredEmails(string $eventId): array;
+
+    /**
      * Teste en lecture seule les routes HelloAsso et renvoie le statut HTTP de chacune.
      *
      * @return list<array{route: string, statut: int|null, erreur: string|null}>

@@ -16,6 +16,8 @@ use App\Repository\BilletSyncRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Synchronise les participants HelloAsso Plus Billetterie d'un GN (par lots) et applique les rapprochements validés.
@@ -29,6 +31,7 @@ class BilletSyncService
         private readonly AttendeeMatcher $matcher,
         private readonly EntityManagerInterface $entityManager,
         private readonly BilletSyncRepository $billetSyncRepository,
+        private readonly CacheInterface $cache,
     ) {
     }
 
@@ -49,9 +52,10 @@ class BilletSyncService
         }
 
         $page = $this->client->listAttendees($eventId, $skip, $limit);
+        $declared = $this->declaredEmails($eventId, 0 === $skip);
 
         foreach ($page['items'] as $attendee) {
-            $this->upsert($gn, $attendee);
+            $this->upsert($gn, $attendee, $declared);
         }
 
         $this->entityManager->flush();
@@ -227,7 +231,28 @@ class BilletSyncService
         $this->entityManager->flush();
     }
 
-    private function upsert(Gn $gn, Attendee $attendee): void
+    /**
+     * E-mails de compte LarpManager déclarés dans les formulaires, mis en cache le temps d'une synchronisation
+     * (une lecture complète des réponses serait refaite à chaque lot de 100 sinon).
+     *
+     * @return array<string, string>
+     */
+    private function declaredEmails(string $eventId, bool $refresh): array
+    {
+        $key = 'helloasso_declared_emails_' . md5($eventId);
+        if ($refresh) {
+            $this->cache->delete($key);
+        }
+
+        return $this->cache->get($key, function (ItemInterface $item) use ($eventId): array {
+            $item->expiresAfter(900);
+
+            return $this->client->declaredEmails($eventId);
+        });
+    }
+
+    /** @param array<string, string> $declared */
+    private function upsert(Gn $gn, Attendee $attendee, array $declared): void
     {
         if ('' === $attendee->id) {
             return;
@@ -237,11 +262,12 @@ class BilletSyncService
         $nouveau = null === $sync;
         $sync ??= $this->creer($gn, $attendee->id);
 
-        $this->remplir($sync, $attendee);
+        $declaredEmail = $declared[$attendee->formResponseId() ?? ''] ?? null;
+        $this->remplir($sync, $attendee, $declaredEmail);
 
         // Une ligne déjà traitée garde sa décision ; sinon on (re)calcule la proposition.
         if ($nouveau || SyncEtat::A_VALIDER === $sync->getEtat()) {
-            $match = $this->matcher->match($gn, $attendee);
+            $match = $this->matcher->match($gn, $attendee, $declaredEmail);
             $sync->setUser($match['user']);
             $sync->setBillet($match['billet']);
             $sync->setConfiance($match['confiance']);
@@ -258,7 +284,7 @@ class BilletSyncService
         return $sync;
     }
 
-    private function remplir(BilletSync $sync, Attendee $attendee): void
+    private function remplir(BilletSync $sync, Attendee $attendee, ?string $declaredEmail): void
     {
         $sync->setOrderId($attendee->orderId);
         $sync->setProductId($attendee->productId);
@@ -266,7 +292,7 @@ class BilletSyncService
         $sync->setNom($attendee->nom);
         $sync->setStatus($attendee->status);
         $sync->setPrice($attendee->price);
-        $sync->setRawData($attendee->raw);
+        $sync->setRawData(null === $declaredEmail ? $attendee->raw : [...$attendee->raw, '_emailLarpManager' => $declaredEmail]);
         $sync->setSynchroniseLe(new DateTime());
     }
 

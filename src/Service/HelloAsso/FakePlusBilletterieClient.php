@@ -35,6 +35,11 @@ class FakePlusBilletterieClient implements PlusBilletterieClientInterface
         ];
     }
 
+    public function declaredEmails(string $eventId): array
+    {
+        return [];
+    }
+
     public function listProducts(string $eventId): array
     {
         $names = [];

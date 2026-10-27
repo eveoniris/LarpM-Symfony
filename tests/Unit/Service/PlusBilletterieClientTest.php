@@ -27,6 +27,40 @@ class PlusBilletterieClientTest extends TestCase
         ]);
     }
 
+    public function testEmailsDeclaresLusViaLesFormulairesEtLesReponses(): void
+    {
+        $client = $this->client(function (string $method, string $url): MockResponse {
+            if (str_contains($url, '/forms')) {
+                return self::json([
+                    'data' => [[
+                        '_id' => 'f1',
+                        'fields' => [
+                            ['key' => 'k-nom', 'name' => 'NOM'],
+                            ['key' => 'k-mail', 'name' => 'EMAIL LARPMANAGER'],
+                        ],
+                    ]],
+                ]);
+            }
+
+            return self::json([
+                'data' => [
+                    ['_id' => 'r1', 'values' => [['key' => 'k-nom', 'value' => 'Darc'], ['key' => 'k-mail', 'value' => ' Jeanne@Example.org ']]],
+                    ['_id' => 'r2', 'values' => [['key' => 'k-mail', 'value' => 'pas un mail']]],
+                    ['_id' => 'r3', 'values' => [['key' => 'k-nom', 'value' => 'Sans mail']]],
+                ],
+            ]);
+        });
+
+        $this->assertSame(['r1' => 'jeanne@example.org'], $client->declaredEmails('evt1'));
+    }
+
+    public function testEmailsDeclaresVidesSiFormulairesInaccessibles(): void
+    {
+        $client = $this->client(static fn (): MockResponse => self::json([], 401));
+
+        $this->assertSame([], $client->declaredEmails('evt1'));
+    }
+
     public function testLitLaRouteAttendeesAvecPrefixeOrganisateur(): void
     {
         $urls = [];

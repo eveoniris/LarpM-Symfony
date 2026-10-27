@@ -136,7 +136,7 @@
                 <tbody>
                 {% for sync in paginator %}
                     <tr>
-                        <td>{{ sync.nom }}<br><small>{{ sync.email }}</small></td>
+                        <td>{{ sync.nom }}<br><small>{{ sync.email }}</small>{% if sync.rawData._emailLarpManager is defined %}<br><small class="text-muted">compte déclaré : {{ sync.rawData._emailLarpManager }}</small>{% endif %}</td>
                         <td><small>{{ nomsProduits[sync.productId]|default(sync.productId) }}</small></td>
                         <td>{{ sync.status }}</td>
                         <td>{{ sync.price is not null ? (sync.price / 100)|number_format(2, ',', ' ') ~ ' €' : '' }}</td>
