@@ -20,17 +20,33 @@
 	{% set f = formContenuJoueur %}
 	{{ form_start(f, {'attr': {'data-lm-unsaved': ''}}) }}
 
+	{# Seules les pièces qui concernent le profil du personnage sont demandées ; les autres restent accessibles, repliées. #}
+	{% set pieces = ['fichePersonnage', 'ficheRetour', 'ficheSort', 'fichePriere', 'carteAlchimiste', 'copiesRecettesSorts', 'corruptionOuvertes', 'corruptionNonOuvertes', 'pincesALinge'] %}
+	{% set attendues = pieces|filter(nom => piecesAttendues[nom] ?? true) %}
+	{% set inattendues = pieces|filter(nom => not (piecesAttendues[nom] ?? true)) %}
+	{% set inattenduesUtilisees = inattendues|filter(nom => attribute(contenuJoueur, nom)) %}
 	<fieldset class="mb-3">
 		<legend class="h6">Pièces jointes à l'enveloppe</legend>
+		{% if profilPersonnage %}
+			<p class="small text-muted">Profil du personnage : <strong>{{ profilPersonnage }}</strong>. Seules les pièces qui le concernent sont demandées ; les autres sont dans « Autres pièces ».</p>
+		{% endif %}
 		<div class="row row-cols-1 row-cols-md-2 g-1">
-			{% for nom in ['fichePersonnage', 'ficheRetour', 'ficheSort', 'fichePriere', 'carteAlchimiste', 'copiesRecettesSorts'] %}
-				<div class="col">{{ form_row(f[nom]) }}</div>
-			{% endfor %}
-			{% for nom in ['corruptionOuvertes', 'corruptionNonOuvertes', 'pincesALinge'] %}
+			{% for nom in attendues %}
 				<div class="col">{{ form_row(f[nom]) }}</div>
 			{% endfor %}
 		</div>
 		{{ form_row(f.documentsNumerotes) }}
+		{% if inattendues|length > 0 %}
+			<details class="mt-2" {{ inattenduesUtilisees|length > 0 ? 'open' : '' }}>
+				<summary class="small">Autres pièces (non attendues pour ce profil)</summary>
+				<p class="small text-muted mb-1">À cocher seulement si elles se trouvent quand même dans l'enveloppe.</p>
+				<div class="row row-cols-1 row-cols-md-2 g-1">
+					{% for nom in inattendues %}
+						<div class="col">{{ form_row(f[nom]) }}</div>
+					{% endfor %}
+				</div>
+			</details>
+		{% endif %}
 	</fieldset>
 
 	<details class="mb-3" open>
