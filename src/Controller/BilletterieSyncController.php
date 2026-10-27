@@ -6,11 +6,13 @@ namespace App\Controller;
 
 use App\Entity\Billet;
 use App\Entity\BilletSync;
+use App\Entity\BilletTarif;
 use App\Entity\Gn;
 use App\Entity\User;
 use App\Enum\SyncConfiance;
 use App\Enum\SyncEtat;
 use App\Repository\BilletSyncRepository;
+use App\Repository\BilletTarifRepository;
 use App\Service\HelloAsso\BilletSyncService;
 use App\Service\HelloAsso\PlusBilletterieException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,6 +38,7 @@ final class BilletterieSyncController extends SymfonyAbstractController
     public function __construct(
         private readonly BilletSyncService $syncService,
         private readonly BilletSyncRepository $billetSyncRepository,
+        private readonly BilletTarifRepository $tarifRepository,
         private readonly EntityManagerInterface $entityManager,
         #[Autowire('%helloasso.plus.enabled%')]
         private readonly bool $enabled,
@@ -114,6 +117,7 @@ final class BilletterieSyncController extends SymfonyAbstractController
             'compteConfiances' => $this->billetSyncRepository->countBy($gn, 'confiance', $etat),
             'compteStatuts' => $this->billetSyncRepository->countBy($gn, 'status', $etat),
             'produits' => $productCounts,
+            'tarifs' => $this->tarifRows($gn),
             'nomsProduits' => $productNames,
             'billets' => $this->entityManager->getRepository(Billet::class)->findBy(['gn' => $gn], ['label' => 'ASC']),
         ]);
@@ -128,14 +132,23 @@ final class BilletterieSyncController extends SymfonyAbstractController
         $this->assertEnabled();
         $this->assertCsrf($request, $gn);
 
-        $billetByProduct = [];
-        foreach ($request->request->all('produit') as $productId => $billetId) {
-            $billetByProduct[(string) $productId] = (int) $billetId;
+        $rows = [];
+        foreach ($request->request->all('tarif') as $row) {
+            if (!\is_array($row)) {
+                continue;
+            }
+            $price = $row['price'] ?? '';
+            $rows[] = [
+                'product' => trim((string) ($row['product'] ?? '')),
+                'price' => '' === $price || !is_numeric($price) ? null : (int) $price,
+                'billet' => (int) ($row['billet'] ?? 0),
+                'prioritaire' => '1' === (string) ($row['prioritaire'] ?? ''),
+            ];
         }
 
         try {
-            $count = $this->syncService->associateProducts($gn, $billetByProduct);
-            $this->addFlash('success', 'Produits associés, ' . $count . ' proposition(s) de billet recalculée(s).');
+            $count = $this->syncService->saveTarifs($gn, $rows);
+            $this->addFlash('success', 'Tarifs enregistrés, ' . $count . ' proposition(s) de billet recalculée(s).');
         } catch (InvalidArgumentException $exception) {
             $this->addFlash('error', $exception->getMessage());
         }
@@ -192,8 +205,11 @@ final class BilletterieSyncController extends SymfonyAbstractController
         $this->assertCsrf($request, $gn);
 
         $admin = $this->getUser();
-        $count = $this->syncService->validateAllSure($gn, $admin instanceof User ? $admin : null);
-        $this->addFlash('success', $count . ' billet(s) attribué(s).');
+        $result = $this->syncService->validateAllSure($gn, $admin instanceof User ? $admin : null);
+        $this->addFlash('success', $result['valides'] . ' billet(s) attribué(s).');
+        if ($result['doublons'] > 0) {
+            $this->addFlash('warning', $result['doublons'] . ' ligne(s) laissée(s) à traiter : le compte a plusieurs lignes payées sans billet prioritaire pour trancher.');
+        }
 
         return $this->redirectToRapprochement($gn);
     }
@@ -209,6 +225,31 @@ final class BilletterieSyncController extends SymfonyAbstractController
         $this->addFlash('success', 'Ligne ignorée.');
 
         return $this->redirectToRapprochement($gn);
+    }
+
+    /**
+     * Lignes du tableau des tarifs : chaque couple produit + prix présent dans les participants, avec le billet associé.
+     *
+     * @return list<array{product: string, price: int|null, nb: int, billet: int, prioritaire: bool}>
+     */
+    private function tarifRows(Gn $gn): array
+    {
+        $existing = $this->tarifRepository->findByGn($gn);
+
+        $rows = [];
+        foreach ($this->billetSyncRepository->countTarifs($gn) as $couple) {
+            $tarif = BilletTarifRepository::resolve($existing, $couple['product'], $couple['price']);
+            $exact = $tarif instanceof BilletTarif && $tarif->getPrice() === $couple['price'];
+            $rows[] = [
+                'product' => $couple['product'],
+                'price' => $couple['price'],
+                'nb' => $couple['nb'],
+                'billet' => $exact ? (int) $tarif->getBillet()?->getId() : 0,
+                'prioritaire' => $exact && $tarif->isPrioritaire(),
+            ];
+        }
+
+        return $rows;
     }
 
     private function assertEnabled(): void

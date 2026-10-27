@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Service\HelloAsso;
 
 use App\Entity\Billet;
+use App\Entity\BilletTarif;
 use App\Entity\Gn;
 use App\Entity\User;
 use App\Enum\SyncConfiance;
+use App\Repository\BilletTarifRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -17,19 +19,23 @@ class AttendeeMatcher
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly BilletTarifRepository $tarifRepository,
     ) {
     }
 
     /**
      * @return array{user: ?User, billet: ?Billet, confiance: SyncConfiance}
      */
-    public function match(Gn $gn, Attendee $attendee, ?string $declaredEmail = null): array
+    /**
+     * @param list<BilletTarif>|null $tarifs tarifs du GN déjà chargés (sinon lus ici)
+     */
+    public function match(Gn $gn, Attendee $attendee, ?string $declaredEmail = null, ?array $tarifs = null): array
     {
         [$user, $confiance] = $this->matchUser($attendee, $declaredEmail);
 
         return [
             'user' => $user,
-            'billet' => $this->matchBillet($gn, $attendee),
+            'billet' => $this->matchBillet($gn, $attendee->productId, $attendee->price, $tarifs),
             'confiance' => $confiance,
         ];
     }
@@ -72,17 +78,28 @@ class AttendeeMatcher
         return [null, SyncConfiance::AUCUN];
     }
 
-    private function matchBillet(Gn $gn, Attendee $attendee): ?Billet
+    /**
+     * Billet du tarif (produit + prix) associé dans le tableau de rapprochement, sinon billet portant l'identifiant
+     * de produit (ancienne association un produit pour un billet).
+     *
+     * @param list<BilletTarif>|null $tarifs
+     */
+    public function matchBillet(Gn $gn, ?string $productId, ?int $price, ?array $tarifs = null): ?Billet
     {
-        if (null === $attendee->productId) {
+        if (null === $productId) {
             return null;
+        }
+
+        $tarif = BilletTarifRepository::resolve($tarifs ?? $this->tarifRepository->findByGn($gn), $productId, $price);
+        if ($tarif instanceof BilletTarif) {
+            return $tarif->getBillet();
         }
 
         return $this->entityManager
             ->getRepository(Billet::class)
             ->findOneBy([
                 'gn' => $gn,
-                'helloassoProductId' => $attendee->productId,
+                'helloassoProductId' => $productId,
             ]);
     }
 }

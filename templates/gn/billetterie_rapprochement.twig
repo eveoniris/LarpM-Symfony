@@ -12,52 +12,59 @@
             {'name' : 'Rapprochement HelloAsso' }
         ]} %}
 
-        {# Association des produits HelloAsso aux billets du GN #}
+        {# Correspondance produit HelloAsso + prix -> billet LarpManager #}
         {% set nbSansBillet = 0 %}
-        {% for productId, nb in produits %}
-            {% set associe = false %}
-            {% for billet in billets %}{% if billet.helloassoProductId == productId %}{% set associe = true %}{% endif %}{% endfor %}
-            {% if not associe %}{% set nbSansBillet = nbSansBillet + 1 %}{% endif %}
-        {% endfor %}
+        {% for tarif in tarifs %}{% if tarif.billet == 0 %}{% set nbSansBillet = nbSansBillet + 1 %}{% endif %}{% endfor %}
         <details class="mb-3" {{ nbSansBillet > 0 ? 'open' : '' }}>
             <summary class="fw-bold">
-                Produits HelloAsso et billets LarpManager
-                {% if nbSansBillet > 0 %}<span class="badge bg-warning text-dark">{{ nbSansBillet }} produit(s) sans billet</span>{% endif %}
+                Tarifs HelloAsso et billets LarpManager
+                {% if nbSansBillet > 0 %}<span class="badge bg-warning text-dark">{{ nbSansBillet }} tarif(s) sans billet</span>{% endif %}
             </summary>
             <form method="post" action="{{ path('gn.billetterie.produits', {'gn': gn.id}) }}" class="mt-2">
                 <input type="hidden" name="_token" value="{{ csrf_token('billetterie_sync_' ~ gn.id) }}">
+                <p class="small text-muted mb-2">
+                    Un tarif est un produit HelloAsso payé à un prix donné. Plusieurs tarifs peuvent mener au même billet
+                    (dons solidaires), et un produit peut mener à des billets différents selon le prix.
+                    « Prioritaire » : si le participant a aussi une autre ligne payée, ce billet l'emporte (place solidaire).
+                </p>
                 <div class="table-responsive">
                     <table class="table table-sm align-middle">
                         <thead>
-                        <tr><th>Produit HelloAsso</th><th class="text-end">Participants</th><th>Billet LarpManager</th></tr>
+                        <tr><th>Produit HelloAsso</th><th class="text-end">Prix</th><th class="text-end">Participants</th><th>Billet LarpManager</th><th class="text-center">Prioritaire</th></tr>
                         </thead>
                         <tbody>
-                        {% for productId in produits|keys %}
+                        {% for tarif in tarifs %}
                             <tr>
                                 <td>
-                                    {{ nomsProduits[productId]|default('Produit sans nom') }}
-                                    <br><small class="text-muted">{{ productId }}</small>
+                                    {{ nomsProduits[tarif.product]|default('Produit sans nom') }}
+                                    <br><small class="text-muted">{{ tarif.product }}</small>
+                                    <input type="hidden" name="tarif[{{ loop.index0 }}][product]" value="{{ tarif.product }}">
+                                    <input type="hidden" name="tarif[{{ loop.index0 }}][price]" value="{{ tarif.price }}">
                                 </td>
+                                <td class="text-end">{{ tarif.price is not null ? (tarif.price / 100)|number_format(2, ',', ' ') ~ ' €' : '-' }}</td>
                                 <td class="text-end">
-                                    <a href="{{ path('gn.billetterie.rapprochement', queryBase|merge({'produit': productId, 'page': 1})) }}">{{ produits[productId] }}</a>
+                                    <a href="{{ path('gn.billetterie.rapprochement', queryBase|merge({'produit': tarif.product, 'page': 1})) }}">{{ tarif.nb }}</a>
                                 </td>
                                 <td>
-                                    <select name="produit[{{ productId }}]" class="form-select form-select-sm">
+                                    <select name="tarif[{{ loop.index0 }}][billet]" class="form-select form-select-sm">
                                         <option value="0">Aucun billet</option>
                                         {% for billet in billets %}
-                                            <option value="{{ billet.id }}" {{ billet.helloassoProductId == productId ? 'selected' : '' }}>{{ billet.label }}</option>
+                                            <option value="{{ billet.id }}" {{ billet.id == tarif.billet ? 'selected' : '' }}>{{ billet.label }}</option>
                                         {% endfor %}
                                     </select>
                                 </td>
+                                <td class="text-center">
+                                    <input type="checkbox" class="form-check-input" name="tarif[{{ loop.index0 }}][prioritaire]" value="1" {{ tarif.prioritaire ? 'checked' : '' }}>
+                                </td>
                             </tr>
                         {% else %}
-                            <tr><td colspan="3" class="text-muted text-center">Aucun produit. Lancez « Contrôler la billetterie » depuis la page billetterie.</td></tr>
+                            <tr><td colspan="5" class="text-muted text-center">Aucun produit. Lancez « Contrôler la billetterie » depuis la page billetterie.</td></tr>
                         {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                <button class="btn btn-primary btn-sm" type="submit">Enregistrer les associations</button>
-                <span class="text-muted small">Les propositions de billet des lignes « À valider » sont recalculées. Un billet ne peut être associé qu'à un seul produit.</span>
+                <button class="btn btn-primary btn-sm" type="submit">Enregistrer les tarifs</button>
+                <span class="text-muted small">Les billets proposés des lignes « À valider » sont recalculés.</span>
             </form>
         </details>
 

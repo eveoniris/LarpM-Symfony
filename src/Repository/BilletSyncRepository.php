@@ -84,6 +84,32 @@ class BilletSyncRepository extends BaseRepository
         return $counts;
     }
 
+    /**
+     * Couples produit + prix présents dans les participants du GN, avec leur effectif.
+     *
+     * @return list<array{product: string, price: int|null, nb: int}>
+     */
+    public function countTarifs(Gn $gn): array
+    {
+        $rows = $this
+            ->createQueryBuilder('s')
+            ->select('s.productId AS product', 's.price AS price', 'COUNT(s.id) AS nb')
+            ->andWhere('s.gn = :gn')
+            ->andWhere('s.productId IS NOT NULL')
+            ->setParameter('gn', $gn)
+            ->groupBy('s.productId', 's.price')
+            ->orderBy('s.productId', 'ASC')
+            ->addOrderBy('s.price', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static fn (array $row): array => [
+            'product' => (string) $row['product'],
+            'price' => null === $row['price'] ? null : (int) $row['price'],
+            'nb' => (int) $row['nb'],
+        ], $rows);
+    }
+
     /** @return list<BilletSync> */
     public function findByGnAndEtat(Gn $gn, ?SyncEtat $etat = null): array
     {
