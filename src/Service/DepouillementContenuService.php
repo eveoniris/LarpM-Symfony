@@ -29,6 +29,7 @@ readonly class DepouillementContenuService
         private EntityManagerInterface $entityManager,
         private ActionsFinOpusRegles $regles,
         private ContenuJoueurSerialiseur $serialiseur,
+        private ControleApprentissage $controleApprentissage,
     ) {
     }
 
@@ -87,11 +88,17 @@ readonly class DepouillementContenuService
      *
      * @return list<string>
      */
-    public function anomalies(ContenuJoueur $contenu): array
+    public function anomalies(ContenuJoueur $contenu, ?Depouillement $depouillement = null): array
     {
         $anomalies = [];
         foreach ($this->regles->evaluer($contenu) as $resultat) {
             $anomalies = [...$anomalies, ...$resultat->anomalies];
+        }
+
+        // L'enseignant d'une compétence apprise est contrôlé dès la saisie, pas seulement à la validation.
+        $apprentissage = null === $depouillement ? null : $this->controleApprentissage->avertissement($depouillement, $contenu);
+        if (null !== $apprentissage) {
+            $anomalies[] = $apprentissage;
         }
 
         if (null !== $contenu->introuvables && '' !== trim($contenu->introuvables)) {

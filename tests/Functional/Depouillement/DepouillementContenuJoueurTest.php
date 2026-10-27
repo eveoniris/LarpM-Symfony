@@ -5,10 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Depouillement;
 
 use App\Entity\Depouillement;
+use App\Entity\Participant;
 use App\Entity\User;
 use App\Enum\DepouillementStatut;
 use App\Enum\DepouillementType;
+use App\Tests\Factory\CompetenceFactory;
+use App\Tests\Factory\CompetenceFamilyFactory;
 use App\Tests\Factory\GnFactory;
+use App\Tests\Factory\ParticipantFactory;
+use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
@@ -128,6 +133,43 @@ class DepouillementContenuJoueurTest extends WebTestCase
         static::assertSame(4, $relu->getDonnees()['contenu_joueur']['surplus']['bois']);
         static::assertTrue($relu->getDonnees()['contenu_joueur']['pieces']['fiche_personnage']);
         static::assertStringContainsString('[Introuvable] Sort de feu inconnu', (string) $relu->getRemarques());
+    }
+
+    public function testLesPiecesAttenduesSuiventLeProfilDuPersonnage(): void
+    {
+        $client = static::createClient();
+        $moi = $this->beta();
+        $gn = GnFactory::createOne();
+        $profane = PersonnageFactory::createOne();
+        $magicien = PersonnageFactory::createOne();
+        // Le côté propriétaire de la relation est la compétence : il faut l'enregistrer des deux côtés pour que la base la retienne.
+        $competence = CompetenceFactory::createOne(['competenceFamily' => CompetenceFamilyFactory::createOne(['label' => 'Magie'])]);
+        $competence->addPersonnage($magicien);
+        $magicien->addCompetence($competence);
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->flush();
+        $client->loginUser($moi);
+
+        foreach ([[$profane, false], [$magicien, true]] as [$personnage, $attendue]) {
+            ParticipantFactory::createOne(['gn' => $gn, 'user' => UserFactory::createOne(), 'personnage' => $personnage]);
+            $depouillement = (new Depouillement())
+                ->setGn($gn)
+                ->setType(DepouillementType::JOUEUR)
+                ->setNumero((string) $personnage->getId())
+                ->setParticipant($em->getRepository(Participant::class)->findOneBy(['gn' => $gn, 'personnage' => $personnage]))
+                ->setSimulation(true)
+                ->setDepouilleur($moi);
+            $em->persist($depouillement);
+            $em->flush();
+
+            $crawler = $client->request('GET', $this->contenu($depouillement));
+
+            static::assertResponseIsSuccessful();
+            // Attendue : la corruption est dans la liste principale. Sinon elle est repliée dans « Autres pièces ».
+            static::assertSame($attendue ? 0 : 1, $crawler->filter('details:contains("Autres pièces") input[name="contenu_joueur[corruptionOuvertes]"]')->count());
+            static::assertSame(1, $crawler->filter('input[name="contenu_joueur[corruptionOuvertes]"]')->count());
+            static::assertSelectorExists('input[name="contenu_joueur[fichePersonnage]"]');
+        }
     }
 
     public function testLesActionsSontPreselectionneesDApresLesRessourcesTrouvees(): void

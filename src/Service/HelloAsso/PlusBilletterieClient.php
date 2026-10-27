@@ -55,6 +55,79 @@ class PlusBilletterieClient implements PlusBilletterieClientInterface
         return [...$this->page($items, \count($attendees), $response, $skip, $limit), 'source' => 'attendees', 'statutAttendees' => null];
     }
 
+    public function declaredEmails(string $eventId): array
+    {
+        $base = \sprintf('%s/organizers/%s/events/%s', self::BASE_URL, rawurlencode($this->organizerId), rawurlencode($eventId));
+
+        try {
+            // Le champ est repéré par son libellé (« EMAIL LARPMANAGER »), sa clé étant la même dans tous les formulaires.
+            $keys = [];
+            $forms = $this->get($base . '/forms', ['limit' => 50], [401, 403, 404]);
+            foreach (\is_array($forms['data'] ?? null) ? $forms['data'] : [] as $form) {
+                foreach (\is_array($form) && \is_array($form['fields'] ?? null) ? $form['fields'] : [] as $field) {
+                    $label = \is_array($field) && \is_scalar($field['name'] ?? null) ? mb_strtolower((string) $field['name']) : '';
+                    if (str_contains($label, 'larpmanager') && str_contains($label, 'mail') && \is_scalar($field['key'] ?? null)) {
+                        $keys[(string) $field['key']] = true;
+                    }
+                }
+            }
+            if ([] === $keys) {
+                return [];
+            }
+
+            $emails = [];
+            for ($skip = 0; $skip < 10000; $skip += 100) {
+                $page = $this->get($base . '/formresponses', ['limit' => 100, 'skip' => $skip], [401, 403, 404]);
+                $rows = \is_array($page['data'] ?? null) ? $page['data'] : [];
+                foreach ($rows as $row) {
+                    if (!\is_array($row) || !\is_scalar($row['_id'] ?? null)) {
+                        continue;
+                    }
+                    foreach (\is_array($row['values'] ?? null) ? $row['values'] : [] as $value) {
+                        $answer = \is_array($value) && \is_string($value['value'] ?? null) ? mb_strtolower(trim($value['value'])) : '';
+                        if (\is_array($value) && isset($keys[(string) ($value['key'] ?? '')]) && false !== filter_var($answer, FILTER_VALIDATE_EMAIL)) {
+                            $emails[(string) $row['_id']] = $answer;
+                        }
+                    }
+                }
+                if (\count($rows) < 100) {
+                    break;
+                }
+            }
+
+            return $emails;
+        } catch (PlusBilletterieException) {
+            return [];
+        }
+    }
+
+    public function listProducts(string $eventId): array
+    {
+        $url = \sprintf('%s/organizers/%s/events/%s/products', self::BASE_URL, rawurlencode($this->organizerId), rawurlencode($eventId));
+        $names = [];
+
+        try {
+            // Quelques pages suffisent : un évènement a une poignée de produits.
+            for ($skip = 0; $skip < 500; $skip += 100) {
+                $refused = null;
+                $response = $this->get($url, ['limit' => 100, 'skip' => $skip], [401, 403, 404], $refused);
+                $products = \is_array($response['data'] ?? null) ? $response['data'] : [];
+                foreach ($products as $product) {
+                    if (\is_array($product) && \is_scalar($product['_id'] ?? null) && \is_scalar($product['name'] ?? null)) {
+                        $names[(string) $product['_id']] = (string) $product['name'];
+                    }
+                }
+                if (\count($products) < 100) {
+                    break;
+                }
+            }
+        } catch (PlusBilletterieException) {
+            return $names;
+        }
+
+        return $names;
+    }
+
     /**
      * Teste en lecture seule les routes utiles et renvoie le statut HTTP de chacune (jamais la clé ni le corps).
      */

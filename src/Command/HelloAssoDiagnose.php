@@ -90,7 +90,11 @@ class HelloAssoDiagnose extends Command
         $url = \sprintf('%s/organizers/%s/events/%s/%s', self::BASE_URL, rawurlencode($this->organizerId), rawurlencode($eventId), rawurlencode($resource));
 
         try {
-            $response = $this->httpClient->request('GET', $url, ['headers' => ['X-API-KEY' => $key, 'Accept' => 'application/json'], 'query' => ['limit' => 1], 'timeout' => 20]);
+            $response = $this->httpClient->request('GET', $url, [
+                'headers' => ['X-API-KEY' => $key, 'Accept' => 'application/json'],
+                'query' => ['limit' => 'forms' === $resource ? 20 : 1],
+                'timeout' => 20,
+            ]);
             $status = $response->getStatusCode();
             $data = $response->toArray(false);
         } catch (ExceptionInterface $exception) {
@@ -100,10 +104,45 @@ class HelloAssoDiagnose extends Command
         }
 
         $io->writeln(\sprintf('%s -> %d', $resource, $status));
+        if ('forms' === $resource) {
+            $io->writeln($this->formsSummary($data));
+
+            return Command::SUCCESS;
+        }
+
         $first = \is_array($data['data'] ?? null) && [] !== $data['data'] ? $data['data'][0] : $data;
         $io->writeln(json_encode($this->shape($first, $resource), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Formulaires et champs (clé, type, libellé). Ce sont des intitulés de questions, jamais des réponses de participants.
+     *
+     * @param array<array-key, mixed> $data
+     */
+    private function formsSummary(array $data): string
+    {
+        $lines = [];
+        foreach (\is_array($data['data'] ?? null) ? $data['data'] : [] as $form) {
+            if (!\is_array($form)) {
+                continue;
+            }
+
+            $lines[] = \sprintf('Formulaire %s : %s', $this->text($form['_id'] ?? null), $this->text($form['name'] ?? null));
+            foreach (\is_array($form['fields'] ?? null) ? $form['fields'] : [] as $field) {
+                if (\is_array($field)) {
+                    $lines[] = \sprintf('  %s | %s | %s', $this->text($field['key'] ?? null), $this->text($field['type'] ?? null), $this->text($field['name'] ?? null));
+                }
+            }
+        }
+
+        return [] === $lines ? 'Aucun formulaire.' : implode("\n", $lines);
+    }
+
+    private function text(mixed $value): string
+    {
+        return \is_scalar($value) ? (string) $value : '?';
     }
 
     /** Remplace les valeurs par leur type ; seuls les libellés techniques (label, title, type, name des produits) sont conservés. */

@@ -28,8 +28,8 @@ final class ConceptionRegles
 
     public const int GENRE_FEMININ = 2;
 
-    /** Seule espèce non humaine qui peut encore concevoir (comparée en minuscules). */
-    public const string ESPECE_AUTORISEE = 'ombrelin';
+    /** Espèces qui peuvent concevoir (comparées en minuscules) : l'espèce « Humain » que la fiche attribue d'office, et les Ombrelins. */
+    public const array ESPECES_AUTORISEES = ['humain', 'ombrelin'];
 
     public const int TIRAGE_MIN = 1;
 
@@ -104,18 +104,22 @@ final class ConceptionRegles
     }
 
     /**
-     * Pour le moment la conception échoue quoi qu'il arrive dès qu'un parent n'est pas humain (sans espèce), sauf les Ombrelins.
+     * Pour le moment la conception échoue quoi qu'il arrive dès qu'un parent a une espèce autre qu'Humain (ou aucune espèce, qui vaut humain) ou Ombrelin.
      *
      * @param list<string> $especes noms des espèces du personnage
      */
     public function anomalieEspece(string $parent, array $especes): ?string
     {
-        $bloquantes = array_filter($especes, static fn (string $nom): bool => self::ESPECE_AUTORISEE !== mb_strtolower(trim($nom)));
+        $bloquantes = array_filter($especes, static fn (string $nom): bool => !\in_array(mb_strtolower(trim($nom)), self::ESPECES_AUTORISEES, strict: true));
         if ([] === $bloquantes) {
             return null;
         }
 
-        return \sprintf('%s n\'est pas humain (%s) : la conception échoue d\'office pour le moment (seuls les Ombrelins font exception).', $parent, implode(', ', $bloquantes));
+        return \sprintf(
+            '%s a une espèce non humaine (%s) : la conception échoue d\'office pour le moment (seuls les Humains et les Ombrelins peuvent concevoir).',
+            $parent,
+            implode(', ', $bloquantes),
+        );
     }
 
     private function verifierTirage(int $tirage): int

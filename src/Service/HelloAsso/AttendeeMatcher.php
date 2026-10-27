@@ -23,9 +23,9 @@ class AttendeeMatcher
     /**
      * @return array{user: ?User, billet: ?Billet, confiance: SyncConfiance}
      */
-    public function match(Gn $gn, Attendee $attendee): array
+    public function match(Gn $gn, Attendee $attendee, ?string $declaredEmail = null): array
     {
-        [$user, $confiance] = $this->matchUser($attendee);
+        [$user, $confiance] = $this->matchUser($attendee, $declaredEmail);
 
         return [
             'user' => $user,
@@ -37,7 +37,7 @@ class AttendeeMatcher
     /**
      * @return array{0: ?User, 1: SyncConfiance}
      */
-    private function matchUser(Attendee $attendee): array
+    private function matchUser(Attendee $attendee, ?string $declaredEmail): array
     {
         $repository = $this->entityManager->getRepository(User::class);
 
@@ -45,6 +45,17 @@ class AttendeeMatcher
             $user = $repository->find((int) $attendee->idLarpManager);
             if ($user instanceof User) {
                 return [$user, SyncConfiance::SUR];
+            }
+        }
+
+        // E-mail du compte LarpManager saisi par le joueur dans le formulaire HelloAsso : correspondance déclarée.
+        if (null !== $declaredEmail && '' !== $declaredEmail) {
+            $users = $repository->findBy(['email' => $declaredEmail]);
+            if (1 === \count($users)) {
+                return [$users[0], SyncConfiance::SUR];
+            }
+            if (\count($users) > 1) {
+                return [null, SyncConfiance::AMBIGU];
             }
         }
 

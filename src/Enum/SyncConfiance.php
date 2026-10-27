@@ -9,7 +9,7 @@ enum SyncConfiance: string
 {
     use EnumTraits;
 
-    /** ID LarpManager saisi par le joueur : correspondance certaine. */
+    /** ID ou e-mail du compte LarpManager saisi par le joueur dans le formulaire HelloAsso : correspondance déclarée. */
     case SUR = 'sur';
 
     /** Adresse e-mail unique : correspondance probable. */
@@ -24,7 +24,7 @@ enum SyncConfiance: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::SUR => 'Sûr (ID LarpManager)',
+            self::SUR => 'Sûr (compte déclaré)',
             self::PROBABLE => 'Probable (e-mail)',
             self::AMBIGU => 'Ambigu',
             self::AUCUN => 'Aucun compte',

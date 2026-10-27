@@ -30,6 +30,24 @@ class HelloAssoAttendeeTest extends TestCase
         $this->assertNull($attendee->idLarpManager);
     }
 
+    public function testNomDepuisClientDetailsDeLaRouteAttendees(): void
+    {
+        $attendee = Attendee::fromArray([
+            '_id' => 'a1',
+            'email' => 'joueur@example.org',
+            'clientDetails' => ['firstName' => 'Jeanne', 'lastName' => 'Darc', 'address' => ['city' => 'Rouen']],
+        ]);
+
+        $this->assertSame('Jeanne Darc', $attendee->nom);
+    }
+
+    public function testFauxClientListeLesProduits(): void
+    {
+        $client = new FakePlusBilletterieClient([Attendee::fromArray(['id' => 'a', 'productId' => 'p1'])]);
+
+        $this->assertSame(['p1' => 'Produit p1'], $client->listProducts('evt'));
+    }
+
     public function testIdLarpManagerDepuisClientReference(): void
     {
         $attendee = Attendee::fromArray(['id' => 'a', 'clientReference' => '1234']);

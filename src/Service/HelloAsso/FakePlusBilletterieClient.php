@@ -35,6 +35,23 @@ class FakePlusBilletterieClient implements PlusBilletterieClientInterface
         ];
     }
 
+    public function declaredEmails(string $eventId): array
+    {
+        return [];
+    }
+
+    public function listProducts(string $eventId): array
+    {
+        $names = [];
+        foreach ($this->attendees ?? self::defaultAttendees() as $attendee) {
+            if (null !== $attendee->productId) {
+                $names[$attendee->productId] = 'Produit ' . $attendee->productId;
+            }
+        }
+
+        return $names;
+    }
+
     public function diagnose(string $eventId): array
     {
         return [['route' => '/events/{eventId}/attendees', 'statut' => null, 'erreur' => 'Faux client : aucune clé API configurée.']];

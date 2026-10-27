@@ -128,7 +128,21 @@ class ConceptionServiceTest extends KernelTestCase
 
         static::assertNull($conception->getTirage());
         static::assertSame(ConceptionIssue::ECHEC, $conception->getIssue());
-        static::assertStringContainsString('pas humain', $conception->getAnomalies()[0]);
+        static::assertStringContainsString('espèce non humaine', $conception->getAnomalies()[0]);
+    }
+
+    public function testUnPersonnageSansEspeceOuDEspeceHumainPeutConcevoir(): void
+    {
+        $gn = GnFactory::createOne();
+        $sansEspece = $this->inscrit($gn);
+        $humain = $this->inscrit($gn, genre: 2);
+        $humain->addEspece(EspeceFactory::createOne(['nom' => 'Humain']));
+        $this->em->flush();
+
+        $conception = $this->service->enregistrer($this->enveloppe($gn, $sansEspece), (string) $humain->getId(), UserFactory::createOne(), static fn (): int => 9);
+
+        static::assertSame(9, $conception->getTirage());
+        static::assertSame([], $conception->getAnomalies());
     }
 
     public function testUnOmbrelinPeutConcevoir(): void

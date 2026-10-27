@@ -18,6 +18,7 @@ use App\Enum\DepouillementType;
 use App\Service\ContenuJoueur;
 use App\Service\DepouillementApprentissageService;
 use App\Service\DepouillementContenuService;
+use App\Service\ControleApprentissage;
 use App\Service\DepouillementEnveloppeResolver;
 use App\Service\PersonnageService;
 use App\Tests\Factory\CompetenceFactory;
@@ -135,13 +136,37 @@ class DepouillementApprentissageServiceTest extends KernelTestCase
         $personnageService->method('canTeachCompetence')->willReturn(true);
         $personnageService->method('getApprentissageCompetences')->willReturn(new ArrayCollection([$competence]));
 
+        $resolver = new DepouillementEnveloppeResolver($this->em->getRepository(Depouillement::class));
+
         return new DepouillementApprentissageService(
             static::getContainer()->get(DepouillementContenuService::class),
-            new DepouillementEnveloppeResolver($this->em->getRepository(Depouillement::class)),
+            $resolver,
             $this->em,
-            $personnageService,
+            new ControleApprentissage($resolver, $personnageService),
             $this->em->getRepository(PersonnageApprentissage::class),
         );
+    }
+
+    public function testLAvertissementSurLEnseignantApparaitDesLaSaisie(): void
+    {
+        // Enseignant inconnu : averti à l'étape Contenu, avant toute validation.
+        [$depouillement] = $this->enveloppeAvecApprentissage(99_999_999);
+        $contenuService = static::getContainer()->get(DepouillementContenuService::class);
+        $contenu = $contenuService->lireContenuJoueur($depouillement);
+
+        $anomalies = $contenuService->anomalies($contenu, $depouillement);
+
+        static::assertStringContainsString('ne sera pas enregistré à la validation', implode(' | ', $anomalies));
+        static::assertStringContainsString('introuvable parmi les personnages inscrits', implode(' | ', $anomalies));
+
+        // Un enseignant inscrit mais sans la compétence au niveau expert est refusé de la même façon.
+        $enseignant = PersonnageFactory::createOne();
+        ParticipantFactory::createOne(['gn' => $depouillement->getGn(), 'user' => UserFactory::createOne(), 'personnage' => $enseignant]);
+        $contenu->enseignantNumero = $enseignant->getId();
+        static::assertStringContainsString('au moins au niveau expert', implode(' | ', $contenuService->anomalies($contenu, $depouillement)));
+
+        // Sans dépouillement fourni, aucun contrôle d'apprentissage n'est tenté (compatibilité).
+        static::assertSame([], $contenuService->anomalies($contenu));
     }
 
     public function testUnEnseignantIntrouvableOuQuiNePeutPasEnseignerRefuseLApprentissage(): void

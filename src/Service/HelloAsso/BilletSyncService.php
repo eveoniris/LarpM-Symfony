@@ -16,6 +16,8 @@ use App\Repository\BilletSyncRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Synchronise les participants HelloAsso Plus Billetterie d'un GN (par lots) et applique les rapprochements validés.
@@ -29,6 +31,7 @@ class BilletSyncService
         private readonly AttendeeMatcher $matcher,
         private readonly EntityManagerInterface $entityManager,
         private readonly BilletSyncRepository $billetSyncRepository,
+        private readonly CacheInterface $cache,
     ) {
     }
 
@@ -49,9 +52,10 @@ class BilletSyncService
         }
 
         $page = $this->client->listAttendees($eventId, $skip, $limit);
+        $declared = $this->declaredEmails($eventId, 0 === $skip);
 
         foreach ($page['items'] as $attendee) {
-            $this->upsert($gn, $attendee);
+            $this->upsert($gn, $attendee, $declared);
         }
 
         $this->entityManager->flush();
@@ -151,13 +155,104 @@ class BilletSyncService
         return $count;
     }
 
+    /**
+     * Nom des produits HelloAsso de l'évènement du GN (vide si la route n'est pas accessible).
+     *
+     * @return array<string, string>
+     */
+    public function productNames(Gn $gn): array
+    {
+        $eventId = $gn->getHelloassoEventId();
+
+        return null === $eventId ? [] : $this->client->listProducts($eventId);
+    }
+
+    /**
+     * Associe des produits HelloAsso à des billets du GN (un produit par billet), puis recalcule les propositions
+     * des lignes encore « à valider ». Les lignes déjà rapprochées ou ignorées ne bougent pas.
+     *
+     * @param array<string, int> $billetByProduct identifiant de produit => identifiant de billet (0 pour dissocier)
+     *
+     * @return int nombre de lignes dont le billet proposé a été recalculé
+     *
+     * @throws InvalidArgumentException si un billet est choisi pour plusieurs produits ou n'appartient pas au GN
+     */
+    public function associateProducts(Gn $gn, array $billetByProduct): int
+    {
+        $billets = [];
+        foreach ($gn->getBillets() as $billet) {
+            $billets[(int) $billet->getId()] = $billet;
+        }
+
+        $chosen = array_filter($billetByProduct, static fn (int $id): bool => $id > 0);
+        if (\count($chosen) !== \count(array_unique($chosen))) {
+            throw new InvalidArgumentException('Un billet ne peut être associé qu\'à un seul produit HelloAsso.');
+        }
+        foreach ($chosen as $billetId) {
+            if (!isset($billets[$billetId])) {
+                throw new InvalidArgumentException('Billet introuvable pour ce GN.');
+            }
+        }
+
+        // On libère d'abord les produits concernés, puis on pose les nouveaux liens.
+        foreach ($billets as $billet) {
+            if (\array_key_exists((string) $billet->getHelloassoProductId(), $billetByProduct)) {
+                $billet->setHelloassoProductId(null);
+            }
+        }
+        $this->entityManager->flush();
+        foreach ($chosen as $productId => $billetId) {
+            $billets[$billetId]->setHelloassoProductId((string) $productId);
+        }
+        $this->entityManager->flush();
+
+        $count = 0;
+        foreach ($this->billetSyncRepository->findByGnAndEtat($gn, SyncEtat::A_VALIDER) as $sync) {
+            $billet = null;
+            foreach ($billets as $candidate) {
+                if (null !== $sync->getProductId() && $candidate->getHelloassoProductId() === $sync->getProductId()) {
+                    $billet = $candidate;
+                    break;
+                }
+            }
+            if ($sync->getBillet() !== $billet) {
+                $sync->setBillet($billet);
+                ++$count;
+            }
+        }
+        $this->entityManager->flush();
+
+        return $count;
+    }
+
     public function ignore(BilletSync $sync): void
     {
         $sync->setEtat(SyncEtat::IGNORE);
         $this->entityManager->flush();
     }
 
-    private function upsert(Gn $gn, Attendee $attendee): void
+    /**
+     * E-mails de compte LarpManager déclarés dans les formulaires, mis en cache le temps d'une synchronisation
+     * (une lecture complète des réponses serait refaite à chaque lot de 100 sinon).
+     *
+     * @return array<string, string>
+     */
+    private function declaredEmails(string $eventId, bool $refresh): array
+    {
+        $key = 'helloasso_declared_emails_' . md5($eventId);
+        if ($refresh) {
+            $this->cache->delete($key);
+        }
+
+        return $this->cache->get($key, function (ItemInterface $item) use ($eventId): array {
+            $item->expiresAfter(900);
+
+            return $this->client->declaredEmails($eventId);
+        });
+    }
+
+    /** @param array<string, string> $declared */
+    private function upsert(Gn $gn, Attendee $attendee, array $declared): void
     {
         if ('' === $attendee->id) {
             return;
@@ -167,11 +262,12 @@ class BilletSyncService
         $nouveau = null === $sync;
         $sync ??= $this->creer($gn, $attendee->id);
 
-        $this->remplir($sync, $attendee);
+        $declaredEmail = $declared[$attendee->formResponseId() ?? ''] ?? null;
+        $this->remplir($sync, $attendee, $declaredEmail);
 
         // Une ligne déjà traitée garde sa décision ; sinon on (re)calcule la proposition.
         if ($nouveau || SyncEtat::A_VALIDER === $sync->getEtat()) {
-            $match = $this->matcher->match($gn, $attendee);
+            $match = $this->matcher->match($gn, $attendee, $declaredEmail);
             $sync->setUser($match['user']);
             $sync->setBillet($match['billet']);
             $sync->setConfiance($match['confiance']);
@@ -188,7 +284,7 @@ class BilletSyncService
         return $sync;
     }
 
-    private function remplir(BilletSync $sync, Attendee $attendee): void
+    private function remplir(BilletSync $sync, Attendee $attendee, ?string $declaredEmail): void
     {
         $sync->setOrderId($attendee->orderId);
         $sync->setProductId($attendee->productId);
@@ -196,7 +292,7 @@ class BilletSyncService
         $sync->setNom($attendee->nom);
         $sync->setStatus($attendee->status);
         $sync->setPrice($attendee->price);
-        $sync->setRawData($attendee->raw);
+        $sync->setRawData(null === $declaredEmail ? $attendee->raw : [...$attendee->raw, '_emailLarpManager' => $declaredEmail]);
         $sync->setSynchroniseLe(new DateTime());
     }
 
