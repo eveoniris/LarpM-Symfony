@@ -1,0 +1,7 @@
+# Compose file intended for use in the CI pipeline.
+
+services:
+    database:
+        healthcheck:
+            retries: 30
+            start_period: 60s
