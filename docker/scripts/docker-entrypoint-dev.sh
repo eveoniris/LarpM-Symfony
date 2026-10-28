@@ -16,23 +16,10 @@ if [ -f "importmap.php" ]; then
     IMPORTMAP_HASH=$(md5sum importmap.php | cut -d' ' -f1)
     if [ "$(cat var/.importmap.hash 2>/dev/null)" != "$IMPORTMAP_HASH" ]; then
         echo "Updating importmap assets..."
-        php bin/console importmap:install
+        php bin/console importmap:install || echo "WARN: importmap:install failed"
         echo "$IMPORTMAP_HASH" > var/.importmap.hash
     fi
 fi
-
-# Wait 60s for database
-echo "Waiting for database..."
-tries=0
-until php bin/console dbal:run-sql "SELECT 1" > /dev/null 2>&1; do
-    tries=$((tries + 1))
-    if [ "$tries" -gt 30 ]; then
-        echo "ERROR: Timed out waiting for database." >&2
-        exit 1
-    fi
-    sleep 2
-done
-echo "Database is ready."
 
 # Migrations
 ## If no migrations are recorded, the DB was just initialized from SQL files.
