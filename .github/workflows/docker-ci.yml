@@ -2,7 +2,7 @@ name: Docker
 
 concurrency:
     group: docker-${{ github.ref }}
-    cancel-in-progress: true
+    cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 on:
     workflow_dispatch:
@@ -22,7 +22,7 @@ jobs:
         permissions:
             contents: read
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - name: Create placeholder prod local env file (validation only)
               run: touch .env.prod-docker
@@ -41,11 +41,10 @@ jobs:
         needs: validate-compose
         permissions:
             contents: read
-            packages: write
         outputs:
             image_tags: ${{ steps.meta.outputs.tags }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - name: Lowercase image name
               run: echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
@@ -93,7 +92,7 @@ jobs:
         env:
             WEBSERVER_IMAGE: larpm-symfony:smoke-test
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - name: Download image artifact
               uses: actions/download-artifact@v4
@@ -133,11 +132,17 @@ jobs:
                     'until [ "$(docker inspect --format="{{.State.Health.Status}}" $(docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci.yml ps -q database))" = "healthy" ]; do sleep 2; done'
 
             - name: Create schema from current entity mappings
-              run: docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci.yml exec -T webserver php bin/console doctrine:schema:create --no-interaction
+              run:
+                  |
+                  DC="docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci.yml"
+                  $DC exec -T webserver php bin/console doctrine:schema:create --no-interaction
+                  $DC exec -T webserver php bin/console doctrine:migrations:sync-metadata-storage --no-interaction
+                  $DC exec -T webserver php bin/console doctrine:migrations:version --add --all --no-interaction
+                  $DC exec -T webserver php bin/console doctrine:schema:validate
 
             - name: Curl webserver
               run: |
-                  timeout 200s bash -c 'until curl -fsS http://localhost:80/ 2>&1 | tee -a /tmp/curl.log; do sleep 2; done'
+                  timeout 200s bash -c 'set -o pipefail; until curl -fsS http://localhost:80/ 2>&1 | tee -a /tmp/curl.log; do sleep 2; done'
                   docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci.yml ps
                   cat /tmp/curl.log
 
@@ -175,8 +180,9 @@ jobs:
                   password: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Push image
+              env:
+                  TAGS: "${{ needs.build.outputs.image_tags }}"
               run: |
-                  tags="${{ needs.build.outputs.image_tags }}"
-                  for tag in $tags; do
+                  for tag in $TAGS; do
                     docker push "$tag"
                   done
