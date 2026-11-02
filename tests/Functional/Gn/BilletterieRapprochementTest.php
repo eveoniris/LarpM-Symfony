@@ -171,7 +171,7 @@ class BilletterieRapprochementTest extends WebTestCase
         $lignes = [];
         $donnees = [
             ['s1', 'p1', 1000, $solidaire],
-            ['s2', 'p3', 500, $solidaire],
+            ['s2', 'p3', 500,  $solidaire],
             ['d1', 'p1', 1000, $doublon],
             ['d2', 'p2', 1000, $doublon],
         ];
