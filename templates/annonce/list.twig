@@ -15,7 +15,7 @@
             <h5>Liste des annonces</h5>
         </div>
 
-        {% if isAdmin %}
+        {% if is_granted('ROLE_REDACTEUR') %}
             <div class="btn-toolbar d-flex justify-content-end" role="toolbar">
                 <div class="btn-group" role="group">
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"

@@ -54,6 +54,11 @@
                 {% include 'homepage/fragment/scenariste.twig' with {'user': user} %}
             {% endif %}
 
+            {# si l'utilisateur est rédacteur, lui afficher l'accès à la gestion des annonces #}
+            {% if is_granted('ROLE_REDACTEUR', app.user) %}
+                {% include 'homepage/fragment/redacteur.twig' %}
+            {% endif %}
+
             {# gestion administrative #}
             {% include 'homepage/fragment/administration.twig' with {'user': user} %}
         </div>

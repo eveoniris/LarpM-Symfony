@@ -338,6 +338,16 @@
                 </div>
             </div>
 
+            {% if gn.substitutionDescription %}
+                <div class="card mb-2">
+                    <div class="header"><h5>Instance hors temps / hors lieu</h5></div>
+
+                    <div class="card-body">
+                        {{ gn.substitutionDescription|raw }}
+                    </div>
+                </div>
+            {% endif %}
+
             {% if participant %}
                 <div class="card mb-2">
                     <div class="header"><h5>Billet et restauration</h5></div>
