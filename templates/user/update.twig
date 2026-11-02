@@ -58,12 +58,31 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label" for="input-discord-pseudo">ID Discord</label>
                 <div class="col-sm-8">
-                    <input class="form-control" name="discord_pseudo" type="text" id="input-discord-pseudo"
-                           placeholder="mon_id_discord" maxlength="33" value="{{ user.discordPseudo }}">
-                    <div class="help-block small">
-                        Facultatif. Votre identifiant unique Discord (sans le @). Visible des organisateurs et des membres de votre groupe pour vous ajouter ou vous
-                        contacter sur Discord.
-                    </div>
+                    {% if user.discordLinked %}
+                        <div class="form-control-plaintext">
+                            <i class="fa-brands fa-discord" aria-hidden="true"></i>
+                            {{ user.discordPseudo ?: 'Compte lié' }}
+                            <span class="badge bg-success">Lié</span>
+                        </div>
+                        {% if user.id == app.user.id %}
+                            <button class="btn btn-sm btn-outline-secondary" type="submit"
+                                    form="form-discord-delier">Délier mon compte Discord</button>
+                        {% endif %}
+                        <div class="help-block small">
+                            Votre compte Discord est vérifié. Il sert à vous attribuer vos rôles sur les serveurs Discord.
+                        </div>
+                    {% else %}
+                        <input class="form-control" name="discord_pseudo" type="text" id="input-discord-pseudo"
+                               placeholder="mon_id_discord" maxlength="33" value="{{ user.discordPseudo }}">
+                        {% if user.id == app.user.id %}
+                            <a class="btn btn-sm btn-primary mt-1" href="{{ path('discord.lier') }}">
+                                <i class="fa-brands fa-discord" aria-hidden="true"></i> Lier mon compte Discord</a>
+                        {% endif %}
+                        <div class="help-block small">
+                            Facultatif. Votre identifiant unique Discord (sans le @). Visible des organisateurs et des membres de votre groupe pour vous ajouter ou vous
+                            contacter sur Discord. Pour recevoir vos rôles automatiquement, liez votre compte avec le bouton ci-dessus.
+                        </div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -149,5 +168,12 @@
                 </div>
             </div>
         </form>
+
+        {% if user.discordLinked and user.id == app.user.id %}
+            <form id="form-discord-delier" method="POST" action="{{ path('discord.delier') }}"
+                  onsubmit="return confirm('Délier votre compte Discord ? Vos rôles ne seront plus synchronisés.');">
+                <input type="hidden" name="_token" value="{{ csrf_token('discord_delier') }}">
+            </form>
+        {% endif %}
     </div>
 {% endblock %}
