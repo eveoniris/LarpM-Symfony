@@ -65,6 +65,8 @@
                             <span class="badge bg-success">Lié</span>
                         </div>
                         {% if user.id == app.user.id %}
+                            <button class="btn btn-sm btn-primary" type="submit"
+                                    form="form-discord-synchroniser">Synchroniser mes rôles Discord</button>
                             <button class="btn btn-sm btn-outline-secondary" type="submit"
                                     form="form-discord-delier">Délier mon compte Discord</button>
                         {% endif %}
@@ -170,6 +172,10 @@
         </form>
 
         {% if user.discordLinked and user.id == app.user.id %}
+            <form id="form-discord-synchroniser" method="POST" action="{{ path('discord.synchroniser') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('discord_synchroniser') }}">
+                <input type="hidden" name="retour" value="{{ path('user.edit', {'user': user.id}) }}">
+            </form>
             <form id="form-discord-delier" method="POST" action="{{ path('discord.delier') }}"
                   onsubmit="return confirm('Délier votre compte Discord ? Vos rôles ne seront plus synchronisés.');">
                 <input type="hidden" name="_token" value="{{ csrf_token('discord_delier') }}">

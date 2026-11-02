@@ -5,9 +5,15 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\Discord\DiscordInteractionHandler;
 use App\Service\Discord\DiscordOAuthClient;
 use App\Service\Discord\DiscordOAuthException;
+use App\Service\Discord\DiscordSignatureVerifier;
+use App\Service\Discord\DiscordSyncService;
 use Discord\Discord;
+use Throwable;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -138,6 +144,40 @@ class DiscordController extends AbstractController
         return $this->redirectToRoute('user.edit', ['user' => $user->getId()]);
     }
 
+    /**
+     * Synchronise les rôles Discord de l'utilisateur connecté dans toutes les guildes configurées.
+     */
+    #[IsGranted('ROLE_USER')]
+    #[Route('/discord/synchroniser', name: 'discord.synchroniser', methods: ['POST'])]
+    public function synchroniserAction(Request $request, DiscordSyncService $syncService): Response
+    {
+        $user = $this->getUser();
+
+        if (!$this->isCsrfTokenValid('discord_synchroniser', $request->request->getString('_token'))) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
+        if (!$user->isDiscordLinked()) {
+            $this->addFlash('alert', 'Liez d\'abord votre compte Discord.');
+        } else {
+            $results = $syncService->syncAll($user);
+            if ([] === $results) {
+                $this->addFlash('alert', 'Aucun serveur Discord n\'est configuré.');
+            }
+            foreach ($results as $result) {
+                $this->addFlash($result->isOk() ? 'success' : 'alert', $result->summary());
+            }
+        }
+
+        $retour = $request->request->getString('retour');
+        // Redirection interne uniquement (pas de //hote ni de schéma).
+        if (str_starts_with($retour, '/') && !str_starts_with($retour, '//')) {
+            return $this->redirect($retour);
+        }
+
+        return $this->redirectToRoute('user.edit', ['user' => $user->getId()]);
+    }
+
     private function callbackUrl(): string
     {
         return $this->generateUrl('discord.callback', [], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -151,34 +191,40 @@ class DiscordController extends AbstractController
         return new JsonResponse(['ok' => true]);
     }
 
-    #[Route('/discord/interactions', name: 'discord.interactions')]
-    public function interactionsAction(Request $request): Response
-    {
-        $this->logger->info('Discord interactions request: ' . var_export($request->getContent(), true));
-        $this->logger->info('Discord interactions TYPE: ' . $request->request->get('type'));
-        $this->logger->info('Discord interactions KEY: ' . $this->getParameter('discord.api.key'));
+    /**
+     * Interactions Endpoint URL : PING, puis commande /roles. Chaque requête est authentifiée par la signature Ed25519 de Discord.
+     */
+    #[Route('/discord/interactions', name: 'discord.interactions', methods: ['POST'])]
+    public function interactionsAction(
+        Request $request,
+        DiscordSignatureVerifier $verifier,
+        DiscordInteractionHandler $handler,
+        EventDispatcherInterface $dispatcher,
+    ): Response {
+        $body = $request->getContent();
+        if (!$verifier->isValid($body, $request->headers->get('x-signature-ed25519'), $request->headers->get('x-signature-timestamp'))) {
+            return new JsonResponse([], 401);
+        }
 
-        /* TODO
-         * $sign = $request->headers->get('x-signature-ed25519');
-         * $time = $request->headers->get('x-signature-timestamp');
-         * if (null === $sign || null === $time || '' !== trim($sign, '0..9A..Fa..f')) {
-         * return new JsonResponse([], 401);
-         * }
-         *
-         * $message = $time . $request->getContent();
-         * $binarySign = sodium_hex2bin($sign);
-         * $binaryKey = sodium_hex2bin($this->getParameter('discord.api.key')); // ERROR  Argument #1 ($string) must be a valid hexadecimal string
-         *
-         * if (!sodium_crypto_sign_verify_detached($binarySign, $message, $binaryKey)) {
-         * return new JsonResponse([], 401);
-         * }
-         */
+        $payload = json_decode($body, true);
+        $response = \is_array($payload) ? $handler->handle($payload) : null;
+        if (null === $response) {
+            return new JsonResponse([], 400);
+        }
 
-        return match ($request->request->get('type')) {
-            1 => new JsonResponse(['type' => 1]),
-            2 => new JsonResponse(['type' => 2]),
-            default => new JsonResponse([], 400),
-        };
+        // Le travail différé s'exécute une fois la réponse envoyée à Discord (limite de 3 s).
+        if (null !== $response->afterResponse) {
+            $afterResponse = $response->afterResponse;
+            $dispatcher->addListener(KernelEvents::TERMINATE, function () use ($afterResponse): void {
+                try {
+                    $afterResponse();
+                } catch (Throwable $exception) {
+                    $this->logger->error('Interaction Discord différée en échec : ' . $exception->getMessage());
+                }
+            });
+        }
+
+        return new JsonResponse($response->body);
     }
 
     #[Route('/discord/linked-role', name: 'discord.linked-role')]
