@@ -87,8 +87,7 @@ class GroupeSecondaireDetailTabsTest extends WebTestCase
     public function testChefManagesButDoesNotSeeScenarisation(): void
     {
         $group = $this->createGroup(members: 2, postulants: 1);
-        $chef = $group->getResponsable()->getUser();
-        $this->client->loginUser($chef);
+        $this->client->loginUser($this->userOfResponsable($group));
 
         foreach (['presentation', 'membres', 'postulants', 'emails'] as $tab) {
             $this->client->request('GET', $this->url($group, $tab));
@@ -103,7 +102,7 @@ class GroupeSecondaireDetailTabsTest extends WebTestCase
     {
         $group = $this->createGroup(members: 2, postulants: 1);
         $member = $this->firstSimpleMember($group);
-        $this->client->loginUser($member->getPersonnage()->getUser());
+        $this->client->loginUser($this->userOfMember($member));
 
         foreach (['presentation', 'membres'] as $tab) {
             $this->client->request('GET', $this->url($group, $tab));
@@ -122,7 +121,7 @@ class GroupeSecondaireDetailTabsTest extends WebTestCase
         $member = $this->firstSimpleMember($group);
         $member->setSecret(true);
         $this->em->flush();
-        $this->client->loginUser($member->getPersonnage()->getUser());
+        $this->client->loginUser($this->userOfMember($member));
 
         $this->client->request('GET', $this->url($group, 'presentation'));
         static::assertResponseIsSuccessful();
@@ -139,7 +138,7 @@ class GroupeSecondaireDetailTabsTest extends WebTestCase
     {
         $group = $this->createGroup(members: 2);
         $member = $this->firstSimpleMember($group);
-        $this->client->loginUser($member->getPersonnage()->getUser());
+        $this->client->loginUser($this->userOfMember($member));
 
         $this->client->request('GET', $this->url($group, 'presentation'));
 
@@ -151,6 +150,7 @@ class GroupeSecondaireDetailTabsTest extends WebTestCase
     {
         $group = $this->createGroup(members: 1, secret: true);
         $outsider = PersonnageFactory::createOne()->getUser();
+        static::assertInstanceOf(User::class, $outsider);
         $this->client->loginUser($outsider);
 
         foreach (self::TABS as $tab) {
@@ -164,7 +164,7 @@ class GroupeSecondaireDetailTabsTest extends WebTestCase
         $group = $this->createGroup(members: 2, private: true);
         $member = $this->firstSimpleMember($group);
 
-        $this->client->loginUser($member->getPersonnage()->getUser());
+        $this->client->loginUser($this->userOfMember($member));
         $this->client->request('GET', $this->url($group, 'membres'));
         static::assertResponseIsSuccessful();
         $html = (string) $this->client->getResponse()->getContent();
@@ -172,7 +172,7 @@ class GroupeSecondaireDetailTabsTest extends WebTestCase
         static::assertSelectorNotExists('.gs-avatar');
 
         $this->client->restart();
-        $this->client->loginUser($group->getResponsable()->getUser());
+        $this->client->loginUser($this->userOfResponsable($group));
         $this->client->request('GET', $this->url($group, 'membres'));
         static::assertResponseIsSuccessful();
         static::assertSelectorExists('.gs-avatar');
@@ -235,7 +235,6 @@ class GroupeSecondaireDetailTabsTest extends WebTestCase
         static::assertLessThan(60, $largeCount);
     }
 
-    /** @return int[] */
     #[DataProvider('tabs')]
     public function testEveryTabStaysUnderQueryBudget(string $tab): void
     {
@@ -265,6 +264,22 @@ class GroupeSecondaireDetailTabsTest extends WebTestCase
         }
 
         return \sprintf('/groupeSecondaire/%d/detail/%s', $group->getId(), $tab);
+    }
+
+    private function userOfMember(Membre $membre): User
+    {
+        $user = $membre->getPersonnage()?->getUser();
+        static::assertInstanceOf(User::class, $user);
+
+        return $user;
+    }
+
+    private function userOfResponsable(SecondaryGroup $group): User
+    {
+        $user = $group->getResponsable()?->getUser();
+        static::assertInstanceOf(User::class, $user);
+
+        return $user;
     }
 
     private function firstSimpleMember(SecondaryGroup $group): Membre

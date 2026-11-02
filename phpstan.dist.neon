@@ -1,6 +1,6 @@
 parameters:
     level: 6
-    phpVersion: 80400
+    phpVersion: 80500
     reportUnmatchedIgnoredErrors: false
     paths:
         - bin/
