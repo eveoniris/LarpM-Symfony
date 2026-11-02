@@ -169,12 +169,13 @@ class BilletterieRapprochementTest extends WebTestCase
         $doublon = UserFactory::createOne(['email' => 'doublon@example.org']);
 
         $lignes = [];
-        foreach ([
+        $donnees = [
             ['s1', 'p1', 1000, $solidaire],
-            ['s2', 'p3', 500,  $solidaire],
+            ['s2', 'p3', 500, $solidaire],
             ['d1', 'p1', 1000, $doublon],
             ['d2', 'p2', 1000, $doublon],
-        ] as [$id, $produit, $prix, $user]) {
+        ];
+        foreach ($donnees as [$id, $produit, $prix, $user]) {
             $ligne = $this->ligne($gn, $id, $produit, SyncConfiance::SUR);
             $ligne->setPrice($prix);
             $ligne->setUser($user);
