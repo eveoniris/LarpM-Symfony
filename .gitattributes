@@ -39,4 +39,5 @@
 # fonctionnelle ; ils ne sont ni analysés par phpcs ni formatés par mago.
 
 # Détection de renommages plus précise pour les sources PHP.
-*.php diff=php.githooks/* text eol=lf
+*.php diff=php
+.githooks/* text eol=lf
