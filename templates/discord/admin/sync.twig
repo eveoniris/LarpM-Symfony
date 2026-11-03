@@ -1,0 +1,68 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Synchronisation Discord : {{ guild.nom }}{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('discord.admin') }}">Bot Discord</a></li>
+        <li><a href="{{ path('discord.admin.guilde', {'guild': guild.id}) }}">{{ guild.nom }}</a></li>
+        <li class="active">Synchronisation</li>
+    </ol>
+
+    <div class="well bs-component">
+        <h3>{{ apply ? 'Synchronisation réalisée' : 'Simulation de la synchronisation' }}</h3>
+
+        {% if not apply %}
+            <div class="alert alert-info small">Simulation : aucun rôle n'a été modifié sur Discord.</div>
+        {% endif %}
+        {% if report.aborted %}
+            <div class="alert alert-danger small">
+                Arrêt anticipé : plusieurs erreurs consécutives de Discord (token, permissions ou limite de débit).
+            </div>
+        {% endif %}
+
+        <p>
+            Comptes {{ offset + 1 }} à {{ offset + report.processed }} sur {{ report.total }} comptes liés :
+            {{ report.upToDate }} déjà à jour, {{ report.changes|length - report.errors }} {{ apply ? 'modifié(s)' : 'à modifier' }},
+            {{ report.absent }} absent(s) du serveur, {{ report.errors }} erreur(s).
+        </p>
+
+        {% if report.changes is not empty %}
+            <div class="table-responsive">
+                <table class="table table-striped table-sm align-middle">
+                    <thead>
+                    <tr>
+                        <th>Joueur</th>
+                        <th>Rôles ajoutés</th>
+                        <th>Rôles retirés</th>
+                        <th>Erreur</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for change in report.changes %}
+                        <tr>
+                            <td>{{ change.user }}</td>
+                            <td>{{ change.added }}</td>
+                            <td>{{ change.removed }}</td>
+                            <td class="small text-danger">{{ change.error }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if report.nextOffset is not null %}
+            <form method="POST" class="d-inline" action="{{ path('discord.admin.guilde.sync', {'guild': guild.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('discord_sync_' ~ guild.id) }}">
+                <input type="hidden" name="mode" value="{{ apply ? 'apply' : 'simulation' }}">
+                <input type="hidden" name="offset" value="{{ report.nextOffset }}">
+                <button class="btn btn-primary" type="submit">Comptes suivants ({{ report.total - report.nextOffset }} restants)</button>
+            </form>
+        {% endif %}
+        <a class="btn btn-secondary" href="{{ path('discord.admin.guilde', {'guild': guild.id}) }}">Retour à la guilde</a>
+    </div>
+
+{% endblock body %}

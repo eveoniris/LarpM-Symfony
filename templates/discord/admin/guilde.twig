@@ -141,6 +141,28 @@
         </form>
     </div>
 
+    <div class="well bs-component mt-3">
+        <h3>Synchronisation des joueurs</h3>
+        <p class="text-muted small">
+            Aligne les rôles Discord de tous les comptes liés sur LarpManager (ajouts et retraits, rôles ci-dessus uniquement).
+            Cette synchronisation est aussi lancée chaque jour par la tâche planifiée <code>discord:sync --apply</code>.
+            Par pages de 25 comptes.
+        </p>
+        <form method="POST" class="d-inline"
+              action="{{ path('discord.admin.guilde.sync', {'guild': guild.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('discord_sync_' ~ guild.id) }}">
+            <input type="hidden" name="mode" value="simulation">
+            <button class="btn btn-outline-primary" type="submit">Simuler</button>
+        </form>
+        <form method="POST" class="d-inline"
+              action="{{ path('discord.admin.guilde.sync', {'guild': guild.id}) }}"
+              onsubmit="return confirm('Modifier maintenant les rôles Discord de tous les comptes liés ? Faites d\'abord une simulation.');">
+            <input type="hidden" name="_token" value="{{ csrf_token('discord_sync_' ~ guild.id) }}">
+            <input type="hidden" name="mode" value="apply">
+            <button class="btn btn-primary" type="submit">Tout resynchroniser</button>
+        </form>
+    </div>
+
     <form method="POST" class="mt-3"
           action="{{ path('discord.admin.guilde.delete', {'guild': guild.id}) }}"
           onsubmit="return confirm('Retirer cette guilde de la configuration ? Rien ne sera supprimé sur Discord.');">

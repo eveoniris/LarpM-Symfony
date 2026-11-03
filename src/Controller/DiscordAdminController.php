@@ -9,6 +9,7 @@ use App\Entity\SecondaryGroup;
 use App\Enum\DiscordRoleType;
 use App\Repository\DiscordGuildRepository;
 use App\Service\Discord\DiscordApiException;
+use App\Service\Discord\DiscordBulkSyncService;
 use App\Service\Discord\DiscordApiInterface;
 use App\Service\Discord\DiscordMappingService;
 use App\Service\Discord\DiscordProvisioningService;
@@ -26,6 +27,9 @@ final class DiscordAdminController extends AbstractController
 {
     /** Groupes provisionnés par clic en mode réel (3 appels Discord par groupe). */
     private const int PROVISION_WEB_LIMIT = 10;
+
+    /** Comptes synchronisés par clic (2 à 4 appels Discord par compte modifié). */
+    private const int SYNC_WEB_LIMIT = 25;
 
     #[Route('/admin/discord', name: 'discord.admin', methods: ['GET', 'POST'])]
     public function listAction(Request $request, DiscordGuildRepository $guilds, DiscordApiInterface $discordApi): Response
@@ -177,6 +181,32 @@ final class DiscordAdminController extends AbstractController
             'unmatched' => $unmatched,
             'apply' => $apply,
             'limit' => self::PROVISION_WEB_LIMIT,
+        ]);
+    }
+
+    /**
+     * Simulation ou application de la synchronisation de tous les comptes liés, par pages (durée d'une requête web).
+     */
+    #[Route('/admin/discord/guilde/{guild}/synchroniser', name: 'discord.admin.guilde.sync', requirements: ['guild' => '\d+'], methods: ['POST'])]
+    public function syncAction(
+        Request $request,
+        #[MapEntity(id: 'guild')]
+        DiscordGuild $guild,
+        DiscordBulkSyncService $bulkSync,
+    ): Response {
+        if (!$this->isCsrfTokenValid('discord_sync_' . $guild->getId(), $request->request->getString('_token'))) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
+        $apply = 'apply' === $request->request->getString('mode');
+        $offset = max(0, $request->request->getInt('offset'));
+        $report = $bulkSync->run($guild, $apply, self::SYNC_WEB_LIMIT, $offset);
+
+        return $this->render('discord/admin/sync.twig', [
+            'guild' => $guild,
+            'report' => $report,
+            'apply' => $apply,
+            'offset' => $offset,
         ]);
     }
 

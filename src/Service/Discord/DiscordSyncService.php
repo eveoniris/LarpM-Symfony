@@ -35,7 +35,10 @@ final readonly class DiscordSyncService
         return $results;
     }
 
-    public function sync(User $user, DiscordGuild $guild): DiscordSyncResult
+    /**
+     * @param bool $apply faux : calcule les ajouts et retraits sans rien modifier sur Discord (simulation)
+     */
+    public function sync(User $user, DiscordGuild $guild, bool $apply = true): DiscordSyncResult
     {
         $discordId = $user->getDiscordId();
         if (null === $discordId) {
@@ -54,11 +57,13 @@ final readonly class DiscordSyncService
             $toAdd = array_values(array_diff($desired, $current));
             $toRemove = array_values(array_diff(array_intersect($managed, $current), $desired));
 
-            foreach ($toAdd as $roleId) {
-                $this->api->addRole($guild->getGuildId(), $discordId, $roleId);
-            }
-            foreach ($toRemove as $roleId) {
-                $this->api->removeRole($guild->getGuildId(), $discordId, $roleId);
+            if ($apply) {
+                foreach ($toAdd as $roleId) {
+                    $this->api->addRole($guild->getGuildId(), $discordId, $roleId);
+                }
+                foreach ($toRemove as $roleId) {
+                    $this->api->removeRole($guild->getGuildId(), $discordId, $roleId);
+                }
             }
         } catch (DiscordApiException $exception) {
             return new DiscordSyncResult($guild->getNom(), error: $exception->getMessage());
