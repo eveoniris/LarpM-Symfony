@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Entity\DiscordGuild;
 use App\Enum\DiscordProvisionStatus;
 use App\Repository\DiscordGuildRepository;
 use App\Service\Discord\DiscordApiException;
@@ -68,6 +69,7 @@ final class DiscordProvisionCommand extends Command
 
             if ([] === $lines) {
                 $io->writeln('Rien à provisionner.');
+                $this->reportUnmatched($io, $guild);
 
                 continue;
             }
@@ -84,8 +86,27 @@ final class DiscordProvisionCommand extends Command
                     $failed = true;
                 }
             }
+
+            $this->reportUnmatched($io, $guild);
         }
 
         return $failed ? Command::FAILURE : Command::SUCCESS;
+    }
+
+    /** Catégories numérotées présentes sur Discord mais sans groupe associé : à vérifier à la main, jamais modifiées. */
+    private function reportUnmatched(SymfonyStyle $io, DiscordGuild $guild): void
+    {
+        try {
+            $unmatched = $this->provisioning->unmatchedCategories($guild);
+        } catch (DiscordApiException) {
+            return;
+        }
+
+        if ([] === $unmatched) {
+            return;
+        }
+
+        $io->writeln(\sprintf('<comment>%d catégorie(s) numérotée(s) sans groupe correspondant (non modifiées) :</comment>', \count($unmatched)));
+        $io->listing(array_column($unmatched, 'name'));
     }
 }

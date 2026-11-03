@@ -91,6 +91,7 @@ final class DiscordAdminController extends AbstractController
         DiscordApiInterface $discordApi,
     ): Response {
         $errors = [];
+        $groups = $this->entityManager->getRepository(SecondaryGroup::class)->findBy([], ['label' => 'ASC']);
 
         if ($request->isMethod('POST')) {
             if (!$this->isCsrfTokenValid('discord_guilde_' . $guild->getId(), $request->request->getString('_token'))) {
@@ -110,6 +111,11 @@ final class DiscordAdminController extends AbstractController
 
             if ([] === $errors) {
                 $guild->setNom($nom);
+                // Le drapeau « ignoré » est global (tous les serveurs) : la page liste tous les groupes, une case décochée le retire.
+                $ignores = $request->request->all('ignores');
+                foreach ($groups as $group) {
+                    $group->setDiscordIgnore(isset($ignores[$group->getId()]));
+                }
                 $this->entityManager->flush();
                 $this->addFlash('success', 'La configuration de la guilde a été enregistrée.');
 
@@ -130,7 +136,7 @@ final class DiscordAdminController extends AbstractController
             'discordRoles' => $discordRoles,
             'rolesError' => $rolesError,
             'guild' => $guild,
-            'groups' => $this->entityManager->getRepository(SecondaryGroup::class)->findBy([], ['label' => 'ASC']),
+            'groups' => $groups,
             'byGroup' => $guild->groupMappings(),
             'membre' => $guild->roleIdOf(DiscordRoleType::MEMBRE),
             'orga' => $guild->roleIdOf(DiscordRoleType::ORGA),
@@ -158,6 +164,7 @@ final class DiscordAdminController extends AbstractController
 
         try {
             $lines = $provisioning->provision($guild, $apply, $apply ? self::PROVISION_WEB_LIMIT : null);
+            $unmatched = $provisioning->unmatchedCategories($guild);
         } catch (DiscordApiException $exception) {
             $this->addFlash('alert', $exception->getMessage());
 
@@ -167,6 +174,7 @@ final class DiscordAdminController extends AbstractController
         return $this->render('discord/admin/provision.twig', [
             'guild' => $guild,
             'lines' => $lines,
+            'unmatched' => $unmatched,
             'apply' => $apply,
             'limit' => self::PROVISION_WEB_LIMIT,
         ]);

@@ -86,6 +86,7 @@
                     <thead>
                     <tr>
                         <th>Groupe</th>
+                        <th title="Groupe inactif ou non repris : pas de rôle ni de salon créés par le provisionnement">Ignorer</th>
                         <th>ID du rôle Discord</th>
                         <th>N°</th>
                         <th>Salon</th>
@@ -97,13 +98,17 @@
                         <tr>
                             <td>{{ group.label }}</td>
                             <td>
+                                <input class="form-check-input" type="checkbox" name="ignores[{{ group.id }}]" value="1"
+                                       aria-label="Ignorer {{ group.label }}"{% if old is not empty ? old.ignores[group.id] is defined : group.discordIgnore %} checked{% endif %}>
+                            </td>
+                            <td>
                                 {{ _self.roleField('groupes[' ~ group.id ~ ']', old.groupes[group.id]|default(mapping ? mapping.roleId : ''), discordRoles, null, 'Rôle Discord de ' ~ group.label, true) }}
                             </td>
                             <td>{{ mapping and mapping.numero is not null ? mapping.numero : '' }}</td>
                             <td>{% if mapping and mapping.channelId %}<code>{{ mapping.channelId }}</code>{% endif %}</td>
                         </tr>
                     {% else %}
-                        <tr><td colspan="4">Aucun groupe transverse.</td></tr>
+                        <tr><td colspan="5">Aucun groupe transverse.</td></tr>
                     {% endfor %}
                     </tbody>
                 </table>

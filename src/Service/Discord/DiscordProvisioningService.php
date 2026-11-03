@@ -87,7 +87,33 @@ final readonly class DiscordProvisioningService
         $rolesCount = \count($roles);
         $channelsCount = \count($channels);
 
+        $existing = $this->numberedCategories($guild, $channels);
+
         foreach ($targets as [$group, $mapping]) {
+            // Un groupe déjà présent sur Discord (catégorie `NNNN-nom` + rôle `NNNN`) est rattaché, jamais recréé.
+            if (null === $mapping) {
+                $found = $existing[self::matchKey($group->getLabel())] ?? [];
+                if (\count($found) > 1) {
+                    $lines[] = new DiscordProvisionLine(
+                        $group->getLabel(),
+                        $found[0]['numero'],
+                        '',
+                        '',
+                        DiscordProvisionStatus::ERREUR,
+                        'Plusieurs catégories Discord portent ce nom : à rattacher à la main.',
+                    );
+
+                    continue;
+                }
+                if (1 === \count($found)) {
+                    $lines[] = $this->adopt($guild, $group, $found[0], $roles, $channels, $apply);
+                    // Une catégorie ne sert qu'à un seul groupe, même si deux groupes portent un libellé voisin.
+                    unset($existing[self::matchKey($group->getLabel())]);
+
+                    continue;
+                }
+            }
+
             $numero = $mapping?->getNumero() ?? $next++;
             $roleName = self::roleName($numero);
             $channelName = self::channelName($numero, $group->getLabel());
@@ -128,6 +154,122 @@ final readonly class DiscordProvisioningService
     }
 
     /**
+     * Catégories numérotées de la guilde (`1232-confrerie-du-savoir`) pas encore associées à un groupe, par nom simplifié.
+     *
+     * @param list<array{id: string, name: string, type: int, parent_id: string|null}> $channels
+     *
+     * @return array<string, list<array{numero: int, id: string, name: string}>>
+     */
+    private function numberedCategories(DiscordGuild $guild, array $channels): array
+    {
+        $taken = [];
+        foreach ($guild->getMappings() as $mapping) {
+            $taken[(string) $mapping->getCategoryId()] = true;
+        }
+
+        $byKey = [];
+        foreach ($channels as $channel) {
+            if (self::CHANNEL_CATEGORY !== $channel['type'] || isset($taken[$channel['id']])) {
+                continue;
+            }
+            if (1 === preg_match('/^(\d{1,4})-(.+)$/', $channel['name'], $matches)) {
+                $byKey[self::matchKey($matches[2])][] = ['numero' => (int) $matches[1], 'id' => $channel['id'], 'name' => $channel['name']];
+            }
+        }
+
+        return $byKey;
+    }
+
+    /**
+     * Catégories numérotées de la guilde qui ne correspondent à aucun groupe enregistré (à vérifier à la main).
+     *
+     * @return list<array{numero: int, name: string}>
+     *
+     * @throws DiscordApiException
+     */
+    public function unmatchedCategories(DiscordGuild $guild): array
+    {
+        $unmatched = [];
+        foreach ($this->numberedCategories($guild, $this->api->guildChannels($guild->getGuildId())) as $categories) {
+            foreach ($categories as $category) {
+                $unmatched[] = ['numero' => $category['numero'], 'name' => $category['name']];
+            }
+        }
+        usort($unmatched, static fn (array $a, array $b): int => $a['numero'] <=> $b['numero']);
+
+        return $unmatched;
+    }
+
+    /** Nom simplifié pour comparer un libellé de groupe à un nom de catégorie : sans accents, sans article initial. */
+    public static function matchKey(string $text): string
+    {
+        $tokens = explode(
+            '-',
+            (string) (new AsciiSlugger('fr'))
+                ->slug($text, '-')
+                ->lower(),
+        );
+        while (\count($tokens) > 1 && \in_array($tokens[0], ['le', 'la', 'les', 'l', 'un', 'une', 'du', 'de', 'des', 'd'], true)) {
+            array_shift($tokens);
+        }
+
+        return implode('-', $tokens);
+    }
+
+    /**
+     * Associe un groupe à sa catégorie, son salon et son rôle déjà présents sur Discord (aucune modification côté Discord).
+     *
+     * @param array{numero: int, id: string, name: string}                              $category
+     * @param list<array{id: string, name: string}>                                     $roles
+     * @param list<array{id: string, name: string, type: int, parent_id: string|null}> $channels
+     */
+    private function adopt(DiscordGuild $guild, SecondaryGroup $group, array $category, array $roles, array $channels, bool $apply): DiscordProvisionLine
+    {
+        $numero = $category['numero'];
+        $roleId = null;
+        foreach ($roles as $role) {
+            if (1 === preg_match('/^\d{1,4}$/', $role['name']) && (int) $role['name'] === $numero) {
+                $roleId = $role['id'];
+
+                break;
+            }
+        }
+        if (null === $roleId) {
+            return new DiscordProvisionLine(
+                $group->getLabel(),
+                $numero,
+                '',
+                $category['name'],
+                DiscordProvisionStatus::ERREUR,
+                \sprintf('Catégorie trouvée mais aucun rôle nommé %d : à rattacher à la main.', $numero),
+            );
+        }
+
+        $channelId = null;
+        foreach ($channels as $channel) {
+            if (self::CHANNEL_TEXT === $channel['type'] && $channel['parent_id'] === $category['id'] && ($channel['name'] === $category['name'] || null === $channelId)) {
+                $channelId = $channel['id'];
+            }
+        }
+
+        if ($apply) {
+            $guild->addMapping(
+                (new DiscordRoleMapping())
+                    ->setGuild($guild)
+                    ->setType(DiscordRoleType::GROUPE_SECONDAIRE)
+                    ->setSecondaryGroup($group)
+                    ->setRoleId($roleId)
+                    ->setNumero($numero)
+                    ->setCategoryId($category['id'])
+                    ->setChannelId($channelId),
+            );
+            $this->entityManager->flush();
+        }
+
+        return new DiscordProvisionLine($group->getLabel(), $numero, (string) $numero, $category['name'], $apply ? DiscordProvisionStatus::RATTACHE : DiscordProvisionStatus::A_RATTACHER);
+    }
+
+    /**
      * Groupes à traiter : d'abord les provisionnements interrompus (numéro attribué, catégorie ou salon manquant),
      * puis les groupes sans aucune correspondance sur cette guilde. Une correspondance saisie à la main est laissée telle quelle.
      *
@@ -150,7 +292,7 @@ final readonly class DiscordProvisioningService
         }
 
         foreach ($this->entityManager->getRepository(SecondaryGroup::class)->findBy([], ['id' => 'ASC']) as $group) {
-            if (!isset($mapped[$group->getId()])) {
+            if (!isset($mapped[$group->getId()]) && !$group->isDiscordIgnore()) {
                 $targets[] = [$group, null];
             }
         }

@@ -13,6 +13,7 @@
 
     {% set erreurs = lines|filter(l => l.status.value == 'erreur') %}
     {% set aCreer = lines|filter(l => l.status.value == 'planifie') %}
+    {% set aRattacher = lines|filter(l => l.status.value == 'a_rattacher') %}
 
     <div class="well bs-component">
         <h3>{{ apply ? 'Provisionnement réalisé' : 'Simulation du provisionnement' }}</h3>
@@ -22,8 +23,9 @@
         {% else %}
             {% if not apply %}
                 <div class="alert alert-info small">
-                    Simulation : rien n'a été créé sur Discord. {{ aCreer|length }} groupe(s) seraient provisionnés,
-                    chacun avec un rôle, une catégorie privée et un salon texte.
+                    Simulation : rien n'a été modifié sur Discord. {{ aCreer|length }} groupe(s) seraient provisionnés
+                    (rôle, catégorie privée et salon texte) et {{ aRattacher|length }} groupe(s) seraient rattachés
+                    à une catégorie et un rôle qui existent déjà.
                 </div>
             {% elseif erreurs is not empty %}
                 <div class="alert alert-danger small">
@@ -60,6 +62,19 @@
                     </tbody>
                 </table>
             </div>
+        {% endif %}
+
+        {% if unmatched is not empty %}
+            <h4 class="mt-3">Catégories numérotées sans groupe correspondant</h4>
+            <p class="text-muted small">
+                Présentes sur Discord mais non associées à un groupe : groupes inactifs ou au libellé différent.
+                Elles ne sont ni modifiées ni supprimées. Pour les associer à un groupe, saisissez son rôle dans le tableau de la guilde.
+            </p>
+            <ul class="small">
+                {% for category in unmatched %}
+                    <li><code>{{ category.name }}</code></li>
+                {% endfor %}
+            </ul>
         {% endif %}
 
         <a class="btn btn-secondary" href="{{ path('discord.admin.guilde', {'guild': guild.id}) }}">Retour à la guilde</a>

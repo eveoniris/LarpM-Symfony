@@ -188,6 +188,83 @@ class DiscordProvisionTest extends WebTestCase
         $this->assertStringContainsString('001-gardiens-du-nord', $crawler->filter('table')->text());
     }
 
+    public function testUnGroupeDejaPresentSurDiscordEstRattacheSansRienCreer(): void
+    {
+        $group = $this->createGroup('La Confrérie du Savoir');
+        $this->createGroup('Ordre du Sud');
+        $api = $this->apiWithExistingGroup();
+
+        $simulation = $this->service($api)->provision($this->guild, apply: false);
+
+        $this->assertSame(DiscordProvisionStatus::A_RATTACHER, $simulation[0]->status);
+        $this->assertSame(1232, $simulation[0]->numero);
+        $this->assertSame(DiscordProvisionStatus::PLANIFIE, $simulation[1]->status);
+        $this->assertSame(1233, $simulation[1]->numero, 'Le nouveau groupe prend le numéro suivant.');
+
+        $this->service($api)->provision($this->guild, apply: true);
+
+        $mapping = $this->guild->getMappings()->first();
+        $this->assertSame($group->getId(), $mapping->getSecondaryGroup()?->getId());
+        $this->assertSame(1232, $mapping->getNumero());
+        $this->assertSame('500000000000000001', $mapping->getRoleId());
+        $this->assertSame('500000000000000002', $mapping->getCategoryId());
+        $this->assertSame('500000000000000003', $mapping->getChannelId());
+        $this->assertSame(['role', 'category', 'channel'], array_column($api->created, 'type'), 'Seul le groupe absent de Discord est créé.');
+    }
+
+    public function testUnGroupeIgnoreNEstNiCreeNiRattache(): void
+    {
+        $this->createGroup('La Confrérie du Savoir')->setDiscordIgnore(true);
+        $this->createGroup('Ordre du Sud')->setDiscordIgnore(true);
+        $this->em->flush();
+        $api = $this->apiWithExistingGroup();
+
+        $this->assertSame([], $this->service($api)->provision($this->guild, apply: true));
+        $this->assertSame([], $api->created);
+    }
+
+    public function testLesCategoriesSansGroupeCorrespondantSontSignalees(): void
+    {
+        $this->createGroup('Ordre du Sud');
+        $api = $this->apiWithExistingGroup();
+
+        $unmatched = $this->service($api)->unmatchedCategories($this->guild);
+
+        $this->assertSame([['numero' => 1232, 'name' => '1232-confrerie-du-savoir']], $unmatched);
+    }
+
+    public function testLaCaseIgnorerDeLaPageDeLaGuildeEstEnregistree(): void
+    {
+        $group = $this->createGroup('Ordre du Sud');
+        $this->client->disableReboot();
+        static::getContainer()->set(DiscordApiInterface::class, new FakeDiscordApi([]));
+        $this->client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_ADMIN']]));
+
+        $crawler = $this->client->request('GET', \sprintf('/admin/discord/guilde/%d', $this->guild->getId()));
+        $form = $crawler->selectButton('Enregistrer')->form();
+        $form['ignores[' . $group->getId() . ']']->tick();
+        $this->client->submit($form);
+
+        $this->assertResponseRedirects();
+        $this->em->clear();
+        $this->assertTrue($this->em->find(SecondaryGroup::class, $group->getId())->isDiscordIgnore());
+    }
+
+    /** Serveur où le groupe « Confrérie du Savoir » existe déjà : rôle 1232, catégorie et salon 1232-confrerie-du-savoir. */
+    private function apiWithExistingGroup(): FakeDiscordApi
+    {
+        return new FakeDiscordApi(
+            [],
+            roles: [self::GUILD => [['id' => '500000000000000001', 'name' => '1232']]],
+            channels: [
+                self::GUILD => [
+                    ['id' => '500000000000000002', 'name' => '1232-confrerie-du-savoir', 'type' => 4, 'parent_id' => null],
+                    ['id' => '500000000000000003', 'name' => '1232-confrerie-du-savoir', 'type' => 0, 'parent_id' => '500000000000000002'],
+                ],
+            ],
+        );
+    }
+
     private function service(FakeDiscordApi $api): DiscordProvisioningService
     {
         return new DiscordProvisioningService($api, $this->em, self::BOT);
