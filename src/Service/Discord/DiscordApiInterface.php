@@ -20,6 +20,24 @@ interface DiscordApiInterface
      */
     public function memberRoleIds(string $guildId, string $userId): ?array;
 
+    /**
+     * Guildes où le bot est présent.
+     *
+     * @return list<array{id: string, name: string}>
+     *
+     * @throws DiscordApiException
+     */
+    public function botGuilds(): array;
+
+    /**
+     * Rôles de la guilde (hors @everyone et rôles gérés par une intégration), triés par nom.
+     *
+     * @return list<array{id: string, name: string}>
+     *
+     * @throws DiscordApiException
+     */
+    public function guildRoles(string $guildId): array;
+
     /** @throws DiscordApiException */
     public function addRole(string $guildId, string $userId, string $roleId): void;
 

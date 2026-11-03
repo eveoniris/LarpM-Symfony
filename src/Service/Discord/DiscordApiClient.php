@@ -45,6 +45,57 @@ final readonly class DiscordApiClient implements DiscordApiInterface
         return array_values(array_map(strval(...), \is_array($roles) ? $roles : []));
     }
 
+    public function botGuilds(): array
+    {
+        $response = $this->request('GET', '/users/@me/guilds?limit=200');
+
+        try {
+            $data = $response->toArray();
+        } catch (ExceptionInterface $exception) {
+            throw new DiscordApiException('Lecture des serveurs du bot impossible (token invalide ?) : ' . $exception->getMessage(), 0, $exception);
+        }
+
+        $guilds = [];
+        foreach ($data as $guild) {
+            if (\is_array($guild) && isset($guild['id'], $guild['name'])) {
+                $guilds[] = ['id' => (string) $guild['id'], 'name' => (string) $guild['name']];
+            }
+        }
+        usort($guilds, static fn (array $a, array $b): int => strcasecmp($a['name'], $b['name']));
+
+        return $guilds;
+    }
+
+    public function guildRoles(string $guildId): array
+    {
+        $response = $this->request('GET', \sprintf('/guilds/%s/roles', $guildId));
+        $status = $response->getStatusCode();
+        if (403 === $status || 404 === $status) {
+            throw new DiscordApiException('Le bot n\'est pas présent sur cette guilde, ou l\'identifiant de guilde est incorrect.');
+        }
+
+        try {
+            $data = $response->toArray();
+        } catch (ExceptionInterface $exception) {
+            throw new DiscordApiException('Lecture des rôles Discord impossible : ' . $exception->getMessage(), 0, $exception);
+        }
+
+        $roles = [];
+        foreach ($data as $role) {
+            if (!\is_array($role) || !isset($role['id'], $role['name'])) {
+                continue;
+            }
+            // @everyone porte l'identifiant de la guilde ; les rôles gérés (bots, boosters) ne s'attribuent pas.
+            if ((string) $role['id'] === $guildId || !empty($role['managed'])) {
+                continue;
+            }
+            $roles[] = ['id' => (string) $role['id'], 'name' => (string) $role['name']];
+        }
+        usort($roles, static fn (array $a, array $b): int => strcasecmp($a['name'], $b['name']));
+
+        return $roles;
+    }
+
     public function addRole(string $guildId, string $userId, string $roleId): void
     {
         $this->assertSuccess($this->request('PUT', \sprintf('/guilds/%s/members/%s/roles/%s', $guildId, $userId, $roleId)));

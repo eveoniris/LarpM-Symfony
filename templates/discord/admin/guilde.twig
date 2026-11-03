@@ -1,5 +1,25 @@
 {% extends "base.html.twig" %}
 
+{# Liste déroulante des rôles Discord si la lecture a réussi, sinon saisie manuelle de l'identifiant. #}
+{% macro roleField(name, value, roles, id, label, small) %}
+    {% if roles is not empty %}
+        <select class="form-select{{ small ? ' form-select-sm' : '' }}" {% if id %}id="{{ id }}" {% endif %}name="{{ name }}" aria-label="{{ label }}">
+            <option value="">(aucun)</option>
+            {% set known = false %}
+            {% for role in roles %}
+                {% if role.id == value %}{% set known = true %}{% endif %}
+                <option value="{{ role.id }}"{{ role.id == value ? ' selected' : '' }}>{{ role.name }}</option>
+            {% endfor %}
+            {% if value is not empty and not known %}
+                <option value="{{ value }}" selected>Rôle introuvable sur Discord ({{ value }})</option>
+            {% endif %}
+        </select>
+    {% else %}
+        <input class="form-control{{ small ? ' form-control-sm' : '' }}" {% if id %}id="{{ id }}" {% endif %}name="{{ name }}"
+               inputmode="numeric" aria-label="{{ label }}" value="{{ value }}">
+    {% endif %}
+{% endmacro %}
+
 {% block title %}Guilde Discord : {{ guild.nom }}{% endblock title %}
 
 {% block body %}
@@ -34,20 +54,24 @@
 
         <div class="well bs-component">
             <h3>Rôles généraux</h3>
-            <p class="text-muted small">
-                Identifiant du rôle Discord (clic droit sur le rôle en mode développeur, « Copier l'identifiant »).
-                Un champ vide supprime la correspondance.
-            </p>
+            {% if rolesError %}
+                <div class="alert alert-warning small">
+                    Liste des rôles indisponible ({{ rolesError }}). Saisissez les identifiants à la main
+                    (clic droit sur le rôle en mode développeur, « Copier l'identifiant »).
+                </div>
+            {% else %}
+                <p class="text-muted small">
+                    Rôles lus sur le serveur Discord. Choisir « (aucun) » supprime la correspondance.
+                </p>
+            {% endif %}
             <div class="row g-2">
                 <div class="col-md-6">
                     <label class="form-label" for="input-membre">Membre (tout compte lié)</label>
-                    <input class="form-control" id="input-membre" name="membre" inputmode="numeric"
-                           value="{{ old.membre|default(membre) }}">
+                    {{ _self.roleField('membre', old.membre|default(membre), discordRoles, 'input-membre', 'Rôle membre', false) }}
                 </div>
                 <div class="col-md-6">
                     <label class="form-label" for="input-orga">Orga / scénariste (ORGA, SCENARISTE, ADMIN)</label>
-                    <input class="form-control" id="input-orga" name="orga" inputmode="numeric"
-                           value="{{ old.orga|default(orga) }}">
+                    {{ _self.roleField('orga', old.orga|default(orga), discordRoles, 'input-orga', 'Rôle orga', false) }}
                 </div>
             </div>
         </div>
@@ -73,9 +97,7 @@
                         <tr>
                             <td>{{ group.label }}</td>
                             <td>
-                                <input class="form-control form-control-sm" name="groupes[{{ group.id }}]"
-                                       inputmode="numeric" aria-label="Rôle Discord de {{ group.label }}"
-                                       value="{{ old.groupes[group.id]|default(mapping ? mapping.roleId : '') }}">
+                                {{ _self.roleField('groupes[' ~ group.id ~ ']', old.groupes[group.id]|default(mapping ? mapping.roleId : ''), discordRoles, null, 'Rôle Discord de ' ~ group.label, true) }}
                             </td>
                             <td>{{ mapping and mapping.numero is not null ? mapping.numero : '' }}</td>
                             <td>{% if mapping and mapping.channelId %}<code>{{ mapping.channelId }}</code>{% endif %}</td>

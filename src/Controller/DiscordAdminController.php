@@ -8,6 +8,8 @@ use App\Entity\DiscordGuild;
 use App\Entity\SecondaryGroup;
 use App\Enum\DiscordRoleType;
 use App\Repository\DiscordGuildRepository;
+use App\Service\Discord\DiscordApiException;
+use App\Service\Discord\DiscordApiInterface;
 use App\Service\Discord\DiscordMappingService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class DiscordAdminController extends AbstractController
 {
     #[Route('/admin/discord', name: 'discord.admin', methods: ['GET', 'POST'])]
-    public function listAction(Request $request, DiscordGuildRepository $guilds): Response
+    public function listAction(Request $request, DiscordGuildRepository $guilds, DiscordApiInterface $discordApi): Response
     {
         $errors = [];
 
@@ -55,16 +57,35 @@ final class DiscordAdminController extends AbstractController
             }
         }
 
+        $configured = $guilds->findAllOrdered();
+        $knownIds = array_map(static fn (DiscordGuild $guild): string => $guild->getGuildId(), $configured);
+
+        // Serveurs où le bot est invité ; en cas d'échec, l'ajout manuel reste possible.
+        $botGuilds = [];
+        $botGuildsError = null;
+        try {
+            $botGuilds = array_values(array_filter($discordApi->botGuilds(), static fn (array $guild): bool => !\in_array($guild['id'], $knownIds, true)));
+        } catch (DiscordApiException $exception) {
+            $botGuildsError = $exception->getMessage();
+        }
+
         return $this->render('discord/admin/list.twig', [
-            'guilds' => $guilds->findAllOrdered(),
+            'botGuilds' => $botGuilds,
+            'botGuildsError' => $botGuildsError,
+            'guilds' => $configured,
             'errors' => $errors,
             'old' => $request->request->all(),
         ]);
     }
 
     #[Route('/admin/discord/guilde/{guild}', name: 'discord.admin.guilde', requirements: ['guild' => '\d+'], methods: ['GET', 'POST'])]
-    public function guildeAction(Request $request, #[MapEntity(id: 'guild')] DiscordGuild $guild, DiscordMappingService $mappingService): Response
-    {
+    public function guildeAction(
+        Request $request,
+        #[MapEntity(id: 'guild')]
+        DiscordGuild $guild,
+        DiscordMappingService $mappingService,
+        DiscordApiInterface $discordApi,
+    ): Response {
         $errors = [];
 
         if ($request->isMethod('POST')) {
@@ -92,7 +113,18 @@ final class DiscordAdminController extends AbstractController
             }
         }
 
+        // Liste des rôles lue chez Discord ; en cas d'échec, la saisie manuelle des identifiants reste possible.
+        $discordRoles = [];
+        $rolesError = null;
+        try {
+            $discordRoles = $discordApi->guildRoles($guild->getGuildId());
+        } catch (DiscordApiException $exception) {
+            $rolesError = $exception->getMessage();
+        }
+
         return $this->render('discord/admin/guilde.twig', [
+            'discordRoles' => $discordRoles,
+            'rolesError' => $rolesError,
             'guild' => $guild,
             'groups' => $this->entityManager->getRepository(SecondaryGroup::class)->findBy([], ['label' => 'ASC']),
             'byGroup' => $guild->groupMappings(),

@@ -13,10 +13,16 @@ final class FakeDiscordApi implements DiscordApiInterface
     /** @var list<string> */
     public array $interactionReplies = [];
 
-    /** @param array<string, array<string, list<string>>> $members */
+    /**
+     * @param array<string, array<string, list<string>>>       $members
+     * @param array<string, list<array{id: string, name: string}>> $roles
+     * @param list<array{id: string, name: string}>                $guilds
+     */
     public function __construct(
         public array $members,
         private readonly bool $fail = false,
+        private readonly array $roles = [],
+        private readonly array $guilds = [],
     ) {
     }
 
@@ -27,6 +33,24 @@ final class FakeDiscordApi implements DiscordApiInterface
         }
 
         return $this->members[$guildId][$userId] ?? null;
+    }
+
+    public function botGuilds(): array
+    {
+        if ($this->fail) {
+            throw new DiscordApiException('Discord indisponible');
+        }
+
+        return $this->guilds;
+    }
+
+    public function guildRoles(string $guildId): array
+    {
+        if ($this->fail) {
+            throw new DiscordApiException('Discord indisponible');
+        }
+
+        return $this->roles[$guildId] ?? [];
     }
 
     public function addRole(string $guildId, string $userId, string $roleId): void

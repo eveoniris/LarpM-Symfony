@@ -8,6 +8,7 @@ use App\Entity\DiscordGuild;
 use App\Entity\SecondaryGroup;
 use App\Entity\SecondaryGroupType;
 use App\Enum\DiscordRoleType;
+use App\Service\Discord\DiscordApiInterface;
 use App\Service\Discord\DiscordMappingService;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -45,10 +46,41 @@ class DiscordAdminTest extends WebTestCase
 
     public function testAdminVoitLaListe(): void
     {
+        static::getContainer()->set(DiscordApiInterface::class, new FakeDiscordApi([]));
         $this->client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_ADMIN']]));
         $this->client->request('GET', '/admin/discord');
 
         $this->assertResponseIsSuccessful();
+    }
+
+    public function testLaListeProposeLesServeursDuBotNonConfigures(): void
+    {
+        $guild = $this->createGuild();
+        static::getContainer()->set(
+            DiscordApiInterface::class,
+            new FakeDiscordApi([], guilds: [
+                ['id' => $guild->getGuildId(), 'name' => 'Déjà configuré'],
+                ['id' => '900000000000000002', 'name' => 'Nouveau serveur'],
+            ]),
+        );
+        $this->client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_ADMIN']]));
+
+        $crawler = $this->client->request('GET', '/admin/discord');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertCount(1, $crawler->filter('input[name=guild_id][value="900000000000000002"]'));
+        $this->assertCount(0, $crawler->filter('input[type=hidden][name=guild_id][value="' . $guild->getGuildId() . '"]'));
+    }
+
+    public function testLaListeSignaleUneErreurDiscordSansPlanter(): void
+    {
+        static::getContainer()->set(DiscordApiInterface::class, new FakeDiscordApi([], fail: true));
+        $this->client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_ADMIN']]));
+
+        $this->client->request('GET', '/admin/discord');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('.alert-warning');
     }
 
     public function testApplyCreeMetAJourEtSupprimeLesCorrespondances(): void
@@ -91,6 +123,39 @@ class DiscordAdminTest extends WebTestCase
 
         $this->assertNotSame([], $errors);
         $this->assertCount(0, $guild->getMappings());
+    }
+
+    public function testLaPageGuilleProposeLesRolesLusSurDiscord(): void
+    {
+        $guild = $this->createGuild();
+        $this->createGroup();
+        static::getContainer()->set(
+            DiscordApiInterface::class,
+            new FakeDiscordApi([], roles: [
+                $guild->getGuildId() => [['id' => self::ROLE_A, 'name' => 'Membres'], ['id' => self::ROLE_B, 'name' => 'Orgas']],
+            ]),
+        );
+        $this->client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_ADMIN']]));
+
+        $crawler = $this->client->request('GET', \sprintf('/admin/discord/guilde/%d', $guild->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertCount(1, $crawler->filter('select[name=membre] option[value="' . self::ROLE_A . '"]'));
+        $this->assertCount(1, $crawler->filter('select[name=orga] option[value="' . self::ROLE_B . '"]'));
+        $this->assertGreaterThan(0, $crawler->filter('select[name^="groupes["]')->count());
+    }
+
+    public function testLaPageGuilleRepliSurLaSaisieManuelleSiDiscordEchoue(): void
+    {
+        $guild = $this->createGuild();
+        static::getContainer()->set(DiscordApiInterface::class, new FakeDiscordApi([], fail: true));
+        $this->client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_ADMIN']]));
+
+        $crawler = $this->client->request('GET', \sprintf('/admin/discord/guilde/%d', $guild->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertCount(1, $crawler->filter('input[name=membre]'));
+        $this->assertSelectorExists('.alert-warning');
     }
 
     private function createGuild(): DiscordGuild
