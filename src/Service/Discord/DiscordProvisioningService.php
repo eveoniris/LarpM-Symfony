@@ -52,7 +52,15 @@ final readonly class DiscordProvisioningService
         return \sprintf('%03d', $numero);
     }
 
-    /** Nom de la catégorie et du salon : `NNN-nom-simplifié` (minuscules, sans accents, 100 caractères maximum). */
+    /** Nom de la catégorie, au format du serveur : `NNN Nom du groupe` (casse et accents conservés, 100 caractères maximum). */
+    public static function categoryName(int $numero, string $label): string
+    {
+        $label = trim((string) preg_replace('/\s+/u', ' ', $label));
+
+        return rtrim(mb_substr('' === $label ? self::roleName($numero) : self::roleName($numero) . ' ' . $label, 0, 100));
+    }
+
+    /** Nom du salon texte : `NNN-nom-simplifié` (Discord impose minuscules et tirets aux salons texte, 100 caractères maximum). */
     public static function channelName(int $numero, string $label): string
     {
         $slug = (string) (new AsciiSlugger('fr'))
@@ -117,9 +125,10 @@ final readonly class DiscordProvisioningService
             $numero = $mapping?->getNumero() ?? $next++;
             $roleName = self::roleName($numero);
             $channelName = self::channelName($numero, $group->getLabel());
+            $categoryName = self::categoryName($numero, $group->getLabel());
 
             if (!$apply) {
-                $lines[] = new DiscordProvisionLine($group->getLabel(), $numero, $roleName, $channelName, DiscordProvisionStatus::PLANIFIE);
+                $lines[] = new DiscordProvisionLine($group->getLabel(), $numero, $roleName, $channelName, DiscordProvisionStatus::PLANIFIE, categoryName: $categoryName);
 
                 continue;
             }
@@ -141,9 +150,9 @@ final readonly class DiscordProvisioningService
                 $created = $this->provisionGroup($guild, $group, $mapping, $numero, $roleName, $channelName, $channels);
                 $rolesCount += $created['roles'];
                 $channelsCount += $created['channels'];
-                $lines[] = new DiscordProvisionLine($group->getLabel(), $numero, $roleName, $channelName, DiscordProvisionStatus::CREE);
+                $lines[] = new DiscordProvisionLine($group->getLabel(), $numero, $roleName, $channelName, DiscordProvisionStatus::CREE, categoryName: $categoryName);
             } catch (DiscordApiException $exception) {
-                $lines[] = new DiscordProvisionLine($group->getLabel(), $numero, $roleName, $channelName, DiscordProvisionStatus::ERREUR, $exception->getMessage());
+                $lines[] = new DiscordProvisionLine($group->getLabel(), $numero, $roleName, $channelName, DiscordProvisionStatus::ERREUR, $exception->getMessage(), $categoryName);
 
                 // Même cause probable pour les groupes suivants (permissions, limite de débit) : on s'arrête, la relance reprend ici.
                 break;
@@ -278,7 +287,14 @@ final readonly class DiscordProvisioningService
             $this->entityManager->flush();
         }
 
-        return new DiscordProvisionLine($group->getLabel(), $numero, (string) $numero, $category['name'], $apply ? DiscordProvisionStatus::RATTACHE : DiscordProvisionStatus::A_RATTACHER);
+        return new DiscordProvisionLine(
+            $group->getLabel(),
+            $numero,
+            (string) $numero,
+            '',
+            $apply ? DiscordProvisionStatus::RATTACHE : DiscordProvisionStatus::A_RATTACHER,
+            categoryName: $category['name'],
+        );
     }
 
     /**
@@ -369,9 +385,10 @@ final readonly class DiscordProvisioningService
         $overwrites = $this->overwrites($guildId, $mapping->getRoleId());
 
         if (null === $mapping->getCategoryId()) {
-            $categoryId = $this->findChannel($channels, $channelName, self::CHANNEL_CATEGORY, null) ?? $this->createChannel(
+            $categoryName = self::categoryName($numero, $group->getLabel());
+            $categoryId = $this->findChannel($channels, $categoryName, self::CHANNEL_CATEGORY, null) ?? $this->createChannel(
                 $guildId,
-                $channelName,
+                $categoryName,
                 self::CHANNEL_CATEGORY,
                 null,
                 $overwrites,

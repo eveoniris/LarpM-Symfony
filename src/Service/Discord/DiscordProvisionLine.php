@@ -18,6 +18,7 @@ final readonly class DiscordProvisionLine
         public string $channelName,
         public DiscordProvisionStatus $status,
         public string $detail = '',
+        public string $categoryName = '',
     ) {
     }
 }

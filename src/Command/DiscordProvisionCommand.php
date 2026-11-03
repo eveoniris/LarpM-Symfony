@@ -77,7 +77,7 @@ final class DiscordProvisionCommand extends Command
             $io->table(['Groupe', 'Rôle', 'Catégorie et salon', 'État'], array_map(static fn ($line): array => [
                 $line->groupe,
                 $line->roleName,
-                $line->channelName,
+                '' === $line->channelName ? $line->categoryName : $line->categoryName . ' / #' . $line->channelName,
                 trim($line->status->label() . ' ' . $line->detail),
             ], $lines));
 

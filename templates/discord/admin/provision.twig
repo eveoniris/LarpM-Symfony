@@ -52,7 +52,10 @@
                         <tr>
                             <td>{{ line.groupe }}</td>
                             <td><code>{{ line.roleName }}</code></td>
-                            <td><code>{{ line.channelName }}</code></td>
+                            <td>
+                                <code>{{ line.categoryName }}</code>
+                                {% if line.channelName %}<div class="small text-body-secondary">salon <code>#{{ line.channelName }}</code></div>{% endif %}
+                            </td>
                             <td>
                                 {{ line.status.label }}
                                 {% if line.detail %}<div class="small text-danger">{{ line.detail }}</div>{% endif %}

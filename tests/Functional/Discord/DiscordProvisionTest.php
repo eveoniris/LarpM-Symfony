@@ -49,6 +49,8 @@ class DiscordProvisionTest extends WebTestCase
     {
         $this->assertSame('012', DiscordProvisioningService::roleName(12));
         $this->assertSame('012-ordre-de-l-epee-noire', DiscordProvisioningService::channelName(12, 'Ordre de l\'Épée Noire'));
+        $this->assertSame('1233 Ordre de l\'Épée Noire', DiscordProvisioningService::categoryName(1233, "  Ordre de   l'Épée Noire "));
+        $this->assertLessThanOrEqual(100, mb_strlen(DiscordProvisioningService::categoryName(1, str_repeat('long ', 40))));
         $this->assertLessThanOrEqual(100, mb_strlen(DiscordProvisioningService::channelName(1, str_repeat('long ', 40))));
         $this->assertStringEndsNotWith('-', DiscordProvisioningService::channelName(1, str_repeat('long ', 40)));
     }
@@ -78,7 +80,7 @@ class DiscordProvisionTest extends WebTestCase
         $this->assertSame(DiscordProvisionStatus::CREE, $lines[0]->status);
         $this->assertSame(['role', 'category', 'channel'], array_column($api->created, 'type'));
         $this->assertSame('006', $api->created[0]['name']);
-        $this->assertSame('006-gardiens-du-nord', $api->created[1]['name']);
+        $this->assertSame('006 Gardiens du Nord', $api->created[1]['name'], 'La catégorie garde la casse, comme sur le serveur.');
         $this->assertSame('006-gardiens-du-nord', $api->created[2]['name']);
 
         $mapping = $this->guild->getMappings()->first();
