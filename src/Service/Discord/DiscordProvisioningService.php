@@ -172,7 +172,7 @@ final readonly class DiscordProvisioningService
             if (self::CHANNEL_CATEGORY !== $channel['type'] || isset($taken[$channel['id']])) {
                 continue;
             }
-            if (1 === preg_match('/^(\d{1,4})-(.+)$/', $channel['name'], $matches)) {
+            if (1 === preg_match('/^(\d{1,4})\s*[-:\s]\s*(.+)$/u', $channel['name'], $matches)) {
                 $byKey[self::matchKey($matches[2])][] = ['numero' => (int) $matches[1], 'id' => $channel['id'], 'name' => $channel['name']];
             }
         }
@@ -189,8 +189,20 @@ final readonly class DiscordProvisioningService
      */
     public function unmatchedCategories(DiscordGuild $guild): array
     {
+        // Une catégorie dont le nom correspond à un groupe actif sera rattachée par le provisionnement : elle n'est pas orpheline.
+        $activeKeys = [];
+        foreach ($this->entityManager->getRepository(SecondaryGroup::class)->findAll() as $group) {
+            if (!$group->isDiscordIgnore()) {
+                $activeKeys[self::matchKey($group->getLabel())] = true;
+            }
+        }
+
         $unmatched = [];
-        foreach ($this->numberedCategories($guild, $this->api->guildChannels($guild->getGuildId())) as $categories) {
+        foreach ($this->numberedCategories($guild, $this->api->guildChannels($guild->getGuildId())) as $key => $categories) {
+            if (isset($activeKeys[$key])) {
+                continue;
+            }
+
             foreach ($categories as $category) {
                 $unmatched[] = ['numero' => $category['numero'], 'name' => $category['name']];
             }
@@ -320,7 +332,7 @@ final readonly class DiscordProvisioningService
             }
         }
         foreach ($channels as $channel) {
-            if (1 === preg_match('/^(\d{1,4})(?:-|$)/', $channel['name'], $matches)) {
+            if (1 === preg_match('/^(\d{1,4})(?:[-:\s]|$)/u', $channel['name'], $matches)) {
                 $used[] = (int) $matches[1];
             }
         }
