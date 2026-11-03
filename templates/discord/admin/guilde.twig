@@ -114,6 +114,28 @@
         <a class="btn btn-secondary" href="{{ path('discord.admin') }}">Retour</a>
     </form>
 
+    <div class="well bs-component mt-3">
+        <h3>Provisionnement automatique</h3>
+        <p class="text-muted small">
+            Pour chaque groupe transverse sans rôle sur ce serveur : un numéro libre, un rôle de ce numéro, une catégorie
+            <code>NNN-nom-du-groupe</code> invisible des autres membres et son salon texte. Rien n'est jamais supprimé ni renommé.
+            Le bot doit pouvoir gérer les rôles et les salons, voir et écrire dans les salons (invitation avec ces permissions).
+        </p>
+        <form method="POST" class="d-inline"
+              action="{{ path('discord.admin.guilde.provision', {'guild': guild.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('discord_provision_' ~ guild.id) }}">
+            <input type="hidden" name="mode" value="simulation">
+            <button class="btn btn-outline-primary" type="submit">Simuler</button>
+        </form>
+        <form method="POST" class="d-inline"
+              action="{{ path('discord.admin.guilde.provision', {'guild': guild.id}) }}"
+              onsubmit="return confirm('Créer maintenant les rôles, catégories et salons sur Discord ? Faites d\'abord une simulation.');">
+            <input type="hidden" name="_token" value="{{ csrf_token('discord_provision_' ~ guild.id) }}">
+            <input type="hidden" name="mode" value="apply">
+            <button class="btn btn-primary" type="submit">Provisionner</button>
+        </form>
+    </div>
+
     <form method="POST" class="mt-3"
           action="{{ path('discord.admin.guilde.delete', {'guild': guild.id}) }}"
           onsubmit="return confirm('Retirer cette guilde de la configuration ? Rien ne sera supprimé sur Discord.');">

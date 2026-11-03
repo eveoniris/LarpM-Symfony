@@ -38,6 +38,31 @@ interface DiscordApiInterface
      */
     public function guildRoles(string $guildId): array;
 
+    /**
+     * Salons et catégories de la guilde (type 0 = salon texte, 4 = catégorie).
+     *
+     * @return list<array{id: string, name: string, type: int, parent_id: string|null}>
+     *
+     * @throws DiscordApiException
+     */
+    public function guildChannels(string $guildId): array;
+
+    /**
+     * Crée un rôle sans permission particulière et renvoie son identifiant.
+     *
+     * @throws DiscordApiException
+     */
+    public function createRole(string $guildId, string $name): string;
+
+    /**
+     * Crée une catégorie (type 4) ou un salon texte (type 0) et renvoie son identifiant.
+     *
+     * @param list<array{id: string, type: int, allow: string, deny: string}> $permissionOverwrites
+     *
+     * @throws DiscordApiException
+     */
+    public function createChannel(string $guildId, string $name, int $type, ?string $parentId, array $permissionOverwrites): string;
+
     /** @throws DiscordApiException */
     public function addRole(string $guildId, string $userId, string $roleId): void;
 

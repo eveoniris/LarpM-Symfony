@@ -11,6 +11,7 @@ use App\Repository\DiscordGuildRepository;
 use App\Service\Discord\DiscordApiException;
 use App\Service\Discord\DiscordApiInterface;
 use App\Service\Discord\DiscordMappingService;
+use App\Service\Discord\DiscordProvisioningService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class DiscordAdminController extends AbstractController
 {
+    /** Groupes provisionnés par clic en mode réel (3 appels Discord par groupe). */
+    private const int PROVISION_WEB_LIMIT = 10;
+
     #[Route('/admin/discord', name: 'discord.admin', methods: ['GET', 'POST'])]
     public function listAction(Request $request, DiscordGuildRepository $guilds, DiscordApiInterface $discordApi): Response
     {
@@ -132,6 +136,39 @@ final class DiscordAdminController extends AbstractController
             'orga' => $guild->roleIdOf(DiscordRoleType::ORGA),
             'errors' => $errors,
             'old' => $request->request->all(),
+        ]);
+    }
+
+    /**
+     * Simulation ou création des rôles, catégories et salons des groupes transverses de la guilde.
+     * En mode réel, le nombre de groupes par passage est borné (durée d'une requête web) : relancer jusqu'à épuisement.
+     */
+    #[Route('/admin/discord/guilde/{guild}/provisionner', name: 'discord.admin.guilde.provision', requirements: ['guild' => '\d+'], methods: ['POST'])]
+    public function provisionAction(
+        Request $request,
+        #[MapEntity(id: 'guild')]
+        DiscordGuild $guild,
+        DiscordProvisioningService $provisioning,
+    ): Response {
+        if (!$this->isCsrfTokenValid('discord_provision_' . $guild->getId(), $request->request->getString('_token'))) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
+        $apply = 'apply' === $request->request->getString('mode');
+
+        try {
+            $lines = $provisioning->provision($guild, $apply, $apply ? self::PROVISION_WEB_LIMIT : null);
+        } catch (DiscordApiException $exception) {
+            $this->addFlash('alert', $exception->getMessage());
+
+            return $this->redirectToRoute('discord.admin.guilde', ['guild' => $guild->getId()]);
+        }
+
+        return $this->render('discord/admin/provision.twig', [
+            'guild' => $guild,
+            'lines' => $lines,
+            'apply' => $apply,
+            'limit' => self::PROVISION_WEB_LIMIT,
         ]);
     }
 

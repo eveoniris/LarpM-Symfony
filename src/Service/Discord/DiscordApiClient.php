@@ -96,6 +96,52 @@ final readonly class DiscordApiClient implements DiscordApiInterface
         return $roles;
     }
 
+    public function guildChannels(string $guildId): array
+    {
+        $response = $this->request('GET', \sprintf('/guilds/%s/channels', $guildId));
+
+        try {
+            $data = $response->toArray();
+        } catch (ExceptionInterface $exception) {
+            throw new DiscordApiException('Lecture des salons Discord impossible : ' . $exception->getMessage(), 0, $exception);
+        }
+
+        $channels = [];
+        foreach ($data as $channel) {
+            if (!\is_array($channel) || !isset($channel['id'], $channel['name'], $channel['type'])) {
+                continue;
+            }
+            $channels[] = [
+                'id' => (string) $channel['id'],
+                'name' => (string) $channel['name'],
+                'type' => (int) $channel['type'],
+                'parent_id' => isset($channel['parent_id']) ? (string) $channel['parent_id'] : null,
+            ];
+        }
+
+        return $channels;
+    }
+
+    public function createRole(string $guildId, string $name): string
+    {
+        return $this->createdId($this->request('POST', \sprintf('/guilds/%s/roles', $guildId), [
+            'name' => $name,
+            'permissions' => '0',
+            'hoist' => false,
+            'mentionable' => false,
+        ]));
+    }
+
+    public function createChannel(string $guildId, string $name, int $type, ?string $parentId, array $permissionOverwrites): string
+    {
+        $payload = ['name' => $name, 'type' => $type, 'permission_overwrites' => $permissionOverwrites];
+        if (null !== $parentId) {
+            $payload['parent_id'] = $parentId;
+        }
+
+        return $this->createdId($this->request('POST', \sprintf('/guilds/%s/channels', $guildId), $payload));
+    }
+
     public function addRole(string $guildId, string $userId, string $roleId): void
     {
         $this->assertSuccess($this->request('PUT', \sprintf('/guilds/%s/members/%s/roles/%s', $guildId, $userId, $roleId)));
@@ -149,6 +195,29 @@ final readonly class DiscordApiClient implements DiscordApiInterface
         }
 
         return $response;
+    }
+
+    private function createdId(ResponseInterface $response): string
+    {
+        $status = $response->getStatusCode();
+
+        try {
+            $body = $response->toArray(throw: false);
+        } catch (ExceptionInterface) {
+            $body = [];
+        }
+
+        if ($status < 200 || $status >= 300 || !isset($body['id'])) {
+            $detail = isset($body['message']) && \is_string($body['message']) ? ' : ' . $body['message'] : '';
+
+            throw new DiscordApiException(\sprintf(
+                'Discord a refusé la création (HTTP %d%s). Vérifiez les permissions du bot (gérer les rôles, gérer les salons) et la position de son rôle.',
+                $status,
+                $detail,
+            ));
+        }
+
+        return (string) $body['id'];
     }
 
     private function assertSuccess(ResponseInterface $response): void
