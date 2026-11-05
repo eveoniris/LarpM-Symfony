@@ -73,7 +73,7 @@
                 <div class="form-group">
                     <div class="input-group flex-wrap">
                         {{ form_widget(form.value) }}
-                        {{ form_widget(form.type) }}
+                        {{ form_widget(form.type, {'attr': {'title': 'Rechercher dans', 'aria-label': 'Rechercher dans'}}) }}
                         {% if searchCriterias is defined %}
                             {% for searchCriteria in searchCriterias %}
                                 // TODO add form inputs from searchCriterias

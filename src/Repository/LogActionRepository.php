@@ -38,10 +38,54 @@ class LogActionRepository extends BaseRepository
             'user.username as username',
             $alias . '.date',
             $alias . '.data',
+            $alias . '.type',
             'etatCivil.nom as nom',
             'etatCivil.prenom as prenom',
             "CONCAT(etatCivil.nom, ' ', etatCivil.prenom) AS HIDDEN nomPrenom",
         ];
+    }
+
+    /** @return array<string, string> */
+    public function translateAttributes(): array
+    {
+        return parent::translateAttributes()
+        + [
+            'username' => 'Utilisateur',
+            'date' => 'Date',
+            'data' => 'Données',
+            'type' => 'Type d\'action (valeur technique)',
+            'nom' => 'Nom',
+            'prenom' => 'Prénom',
+        ];
+    }
+
+    /** @return array<string, mixed> */
+    public function sortAttributes(?string $alias = null): array
+    {
+        $alias ??= static::getEntityAlias();
+
+        $sorts = [];
+        foreach (['id' => $alias . '.id', 'date' => $alias . '.date', 'type' => $alias . '.type', 'username' => 'user.username'] as $name => $field) {
+            $sorts[$name] = [
+                OrderBy::ASC => [$field => OrderBy::ASC],
+                OrderBy::DESC => [$field => OrderBy::DESC],
+            ];
+        }
+
+        return $sorts;
+    }
+
+    /**
+     * Valeurs de type réellement présentes en base (y compris hors enum).
+     *
+     * @return array<int, string>
+     */
+    public function findDistinctTypes(): array
+    {
+        return array_map(
+            static fn (array $row): string => (string) $row['type'],
+            $this->createQueryBuilder('la')->select('DISTINCT la.type AS type')->orderBy('la.type')->getQuery()->getScalarResult(),
+        );
     }
 
     public function getLastAgingActionDate(): ?int

@@ -207,6 +207,7 @@ final class PagerService
                 $typeChoicesOverride = [
                     'type_choices' => [
                         'required' => true,
+                        'label' => 'Rechercher dans',
                         'choices' => [],
                     ],
                 ];

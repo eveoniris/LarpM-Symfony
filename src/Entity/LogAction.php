@@ -81,6 +81,12 @@ class LogAction
         return LogActionType::tryFrom($this->type);
     }
 
+    /** Valeur brute en base, y compris les types absents de l'enum. */
+    public function getRawType(): ?string
+    {
+        return $this->type;
+    }
+
     public function setType(string|LogActionType|null $type): static
     {
         if ($type instanceof LogActionType) {
