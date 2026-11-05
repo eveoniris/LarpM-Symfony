@@ -60,15 +60,6 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
-    App\Command\DiscordBot:
-        arguments:
-            $entityManager: '@doctrine.orm.entity_manager'
-            $botId: '%discord.bot.id%'
-            $botToken: '%discord.bot.token%'
-            $apiKey: '%discord.api.key%'
-            $oauthId: '%discord.oauth.id%'
-            $oauthSecret: '%discord.oauth.secret%'
-
     App\Service\HelloAsso\PlusBilletterieClientFactory:
         arguments:
             $apiKey: '%helloasso.plus.api_key%'
