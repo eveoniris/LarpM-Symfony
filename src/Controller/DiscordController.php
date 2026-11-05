@@ -10,7 +10,6 @@ use App\Service\Discord\DiscordOAuthClient;
 use App\Service\Discord\DiscordOAuthException;
 use App\Service\Discord\DiscordSignatureVerifier;
 use App\Service\Discord\DiscordSyncService;
-use Discord\Discord;
 use Throwable;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -24,40 +23,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DiscordController extends AbstractController
 {
     private const string SESSION_STATE = 'discord_oauth_state';
-
-    public static ?Discord $discord = null;
-
-    private function getDiscord(): Discord
-    {
-        self::$discord ??= new Discord([
-            'token' => $this->getParameter('discord.bot.token'),
-            //  'loadAllMembers' => true,
-        ]);
-
-        return self::$discord;
-    }
-
-    #[Route('/discord/bot', name: 'discord.bot')]
-    public function botAction(Request $request): Response
-    {
-        $this->getDiscord()->on('ready', static function ($discord): void {
-            echo 'Bot is ready!', \PHP_EOL;
-
-            // Listen for messages
-            $discord->on('message', static function ($message): void {
-                echo "Received a message from {$message->author->username}: {$message->content}", \PHP_EOL;
-
-                // Respond to a specific command
-                if ('!hello' === $message->content) {
-                    $message->channel->sendMessage('Hello, Discord!');
-                }
-            });
-        });
-
-        $this->getDiscord()->run();
-
-        return new Response();
-    }
 
     /**
      * Démarre la liaison du compte Discord de l'utilisateur connecté (OAuth2, scope identify).
@@ -183,14 +148,6 @@ class DiscordController extends AbstractController
         return $this->generateUrl('discord.callback', [], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
-    #[Route('/discord/result', name: 'discord.result')]
-    public function resultAction(Request $request): Response
-    {
-        $this->logger->info('Discord result: ' . var_export($request->request->all(), true));
-
-        return new JsonResponse(['ok' => true]);
-    }
-
     /**
      * Interactions Endpoint URL : PING, puis commande /roles. Chaque requête est authentifiée par la signature Ed25519 de Discord.
      */
@@ -225,13 +182,5 @@ class DiscordController extends AbstractController
         }
 
         return new JsonResponse($response->body);
-    }
-
-    #[Route('/discord/linked-role', name: 'discord.linked-role')]
-    public function linkedRoleAction(Request $request): Response
-    {
-        $this->logger->warning('Discord linked role');
-
-        return new JsonResponse(['ok' => true]);
     }
 }
