@@ -1,0 +1,6 @@
+#!/bin/sh
+# Refuse les trailers Co-Authored-By Claude/Anthropic (regle projet)
+if grep -qiE "^Co-Authored-By:.*(Claude|Anthropic)" "$1"; then
+  echo "Commit refuse : pas de Co-Authored-By Claude/Anthropic dans ce projet. Retirez la ligne." >&2
+  exit 1
+fi

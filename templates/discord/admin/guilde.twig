@@ -1,0 +1,173 @@
+{% extends "base.html.twig" %}
+
+{# Liste déroulante des rôles Discord si la lecture a réussi, sinon saisie manuelle de l'identifiant. #}
+{% macro roleField(name, value, roles, id, label, small) %}
+    {% if roles is not empty %}
+        <select class="form-select{{ small ? ' form-select-sm' : '' }}" {% if id %}id="{{ id }}" {% endif %}name="{{ name }}" aria-label="{{ label }}">
+            <option value="">(aucun)</option>
+            {% set known = false %}
+            {% for role in roles %}
+                {% if role.id == value %}{% set known = true %}{% endif %}
+                <option value="{{ role.id }}"{{ role.id == value ? ' selected' : '' }}>{{ role.name }}</option>
+            {% endfor %}
+            {% if value is not empty and not known %}
+                <option value="{{ value }}" selected>Rôle introuvable sur Discord ({{ value }})</option>
+            {% endif %}
+        </select>
+    {% else %}
+        <input class="form-control{{ small ? ' form-control-sm' : '' }}" {% if id %}id="{{ id }}" {% endif %}name="{{ name }}"
+               inputmode="numeric" aria-label="{{ label }}" value="{{ value }}">
+    {% endif %}
+{% endmacro %}
+
+{% block title %}Guilde Discord : {{ guild.nom }}{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('discord.admin') }}">Bot Discord</a></li>
+        <li class="active">{{ guild.nom }}</li>
+    </ol>
+
+    {% for error in errors %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endfor %}
+
+    <form method="POST" action="{{ path('discord.admin.guilde', {'guild': guild.id}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('discord_guilde_' ~ guild.id) }}">
+
+        <div class="well bs-component">
+            <h3>Guilde</h3>
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <label class="form-label" for="input-nom">Nom</label>
+                    <input class="form-control" id="input-nom" name="nom" maxlength="100" required
+                           value="{{ old.nom|default(guild.nom) }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">ID de la guilde</label>
+                    <div class="form-control-plaintext"><code>{{ guild.guildId }}</code></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="well bs-component">
+            <h3>Rôles généraux</h3>
+            {% if rolesError %}
+                <div class="alert alert-warning small">
+                    Liste des rôles indisponible ({{ rolesError }}). Saisissez les identifiants à la main
+                    (clic droit sur le rôle en mode développeur, « Copier l'identifiant »).
+                </div>
+            {% else %}
+                <p class="text-muted small">
+                    Rôles lus sur le serveur Discord. Choisir « (aucun) » supprime la correspondance.
+                </p>
+            {% endif %}
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <label class="form-label" for="input-membre">Membre (tout compte lié)</label>
+                    {{ _self.roleField('membre', old.membre|default(membre), discordRoles, 'input-membre', 'Rôle membre', false) }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="input-orga">Orga / scénariste (ORGA, SCENARISTE, ADMIN)</label>
+                    {{ _self.roleField('orga', old.orga|default(orga), discordRoles, 'input-orga', 'Rôle orga', false) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="well bs-component">
+            <h3>Groupes transverses</h3>
+            <p class="text-muted small">
+                Un membre accepté d'un groupe, avec au moins un personnage vivant, reçoit le rôle correspondant.
+            </p>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm align-middle">
+                    <thead>
+                    <tr>
+                        <th>Groupe</th>
+                        <th title="Groupe inactif ou non repris : pas de rôle ni de salon créés par le provisionnement">Ignorer</th>
+                        <th>ID du rôle Discord</th>
+                        <th>N°</th>
+                        <th>Salon</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for group in groups %}
+                        {% set mapping = byGroup[group.id]|default(null) %}
+                        <tr>
+                            <td>{{ group.label }}</td>
+                            <td>
+                                <input class="form-check-input" type="checkbox" name="ignores[{{ group.id }}]" value="1"
+                                       aria-label="Ignorer {{ group.label }}"{% if old is not empty ? old.ignores[group.id] is defined : group.discordIgnore %} checked{% endif %}>
+                            </td>
+                            <td>
+                                {{ _self.roleField('groupes[' ~ group.id ~ ']', old.groupes[group.id]|default(mapping ? mapping.roleId : ''), discordRoles, null, 'Rôle Discord de ' ~ group.label, true) }}
+                            </td>
+                            <td>{{ mapping and mapping.numero is not null ? mapping.numero : '' }}</td>
+                            <td>{% if mapping and mapping.channelId %}<code>{{ mapping.channelId }}</code>{% endif %}</td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="5">Aucun groupe transverse.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <a class="btn btn-secondary" href="{{ path('discord.admin') }}">Retour</a>
+    </form>
+
+    <div class="well bs-component mt-3">
+        <h3>Provisionnement automatique</h3>
+        <p class="text-muted small">
+            Pour chaque groupe transverse sans rôle sur ce serveur : un numéro libre, un rôle de ce numéro, une catégorie
+            <code>NNN-nom-du-groupe</code> invisible des autres membres et son salon texte. Rien n'est jamais supprimé ni renommé.
+            Le bot doit pouvoir gérer les rôles et les salons, voir et écrire dans les salons (invitation avec ces permissions).
+        </p>
+        <form method="POST" class="d-inline"
+              action="{{ path('discord.admin.guilde.provision', {'guild': guild.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('discord_provision_' ~ guild.id) }}">
+            <input type="hidden" name="mode" value="simulation">
+            <button class="btn btn-outline-primary" type="submit">Simuler</button>
+        </form>
+        <form method="POST" class="d-inline"
+              action="{{ path('discord.admin.guilde.provision', {'guild': guild.id}) }}"
+              onsubmit="return confirm('Créer maintenant les rôles, catégories et salons sur Discord ? Faites d\'abord une simulation.');">
+            <input type="hidden" name="_token" value="{{ csrf_token('discord_provision_' ~ guild.id) }}">
+            <input type="hidden" name="mode" value="apply">
+            <button class="btn btn-primary" type="submit">Provisionner</button>
+        </form>
+    </div>
+
+    <div class="well bs-component mt-3">
+        <h3>Synchronisation des joueurs</h3>
+        <p class="text-muted small">
+            Aligne les rôles Discord de tous les comptes liés sur LarpManager (ajouts et retraits, rôles ci-dessus uniquement).
+            Cette synchronisation est aussi lancée chaque jour par la tâche planifiée <code>discord:sync --apply</code>.
+            Par pages de 25 comptes.
+        </p>
+        <form method="POST" class="d-inline"
+              action="{{ path('discord.admin.guilde.sync', {'guild': guild.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('discord_sync_' ~ guild.id) }}">
+            <input type="hidden" name="mode" value="simulation">
+            <button class="btn btn-outline-primary" type="submit">Simuler</button>
+        </form>
+        <form method="POST" class="d-inline"
+              action="{{ path('discord.admin.guilde.sync', {'guild': guild.id}) }}"
+              onsubmit="return confirm('Modifier maintenant les rôles Discord de tous les comptes liés ? Faites d\'abord une simulation.');">
+            <input type="hidden" name="_token" value="{{ csrf_token('discord_sync_' ~ guild.id) }}">
+            <input type="hidden" name="mode" value="apply">
+            <button class="btn btn-primary" type="submit">Tout resynchroniser</button>
+        </form>
+    </div>
+
+    <form method="POST" class="mt-3"
+          action="{{ path('discord.admin.guilde.delete', {'guild': guild.id}) }}"
+          onsubmit="return confirm('Retirer cette guilde de la configuration ? Rien ne sera supprimé sur Discord.');">
+        <input type="hidden" name="_token" value="{{ csrf_token('discord_guilde_delete_' ~ guild.id) }}">
+        <button class="btn btn-sm btn-outline-danger" type="submit">Retirer cette guilde</button>
+    </form>
+
+{% endblock body %}

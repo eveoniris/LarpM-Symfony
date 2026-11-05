@@ -1,0 +1,86 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Provisionnement Discord : {{ guild.nom }}{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('discord.admin') }}">Bot Discord</a></li>
+        <li><a href="{{ path('discord.admin.guilde', {'guild': guild.id}) }}">{{ guild.nom }}</a></li>
+        <li class="active">Provisionnement</li>
+    </ol>
+
+    {% set erreurs = lines|filter(l => l.status.value == 'erreur') %}
+    {% set aCreer = lines|filter(l => l.status.value == 'planifie') %}
+    {% set aRattacher = lines|filter(l => l.status.value == 'a_rattacher') %}
+
+    <div class="well bs-component">
+        <h3>{{ apply ? 'Provisionnement réalisé' : 'Simulation du provisionnement' }}</h3>
+
+        {% if lines is empty %}
+            <p class="mb-0">Rien à provisionner : tous les groupes transverses ont déjà leur rôle, leur catégorie et leur salon sur ce serveur.</p>
+        {% else %}
+            {% if not apply %}
+                <div class="alert alert-info small">
+                    Simulation : rien n'a été modifié sur Discord. {{ aCreer|length }} groupe(s) seraient provisionnés
+                    (rôle, catégorie privée et salon texte) et {{ aRattacher|length }} groupe(s) seraient rattachés
+                    à une catégorie et un rôle qui existent déjà.
+                </div>
+            {% elseif erreurs is not empty %}
+                <div class="alert alert-danger small">
+                    Le provisionnement s'est arrêté sur une erreur. Corrigez la cause puis relancez : la reprise se fait là où il s'est arrêté.
+                </div>
+            {% else %}
+                <div class="alert alert-success small">
+                    Au plus {{ limit }} groupes sont traités par passage. Relancez tant que d'autres groupes restent à provisionner.
+                </div>
+            {% endif %}
+
+            <div class="table-responsive">
+                <table class="table table-striped table-sm align-middle">
+                    <thead>
+                    <tr>
+                        <th>Groupe</th>
+                        <th>Rôle</th>
+                        <th>Catégorie et salon</th>
+                        <th>État</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for line in lines %}
+                        <tr>
+                            <td>{{ line.groupe }}</td>
+                            <td><code>{{ line.roleName }}</code></td>
+                            <td>
+                                <code>{{ line.categoryName }}</code>
+                                {% if line.channelName %}<div class="small text-body-secondary">salon <code>#{{ line.channelName }}</code></div>{% endif %}
+                            </td>
+                            <td>
+                                {{ line.status.label }}
+                                {% if line.detail %}<div class="small text-danger">{{ line.detail }}</div>{% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if unmatched is not empty %}
+            <h4 class="mt-3">Catégories numérotées sans groupe correspondant</h4>
+            <p class="text-muted small">
+                Présentes sur Discord mais non associées à un groupe : groupes inactifs ou au libellé différent.
+                Elles ne sont ni modifiées ni supprimées. Pour les associer à un groupe, saisissez son rôle dans le tableau de la guilde.
+            </p>
+            <ul class="small">
+                {% for category in unmatched %}
+                    <li><code>{{ category.name }}</code></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <a class="btn btn-secondary" href="{{ path('discord.admin.guilde', {'guild': guild.id}) }}">Retour à la guilde</a>
+    </div>
+
+{% endblock body %}

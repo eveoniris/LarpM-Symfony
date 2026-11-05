@@ -83,6 +83,10 @@ abstract class BaseSecondaryGroup
     #[Column(nullable: true)]
     private ?bool $show_discord = null;
 
+    /** Groupe inactif ou non repris : ignoré par le provisionnement du bot Discord (ses rôles déjà associés continuent d'être synchronisés). */
+    #[Column(name: 'discord_ignore', options: ['default' => false])]
+    private bool $discordIgnore = false;
+
     public function __construct()
     {
         $this->intrigueHasGroupeSecondaires = new ArrayCollection();
@@ -359,6 +363,18 @@ abstract class BaseSecondaryGroup
     public function removePostulant(Postulant $postulant): static
     {
         $this->postulants->removeElement($postulant);
+
+        return $this;
+    }
+
+    public function isDiscordIgnore(): bool
+    {
+        return $this->discordIgnore;
+    }
+
+    public function setDiscordIgnore(bool $discordIgnore): static
+    {
+        $this->discordIgnore = $discordIgnore;
 
         return $this;
     }

@@ -63,6 +63,30 @@
                             {% endset %}
                             {% include '_partials/cardNotif.twig' with {'type' : 'info', 'content' : discordInfo} %}
                         {% endif %}
+
+                        {# Rôle Discord du groupe : réservé aux membres acceptés ayant un personnage vivant dans le groupe #}
+                        {% set discordMembre = false %}
+                        {% for membre in groupeSecondaire.membres %}
+                            {% if membre.personnage.user and membre.personnage.user.id == app.user.id and membre.personnage.vivant %}
+                                {% set discordMembre = true %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if discordMembre %}
+                            {% if app.user.discordLinked %}
+                                <form method="POST" action="{{ path('discord.synchroniser') }}" class="mt-2">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('discord_synchroniser') }}">
+                                    <input type="hidden" name="retour" value="{{ app.request.requestUri }}">
+                                    <button class="btn btn-sm btn-outline-primary" type="submit">
+                                        <i class="fa-brands fa-discord" aria-hidden="true"></i> M'ajouter ce rôle sur Discord
+                                    </button>
+                                </form>
+                            {% else %}
+                                <div class="mt-2 small text-body-secondary">
+                                    Liez votre compte Discord pour recevoir le rôle de ce groupe :
+                                    <a href="{{ path('discord.lier') }}">Lier mon compte Discord</a>
+                                </div>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             {% endif %}

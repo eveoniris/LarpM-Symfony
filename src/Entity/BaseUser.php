@@ -230,6 +230,10 @@ abstract class BaseUser
     #[Column(name: 'discord_pseudo', type: Types::STRING, length: 64, nullable: true)]
     private ?string $discordPseudo = null;
 
+    /** Identifiant Discord (snowflake) vérifié par OAuth : seul lien fiable entre un compte Discord et ce compte. */
+    #[Column(name: 'discord_id', type: Types::STRING, length: 32, unique: true, nullable: true)]
+    private ?string $discordId = null;
+
     /** Interface choisie : null = interface actuelle, 'beta' = nouveau thème (bêta). */
     #[Column(name: 'ui_theme', type: Types::STRING, length: 16, nullable: true)]
     private ?string $uiTheme = null;
@@ -630,6 +634,23 @@ abstract class BaseUser
         $this->email_contact = $email_contact;
 
         return $this;
+    }
+
+    public function getDiscordId(): ?string
+    {
+        return $this->discordId;
+    }
+
+    public function setDiscordId(?string $discordId): static
+    {
+        $this->discordId = '' === $discordId ? null : $discordId;
+
+        return $this;
+    }
+
+    public function isDiscordLinked(): bool
+    {
+        return null !== $this->discordId;
     }
 
     public function getDiscordPseudo(): ?string
