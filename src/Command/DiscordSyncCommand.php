@@ -58,8 +58,8 @@ final class DiscordSyncCommand extends Command
             if ([] !== $report->changes) {
                 $io->table(['Joueur', 'Ajoutés', 'Retirés', 'Erreur'], array_map(static fn (array $change): array => [
                     $change['user'],
-                    $change['added'],
-                    $change['removed'],
+                    implode(', ', $change['added']),
+                    implode(', ', $change['removed']),
                     $change['error'] ?? '',
                 ], $report->changes));
             }

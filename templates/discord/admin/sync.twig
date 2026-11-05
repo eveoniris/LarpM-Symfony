@@ -44,8 +44,8 @@
                     {% for change in report.changes %}
                         <tr>
                             <td>{{ change.user }}</td>
-                            <td>{{ change.added }}</td>
-                            <td>{{ change.removed }}</td>
+                            <td>{{ change.added|join(', ') }}</td>
+                            <td>{{ change.removed|join(', ') }}</td>
                             <td class="small text-danger">{{ change.error }}</td>
                         </tr>
                     {% endfor %}

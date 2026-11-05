@@ -50,7 +50,7 @@ final readonly class DiscordBulkSyncService
             if (null !== $result->error) {
                 ++$report->errors;
                 ++$consecutiveErrors;
-                $report->changes[] = ['user' => $user->getDisplayName(), 'added' => 0, 'removed' => 0, 'error' => $result->error];
+                $report->changes[] = ['user' => $user->getDisplayName(), 'added' => [], 'removed' => [], 'error' => $result->error];
                 if ($consecutiveErrors >= self::MAX_CONSECUTIVE_ERRORS) {
                     $report->aborted = true;
 
@@ -66,7 +66,7 @@ final readonly class DiscordBulkSyncService
             } elseif ([] === $result->added && [] === $result->removed) {
                 ++$report->upToDate;
             } else {
-                $report->changes[] = ['user' => $user->getDisplayName(), 'added' => \count($result->added), 'removed' => \count($result->removed), 'error' => null];
+                $report->changes[] = ['user' => $user->getDisplayName(), 'added' => $result->addedLabels, 'removed' => $result->removedLabels, 'error' => null];
                 if ($apply && $this->pauseMicroseconds > 0) {
                     usleep($this->pauseMicroseconds);
                 }

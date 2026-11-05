@@ -29,6 +29,6 @@ final class DiscordBulkSyncReport
     /** Arrêt anticipé (Discord injoignable ou limite de débit persistante). */
     public bool $aborted = false;
 
-    /** @var list<array{user: string, added: int, removed: int, error: string|null}> */
+    /** @var list<array{user: string, added: list<string>, removed: list<string>, error: string|null}> noms des rôles ajoutés et retirés par joueur */
     public array $changes = [];
 }
