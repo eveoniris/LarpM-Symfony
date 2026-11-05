@@ -249,7 +249,7 @@
     {% endset %}
 
     {% set experienceCollapse = false %}
-    {% if canSeeDetail and personnage.xp|default(-1) >= 0 %}
+    {% if canSeeDetail %}
         {% set experienceCollapseHtml %}
             <div class="list-group">
                 <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
