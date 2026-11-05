@@ -74,6 +74,9 @@
                         <a class="btn btn-secondary" href="{{ path('user.edit', {'user': user.id}) }}"><span
                                 class="fa fa-edit"
                                 style="margin-right: 5px;"></span>Modifier</a>
+                        <a class="btn btn-secondary" href="{{ path('user.password', {'user': user.id}) }}"><span
+                                class="fa fa-key"
+                                style="margin-right: 5px;"></span>Mot de passe</a>
                         {# todo ?
                         <a class="btn btn-secondary" href="{{ path('etatCivil.update', {'etatCivil': user.etatCivil.id}) }}"><span
                                 class="fa fa-edit"
