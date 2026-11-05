@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Personnage;
+use App\Enum\LogActionType;
 use App\Repository\ExperienceGainRepository;
 use App\Repository\ExperienceUsageRepository;
 use App\Repository\LogActionRepository;
@@ -204,9 +205,20 @@ class AdminController extends AbstractController
     {
         $pagerService->setRequest($request)->setRepository($repository)->setLimit(50)->setDefaultOrdersBy(['id' => 'DESC']);
 
+        $typeAction = trim($request->query->getString('typeAction'));
+        $query = null;
+        if ('' !== $typeAction) {
+            $query = $repository
+                ->createQueryBuilder($repository->getAlias())
+                ->andWhere($repository->getAlias() . '.type = :typeAction')
+                ->setParameter('typeAction', $typeAction);
+        }
+
         return $this->render('admin/logAction.twig', [
-            'paginator' => $repository->searchPaginated($pagerService),
+            'paginator' => $repository->searchPaginated($pagerService, $query),
             'pagerService' => $pagerService,
+            'typeAction' => $typeAction,
+            'typesAction' => array_unique([...array_column(LogActionType::cases(), 'value'), ...$repository->findDistinctTypes()]),
         ]);
     }
 

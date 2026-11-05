@@ -45,17 +45,20 @@ class AnnonceRedacteurAccessTest extends WebTestCase
         $gn = GnFactory::createOne();
 
         $crawler = $client->request('GET', '/annonce/add');
-        $form = $crawler->selectButton('Sauvegarder')->form([
-            'annonce[title]' => 'Annonce de test rédacteur',
-            'annonce[archive]' => '0',
-            'annonce[gn]' => (string) $gn->getId(),
-            'annonce[text]' => '<p>Texte</p>',
-        ]);
+        $form = $crawler
+            ->selectButton('Sauvegarder')
+            ->form([
+                'annonce[title]' => 'Annonce de test rédacteur',
+                'annonce[archive]' => '0',
+                'annonce[gn]' => (string) $gn->getId(),
+                'annonce[text]' => '<p>Texte</p>',
+            ]);
         $client->submit($form);
 
         static::assertResponseRedirects('/annonce');
 
-        $annonce = static::getContainer()->get(EntityManagerInterface::class)
+        $annonce = static::getContainer()
+            ->get(EntityManagerInterface::class)
             ->getRepository(Annonce::class)
             ->findOneBy(['title' => 'Annonce de test rédacteur']);
         static::assertNotNull($annonce);

@@ -3,8 +3,8 @@
 {% endif %}
 <div class="{{ css }}">
     <div class="header">
-        <h5>Expériences <small>({{ personnage.xp|default(0) }}
-                / {{ personnage.xpTotal }}
+        <h5>Expériences <small>(<span{% if personnage.xp < 0 %} class="text-danger"{% endif %}>{{ personnage.xp|default(0) }}</span>
+                /{{ personnage.xpTotal }}
                 xp)</small></h5>
     </div>
 
