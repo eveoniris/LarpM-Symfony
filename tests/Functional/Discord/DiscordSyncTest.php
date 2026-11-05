@@ -116,6 +116,9 @@ class DiscordSyncTest extends KernelTestCase
         $this->assertTrue($result->isOk());
         $this->assertEqualsCanonicalizing([self::ROLE_MEMBRE, self::ROLE_GROUPE], $result->added);
         $this->assertSame([self::ROLE_ORGA], $result->removed);
+        $this->assertEqualsCanonicalizing(['Membre', 'Confrérie'], $result->addedLabels);
+        $this->assertSame(['Orga / scénariste'], $result->removedLabels);
+        $this->assertStringContainsString('retiré(s) : Orga / scénariste', $result->summary());
         $this->assertEqualsCanonicalizing([self::ROLE_MEMBRE, self::ROLE_GROUPE, self::ROLE_MANUEL], $api->members[self::GUILD][self::DISCORD_USER]);
     }
 

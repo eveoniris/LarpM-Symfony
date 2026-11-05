@@ -108,7 +108,7 @@ class DiscordInteractionTest extends WebTestCase
 
         $this->assertSame([self::ROLE_MEMBRE], $this->api->members[self::GUILD][self::DISCORD_USER]);
         $this->assertCount(1, $this->api->interactionReplies);
-        $this->assertStringContainsString('1 rôle(s) ajouté(s)', $this->api->interactionReplies[0]);
+        $this->assertStringContainsString('ajouté(s) : Membre', $this->api->interactionReplies[0]);
     }
 
     private function handler(): DiscordInteractionHandler

@@ -6,6 +6,7 @@ namespace App\Service\Discord;
 
 use App\Entity\DiscordGuild;
 use App\Entity\User;
+use App\Enum\DiscordRoleType;
 use App\Repository\DiscordGuildRepository;
 
 /**
@@ -69,6 +70,27 @@ final readonly class DiscordSyncService
             return new DiscordSyncResult($guild->getNom(), error: $exception->getMessage());
         }
 
-        return new DiscordSyncResult($guild->getNom(), added: $toAdd, removed: $toRemove);
+        return new DiscordSyncResult($guild->getNom(), added: $toAdd, removed: $toRemove, addedLabels: $this->labelsOf($guild, $toAdd), removedLabels: $this->labelsOf($guild, $toRemove));
+    }
+
+    /**
+     * Noms lisibles des rôles Discord d'après la correspondance de la guilde (Membre, Orga / scénariste, nom du groupe).
+     *
+     * @param list<string> $roleIds
+     *
+     * @return list<string>
+     */
+    private function labelsOf(DiscordGuild $guild, array $roleIds): array
+    {
+        $labels = [];
+        foreach ($guild->getMappings() as $mapping) {
+            $labels[$mapping->getRoleId()] = match ($mapping->getType()) {
+                DiscordRoleType::MEMBRE => 'Membre',
+                DiscordRoleType::ORGA => 'Orga / scénariste',
+                DiscordRoleType::GROUPE_SECONDAIRE => $mapping->getSecondaryGroup()?->getLabel() ?? 'Groupe',
+            };
+        }
+
+        return array_map(static fn (string $roleId): string => $labels[$roleId] ?? 'Rôle ' . $roleId, $roleIds);
     }
 }
