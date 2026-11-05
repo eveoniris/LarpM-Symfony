@@ -61,6 +61,10 @@ jobs:
           HELLOASSO_PLUS_ENABLED: ${{ secrets.HELLOASSO_PLUS_ENABLED }}
           DATABASE_USER: ${{ secrets.DATABASE_USER }}
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DISCORD_BOT_ID: ${{ secrets.DISCORD_BOT_ID }}
+          DISCORD_API_KEY: ${{ secrets.DISCORD_API_KEY }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_OAUTH_SECRET: ${{ secrets.DISCORD_OAUTH_SECRET }}
           RUN_MIGRATIONS: ${{ github.event.inputs.run_migrations || 'true' }}
           CLEAR_CACHE: ${{ github.event.inputs.clear_cache || 'true' }}
         run: |
@@ -72,6 +76,10 @@ jobs:
           HELLOASSO_PLUS_ENABLED_B64=$(printf '%s' "$HELLOASSO_PLUS_ENABLED" | base64 | tr -d '\n')
           DATABASE_USER_B64=$(printf '%s' "$DATABASE_USER" | base64 | tr -d '\n')
           DATABASE_PASSWORD_B64=$(printf '%s' "$DATABASE_PASSWORD" | base64 | tr -d '\n')
+          DISCORD_BOT_ID_B64=$(printf '%s' "$DISCORD_BOT_ID" | base64 | tr -d '\n')
+          DISCORD_API_KEY_B64=$(printf '%s' "$DISCORD_API_KEY" | base64 | tr -d '\n')
+          DISCORD_BOT_TOKEN_B64=$(printf '%s' "$DISCORD_BOT_TOKEN" | base64 | tr -d '\n')
+          DISCORD_OAUTH_SECRET_B64=$(printf '%s' "$DISCORD_OAUTH_SECRET" | base64 | tr -d '\n')
           ssh $SSH_USER@$SSH_HOST bash -s << ENDSSH
             set -e
 
@@ -113,7 +121,11 @@ jobs:
             HELLOASSO_PLUS_ENABLED_B64='$HELLOASSO_PLUS_ENABLED_B64'
             DATABASE_USER_B64='$DATABASE_USER_B64'
             DATABASE_PASSWORD_B64='$DATABASE_PASSWORD_B64'
-            if [ -n "\$APP_SECRET_B64" ] || [ -n "\$DATABASE_USER_B64" ] || [ -n "\$MAILER_DSN_B64" ] || [ -n "\$HELLOASSO_PLUS_API_KEY_B64" ]; then
+            DISCORD_BOT_ID_B64='$DISCORD_BOT_ID_B64'
+            DISCORD_API_KEY_B64='$DISCORD_API_KEY_B64'
+            DISCORD_BOT_TOKEN_B64='$DISCORD_BOT_TOKEN_B64'
+            DISCORD_OAUTH_SECRET_B64='$DISCORD_OAUTH_SECRET_B64'
+            if [ -n "\$APP_SECRET_B64" ] || [ -n "\$DATABASE_USER_B64" ] || [ -n "\$MAILER_DSN_B64" ] || [ -n "\$HELLOASSO_PLUS_API_KEY_B64" ] || [ -n "\$DISCORD_BOT_TOKEN_B64" ]; then
               echo "==> Writing secrets to .env.prod.local"
               > .env.prod.local
               if [ -n "\$APP_SECRET_B64" ]; then
@@ -133,6 +145,19 @@ jobs:
               fi
               if [ -n "\$HELLOASSO_PLUS_ENABLED_B64" ]; then
                 printf 'HELLOASSO_PLUS_ENABLED=%s\n' "\$(printf '%s' "\$HELLOASSO_PLUS_ENABLED_B64" | base64 --decode)" >> .env.prod.local
+              fi
+              # Bot Discord : valeurs entre apostrophes (le secret OAuth et le jeton peuvent contenir des caractères spéciaux).
+              if [ -n "\$DISCORD_BOT_ID_B64" ]; then
+                printf "DISCORD_BOT_ID='%s'\n" "\$(printf '%s' "\$DISCORD_BOT_ID_B64" | base64 --decode)" >> .env.prod.local
+              fi
+              if [ -n "\$DISCORD_API_KEY_B64" ]; then
+                printf "DISCORD_API_KEY='%s'\n" "\$(printf '%s' "\$DISCORD_API_KEY_B64" | base64 --decode)" >> .env.prod.local
+              fi
+              if [ -n "\$DISCORD_BOT_TOKEN_B64" ]; then
+                printf "DISCORD_BOT_TOKEN='%s'\n" "\$(printf '%s' "\$DISCORD_BOT_TOKEN_B64" | base64 --decode)" >> .env.prod.local
+              fi
+              if [ -n "\$DISCORD_OAUTH_SECRET_B64" ]; then
+                printf "DISCORD_OAUTH_SECRET='%s'\n" "\$(printf '%s' "\$DISCORD_OAUTH_SECRET_B64" | base64 --decode)" >> .env.prod.local
               fi
             fi
 
