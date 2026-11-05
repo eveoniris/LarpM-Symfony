@@ -33,6 +33,37 @@ class LogAction
     #[ORM\Column(length: 255)]
     private ?string $type = null;
 
+    /** Adresse IP de la requête à l'origine de l'action (IPv4 ou IPv6), null pour une action système. */
+    #[ORM\Column(length: 45, nullable: true)]
+    private ?string $ip = null;
+
+    #[ORM\Column(name: 'user_agent', length: 512, nullable: true)]
+    private ?string $userAgent = null;
+
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
+
+    public function setIp(?string $ip): static
+    {
+        $this->ip = $ip;
+
+        return $this;
+    }
+
+    public function getUserAgent(): ?string
+    {
+        return $this->userAgent;
+    }
+
+    public function setUserAgent(?string $userAgent): static
+    {
+        $this->userAgent = null === $userAgent ? null : mb_substr($userAgent, start: 0, length: 512);
+
+        return $this;
+    }
+
     /** @return array<string, mixed>|null */
     public function getData(): ?array
     {

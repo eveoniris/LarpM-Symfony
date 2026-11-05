@@ -39,6 +39,7 @@ class LogActionRepository extends BaseRepository
             $alias . '.date',
             $alias . '.data',
             $alias . '.type',
+            $alias . '.ip',
             'etatCivil.nom as nom',
             'etatCivil.prenom as prenom',
             "CONCAT(etatCivil.nom, ' ', etatCivil.prenom) AS HIDDEN nomPrenom",
@@ -54,6 +55,7 @@ class LogActionRepository extends BaseRepository
             'date' => 'Date',
             'data' => 'Données',
             'type' => 'Type d\'action (valeur technique)',
+            'ip' => 'Adresse IP',
             'nom' => 'Nom',
             'prenom' => 'Prénom',
         ];
