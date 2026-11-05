@@ -23,10 +23,12 @@ class LogActionFiltreTypeTest extends WebTestCase
         $client = static::createClient();
         $em = $client->getContainer()->get(EntityManagerInterface::class);
 
-        foreach ([
+        $logs = [
             [LogActionType::XP_ADD,      'marqueur-xp-aaa'],
             [LogActionType::GROUPE_LOCK, 'marqueur-groupe-bbb'],
-        ] as [$type, $marqueur]) {
+        ];
+
+        foreach ($logs as [$type, $marqueur]) {
             $log = new LogAction();
             $log->setType($type);
             $log->setDate(new DateTime());
