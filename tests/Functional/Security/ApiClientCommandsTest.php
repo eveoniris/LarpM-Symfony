@@ -40,6 +40,23 @@ class ApiClientCommandsTest extends KernelTestCase
         static::assertNotContains('ROLE_API_ADMIN', $app->getUser()->getRoles());
     }
 
+    public function testNomDejaPrisEstRefuse(): void
+    {
+        self::bootKernel();
+        $application = new Application(self::$kernel);
+
+        $first = new CommandTester($application->find('api:client:create'));
+        $first->execute(['name' => 'app-doublon']);
+        static::assertSame(0, $first->getStatusCode());
+
+        $second = new CommandTester($application->find('api:client:create'));
+        $second->execute(['name' => 'app-doublon']);
+
+        static::assertSame(1, $second->getStatusCode());
+        static::assertStringContainsString('déjà pris', $second->getDisplay());
+        static::assertStringNotContainsString('client_secret', $second->getDisplay());
+    }
+
     public function testRevoquerClientInconnuEchoue(): void
     {
         self::bootKernel();

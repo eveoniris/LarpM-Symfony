@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Service\Api\ApiClientManager;
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -37,7 +38,13 @@ final class ApiClientCreateCommand extends Command
         /** @var list<string> $roles */
         $roles = array_values(array_unique(array_map(strval(...), (array) $input->getOption('role'))));
 
-        $result = $this->manager->create($name, $roles);
+        try {
+            $result = $this->manager->create($name, $roles);
+        } catch (InvalidArgumentException $e) {
+            $io->error($e->getMessage());
+
+            return Command::FAILURE;
+        }
 
         $io->success(\sprintf('Application « %s » enregistrée.', $name));
         $io->definitionList(
