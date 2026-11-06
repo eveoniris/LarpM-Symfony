@@ -127,7 +127,7 @@ d'application de la Phase 2 de façon à ce qu'il soit réutilisable tel quel pa
 
 | Étape | Contenu | Statut | Date | Remarques |
 |---|---|---|---|---|
-| 0a | Test Playwright de la zone « Prières apprises » | TODO | | partir de `tests/playwright/auth.setup.ts` |
+| 0a | Test Playwright de la zone « Prières apprises » | FAIT | 2026-11-06 | `tests/playwright/depouillement-apprentissages.spec.ts` (prières, sorts, potions, bureau et mobile) : 7 verts en local. Résultat : la liste s'ouvre et conserve le choix, blocage NON reproduit. Seule piste d'interface : sur mobile, toucher une pastille déjà choisie (large, elle occupe la ligne) n'ouvre pas la liste, il faut toucher la flèche ou la zone vide. Le test écrit dans la simulation `/gn/7/depouillement/6` (URL surchargeable par `DEPOUILLEMENT_URL`) |
 | 0b | Diagnostic prières (log prod, requête SQL des prières sans sphère, reproduction locale) | TODO | | |
 | 1 | Correction des prières selon le diagnostic, ajout unique et doublon centralisé | TODO | | |
 | 2a | Champs connaissances, technologies, langues, maladies dans `ContenuJoueur`, le formulaire et le récapitulatif | TODO | | |
@@ -136,7 +136,7 @@ d'application de la Phase 2 de façon à ce qu'il soit réutilisable tel quel pa
 | 2d | Application des éléments acceptés (connaissance, technologie, langue) et tests | TODO | | |
 | 3 | Service commun réutilisable par le futur retour de jeu joueur | TODO | | voir `retour-de-jeu-joueur-plan.md` |
 
-Réponses du 2026-11-06 enregistrées (dont la décision 5 sur le périmètre et les rôles) ; aucune étape démarrée.
+Réponses du 2026-11-06 enregistrées (dont la décision 5 sur le périmètre et les rôles). Étape 0a faite le 2026-11-06 ; reste 0b (log et base de production : prières sans sphère) avant de conclure sur l'origine du signalement.
 
 ## Questions encore ouvertes pour le démarrage
 
