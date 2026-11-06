@@ -22,6 +22,7 @@ class ApiDocTest extends WebTestCase
         static::assertArrayHasKey('/api/login_check', $doc['paths']);
         static::assertArrayHasKey('/api/admin/groupes', $doc['paths']);
         static::assertArrayHasKey('/api/token/refresh', $doc['paths']);
+        static::assertArrayHasKey('/api/client/token', $doc['paths']);
     }
 
     public function testSwaggerUiAccessibleSansJeton(): void

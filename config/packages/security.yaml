@@ -92,6 +92,7 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/api/client/token, roles: PUBLIC_ACCESS }
         # Documentation OpenAPI (Swagger UI) : publique, ne contient que le contrat de l'API, aucune donnée.
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api/admin, roles: ROLE_API_ADMIN }
