@@ -37,9 +37,38 @@ nelmio_api_doc:
                                     schema:
                                         type: object
                                         properties:
-                                            token: { type: string }
+                                            token: { type: string, description: "Jeton d'accès JWT (valide 1 h)" }
+                                            refresh_token: { type: string, description: "Jeton de renouvellement (valide 30 jours, usage unique)" }
                         '401':
                             description: Identifiants invalides
+            /api/token/refresh:
+                post:
+                    operationId: refreshToken
+                    tags: [Authentification]
+                    summary: Renouveler le jeton d'accès
+                    description: Échange un refresh token contre un nouveau jeton d'accès et un nouveau refresh token. Chaque refresh token n'est utilisable qu'une fois ; au bout de 30 jours il faut se reconnecter.
+                    security: []
+                    requestBody:
+                        required: true
+                        content:
+                            application/json:
+                                schema:
+                                    type: object
+                                    required: [refresh_token]
+                                    properties:
+                                        refresh_token: { type: string }
+                    responses:
+                        '200':
+                            description: Nouveaux jetons
+                            content:
+                                application/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            token: { type: string }
+                                            refresh_token: { type: string }
+                        '401':
+                            description: Refresh token invalide, expiré ou déjà utilisé
     areas:
         default:
             path_patterns:
