@@ -114,8 +114,14 @@ d'application de la Phase 2 de façon à ce qu'il soit réutilisable tel quel pa
    description), repris dans le récapitulatif et dans l'export CSV du futur retour de jeu joueur. Pas d'entité maladie tant que les règles
    ne sont pas définies (aucune n'existe aujourd'hui).
 
-Reste ouverte : **trigger ou ajout direct** pour les technologies (trigger `TECHNOLOGIE`) et les langues (triggers de Littérature). Avec la
-décision 3 (le validateur tranche), l'ajout direct sans trigger après accord du scénariste est la piste la plus simple ; à confirmer.
+5. **Périmètre et rôles de la décision OK/KO (précisé le 2026-11-06)** : l'ajout direct (sans trigger) est retenu s'il reste simple, MAIS
+   une validation reste nécessaire. Un utilisateur qui n'a que le rôle dépouilleur ne peut PAS appliquer ; un scénariste (validateur) le
+   peut. La décision OK ou KO ne concerne que les champs pour lesquels des « conditions d'apprentissage » ont été récemment ajoutées :
+   **connaissances et technologies uniquement**. Les sorts, prières, potions, la compétence apprise et les langues restent appliqués
+   comme aujourd'hui (automatiquement à la validation). Cela remplace la portée plus large de la décision 3 (langues et autres types).
+   Constat de code (2026-11-06) : `BaseConnaissance` a bien un champ `transmission` (conditions de transmission), `BaseLangue` a un champ
+   `condition_apprentissage`, mais **`Technologie` n'a aucun champ équivalent** : à confirmer avec l'utilisateur (ajouter le champ à la
+   technologie, ou ne présenter que la connaissance pour l'instant).
 
 ## Suivi d'avancement (à mettre à jour après chaque étape, voir la règle de suivi des plans)
 
@@ -125,17 +131,17 @@ décision 3 (le validateur tranche), l'ajout direct sans trigger après accord d
 | 0b | Diagnostic prières (log prod, requête SQL des prières sans sphère, reproduction locale) | TODO | | |
 | 1 | Correction des prières selon le diagnostic, ajout unique et doublon centralisé | TODO | | |
 | 2a | Champs connaissances, technologies, langues, maladies dans `ContenuJoueur`, le formulaire et le récapitulatif | TODO | | |
-| 2b | Statut par élément (à décider, accepté, refusé) et décision du validateur avec remarque dans le rapport final | TODO | | change le flux de validation |
+| 2b | Statut par élément (à décider, accepté, refusé) et décision du validateur avec remarque dans le rapport final, POUR CONNAISSANCES ET TECHNOLOGIES SEULEMENT, réservé au scénariste (le dépouilleur seul ne peut pas appliquer) | TODO | | affiche les conditions d'apprentissage (`transmission` de la connaissance ; rien côté technologie) |
 | 2c | Source de langue : liste des `LangueSourceType` + « Autre » en texte libre | TODO | | enum et rulebook à terme |
 | 2d | Application des éléments acceptés (connaissance, technologie, langue) et tests | TODO | | |
 | 3 | Service commun réutilisable par le futur retour de jeu joueur | TODO | | voir `retour-de-jeu-joueur-plan.md` |
 
-Réponses du 2026-11-06 enregistrées ; aucune étape démarrée.
+Réponses du 2026-11-06 enregistrées (dont la décision 5 sur le périmètre et les rôles) ; aucune étape démarrée.
 
 ## Questions encore ouvertes pour le démarrage
 
-- Trigger ou ajout direct après accord du validateur pour les technologies et les langues (voir ci-dessus) ?
-- La décision OK ou KO du validateur s'applique-t-elle aussi aux sorts, prières et à la compétence apprise, ou seulement aux connaissances,
-  technologies et langues ?
+- La technologie n'a pas de champ de conditions d'apprentissage : en ajouter un (calqué sur `transmission`) ou ne gérer que la connaissance ?
+- Les langues ont `condition_apprentissage` mais sont appliquées automatiquement (décision 5) : l'afficher à titre d'information seulement ?
+- Quel rôle exact pour le validateur : ROLE_SCENARISTE seul, ou aussi un rôle admin ? (décision 5 : le dépouilleur seul ne peut pas)
 - Quel message exact voit la personne qui signale la zone des prières (capture d'écran, navigateur), pour guider le test Playwright ?
 - Les recettes alchimiques en texte restent couvertes par la liste des potions : à confirmer.
