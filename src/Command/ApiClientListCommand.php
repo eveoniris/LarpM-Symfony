@@ -30,10 +30,11 @@ final class ApiClientListCommand extends Command
                 $client->getClientId(),
                 $client->isActive() ? 'active' : 'révoquée',
                 implode(', ', $client->getUser()->getRoles()),
+                null === $client->getGn() ? '(tous)' : \sprintf('#%d', (int) $client->getGn()->getId()),
                 $client->getLastUsedAt()?->format('Y-m-d H:i') ?? 'jamais',
             ];
         }
-        $io->table(['Nom', 'client_id', 'État', 'Rôles', 'Dernier usage'], $rows);
+        $io->table(['Nom', 'client_id', 'État', 'Rôles', 'GN', 'Dernier usage'], $rows);
 
         return Command::SUCCESS;
     }

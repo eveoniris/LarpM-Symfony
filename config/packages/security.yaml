@@ -72,6 +72,8 @@ security:
         # ROLE_BETA_TEST : accès aux développements en cours. Seul le super admin l'attribue ; ROLE_ADMIN ne l'hérite pas,
         # le super admin (et donc ROLE_DEV) l'a d'office pour tester.
         # ROLE_API_ADMIN : accès à /api/admin (app tierce / compagnon). Attribué à la main, ROLE_ADMIN ne l'hérite pas.
+        # ROLE_API_READ : lecture seule de /api/admin, limitée au GN de l'application (api_client.gn_id). ROLE_API_ADMIN l'implique (accès à tous les GN).
+        ROLE_API_ADMIN: [ ROLE_API_READ ]
         ROLE_SUPER_ADMIN: [ ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH, ROLE_BETA_TEST, ROLE_API_ADMIN ]
         ROLE_DEV: [ ROLE_SUPER_ADMIN ]
         ROLE_REGLE: [ ROLE_WARGAME, ROLE_TERRITOIRE ]
@@ -95,7 +97,7 @@ security:
         - { path: ^/api/client/token, roles: PUBLIC_ACCESS }
         # Documentation OpenAPI (Swagger UI) : publique, ne contient que le contrat de l'API, aucune donnée.
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
-        - { path: ^/api/admin, roles: ROLE_API_ADMIN }
+        - { path: ^/api/admin, roles: ROLE_API_READ }
         - { path: ^/api,       roles: [ IS_AUTHENTICATED_FULLY, IS_AUTHENTICATED_REMEMBERED ] }
         # - { path: ^/profile, roles: ROLE_USER }
 
