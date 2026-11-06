@@ -536,7 +536,7 @@
                     L.DrawToolbar.include({
                         getModeHandlers: function (map) {
                             return [
-                                {% if is_granted('ROLE_ORGA', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
+                                {% if is_granted('ROLE_TERRITOIRE', app.user) %}
                                 {
                                     enabled: true,
                                     handler: new L.Draw.Territoire(map),
@@ -1139,6 +1139,19 @@
                         })fail(function() {});
                 },*/
 
+                // ajoute à la carte la géométrie renvoyée par le serveur après un enregistrement
+                addSavedGeom: function (layerGroup, data) {
+                    var geom = JSON.parse(data.geom);
+                    geom.properties = geom.properties || {};
+                    geom.properties.name = data.name;
+                    geom.properties.description = data.description;
+                    geom.properties.color = data.color;
+                    geom.properties.id = data.id;
+                    geom.properties.groupes = data.groupes;
+                    geom.properties.desordre = data.desordre;
+                    layerGroup.addData(geom);
+                },
+
                 // sauvegarde une geometrie de territoire en base de donnee
                 saveTerritoire: function () {
                     var country = document.getElementById("selectedCountry");
@@ -1151,10 +1164,7 @@
                         data: {geom: this.currentGeom, color: randomColor({luminosity: 'dark'})},
                         success: function (data) {
                             alert("la geographie a été enregistrée");
-                            var geom = JSON.parse(country.geom);
-                            geom.properties.name = country.name;
-                            geom.properties.description = country.description;
-                            this.countriesGeom.addData(geom);
+                            cartographie.addSavedGeom(cartographie.countriesGeom, data);
                         }
                     }).fail(function () {
                         alert("désolé, une erreur est survenue");
@@ -1177,10 +1187,7 @@
                         data: {geom: this.currentGeom, color: randomColor({luminosity: 'light'})},
                         success: function (data) {
                             alert("la geographie a été enregistrée");
-                            var geom = JSON.parse(country.geom);
-                            geom.properties.name = country.name;
-                            geom.properties.description = country.description;
-                            this.regionsGeom.addData(geom);
+                            cartographie.addSavedGeom(cartographie.regionsGeom, data);
                         }
                     }).fail(function () {
                         alert("désolé, une erreur est survenue");
@@ -1203,10 +1210,7 @@
                         data: {geom: this.currentGeom, color: randomColor({luminosity: 'light'})},
                         success: function (data) {
                             alert("la geographie a été enregistrée");
-                            var geom = JSON.parse(country.geom);
-                            geom.properties.name = country.name;
-                            geom.properties.description = country.description;
-                            this.fiefsGeom.addData(geom);
+                            cartographie.addSavedGeom(cartographie.fiefsGeom, data);
                         }
                     }).fail(function () {
                         alert("désolé, une erreur est survenue");
