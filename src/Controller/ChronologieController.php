@@ -24,7 +24,7 @@ class ChronologieController extends AbstractController
      * API : mettre à jour un événement
      * POST /api/chronologies/{event}.
      */
-    #[Route('/api/chronologies/{event}', name: 'api.chronologie.update')]
+    #[Route('/api/chronologies/{event}', name: 'api.chronologie.update', methods: ['POST'])]
     public function apiUpdateAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -47,7 +47,7 @@ class ChronologieController extends AbstractController
      * API : supprimer un événement
      * DELETE /api/chronologies/{event}.
      */
-    #[Route('/api/chronologies/{event}', name: 'api.chronologie.delete')]
+    #[Route('/api/chronologies/{event}', name: 'api.chronologie.delete', methods: ['DELETE'])]
     public function apiDeleteAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -63,7 +63,7 @@ class ChronologieController extends AbstractController
      * API : ajouter un événement
      * POST /api/chronologies.
      */
-    #[Route('/api/chronologies', name: 'api.chronologie.add')]
+    #[Route('/api/chronologies', name: 'api.chronologie.add', methods: ['POST'])]
     public function apiAddAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $payload = json_decode($request->getContent());

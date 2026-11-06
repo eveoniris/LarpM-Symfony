@@ -24,7 +24,7 @@ class RessourceController extends AbstractController
      * API: fourni la liste des ressources
      * GET /api/ressource.
      */
-    #[Route('/api/ressource', name: 'api.ressource')]
+    #[Route('/api/ressource', methods: ['GET'], name: 'api.ressource')]
     public function apiListAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $qb = $entityManager->createQueryBuilder();

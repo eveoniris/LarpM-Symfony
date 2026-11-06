@@ -96,7 +96,7 @@ class HomepageController extends AbstractController
         return $this->getWorldTerritoireGeoData('fiefs');
     }
 
-    #[Route('/api/{gn}/gdata', name: 'api.gdata', requirements: ['gn' => Requirement::DIGITS])]
+    #[Route('/api/{gn}/gdata', methods: ['GET'], name: 'api.gdata', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted('ROLE_SCENARISTE')]
     public function gdataAction(
         Request $request,
