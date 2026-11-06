@@ -13,6 +13,7 @@
     "doctrine/doctrine-migrations-bundle": "^4",
     "doctrine/orm": "^3",
     "endroid/qr-code-bundle": "*",
+    "gesdinet/jwt-refresh-token-bundle": "^3.1",
     "imagine/imagine": "^1",
     "league/commonmark": "^2",
     "lexik/jwt-authentication-bundle": "^3.2",

@@ -1,0 +1,8 @@
+gesdinet_jwt_refresh_token:
+    refresh_token_class: App\Entity\RefreshToken
+    # Durée de vie d'un refresh token : 30 jours (en secondes).
+    ttl: 2592000
+    # Rotation : chaque refresh consomme le jeton et en émet un nouveau.
+    single_use: true
+    # Le nouveau jeton n'allonge pas la session : après 30 jours depuis la connexion, il faut se reconnecter.
+    single_use_ttl_update: false
