@@ -8,6 +8,7 @@ use App\Entity\ApiClient;
 use App\Entity\User;
 use App\Repository\ApiClientRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
 use SensitiveParameter;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -30,15 +31,22 @@ final readonly class ApiClientManager
      *
      * @param list<string> $roles
      *
+     * @throws InvalidArgumentException si le nom est déjà pris
+     *
      * @return array{client: ApiClient, secret: string}
      */
     public function create(string $name, array $roles): array
     {
+        $username = 'api-' . $name;
+        if (null !== $this->em->getRepository(User::class)->findOneBy(['username' => $username])) {
+            throw new InvalidArgumentException(\sprintf('Le nom « %s » est déjà pris (compte « %s »), même par une application révoquée. Choisissez un autre nom.', $name, $username));
+        }
+
         $clientId = self::CLIENT_ID_PREFIX . bin2hex(random_bytes(8));
         $secret = bin2hex(random_bytes(32));
 
         $user = new User(\sprintf('%s@api.larpmanager.invalid', $clientId));
-        $user->setUsername('api-' . $name);
+        $user->setUsername($username);
         // Mot de passe aléatoire que personne ne connaît : le compte ne peut pas se connecter par mot de passe.
         $hash = $this->passwordHasher->hashPassword($user, bin2hex(random_bytes(32)));
         $user->setPassword($hash);
