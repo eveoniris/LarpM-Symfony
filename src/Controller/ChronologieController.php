@@ -9,6 +9,7 @@ use App\Entity\Territoire;
 use App\Form\ChronologieRemoveType;
 use App\Form\ChronologieType;
 use Doctrine\ORM\EntityManagerInterface;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,6 +25,7 @@ class ChronologieController extends AbstractController
      * API : mettre à jour un événement
      * POST /api/chronologies/{event}.
      */
+    #[OA\Post(summary: 'Mettre a jour un evenement de chronologie', description: 'Heritage. Role requis : SCENARISTE. Ecriture.', tags: ['Anciennes routes'])]
     #[Route('/api/chronologies/{event}', name: 'api.chronologie.update', methods: ['POST'])]
     public function apiUpdateAction(
         Request $request,
@@ -47,6 +49,7 @@ class ChronologieController extends AbstractController
      * API : supprimer un événement
      * DELETE /api/chronologies/{event}.
      */
+    #[OA\Delete(summary: 'Supprimer un evenement de chronologie', description: 'Heritage. Role requis : SCENARISTE. Suppression definitive.', tags: ['Anciennes routes'])]
     #[Route('/api/chronologies/{event}', name: 'api.chronologie.delete', methods: ['DELETE'])]
     public function apiDeleteAction(
         Request $request,
@@ -63,6 +66,7 @@ class ChronologieController extends AbstractController
      * API : ajouter un événement
      * POST /api/chronologies.
      */
+    #[OA\Post(summary: 'Ajouter un evenement de chronologie', description: 'Heritage. Role requis : SCENARISTE. Ecriture.', tags: ['Anciennes routes'])]
     #[Route('/api/chronologies', name: 'api.chronologie.add', methods: ['POST'])]
     public function apiAddAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {

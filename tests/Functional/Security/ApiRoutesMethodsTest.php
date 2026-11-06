@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Security;
 
+use App\Service\Api\ApiClientManager;
+use App\Tests\Factory\GnFactory;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Routing\RouterInterface;
@@ -46,6 +48,40 @@ class ApiRoutesMethodsTest extends WebTestCase
         }
 
         static::assertSame([], $acceptes, 'Routes /api qui ne répondent pas 401 sans jeton : ' . implode(', ', $acceptes));
+    }
+
+    public function testCompteDeServiceApiAdminSeulNaPasAccesAuxAnciennesRoutes(): void
+    {
+        $client = static::createClient();
+        ['client' => $app, 'secret' => $secret] = static::getContainer()->get(ApiClientManager::class)->create('app-droits-herites', ['ROLE_API_ADMIN']);
+        $client->request('POST', '/api/client/token', [], [], ['CONTENT_TYPE' => 'application/json'], (string) json_encode(['client_id' => $app->getClientId(), 'client_secret' => $secret]));
+        /** @var array<string, string> $data */
+        $data = json_decode((string) $client->getResponse()->getContent(), true);
+        $gnId = GnFactory::createOne()->getId();
+
+        $autorises = [];
+        foreach ([
+            '/api/fiefsState',
+            '/api/qrCodeScanList',
+            '/api/constructions',
+            '/api/constructions/fiefs',
+            '/api/gameItemWithoutPersonnage',
+            '/api/personnages',
+            '/api/ressource',
+            '/api/mineurs/' . $gnId,
+            '/api/sensible/' . $gnId,
+        ] as $path) {
+            $client->request('GET', $path, [], [], ['HTTP_AUTHORIZATION' => 'Bearer ' . $data['token']]);
+            if (403 !== $client->getResponse()->getStatusCode()) {
+                $autorises[] = $path . ' => ' . $client->getResponse()->getStatusCode();
+            }
+        }
+        $client->request('POST', '/api/chronologies', [], [], ['HTTP_AUTHORIZATION' => 'Bearer ' . $data['token'], 'CONTENT_TYPE' => 'application/json'], '{}');
+        if (403 !== $client->getResponse()->getStatusCode()) {
+            $autorises[] = 'POST /api/chronologies => ' . $client->getResponse()->getStatusCode();
+        }
+
+        static::assertSame([], $autorises, 'Routes héritées accessibles à un compte ROLE_API_ADMIN seul : ' . implode(', ', $autorises));
     }
 
     public function testChronologieSuppressionEstAtteignable(): void

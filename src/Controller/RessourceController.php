@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -24,6 +25,7 @@ class RessourceController extends AbstractController
      * API: fourni la liste des ressources
      * GET /api/ressource.
      */
+    #[OA\Get(summary: 'Liste des ressources', description: 'Heritage. Role requis : SCENARISTE.', tags: ['Anciennes routes'])]
     #[Route('/api/ressource', methods: ['GET'], name: 'api.ressource')]
     public function apiListAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
