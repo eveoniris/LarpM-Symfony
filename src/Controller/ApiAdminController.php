@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Repository\GroupeRepository;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,24 @@ final class ApiAdminController extends AbstractController
      * Liste des groupes avec leur numéro. Filtre optionnel ?gn=<id> et pagination ?page=&limit=.
      */
     #[Route('/groupes', name: 'groupes', methods: ['GET'])]
+    #[OA\Tag(name: 'Administration')]
+    #[OA\Get(summary: 'Liste des groupes avec leur numéro', description: 'Réservé à ROLE_API_ADMIN. Triée par numéro.')]
+    #[OA\Parameter(name: 'gn', in: 'query', description: 'Filtrer sur un GN (id)', schema: new OA\Schema(type: 'integer'))]
+    #[OA\Parameter(name: 'page', in: 'query', schema: new OA\Schema(type: 'integer', default: 1, minimum: 1))]
+    #[OA\Parameter(name: 'limit', in: 'query', description: '200 maximum', schema: new OA\Schema(type: 'integer', default: 50, minimum: 1, maximum: 200))]
+    #[OA\Response(response: 200, description: 'Page de groupes', content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'page', type: 'integer'),
+        new OA\Property(property: 'limit', type: 'integer'),
+        new OA\Property(property: 'total', type: 'integer'),
+        new OA\Property(property: 'items', type: 'array', items: new OA\Items(properties: [
+            new OA\Property(property: 'id', type: 'integer'),
+            new OA\Property(property: 'numero', type: 'integer'),
+            new OA\Property(property: 'nom', type: 'string'),
+            new OA\Property(property: 'code', type: 'string', nullable: true),
+        ], type: 'object')),
+    ]))]
+    #[OA\Response(response: 401, description: 'Jeton absent ou invalide')]
+    #[OA\Response(response: 403, description: 'ROLE_API_ADMIN requis')]
     public function groupes(Request $request, GroupeRepository $repo): JsonResponse
     {
         $gnParam = $request->query->getInt('gn');
