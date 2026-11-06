@@ -90,12 +90,52 @@ d'application de la Phase 2 de façon à ce qu'il soit réutilisable tel quel pa
   compétence est le côté propriétaire de `personnages_competences` ; pas de `Co-Authored-By` ; mago (format puis lint) avant chaque commit ;
   pas de tiret cadratin dans les textes ajoutés.
 
-## Questions pour l'utilisateur au démarrage
+## Réponses de l'utilisateur (2026-11-06) et décisions qui en découlent
 
-- Les prières ne peuvent pas être ajoutées : sur quel écran exactement, avec quel message (voir Phase 0) ?
-- Les connaissances, technologies et langues se saisissent-elles comme les sorts (ajout direct à la validation, sans trigger), ou faut-il
-  consommer le trigger correspondant (technologie d'Artisanat, langues de Littérature) ?
-- Pour une langue apprise en jeu, quelle source enregistrer (`LangueSourceType`) : une source existante, ou une nouvelle « apprise en jeu » ?
-- L'enseignant d'une connaissance, d'une technologie ou d'une langue doit-il être contrôlé (inscrit au GN, niveau expert) comme pour une
-  compétence, ou simplement consigné ?
-- Faut-il aussi les recettes alchimiques en texte (déjà couvertes par la liste des potions) et les « maladies » du formulaire Google ?
+1. **Prières** : on indique seulement que la zone « Prières apprises pendant le jeu » semble inaccessible. Comme « inaccessible » évoque
+   l'interface (liste à recherche qui ne s'ouvre pas, champ masqué ou recouvert) plus qu'une donnée, la **Phase 0 commence par un test
+   Playwright** (le dépôt a déjà `tests/playwright/`, avec `auth.setup.ts` et un audit de style) : ouvrir l'étape Contenu d'un
+   dépouillement, ouvrir la liste « Prières apprises », choisir une prière, enregistrer, recharger et vérifier qu'elle est conservée. PHPUnit
+   ne voit pas le JavaScript (Tom Select) : seul un test navigateur tranche entre un problème d'interface et un problème de données. Le garder
+   ensuite comme test de non-régression (mêmes scénarios pour sorts, potions, connaissances, technologies, langues).
+2. **Source d'une langue apprise** : une LISTE des sources connues (`LangueSourceType`) avec un choix « Autre » qui ouvre un texte libre.
+   Cas à prévoir : la compétence de niveau Maître qui « donne » une langue à un PJ, et des bonus en jeu (beau jeu de rôle, récompense de
+   quête). À terme : ajouter ces sources à un enum (nouvelles valeurs de `LangueSourceType` ou un enum dédié aux bonus en jeu) et les décrire
+   dans le rulebook (voir `rulebook-gameplay-plan.md`). Première version : la saisie « Autre » est conservée en texte, on ne crée l'enum que
+   quand le rulebook aura fixé la liste. À étudier : où stocker ce texte (le troisième argument de `Personnage::addLangueSource`, `triggerTag`,
+   ou un champ dédié) sans casser le dédoublonnage par rang de source.
+3. **Enseignant et conditions d'apprentissage** : CONSIGNÉS pour l'instant, le temps d'avoir les règles. Ils vont dans un champ dédié, présenté
+   au dépouilleur et surtout au validateur (scénariste), qui décide par élément : **OK, on applique** ou **KO, les conditions
+   d'apprentissage ne sont pas réunies**, et complète le rapport final si besoin. Conséquence de conception : connaissances, technologies et
+   langues ne sont PAS appliquées automatiquement à la validation comme les sorts ; chaque élément a un statut (à décider, accepté, refusé) et une
+   remarque du validateur, et seuls les éléments acceptés sont écrits sur la fiche. À confirmer : faire de même pour les sorts, prières et
+   la compétence apprise, ou seulement pour ces trois nouveaux types.
+4. **Maladies** : oui, elles peuvent avoir une utilité. À inclure : en texte libre structuré dans le contenu (liste d'entrées avec une
+   description), repris dans le récapitulatif et dans l'export CSV du futur retour de jeu joueur. Pas d'entité maladie tant que les règles
+   ne sont pas définies (aucune n'existe aujourd'hui).
+
+Reste ouverte : **trigger ou ajout direct** pour les technologies (trigger `TECHNOLOGIE`) et les langues (triggers de Littérature). Avec la
+décision 3 (le validateur tranche), l'ajout direct sans trigger après accord du scénariste est la piste la plus simple ; à confirmer.
+
+## Suivi d'avancement (à mettre à jour après chaque étape, voir la règle de suivi des plans)
+
+| Étape | Contenu | Statut | Date | Remarques |
+|---|---|---|---|---|
+| 0a | Test Playwright de la zone « Prières apprises » | TODO | | partir de `tests/playwright/auth.setup.ts` |
+| 0b | Diagnostic prières (log prod, requête SQL des prières sans sphère, reproduction locale) | TODO | | |
+| 1 | Correction des prières selon le diagnostic, ajout unique et doublon centralisé | TODO | | |
+| 2a | Champs connaissances, technologies, langues, maladies dans `ContenuJoueur`, le formulaire et le récapitulatif | TODO | | |
+| 2b | Statut par élément (à décider, accepté, refusé) et décision du validateur avec remarque dans le rapport final | TODO | | change le flux de validation |
+| 2c | Source de langue : liste des `LangueSourceType` + « Autre » en texte libre | TODO | | enum et rulebook à terme |
+| 2d | Application des éléments acceptés (connaissance, technologie, langue) et tests | TODO | | |
+| 3 | Service commun réutilisable par le futur retour de jeu joueur | TODO | | voir `retour-de-jeu-joueur-plan.md` |
+
+Réponses du 2026-11-06 enregistrées ; aucune étape démarrée.
+
+## Questions encore ouvertes pour le démarrage
+
+- Trigger ou ajout direct après accord du validateur pour les technologies et les langues (voir ci-dessus) ?
+- La décision OK ou KO du validateur s'applique-t-elle aussi aux sorts, prières et à la compétence apprise, ou seulement aux connaissances,
+  technologies et langues ?
+- Quel message exact voit la personne qui signale la zone des prières (capture d'écran, navigateur), pour guider le test Playwright ?
+- Les recettes alchimiques en texte restent couvertes par la liste des potions : à confirmer.
