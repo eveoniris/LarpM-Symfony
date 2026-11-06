@@ -65,6 +65,7 @@ jobs:
           DISCORD_API_KEY: ${{ secrets.DISCORD_API_KEY }}
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_OAUTH_SECRET: ${{ secrets.DISCORD_OAUTH_SECRET }}
+          JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
           RUN_MIGRATIONS: ${{ github.event.inputs.run_migrations || 'true' }}
           CLEAR_CACHE: ${{ github.event.inputs.clear_cache || 'true' }}
         run: |
@@ -80,6 +81,7 @@ jobs:
           DISCORD_API_KEY_B64=$(printf '%s' "$DISCORD_API_KEY" | base64 | tr -d '\n')
           DISCORD_BOT_TOKEN_B64=$(printf '%s' "$DISCORD_BOT_TOKEN" | base64 | tr -d '\n')
           DISCORD_OAUTH_SECRET_B64=$(printf '%s' "$DISCORD_OAUTH_SECRET" | base64 | tr -d '\n')
+          JWT_PASSPHRASE_B64=$(printf '%s' "$JWT_PASSPHRASE" | base64 | tr -d '\n')
           ssh $SSH_USER@$SSH_HOST bash -s << ENDSSH
             set -e
 
@@ -125,7 +127,8 @@ jobs:
             DISCORD_API_KEY_B64='$DISCORD_API_KEY_B64'
             DISCORD_BOT_TOKEN_B64='$DISCORD_BOT_TOKEN_B64'
             DISCORD_OAUTH_SECRET_B64='$DISCORD_OAUTH_SECRET_B64'
-            if [ -n "\$APP_SECRET_B64" ] || [ -n "\$DATABASE_USER_B64" ] || [ -n "\$MAILER_DSN_B64" ] || [ -n "\$HELLOASSO_PLUS_API_KEY_B64" ] || [ -n "\$DISCORD_BOT_TOKEN_B64" ]; then
+            JWT_PASSPHRASE_B64='$JWT_PASSPHRASE_B64'
+            if [ -n "\$APP_SECRET_B64" ] || [ -n "\$DATABASE_USER_B64" ] || [ -n "\$MAILER_DSN_B64" ] || [ -n "\$HELLOASSO_PLUS_API_KEY_B64" ] || [ -n "\$DISCORD_BOT_TOKEN_B64" ] || [ -n "\$JWT_PASSPHRASE_B64" ]; then
               echo "==> Writing secrets to .env.prod.local"
               > .env.prod.local
               if [ -n "\$APP_SECRET_B64" ]; then
@@ -158,6 +161,10 @@ jobs:
               fi
               if [ -n "\$DISCORD_OAUTH_SECRET_B64" ]; then
                 printf "DISCORD_OAUTH_SECRET='%s'\n" "\$(printf '%s' "\$DISCORD_OAUTH_SECRET_B64" | base64 --decode)" >> .env.prod.local
+              fi
+              # Passphrase des clés JWT de l'API (entre apostrophes).
+              if [ -n "\$JWT_PASSPHRASE_B64" ]; then
+                printf "JWT_PASSPHRASE='%s'\n" "\$(printf '%s' "\$JWT_PASSPHRASE_B64" | base64 --decode)" >> .env.prod.local
               fi
             fi
 
