@@ -1,0 +1,8 @@
+{# Pastille de statut d'une règle. Attendu : statut (RulebookStatut), beta (bool). #}
+{% set roles = {'valide': 'ok', 'bugue': 'err', 'fixe': 'info', 'todo': 'warn', 'hardcode': 'muted', 'a_confirmer': 'warn'} %}
+{% set bootstrap = {'valide': 'text-bg-success', 'bugue': 'text-bg-danger', 'fixe': 'text-bg-info', 'todo': 'text-bg-warning', 'hardcode': 'text-bg-secondary', 'a_confirmer': 'text-bg-warning'} %}
+{% if beta %}
+	<span class="lm-badge" data-role="{{ roles[statut.value] }}">{{ statut.label }}</span>
+{% else %}
+	<span class="badge {{ bootstrap[statut.value] }}">{{ statut.label }}</span>
+{% endif %}

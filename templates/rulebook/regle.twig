@@ -1,0 +1,63 @@
+{% extends "base.html.twig" %}
+
+{# Interface bêta (lm-design) : les composants lm-* s'ajoutent à Bootstrap, les autres comptes gardent le rendu Bootstrap. #}
+{% set beta = app.user is not null and app.user.uiBeta %}
+
+{% block title %}{{ regle.code }} {{ regle.titre }}{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Rulebook', 'route' : path('rulebook.index')}, {'name' : regle.domaine.titre, 'route' : path('rulebook.index', {'domaine': regle.domaine.code})}, {'name' : regle.code}]} %}
+
+	<header class="lm-page-head mb-3">
+		<h1 class="lm-page-title h4 mb-1">{{ regle.titre }}</h1>
+		<p class="lm-meta mb-0">
+			<code>{{ regle.code }}</code> · {{ regle.domaine.titre }}
+			{% if equipeRegle %}
+				· {% include 'rulebook/_statut.twig' with {'statut': regle.statut, 'beta': beta} %}
+				· {{ regle.publiee ? 'Publiée' : 'Non publiée' }}
+				· version {{ regle.version }}, modifiée le {{ regle.updatedAt|date('d/m/Y H:i') }}
+			{% endif %}
+		</p>
+	</header>
+
+	{# Le HTML vient de MarkdownRenderer : HTML saisi retiré et liens dangereux neutralisés, donc |raw est sûr ici. #}
+	<div class="{{ beta ? 'card lm-carte-verre' : 'well well-sm' }} mb-3">
+		<div class="{{ beta ? 'card-body' : '' }}">
+			{% if texteClairHtml %}
+				{{ texteClairHtml|raw }}
+			{% else %}
+				<p class="text-muted mb-0">Pas encore de version claire rédigée pour cette règle.</p>
+			{% endif %}
+		</div>
+	</div>
+
+	{% if equipeRegle %}
+		<div class="{{ beta ? 'card lm-carte-verre' : 'well well-sm' }} mb-3">
+			<div class="{{ beta ? 'card-body' : '' }}">
+				<h2 class="h6">Détail technique</h2>
+				{% if detailTechniqueHtml %}
+					{{ detailTechniqueHtml|raw }}
+				{% else %}
+					<p class="text-muted mb-0">Aucun détail technique.</p>
+				{% endif %}
+			</div>
+		</div>
+
+		{% if regle.testsRefs|length > 0 %}
+			<div class="{{ beta ? 'card lm-carte-verre' : 'well well-sm' }} mb-3">
+				<div class="{{ beta ? 'card-body' : '' }}">
+					<h2 class="h6">Tests</h2>
+					<ul class="mb-0">
+						{% for test in regle.testsRefs %}
+							<li><code>{{ test }}</code></li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		{% endif %}
+	{% endif %}
+
+	<p><a href="{{ path('rulebook.index', {'domaine': regle.domaine.code}) }}">&larr; Retour au domaine {{ regle.domaine.titre }}</a></p>
+
+{% endblock body %}
