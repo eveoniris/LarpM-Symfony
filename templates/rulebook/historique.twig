@@ -1,0 +1,55 @@
+{% extends "base.html.twig" %}
+
+{# Interface bêta (lm-design) : les composants lm-* s'ajoutent à Bootstrap, les autres comptes gardent le rendu Bootstrap. #}
+{% set beta = app.user is not null and app.user.uiBeta %}
+
+{% block title %}Historique {{ regle.code }}{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Rulebook', 'route' : path('rulebook.index')}, {'name' : regle.code, 'route' : path('rulebook.regle', {'code': regle.code})}, {'name' : 'Historique'}]} %}
+
+	<header class="lm-page-head mb-3">
+		<h1 class="lm-page-title h4 mb-1">Historique de {{ regle.code }} - {{ regle.titre }}</h1>
+		<p class="lm-meta mb-0">Version actuelle : {{ regle.version }}. La restauration crée une nouvelle version, l'historique n'est jamais réécrit.</p>
+	</header>
+
+	<div class="{{ beta ? 'lm-table-wrap' : 'table-responsive' }}">
+		<table class="{{ beta ? 'lm-table' : 'table table-bordered table-striped' }}">
+			<thead>
+				<tr>
+					<th>Version</th>
+					<th>Date</th>
+					<th>Auteur</th>
+					<th>Motif</th>
+					<th>Statut</th>
+					{% if is_granted('ROLE_ADMIN') %}<th></th>{% endif %}
+				</tr>
+			</thead>
+			<tbody>
+				{% for revision in regle.revisions %}
+					<tr>
+						<td class="text-nowrap">{{ revision.version }}{% if revision.version == regle.version %} (actuelle){% endif %}</td>
+						<td class="text-nowrap">{{ revision.createdAt|date('d/m/Y H:i') }}</td>
+						<td>{{ revision.auteur ? revision.auteur.username : '-' }}</td>
+						<td>{{ revision.motif ?? '-' }}</td>
+						<td>{% include 'rulebook/_statut.twig' with {'statut': revision.statut, 'beta': beta} %}{{ revision.publiee ? ' · publiée' : '' }}</td>
+						{% if is_granted('ROLE_ADMIN') %}
+							<td>
+								{% if revision.version != regle.version %}
+									<form method="post" action="{{ path('rulebook.regle.restaurer', {'code': regle.code, 'version': revision.version}) }}" onsubmit="return confirm('Restaurer la version {{ revision.version }} ?');">
+										<input type="hidden" name="_token" value="{{ csrf_token('rulebook_restaurer_' ~ regle.code) }}">
+										<button type="submit" class="{{ beta ? 'lm-btn lm-btn--ghost' : 'btn btn-sm btn-default' }}">Restaurer</button>
+									</form>
+								{% endif %}
+							</td>
+						{% endif %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<p><a href="{{ path('rulebook.regle', {'code': regle.code}) }}">&larr; Retour à la règle</a></p>
+
+{% endblock body %}

@@ -80,6 +80,9 @@ docker/mailpit/
 /*.png
 /*.jpg
 
+# Cache local du rulebook, régénéré par app:rulebook:exporter
+/docs/rulebook/
+
 ###> outils de travail locaux (non versionnés, conservés hors du cache et des purges)
 /.local/
 ###< outils de travail locaux

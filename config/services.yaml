@@ -60,6 +60,15 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    # Cache local du rulebook (fichiers markdown par domaine), non versionné.
+    App\Service\Rulebook\RulebookExporter:
+        arguments:
+            $cacheDir: '%kernel.project_dir%/docs/rulebook'
+
+    App\Command\RulebookVerifier:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     App\Service\HelloAsso\PlusBilletterieClientFactory:
         arguments:
             $apiKey: '%helloasso.plus.api_key%'
@@ -96,3 +105,8 @@ services:
 when@test:
     parameters:
         depouillement.upload_dir: "%kernel.project_dir%/var/test-uploads/depouillements"
+    services:
+        App\Service\Rulebook\RulebookExporter:
+            autowire: true
+            arguments:
+                $cacheDir: '%kernel.project_dir%/var/test-rulebook'

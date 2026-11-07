@@ -1,0 +1,80 @@
+/* Thème sombre d'EasyMDE : suit le thème du site (html[data-bs-theme="dark"]). */
+html[data-bs-theme="dark"] .EasyMDEContainer .CodeMirror {
+    background: #1b1714;
+    color: #e8e0d4;
+    border-color: #3a332c;
+}
+
+html[data-bs-theme="dark"] .EasyMDEContainer .CodeMirror-cursor {
+    border-left-color: #e8e0d4;
+}
+
+html[data-bs-theme="dark"] .EasyMDEContainer .CodeMirror-selected,
+html[data-bs-theme="dark"] .EasyMDEContainer .CodeMirror-focused .CodeMirror-selected {
+    background: #4a3f33;
+}
+
+html[data-bs-theme="dark"] .EasyMDEContainer .CodeMirror-gutters {
+    background: #1b1714;
+    border-color: #3a332c;
+}
+
+html[data-bs-theme="dark"] .EasyMDEContainer .cm-header,
+html[data-bs-theme="dark"] .EasyMDEContainer .cm-strong {
+    color: #f0c987;
+}
+
+html[data-bs-theme="dark"] .EasyMDEContainer .cm-link,
+html[data-bs-theme="dark"] .EasyMDEContainer .cm-url {
+    color: #7fb2ff;
+}
+
+html[data-bs-theme="dark"] .EasyMDEContainer .cm-comment,
+html[data-bs-theme="dark"] .EasyMDEContainer .cm-quote {
+    color: #a99f90;
+}
+
+html[data-bs-theme="dark"] .editor-toolbar {
+    background: #231e1a;
+    border-color: #3a332c;
+    opacity: 1;
+}
+
+html[data-bs-theme="dark"] .editor-toolbar button {
+    color: #e8e0d4;
+}
+
+html[data-bs-theme="dark"] .editor-toolbar button:hover,
+html[data-bs-theme="dark"] .editor-toolbar button.active {
+    background: #3a332c;
+    border-color: #5a4e40;
+}
+
+html[data-bs-theme="dark"] .editor-toolbar i.separator {
+    border-color: #3a332c;
+}
+
+html[data-bs-theme="dark"] .editor-preview,
+html[data-bs-theme="dark"] .editor-preview-side {
+    background: #1b1714;
+    color: #e8e0d4;
+    border-color: #3a332c;
+}
+
+html[data-bs-theme="dark"] .editor-preview a,
+html[data-bs-theme="dark"] .editor-preview-side a {
+    color: #7fb2ff;
+}
+
+html[data-bs-theme="dark"] .editor-preview table td,
+html[data-bs-theme="dark"] .editor-preview table th,
+html[data-bs-theme="dark"] .editor-preview-side table td,
+html[data-bs-theme="dark"] .editor-preview-side table th {
+    border-color: #3a332c;
+}
+
+html[data-bs-theme="dark"] .editor-preview pre,
+html[data-bs-theme="dark"] .editor-preview-side pre {
+    background: #14110f;
+    color: #e8e0d4;
+}

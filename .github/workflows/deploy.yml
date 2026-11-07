@@ -193,6 +193,9 @@ jobs:
               APP_ENV=prod php bin/console cache:warmup
             fi
 
+            echo "==> Regenerating rulebook local cache (non bloquant)"
+            APP_ENV=prod php bin/console app:rulebook:exporter || echo "Export du rulebook ignore (table absente ou dossier non inscriptible)"
+
             echo "==> Installing importmap vendor assets"
             APP_ENV=prod php bin/console importmap:install
 

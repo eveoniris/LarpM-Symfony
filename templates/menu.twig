@@ -185,6 +185,10 @@
                                 Compétences</a></li>
                         <li><a class="dropdown-item text-body-emphasis" href="{{ path('classe.index') }}">
                                 Classes</a></li>
+                        {# Rulebook (bêta) : équipe règle et admins ayant aussi le rôle bêta-testeur #}
+                        {% if is_granted('ROLE_BETA_TEST', app.user) and (is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ADMIN', app.user)) %}
+                            <li><a class="dropdown-item text-body-emphasis" href="{{ path('rulebook.index') }}">Rulebook</a></li>
+                        {% endif %}
                         {% if is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                             <li>
                                 <hr class="dropdown-divider">
