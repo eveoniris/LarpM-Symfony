@@ -1,0 +1,70 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Applications tierces API{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">Applications tierces API</li>
+    </ol>
+
+    <div class="well bs-component">
+        <h3>Applications tierces</h3>
+        <p class="text-muted small">
+            Chaque application s'authentifie avec un client_id et un secret, et obtient un jeton pour l'API.
+            Le secret n'est affiché qu'à la création. La révocation est immédiate.
+        </p>
+        <p><a class="btn btn-primary" href="{{ path('api.client.admin.new') }}">Créer une application</a></p>
+
+        {% if clients is empty %}
+            <p>Aucune application.</p>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>client_id</th>
+                        <th>Rôle</th>
+                        <th>GN</th>
+                        <th>État</th>
+                        <th>Dernier usage</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for client in clients %}
+                        <tr>
+                            <td>{{ client.name }}</td>
+                            <td><code>{{ client.clientId }}</code></td>
+                            <td>
+                                {% if client.active %}
+                                    {{ client.user.roles|join(', ') }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if client.gn %}{{ client.gn.label }}{% elseif 'ROLE_API_ADMIN' in client.user.roles %}tous{% else %}GN actif{% endif %}
+                            </td>
+                            <td>{% if client.active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Révoquée</span>{% endif %}</td>
+                            <td>{{ client.lastUsedAt ? client.lastUsedAt|date('d/m/Y H:i') : '-' }}</td>
+                            <td>
+                                {% if client.active %}
+                                    <form method="POST" action="{{ path('api.client.admin.revoke', {'id': client.id}) }}"
+                                          onsubmit="return confirm('Révoquer cette application ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('api_client_revoke_' ~ client.id) }}">
+                                        <button class="btn btn-sm btn-danger" type="submit">Révoquer</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock body %}

@@ -103,7 +103,10 @@ class UserController extends AbstractController
         $validRoles = array_column(Role::cases(), 'value');
         $qb = $userRepository
             ->createQueryBuilder('user')
-            ->leftJoin('user.etatCivil', 'etatCivil');
+            ->leftJoin('user.etatCivil', 'etatCivil')
+            // Les comptes de service des applications tierces ne sont pas des utilisateurs.
+            ->andWhere('user.email NOT LIKE :apiEmail')
+            ->setParameter('apiEmail', '%@api.larpmanager.invalid');
         if ($roleFilter && in_array(needle: $roleFilter, haystack: $validRoles, strict: true)) {
             // roles est stocké en JSON : on cible la valeur entre guillemets (ROLE_ADMIN != ROLE_SUPER_ADMIN)
             $qb->andWhere('user.roles LIKE :role')

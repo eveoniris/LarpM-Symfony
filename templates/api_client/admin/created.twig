@@ -1,0 +1,29 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Application créée{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('api.client.admin') }}">Applications tierces API</a></li>
+        <li class="active">Application créée</li>
+    </ol>
+
+    <div class="alert alert-warning">
+        Copiez le secret maintenant : il ne sera plus jamais affiché. En cas de perte, il faudra révoquer l'application et en créer une autre.
+    </div>
+
+    <div class="well bs-component">
+        <h3>{{ client.name }}</h3>
+        <dl>
+            <dt>client_id</dt>
+            <dd><code>{{ client.clientId }}</code></dd>
+            <dt>client_secret</dt>
+            <dd><code>{{ secret }}</code></dd>
+        </dl>
+        <p class="text-muted small">Échange de jeton : POST /api/client/token avec client_id et client_secret en JSON.</p>
+        <a class="btn btn-primary" href="{{ path('api.client.admin') }}">Retour à la liste</a>
+    </div>
+
+{% endblock body %}

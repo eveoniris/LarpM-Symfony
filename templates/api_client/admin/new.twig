@@ -1,0 +1,54 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Nouvelle application API{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('api.client.admin') }}">Applications tierces API</a></li>
+        <li class="active">Nouvelle application</li>
+    </ol>
+
+    {% for error in errors %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endfor %}
+
+    <div class="well bs-component">
+        <h3>Nouvelle application</h3>
+        <form method="POST" action="{{ path('api.client.admin.new') }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('api_client_new') }}">
+
+            <div class="mb-3">
+                <label class="form-label" for="name">Nom</label>
+                <input class="form-control" id="name" name="name" maxlength="60" required value="{{ form.name }}">
+                <div class="form-text">Lettres, chiffres, tiret et underscore. Un nom ne peut pas être réutilisé, même après révocation.</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="role">Rôle</label>
+                <select class="form-select" id="role" name="role">
+                    <option value="ROLE_API_READ" {{ form.role == 'ROLE_API_READ' ? 'selected' }}>Lecture seule (ROLE_API_READ)</option>
+                    {% if canApiAdmin %}
+                        <option value="ROLE_API_ADMIN" {{ form.role == 'ROLE_API_ADMIN' ? 'selected' }}>Administration, tous les GN (ROLE_API_ADMIN)</option>
+                    {% endif %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="gn">GN</label>
+                <select class="form-select" id="gn" name="gn">
+                    <option value="">GN actif par défaut</option>
+                    {% for gn in gns %}
+                        <option value="{{ gn.id }}" {{ form.gn == (gn.id ~ '') ? 'selected' }}>{{ gn.label }}</option>
+                    {% endfor %}
+                </select>
+                <div class="form-text">Une application en lecture seule ne voit que ce GN.</div>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Créer</button>
+            <a class="btn btn-secondary" href="{{ path('api.client.admin') }}">Annuler</a>
+        </form>
+    </div>
+
+{% endblock body %}
