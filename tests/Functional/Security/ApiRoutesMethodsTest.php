@@ -60,7 +60,7 @@ class ApiRoutesMethodsTest extends WebTestCase
         $gnId = GnFactory::createOne()->getId();
 
         $autorises = [];
-        foreach ([
+        $chemins = [
             '/api/fiefsState',
             '/api/qrCodeScanList',
             '/api/constructions',
@@ -70,7 +70,8 @@ class ApiRoutesMethodsTest extends WebTestCase
             '/api/ressource',
             '/api/mineurs/' . $gnId,
             '/api/sensible/' . $gnId,
-        ] as $path) {
+        ];
+        foreach ($chemins as $path) {
             $client->request('GET', $path, [], [], ['HTTP_AUTHORIZATION' => 'Bearer ' . $data['token']]);
             if (403 !== $client->getResponse()->getStatusCode()) {
                 $autorises[] = $path . ' => ' . $client->getResponse()->getStatusCode();
