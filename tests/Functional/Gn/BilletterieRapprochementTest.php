@@ -18,6 +18,7 @@ use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\UserFactory;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -45,15 +46,19 @@ class BilletterieRapprochementTest extends WebTestCase
         return $sync;
     }
 
-    /** @return array{0: KernelBrowser, 1: Gn, 2: Billet} */
-    private function preparer(): array
+    /**
+     * @param list<string> $roles rôles de l'utilisateur connecté (par défaut : admin bêta-testeur)
+     *
+     * @return array{0: KernelBrowser, 1: Gn, 2: Billet}
+     */
+    private function preparer(array $roles = ['ROLE_ADMIN', 'ROLE_BETA_TEST']): array
     {
         $_SERVER['HELLOASSO_PLUS_ENABLED'] = $_ENV['HELLOASSO_PLUS_ENABLED'] = '1';
         putenv('HELLOASSO_PLUS_ENABLED=1');
         $client = static::createClient();
         $gn = GnFactory::createOne(['helloassoEventId' => 'evt1']);
         $billet = BilletFactory::createOne(['gn' => $gn, 'label' => 'Billet adulte']);
-        $admin = UserFactory::createOne(['roles' => ['ROLE_SUPER_ADMIN']]);
+        $admin = UserFactory::createOne(['roles' => $roles]);
 
         $em = static::getContainer()->get(EntityManagerInterface::class);
         for ($i = 1; $i <= 60; ++$i) {
@@ -72,6 +77,30 @@ class BilletterieRapprochementTest extends WebTestCase
         unset($_SERVER['HELLOASSO_PLUS_ENABLED'], $_ENV['HELLOASSO_PLUS_ENABLED']);
         putenv('HELLOASSO_PLUS_ENABLED=0');
         parent::tearDown();
+    }
+
+    /** @return iterable<string, array{0: list<string>, 1: bool}> */
+    public static function accesParRoles(): iterable
+    {
+        yield 'admin bêta-testeur' => [['ROLE_ADMIN', 'ROLE_BETA_TEST'], true];
+        yield 'super admin (hérite des deux rôles)' => [['ROLE_SUPER_ADMIN'], true];
+        yield 'admin sans bêta' => [['ROLE_ADMIN'], false];
+        yield 'bêta-testeur sans admin' => [['ROLE_BETA_TEST'], false];
+    }
+
+    /** @param list<string> $roles */
+    #[DataProvider('accesParRoles')]
+    public function testAccesReserveAuxAdminsBetaTesteurs(array $roles, bool $accorde): void
+    {
+        [$client, $gn] = $this->preparer($roles);
+
+        $client->request('GET', '/gn/' . $gn->getId() . '/billetterie/rapprochement');
+
+        if ($accorde) {
+            static::assertResponseIsSuccessful();
+        } else {
+            static::assertResponseRedirects('/access_denied');
+        }
     }
 
     public function testCompteursEtPaginationPar50(): void

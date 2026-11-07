@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        {% if helloassoEnabled and is_granted('ROLE_SUPER_ADMIN') %}
+        {% if helloassoEnabled and is_granted('ROLE_ADMIN') and is_granted('ROLE_BETA_TEST') %}
             <div class="card mb-3 border-primary" id="helloasso-sync">
                 <div class="card-header"><i class="fa fa-rotate text-primary"></i> Synchronisation HelloAsso (bêta)</div>
                 <div class="card-body">
