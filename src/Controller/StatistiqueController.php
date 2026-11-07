@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -61,7 +62,8 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route('/api/alchimieHerboriste/{gn}', name: 'api.alchimieHerboriste.gn', requirements: [
+    #[OA\Get(summary: 'Alchimistes et herboristes du GN', description: 'Heritage. Role requis : SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/alchimieHerboriste/{gn}', methods: ['GET'], name: 'api.alchimieHerboriste.gn', requirements: [
         'gn' => Requirement::DIGITS,
     ])]
     #[Route('/stats/alchimieHerboriste/{gn}/json', name: 'stats.alchimieHerboriste.gn.json', requirements: [
@@ -73,7 +75,8 @@ class StatistiqueController extends AbstractController
         return new JsonResponse($this->statsService->getAlchimieHerboristeGn($gn)->getResult());
     }
 
-    #[Route('/api/whoswho/{gn}', name: 'api.whoswho.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Who is who des personnages du GN', description: 'Heritage. Role requis : ORGA ou SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/whoswho/{gn}', methods: ['GET'], name: 'api.whoswho.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/whoswho/{gn}', name: 'stats.whoswho.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/whoswho/{gn}/csv', name: 'stats.whoswho.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/whoswho/{gn}/json', name: 'stats.whoswho.gn.json', requirements: ['gn' => Requirement::DIGITS])]
@@ -109,7 +112,8 @@ class StatistiqueController extends AbstractController
         };
     }
 
-    #[Route('/api/bateaux/{gn}', name: 'api.bateaux.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Bateaux du GN', description: 'Heritage. Role requis : ORGA ou SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/bateaux/{gn}', methods: ['GET'], name: 'api.bateaux.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/bateaux/{gn}', name: 'stats.bateaux.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/bateaux/{gn}/csv', name: 'stats.bateaux.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/bateaux/{gn}/json', name: 'stats.bateaux.gn.json', requirements: ['gn' => Requirement::DIGITS])]
@@ -135,7 +139,8 @@ class StatistiqueController extends AbstractController
         };
     }
 
-    #[Route('/api/bateaux-ordre/{gn}', name: 'api.bateaux-ordre.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Bateaux du GN avec leur ordre', description: 'Heritage. Role requis : ORGA ou SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/bateaux-ordre/{gn}', methods: ['GET'], name: 'api.bateaux-ordre.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/bateaux-ordre/{gn}', name: 'stats.bateaux-ordre.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/bateaux-ordre/{gn}/csv', name: 'stats.bateaux-ordre.gn.csv', requirements: [
         'gn' => Requirement::DIGITS,
@@ -226,7 +231,12 @@ class StatistiqueController extends AbstractController
         };
     }
 
-    #[Route('/api/qrCodeScanList', name: 'api.qrCodeScanList')]
+    #[OA\Get(
+        summary: 'Journal des scans de QR codes d objets (user, participant, objet, date, autorise)',
+        description: 'Heritage. Role requis : ADMIN (en plus de STATISTIQUE pour les statistiques).',
+        tags: ['Anciennes routes'],
+    )]
+    #[Route('/api/qrCodeScanList', methods: ['GET'], name: 'api.qrCodeScanList')]
     #[Route('/stats/qrCodeScanList', name: 'stats.qrCodeScanList')]
     #[Route('/stats/qrCodeScanList/csv', name: 'stats.qrCodeScanList.csv')]
     #[Route('/stats/qrCodeScanList/json', name: 'stats.qrCodeScanList.json')]
@@ -265,7 +275,12 @@ class StatistiqueController extends AbstractController
         };
     }
 
-    #[Route('/api/fiefsState', name: 'api.fiefsState')]
+    #[OA\Get(
+        summary: 'Etat de chaque fief (groupe, religion, defense, revenus, batiments, suzerain, renommee, technologies)',
+        description: 'Heritage. Role requis : ADMIN (en plus de STATISTIQUE pour les statistiques).',
+        tags: ['Anciennes routes'],
+    )]
+    #[Route('/api/fiefsState', methods: ['GET'], name: 'api.fiefsState')]
     #[Route('/stats/fiefsState', name: 'stats.fiefsState')]
     #[Route('/stats/fiefsState/csv', name: 'stats.fiefsState.csv')]
     #[Route('/stats/fiefsState/json', name: 'stats.fiefsState.json')]
@@ -311,7 +326,8 @@ class StatistiqueController extends AbstractController
         };
     }
 
-    #[Route('/api/{gn}/sumAll', name: 'api.sumAll.gn')]
+    #[OA\Get(summary: 'Totaux generaux du GN', description: 'Heritage. Role requis : ADMIN (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/{gn}/sumAll', methods: ['GET'], name: 'api.sumAll.gn')]
     #[Route('/stats/{gn}/sumAll', name: 'stats.sumAll.gn')]
     #[Route('/stats/{gn}/sumAll/csv', name: 'stats.sumAll.gn.csv')]
     #[Route('/stats/{gn}/sumAll/json', name: 'stats.sumAll.gn.json')]
@@ -362,7 +378,8 @@ class StatistiqueController extends AbstractController
         };
     }
 
-    #[Route('/api/{gn}/list/arrivee', name: 'api.list.arrivee.gn')]
+    #[OA\Get(summary: 'Liste des arrivees du GN', description: 'Heritage. Role requis : ADMIN ou ORGA (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/{gn}/list/arrivee', methods: ['GET'], name: 'api.list.arrivee.gn')]
     #[Route('/stats/{gn}/list/arrivee', name: 'stats.list.arrivee.gn')]
     #[Route('/stats/{gn}/list/arrivee/csv', name: 'stats.list.arrivee.gn.csv')]
     #[Route('/stats/{gn}/list/arrivee/json', name: 'stats.list.arrivee.gn.json')]
@@ -404,7 +421,8 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route('/api/classes/{gn}', name: 'api.classes.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Repartition des classes du GN', description: 'Heritage. Role requis : SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/classes/{gn}', methods: ['GET'], name: 'api.classes.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/classes/{gn}/json', name: 'stats.classes.gn.json', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function classesStatsGnApiAction(#[MapEntity] Gn $gn): JsonResponse
@@ -445,7 +463,12 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route('/api/competenceFamily/{competenceFamily}/gn/{gn}', name: 'api.competenceFamily.gn', requirements: [
+    #[OA\Get(
+        summary: 'Personnages du GN pour une famille de competences',
+        description: 'Heritage. Role requis : SCENARISTE ou ORGA (en plus de STATISTIQUE pour les statistiques).',
+        tags: ['Anciennes routes'],
+    )]
+    #[Route('/api/competenceFamily/{competenceFamily}/gn/{gn}', methods: ['GET'], name: 'api.competenceFamily.gn', requirements: [
         'competenceFamily' => Requirement::DIGITS,
         'gn' => Requirement::DIGITS,
     ])]
@@ -479,7 +502,8 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route('/api/competences/{gn}', name: 'api.competences.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Competences prises par les personnages du GN', description: 'Heritage. Role requis : SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/competences/{gn}', methods: ['GET'], name: 'api.competences.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/competences/{gn}/json', name: 'stats.competences.gn.json', requirements: [
         'gn' => Requirement::DIGITS,
     ])]
@@ -508,7 +532,8 @@ class StatistiqueController extends AbstractController
         return $this->sendCsv(title: 'eveoniris_langues_gn_' . $gn->getId() . '_' . date('Ymd'), header: ['total', 'langue', 'visibilite'], dataProvider: $rows);
     }
 
-    #[Route('/api/langues/{gn}', name: 'api.langues.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Langues des personnages du GN', description: 'Heritage. Role requis : SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/langues/{gn}', methods: ['GET'], name: 'api.langues.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/langues/{gn}/json', name: 'stats.langues.gn.json', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function languesStatsGnApiAction(#[MapEntity] Gn $gn, LangueJoueursService $langueJoueursService): JsonResponse
@@ -516,7 +541,8 @@ class StatistiqueController extends AbstractController
         return new JsonResponse($langueJoueursService->getRepartitionGn($gn));
     }
 
-    #[Route('/api/constructions', name: 'api.constructions')]
+    #[OA\Get(summary: 'Liste des constructions', description: 'Heritage. Role requis : WARGAME (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/constructions', methods: ['GET'], name: 'api.constructions')]
     #[Route('/stats/constructions/json', name: 'stats.constructions.json')]
     #[IsGranted(new MultiRolesExpression(Role::WARGAME))]
     public function constructionsApiAction(): JsonResponse
@@ -531,7 +557,12 @@ class StatistiqueController extends AbstractController
         return $this->sendCsv(title: 'eveoniris_construction_' . date('Ymd'), query: $this->statsService->getConstructions(), header: ['fief', 'batiment', 'description', 'defense']);
     }
 
-    #[Route('/api/constructions/fiefs', name: 'api.constructions.fiefs')]
+    #[OA\Get(
+        summary: 'Constructions par fief (fief, batiment, description, defense)',
+        description: 'Heritage. Role requis : WARGAME (en plus de STATISTIQUE pour les statistiques).',
+        tags: ['Anciennes routes'],
+    )]
+    #[Route('/api/constructions/fiefs', methods: ['GET'], name: 'api.constructions.fiefs')]
     #[Route('/stats/constructions/fiefs/json', name: 'stats.constructions.fiefs.json')]
     #[IsGranted(new MultiRolesExpression(Role::WARGAME))]
     public function constructionsFiefsApiAction(): JsonResponse
@@ -564,7 +595,8 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route('/api/gameItemWithoutPersonnage', name: 'api.gameItemWithoutPersonnage')]
+    #[OA\Get(summary: 'Objets de jeu sans personnage rattache', description: 'Heritage. Role requis : ORGA ou SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/gameItemWithoutPersonnage', methods: ['GET'], name: 'api.gameItemWithoutPersonnage')]
     #[Route('/stats/gameItemWithoutPersonnage/json', name: 'stats.gameItemWithoutPersonnage.json')]
     #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function gameItemWithoutPersonnageApiAction(): JsonResponse
@@ -623,7 +655,8 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route('/api/mineurs/{gn}', name: 'api.mineurs.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Participants mineurs du GN (donnees sensibles)', description: 'Heritage. Role requis : ORGA (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/mineurs/{gn}', methods: ['GET'], name: 'api.mineurs.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/mineurs/{gn}/json', name: 'stats.mineurs.gn.json', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     public function mineursApiGnAction(#[MapEntity] Gn $gn): JsonResponse
@@ -660,7 +693,12 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route('/api/nbClasseGroupe/classe/{classe}/gn/{gn}', name: 'api.nbClasseGroupe.gn', requirements: [
+    #[OA\Get(
+        summary: 'Nombre de personnages d une classe par groupe pour un GN',
+        description: 'Heritage. Role requis : ORGA ou SCENARISTE (en plus de STATISTIQUE pour les statistiques).',
+        tags: ['Anciennes routes'],
+    )]
+    #[Route('/api/nbClasseGroupe/classe/{classe}/gn/{gn}', methods: ['GET'], name: 'api.nbClasseGroupe.gn', requirements: [
         'gn' => Requirement::DIGITS,
         'classe' => Requirement::DIGITS,
     ])]
@@ -702,7 +740,8 @@ class StatistiqueController extends AbstractController
         };
     }
 
-    #[Route('/api/potionsDepart/{gn}', name: 'api.potionsDepart.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Potions de depart des personnages du GN', description: 'Heritage. Role requis : ORGA ou SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/potionsDepart/{gn}', methods: ['GET'], name: 'api.potionsDepart.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/potionsDepart/{gn}', name: 'stats.potionsDepart.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/potionsDepart/{gn}/csv', name: 'stats.potionsDepart.gn.csv', requirements: [
         'gn' => Requirement::DIGITS,
@@ -773,7 +812,8 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route('/api/religion/{religion}/gn/{gn}/personnage', name: 'api.religionPersonnage.gn', requirements: [
+    #[OA\Get(summary: 'Personnages d une religion pour un GN', description: 'Heritage. Role requis : SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/religion/{religion}/gn/{gn}/personnage', methods: ['GET'], name: 'api.religionPersonnage.gn', requirements: [
         'gn' => Requirement::DIGITS,
         'personnage' => Requirement::DIGITS,
     ])]
@@ -792,7 +832,8 @@ class StatistiqueController extends AbstractController
         return new JsonResponse($religionRepository->getPersonnagesByReligions($gn, $religion)->getResult());
     }
 
-    #[Route('/api/religions/{gn}', name: 'api.religions.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Religions des personnages du GN', description: 'Heritage. Role requis : ORGA ou SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/religions/{gn}', methods: ['GET'], name: 'api.religions.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/religions/{gn}', name: 'stats.religions.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/religions/{gn}/csv', name: 'stats.religions.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/religions/{gn}/json', name: 'stats.religions.gn.json', requirements: ['gn' => Requirement::DIGITS])]
@@ -825,7 +866,8 @@ class StatistiqueController extends AbstractController
         };
     }
 
-    #[Route('/api/religions/pratiquants/{gn}', name: 'api.religions.pratiquants', requirements: [
+    #[OA\Get(summary: 'Pratiquants par religion pour un GN', description: 'Heritage. Role requis : SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/religions/pratiquants/{gn}', methods: ['GET'], name: 'api.religions.pratiquants', requirements: [
         'gn' => Requirement::DIGITS,
     ])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
@@ -859,7 +901,8 @@ class StatistiqueController extends AbstractController
         return $this->sendCsv(title: 'eveoniris_renomme_gn_' . $gn->getId() . '_' . date('Ymd'), query: $this->statsService->getRenommeGn($gn), header: ['total', 'grp_renome']);
     }
 
-    #[Route('/api/renommeGroupe/{gn}', name: 'api.renommeGroupe.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Renommee des groupes du GN', description: 'Heritage. Role requis : ORGA ou SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/renommeGroupe/{gn}', methods: ['GET'], name: 'api.renommeGroupe.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/renommeGroupe/{gn}', name: 'stats.renommeGroupe.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/renommeGroupe/{gn}/csv', name: 'stats.renommeGroupe.gn.csv', requirements: [
         'gn' => Requirement::DIGITS,
@@ -897,7 +940,8 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route('/api/renomme/{gn}', name: 'api.renomme.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Renommee des personnages du GN', description: 'Heritage. Role requis : SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/renomme/{gn}', methods: ['GET'], name: 'api.renomme.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/renomme/{gn}/json', name: 'stats.renomme.gn.json', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE))]
     public function renommeStatsGnApiAction(#[MapEntity] Gn $gn): JsonResponse
@@ -905,7 +949,12 @@ class StatistiqueController extends AbstractController
         return new JsonResponse($this->statsService->getRenommeGn($gn)->getResult());
     }
 
-    #[Route('/api/sensible/{gn}', name: 'api.sensible.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(
+        summary: 'Participants avec informations sensibles du GN (donnees sensibles)',
+        description: 'Heritage. Role requis : ORGA ou SCENARISTE (en plus de STATISTIQUE pour les statistiques).',
+        tags: ['Anciennes routes'],
+    )]
+    #[Route('/api/sensible/{gn}', methods: ['GET'], name: 'api.sensible.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/sensible/{gn}', name: 'stats.sensible.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/sensible/{gn}/csv', name: 'stats.sensible.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/sensible/{gn}/json', name: 'stats.sensible.gn.json', requirements: ['gn' => Requirement::DIGITS])]
@@ -966,6 +1015,7 @@ class StatistiqueController extends AbstractController
     #[Route('/stats/personnages', name: 'stats.personnages', methods: ['GET'])]
     #[Route('/stats/personnages/csv', name: 'stats.personnages.csv', methods: ['GET'])]
     #[Route('/stats/personnages/json', name: 'stats.personnages.json', methods: ['GET'])]
+    #[OA\Get(summary: 'Extraction des personnages', description: 'Heritage. Role requis : ADMIN ou SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
     #[Route('/api/personnages', name: 'api.personnages', methods: ['GET'])]
     #[IsGranted(new MultiRolesExpression(Role::ADMIN, Role::SCENARISTE))]
     public function personnagesExtractAction(Request $request, EntityManagerInterface $entityManager, string $_route): Response|JsonResponse|StreamedResponse
@@ -1038,7 +1088,8 @@ class StatistiqueController extends AbstractController
         ]);
     }
 
-    #[Route('/api/xpGap/{gn}/{gap}', name: 'api.xpGap.gn', requirements: ['gn' => Requirement::DIGITS], defaults: ['gap' => 50])]
+    #[OA\Get(summary: 'Ecart d XP des personnages du GN (parametre gap)', description: 'Heritage. Role requis : ADMIN (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/xpGap/{gn}/{gap}', methods: ['GET'], name: 'api.xpGap.gn', requirements: ['gn' => Requirement::DIGITS], defaults: ['gap' => 50])]
     #[Route('/stats/xpGap/{gn}/{gap}', name: 'stats.xpGap.gn', requirements: ['gn' => Requirement::DIGITS], defaults: ['gap' => 50])]
     #[Route('/stats/xpGap/{gn}/{gap}/csv', name: 'stats.xpGap.gn.csv', requirements: ['gn' => Requirement::DIGITS], defaults: ['gap' => 50])]
     #[Route('/stats/xpGap/{gn}/{gap}/json', name: 'stats.xpGap.gn.json', requirements: ['gn' => Requirement::DIGITS], defaults: ['gap' => 50])]
@@ -1069,7 +1120,8 @@ class StatistiqueController extends AbstractController
         };
     }
 
-    #[Route('/api/groupeOrganisation/{gn}', name: 'api.groupeOrganisation.gn', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Organisation des groupes du GN', description: 'Heritage. Role requis : ORGA ou SCENARISTE (en plus de STATISTIQUE pour les statistiques).', tags: ['Anciennes routes'])]
+    #[Route('/api/groupeOrganisation/{gn}', methods: ['GET'], name: 'api.groupeOrganisation.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/groupeOrganisation/{gn}', name: 'stats.groupeOrganisation.gn', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/groupeOrganisation/{gn}/csv', name: 'stats.groupeOrganisation.gn.csv', requirements: ['gn' => Requirement::DIGITS])]
     #[Route('/stats/groupeOrganisation/{gn}/json', name: 'stats.groupeOrganisation.gn.json', requirements: ['gn' => Requirement::DIGITS])]

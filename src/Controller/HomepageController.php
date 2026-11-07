@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -96,7 +97,8 @@ class HomepageController extends AbstractController
         return $this->getWorldTerritoireGeoData('fiefs');
     }
 
-    #[Route('/api/{gn}/gdata', name: 'api.gdata', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Donnees globales du GN', description: 'Heritage. Role requis : SCENARISTE.', tags: ['Anciennes routes'])]
+    #[Route('/api/{gn}/gdata', methods: ['GET'], name: 'api.gdata', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted('ROLE_SCENARISTE')]
     public function gdataAction(
         Request $request,
