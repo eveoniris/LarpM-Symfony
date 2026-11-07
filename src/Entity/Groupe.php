@@ -60,8 +60,12 @@ class Groupe extends BaseGroupe implements Stringable
     /**
      * Fourni les informations pour une session de jeu.
      */
-    public function getGroupeGnById(int $gnId): ?GroupeGn
+    public function getGroupeGnById(?int $gnId): ?GroupeGn
     {
+        if (null === $gnId) {
+            return null;
+        }
+
         foreach ($this->getGroupeGns() as $groupeGn) {
             if ((int) $groupeGn->getGn()->getId() === $gnId) {
                 return $groupeGn;
