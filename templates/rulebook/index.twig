@@ -1,0 +1,104 @@
+{% extends "base.html.twig" %}
+
+{# Interface bêta (lm-design) : les composants lm-* s'ajoutent à Bootstrap, les autres comptes gardent le rendu Bootstrap. #}
+{% set beta = app.user is not null and app.user.uiBeta %}
+
+{% block title %}Rulebook{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Rulebook'}]} %}
+
+	<header class="lm-page-head mb-3">
+		<h1 class="lm-page-title h4 mb-1">Rulebook</h1>
+		<p class="lm-meta mb-0">
+			Règles de gameplay.
+			{% if equipeRegle %}Vue équipe règle : toutes les règles, statuts et détails techniques.{% else %}Version claire des règles publiées.{% endif %}
+		</p>
+		{% if equipeRegle %}
+			<p class="mt-2 mb-0">
+				<a href="{{ path('rulebook.regle.nouvelle', {'domaine': domaineFiltre ?: null}) }}" class="{{ beta ? 'lm-btn lm-btn--primary' : 'btn btn-primary' }}">Nouvelle règle</a>
+			</p>
+		{% endif %}
+	</header>
+
+	<div class="alert alert-warning">
+		Fonctionnalité en cours de test, réservée aux bêta-testeurs.
+	</div>
+
+	<form method="get" action="{{ path('rulebook.index') }}" class="{{ beta ? 'lm-form' : '' }} row g-2 mb-3">
+		<div class="col-12 col-md">
+			<input type="search" name="q" value="{{ recherche }}" class="{{ beta ? 'lm-field' : 'form-control' }}" placeholder="Rechercher dans les règles" aria-label="Rechercher dans les règles">
+		</div>
+		{% if equipeRegle %}
+			<div class="col-12 col-md-3">
+				<select name="statut" class="{{ beta ? 'lm-field' : 'form-select' }}" aria-label="Filtrer par statut">
+					<option value="">Tous les statuts</option>
+					{% for s in statuts %}
+						<option value="{{ s.value }}"{% if statutFiltre and statutFiltre.value == s.value %} selected{% endif %}>{{ s.label }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		{% endif %}
+		<div class="col-12 col-md-auto">
+			<button type="submit" class="{{ beta ? 'lm-btn lm-btn--primary' : 'btn btn-primary' }}">Filtrer</button>
+			{% if recherche or statutFiltre or domaineFiltre %}
+				<a href="{{ path('rulebook.index') }}" class="{{ beta ? 'lm-btn lm-btn--ghost' : 'btn btn-link' }}">Réinitialiser</a>
+			{% endif %}
+		</div>
+	</form>
+
+	{% if domaines|length > 0 %}
+		<nav class="mb-3" aria-label="Domaines">
+			<ul class="list-inline mb-0">
+				{% for ligne in domaines %}
+					<li class="list-inline-item mb-1">
+						<a href="{{ path('rulebook.index', {'q': recherche ?: null, 'statut': statutFiltre ? statutFiltre.value : null, 'domaine': ligne.domaine.code}) }}"
+						   class="{{ beta ? 'lm-chip' : 'badge text-bg-light border' }}"{% if domaineFiltre == ligne.domaine.code %} aria-current="true"{% endif %}>
+							{{ ligne.domaine.titre }} <span class="{{ beta ? 'lm-count' : 'text-muted' }}">{{ ligne.nombre }}</span>
+						</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</nav>
+	{% endif %}
+
+	{% if total == 0 %}
+		<div class="{{ beta ? 'lm-callout' : 'alert alert-info' }}">
+			{% if recherche or statutFiltre or domaineFiltre %}Aucune règle ne correspond à ces critères.{% else %}Aucune règle n'est encore publiée.{% endif %}
+		</div>
+	{% endif %}
+
+	{% for groupe in groupes %}
+		<section class="mb-4" id="domaine-{{ groupe.domaine.code }}">
+			<h2 class="h5{{ beta ? ' lm-carte-verre py-2 mb-2' : '' }}">{{ groupe.domaine.titre }} <small class="{{ beta ? 'lm-meta' : 'text-muted' }}">({{ groupe.regles|length }})</small></h2>
+			<div class="{{ beta ? 'lm-table-wrap' : 'table-responsive' }}">
+				<table class="{{ beta ? 'lm-table' : 'table table-bordered table-striped' }}">
+					<thead>
+						<tr>
+							<th>Code</th>
+							<th>Règle</th>
+							{% if equipeRegle %}
+								<th>Statut</th>
+								<th>Publiée</th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for regle in groupe.regles %}
+							<tr>
+								<td class="text-nowrap"><code class="text-nowrap">{{ regle.code }}</code></td>
+								<td><a href="{{ path('rulebook.regle', {'code': regle.code}) }}">{{ regle.titre }}</a></td>
+								{% if equipeRegle %}
+									<td>{% include 'rulebook/_statut.twig' with {'statut': regle.statut, 'beta': beta} %}</td>
+									<td>{{ regle.publiee ? 'Oui' : 'Non' }}</td>
+								{% endif %}
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	{% endfor %}
+
+{% endblock body %}
