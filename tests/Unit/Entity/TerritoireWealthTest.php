@@ -34,6 +34,7 @@ class TerritoireWealthTest extends TestCase
 
     // ── getRichesse() ──────────────────────────────────────────────────────────
 
+    #[Group('TERR-01')]
     public function testRichesseStableTerritoireReturnsTresor(): void
     {
         $t = $this->makeTerritoire(100, TerritoireStatut::STABLE);
@@ -41,6 +42,7 @@ class TerritoireWealthTest extends TestCase
         static::assertSame(100, $t->getRichesse());
     }
 
+    #[Group('TERR-01')]
     public function testRichesseUnstableTerritoireIsHalved(): void
     {
         $t = $this->makeTerritoire(100, TerritoireStatut::INSTABLE);
@@ -48,6 +50,7 @@ class TerritoireWealthTest extends TestCase
         static::assertSame(50.0, $t->getRichesse());
     }
 
+    #[Group('TERR-01')]
     public function testRichesseUnstableWithOddTresorCeilsUp(): void
     {
         $t = $this->makeTerritoire(101, TerritoireStatut::INSTABLE);
@@ -56,6 +59,7 @@ class TerritoireWealthTest extends TestCase
         static::assertSame(51.0, $t->getRichesse());
     }
 
+    #[Group('TERR-01')]
     public function testRichesseUnstableWithConstructionRevenueBeforeHalving(): void
     {
         $t = $this->makeTerritoire(100, TerritoireStatut::INSTABLE);
@@ -66,6 +70,7 @@ class TerritoireWealthTest extends TestCase
         static::assertSame(55.0, $t->getRichesse());
     }
 
+    #[Group('TERR-01')]
     public function testRichesseStableIgnoresConstructionRevenue(): void
     {
         $t = $this->makeTerritoire(100, TerritoireStatut::STABLE);
@@ -75,6 +80,7 @@ class TerritoireWealthTest extends TestCase
         static::assertSame(100, $t->getRichesse());
     }
 
+    #[Group('TERR-01')]
     public function testRichesseUnstableAccumulatesMultipleConstructions(): void
     {
         $t = $this->makeTerritoire(50, TerritoireStatut::INSTABLE);
@@ -88,6 +94,7 @@ class TerritoireWealthTest extends TestCase
 
     // ── getDefense() ──────────────────────────────────────────────────────────
 
+    #[Group('TERR-02')]
     public function testDefenseZeroWhenNoResistanceAndNoConstructions(): void
     {
         $t = $this->makeTerritoire(0);
@@ -96,6 +103,7 @@ class TerritoireWealthTest extends TestCase
         static::assertSame(0, $t->getDefense());
     }
 
+    #[Group('TERR-02')]
     public function testDefenseIncludesResistance(): void
     {
         $t = $this->makeTerritoire(0);
@@ -104,6 +112,7 @@ class TerritoireWealthTest extends TestCase
         static::assertSame(15, $t->getDefense());
     }
 
+    #[Group('TERR-02')]
     public function testDefenseIncludesConstructionDefense(): void
     {
         $t = $this->makeTerritoire(0);
@@ -114,6 +123,7 @@ class TerritoireWealthTest extends TestCase
         static::assertSame(18, $t->getDefense());
     }
 
+    #[Group('TERR-02')]
     public function testDefenseZeroResistanceNotAddedWhenItIsZero(): void
     {
         $t = $this->makeTerritoire(0);
@@ -126,6 +136,7 @@ class TerritoireWealthTest extends TestCase
 
     // ── isStable() ────────────────────────────────────────────────────────────
 
+    #[Group('TERR-03')]
     public function testIsStableReturnsTrueForStableStatut(): void
     {
         $t = $this->makeTerritoire(0, TerritoireStatut::STABLE);
@@ -133,6 +144,7 @@ class TerritoireWealthTest extends TestCase
         static::assertTrue($t->isStable());
     }
 
+    #[Group('TERR-03')]
     public function testIsStableReturnsFalseForInstableStatut(): void
     {
         $t = $this->makeTerritoire(0, TerritoireStatut::INSTABLE);
@@ -140,6 +152,7 @@ class TerritoireWealthTest extends TestCase
         static::assertFalse($t->isStable());
     }
 
+    #[Group('TERR-03')]
     public function testIsStableTrueByDefaultWhenStatutIsNull(): void
     {
         // BaseTerritoire::getStatut() returns STABLE when $this->statut is falsy

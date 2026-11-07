@@ -2,6 +2,7 @@
 // Markdown pur : pas de WYSIWYG, pas de HTML saisi. L'aperçu vient du serveur (même rendu sûr que la page de lecture).
 import EasyMDE from 'easymde';
 import 'easymde/dist/easymde.min.css';
+import './styles/rulebook-editor.css';
 
 function initialiser() {
     document.querySelectorAll('textarea.js-markdown').forEach((zone) => {

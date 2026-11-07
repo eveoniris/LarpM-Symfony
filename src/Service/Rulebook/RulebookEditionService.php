@@ -21,6 +21,7 @@ final readonly class RulebookEditionService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private MarkdownNormalizer $normalizer,
+        private RulebookExporter $exporter,
     ) {
     }
 
@@ -58,6 +59,7 @@ final readonly class RulebookEditionService
         $this->entityManager->persist($revision);
         $this->journaliser($regle, $auteur, $creation ? 'creation' : 'modification', $motif);
         $this->entityManager->flush();
+        $this->rafraichirCache();
 
         return ['version' => $regle->getVersion(), 'nettoyes' => $nettoyes, 'modifiee' => true];
     }
@@ -82,6 +84,7 @@ final readonly class RulebookEditionService
         $this->entityManager->persist($revision);
         $this->journaliser($regle, $auteur, 'restauration', $motif);
         $this->entityManager->flush();
+        $this->rafraichirCache();
     }
 
     /** Empreinte du contenu éditable, pour détecter l'absence de changement. */
@@ -97,6 +100,16 @@ final readonly class RulebookEditionService
             $regle->getDomaine()->getId(),
             $regle->getTestsRefs(),
         ], JSON_THROW_ON_ERROR));
+    }
+
+    /** Le cache local est un confort : une erreur d'écriture ne doit jamais empêcher l'enregistrement. */
+    private function rafraichirCache(): void
+    {
+        try {
+            $this->exporter->exporter();
+        } catch (Throwable) {
+            // ignoré volontairement
+        }
     }
 
     private function nettoyer(?string $texte, int &$nettoyes): ?string
