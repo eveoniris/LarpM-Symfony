@@ -12,7 +12,7 @@
 	<header class="lm-page-head mb-3">
 		<h1 class="lm-page-title h4 mb-1">{{ regle.titre }}</h1>
 		<p class="lm-meta mb-0">
-			<code>{{ regle.code }}</code> · {{ regle.domaine.titre }}
+			<code class="text-nowrap">{{ regle.code }}</code> · {{ regle.domaine.titre }}
 			{% if equipeRegle %}
 				· {% include 'rulebook/_statut.twig' with {'statut': regle.statut, 'beta': beta} %}
 				· {{ regle.publiee ? 'Publiée' : 'Non publiée' }}
@@ -44,12 +44,13 @@
 			</div>
 		</div>
 
-		{% if regle.testsRefs|length > 0 %}
+		{# Les références déjà citées dans le détail technique (import de la spec) ne sont pas répétées. #}
+		{% if testsRefs|length > 0 %}
 			<div class="{{ beta ? 'card lm-carte-verre' : 'well well-sm' }} mb-3">
 				<div class="{{ beta ? 'card-body' : '' }}">
 					<h2 class="h6">Tests</h2>
 					<ul class="mb-0">
-						{% for test in regle.testsRefs %}
+						{% for test in testsRefs %}
 							<li><code>{{ test }}</code></li>
 						{% endfor %}
 					</ul>

@@ -82,7 +82,7 @@
 					<tbody>
 						{% for regle in groupe.regles %}
 							<tr>
-								<td><code>{{ regle.code }}</code></td>
+								<td class="text-nowrap"><code class="text-nowrap">{{ regle.code }}</code></td>
 								<td><a href="{{ path('rulebook.regle', {'code': regle.code}) }}">{{ regle.titre }}</a></td>
 								{% if equipeRegle %}
 									<td>{% include 'rulebook/_statut.twig' with {'statut': regle.statut, 'beta': beta} %}</td>

@@ -86,11 +86,23 @@ final class RulebookController extends AbstractController
         }
 
         $technique = $this->isGranted(RulebookVoter::VIEW_TECHNIQUE, $regle);
+        $detailHtml = $technique ? $this->renderer->rendre($regle->getDetailTechnique()) : null;
+
+        // Références de tests pas déjà citées dans le détail technique (évite l'affichage en double).
+        $testsRefs = [];
+        if ($technique) {
+            foreach ($regle->getTestsRefs() as $ref) {
+                if (!str_contains((string) $detailHtml, htmlspecialchars((string) $ref, ENT_NOQUOTES))) {
+                    $testsRefs[] = $ref;
+                }
+            }
+        }
 
         return $this->render('rulebook/regle.twig', [
             'regle' => $regle,
             'texteClairHtml' => $this->renderer->rendre($regle->getTexteClair()),
-            'detailTechniqueHtml' => $technique ? $this->renderer->rendre($regle->getDetailTechnique()) : null,
+            'detailTechniqueHtml' => $detailHtml,
+            'testsRefs' => $testsRefs,
             'equipeRegle' => $technique,
         ]);
     }
