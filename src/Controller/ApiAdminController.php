@@ -28,7 +28,10 @@ final class ApiAdminController extends AbstractController
      */
     #[Route('/groupes', name: 'groupes', methods: ['GET'])]
     #[OA\Tag(name: 'Administration')]
-    #[OA\Get(summary: 'Liste des groupes avec leur numéro', description: 'ROLE_API_ADMIN : tous les GN (filtre ?gn= optionnel). ROLE_API_READ : lecture seule, uniquement le GN de l\'application (?gn= absent ou égal à ce GN). Triée par numéro.')]
+    #[OA\Get(
+        summary: 'Liste des groupes avec leur numéro',
+        description: 'ROLE_API_ADMIN : tous les GN (filtre ?gn= optionnel). ROLE_API_READ : lecture seule, uniquement le GN de l\'application (?gn= absent ou égal à ce GN). Triée par numéro.',
+    )]
     #[OA\Parameter(name: 'gn', in: 'query', description: 'Filtrer sur un GN (id)', schema: new OA\Schema(type: 'integer'))]
     #[OA\Parameter(name: 'page', in: 'query', schema: new OA\Schema(type: 'integer', default: 1, minimum: 1))]
     #[OA\Parameter(name: 'limit', in: 'query', description: '200 maximum', schema: new OA\Schema(type: 'integer', default: 50, minimum: 1, maximum: 200))]
@@ -54,7 +57,7 @@ final class ApiAdminController extends AbstractController
             // Lecture seule : l'application ne voit que son GN.
             $client = $clients->findOneByUser($this->getUser());
             $scope = $client?->isActive() ? $client->getGn()?->getId() : null;
-            if (null === $scope || (null !== $gnId && $gnId !== $scope)) {
+            if (null === $scope || null !== $gnId && $gnId !== $scope) {
                 return $this->json(['error' => 'Accès refusé : GN hors du périmètre de l\'application'], 403);
             }
             $gnId = $scope;
