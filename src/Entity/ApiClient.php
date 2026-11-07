@@ -38,6 +38,14 @@ class ApiClient
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, options: ['unsigned' => true])]
     private User $user;
 
+    /**
+     * GN auquel l'application est limitée (obligatoire pour ROLE_API_READ, sans effet pour ROLE_API_ADMIN).
+     * Si le GN est supprimé, le périmètre disparaît et l'accès en lecture seule est refusé.
+     */
+    #[ORM\ManyToOne(targetEntity: Gn::class)]
+    #[ORM\JoinColumn(name: 'gn_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Gn $gn = null;
+
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $active = true;
 
@@ -79,6 +87,18 @@ class ApiClient
     public function getUser(): User
     {
         return $this->user;
+    }
+
+    public function getGn(): ?Gn
+    {
+        return $this->gn;
+    }
+
+    public function setGn(?Gn $gn): static
+    {
+        $this->gn = $gn;
+
+        return $this;
     }
 
     public function isActive(): bool

@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -96,7 +97,8 @@ class HomepageController extends AbstractController
         return $this->getWorldTerritoireGeoData('fiefs');
     }
 
-    #[Route('/api/{gn}/gdata', name: 'api.gdata', requirements: ['gn' => Requirement::DIGITS])]
+    #[OA\Get(summary: 'Donnees globales du GN', description: 'Heritage. Role requis : SCENARISTE.', tags: ['Anciennes routes'])]
+    #[Route('/api/{gn}/gdata', methods: ['GET'], name: 'api.gdata', requirements: ['gn' => Requirement::DIGITS])]
     #[IsGranted('ROLE_SCENARISTE')]
     public function gdataAction(
         Request $request,
@@ -313,27 +315,32 @@ class HomepageController extends AbstractController
     /**
      * Met à jour la geographie d'un pays.
      */
-    public function updateCountryGeomAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $territoire = $request->attributes->get('territoire');
-        $geom = $request->request->get('geom');
-        $color = $request->request->get('color');
+    #[Route('/world/countries/{territoire}/update', name: 'world.countries.update', requirements: ['territoire' => Requirement::DIGITS], methods: ['POST'])]
+    #[IsGranted('ROLE_TERRITOIRE')]
+    public function updateCountryGeomAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        #[MapEntity]
+        Territoire $territoire,
+    ): JsonResponse {
+        $geom = (string) $request->request->get('geom');
+        $color = (string) $request->request->get('color');
+
+        // Le zonage doit être un objet GeoJSON valide
+        $decoded = json_decode($geom, associative: true);
+        if (!\is_array($decoded) || !\array_key_exists('type', $decoded)) {
+            return new JsonResponse(['error' => 'Zonage invalide'], Response::HTTP_BAD_REQUEST);
+        }
 
         $territoire->setGeojson($geom);
-        $territoire->setColor($color);
+        if (1 === preg_match('/^#[0-9a-fA-F]{3,8}$/', $color)) {
+            $territoire->setColor($color);
+        }
 
         $entityManager->persist($territoire);
         $entityManager->flush();
 
-        $country = [
-            'id' => $territoire->getId(),
-            'geom' => $territoire->getGeojson(),
-            'name' => $territoire->getNom(),
-            'description' => strip_tags((string) $territoire->getDescription()),
-            'groupes' => array_values($territoire->getGroupesPj()),
-        ];
-
-        return new JsonResponse($country);
+        return new JsonResponse($this->addGeoData($territoire));
     }
 
     /**
