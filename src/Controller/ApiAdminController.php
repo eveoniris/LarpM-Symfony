@@ -8,7 +8,6 @@ use App\Repository\ApiClientRepository;
 use App\Repository\GnRepository;
 use App\Repository\GroupeRepository;
 use OpenApi\Attributes as OA;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -20,7 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 #[Route('/api/admin', name: 'api.admin.')]
 #[IsGranted('ROLE_API_READ')]
-final class ApiAdminController extends AbstractController
+final class ApiAdminController extends AbstractApiGnController
 {
     private const int MAX_PAR_PAGE = 200;
 
@@ -31,7 +30,7 @@ final class ApiAdminController extends AbstractController
     #[OA\Tag(name: 'Administration')]
     #[OA\Get(
         summary: 'Liste des groupes avec leur numéro',
-        description: 'Sans ?gn=, le GN est le prochain GN actif (à défaut le dernier GN) ; le GN utilisé est renvoyé dans le champ gn. ROLE_API_ADMIN : ?gn=<id> ou ?gn=all (tous les GN). ROLE_API_READ : lecture seule, uniquement le GN de l\'application (?gn= absent ou égal à ce GN). Triée par numéro.',
+        description: 'ROLE_API_READ ou ROLE_API_ADMIN. Sans ?gn=, le GN est le prochain GN actif (à défaut le dernier GN) ; le GN utilisé est renvoyé dans le champ gn. ROLE_API_ADMIN : ?gn=<id> ou ?gn=all (tous les GN). ROLE_API_READ : lecture seule, uniquement le GN de l\'application (?gn= absent ou égal à ce GN). Triée par numéro.',
     )]
     #[OA\Parameter(
         name: 'gn',
@@ -60,27 +59,11 @@ final class ApiAdminController extends AbstractController
     #[OA\Response(response: 403, description: 'Rôle insuffisant, application révoquée, ou GN demandé hors du périmètre de l\'application')]
     public function groupes(Request $request, GroupeRepository $repo, ApiClientRepository $clients, GnRepository $gns): JsonResponse
     {
-        $gnParam = $request->query->get('gn');
-        $gnParam = \is_string($gnParam) && '' !== $gnParam ? $gnParam : null;
-        $tousLesGn = 'all' === $gnParam;
-
-        if (!$this->isGranted('ROLE_API_ADMIN')) {
-            // Lecture seule : le GN de l'application, ou à défaut le GN actif par défaut (prochain GN actif, sinon le dernier).
-            $client = $clients->findOneByUser($this->getUser());
-            if (null === $client || !$client->isActive()) {
-                return $this->json(['error' => 'Accès refusé : application inconnue ou révoquée'], 403);
-            }
-            $gn = $client->getGn() ?? $gns->findFromFilter(null);
-            if (null !== $gnParam && (null === $gn || $gnParam !== (string) $gn->getId())) {
-                return $this->json(['error' => 'Accès refusé : GN hors du périmètre de l\'application'], 403);
-            }
-        } else {
-            // Même règle que les listes du site : ?gn=<id>, ?gn=all (aucun filtre), sinon le prochain GN actif (à défaut le dernier).
-            $gn = $gns->findFromFilter($gnParam);
-            if (!$tousLesGn && null !== $gnParam && ctype_digit($gnParam) && null === $gn) {
-                return $this->json(['error' => 'GN introuvable'], 404);
-            }
+        $gn = $this->resolveGn($request, $clients, $gns);
+        if ($gn instanceof JsonResponse) {
+            return $gn;
         }
+        $tousLesGn = 'all' === $request->query->get('gn');
         $gnId = $gn?->getId();
         $page = max(1, $request->query->getInt('page', 1));
         $limit = min(self::MAX_PAR_PAGE, max(1, $request->query->getInt('limit', 50)));
