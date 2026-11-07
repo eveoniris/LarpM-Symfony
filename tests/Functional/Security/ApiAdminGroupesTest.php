@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Security;
 
 use App\Tests\Factory\GnFactory;
+use DateTime;
 use App\Tests\Factory\GroupeFactory;
 use App\Tests\Factory\GroupeGnFactory;
 use App\Tests\Factory\UserFactory;
@@ -78,6 +79,40 @@ class ApiAdminGroupesTest extends WebTestCase
         $page2 = json_decode((string) $client->getResponse()->getContent(), true);
         static::assertSame(2, $page2['total']);
         static::assertSame([9002], array_column($page2['items'], 'numero'));
+    }
+
+    public function testSansGnLeProchainGnActifEstUtilise(): void
+    {
+        $client = static::createClient();
+        $token = $this->token($client, 'api-admin3@example.com', ['ROLE_API_ADMIN']);
+        $ancien = GnFactory::createOne(['actif' => true, 'date_debut' => new DateTime('2099-01-01')]);
+        $recent = GnFactory::createOne(['actif' => true, 'date_debut' => new DateTime('2099-06-01')]);
+        GroupeGnFactory::createOne(['groupe' => GroupeFactory::createOne(['numero' => 9201]), 'gn' => $ancien]);
+        GroupeGnFactory::createOne(['groupe' => GroupeFactory::createOne(['numero' => 9202]), 'gn' => $recent]);
+        $auth = ['HTTP_AUTHORIZATION' => 'Bearer ' . $token];
+
+        $client->request('GET', '/api/admin/groupes', [], [], $auth);
+        /** @var array{gn: array{id: int}|null, total: int, items: list<array{numero: int}>} $data */
+        $data = json_decode((string) $client->getResponse()->getContent(), true);
+        static::assertSame($recent->getId(), $data['gn']['id'] ?? null);
+        static::assertSame([9202], array_column($data['items'], 'numero'));
+
+        // ?gn=all : aucun filtre, le champ gn est null.
+        $client->request('GET', '/api/admin/groupes?gn=all&limit=200', [], [], $auth);
+        /** @var array{gn: array{id: int}|null, total: int} $tous */
+        $tous = json_decode((string) $client->getResponse()->getContent(), true);
+        static::assertNull($tous['gn']);
+        static::assertGreaterThanOrEqual(2, $tous['total']);
+    }
+
+    public function testGnInexistantRenvoie404(): void
+    {
+        $client = static::createClient();
+        $token = $this->token($client, 'api-admin4@example.com', ['ROLE_API_ADMIN']);
+
+        $client->request('GET', '/api/admin/groupes?gn=999999999', [], [], ['HTTP_AUTHORIZATION' => 'Bearer ' . $token]);
+
+        static::assertSame(404, $client->getResponse()->getStatusCode());
     }
 
     /** @param list<string> $roles */
