@@ -19,6 +19,12 @@
 				· version {{ regle.version }}, modifiée le {{ regle.updatedAt|date('d/m/Y H:i') }}
 			{% endif %}
 		</p>
+		{% if equipeRegle %}
+			<p class="mt-2 mb-0">
+				<a href="{{ path('rulebook.regle.editer', {'code': regle.code}) }}" class="{{ beta ? 'lm-btn lm-btn--primary' : 'btn btn-primary' }}">Modifier</a>
+				<a href="{{ path('rulebook.regle.historique', {'code': regle.code}) }}" class="{{ beta ? 'lm-btn lm-btn--ghost' : 'btn btn-link' }}">Historique</a>
+			</p>
+		{% endif %}
 	</header>
 
 	{# Le HTML vient de MarkdownRenderer : HTML saisi retiré et liens dangereux neutralisés, donc |raw est sûr ici. #}

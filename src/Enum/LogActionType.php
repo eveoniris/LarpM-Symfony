@@ -54,6 +54,9 @@ enum LogActionType: string
      */
     case PERSONNAGE_ROLE_CHANGE = 'personnage_role_change';
 
+    /** Création, modification ou restauration d'une règle du rulebook (data : action, règle, version, motif). */
+    case RULEBOOK = 'rulebook';
+
     /** Trigger de choix (potion, sort...) recréé par une commande de réparation. */
     case TRIGGER_REPARATION = 'trigger_reparation';
 }

@@ -15,6 +15,11 @@
 			Règles de gameplay.
 			{% if equipeRegle %}Vue équipe règle : toutes les règles, statuts et détails techniques.{% else %}Version claire des règles publiées.{% endif %}
 		</p>
+		{% if equipeRegle %}
+			<p class="mt-2 mb-0">
+				<a href="{{ path('rulebook.regle.nouvelle', {'domaine': domaineFiltre ?: null}) }}" class="{{ beta ? 'lm-btn lm-btn--primary' : 'btn btn-primary' }}">Nouvelle règle</a>
+			</p>
+		{% endif %}
 	</header>
 
 	<div class="alert alert-warning">
@@ -66,7 +71,7 @@
 
 	{% for groupe in groupes %}
 		<section class="mb-4" id="domaine-{{ groupe.domaine.code }}">
-			<h2 class="h5">{{ groupe.domaine.titre }} <small class="{{ beta ? 'lm-meta' : 'text-muted' }}">({{ groupe.regles|length }})</small></h2>
+			<h2 class="h5{{ beta ? ' lm-carte-verre py-2 mb-2' : '' }}">{{ groupe.domaine.titre }} <small class="{{ beta ? 'lm-meta' : 'text-muted' }}">({{ groupe.regles|length }})</small></h2>
 			<div class="{{ beta ? 'lm-table-wrap' : 'table-responsive' }}">
 				<table class="{{ beta ? 'lm-table' : 'table table-bordered table-striped' }}">
 					<thead>

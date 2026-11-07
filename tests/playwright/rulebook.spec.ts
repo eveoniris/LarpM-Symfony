@@ -57,6 +57,25 @@ test.describe('équipe règle', () => {
         await page.screenshot({ path: testInfo.outputPath('rulebook-equipe-regle.png'), fullPage: true });
     });
 
+    test('éditeur markdown chargé, aperçu rendu par le serveur, sans enregistrer', async ({ browser }, testInfo) => {
+        const page = await connecter(browser, 'test@test.com');
+        const erreurs: string[] = [];
+        page.on('pageerror', (e) => erreurs.push(e.message));
+        test.setTimeout(120_000);
+        await page.goto('/rulebook/regle/TERR-02/editer', { timeout: 90_000 });
+
+        await expect(page.locator('.EasyMDEContainer')).toHaveCount(2);
+        await sansDebordement(page);
+
+        const zone = page.locator('.EasyMDEContainer').first();
+        await zone.locator('.CodeMirror').click();
+        await page.keyboard.type('Texte **en gras** de test');
+        await zone.locator('button.preview').click();
+        await expect(zone.locator('.editor-preview-active strong', { hasText: 'en gras' })).toHaveCount(1);
+        await page.screenshot({ path: testInfo.outputPath('rulebook-editeur.png'), fullPage: true });
+        expect(erreurs).toEqual([]);
+    });
+
     test('recherche dans le détail technique', async ({ browser }) => {
         const page = await connecter(browser, 'test@test.com');
         await page.goto('/rulebook?q=ceil');
