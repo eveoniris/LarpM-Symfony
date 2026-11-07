@@ -7,7 +7,7 @@ Le rulebook (`/rulebook`, bêta) est la **source de vérité des règles de game
 
 | Rôle | Peut |
 | --- | --- |
-| `ROLE_SCENARISTE` | Lire la version claire des règles publiées (statut valide, fixé ou codé en dur) |
+| `ROLE_SCENARISTE` | Lire la version claire des règles publiées (statut valide, corrigé ou codé en dur) |
 | `ROLE_REGLE` | Tout lire (brouillons, bugs, à confirmer), créer, modifier, publier, consulter l'historique |
 | `ROLE_ADMIN` | Comme l'équipe règle, plus la restauration d'une ancienne version |
 
@@ -32,7 +32,7 @@ Un bug de règle se déclare en passant la règle en `BUGUÉ` (visible de l'équ
 | Statut | Sens | Visible des scénaristes |
 | --- | --- | --- |
 | Valide | Règle confirmée et conforme au code | oui, si publiée |
-| Fixé | Bug corrigé, règle conforme | oui, si publiée |
+| Corrigé | Bug corrigé, règle conforme | oui, si publiée |
 | Codé en dur | Règle appliquée mais non paramétrable | oui, si publiée |
 | Bugué | Le code ne respecte pas la règle | non |
 | À faire | Règle pas encore implémentée | non |
