@@ -19,8 +19,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 final readonly class ApiClientManager
 {
     private const string CLIENT_ID_PREFIX = 'lm_';
-    private const string ROLE_READ = 'ROLE_API_READ';
-    private const string ROLE_ADMIN = 'ROLE_API_ADMIN';
 
     public function __construct(
         private EntityManagerInterface $em,
@@ -34,16 +32,14 @@ final readonly class ApiClientManager
      *
      * @param list<string> $roles
      *
-     * @throws InvalidArgumentException si le nom est déjà pris, ou si ROLE_API_READ est demandé sans GN
+     * @param Gn|null $gn GN auquel une application en lecture seule est limitée ; sans GN, elle ne voit que le GN actif par défaut
+     *
+     * @throws InvalidArgumentException si le nom est déjà pris
      *
      * @return array{client: ApiClient, secret: string}
      */
     public function create(string $name, array $roles, ?Gn $gn = null): array
     {
-        if (\in_array(self::ROLE_READ, $roles, true) && !\in_array(self::ROLE_ADMIN, $roles, true) && null === $gn) {
-            throw new InvalidArgumentException(\sprintf('Le rôle %s (lecture seule) exige un GN : l\'application est limitée à ce GN.', self::ROLE_READ));
-        }
-
         $username = 'api-' . $name;
         if (null !== $this->em->getRepository(User::class)->findOneBy(['username' => $username])) {
             throw new InvalidArgumentException(\sprintf('Le nom « %s » est déjà pris (compte « %s »), même par une application révoquée. Choisissez un autre nom.', $name, $username));

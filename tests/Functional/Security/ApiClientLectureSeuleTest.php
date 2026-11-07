@@ -9,13 +9,13 @@ use App\Service\Api\ApiClientManager;
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\GroupeFactory;
 use App\Tests\Factory\GroupeGnFactory;
-use InvalidArgumentException;
+use DateTime;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * ROLE_API_READ : lecture seule de /api/admin/groupes, limitée au GN de l'application.
+ * ROLE_API_READ : lecture seule de /api/admin/groupes, limitée au GN de l'application (à défaut, au GN actif par défaut).
  */
 #[Group('functional')]
 class ApiClientLectureSeuleTest extends WebTestCase
@@ -45,12 +45,28 @@ class ApiClientLectureSeuleTest extends WebTestCase
         static::assertSame(403, $client->getResponse()->getStatusCode());
     }
 
-    public function testLectureSeuleSansGnEstRefuseALaCreation(): void
+    public function testLectureSeuleSansGnVoitLeGnActifParDefaut(): void
     {
-        static::createClient();
+        $client = static::createClient();
+        $ancien = GnFactory::createOne(['actif' => true, 'date_debut' => new DateTime('2099-01-01')]);
+        $recent = GnFactory::createOne(['actif' => true, 'date_debut' => new DateTime('2099-06-01')]);
+        GroupeGnFactory::createOne(['groupe' => GroupeFactory::createOne(['numero' => 9111, 'nom' => 'Ancien GN']), 'gn' => $ancien]);
+        GroupeGnFactory::createOne(['groupe' => GroupeFactory::createOne(['numero' => 9112, 'nom' => 'GN par defaut']), 'gn' => $recent]);
+        $token = $this->jeton($client, 'app-lecture-gn-actif', ['ROLE_API_READ'], null);
+        $auth = ['HTTP_AUTHORIZATION' => 'Bearer ' . $token];
 
-        $this->expectException(InvalidArgumentException::class);
-        static::getContainer()->get(ApiClientManager::class)->create('app-lecture-sans-gn', ['ROLE_API_READ']);
+        $client->request('GET', '/api/admin/groupes', [], [], $auth);
+        static::assertSame(200, $client->getResponse()->getStatusCode());
+        /** @var array{gn: array{id: int}|null, items: list<array{numero: int}>} $data */
+        $data = json_decode((string) $client->getResponse()->getContent(), true);
+        static::assertSame($recent->getId(), $data['gn']['id'] ?? null);
+        static::assertSame([9112], array_column($data['items'], 'numero'));
+
+        // Autre GN ou tous les GN : refusé, l'application reste limitée au GN actif.
+        foreach ([(string) $ancien->getId(), 'all'] as $demande) {
+            $client->request('GET', '/api/admin/groupes?gn=' . $demande, [], [], $auth);
+            static::assertSame(403, $client->getResponse()->getStatusCode(), $demande);
+        }
     }
 
     public function testLectureSeuleNaPasAccesAuxAutresRoutes(): void
