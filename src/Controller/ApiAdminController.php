@@ -57,7 +57,7 @@ final class ApiAdminController extends AbstractController
         ], type: 'object')),
     ]))]
     #[OA\Response(response: 401, description: 'Jeton absent ou invalide')]
-    #[OA\Response(response: 403, description: 'Rôle insuffisant, application sans GN, ou GN demandé hors du périmètre de l\'application')]
+    #[OA\Response(response: 403, description: 'Rôle insuffisant, application révoquée, ou GN demandé hors du périmètre de l\'application')]
     public function groupes(Request $request, GroupeRepository $repo, ApiClientRepository $clients, GnRepository $gns): JsonResponse
     {
         $gnParam = $request->query->get('gn');
@@ -65,10 +65,13 @@ final class ApiAdminController extends AbstractController
         $tousLesGn = 'all' === $gnParam;
 
         if (!$this->isGranted('ROLE_API_ADMIN')) {
-            // Lecture seule : l'application ne voit que son GN.
+            // Lecture seule : le GN de l'application, ou à défaut le GN actif par défaut (prochain GN actif, sinon le dernier).
             $client = $clients->findOneByUser($this->getUser());
-            $gn = $client?->isActive() ? $client->getGn() : null;
-            if (null === $gn || null !== $gnParam && $gnParam !== (string) $gn->getId()) {
+            if (null === $client || !$client->isActive()) {
+                return $this->json(['error' => 'Accès refusé : application inconnue ou révoquée'], 403);
+            }
+            $gn = $client->getGn() ?? $gns->findFromFilter(null);
+            if (null !== $gnParam && (null === $gn || $gnParam !== (string) $gn->getId())) {
                 return $this->json(['error' => 'Accès refusé : GN hors du périmètre de l\'application'], 403);
             }
         } else {

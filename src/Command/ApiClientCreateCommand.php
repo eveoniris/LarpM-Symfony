@@ -29,8 +29,8 @@ final class ApiClientCreateCommand extends Command
     {
         $this
             ->addArgument('name', InputArgument::REQUIRED, 'Nom de l\'application (ex. compagnon)')
-            ->addOption('role', 'r', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Rôle accordé (répétable) : ROLE_API_READ (lecture seule, exige --gn) ou ROLE_API_ADMIN (tous les GN)')
-            ->addOption('gn', null, InputOption::VALUE_REQUIRED, 'Identifiant du GN auquel l\'application est limitée (obligatoire pour ROLE_API_READ)');
+            ->addOption('role', 'r', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Rôle accordé (répétable) : ROLE_API_READ (lecture seule) ou ROLE_API_ADMIN (tous les GN)')
+            ->addOption('gn', null, InputOption::VALUE_REQUIRED, 'Identifiant du GN auquel une application ROLE_API_READ est limitée (sans --gn : le GN actif par défaut, prochain ou dernier)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -65,7 +65,7 @@ final class ApiClientCreateCommand extends Command
             ['client_id' => $result['client']->getClientId()],
             ['client_secret' => $result['secret']],
             ['rôles' => [] === $roles ? '(aucun, ROLE_USER seulement)' : implode(', ', $roles)],
-            ['GN' => null === $gn ? '(tous)' : \sprintf('#%d', (int) $gn->getId())],
+            ['GN' => null === $gn ? (\in_array('ROLE_API_ADMIN', $roles, true) ? '(tous)' : '(GN actif par défaut)') : \sprintf('#%d', (int) $gn->getId())],
         );
         $io->warning('Notez le client_secret maintenant : il ne sera plus jamais affiché.');
 

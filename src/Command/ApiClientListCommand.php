@@ -30,7 +30,7 @@ final class ApiClientListCommand extends Command
                 $client->getClientId(),
                 $client->isActive() ? 'active' : 'révoquée',
                 implode(', ', $client->getUser()->getRoles()),
-                null === $client->getGn() ? '(tous)' : \sprintf('#%d', (int) $client->getGn()->getId()),
+                null === $client->getGn() ? (\in_array('ROLE_API_ADMIN', $client->getUser()->getRoles(), true) ? '(tous)' : '(GN actif par défaut)') : \sprintf('#%d', (int) $client->getGn()->getId()),
                 $client->getLastUsedAt()?->format('Y-m-d H:i') ?? 'jamais',
             ];
         }
