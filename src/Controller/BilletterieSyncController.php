@@ -29,10 +29,12 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Synchronisation de la billetterie HelloAsso Plus Billetterie et tableau de rapprochement (bêta, super admin).
+ * Synchronisation de la billetterie HelloAsso Plus Billetterie et tableau de rapprochement.
+ * Bêta : réservée aux admins qui ont aussi ROLE_BETA_TEST (le super admin a les deux). Les deux attributs se cumulent.
  */
 #[Route('/gn/{gn}/billetterie', name: 'gn.billetterie.')]
-#[IsGranted('ROLE_SUPER_ADMIN')]
+#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_BETA_TEST', message: 'Fonctionnalité en cours de test.')]
 final class BilletterieSyncController extends SymfonyAbstractController
 {
     public function __construct(
