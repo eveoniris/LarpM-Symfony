@@ -18,6 +18,11 @@ class ApiClientRepository extends ServiceEntityRepository
         parent::__construct($registry, ApiClient::class);
     }
 
+    public function findOneByUser(object $user): ?ApiClient
+    {
+        return $this->findOneBy(['user' => $user]);
+    }
+
     public function findOneByClientId(string $clientId): ?ApiClient
     {
         return $this->findOneBy(['clientId' => $clientId]);
