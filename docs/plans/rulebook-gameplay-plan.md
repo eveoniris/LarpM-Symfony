@@ -82,4 +82,4 @@ Cette vérification est une étape à part entière (3bis) du suivi.
 | 5 Édition en ligne | TODO |
 | 6 Cache local (export) | TODO |
 | 7 Lien tests + vérification | TODO |
-| 8 Processus | TODO |
+| 8 Processus | CODÉ (docs/rulebook-processus.md, app:rulebook:revue, modèle de PR ; CODEOWNERS non créé : handles GitHub de l équipe règle à fournir) |
