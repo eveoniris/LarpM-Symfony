@@ -1,5 +1,16 @@
 {% if session is not defined %}
-    {% set session = groupe.getGroupeGnById(app.request.query.get('gn')) %}
+    {% set gnQuery = app.request.query.get('gn') %}
+    {% set groupeGnQuery = app.request.query.get('groupeGn') %}
+    {% if groupeGn|default(null) %}
+        {% set session = groupeGn %}
+    {% elseif gnQuery %}
+        {% set session = groupe.getGroupeGnById(gnQuery) %}
+    {% elseif groupeGnQuery %}
+        {# Lien sans ?gn= (onglets Détail, Backgrounds...) : on retrouve la session parmi celles du groupe seulement. #}
+        {% set session = groupe.groupeGns|filter(gg => gg.id == groupeGnQuery)|first|default(null) %}
+    {% else %}
+        {% set session = null %}
+    {% endif %}
 {% endif %}
 
 {% if session %}
