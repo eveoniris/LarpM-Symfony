@@ -25,7 +25,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 /**
  * Choix d'une langue (courante ou commune) avec le trigger LANGUE COURANTE, par le propriétaire du personnage.
  */
-#[Route('/api/joueur/personnage/{id}/langues/{type}', name: 'api.joueur.langue.', requirements: ['id' => '\d+', 'type' => 'courante|commune'])]
+#[Route('/api/joueur/personnage/{id}/langues/{type}', name: 'api.joueur.langue.', requirements: ['id' => '\d+', 'type' => '[a-z0-9]+'])]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class ApiJoueurLangueController extends AbstractController
 {
@@ -54,7 +54,7 @@ final class ApiJoueurLangueController extends AbstractController
     #[Route('', name: 'disponibles', methods: ['GET'])]
     public function disponibles(int $id, string $type, PersonnageRepository $personnages): JsonResponse
     {
-        $personnage = $this->guard($id, $personnages);
+        $personnage = $this->guard($id, $type, $personnages);
         if ($personnage instanceof JsonResponse) {
             return $personnage;
         }
@@ -83,7 +83,7 @@ final class ApiJoueurLangueController extends AbstractController
     #[Route('', name: 'choisir', methods: ['POST'])]
     public function choisir(int $id, string $type, Request $request, PersonnageRepository $personnages): JsonResponse
     {
-        $personnage = $this->guard($id, $personnages);
+        $personnage = $this->guard($id, $type, $personnages);
         if ($personnage instanceof JsonResponse) {
             return $personnage;
         }
@@ -121,8 +121,13 @@ final class ApiJoueurLangueController extends AbstractController
         return $this->json(['langue_id' => $langue->getId()], 201);
     }
 
-    private function guard(int $id, PersonnageRepository $personnages): Personnage|JsonResponse
+    private function guard(int $id, string $type, PersonnageRepository $personnages): Personnage|JsonResponse
     {
+        // Le type est validé ici (et non dans la route) pour que toute route /api réponde 401 sans jeton.
+        if (!isset(self::DIFFUSIONS[$type])) {
+            return $this->json(['error' => 'Type de langue inconnu (courante ou commune)'], 404);
+        }
+
         $personnage = $personnages->find($id);
         if (null === $personnage) {
             return $this->json(['error' => 'Personnage non trouvé'], 404);

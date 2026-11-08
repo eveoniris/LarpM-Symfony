@@ -80,6 +80,9 @@ class ApiJoueurLangueTest extends WebTestCase
 
         $this->choisir($client, $personnage, 'commune', $commune->getId(), $auth);
         static::assertSame(201, $client->getResponse()->getStatusCode());
+
+        $client->request('GET', '/api/joueur/personnage/' . $personnage->getId() . '/langues/inconnue', [], [], $auth);
+        static::assertSame(404, $client->getResponse()->getStatusCode());
     }
 
     public function testCorpsInvalideEtLangueInconnue(): void
