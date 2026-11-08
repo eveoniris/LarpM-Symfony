@@ -85,6 +85,11 @@ jobs:
           ssh $SSH_USER@$SSH_HOST bash -s << ENDSSH
             set -e
 
+            # En SSH non interactif, 'php' pointe sur PHP 8.4 : on force PHP 8.5 pour composer et la console.
+            export PATH=/usr/local/php8.5/bin:\$PATH
+            echo "==> PHP utilisé : \$(php -r 'echo PHP_VERSION;')"
+            php -r 'exit(PHP_VERSION_ID >= 80500 ? 0 : 1);' || { echo "PHP 8.5 requis"; exit 1; }
+
             echo "==> Navigating to deploy path"
             cd $DEPLOY_PATH
 
