@@ -27,10 +27,39 @@ class ApiJoueurTest extends WebTestCase
     {
         $client = static::createClient();
 
-        foreach (['/me', '/gn', '/groupe', '/participation/1', '/personnage/1', '/competences/1'] as $chemin) {
+        foreach (['/me', '/gn', '/gn/1', '/groupe', '/participation/1', '/personnage/1', '/competences/1'] as $chemin) {
             $client->request('GET', '/api/joueur' . $chemin);
             static::assertSame(401, $client->getResponse()->getStatusCode(), $chemin);
         }
+    }
+
+    public function testDetailDunGnSansDonneesStaff(): void
+    {
+        $client = static::createClient();
+        $gn = GnFactory::createOne(['label' => 'GN detail test']);
+        $token = $this->jeton(UserFactory::createOne());
+
+        $client->request('GET', '/api/joueur/gn/' . $gn->getId(), [], [], ['HTTP_AUTHORIZATION' => 'Bearer ' . $token]);
+
+        static::assertSame(200, $client->getResponse()->getStatusCode());
+        $contenu = (string) $client->getResponse()->getContent();
+        /** @var array{label: string, inscription: bool} $data */
+        $data = json_decode($contenu, true);
+        static::assertSame('GN detail test', $data['label']);
+        static::assertFalse($data['inscription']);
+        foreach (['date_fin_orga', 'helloasso', 'billetterie', 'substitution'] as $interdit) {
+            static::assertStringNotContainsString($interdit, $contenu);
+        }
+    }
+
+    public function testDetailDunGnInconnuRenvoie404(): void
+    {
+        $client = static::createClient();
+        $token = $this->jeton(UserFactory::createOne());
+
+        $client->request('GET', '/api/joueur/gn/999999999', [], [], ['HTTP_AUTHORIZATION' => 'Bearer ' . $token]);
+
+        static::assertSame(404, $client->getResponse()->getStatusCode());
     }
 
     public function testPersonnageEtCompetencesDunAutreJoueurSontRefuses(): void
