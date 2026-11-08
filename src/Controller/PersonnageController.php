@@ -98,6 +98,7 @@ use App\Security\MultiRolesExpression;
 use App\Service\CarteAlchimisteService;
 use App\Service\CompetenceService;
 use App\Service\EspeceBonusService;
+use App\Service\PersonnageVisibilityService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Carbon\Carbon;
@@ -3811,6 +3812,8 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}/export', name: 'export')]
     public function exportAction(#[MapEntity] Personnage $personnage): Response
     {
+        $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA, Role::ADMIN]);
+
         $participant = $personnage->getParticipants()->last();
         $groupe = null;
 
@@ -3887,8 +3890,17 @@ class PersonnageController extends AbstractController
      * Obtenir une image protégée.
      */
     #[Route('/{personnage}/trombine', name: 'trombine')]
-    public function getTrombineAction(Request $request, #[MapEntity] Personnage $personnage): Response
-    {
+    public function getTrombineAction(
+        Request $request,
+        #[MapEntity]
+        Personnage $personnage,
+        PersonnageVisibilityService $visibility,
+    ): Response {
+        // Les listes affichent la photo dans des <img> : un refus renvoie l'image par défaut plutôt qu'une redirection.
+        if (!$visibility->canViewTrombine($personnage)) {
+            return $this->sendNoImageAvailable();
+        }
+
         // PROD path https://larpmanager.eveoniris.com/ => ???
         // PROD lARPV2 https://larpm.eveoniris.com/ => ???
         $miniature = $request->query->get('miniature');

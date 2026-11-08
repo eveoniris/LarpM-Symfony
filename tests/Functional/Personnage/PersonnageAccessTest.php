@@ -75,6 +75,19 @@ class PersonnageAccessTest extends WebTestCase
         static::assertResponseRedirects();
     }
 
+    public function testPlayerCannotExportAnotherPlayerPersonnage(): void
+    {
+        $client = static::createClient();
+
+        $owner = UserFactory::createOne();
+        $personnage = PersonnageFactory::createOne(['user' => $owner]);
+
+        $client->loginUser(UserFactory::createOne());
+        $client->request('GET', '/personnage/' . $personnage->getId() . '/export');
+
+        static::assertResponseRedirects('/access_denied');
+    }
+
     public function testPlayerCannotWriteChoicesForAnotherPlayerPersonnage(): void
     {
         $client = static::createClient();
