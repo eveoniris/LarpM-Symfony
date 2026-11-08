@@ -16,6 +16,9 @@
 
     <div class="well bs-component">
         <h3>{{ client.name }}</h3>
+        {% if requester is defined %}
+            <p>À transmettre par un moyen sûr à {{ requester.displayName }} ({{ requester.email }}).</p>
+        {% endif %}
         <dl>
             <dt>client_id</dt>
             <dd><code>{{ client.clientId }}</code></dd>
