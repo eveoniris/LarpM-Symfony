@@ -254,4 +254,20 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
                 SQL, $rsm)
             ->setParameter('role', '"' . $role . '"');
     }
+
+    /**
+     * Comptes admin ou super admin (le rôle est stocké en JSON : la hiérarchie des rôles n'est pas appliquée en base).
+     *
+     * @return list<User>
+     */
+    public function findAdmins(): array
+    {
+        return $this
+            ->createQueryBuilder('u')
+            ->where('u.roles LIKE :admin OR u.roles LIKE :superAdmin')
+            ->setParameter('admin', '%"ROLE_ADMIN"%')
+            ->setParameter('superAdmin', '%"ROLE_SUPER_ADMIN"%')
+            ->getQuery()
+            ->getResult();
+    }
 }
