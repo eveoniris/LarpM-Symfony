@@ -1762,6 +1762,8 @@ class PersonnageController extends AbstractController
         PotionRepository $potionRepository,
         int $niveau,
     ): RedirectResponse|Response {
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
+
         $niveaux = [
             1 => TriggerType::ALCHIMIE_APPRENTI,
             2 => TriggerType::ALCHIMIE_INITIE,
@@ -1775,7 +1777,7 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de potions supplémentaires.');
 
-            return $this->redirectToRoute('gn.personnage', ['personnage.detail' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         $potions = $potionRepository->findByNiveau($niveau);

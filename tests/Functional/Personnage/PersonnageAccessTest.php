@@ -75,6 +75,35 @@ class PersonnageAccessTest extends WebTestCase
         static::assertResponseRedirects();
     }
 
+    public function testPlayerCannotChoosePotionForAnotherPlayerPersonnage(): void
+    {
+        $client = static::createClient();
+
+        $owner = UserFactory::createOne();
+        $viewer = UserFactory::createOne();
+        $personnage = PersonnageFactory::createOne(['user' => $owner]);
+
+        $client->loginUser($viewer);
+        $client->request('GET', '/personnage/' . $personnage->getId() . '/potion/1/add');
+
+        static::assertResponseRedirects('/access_denied');
+    }
+
+    public function testOwnerIsNotDeniedOnPotionChoice(): void
+    {
+        $client = static::createClient();
+
+        $owner = UserFactory::createOne();
+        $personnage = PersonnageFactory::createOne(['user' => $owner]);
+
+        $client->loginUser($owner);
+        $client->request('GET', '/personnage/' . $personnage->getId() . '/potion/1/add');
+
+        // Sans trigger d'alchimie, le propriétaire est renvoyé vers sa fiche, pas vers l'accès refusé.
+        static::assertResponseRedirects();
+        static::assertStringNotContainsString('/access_denied', (string) $client->getResponse()->headers->get('Location'));
+    }
+
     public function testDetailAliasRouteWorks(): void
     {
         $client = static::createClient();
