@@ -1510,6 +1510,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         },
  *     },
  *     default_transport?: scalar|Param|null, // Default: "default"
+ *     mercure?: array{
+ *         ignore_cookie_domain_errors?: bool|Param, // Render nothing and log a warning, instead of failing, when the authorization cookie of a private stream source cannot be created because the page is served on another domain than the hub // Default: false
+ *     },
  * }
  * @psalm-type LexikJwtAuthenticationConfig = array{
  *     public_key?: scalar|Param|null, // The key used to sign tokens (useless for HMAC). If not set, the key will be automatically computed from the secret key. // Default: null
