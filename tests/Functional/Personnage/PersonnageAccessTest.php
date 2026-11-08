@@ -75,6 +75,63 @@ class PersonnageAccessTest extends WebTestCase
         static::assertResponseRedirects();
     }
 
+    public function testPlayerCannotExportAnotherPlayerPersonnage(): void
+    {
+        $client = static::createClient();
+
+        $owner = UserFactory::createOne();
+        $personnage = PersonnageFactory::createOne(['user' => $owner]);
+
+        $client->loginUser(UserFactory::createOne());
+        $client->request('GET', '/personnage/' . $personnage->getId() . '/export');
+
+        static::assertResponseRedirects('/access_denied');
+    }
+
+    public function testPlayerCannotWriteChoicesForAnotherPlayerPersonnage(): void
+    {
+        $client = static::createClient();
+
+        $owner = UserFactory::createOne();
+        $viewer = UserFactory::createOne();
+        $personnage = PersonnageFactory::createOne(['user' => $owner]);
+        $client->loginUser($viewer);
+
+        foreach (['/langueCourante', '/langueCommune', '/religion/description'] as $chemin) {
+            $client->request('GET', '/personnage/' . $personnage->getId() . $chemin);
+            static::assertResponseRedirects('/access_denied', null, $chemin);
+        }
+    }
+
+    public function testPlayerCannotChoosePotionForAnotherPlayerPersonnage(): void
+    {
+        $client = static::createClient();
+
+        $owner = UserFactory::createOne();
+        $viewer = UserFactory::createOne();
+        $personnage = PersonnageFactory::createOne(['user' => $owner]);
+
+        $client->loginUser($viewer);
+        $client->request('GET', '/personnage/' . $personnage->getId() . '/potion/1/add');
+
+        static::assertResponseRedirects('/access_denied');
+    }
+
+    public function testOwnerIsNotDeniedOnPotionChoice(): void
+    {
+        $client = static::createClient();
+
+        $owner = UserFactory::createOne();
+        $personnage = PersonnageFactory::createOne(['user' => $owner]);
+
+        $client->loginUser($owner);
+        $client->request('GET', '/personnage/' . $personnage->getId() . '/potion/1/add');
+
+        // Sans trigger d'alchimie, le propriétaire est renvoyé vers sa fiche, pas vers l'accès refusé.
+        static::assertResponseRedirects();
+        static::assertStringNotContainsString('/access_denied', (string) $client->getResponse()->headers->get('Location'));
+    }
+
     public function testDetailAliasRouteWorks(): void
     {
         $client = static::createClient();
