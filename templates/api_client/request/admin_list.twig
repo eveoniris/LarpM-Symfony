@@ -1,0 +1,63 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Demandes d'applications API{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('api.client.admin') }}">Applications tierces API</a></li>
+        <li class="active">Demandes</li>
+    </ol>
+
+    <div class="well bs-component">
+        <h3>Demandes en attente</h3>
+        {% if pending is empty %}
+            <p>Aucune demande en attente.</p>
+        {% endif %}
+        {% for demande in pending %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ demande.name }}</h5>
+                    <p class="text-muted small">
+                        Par {{ demande.requester.displayName }} ({{ demande.requester.email }}) le {{ demande.createdAt|date('d/m/Y H:i') }}
+                        - GN : {{ demande.gn ? demande.gn.label : 'GN actif par défaut' }}
+                    </p>
+                    <p>{{ demande.purpose|nl2br }}</p>
+                    <form method="POST" action="{{ path('api.client.admin.request.accept', {'id': demande.id}) }}" class="d-inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('api_client_request_accept_' ~ demande.id) }}">
+                        <button class="btn btn-sm btn-success" type="submit">Accepter et créer</button>
+                    </form>
+                    <form method="POST" action="{{ path('api.client.admin.request.refuse', {'id': demande.id}) }}" class="d-inline-flex gap-2 ms-2">
+                        <input type="hidden" name="_token" value="{{ csrf_token('api_client_request_refuse_' ~ demande.id) }}">
+                        <input class="form-control form-control-sm" name="note" maxlength="1000" placeholder="Motif du refus (facultatif)">
+                        <button class="btn btn-sm btn-danger" type="submit">Refuser</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if done is not empty %}
+        <div class="well bs-component">
+            <h3>Dernières décisions</h3>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                    <thead><tr><th>Date</th><th>Application</th><th>Demandeur</th><th>Décision</th><th>Motif</th></tr></thead>
+                    <tbody>
+                    {% for demande in done %}
+                        <tr>
+                            <td>{{ demande.decidedAt ? demande.decidedAt|date('d/m/Y') : '' }}</td>
+                            <td>{{ demande.name }}</td>
+                            <td>{{ demande.requester.displayName }}</td>
+                            <td>{{ demande.status == 'acceptee' ? 'Acceptée' : 'Refusée' }}</td>
+                            <td>{{ demande.decisionNote }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock body %}

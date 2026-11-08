@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\ApiClient;
 use App\Repository\ApiClientRepository;
+use App\Repository\ApiClientRequestRepository;
 use App\Repository\GnRepository;
 use App\Service\Api\ApiClientManager;
 use InvalidArgumentException;
@@ -25,10 +26,11 @@ final class ApiClientAdminController extends AbstractController
     private const array ROLES_ATTRIBUABLES = ['ROLE_API_READ', 'ROLE_API_ADMIN'];
 
     #[Route('/admin/api-clients', name: 'api.client.admin', methods: ['GET'])]
-    public function listAction(ApiClientRepository $clients): Response
+    public function listAction(ApiClientRepository $clients, ApiClientRequestRepository $requests): Response
     {
         return $this->render('api_client/admin/list.twig', [
             'clients' => $clients->findBy([], ['createdAt' => 'DESC']),
+            'pendingRequests' => \count($requests->findPending()),
         ]);
     }
 

@@ -17,6 +17,8 @@
         </p>
         <p><a class="btn btn-primary" href="{{ path('api.client.admin.new') }}">Créer une application</a></p>
 
+        <p><a href="{{ path('api.client.admin.requests') }}">Demandes d'applications{% if pendingRequests > 0 %} ({{ pendingRequests }} en attente){% endif %}</a></p>
+
         {% if clients is empty %}
             <p>Aucune application.</p>
         {% else %}
