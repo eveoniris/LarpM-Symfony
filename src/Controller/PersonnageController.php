@@ -1465,6 +1465,8 @@ class PersonnageController extends AbstractController
         #[MapEntity]
         Personnage $personnage,
     ): RedirectResponse|Response {
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
+
         if (!$personnage->hasTrigger('LANGUE COURANTE')) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue courante supplémentaire.');
 
@@ -1592,6 +1594,8 @@ class PersonnageController extends AbstractController
     #[Route('/{personnage}/langueCommune', name: 'langueCommune')]
     public function langueCommuneAction(Request $request, Personnage $personnage): RedirectResponse|Response
     {
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
+
         if (!$personnage->hasTrigger(TriggerType::LANGUE_COURANTE)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de langue commune supplémentaire.');
 
@@ -4332,6 +4336,8 @@ class PersonnageController extends AbstractController
         #[MapEntity]
         Personnage $personnage,
     ): RedirectResponse|Response {
+        $this->hasAccess($personnage, [Role::ORGA, Role::ADMIN]);
+
         if (!$personnage->hasTrigger(TriggerType::PRETRISE_INITIE)) {
             $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de descriptif de religion supplémentaire.');
 

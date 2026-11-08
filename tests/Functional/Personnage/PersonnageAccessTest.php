@@ -75,6 +75,21 @@ class PersonnageAccessTest extends WebTestCase
         static::assertResponseRedirects();
     }
 
+    public function testPlayerCannotWriteChoicesForAnotherPlayerPersonnage(): void
+    {
+        $client = static::createClient();
+
+        $owner = UserFactory::createOne();
+        $viewer = UserFactory::createOne();
+        $personnage = PersonnageFactory::createOne(['user' => $owner]);
+        $client->loginUser($viewer);
+
+        foreach (['/langueCourante', '/langueCommune', '/religion/description'] as $chemin) {
+            $client->request('GET', '/personnage/' . $personnage->getId() . $chemin);
+            static::assertResponseRedirects('/access_denied', null, $chemin);
+        }
+    }
+
     public function testPlayerCannotChoosePotionForAnotherPlayerPersonnage(): void
     {
         $client = static::createClient();
