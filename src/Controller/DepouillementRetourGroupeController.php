@@ -10,6 +10,8 @@ use App\Enum\DepouillementEtape;
 use App\Exception\ContenuInvalideException;
 use App\Exception\EnveloppeIntrouvableException;
 use App\Form\Depouillement\RetourGroupeType;
+use App\Security\Voter\DepouillementVoter;
+use App\Service\DepouillementOrdresService;
 use App\Service\DepouillementRetourGroupeService;
 use App\Service\DepouillementService;
 use App\Service\RetourGroupe;
@@ -80,6 +82,43 @@ final class DepouillementRetourGroupeController extends AbstractDepouillementCon
         }
 
         $this->addFlash('success', 'Le retour du groupe est enregistré.');
+
+        return $retour;
+    }
+
+    /**
+     * Le wargame valide, ou retire la validation, des ordres d'une phase du retour d'un groupe.
+     */
+    // @mago-expect lint:excessive-parameter-list
+    #[Route(
+        '/gn/{gn}/depouillement/{depouillement}/ordres/{phase}/{decision}',
+        name: 'depouillement.ordres',
+        requirements: ['gn' => '\d+', 'depouillement' => '\d+', 'phase' => '[1-3]', 'decision' => 'valider|rouvrir'],
+        methods: ['POST'],
+    )]
+    public function ordresAction(Request $request, Gn $gn, Depouillement $depouillement, int $phase, string $decision, DepouillementOrdresService $ordresService): Response
+    {
+        $this->verifier($gn, $depouillement);
+        $this->denyAccessUnlessGranted(DepouillementVoter::VALIDER_ORDRES, $depouillement);
+        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::RETOUR_GROUPE), 303);
+
+        if (!$this->jetonValide($request, 'depouillement_ordres_' . $depouillement->getId())) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+
+            return $retour;
+        }
+
+        try {
+            'valider' === $decision
+                ? $ordresService->valider($depouillement, $phase, $this->utilisateur())
+                : $ordresService->rouvrir($depouillement, $phase, $this->utilisateur());
+        } catch (ContenuInvalideException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $retour;
+        }
+
+        $this->addFlash('success', 'valider' === $decision ? \sprintf('Ordres de la phase %d validés.', $phase) : \sprintf('Validation des ordres de la phase %d retirée.', $phase));
 
         return $retour;
     }

@@ -19,6 +19,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
  * Droits sur un dépouillement, une conception d'héritier ou le GN.
  *
  * - VALIDER : la validation (et le renvoi, la décision sur les héritiers) est réservée aux scénaristes, wargames et admins.
+ * - VALIDER_ORDRES : la validation des ordres de conquête de chaque phase d'un retour de groupe est réservée au wargame et à l'admin.
  * - CONTENU : saisir le contenu physique de l'enveloppe, réservé au staff (les simulations restent ouvertes aux bêta-testeurs).
  * - VOIR et SAISIR (sur un dépouillement) : une simulation reste ouverte à tout bêta-testeur. Un dossier RÉEL est ouvert aux
  *   scénaristes, wargames et admins, et à son joueur propriétaire (le participant dont le numéro est celui du dossier). Le joueur
@@ -29,6 +30,8 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 class DepouillementVoter extends Voter
 {
     public const string VALIDER = 'DEPOUILLEMENT_VALIDER';
+
+    public const string VALIDER_ORDRES = 'DEPOUILLEMENT_VALIDER_ORDRES';
 
     public const string VOIR = 'DEPOUILLEMENT_VOIR';
 
@@ -47,11 +50,20 @@ class DepouillementVoter extends Voter
             return $subject instanceof Depouillement;
         }
 
+        if (self::VALIDER_ORDRES === $attribute) {
+            return $subject instanceof Depouillement;
+        }
+
         return self::VALIDER === $attribute && ($subject instanceof Depouillement || $subject instanceof Conception || $subject instanceof Gn);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, #[\SensitiveParameter] TokenInterface $token, ?Vote $vote = null): bool
     {
+        // Les ordres de conquête sont validés par le wargame (et l'admin), pas par les autres scénaristes.
+        if (self::VALIDER_ORDRES === $attribute) {
+            return $this->security->isGranted(Role::WARGAME->value) || $this->security->isGranted(Role::ADMIN->value);
+        }
+
         if ($this->estStaff()) {
             return true;
         }

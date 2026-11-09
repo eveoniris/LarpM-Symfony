@@ -74,7 +74,11 @@ readonly class DepouillementRetourGroupeService
             return;
         }
 
-        $depouillement->setDonnees([...$depouillement->getDonnees(), self::CLE => $apres]);
+        $depouillement->setDonnees([
+            ...$depouillement->getDonnees(),
+            self::CLE => $apres,
+            DepouillementOrdresService::CLE => DepouillementOrdresService::sansPhasesModifiees($depouillement, \is_array($avant) ? $avant['ordres'] ?? [] : [], $apres['ordres']),
+        ]);
         $depouillement->addHistory(
             (new DepouillementHistory())
                 ->setUser($utilisateur)
