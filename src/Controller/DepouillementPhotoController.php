@@ -33,7 +33,7 @@ final class DepouillementPhotoController extends AbstractDepouillementController
     #[Route('/gn/{gn}/depouillement/{depouillement}/photos', name: 'depouillement.photo.add', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
     public function addAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementPhotoService $photoService): Response
     {
-        $this->verifier($gn, $depouillement);
+        $this->verifier($gn, $depouillement, saisie: true);
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::PHOTOS), 303);
 
         // Au-delà de post_max_size, PHP vide tout l'envoi (fichiers et jeton) : on l'explique plutôt qu'un "jeton invalide".
@@ -102,7 +102,7 @@ final class DepouillementPhotoController extends AbstractDepouillementController
     )]
     public function deleteAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementPhoto $photo, DepouillementPhotoService $photoService): Response
     {
-        $this->verifierPhoto($gn, $depouillement, $photo);
+        $this->verifierPhoto($gn, $depouillement, $photo, saisie: true);
         $this->denyAccessUnlessGranted(DepouillementPhotoVoter::MANAGE, $photo);
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::PHOTOS), 303);
 
@@ -133,7 +133,7 @@ final class DepouillementPhotoController extends AbstractDepouillementController
     )]
     public function shareAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementPhoto $photo, DepouillementPhotoService $photoService): Response
     {
-        $this->verifierPhoto($gn, $depouillement, $photo);
+        $this->verifierPhoto($gn, $depouillement, $photo, saisie: true);
         $this->denyAccessUnlessGranted(DepouillementPhotoVoter::MANAGE, $photo);
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::PHOTOS), 303);
 
@@ -146,9 +146,9 @@ final class DepouillementPhotoController extends AbstractDepouillementController
         return $retour;
     }
 
-    private function verifierPhoto(Gn $gn, Depouillement $depouillement, DepouillementPhoto $photo): void
+    private function verifierPhoto(Gn $gn, Depouillement $depouillement, DepouillementPhoto $photo, bool $saisie = false): void
     {
-        $this->verifier($gn, $depouillement);
+        $this->verifier($gn, $depouillement, $saisie);
 
         if ($photo->getDepouillement()->getId() !== $depouillement->getId()) {
             throw $this->createNotFoundException();

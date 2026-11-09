@@ -10,6 +10,7 @@ use App\Enum\DepouillementEtape;
 use App\Enum\DepouillementType;
 use App\Exception\EnveloppeIntrouvableException;
 use App\Form\Depouillement\DepouillementSimulationType;
+use App\Security\Voter\DepouillementVoter;
 use App\Service\DepouillementService;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  *
  * Fonctionnalité en cours de développement : réservée à ROLE_BETA_TEST (voir docs/plans/role-beta-test.md).
  */
+// @mago-expect lint:cyclomatic-complexity
 #[IsGranted('ROLE_BETA_TEST', message: 'Fonctionnalité en cours de test.')]
 final class DepouillementController extends AbstractDepouillementController
 {
@@ -33,15 +35,15 @@ final class DepouillementController extends AbstractDepouillementController
     #[Route('/gn/{gn}/depouillement', name: 'depouillement.index', requirements: ['gn' => '\d+'], methods: ['GET', 'POST'])]
     public function indexAction(Request $request, Gn $gn, DepouillementService $depouillementService): Response
     {
-        $form = $this->createForm(DepouillementSimulationType::class);
+        $form = $this->createForm(DepouillementSimulationType::class, null, ['avec_reel' => $this->isGranted(DepouillementVoter::VALIDER, $gn)]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var array{type: DepouillementType, numero: string} $data */
+            /** @var array{type: DepouillementType, numero: string, reel?: bool} $data */
             $data = $form->getData();
 
             try {
-                return $this->demarrer($gn, $data['type'], $data['numero'], $depouillementService);
+                return $this->demarrer($gn, $data['type'], $data['numero'], $data['reel'] ?? false, $depouillementService);
             } catch (EnveloppeIntrouvableException $exception) {
                 $form->get('numero')->addError(new FormError($exception->getMessage()));
             }
@@ -77,7 +79,7 @@ final class DepouillementController extends AbstractDepouillementController
     #[Route('/gn/{gn}/depouillement/{depouillement}/supprimer', name: 'depouillement.delete', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
     public function deleteAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementService $depouillementService): Response
     {
-        $this->verifier($gn, $depouillement);
+        $this->verifier($gn, $depouillement, saisie: true);
         $redirection = $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
 
         if (!$this->jetonValide($request, 'depouillement_delete_' . $depouillement->getId())) {
@@ -102,7 +104,7 @@ final class DepouillementController extends AbstractDepouillementController
     #[Route('/gn/{gn}/depouillement/{depouillement}/recommencer', name: 'depouillement.recommencer', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
     public function recommencerAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementService $depouillementService): Response
     {
-        $this->verifier($gn, $depouillement);
+        $this->verifier($gn, $depouillement, saisie: true);
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::RECAPITULATIF), 303);
 
         if (!$this->jetonValide($request, 'depouillement_recommencer_' . $depouillement->getId())) {
@@ -137,9 +139,9 @@ final class DepouillementController extends AbstractDepouillementController
      *
      * @throws EnveloppeIntrouvableException si le numéro ne correspond à rien dans ce GN
      */
-    private function demarrer(Gn $gn, DepouillementType $type, string $numero, DepouillementService $depouillementService): Response
+    private function demarrer(Gn $gn, DepouillementType $type, string $numero, bool $reel, DepouillementService $depouillementService): Response
     {
-        $existant = $depouillementService->trouverSimulation($gn, $type, $numero);
+        $existant = $reel ? $depouillementService->trouverReel($gn, $type, $numero) : $depouillementService->trouverSimulation($gn, $type, $numero);
 
         if ($existant instanceof Depouillement) {
             // Un seul dépouillement par enveloppe et par GN : on reprend l'existant, rien n'est créé ni écrasé.
@@ -152,7 +154,9 @@ final class DepouillementController extends AbstractDepouillementController
             return $this->ouvrir($existant);
         }
 
-        $depouillement = $depouillementService->creerSimulation($gn, $type, $numero, $this->utilisateur());
+        $depouillement = $reel
+            ? $depouillementService->ouvrirReel($gn, $type, $numero, $this->utilisateur())
+            : $depouillementService->creerSimulation($gn, $type, $numero, $this->utilisateur());
 
         return $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::IDENTIFICATION), 303);
     }
