@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace App\Form\Depouillement;
 
 use App\Entity\Competence;
+use App\Entity\Connaissance;
 use App\Entity\Ingredient;
+use App\Entity\Langue;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Ressource;
 use App\Entity\Sort;
+use App\Entity\Technologie;
 use App\Enum\ActionFinOpus;
 use App\Service\ContenuJoueur;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -147,6 +152,16 @@ class ContenuJoueurType extends AbstractType
                 ...$this->liste(Potion::class, 'Potions (recettes) apprises pendant le jeu'),
                 'choice_label' => static fn (Potion $potion): string => \sprintf('%s - %s (niveau %d)', $potion->getNumero(), $potion->getLabel(), $potion->getNiveau()),
             ])
+            // Seules les langues, connaissances et technologies non secrètes sont proposées : une secrète se signale dans « Je ne trouve pas ».
+            ->add('langues', EntityType::class, $this->liste(Langue::class, 'Langues apprises pendant le jeu', nonSecret: true))
+            ->add('connaissances', EntityType::class, $this->liste(Connaissance::class, 'Connaissances apprises pendant le jeu', nonSecret: true))
+            ->add('technologies', EntityType::class, $this->liste(Technologie::class, 'Technologies apprises pendant le jeu', nonSecret: true))
+            ->add('enseignantTechnologieNumero', IntegerType::class, [
+                'label' => 'Numéro de personnage de l\'enseignant des technologies',
+                'required' => false,
+                'attr' => ['inputmode' => 'numeric', 'min' => 1],
+                'help' => 'Facultatif. Si plusieurs enseignants, précisez-le dans « Je ne trouve pas » ou dans votre retour.',
+            ])
             ->add('competenceApprise', EntityType::class, [
                 'class' => Competence::class,
                 'label' => 'Compétence apprise auprès d\'un enseignant',
@@ -220,9 +235,14 @@ class ContenuJoueurType extends AbstractType
      *
      * @return array<string, mixed>
      */
-    private function liste(string $classe, string $libelle, ?int $maximum = null): array
+    private function liste(string $classe, string $libelle, ?int $maximum = null, bool $nonSecret = false): array
     {
         return [
+            ...(
+                $nonSecret
+                    ? ['query_builder' => static fn (EntityRepository $repository): QueryBuilder => $repository->createQueryBuilder('e')->where('e.secret = false')->orderBy('e.label', 'ASC')]
+                    : []
+            ),
             'class' => $classe,
             'label' => $libelle,
             'choice_label' => 'label',

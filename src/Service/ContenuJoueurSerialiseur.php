@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Competence;
+use App\Entity\Connaissance;
 use App\Entity\Ingredient;
+use App\Entity\Langue;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Ressource;
 use App\Entity\Sort;
+use App\Entity\Technologie;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -47,6 +50,10 @@ readonly class ContenuJoueurSerialiseur
             'sorts' => $this->ids($contenu->sorts),
             'prieres' => $this->ids($contenu->prieres),
             'potions' => $this->ids($contenu->potions),
+            'langues' => $this->ids($contenu->langues),
+            'connaissances' => $this->ids($contenu->connaissances),
+            'technologies' => $this->ids($contenu->technologies),
+            'enseignant_technologie_numero' => $contenu->enseignantTechnologieNumero,
             'competence_apprise' => $contenu->competenceApprise?->getId(),
             'enseignant_numero' => $contenu->enseignantNumero,
             'introuvables' => $contenu->introuvables,
@@ -91,6 +98,10 @@ readonly class ContenuJoueurSerialiseur
         $contenu->sorts = $this->entites(Sort::class, $donnees['sorts'] ?? []);
         $contenu->prieres = $this->entites(Priere::class, $donnees['prieres'] ?? []);
         $contenu->potions = $this->entites(Potion::class, $donnees['potions'] ?? []);
+        $contenu->langues = $this->entites(Langue::class, $donnees['langues'] ?? []);
+        $contenu->connaissances = $this->entites(Connaissance::class, $donnees['connaissances'] ?? []);
+        $contenu->technologies = $this->entites(Technologie::class, $donnees['technologies'] ?? []);
+        $contenu->enseignantTechnologieNumero = null === ($donnees['enseignant_technologie_numero'] ?? null) ? null : (int) $donnees['enseignant_technologie_numero'];
         $competence = null === ($donnees['competence_apprise'] ?? null) ? [] : $this->entites(Competence::class, [$donnees['competence_apprise']]);
         $contenu->competenceApprise = $competence[0] ?? null;
         $contenu->enseignantNumero = null === ($donnees['enseignant_numero'] ?? null) ? null : (int) $donnees['enseignant_numero'];
