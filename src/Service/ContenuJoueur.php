@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Competence;
+use App\Entity\Connaissance;
 use App\Entity\Ingredient;
+use App\Entity\Langue;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Ressource;
 use App\Entity\Sort;
+use App\Entity\Technologie;
 use App\Enum\ActionFinOpus;
 
 /**
@@ -51,6 +54,18 @@ final class ContenuJoueur
 
     /** @var list<Potion> potions (recettes) apprises pendant le jeu */
     public array $potions = [];
+
+    /** @var list<Langue> langues apprises pendant le jeu (non secrètes) */
+    public array $langues = [];
+
+    /** @var list<Connaissance> connaissances apprises pendant le jeu (non secrètes) */
+    public array $connaissances = [];
+
+    /** @var list<Technologie> technologies apprises pendant le jeu (non secrètes) */
+    public array $technologies = [];
+
+    /** Numéro de personnage de l'enseignant des technologies apprises (facultatif, consigné sans contrôle). */
+    public ?int $enseignantTechnologieNumero = null;
 
     /** Compétence apprise auprès d'un autre personnage pendant l'opus (un apprentissage au plus entre deux GN), avec son enseignant. */
     public ?Competence $competenceApprise = null;

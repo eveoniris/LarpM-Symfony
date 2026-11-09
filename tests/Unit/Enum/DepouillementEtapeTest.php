@@ -12,12 +12,13 @@ use PHPUnit\Framework\TestCase;
 #[Group('unit')]
 class DepouillementEtapeTest extends TestCase
 {
-    public function testLEnveloppeDeJoueurAHuitEtapes(): void
+    public function testLEnveloppeDeJoueurANeufEtapes(): void
     {
-        static::assertCount(8, DepouillementEtape::pourType(DepouillementType::JOUEUR));
+        static::assertCount(9, DepouillementEtape::pourType(DepouillementType::JOUEUR));
         static::assertSame(1, DepouillementEtape::IDENTIFICATION->position(DepouillementType::JOUEUR));
         static::assertSame(5, DepouillementEtape::ACTIONS->position(DepouillementType::JOUEUR));
-        static::assertSame(8, DepouillementEtape::RECAPITULATIF->position(DepouillementType::JOUEUR));
+        static::assertSame(6, DepouillementEtape::DECLARATION->position(DepouillementType::JOUEUR));
+        static::assertSame(9, DepouillementEtape::RECAPITULATIF->position(DepouillementType::JOUEUR));
     }
 
     public function testLEnveloppeDeGroupeNAPasLesEtapesDesJoueurs(): void
@@ -27,6 +28,7 @@ class DepouillementEtapeTest extends TestCase
         static::assertCount(6, $etapes);
         static::assertNotContains(DepouillementEtape::ACTIONS, $etapes);
         static::assertNotContains(DepouillementEtape::CONCEPTIONS, $etapes);
+        static::assertNotContains(DepouillementEtape::DECLARATION, $etapes);
         static::assertSame(6, DepouillementEtape::RECAPITULATIF->position(DepouillementType::GROUPE));
         static::assertSame(0, DepouillementEtape::ACTIONS->position(DepouillementType::GROUPE));
     }
@@ -38,9 +40,22 @@ class DepouillementEtapeTest extends TestCase
         static::assertNull(DepouillementEtape::IDENTIFICATION->precedente($joueur));
         static::assertSame(DepouillementEtape::PHOTOS, DepouillementEtape::IDENTIFICATION->suivante($joueur));
         static::assertSame(DepouillementEtape::CONTENU, DepouillementEtape::ACTIONS->precedente($joueur));
-        static::assertSame(DepouillementEtape::CONCEPTIONS, DepouillementEtape::ACTIONS->suivante($joueur));
+        static::assertSame(DepouillementEtape::DECLARATION, DepouillementEtape::ACTIONS->suivante($joueur));
+        static::assertSame(DepouillementEtape::DECLARATION, DepouillementEtape::CONCEPTIONS->precedente($joueur));
         static::assertSame(DepouillementEtape::CONCEPTIONS, DepouillementEtape::REMARQUES->precedente($joueur));
         static::assertNull(DepouillementEtape::RECAPITULATIF->suivante($joueur));
+    }
+
+    public function testLeDeclarantNeVoitQueSesEtapes(): void
+    {
+        $joueur = DepouillementType::JOUEUR;
+        $etapes = DepouillementEtape::pourType($joueur, declarant: true);
+
+        static::assertSame([DepouillementEtape::DECLARATION, DepouillementEtape::CONCEPTIONS, DepouillementEtape::REMARQUES, DepouillementEtape::RECAPITULATIF], $etapes);
+        static::assertSame(1, DepouillementEtape::DECLARATION->position($joueur, declarant: true));
+        static::assertSame(0, DepouillementEtape::CONTENU->position($joueur, declarant: true));
+        static::assertNull(DepouillementEtape::DECLARATION->precedente($joueur, declarant: true));
+        static::assertSame(DepouillementEtape::CONCEPTIONS, DepouillementEtape::DECLARATION->suivante($joueur, declarant: true));
     }
 
     public function testNavigationSauteLesEtapesDesJoueursPourUnGroupe(): void

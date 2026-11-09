@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace App\Form\Depouillement;
 
 use App\Entity\Competence;
+use App\Entity\Connaissance;
 use App\Entity\Ingredient;
+use App\Entity\Langue;
 use App\Entity\Potion;
 use App\Entity\Priere;
 use App\Entity\Ressource;
 use App\Entity\Sort;
+use App\Entity\Technologie;
 use App\Enum\ActionFinOpus;
 use App\Service\ContenuJoueur;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -39,25 +44,27 @@ class ContenuJoueurType extends AbstractType
     /** Étape « Actions de fin d'Opus ». */
     public const string PORTION_ACTIONS = 'actions';
 
+    /** Étape « Déclaration du joueur » : ce que le joueur annonce avoir appris, et la mort de son personnage. */
+    public const string PORTION_DECLARATION = 'declaration';
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $portion = $options['portion'];
 
+        // La déclaration du joueur ne porte que sur ce qu'il annonce lui-même : jamais sur le contenu physique de l'enveloppe.
+        if (self::PORTION_DECLARATION === $portion) {
+            $this->ajouterApprentissages($builder);
+            $this->ajouterMort($builder);
+            $builder->add('submit', SubmitType::class, ['label' => 'Enregistrer ce que j\'ai appris']);
+
+            return;
+        }
+
         if (self::PORTION_ACTIONS !== $portion) {
             $this->ajouterPiecesJointes($builder);
             $this->ajouterApprentissages($builder);
-            $builder
-                ->add('personnageMort', CheckboxType::class, [
-                    'label' => 'Le personnage est mort pendant cet opus',
-                    'required' => false,
-                    'help' => 'À la validation, le personnage sera marqué mort sur sa fiche (avec une ligne dans sa chronologie) et rien ne sera reporté dans l\'enveloppe du GN suivant.',
-                ])
-                ->add('circonstancesMort', TextareaType::class, [
-                    'label' => 'Circonstances de la mort (facultatif)',
-                    'required' => false,
-                    'attr' => ['rows' => 2],
-                ])
-                ->add('surplus', CompteursEnveloppeType::class);
+            $this->ajouterMort($builder);
+            $builder->add('surplus', CompteursEnveloppeType::class);
         }
 
         if (self::PORTION_CONTENU !== $portion) {
@@ -67,13 +74,28 @@ class ContenuJoueurType extends AbstractType
         $builder->add('submit', SubmitType::class, ['label' => self::PORTION_ACTIONS === $portion ? 'Enregistrer les actions' : 'Enregistrer le contenu']);
     }
 
+    private function ajouterMort(FormBuilderInterface $builder): void
+    {
+        $builder
+            ->add('personnageMort', CheckboxType::class, [
+                'label' => 'Le personnage est mort pendant cet opus',
+                'required' => false,
+                'help' => 'À la validation, le personnage sera marqué mort sur sa fiche (avec une ligne dans sa chronologie) et rien ne sera reporté dans l\'enveloppe du GN suivant.',
+            ])
+            ->add('circonstancesMort', TextareaType::class, [
+                'label' => 'Circonstances de la mort (facultatif)',
+                'required' => false,
+                'attr' => ['rows' => 2],
+            ]);
+    }
+
     /**
      * Le formulaire d'une étape ne modifie que ses propres champs : il reçoit le contenu déjà enregistré.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(['data_class' => ContenuJoueur::class, 'portion' => self::PORTION_TOUT]);
-        $resolver->setAllowedValues('portion', [self::PORTION_TOUT, self::PORTION_CONTENU, self::PORTION_ACTIONS]);
+        $resolver->setAllowedValues('portion', [self::PORTION_TOUT, self::PORTION_CONTENU, self::PORTION_ACTIONS, self::PORTION_DECLARATION]);
     }
 
     private function ajouterPiecesJointes(FormBuilderInterface $builder): void
@@ -129,6 +151,16 @@ class ContenuJoueurType extends AbstractType
             ->add('potions', EntityType::class, [
                 ...$this->liste(Potion::class, 'Potions (recettes) apprises pendant le jeu'),
                 'choice_label' => static fn (Potion $potion): string => \sprintf('%s - %s (niveau %d)', $potion->getNumero(), $potion->getLabel(), $potion->getNiveau()),
+            ])
+            // Seules les langues, connaissances et technologies non secrètes sont proposées : une secrète se signale dans « Je ne trouve pas ».
+            ->add('langues', EntityType::class, $this->liste(Langue::class, 'Langues apprises pendant le jeu', nonSecret: true))
+            ->add('connaissances', EntityType::class, $this->liste(Connaissance::class, 'Connaissances apprises pendant le jeu', nonSecret: true))
+            ->add('technologies', EntityType::class, $this->liste(Technologie::class, 'Technologies apprises pendant le jeu', nonSecret: true))
+            ->add('enseignantTechnologieNumero', IntegerType::class, [
+                'label' => 'Numéro de personnage de l\'enseignant des technologies',
+                'required' => false,
+                'attr' => ['inputmode' => 'numeric', 'min' => 1],
+                'help' => 'Facultatif. Si plusieurs enseignants, précisez-le dans « Je ne trouve pas » ou dans votre retour.',
             ])
             ->add('competenceApprise', EntityType::class, [
                 'class' => Competence::class,
@@ -203,9 +235,14 @@ class ContenuJoueurType extends AbstractType
      *
      * @return array<string, mixed>
      */
-    private function liste(string $classe, string $libelle, ?int $maximum = null): array
+    private function liste(string $classe, string $libelle, ?int $maximum = null, bool $nonSecret = false): array
     {
         return [
+            ...(
+                $nonSecret
+                    ? ['query_builder' => static fn (EntityRepository $repository): QueryBuilder => $repository->createQueryBuilder('e')->where('e.secret = false')->orderBy('e.label', 'ASC')]
+                    : []
+            ),
             'class' => $classe,
             'label' => $libelle,
             'choice_label' => 'label',

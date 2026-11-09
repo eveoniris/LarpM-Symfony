@@ -11,12 +11,16 @@ use App\Enum\DepouillementType;
 use App\Enum\ActionFinOpus;
 use App\Form\Depouillement\ContenuGroupeType;
 use App\Form\Depouillement\ContenuJoueurType;
+use App\Form\Depouillement\DeclarationJoueurType;
 use App\Service\ContenuGroupe;
 use App\Service\DepouillementGroupeService;
 use App\Form\Depouillement\DepouillementEtiquetteType;
 use App\Form\Depouillement\DepouillementRemarquesType;
 use App\Service\CompteursEnveloppe;
+use App\Service\DecisionsDeclaration;
 use App\Service\DepouillementContenuService;
+use App\Service\DepouillementDeclarationService;
+use App\Service\DepouillementDecisionService;
 use App\Service\DepouillementService;
 use App\Service\PiecesAttendues;
 use App\Service\EtiquetteSaisie;
@@ -58,7 +62,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
     #[Route('/gn/{gn}/depouillement/{depouillement}/reprendre', name: 'depouillement.reprendre', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
     public function reprendreAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementService $depouillementService): Response
     {
-        $this->verifier($gn, $depouillement);
+        $this->verifier($gn, $depouillement, saisie: true);
         $liste = $this->redirectToRoute('depouillement.index', ['gn' => $gn->getId()], 303);
 
         if (!$this->jetonValide($request, 'depouillement_reprendre_' . $depouillement->getId())) {
@@ -88,15 +92,18 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         DepouillementContenuService $contenuService,
         DepouillementGroupeService $groupeService,
         PiecesAttendues $piecesAttendues,
+        DepouillementDeclarationService $declarationService,
+        DepouillementDecisionService $decisionService,
     ): Response {
         $this->verifier($gn, $depouillement);
 
-        $etapes = DepouillementEtape::pourType($depouillement->getType());
+        $declarant = $this->declarant($depouillement);
+        $etapes = DepouillementEtape::pourType($depouillement->getType(), $declarant);
         if (!\in_array($etape, $etapes, strict: true)) {
             throw $this->createNotFoundException();
         }
 
-        $modifiable = $depouillement->getStatut()->isEditable();
+        $modifiable = $this->saisissable($depouillement);
         $form = null;
 
         if (DepouillementEtape::REMARQUES === $etape && $modifiable) {
@@ -108,7 +115,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
                 $data = $form->getData();
                 $depouillementService->enregistrerRemarques($depouillement, $data['remarques'], $this->utilisateur());
 
-                return $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, $etape->suivante($depouillement->getType()) ?? $etape), 303);
+                return $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, $etape->suivante($depouillement->getType(), $declarant) ?? $etape), 303);
             }
         }
 
@@ -117,14 +124,16 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             'depouillement' => $depouillement,
             'etape' => $etape,
             'etapes' => $etapes,
-            'position' => $etape->position($depouillement->getType()),
-            'precedente' => $etape->precedente($depouillement->getType()),
-            'suivante' => $etape->suivante($depouillement->getType()),
+            'declarant' => $declarant,
+            'position' => $etape->position($depouillement->getType(), $declarant),
+            'precedente' => $etape->precedente($depouillement->getType(), $declarant),
+            'suivante' => $etape->suivante($depouillement->getType(), $declarant),
             'modifiable' => $modifiable,
             'form' => $form,
             'formEtiquette' => $this->formulaireEtiquette($depouillement, $etape),
             'avertissementGroupe' => $this->avertissementGroupe($depouillement, $depouillementService),
             ...$this->contenuJoueur($depouillement, $etape, $contenuService, $piecesAttendues),
+            ...$this->declaration($depouillement, $etape, $declarationService, $decisionService),
             ...$this->contenuGroupe($depouillement, $etape, $groupeService),
         ]);
     }
@@ -135,7 +144,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
     #[Route('/gn/{gn}/depouillement/{depouillement}/terminer', name: 'depouillement.terminer', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
     public function terminerAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementService $depouillementService): Response
     {
-        $this->verifier($gn, $depouillement);
+        $this->verifier($gn, $depouillement, saisie: true);
         $redirection = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::RECAPITULATIF), 303);
 
         if (!$this->jetonValide($request, 'depouillement_terminer_' . $depouillement->getId())) {
@@ -161,14 +170,17 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
      */
     private function contenuJoueur(Depouillement $depouillement, DepouillementEtape $etape, DepouillementContenuService $contenuService, PiecesAttendues $piecesAttendues): array
     {
-        if (!in_array($etape, [DepouillementEtape::CONTENU, DepouillementEtape::ACTIONS, DepouillementEtape::RECAPITULATIF], strict: true) || DepouillementType::JOUEUR !== $depouillement->getType()) {
+        if (
+            !in_array($etape, [DepouillementEtape::CONTENU, DepouillementEtape::ACTIONS, DepouillementEtape::DECLARATION, DepouillementEtape::RECAPITULATIF], strict: true)
+            || DepouillementType::JOUEUR !== $depouillement->getType()
+        ) {
             return [];
         }
 
         $contenu = $contenuService->lireContenuJoueur($depouillement);
 
         // Première visite de l'étape des actions : les choix sont proposés d'après les ressources trouvées, le dépouilleur vérifie.
-        $preselection = DepouillementEtape::ACTIONS === $etape && $depouillement->getStatut()->isEditable() && !$contenu->actionsDecidees;
+        $preselection = DepouillementEtape::ACTIONS === $etape && $this->saisissable($depouillement) && !$contenu->actionsDecidees;
         if ($preselection) {
             $contenu->preselectionnerActions();
         }
@@ -201,9 +213,10 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         $portion = match ($etape) {
             DepouillementEtape::CONTENU => ContenuJoueurType::PORTION_CONTENU,
             DepouillementEtape::ACTIONS => ContenuJoueurType::PORTION_ACTIONS,
+            DepouillementEtape::DECLARATION => ContenuJoueurType::PORTION_DECLARATION,
             default => null,
         };
-        if (null === $portion || !$depouillement->getStatut()->isEditable()) {
+        if (null === $portion || !$this->saisissable($depouillement)) {
             return null;
         }
 
@@ -211,6 +224,33 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             'portion' => $portion,
             'action' => $this->generateUrl('depouillement.contenu_joueur', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId(), 'portion' => $portion]),
         ]);
+    }
+
+    /**
+     * Variables de l'étape Déclaration (et du récapitulatif) d'un dossier de joueur : sa déclaration, le formulaire si le dossier est
+     * modifiable par l'utilisateur, et la provenance de ce qui a été déclaré.
+     *
+     * @return array<string, mixed>
+     */
+    private function declaration(Depouillement $depouillement, DepouillementEtape $etape, DepouillementDeclarationService $declarationService, DepouillementDecisionService $decisionService): array
+    {
+        if (!\in_array($etape, [DepouillementEtape::DECLARATION, DepouillementEtape::RECAPITULATIF], strict: true) || DepouillementType::JOUEUR !== $depouillement->getType()) {
+            return [];
+        }
+
+        $declaration = $declarationService->lire($depouillement);
+
+        return [
+            'declaration' => $declaration,
+            'formDeclaration' => DepouillementEtape::DECLARATION === $etape && $this->saisissable($depouillement)
+                ? $this->createForm(DeclarationJoueurType::class, $declaration, [
+                    'action' => $this->generateUrl('depouillement.declaration', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()]),
+                ])
+                : null,
+            'suiviDeclaration' => DecisionsDeclaration::resume(DecisionsDeclaration::depuis($depouillement->getDonnees())),
+            'lignesDeclaration' => $decisionService->lignes($depouillement),
+            'peutDecider' => $this->saisissable($depouillement) && !$this->declarant($depouillement),
+        ];
     }
 
     /**
@@ -228,7 +268,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
 
         return [
             'contenuGroupe' => $contenu,
-            'formContenuGroupe' => DepouillementEtape::CONTENU === $etape && $depouillement->getStatut()->isEditable()
+            'formContenuGroupe' => DepouillementEtape::CONTENU === $etape && $this->saisissable($depouillement)
                 ? $this->createForm(ContenuGroupeType::class, $contenu, [
                     'action' => $this->generateUrl('depouillement.contenu_groupe', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()]),
                 ])
@@ -243,7 +283,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
      */
     private function formulaireEtiquette(Depouillement $depouillement, DepouillementEtape $etape): ?FormInterface
     {
-        if (DepouillementEtape::ETIQUETTES !== $etape || !$depouillement->getStatut()->isEditable()) {
+        if (DepouillementEtape::ETIQUETTES !== $etape || !$this->saisissable($depouillement)) {
             return null;
         }
 
@@ -258,7 +298,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
      */
     private function avertissementGroupe(Depouillement $depouillement, DepouillementService $depouillementService): int
     {
-        if (DepouillementType::GROUPE !== $depouillement->getType() || !$depouillement->getStatut()->isEditable()) {
+        if (DepouillementType::GROUPE !== $depouillement->getType() || !$this->saisissable($depouillement)) {
             return 0;
         }
 

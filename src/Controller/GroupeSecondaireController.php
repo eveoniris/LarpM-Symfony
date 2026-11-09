@@ -613,6 +613,8 @@ class GroupeSecondaireController extends AbstractController
         if (!$isAdmin && $personnage) {
             $fetchCollection = true; // may have issue with OrderBy but paginator will load result without member in (due to leftjoin(member))
             $queryBuilder = $secondaryGroupRepository->visibleForPersonnage($queryBuilder, $personnage->getId());
+        } elseif (!$isAdmin) {
+            $queryBuilder = $secondaryGroupRepository->publicOnly($queryBuilder);
         }
 
         $membershipIds = $personnage ? $secondaryGroupRepository->getMembershipGroupIds($personnage->getId()) : [];

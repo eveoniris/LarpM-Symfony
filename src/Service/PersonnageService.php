@@ -1585,7 +1585,7 @@ class PersonnageService
     /**
      * @return ArrayCollection<int, Competence>
      */
-    public function getAvailableCompetences(Personnage $personnage): ArrayCollection
+    public function getAvailableCompetences(Personnage $personnage, bool $avecSecretes = false): ArrayCollection
     {
         $availableCompetences = new ArrayCollection();
 
@@ -1602,6 +1602,14 @@ class PersonnageService
         $unknownCompetences = $this->getUnknownCompetences($personnage);
         foreach ($unknownCompetences as $competence) {
             $availableCompetences->add($competence);
+        }
+
+        // règle SEC-01 : une compétence secrète n'est proposée qu'à l'organisation (elle les attribue)
+        // ou pour progresser dans une famille que le personnage possède déjà
+        if (!$avecSecretes) {
+            $availableCompetences = $availableCompetences->filter(
+                fn (Competence $competence): bool => !$competence->isSecret() || $this->knownCompetenceFamily($personnage, $competence->getCompetenceFamily()),
+            );
         }
 
         // trie des competences disponibles
@@ -1689,6 +1697,32 @@ class PersonnageService
         }
 
         return $availableDomaines;
+    }
+
+    /**
+     * Sorts d'un domaine montrés en exemple au choix du domaine (règle SEC-01) :
+     * niveau accessible au personnage, sans les sorts secrets qu'il ne possède pas déjà.
+     *
+     * @return list<Sort>
+     */
+    public function getSortsExemples(Domaine $domaine, Personnage $personnage): array
+    {
+        $niveauMagie = $personnage->getCompetenceNiveau('Magie');
+        $exemples = [];
+
+        foreach ($domaine->getSorts() as $sort) {
+            if ($sort->getNiveau() > $niveauMagie) {
+                continue;
+            }
+
+            if ($sort->getSecret() && !$personnage->getSorts()->contains($sort)) {
+                continue;
+            }
+
+            $exemples[] = $sort;
+        }
+
+        return $exemples;
     }
 
     /**
