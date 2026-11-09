@@ -30,7 +30,7 @@ final class DepouillementContenuController extends AbstractDepouillementControll
     #[Route('/gn/{gn}/depouillement/{depouillement}/contenu-joueur', name: 'depouillement.contenu_joueur', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
     public function joueurAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementContenuService $contenuService): Response
     {
-        $this->verifier($gn, $depouillement);
+        $this->verifier($gn, $depouillement, saisie: true);
         $portion = $request->query->getString('portion', ContenuJoueurType::PORTION_TOUT);
         if (!\in_array($portion, [ContenuJoueurType::PORTION_TOUT, ContenuJoueurType::PORTION_CONTENU, ContenuJoueurType::PORTION_ACTIONS], strict: true)) {
             throw $this->createNotFoundException();
@@ -72,7 +72,7 @@ final class DepouillementContenuController extends AbstractDepouillementControll
     #[Route('/gn/{gn}/depouillement/{depouillement}/contenu-groupe', name: 'depouillement.contenu_groupe', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
     public function groupeAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementGroupeService $groupeService): Response
     {
-        $this->verifier($gn, $depouillement);
+        $this->verifier($gn, $depouillement, saisie: true);
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::CONTENU), 303);
 
         $form = $this->createForm(ContenuGroupeType::class, new ContenuGroupe());

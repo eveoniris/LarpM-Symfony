@@ -19,9 +19,11 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * Dépouillement des enveloppes de retour de jeu.
  *
- * Phase de développement : seules les simulations peuvent être créées. Une simulation n'a jamais d'effet sur les données réelles
- * et reste purgeable. Le dépouillement réel arrive avec les étapes suivantes du plan.
+ * Une simulation n'a jamais d'effet sur les données réelles et reste purgeable. Un dossier réel est unique par GN, type et numéro :
+ * le joueur peut l'ouvrir (sa déclaration), puis le staff le reprend. Rien n'est appliqué avant la validation.
  */
+// @mago-expect lint:cyclomatic-complexity
+// @mago-expect lint:too-many-methods
 readonly class DepouillementService
 {
     public function __construct(
@@ -39,6 +41,58 @@ readonly class DepouillementService
      */
     public function creerSimulation(Gn $gn, DepouillementType $type, string $numero, User $depouilleur): Depouillement
     {
+        return $this->creer($gn, $type, $numero, $depouilleur, true);
+    }
+
+    /**
+     * Ouvre le dossier RÉEL d'une enveloppe (rien n'est appliqué aux personnages avant la validation), ou retourne celui qui existe
+     * déjà : il n'y a qu'un dossier réel par GN, type et numéro.
+     *
+     * @throws EnveloppeIntrouvableException si aucun groupe ou personnage de ce GN ne porte ce numéro
+     */
+    public function ouvrirReel(Gn $gn, DepouillementType $type, string $numero, User $saisisseur): Depouillement
+    {
+        $existant = $this->trouverReel($gn, $type, $numero);
+
+        return $existant ?? $this->creer($gn, $type, $numero, $saisisseur, false);
+    }
+
+    /**
+     * Le joueur ouvre le dossier réel de son personnage pour ce GN. Le numéro n'est jamais choisi par le joueur : c'est celui du
+     * personnage de sa participation.
+     *
+     * @throws EnveloppeIntrouvableException si le joueur n'est pas inscrit à ce GN avec un personnage
+     */
+    public function ouvrirPourJoueur(Gn $gn, User $joueur): Depouillement
+    {
+        $personnage = $joueur->getParticipant($gn)?->getPersonnage();
+        if (null === $personnage) {
+            throw new EnveloppeIntrouvableException("Vous n'avez pas de personnage inscrit à ce GN.");
+        }
+
+        return $this->ouvrirReel($gn, DepouillementType::JOUEUR, (string) $personnage->getId(), $joueur);
+    }
+
+    /**
+     * Dossier réel du personnage du joueur pour ce GN, s'il existe (null aussi quand le joueur n'a pas de personnage inscrit).
+     */
+    public function trouverPourJoueur(Gn $gn, User $joueur): ?Depouillement
+    {
+        $personnage = $joueur->getParticipant($gn)?->getPersonnage();
+
+        return null === $personnage ? null : $this->trouverReel($gn, DepouillementType::JOUEUR, (string) $personnage->getId());
+    }
+
+    /**
+     * Dossier réel déjà ouvert pour cette enveloppe, quel que soit son statut.
+     */
+    public function trouverReel(Gn $gn, DepouillementType $type, string $numero): ?Depouillement
+    {
+        return $this->depouillementRepository->findByEnveloppe($gn, $type, $this->resolver->normaliserNumero($numero), false);
+    }
+
+    private function creer(Gn $gn, DepouillementType $type, string $numero, User $saisisseur, bool $simulation): Depouillement
+    {
         $numero = $this->resolver->normaliserNumero($numero);
         $cible = $this->resolver->resoudre($gn, $type, $numero);
         $depouillement = (new Depouillement())
@@ -47,15 +101,15 @@ readonly class DepouillementService
             ->setNumero($numero)
             ->setGroupeGn($cible instanceof GroupeGn ? $cible : null)
             ->setParticipant($cible instanceof Participant ? $cible : null)
-            ->setSimulation(true)
-            ->setDepouilleur($depouilleur);
+            ->setSimulation($simulation)
+            ->setDepouilleur($saisisseur);
 
         $depouillement->addHistory(
             (new DepouillementHistory())
-                ->setUser($depouilleur)
+                ->setUser($saisisseur)
                 ->setActionType(DepouillementHistory::ACTION_CREATE)
                 ->setStatutApres($depouillement->getStatut())
-                ->setMotif('Simulation'),
+                ->setMotif($simulation ? 'Simulation' : 'Dossier réel'),
         );
 
         $this->entityManager->persist($depouillement);

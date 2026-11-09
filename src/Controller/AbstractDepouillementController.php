@@ -8,6 +8,7 @@ use App\Entity\Depouillement;
 use App\Entity\Gn;
 use App\Entity\User;
 use App\Enum\DepouillementEtape;
+use App\Security\Voter\DepouillementVoter;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,13 +23,24 @@ use Symfony\Component\HttpFoundation\Request;
 abstract class AbstractDepouillementController extends AbstractController
 {
     /**
-     * Le dépouillement doit appartenir au GN de l'URL.
+     * Le dépouillement doit appartenir au GN de l'URL, et l'utilisateur doit avoir le droit de le voir (ou, pour une action qui
+     * écrit, de le saisir : voir DepouillementVoter).
      */
-    protected function verifier(Gn $gn, Depouillement $depouillement): void
+    protected function verifier(Gn $gn, Depouillement $depouillement, bool $saisie = false): void
     {
         if ($depouillement->getGn()->getId() !== $gn->getId()) {
             throw $this->createNotFoundException();
         }
+
+        $this->denyAccessUnlessGranted($saisie ? DepouillementVoter::SAISIR : DepouillementVoter::VOIR, $depouillement);
+    }
+
+    /**
+     * Le dossier est en cours de saisie ET l'utilisateur a la main dessus (un joueur la perd quand un tiers reprend le dossier).
+     */
+    protected function saisissable(Depouillement $depouillement): bool
+    {
+        return $depouillement->getStatut()->isEditable() && $this->isGranted(DepouillementVoter::SAISIR, $depouillement);
     }
 
     protected function utilisateur(): User
