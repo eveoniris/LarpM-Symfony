@@ -238,6 +238,14 @@ class SecondaryGroupRepository extends BaseRepository
         return array_column($result, 'id');
     }
 
+    /**
+     * Règle SEC-01 : sans personnage, seuls les groupes non secrets sont visibles.
+     */
+    public function publicOnly(QueryBuilder $queryBuilder): QueryBuilder
+    {
+        return $queryBuilder->andWhere($this->alias . '.secret IS NULL OR ' . $this->alias . '.secret = false');
+    }
+
     public function visibleForPersonnage(QueryBuilder $queryBuilder, int $personnagesId): QueryBuilder
     {
         return $queryBuilder
