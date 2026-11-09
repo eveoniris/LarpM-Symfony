@@ -3,6 +3,10 @@
 	'sorts': 'Sorts',
 	'prieres': 'Prières',
 	'potions': 'Potions (recettes)',
+	'langues': 'Langues',
+	'connaissances': 'Connaissances',
+	'technologies': 'Technologies',
+	'enseignant_technologie_numero': 'Enseignant des technologies',
 	'competence_apprise': 'Compétence apprise',
 	'enseignant_numero': 'Enseignant',
 	'personnage_mort': 'Mort du personnage',
@@ -40,6 +44,9 @@
 		<li>Sorts : {{ contenuJoueur.sorts|map(s => s.label)|join(', ') ?: 'aucun' }}</li>
 		<li>Prières : {{ contenuJoueur.prieres|map(p => p.label)|join(', ') ?: 'aucune' }}</li>
 		<li>Potions : {{ contenuJoueur.potions|map(p => p.label)|join(', ') ?: 'aucune' }}</li>
+		<li>Langues : {{ contenuJoueur.langues|map(l => l.label)|join(', ') ?: 'aucune' }}</li>
+		<li>Connaissances : {{ contenuJoueur.connaissances|map(c => c.label)|join(', ') ?: 'aucune' }}</li>
+		<li>Technologies : {{ contenuJoueur.technologies|map(t => t.label)|join(', ') ?: 'aucune' }}{% if contenuJoueur.technologies|length > 0 and contenuJoueur.enseignantTechnologieNumero %} (enseignant n° {{ contenuJoueur.enseignantTechnologieNumero }}){% endif %}</li>
 		<li>Compétence apprise : {% if contenuJoueur.competenceApprise %}{{ contenuJoueur.competenceApprise.label }} (enseignant n° {{ contenuJoueur.enseignantNumero ?: '?' }}){% else %}aucune{% endif %}</li>
 		{% if contenuJoueur.personnageMort %}
 			<li class="lm-anomalie"><i class="fa fa-skull"></i> Le personnage est mort pendant cet opus{% if contenuJoueur.circonstancesMort %} ({{ contenuJoueur.circonstancesMort }}){% endif %}</li>
