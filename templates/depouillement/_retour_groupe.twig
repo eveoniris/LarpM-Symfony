@@ -39,3 +39,27 @@
 		<p>{{ retourGroupe.precisions|nl2br }}</p>
 	{% endif %}
 {% endif %}
+
+{# Validation des ordres de conquête, phase par phase, par le wargame. #}
+{% if phasesOrdres is not empty %}
+	<h6 class="mt-3">Validation des ordres par le wargame</h6>
+	<ul class="list-unstyled">
+		{% for numero, phase in phasesOrdres %}
+			<li class="mb-2">
+				<strong>Phase {{ numero }}</strong> :
+				{% if phase.valide %}
+					<span class="badge bg-success">Validée par le wargame</span>
+				{% else %}
+					<span class="badge bg-warning text-dark">En attente de validation</span>
+				{% endif %}
+				{% if peutValiderOrdres %}
+					<form method="post" class="d-inline" action="{{ path('depouillement.ordres', {'gn': gn.id, 'depouillement': depouillement.id, 'phase': numero, 'decision': phase.valide ? 'rouvrir' : 'valider'}) }}">
+						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_ordres_' ~ depouillement.id) }}">
+						<button type="submit" class="btn btn-sm {{ phase.valide ? 'btn-outline-secondary' : 'btn-success' }}">{{ phase.valide ? 'Retirer la validation' : 'Valider les ordres' }}</button>
+					</form>
+				{% endif %}
+			</li>
+		{% endfor %}
+	</ul>
+	<p class="text-muted small">Modifier le texte d'une phase retire sa validation. La validation du dossier signale les phases dont les ordres n'ont pas été validés.</p>
+{% endif %}

@@ -21,13 +21,14 @@ readonly class DepouillementTitresService
     public function __construct(
         private DepouillementRetourGroupeService $retourGroupe,
         private DepouillementRepository $depouillementRepository,
+        private DepouillementOrdresService $ordres,
         private EntityManagerInterface $entityManager,
     ) {
     }
 
     public function appliquer(Depouillement $depouillement): ResultatApprentissages
     {
-        $resultat = new ResultatApprentissages('Titres du groupe', 'Aucun titre de groupe à appliquer.');
+        $resultat = new ResultatApprentissages('Titres et ordres du groupe', 'Aucun titre ni ordre de groupe à traiter.');
         $groupeGn = $depouillement->getGroupeGn();
         if (DepouillementType::GROUPE !== $depouillement->getType() || !$groupeGn instanceof GroupeGn) {
             return $resultat;
@@ -41,6 +42,12 @@ readonly class DepouillementTitresService
             }
 
             $this->titre($groupeGn, $cle, $numero, $titulaires[$cle] ?? null, $depouillement, $resultat);
+        }
+
+        foreach ($this->ordres->phases($depouillement) as $numero => $phase) {
+            if (!$phase['valide']) {
+                $resultat->anomalies[] = \sprintf("Les ordres de la phase %d n'ont pas été validés par le wargame.", $numero);
+            }
         }
 
         return $resultat;
