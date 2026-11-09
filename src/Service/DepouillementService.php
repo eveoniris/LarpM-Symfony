@@ -74,6 +74,41 @@ readonly class DepouillementService
     }
 
     /**
+     * Le groupe dont le joueur peut remplir le retour pour ce GN : celui dont il est le chef ou dont son personnage porte un titre.
+     */
+    public function groupeDuJoueur(Gn $gn, User $joueur): ?GroupeGn
+    {
+        $participant = $joueur->getParticipant($gn);
+        if (null === $participant) {
+            return null;
+        }
+
+        $candidats = [$participant->getGroupeGn(), ...$participant->getGroupeGns()->toArray()];
+        foreach ($candidats as $groupeGn) {
+            if ($groupeGn instanceof GroupeGn && $groupeGn->getGn()?->getId() === $gn->getId() && $groupeGn->peutSaisirRetour($joueur)) {
+                return $groupeGn;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Le joueur ouvre le dossier réel de son groupe pour ce GN (le numéro est celui du groupe, jamais choisi par le joueur).
+     *
+     * @throws EnveloppeIntrouvableException si le joueur n'est ni chef de groupe ni titulaire d'un titre de groupe à ce GN
+     */
+    public function ouvrirPourGroupe(Gn $gn, User $joueur): Depouillement
+    {
+        $groupeGn = $this->groupeDuJoueur($gn, $joueur);
+        if (null === $groupeGn) {
+            throw new EnveloppeIntrouvableException("Vous n'êtes ni chef de groupe ni titulaire d'un titre de groupe à ce GN.");
+        }
+
+        return $this->ouvrirReel($gn, DepouillementType::GROUPE, (string) $groupeGn->getGroupe()->getNumero(), $joueur);
+    }
+
+    /**
      * Dossier réel du personnage du joueur pour ce GN, s'il existe (null aussi quand le joueur n'a pas de personnage inscrit).
      */
     public function trouverPourJoueur(Gn $gn, User $joueur): ?Depouillement

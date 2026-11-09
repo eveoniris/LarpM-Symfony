@@ -25,11 +25,13 @@ class DepouillementEtapeTest extends TestCase
     {
         $etapes = DepouillementEtape::pourType(DepouillementType::GROUPE);
 
-        static::assertCount(6, $etapes);
+        static::assertCount(7, $etapes);
+        static::assertContains(DepouillementEtape::RETOUR_GROUPE, $etapes);
         static::assertNotContains(DepouillementEtape::ACTIONS, $etapes);
         static::assertNotContains(DepouillementEtape::CONCEPTIONS, $etapes);
         static::assertNotContains(DepouillementEtape::DECLARATION, $etapes);
-        static::assertSame(6, DepouillementEtape::RECAPITULATIF->position(DepouillementType::GROUPE));
+        static::assertSame(7, DepouillementEtape::RECAPITULATIF->position(DepouillementType::GROUPE));
+        static::assertSame(0, DepouillementEtape::RETOUR_GROUPE->position(DepouillementType::JOUEUR));
         static::assertSame(0, DepouillementEtape::ACTIONS->position(DepouillementType::GROUPE));
     }
 
@@ -62,7 +64,8 @@ class DepouillementEtapeTest extends TestCase
     {
         $groupe = DepouillementType::GROUPE;
 
-        static::assertSame(DepouillementEtape::REMARQUES, DepouillementEtape::CONTENU->suivante($groupe));
-        static::assertSame(DepouillementEtape::CONTENU, DepouillementEtape::REMARQUES->precedente($groupe));
+        static::assertSame(DepouillementEtape::RETOUR_GROUPE, DepouillementEtape::CONTENU->suivante($groupe));
+        static::assertSame(DepouillementEtape::RETOUR_GROUPE, DepouillementEtape::REMARQUES->precedente($groupe));
+        static::assertSame([DepouillementEtape::RETOUR_GROUPE, DepouillementEtape::REMARQUES, DepouillementEtape::RECAPITULATIF], DepouillementEtape::pourType($groupe, declarant: true));
     }
 }
