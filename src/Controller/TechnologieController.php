@@ -135,23 +135,26 @@ class TechnologieController extends AbstractController
     }
 
     /**
+     * Règle SEC-01 : un joueur ne lit une technologie (secrète ou non) que si l'un de ses personnages la connaît.
+     */
+    private function userKnowsTechnologie(Technologie $technologie): bool
+    {
+        foreach ($this->getUser()?->getPersonnages() ?? [] as $personnage) {
+            if ($personnage->isKnownTechnologie($technologie)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Détail d'une technologie.
      */
     #[Route('/{technologie}/detail', name: 'detail', requirements: ['technologie' => Requirement::DIGITS])]
     public function detailAction(#[MapEntity] Technologie $technologie): Response
     {
-        $this->checkHasAccess([Role::ORGA, Role::REGLE, Role::SCENARISTE], function () use ($technologie) {
-            $personnage = $this->getPersonnage();
-            $this->checkHasPersonnage($personnage);
-
-            if ($personnage && !$personnage->isKnownTechnologie($technologie)) {
-                $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
-
-                return $this->redirectToRoute('homepage');
-            }
-
-            return false;
-        });
+        $this->checkHasAccess([Role::ORGA, Role::REGLE, Role::SCENARISTE], fn (): bool => $this->userKnowsTechnologie($technologie));
 
         $isAdmin = $this->isGranted(Role::ORGA->value) || $this->isGranted(Role::REGLE->value) || $this->isGranted(Role::SCENARISTE->value);
 
@@ -167,18 +170,7 @@ class TechnologieController extends AbstractController
     #[Route('/{technologie}/document', name: 'document', requirements: ['technologie' => Requirement::DIGITS])]
     public function getTechnologieDocumentAction(#[MapEntity] Technologie $technologie): BinaryFileResponse
     {
-        $this->checkHasAccess([Role::ORGA, Role::REGLE, Role::SCENARISTE], function () use ($technologie) {
-            $personnage = $this->getPersonnage();
-            $this->checkHasPersonnage($personnage);
-
-            if ($personnage && !$personnage->isKnownTechnologie($technologie)) {
-                $this->addFlash('error', 'Vous ne connaissez pas cette technologie !');
-
-                return $this->redirectToRoute('homepage');
-            }
-
-            return false;
-        });
+        $this->checkHasAccess([Role::ORGA, Role::REGLE, Role::SCENARISTE], fn (): bool => $this->userKnowsTechnologie($technologie));
 
         return $this->sendDocument($technologie);
     }
