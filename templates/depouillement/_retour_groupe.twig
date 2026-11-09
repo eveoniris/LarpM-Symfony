@@ -40,6 +40,8 @@
 	{% endif %}
 {% endif %}
 
+{% include 'depouillement/_suivi_groupe.twig' %}
+
 {# Validation des ordres de conquête, phase par phase, par le wargame. #}
 {% if phasesOrdres is not empty %}
 	<h6 class="mt-3">Validation des ordres par le wargame</h6>
