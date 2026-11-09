@@ -34,6 +34,45 @@
 	{% endif %}
 {% endif %}
 
+{% if not declarant and lignesDeclaration|length > 0 %}
+	<div class="card mb-3">
+		<div class="card-header">Décisions sur la déclaration</div>
+		<div class="table-responsive">
+			<table class="table table-sm mb-0">
+				<thead>
+					<tr><th>Rubrique</th><th>Valeur</th><th>Déclaré par</th><th>État</th>{% if peutDecider %}<th></th>{% endif %}</tr>
+				</thead>
+				<tbody>
+					{% for ligne in lignesDeclaration %}
+						<tr>
+							<td>{{ ligne.libelleChamp }}</td>
+							<td>{{ ligne.valeur|slice(0, 80) }}{% if ligne.valeur|length > 80 %}...{% endif %}</td>
+							<td>{{ ligne.source == 'joueur' ? 'Joueur' : 'Dépouillement' }}</td>
+							<td>
+								{% if ligne.etat == 'en_attente' %}<span class="badge text-bg-warning">En attente</span>
+								{% elseif ligne.etat == 'refuse' %}<span class="badge text-bg-danger">Refusé</span>
+								{% else %}<span class="badge text-bg-success">Confirmé</span>{% endif %}
+							</td>
+							{% if peutDecider %}
+								<td class="text-nowrap">
+									<form method="post" action="{{ path('depouillement.decision', {'gn': gn.id, 'depouillement': depouillement.id}) }}" class="d-inline">
+										<input type="hidden" name="_token" value="{{ csrf_token('depouillement_decision_' ~ depouillement.id) }}">
+										<input type="hidden" name="champ" value="{{ ligne.champ }}">
+										<input type="hidden" name="element" value="{{ ligne.element }}">
+										{% if ligne.etat != 'confirme' and ligne.etat != 'refuse' %}<button type="submit" name="decision" value="confirmer" class="btn btn-sm btn-success">Confirmer</button>{% endif %}
+										{% if ligne.etat != 'refuse' %}<button type="submit" name="decision" value="refuser" class="btn btn-sm btn-outline-danger">Refuser</button>{% endif %}
+										{% if ligne.etat == 'refuse' %}<button type="submit" name="decision" value="remettre" class="btn btn-sm btn-outline-secondary">Remettre en attente</button>{% endif %}
+									</form>
+								</td>
+							{% endif %}
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+{% endif %}
+
 <h6>Ce que j'ai appris</h6>
 {% if formContenuJoueur is defined and formContenuJoueur %}
 	{{ form_start(formContenuJoueur, {'attr': {'data-lm-unsaved': ''}}) }}

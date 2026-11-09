@@ -15,6 +15,7 @@ namespace App\Service;
  */
 // @mago-expect lint:cyclomatic-complexity
 // @mago-expect lint:kan-defect
+// @mago-expect lint:too-many-methods
 final class DecisionsDeclaration
 {
     public const string SOURCE_JOUEUR = 'joueur';
@@ -24,6 +25,8 @@ final class DecisionsDeclaration
     public const string ETAT_EN_ATTENTE = 'en_attente';
 
     public const string ETAT_CONFIRME = 'confirme';
+
+    public const string ETAT_REFUSE = 'refuse';
 
     public const string ELEMENT_UNIQUE = '_';
 
@@ -75,6 +78,43 @@ final class DecisionsDeclaration
                 ? self::retirer($decisions, $champ, self::ELEMENT_UNIQUE)
                 : self::poser($decisions, $champ, self::ELEMENT_UNIQUE, $auteur);
         }
+
+        return $decisions;
+    }
+
+    /**
+     * Entrée enregistrée d'un élément (null si l'élément n'a pas de décision : il vient du dépouillement).
+     *
+     * @param array<string, array<string, array<string, mixed>>> $decisions
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function entree(array $decisions, string $champ, string $element = self::ELEMENT_UNIQUE): ?array
+    {
+        return $decisions[$champ][$element] ?? null;
+    }
+
+    /**
+     * Un responsable décide d'un élément : l'état change, la source reste celle de qui l'a déclaré. `$complement` garde ce qu'il faut
+     * pour revenir en arrière (libellé d'un élément retiré de la liste, valeur d'un champ vidé).
+     *
+     * @param array<string, array<string, array<string, mixed>>> $decisions
+     * @param array<string, mixed>                               $complement
+     *
+     * @return array<string, array<string, array<string, mixed>>>
+     */
+    // @mago-expect lint:excessive-parameter-list
+    public static function decider(array $decisions, string $champ, string $element, string $etat, AuteurDeclaration $auteur, array $complement = []): array
+    {
+        $entree = $decisions[$champ][$element] ?? ['source' => self::SOURCE_DEPOUILLEUR];
+        $entree['etat'] = $etat;
+        $entree['decide_par'] = $auteur->utilisateur;
+        $entree['decide_le'] = $auteur->le->format(DATE_ATOM);
+        if (self::ETAT_REFUSE !== $etat) {
+            unset($entree['libelle'], $entree['valeur']);
+        }
+
+        $decisions[$champ][$element] = [...$entree, ...$complement];
 
         return $decisions;
     }
