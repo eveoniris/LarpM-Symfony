@@ -33,7 +33,7 @@ final class DepouillementPhotoController extends AbstractDepouillementController
     #[Route('/gn/{gn}/depouillement/{depouillement}/photos', name: 'depouillement.photo.add', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
     public function addAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementPhotoService $photoService): Response
     {
-        $this->verifier($gn, $depouillement, saisie: true);
+        $this->verifierContenu($gn, $depouillement);
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::PHOTOS), 303);
 
         // Au-delà de post_max_size, PHP vide tout l'envoi (fichiers et jeton) : on l'explique plutôt qu'un "jeton invalide".
@@ -148,7 +148,7 @@ final class DepouillementPhotoController extends AbstractDepouillementController
 
     private function verifierPhoto(Gn $gn, Depouillement $depouillement, DepouillementPhoto $photo, bool $saisie = false): void
     {
-        $this->verifier($gn, $depouillement, $saisie);
+        $saisie ? $this->verifierContenu($gn, $depouillement) : $this->verifier($gn, $depouillement);
 
         if ($photo->getDepouillement()->getId() !== $depouillement->getId()) {
             throw $this->createNotFoundException();

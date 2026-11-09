@@ -38,7 +38,7 @@ final class DepouillementEtiquetteController extends AbstractDepouillementContro
     #[Route('/gn/{gn}/depouillement/{depouillement}/etiquettes', name: 'depouillement.etiquette.add', requirements: ['gn' => '\d+', 'depouillement' => '\d+'], methods: ['POST'])]
     public function addAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementEtiquetteService $etiquetteService): Response
     {
-        $this->verifier($gn, $depouillement, saisie: true);
+        $this->verifierContenu($gn, $depouillement);
         $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::ETIQUETTES), 303);
 
         $form = $this->createForm(DepouillementEtiquetteType::class, new EtiquetteSaisie());
@@ -71,7 +71,7 @@ final class DepouillementEtiquetteController extends AbstractDepouillementContro
     )]
     public function deleteAction(Request $request, Gn $gn, Depouillement $depouillement, DepouillementEtiquette $etiquette, DepouillementEtiquetteService $etiquetteService): Response
     {
-        $this->verifier($gn, $depouillement, saisie: true);
+        $this->verifierContenu($gn, $depouillement);
         if ($etiquette->getDepouillement()->getId() !== $depouillement->getId()) {
             throw $this->createNotFoundException();
         }

@@ -36,6 +36,24 @@ abstract class AbstractDepouillementController extends AbstractController
     }
 
     /**
+     * Action sur le contenu physique de l'enveloppe (photos, étiquettes, contenu, actions) : réservée au staff, jamais au joueur
+     * qui déclare son propre retour.
+     */
+    protected function verifierContenu(Gn $gn, Depouillement $depouillement): void
+    {
+        $this->verifier($gn, $depouillement, saisie: true);
+        $this->denyAccessUnlessGranted(DepouillementVoter::CONTENU, $depouillement);
+    }
+
+    /**
+     * L'utilisateur parcourt le dossier en joueur qui déclare son retour (il n'a pas la main sur le contenu physique de l'enveloppe).
+     */
+    protected function declarant(Depouillement $depouillement): bool
+    {
+        return !$this->isGranted(DepouillementVoter::CONTENU, $depouillement);
+    }
+
+    /**
      * Le dossier est en cours de saisie ET l'utilisateur a la main dessus (un joueur la perd quand un tiers reprend le dossier).
      */
     protected function saisissable(Depouillement $depouillement): bool

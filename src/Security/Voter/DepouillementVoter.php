@@ -18,6 +18,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
  * Droits sur un dépouillement, une conception d'héritier ou le GN.
  *
  * - VALIDER : la validation (et le renvoi, la décision sur les héritiers) est réservée aux scénaristes, wargames et admins.
+ * - CONTENU : saisir le contenu physique de l'enveloppe, réservé au staff (les simulations restent ouvertes aux bêta-testeurs).
  * - VOIR et SAISIR (sur un dépouillement) : une simulation reste ouverte à tout bêta-testeur. Un dossier RÉEL est ouvert aux
  *   scénaristes, wargames et admins, et à son joueur propriétaire (le participant dont le numéro est celui du dossier). Le joueur
  *   saisit tant qu'aucun autre n'a pris le relais : dès qu'un tiers a repris le dossier, le joueur n'a plus que la lecture.
@@ -31,6 +32,8 @@ class DepouillementVoter extends Voter
 
     public const string SAISIR = 'DEPOUILLEMENT_SAISIR';
 
+    public const string CONTENU = 'DEPOUILLEMENT_CONTENU';
+
     public function __construct(
         private readonly Security $security,
     ) {
@@ -38,7 +41,7 @@ class DepouillementVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if (\in_array($attribute, [self::VOIR, self::SAISIR], strict: true)) {
+        if (\in_array($attribute, [self::VOIR, self::SAISIR, self::CONTENU], strict: true)) {
             return $subject instanceof Depouillement;
         }
 
@@ -57,6 +60,11 @@ class DepouillementVoter extends Voter
 
         if ($subject->isSimulation()) {
             return true;
+        }
+
+        // Le contenu physique de l'enveloppe (photos, étiquettes, contenu, actions) n'est jamais écrit par le joueur d'un dossier réel.
+        if (self::CONTENU === $attribute) {
+            return false;
         }
 
         $utilisateur = $token->getUser();

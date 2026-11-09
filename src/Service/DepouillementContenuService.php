@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Enum\ActionStatut;
 use App\Enum\DepouillementType;
 use App\Exception\ContenuInvalideException;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -18,6 +19,7 @@ use Doctrine\ORM\EntityManagerInterface;
  * Tant que le dépouillement n'est pas validé, tout est gardé dans `donnees['contenu_joueur']` (brouillon de suivi) : les listes
  * y sont des identifiants. Rien n'est appliqué à la fiche du joueur avant la validation (étape 12).
  */
+// @mago-expect lint:cyclomatic-complexity
 readonly class DepouillementContenuService
 {
     private const string CLE = 'contenu_joueur';
@@ -36,7 +38,7 @@ readonly class DepouillementContenuService
     /**
      * @throws ContenuInvalideException si le dépouillement n'est pas une enveloppe de joueur ou n'est plus modifiable
      */
-    public function enregistrerContenuJoueur(Depouillement $depouillement, ContenuJoueur $contenu, User $utilisateur): void
+    public function enregistrerContenuJoueur(Depouillement $depouillement, ContenuJoueur $contenu, User $utilisateur, bool $parJoueur = false): void
     {
         if (DepouillementType::JOUEUR !== $depouillement->getType()) {
             throw new ContenuInvalideException('Ce contenu ne concerne que les enveloppes de joueur.');
@@ -50,7 +52,14 @@ readonly class DepouillementContenuService
         $avant = $depouillement->getDonnees()[self::CLE] ?? null;
         $apres = $this->serialiseur->versTableau($contenu, $this->statuts($contenu));
 
-        $depouillement->setDonnees([...$depouillement->getDonnees(), self::CLE => $apres]);
+        $decisions = DecisionsDeclaration::suivre(
+            $depouillement->getDonnees()['decisions'] ?? [],
+            $this->valeursSuivies(\is_array($avant) ? $avant : []),
+            $this->valeursSuivies($apres),
+            new AuteurDeclaration($parJoueur, (int) $utilisateur->getId(), new DateTimeImmutable()),
+        );
+
+        $depouillement->setDonnees([...$depouillement->getDonnees(), self::CLE => $apres, 'decisions' => $decisions]);
         $this->majRemarquesIntrouvables($depouillement, $contenu->introuvables);
         $depouillement->addHistory(
             (new DepouillementHistory())
@@ -111,6 +120,26 @@ readonly class DepouillementContenuService
     public function compterAcceptees(ContenuJoueur $contenu): int
     {
         return \count(array_filter($this->regles->evaluer($contenu), static fn (ActionFinOpusResultat $resultat): bool => ActionStatut::ACCEPTEE === $resultat->statut));
+    }
+
+    /**
+     * Ce que le joueur peut déclarer dans le contenu (apprentissages et mort) : ce sont ces valeurs dont on suit la provenance.
+     *
+     * @param array<string, mixed> $contenu
+     *
+     * @return array<string, mixed>
+     */
+    private function valeursSuivies(array $contenu): array
+    {
+        return [
+            'sorts' => $contenu['sorts'] ?? [],
+            'prieres' => $contenu['prieres'] ?? [],
+            'potions' => $contenu['potions'] ?? [],
+            'competence_apprise' => $contenu['competence_apprise'] ?? null,
+            'enseignant_numero' => $contenu['enseignant_numero'] ?? null,
+            'personnage_mort' => $contenu['personnage_mort'] ?? false,
+            'circonstances_mort' => $contenu['circonstances_mort'] ?? null,
+        ];
     }
 
     /**
