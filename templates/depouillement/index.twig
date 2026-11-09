@@ -18,6 +18,17 @@
 		Fonctionnalité en cours de test, réservée aux bêta-testeurs. Une <strong>simulation</strong> n'a aucun effet sur les joueurs ni sur les groupes et peut être supprimée à tout moment. Un <strong>dossier réel</strong> (ouvert par le joueur ou par le staff) n'est appliqué qu'à la validation.
 	</div>
 
+	{% if is_granted('ROLE_WARGAME') %}
+		<div class="card mb-3 lm-carte-verre">
+			<div class="card-header">Exports CSV (wargame)</div>
+			<div class="card-body">
+				<a class="btn btn-sm btn-outline-secondary" href="{{ path('gn.export.fiches_groupe', {'gn': gn.id}) }}"><i class="fa fa-download"></i> Fiches de retour de groupe</a>
+				<a class="btn btn-sm btn-outline-secondary" href="{{ path('gn.export.retours_groupe', {'gn': gn.id}) }}"><i class="fa fa-download"></i> Retours de groupe (titres, ordres)</a>
+				<a class="btn btn-sm btn-outline-secondary" href="{{ path('gn.export.retours_joueurs', {'gn': gn.id}) }}"><i class="fa fa-download"></i> Retours des joueurs</a>
+			</div>
+		</div>
+	{% endif %}
+
 	<div class="card mb-3 lm-carte-verre">
 		<div class="card-header">Nouveau dépouillement</div>
 		<div class="card-body">

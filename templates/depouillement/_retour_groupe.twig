@@ -1,0 +1,67 @@
+{# Étape « Retour du groupe » : titres de la session (numéros de personnage) et ordres des trois phases.
+   Variables : retourGroupe, formRetourGroupe (null si non modifiable), titresGroupe (libellés), declarant #}
+
+{% if declarant %}
+	<p class="text-muted">Le chef de groupe et les titulaires des six titres remplissent ensemble ce retour, qui est partagé : chacun peut le compléter tant qu'un organisateur n'a pas pris le relais. Les ordres de conquête de chaque phase sont validés par le wargame. Rien n'est appliqué avant la validation.</p>
+{% endif %}
+
+{% if formRetourGroupe %}
+	{% set f = formRetourGroupe %}
+	{{ form_start(f, {'attr': {'data-lm-unsaved': ''}}) }}
+	<h6>Titres de la session</h6>
+	<div class="row">
+		{% for champ in f.titres %}
+			<div class="col-md-4 mb-2">{{ form_row(champ) }}</div>
+		{% endfor %}
+	</div>
+	<h6>Ordres</h6>
+	{{ form_row(f.ordres1) }}
+	{{ form_row(f.ordres2) }}
+	{{ form_row(f.ordres3) }}
+	{{ form_row(f.precisions) }}
+	{{ form_row(f.submit) }}
+	{{ form_end(f) }}
+{% else %}
+	<h6>Titres de la session</h6>
+	<ul>
+		{% for cle, libelle in titresGroupe %}
+			<li>{{ libelle }} : {{ retourGroupe.titres[cle] is not empty ? 'n° ' ~ retourGroupe.titres[cle] : '-' }}</li>
+		{% endfor %}
+	</ul>
+	{% for numero, texte in {1: retourGroupe.ordres1, 2: retourGroupe.ordres2, 3: retourGroupe.ordres3} %}
+		{% if texte %}
+			<h6>Ordres de la phase {{ numero }}</h6>
+			<p>{{ texte|nl2br }}</p>
+		{% endif %}
+	{% endfor %}
+	{% if retourGroupe.precisions %}
+		<h6>Précisions</h6>
+		<p>{{ retourGroupe.precisions|nl2br }}</p>
+	{% endif %}
+{% endif %}
+
+{% include 'depouillement/_suivi_groupe.twig' %}
+
+{# Validation des ordres de conquête, phase par phase, par le wargame. #}
+{% if phasesOrdres is not empty %}
+	<h6 class="mt-3">Validation des ordres par le wargame</h6>
+	<ul class="list-unstyled">
+		{% for numero, phase in phasesOrdres %}
+			<li class="mb-2">
+				<strong>Phase {{ numero }}</strong> :
+				{% if phase.valide %}
+					<span class="badge bg-success">Validée par le wargame</span>
+				{% else %}
+					<span class="badge bg-warning text-dark">En attente de validation</span>
+				{% endif %}
+				{% if peutValiderOrdres %}
+					<form method="post" class="d-inline" action="{{ path('depouillement.ordres', {'gn': gn.id, 'depouillement': depouillement.id, 'phase': numero, 'decision': phase.valide ? 'rouvrir' : 'valider'}) }}">
+						<input type="hidden" name="_token" value="{{ csrf_token('depouillement_ordres_' ~ depouillement.id) }}">
+						<button type="submit" class="btn btn-sm {{ phase.valide ? 'btn-outline-secondary' : 'btn-success' }}">{{ phase.valide ? 'Retirer la validation' : 'Valider les ordres' }}</button>
+					</form>
+				{% endif %}
+			</li>
+		{% endfor %}
+	</ul>
+	<p class="text-muted small">Modifier le texte d'une phase retire sa validation. La validation du dossier signale les phases dont les ordres n'ont pas été validés.</p>
+{% endif %}

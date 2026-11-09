@@ -8,6 +8,7 @@ use App\Entity\Conception;
 use App\Entity\Depouillement;
 use App\Entity\Gn;
 use App\Entity\User;
+use App\Enum\DepouillementType;
 use App\Enum\Role;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -18,15 +19,19 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
  * Droits sur un dépouillement, une conception d'héritier ou le GN.
  *
  * - VALIDER : la validation (et le renvoi, la décision sur les héritiers) est réservée aux scénaristes, wargames et admins.
+ * - VALIDER_ORDRES : la validation des ordres de conquête de chaque phase d'un retour de groupe est réservée au wargame et à l'admin.
  * - CONTENU : saisir le contenu physique de l'enveloppe, réservé au staff (les simulations restent ouvertes aux bêta-testeurs).
  * - VOIR et SAISIR (sur un dépouillement) : une simulation reste ouverte à tout bêta-testeur. Un dossier RÉEL est ouvert aux
  *   scénaristes, wargames et admins, et à son joueur propriétaire (le participant dont le numéro est celui du dossier). Le joueur
  *   saisit tant qu'aucun autre n'a pris le relais : dès qu'un tiers a repris le dossier, le joueur n'a plus que la lecture.
  *   Le statut du dossier (modifiable ou non) est vérifié à part, par le dépouillement lui-même.
  */
+// @mago-expect lint:cyclomatic-complexity
 class DepouillementVoter extends Voter
 {
     public const string VALIDER = 'DEPOUILLEMENT_VALIDER';
+
+    public const string VALIDER_ORDRES = 'DEPOUILLEMENT_VALIDER_ORDRES';
 
     public const string VOIR = 'DEPOUILLEMENT_VOIR';
 
@@ -45,11 +50,20 @@ class DepouillementVoter extends Voter
             return $subject instanceof Depouillement;
         }
 
+        if (self::VALIDER_ORDRES === $attribute) {
+            return $subject instanceof Depouillement;
+        }
+
         return self::VALIDER === $attribute && ($subject instanceof Depouillement || $subject instanceof Conception || $subject instanceof Gn);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, #[\SensitiveParameter] TokenInterface $token, ?Vote $vote = null): bool
     {
+        // Les ordres de conquête sont validés par le wargame (et l'admin), pas par les autres scénaristes.
+        if (self::VALIDER_ORDRES === $attribute) {
+            return $this->security->isGranted(Role::WARGAME->value) || $this->security->isGranted(Role::ADMIN->value);
+        }
+
         if ($this->estStaff()) {
             return true;
         }
@@ -87,10 +101,15 @@ class DepouillementVoter extends Voter
     }
 
     /**
-     * Le joueur propriétaire d'un dossier de joueur : l'utilisateur du participant concerné. Un dossier de groupe n'a pas de propriétaire.
+     * Le joueur propriétaire d'un dossier de joueur : l'utilisateur du participant concerné. Pour un dossier de groupe : le chef du
+     * groupe et les joueurs de ses six titres (suzerain, chef de guerre, diplomate, intendant, navigateur, éminence grise).
      */
     private function estProprietaire(User $utilisateur, Depouillement $depouillement): bool
     {
+        if (DepouillementType::GROUPE === $depouillement->getType()) {
+            return $depouillement->getGroupeGn()?->peutSaisirRetour($utilisateur) ?? false;
+        }
+
         return $depouillement->getParticipant()?->getUser()?->getId() === $utilisateur->getId();
     }
 
@@ -100,6 +119,11 @@ class DepouillementVoter extends Voter
     private function aLaMain(User $utilisateur, Depouillement $depouillement): bool
     {
         $saisisseur = $depouillement->getDepouilleur();
+
+        // Un retour de groupe est partagé : il reste à tous ses titulaires tant que personne d'autre (le staff) n'en a pris le relais.
+        if (DepouillementType::GROUPE === $depouillement->getType() && $saisisseur instanceof User) {
+            return $saisisseur->getId() === $utilisateur->getId() || ($depouillement->getGroupeGn()?->peutSaisirRetour($saisisseur) ?? false);
+        }
 
         return !$saisisseur instanceof User || $saisisseur->getId() === $utilisateur->getId();
     }

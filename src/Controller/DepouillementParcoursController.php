@@ -13,7 +13,13 @@ use App\Form\Depouillement\ContenuGroupeType;
 use App\Form\Depouillement\ContenuJoueurType;
 use App\Form\Depouillement\DeclarationJoueurType;
 use App\Service\ContenuGroupe;
+use App\Security\Voter\DepouillementVoter;
 use App\Service\DepouillementGroupeService;
+use App\Service\DepouillementOrdresService;
+use App\Service\DepouillementSuiviGroupeService;
+use App\Service\DepouillementRetourGroupeService;
+use App\Service\RetourGroupe;
+use App\Form\Depouillement\RetourGroupeType;
 use App\Form\Depouillement\DepouillementEtiquetteType;
 use App\Form\Depouillement\DepouillementRemarquesType;
 use App\Service\CompteursEnveloppe;
@@ -39,6 +45,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * Fonctionnalité en cours de développement : réservée à ROLE_BETA_TEST (voir docs/plans/role-beta-test.md).
  */
 // @mago-expect lint:cyclomatic-complexity
+// @mago-expect lint:too-many-methods
 #[IsGranted('ROLE_BETA_TEST', message: 'Fonctionnalité en cours de test.')]
 final class DepouillementParcoursController extends AbstractDepouillementController
 {
@@ -94,6 +101,9 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         PiecesAttendues $piecesAttendues,
         DepouillementDeclarationService $declarationService,
         DepouillementDecisionService $decisionService,
+        DepouillementRetourGroupeService $retourGroupeService,
+        DepouillementOrdresService $ordresService,
+        DepouillementSuiviGroupeService $suiviService,
     ): Response {
         $this->verifier($gn, $depouillement);
 
@@ -135,6 +145,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             ...$this->contenuJoueur($depouillement, $etape, $contenuService, $piecesAttendues),
             ...$this->declaration($depouillement, $etape, $declarationService, $decisionService),
             ...$this->contenuGroupe($depouillement, $etape, $groupeService),
+            ...$this->retourGroupe($depouillement, $etape, $retourGroupeService, $ordresService, $suiviService),
         ]);
     }
 
@@ -250,6 +261,40 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             'suiviDeclaration' => DecisionsDeclaration::resume(DecisionsDeclaration::depuis($depouillement->getDonnees())),
             'lignesDeclaration' => $decisionService->lignes($depouillement),
             'peutDecider' => $this->saisissable($depouillement) && !$this->declarant($depouillement),
+        ];
+    }
+
+    /**
+     * Variables de l'étape Retour du groupe (et du récapitulatif) d'un dossier de groupe : titres et ordres, formulaire si modifiable.
+     *
+     * @return array<string, mixed>
+     */
+    private function retourGroupe(
+        Depouillement $depouillement,
+        DepouillementEtape $etape,
+        DepouillementRetourGroupeService $retourGroupeService,
+        DepouillementOrdresService $ordresService,
+        DepouillementSuiviGroupeService $suiviService,
+    ): array {
+        if (!\in_array($etape, [DepouillementEtape::RETOUR_GROUPE, DepouillementEtape::RECAPITULATIF], strict: true) || DepouillementType::GROUPE !== $depouillement->getType()) {
+            return [];
+        }
+
+        $retour = $retourGroupeService->lire($depouillement);
+
+        return [
+            'retourGroupe' => $retour,
+            'titresGroupe' => RetourGroupe::TITRES,
+            'phasesOrdres' => $ordresService->phases($depouillement),
+            'suiviGroupe' => $suiviService->suivi($depouillement),
+            'statutsCloture' => DepouillementSuiviGroupeService::STATUTS,
+            'peutCloturer' => $this->isGranted(DepouillementVoter::VALIDER, $depouillement),
+            'peutValiderOrdres' => $this->saisissable($depouillement) && $this->isGranted(DepouillementVoter::VALIDER_ORDRES, $depouillement),
+            'formRetourGroupe' => DepouillementEtape::RETOUR_GROUPE === $etape && $this->saisissable($depouillement)
+                ? $this->createForm(RetourGroupeType::class, $retour, [
+                    'action' => $this->generateUrl('depouillement.retour_groupe', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()]),
+                ])
+                : null,
         ];
     }
 

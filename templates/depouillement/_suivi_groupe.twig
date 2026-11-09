@@ -1,0 +1,59 @@
+{# Suivi des retours des membres d'un groupe : reçus / attendus, et clôture des retours qui ne viendront pas.
+   Variables : suiviGroupe (lignes, attendus, recus, clotures), statutsCloture, peutCloturer #}
+
+<h6 class="mt-4">Retours des membres du groupe</h6>
+<p class="mb-2">
+	<strong>{{ suiviGroupe.recus }} / {{ suiviGroupe.attendus }}</strong> retour(s) reçu(s)
+	{% if suiviGroupe.clotures > 0 %}, {{ suiviGroupe.clotures }} clôturé(s) sans retour{% endif %}
+	{% if suiviGroupe.recus + suiviGroupe.clotures >= suiviGroupe.attendus and suiviGroupe.attendus > 0 %}
+		<span class="badge text-bg-success">Groupe complet</span>
+	{% endif %}
+</p>
+
+{% if peutCloturer and suiviGroupe.lignes|length > 0 %}
+	<div class="table-responsive">
+		<table class="table table-sm">
+			<thead>
+				<tr><th>Joueur</th><th>Personnage</th><th>Retour</th><th>Clôture</th></tr>
+			</thead>
+			<tbody>
+				{% for ligne in suiviGroupe.lignes %}
+					{% set participant = ligne.participant %}
+					<tr>
+						<td>{{ participant.user ? participant.user.username : '-' }}</td>
+						<td>n° {{ participant.personnage.id }} {{ participant.personnage.publicName }}</td>
+						<td>
+							{% if ligne.dossier %}
+								<a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': ligne.dossier.id, 'etape': 'recapitulatif'}) }}">{{ ligne.dossier.statut.label }}</a>
+							{% else %}
+								<span class="text-muted">Aucun</span>
+							{% endif %}
+						</td>
+						<td>
+							{% if ligne.recu %}
+								-
+							{% elseif ligne.cloture %}
+								<span class="badge text-bg-secondary">{{ statutsCloture[ligne.cloture.statut] }}</span> {{ ligne.cloture.motif }}
+								<form method="post" class="d-inline" action="{{ path('depouillement.cloture', {'gn': gn.id, 'depouillement': depouillement.id, 'participant': participant.id, 'decision': 'rouvrir'}) }}">
+									<input type="hidden" name="_token" value="{{ csrf_token('depouillement_cloture_' ~ depouillement.id) }}">
+									<button type="submit" class="btn btn-sm btn-outline-secondary">Retirer</button>
+								</form>
+							{% elseif modifiable %}
+								<form method="post" class="row g-1" action="{{ path('depouillement.cloture', {'gn': gn.id, 'depouillement': depouillement.id, 'participant': participant.id, 'decision': 'cloturer'}) }}">
+									<input type="hidden" name="_token" value="{{ csrf_token('depouillement_cloture_' ~ depouillement.id) }}">
+									<div class="col-auto">
+										<select name="statut" class="form-select form-select-sm" aria-label="Statut">
+											{% for cle, libelle in statutsCloture %}<option value="{{ cle }}">{{ libelle }}</option>{% endfor %}
+										</select>
+									</div>
+									<div class="col"><input type="text" name="motif" class="form-control form-control-sm" maxlength="500" placeholder="Motif" aria-label="Motif" required></div>
+									<div class="col-auto"><button type="submit" class="btn btn-sm btn-outline-primary">Clôturer</button></div>
+								</form>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endif %}

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Depouillement;
+use App\Entity\Participant;
+use App\Enum\DepouillementType;
+use App\Security\Voter\DepouillementVoter;
 use App\Entity\Gn;
 use App\Enum\DepouillementEtape;
 use App\Exception\EnveloppeIntrouvableException;
@@ -49,5 +52,27 @@ final class DepouillementJoueurController extends AbstractDepouillementControlle
             'gn' => $gn,
             'personnage' => $joueur->getParticipant($gn)?->getPersonnage(),
         ]);
+    }
+
+    /**
+     * Lien depuis la fiche d'un participant vers son retour de jeu (staff) : ouvre le dossier réel s'il existe.
+     */
+    #[Route('/gn/{gn}/participant/{participant}/retour', name: 'depouillement.retour_participant', requirements: ['gn' => '\d+', 'participant' => '\d+'], methods: ['GET'])]
+    public function retourParticipantAction(Gn $gn, Participant $participant, DepouillementService $depouillementService): Response
+    {
+        $this->denyAccessUnlessGranted(DepouillementVoter::VALIDER, $gn);
+        if ($participant->getGn()?->getId() !== $gn->getId()) {
+            throw $this->createNotFoundException();
+        }
+
+        $personnage = $participant->getPersonnage();
+        $dossier = null === $personnage ? null : $depouillementService->trouverReel($gn, DepouillementType::JOUEUR, (string) $personnage->getId());
+        if (!$dossier instanceof Depouillement) {
+            $this->addFlash('warning', "Ce participant n'a pas encore de retour de jeu pour ce GN.");
+
+            return $this->redirectToRoute('participant.detail', ['participant' => $participant->getId()], 303);
+        }
+
+        return $this->redirectToRoute('depouillement.etape', $this->parametres($dossier, DepouillementEtape::RECAPITULATIF), 303);
     }
 }

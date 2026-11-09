@@ -140,7 +140,7 @@ class FicheRetourGroupeImportService
             return [];
         }
 
-        while (false !== ($row = fgetcsv($handle, 0, ',', '"'))) {
+        while (false !== ($row = fgetcsv($handle, 0, ',', '"', ''))) {
             $rows[] = array_map(static fn ($v) => mb_convert_encoding((string) $v, 'UTF-8', 'UTF-8,ISO-8859-1'), $row);
         }
 
