@@ -21,6 +21,10 @@
                    href="{{ path('gn.fiche_retour.template', {'gn': gn.id}) }}">
                     <i class="fa fa-download"></i> Télécharger le modèle CSV
                 </a>
+                <a class="btn btn-sm btn-outline-info"
+                   href="{{ path('gn.export.fiches_groupe', {'gn': gn.id}) }}">
+                    <i class="fa fa-download"></i> Exporter les fiches existantes
+                </a>
             </div>
             <div class="card-body">
                 <p class="mb-1">Fichier CSV ou Excel avec les colonnes :</p>
