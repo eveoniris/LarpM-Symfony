@@ -13,6 +13,7 @@ final readonly class ResultatValidation
         public ResultatApprentissages $apprentissages,
         public ResultatApprentissages $finOpus,
         public ResultatApprentissages $enveloppeSuivante,
+        public ResultatApprentissages $savoirs = new ResultatApprentissages('Langues, connaissances et technologies'),
     ) {
     }
 
@@ -23,7 +24,7 @@ final readonly class ResultatValidation
      */
     public function parties(): array
     {
-        return array_values(array_filter([$this->apprentissages, $this->finOpus, $this->enveloppeSuivante], static fn (ResultatApprentissages $partie): bool => !$partie->estVide()));
+        return array_values(array_filter([$this->apprentissages, $this->savoirs, $this->finOpus, $this->enveloppeSuivante], static fn (ResultatApprentissages $partie): bool => !$partie->estVide()));
     }
 
     public function estVide(): bool

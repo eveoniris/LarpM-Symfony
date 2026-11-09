@@ -26,6 +26,7 @@ readonly class DepouillementValidationService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private DepouillementApprentissageService $apprentissages,
+        private DepouillementSavoirsService $savoirs,
         private DepouillementFinOpusService $finOpus,
         private DepouillementImportService $import,
     ) {
@@ -40,6 +41,7 @@ readonly class DepouillementValidationService
     {
         $this->verifierAValider($depouillement);
         $apprentissages = $this->apprentissages->appliquer($depouillement);
+        $savoirs = $this->savoirs->appliquer($depouillement);
         $finOpus = $this->finOpus->appliquer($depouillement);
 
         $historique = (new DepouillementHistory())
@@ -47,7 +49,7 @@ readonly class DepouillementValidationService
             ->setActionType(DepouillementHistory::ACTION_VALIDATION)
             ->setStatutAvant($depouillement->getStatut())
             ->setStatutApres(DepouillementStatut::VALIDE)
-            ->setMotif($this->motif($depouillement, new ResultatValidation($apprentissages, $finOpus, new ResultatApprentissages())));
+            ->setMotif($this->motif($depouillement, new ResultatValidation($apprentissages, $finOpus, new ResultatApprentissages(), $savoirs)));
 
         $depouillement
             ->setStatut(DepouillementStatut::VALIDE)
@@ -59,7 +61,7 @@ readonly class DepouillementValidationService
         $this->entityManager->flush();
         // Le report vers l'enveloppe suivante change le statut (terminé ou en attente d'import) et ne concerne jamais une simulation.
         $enveloppeSuivante = $this->import->importer($depouillement, $validateur);
-        $resultat = new ResultatValidation($apprentissages, $finOpus, $enveloppeSuivante);
+        $resultat = new ResultatValidation($apprentissages, $finOpus, $enveloppeSuivante, $savoirs);
         $this->journaliser($depouillement, $historique, $validateur, 'validation', $resultat);
 
         return $resultat;
