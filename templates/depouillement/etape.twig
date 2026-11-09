@@ -215,6 +215,8 @@
 				{% include 'depouillement/_actions_joueur.twig' %}
 			{% elseif etape.value == 'declaration' %}
 				{% include 'depouillement/_declaration_joueur.twig' %}
+			{% elseif etape.value == 'retour-groupe' %}
+				{% include 'depouillement/_retour_groupe.twig' %}
 			{% elseif etape.value == 'conceptions' %}
 				{% include 'depouillement/_conceptions.twig' %}
 			{% elseif etape.value == 'remarques' %}
@@ -273,6 +275,12 @@
 							<li class="lm-anomalie"><i class="fa fa-triangle-exclamation"></i> {{ enAttente }} ligne(s) déclarée(s) par le joueur attendent une décision (<a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'declaration'}) }}">étape Déclaration</a>).</li>
 						{% endif %}
 						{% if not declarant %}<li>Surplus à reverser au groupe (trouvé moins consommé par les actions) : {% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}</li>{% endif %}
+					{% endif %}
+					{% if retourGroupe is defined %}
+						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'retour-groupe'}) }}">Retour du groupe</a> :
+							{% for cle, libelle in titresGroupe %}{{ libelle }} {{ retourGroupe.titres[cle] is not empty ? 'n° ' ~ retourGroupe.titres[cle] : '-' }}{% if not loop.last %}, {% endif %}{% endfor %}
+							; ordres : {{ [retourGroupe.ordres1, retourGroupe.ordres2, retourGroupe.ordres3]|filter(o => o)|length }} phase(s) renseignée(s)
+						</li>
 					{% endif %}
 					{% if contenuGroupe is defined %}
 						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Reliquat du groupe</a> :

@@ -24,6 +24,7 @@ enum DepouillementEtape: string
     case ACTIONS = 'actions';
     case DECLARATION = 'declaration';
     case CONCEPTIONS = 'conceptions';
+    case RETOUR_GROUPE = 'retour-groupe';
     case REMARQUES = 'remarques';
     case RECAPITULATIF = 'recapitulatif';
 
@@ -37,6 +38,7 @@ enum DepouillementEtape: string
             self::ACTIONS => 'Actions de fin d\'Opus',
             self::DECLARATION => 'Déclaration du joueur',
             self::CONCEPTIONS => 'Conceptions',
+            self::RETOUR_GROUPE => 'Retour du groupe',
             self::REMARQUES => 'Remarques',
             self::RECAPITULATIF => 'Récapitulatif',
         };
@@ -48,10 +50,16 @@ enum DepouillementEtape: string
         return \in_array($this, [self::ACTIONS, self::DECLARATION, self::CONCEPTIONS], strict: true);
     }
 
+    /** Étape propre aux enveloppes de groupe. */
+    public function estReserveeAuxGroupes(): bool
+    {
+        return self::RETOUR_GROUPE === $this;
+    }
+
     /** Étape ouverte au joueur qui déclare son retour (le contenu physique de l'enveloppe lui reste fermé). */
     public function estOuverteAuDeclarant(): bool
     {
-        return \in_array($this, [self::DECLARATION, self::CONCEPTIONS, self::REMARQUES, self::RECAPITULATIF], strict: true);
+        return \in_array($this, [self::DECLARATION, self::CONCEPTIONS, self::RETOUR_GROUPE, self::REMARQUES, self::RECAPITULATIF], strict: true);
     }
 
     /**
@@ -63,7 +71,11 @@ enum DepouillementEtape: string
     {
         return array_values(array_filter(
             self::cases(),
-            static fn (self $etape): bool => (DepouillementType::JOUEUR === $type || !$etape->estReserveeAuxJoueurs()) && (!$declarant || $etape->estOuverteAuDeclarant()),
+            static fn (self $etape): bool => (
+                (DepouillementType::JOUEUR === $type || !$etape->estReserveeAuxJoueurs())
+                && (DepouillementType::GROUPE === $type || !$etape->estReserveeAuxGroupes())
+                && (!$declarant || $etape->estOuverteAuDeclarant())
+            ),
         ));
     }
 

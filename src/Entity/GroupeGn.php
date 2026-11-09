@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Entity;
 
+// @mago-expect lint:cyclomatic-complexity
 #[Entity(repositoryClass: GroupeGnRepository::class)]
 class GroupeGn extends BaseGroupeGn
 {
@@ -150,6 +151,41 @@ class GroupeGn extends BaseGroupeGn
         }
 
         return $this->getNavigateur(false)?->getId() === $personnage->getId();
+    }
+
+    /**
+     * Les six titres de la session, par clé du retour de groupe (strict : un titre vide n'est pas remplacé par celui du suzerain).
+     *
+     * @return array<string, Personnage|null>
+     */
+    public function titulaires(): array
+    {
+        return [
+            'suzerain' => $this->getSuzerin(),
+            'chef_guerre' => $this->getConnetable(),
+            'diplomate' => $this->getDiplomate(),
+            'intendant' => $this->getIntendant(),
+            'navigateur' => $this->getNavigateur(),
+            'eminence_grise' => $this->getCamarilla(),
+        ];
+    }
+
+    /**
+     * Le chef de groupe (participant responsable) et les joueurs des personnages titrés peuvent remplir le retour de groupe.
+     */
+    public function peutSaisirRetour(User $utilisateur): bool
+    {
+        if (null !== $utilisateur->getId() && $this->getParticipant()?->getUser()?->getId() === $utilisateur->getId()) {
+            return true;
+        }
+
+        foreach ($this->titulaires() as $personnage) {
+            if (null !== $personnage && null !== $utilisateur->getId() && $personnage->getUser()?->getId() === $utilisateur->getId()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function isResponsable(Personnage|Participant $personnage): bool
