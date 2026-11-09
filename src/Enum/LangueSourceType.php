@@ -16,6 +16,8 @@ enum LangueSourceType: string
     /** Langue transmise par les parents d'un héritier né en jeu (choisie par le scénariste). */
     case PARENTS = 'PARENTS';
     case LITTERATURE = 'LITTERATURE';
+    /** Langue apprise pendant le jeu, déclarée dans le retour de jeu et validée par le staff. */
+    case JEU = 'JEU';
 
     public function getLabel(): string
     {
@@ -49,6 +51,7 @@ enum LangueSourceType: string
             self::ORIGINE_ET_GROUPE->value => 'Origine et groupe',
             self::PARENTS->value => 'Parents',
             self::LITTERATURE->value => 'Littérature',
+            self::JEU->value => 'Apprise en jeu',
         ];
     }
 }
