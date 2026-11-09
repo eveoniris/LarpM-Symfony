@@ -1947,10 +1947,16 @@ class PersonnageController extends AbstractController
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
+        $sortsExemples = [];
+        foreach ($availableDomaines as $domaine) {
+            $sortsExemples[$domaine->getId()] = $personnageService->getSortsExemples($domaine, $personnage);
+        }
+
         return $this->render('personnage/domaineMagie.twig', [
             'form' => $form->createView(),
             'personnage' => $personnage,
             'domaines' => $availableDomaines,
+            'sortsExemples' => $sortsExemples,
         ]);
     }
 
@@ -4235,12 +4241,20 @@ class PersonnageController extends AbstractController
         #[MapEntity]
         Personnage $personnage,
         DomaineRepository $domaineRepository,
+        PersonnageService $personnageService,
     ): RedirectResponse|Response {
         $this->hasAccess($personnage);
 
+        $domaines = $domaineRepository->findAll();
+        $sortsExemples = [];
+        foreach ($domaines as $domaine) {
+            $sortsExemples[$domaine->getId()] = $personnageService->getSortsExemples($domaine, $personnage);
+        }
+
         return $this->render('personnage/magie.twig', [
-            'domaines' => $domaineRepository->findAll(),
+            'domaines' => $domaines,
             'personnage' => $personnage,
+            'sortsExemples' => $sortsExemples,
         ]);
     }
 

@@ -1692,6 +1692,32 @@ class PersonnageService
     }
 
     /**
+     * Sorts d'un domaine montrés en exemple au choix du domaine (règle SEC-01) :
+     * niveau accessible au personnage, sans les sorts secrets qu'il ne possède pas déjà.
+     *
+     * @return list<Sort>
+     */
+    public function getSortsExemples(Domaine $domaine, Personnage $personnage): array
+    {
+        $niveauMagie = $personnage->getCompetenceNiveau('Magie');
+        $exemples = [];
+
+        foreach ($domaine->getSorts() as $sort) {
+            if ($sort->getNiveau() > $niveauMagie) {
+                continue;
+            }
+
+            if ($sort->getSecret() && !$personnage->getSorts()->contains($sort)) {
+                continue;
+            }
+
+            $exemples[] = $sort;
+        }
+
+        return $exemples;
+    }
+
+    /**
      * @return ArrayCollection<int, Langue>
      */
     public function getAvailableLangues(Personnage $personnage, int $diffusion = 0): ArrayCollection

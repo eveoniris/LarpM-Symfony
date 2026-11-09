@@ -6,14 +6,12 @@
         </div>
         <p>{{ domaine.description|markdown_to_html }}</p>
         <div class="list-group">
-            {# il ne fait afficher que les sorts correspondant au niveau du mage #}
-            {% for sort in domaine.sorts %}
-                {% if sort.niveau <= personnage.competenceNiveau('Magie') %}
-                    <div class="list-group-item">
-                        <div class="list-group-item-heading">{{ sort.label }} - Niveau {{ sort.niveau }}</div>
-                        <div class="list-group-item-text">{{ sort.description|markdown_to_html }}</div>
-                    </div>
-                {% endif %}
+            {# sorts d'exemple filtrés côté serveur : niveau du mage, sans secrets non possédés (SEC-01) #}
+            {% for sort in sortsExemples[domaine.id] ?? [] %}
+                <div class="list-group-item">
+                    <div class="list-group-item-heading">{{ sort.label }} - Niveau {{ sort.niveau }}</div>
+                    <div class="list-group-item-text">{{ sort.description|markdown_to_html }}</div>
+                </div>
             {% endfor %}
         </div>
     </div>
