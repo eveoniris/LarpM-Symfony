@@ -16,6 +16,7 @@ use App\Service\ContenuGroupe;
 use App\Security\Voter\DepouillementVoter;
 use App\Service\DepouillementGroupeService;
 use App\Service\DepouillementOrdresService;
+use App\Service\DepouillementSuiviGroupeService;
 use App\Service\DepouillementRetourGroupeService;
 use App\Service\RetourGroupe;
 use App\Form\Depouillement\RetourGroupeType;
@@ -102,6 +103,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         DepouillementDecisionService $decisionService,
         DepouillementRetourGroupeService $retourGroupeService,
         DepouillementOrdresService $ordresService,
+        DepouillementSuiviGroupeService $suiviService,
     ): Response {
         $this->verifier($gn, $depouillement);
 
@@ -143,7 +145,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             ...$this->contenuJoueur($depouillement, $etape, $contenuService, $piecesAttendues),
             ...$this->declaration($depouillement, $etape, $declarationService, $decisionService),
             ...$this->contenuGroupe($depouillement, $etape, $groupeService),
-            ...$this->retourGroupe($depouillement, $etape, $retourGroupeService, $ordresService),
+            ...$this->retourGroupe($depouillement, $etape, $retourGroupeService, $ordresService, $suiviService),
         ]);
     }
 
@@ -267,8 +269,13 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
      *
      * @return array<string, mixed>
      */
-    private function retourGroupe(Depouillement $depouillement, DepouillementEtape $etape, DepouillementRetourGroupeService $retourGroupeService, DepouillementOrdresService $ordresService): array
-    {
+    private function retourGroupe(
+        Depouillement $depouillement,
+        DepouillementEtape $etape,
+        DepouillementRetourGroupeService $retourGroupeService,
+        DepouillementOrdresService $ordresService,
+        DepouillementSuiviGroupeService $suiviService,
+    ): array {
         if (!\in_array($etape, [DepouillementEtape::RETOUR_GROUPE, DepouillementEtape::RECAPITULATIF], strict: true) || DepouillementType::GROUPE !== $depouillement->getType()) {
             return [];
         }
@@ -279,6 +286,9 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             'retourGroupe' => $retour,
             'titresGroupe' => RetourGroupe::TITRES,
             'phasesOrdres' => $ordresService->phases($depouillement),
+            'suiviGroupe' => $suiviService->suivi($depouillement),
+            'statutsCloture' => DepouillementSuiviGroupeService::STATUTS,
+            'peutCloturer' => $this->isGranted(DepouillementVoter::VALIDER, $depouillement),
             'peutValiderOrdres' => $this->saisissable($depouillement) && $this->isGranted(DepouillementVoter::VALIDER_ORDRES, $depouillement),
             'formRetourGroupe' => DepouillementEtape::RETOUR_GROUPE === $etape && $this->saisissable($depouillement)
                 ? $this->createForm(RetourGroupeType::class, $retour, [

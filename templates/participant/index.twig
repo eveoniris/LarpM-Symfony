@@ -46,6 +46,20 @@
                         </li>
                     {% endif %}
 
+                    {% if participant.personnage and is_granted('ROLE_BETA_TEST') %}
+                        <li class="list-group-item">
+                            {% if participant.user.id == app.user.id %}
+                                <a href="{{ path('depouillement.mon_retour', {'gn': participant.gn.id}) }}"><i class="fa fa-clipboard-list"></i> Mon retour de jeu</a>
+                            {% endif %}
+                            {% if is_granted('DEPOUILLEMENT_VALIDER', participant.gn) %}
+                                <a href="{{ path('depouillement.retour_participant', {'gn': participant.gn.id, 'participant': participant.id}) }}"><i class="fa fa-clipboard-list"></i> Retour de jeu du participant</a>
+                            {% endif %}
+                        </li>
+                        {% if groupeGn and groupeGn.peutSaisirRetour(app.user) %}
+                            <li class="list-group-item"><a href="{{ path('depouillement.mon_groupe', {'gn': participant.gn.id}) }}"><i class="fa fa-users"></i> Retour de mon groupe</a></li>
+                        {% endif %}
+                    {% endif %}
+
                     {% if participant.personnage %}
                         {% for membre in participant.personnage.membres %}
                             <li class="list-group-item"><a

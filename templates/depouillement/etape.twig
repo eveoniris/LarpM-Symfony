@@ -279,7 +279,7 @@
 					{% if retourGroupe is defined %}
 						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'retour-groupe'}) }}">Retour du groupe</a> :
 							{% for cle, libelle in titresGroupe %}{{ libelle }} {{ retourGroupe.titres[cle] is not empty ? 'n° ' ~ retourGroupe.titres[cle] : '-' }}{% if not loop.last %}, {% endif %}{% endfor %}
-							; ordres : {{ [retourGroupe.ordres1, retourGroupe.ordres2, retourGroupe.ordres3]|filter(o => o)|length }} phase(s) renseignée(s)
+							; retours des membres : {{ suiviGroupe.recus }} / {{ suiviGroupe.attendus }}{% if suiviGroupe.clotures > 0 %} (+ {{ suiviGroupe.clotures }} clôturé(s)){% endif %}; ordres : {{ [retourGroupe.ordres1, retourGroupe.ordres2, retourGroupe.ordres3]|filter(o => o)|length }} phase(s) renseignée(s)
 						</li>
 					{% endif %}
 					{% if contenuGroupe is defined %}

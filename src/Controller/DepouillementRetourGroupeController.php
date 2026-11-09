@@ -11,7 +11,9 @@ use App\Exception\ContenuInvalideException;
 use App\Exception\EnveloppeIntrouvableException;
 use App\Form\Depouillement\RetourGroupeType;
 use App\Security\Voter\DepouillementVoter;
+use App\Entity\Participant;
 use App\Service\DepouillementOrdresService;
+use App\Service\DepouillementSuiviGroupeService;
 use App\Service\DepouillementRetourGroupeService;
 use App\Service\DepouillementService;
 use App\Service\RetourGroupe;
@@ -27,6 +29,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * Fonctionnalité en cours de développement : réservée à ROLE_BETA_TEST (voir docs/plans/role-beta-test.md).
  */
 #[IsGranted('ROLE_BETA_TEST', message: 'Fonctionnalité en cours de test.')]
+// @mago-expect lint:cyclomatic-complexity
 final class DepouillementRetourGroupeController extends AbstractDepouillementController
 {
     #[Route('/gn/{gn}/mon-groupe', name: 'depouillement.mon_groupe', requirements: ['gn' => '\d+'], methods: ['GET', 'POST'])]
@@ -119,6 +122,43 @@ final class DepouillementRetourGroupeController extends AbstractDepouillementCon
         }
 
         $this->addFlash('success', 'valider' === $decision ? \sprintf('Ordres de la phase %d validés.', $phase) : \sprintf('Validation des ordres de la phase %d retirée.', $phase));
+
+        return $retour;
+    }
+
+    /**
+     * Le staff clôture (pas de retour, n'a pas participé, avec motif) ou rouvre le retour d'un membre du groupe.
+     */
+    // @mago-expect lint:excessive-parameter-list
+    #[Route(
+        '/gn/{gn}/depouillement/{depouillement}/cloture/{participant}/{decision}',
+        name: 'depouillement.cloture',
+        requirements: ['gn' => '\d+', 'depouillement' => '\d+', 'participant' => '\d+', 'decision' => 'cloturer|rouvrir'],
+        methods: ['POST'],
+    )]
+    public function clotureAction(Request $request, Gn $gn, Depouillement $depouillement, Participant $participant, string $decision, DepouillementSuiviGroupeService $suiviService): Response
+    {
+        $this->verifier($gn, $depouillement);
+        $this->denyAccessUnlessGranted(DepouillementVoter::VALIDER, $depouillement);
+        $retour = $this->redirectToRoute('depouillement.etape', $this->parametres($depouillement, DepouillementEtape::RETOUR_GROUPE), 303);
+
+        if (!$this->jetonValide($request, 'depouillement_cloture_' . $depouillement->getId())) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+
+            return $retour;
+        }
+
+        try {
+            'cloturer' === $decision
+                ? $suiviService->cloturer($depouillement, $participant, (string) $request->request->get('statut'), (string) $request->request->get('motif'), $this->utilisateur())
+                : $suiviService->rouvrir($depouillement, $participant, $this->utilisateur());
+        } catch (ContenuInvalideException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $retour;
+        }
+
+        $this->addFlash('success', 'cloturer' === $decision ? 'Retour clôturé.' : 'Clôture retirée.');
 
         return $retour;
     }
