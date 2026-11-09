@@ -39,25 +39,27 @@ class ContenuJoueurType extends AbstractType
     /** Étape « Actions de fin d'Opus ». */
     public const string PORTION_ACTIONS = 'actions';
 
+    /** Étape « Déclaration du joueur » : ce que le joueur annonce avoir appris, et la mort de son personnage. */
+    public const string PORTION_DECLARATION = 'declaration';
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $portion = $options['portion'];
 
+        // La déclaration du joueur ne porte que sur ce qu'il annonce lui-même : jamais sur le contenu physique de l'enveloppe.
+        if (self::PORTION_DECLARATION === $portion) {
+            $this->ajouterApprentissages($builder);
+            $this->ajouterMort($builder);
+            $builder->add('submit', SubmitType::class, ['label' => 'Enregistrer ce que j\'ai appris']);
+
+            return;
+        }
+
         if (self::PORTION_ACTIONS !== $portion) {
             $this->ajouterPiecesJointes($builder);
             $this->ajouterApprentissages($builder);
-            $builder
-                ->add('personnageMort', CheckboxType::class, [
-                    'label' => 'Le personnage est mort pendant cet opus',
-                    'required' => false,
-                    'help' => 'À la validation, le personnage sera marqué mort sur sa fiche (avec une ligne dans sa chronologie) et rien ne sera reporté dans l\'enveloppe du GN suivant.',
-                ])
-                ->add('circonstancesMort', TextareaType::class, [
-                    'label' => 'Circonstances de la mort (facultatif)',
-                    'required' => false,
-                    'attr' => ['rows' => 2],
-                ])
-                ->add('surplus', CompteursEnveloppeType::class);
+            $this->ajouterMort($builder);
+            $builder->add('surplus', CompteursEnveloppeType::class);
         }
 
         if (self::PORTION_CONTENU !== $portion) {
@@ -67,13 +69,28 @@ class ContenuJoueurType extends AbstractType
         $builder->add('submit', SubmitType::class, ['label' => self::PORTION_ACTIONS === $portion ? 'Enregistrer les actions' : 'Enregistrer le contenu']);
     }
 
+    private function ajouterMort(FormBuilderInterface $builder): void
+    {
+        $builder
+            ->add('personnageMort', CheckboxType::class, [
+                'label' => 'Le personnage est mort pendant cet opus',
+                'required' => false,
+                'help' => 'À la validation, le personnage sera marqué mort sur sa fiche (avec une ligne dans sa chronologie) et rien ne sera reporté dans l\'enveloppe du GN suivant.',
+            ])
+            ->add('circonstancesMort', TextareaType::class, [
+                'label' => 'Circonstances de la mort (facultatif)',
+                'required' => false,
+                'attr' => ['rows' => 2],
+            ]);
+    }
+
     /**
      * Le formulaire d'une étape ne modifie que ses propres champs : il reçoit le contenu déjà enregistré.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(['data_class' => ContenuJoueur::class, 'portion' => self::PORTION_TOUT]);
-        $resolver->setAllowedValues('portion', [self::PORTION_TOUT, self::PORTION_CONTENU, self::PORTION_ACTIONS]);
+        $resolver->setAllowedValues('portion', [self::PORTION_TOUT, self::PORTION_CONTENU, self::PORTION_ACTIONS, self::PORTION_DECLARATION]);
     }
 
     private function ajouterPiecesJointes(FormBuilderInterface $builder): void

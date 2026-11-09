@@ -213,6 +213,8 @@
 				{% endif %}
 			{% elseif etape.value == 'actions' %}
 				{% include 'depouillement/_actions_joueur.twig' %}
+			{% elseif etape.value == 'declaration' %}
+				{% include 'depouillement/_declaration_joueur.twig' %}
 			{% elseif etape.value == 'conceptions' %}
 				{% include 'depouillement/_conceptions.twig' %}
 			{% elseif etape.value == 'remarques' %}
@@ -242,18 +244,22 @@
 				<h6>Résumé à relire</h6>
 				{% set etiquettesAnomalies = depouillement.etiquettes|filter(e => e.anomalies|length > 0)|length %}
 				<ul class="mb-3">
-					<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'photos'}) }}">Photos</a> : {{ depouillement.photos|length }}</li>
-					<li>
-						<a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'etiquettes'}) }}">Étiquettes</a> : {{ depouillement.etiquettes|length }}
-						{% if etiquettesAnomalies > 0 %}<span class="lm-anomalie">({{ etiquettesAnomalies }} avec anomalie)</span>{% endif %}
-					</li>
+					{% if not declarant %}
+						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'photos'}) }}">Photos</a> : {{ depouillement.photos|length }}</li>
+						<li>
+							<a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'etiquettes'}) }}">Étiquettes</a> : {{ depouillement.etiquettes|length }}
+							{% if etiquettesAnomalies > 0 %}<span class="lm-anomalie">({{ etiquettesAnomalies }} avec anomalie)</span>{% endif %}
+						</li>
+					{% endif %}
 					{% if contenuJoueur is defined %}
 						{% set acceptees = resultatsActions|filter(r => r.statut.value == 'acceptee')|map(r => r.action.ressource) %}
 						{% set refusees = resultatsActions|filter(r => r.statut.value == 'refusee')|map(r => r.action.ressource) %}
-						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'actions'}) }}">Actions de fin d'Opus</a> :
-							acceptées : {{ acceptees|join(', ') ?: 'aucune' }}
-							{% if refusees|length > 0 %}<span class="lm-anomalie">; refusées : {{ refusees|join(', ') }}</span>{% endif %}
-						</li>
+						{% if not declarant %}
+							<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'actions'}) }}">Actions de fin d'Opus</a> :
+								acceptées : {{ acceptees|join(', ') ?: 'aucune' }}
+								{% if refusees|length > 0 %}<span class="lm-anomalie">; refusées : {{ refusees|join(', ') }}</span>{% endif %}
+							</li>
+						{% endif %}
 						{% set anomaliesConceptions = depouillement.conceptions|filter(c => c.anomalies|length > 0)|length %}
 						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'conceptions'}) }}">Conceptions d'héritier</a> : {{ depouillement.conceptions|length }}
 							{% if anomaliesConceptions > 0 %}<span class="lm-anomalie">({{ anomaliesConceptions }} avec anomalie)</span>{% endif %}
@@ -262,7 +268,7 @@
 						{% if contenuJoueur.personnageMort %}
 							<li class="lm-anomalie"><i class="fa fa-skull"></i> Le personnage est mort pendant cet opus{% if contenuJoueur.circonstancesMort %} ({{ contenuJoueur.circonstancesMort }}){% endif %} : le personnage sera marqué mort sur sa fiche à la validation.</li>
 						{% endif %}
-						<li>Surplus à reverser au groupe (trouvé moins consommé par les actions) : {% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}</li>
+						{% if not declarant %}<li>Surplus à reverser au groupe (trouvé moins consommé par les actions) : {% for libelle, quantite in surplusLibelles %}{{ libelle }} : {{ quantite }}{% if not loop.last %}, {% endif %}{% else %}aucun{% endfor %}</li>{% endif %}
 					{% endif %}
 					{% if contenuGroupe is defined %}
 						<li><a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': depouillement.id, 'etape': 'contenu'}) }}">Reliquat du groupe</a> :

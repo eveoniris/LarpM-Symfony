@@ -39,7 +39,8 @@ final class DepouillementJoueurController extends AbstractDepouillementControlle
         }
 
         if ($existant instanceof Depouillement) {
-            $etape = $this->saisissable($existant) ? DepouillementEtape::IDENTIFICATION : DepouillementEtape::RECAPITULATIF;
+            // Le joueur entre par la première étape qui lui est ouverte (jamais par le contenu physique de l'enveloppe).
+            $etape = $this->saisissable($existant) ? DepouillementEtape::pourType($existant->getType(), $this->declarant($existant))[0] : DepouillementEtape::RECAPITULATIF;
 
             return $this->redirectToRoute('depouillement.etape', $this->parametres($existant, $etape), 303);
         }

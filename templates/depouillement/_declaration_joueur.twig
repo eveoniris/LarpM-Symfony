@@ -1,0 +1,66 @@
+{# Étape « Déclaration du joueur » : ce que le joueur annonce de son retour de jeu. Le staff relit, confirme ou complète. #}
+{% set libellesChamps = {
+	'sorts': 'Sorts',
+	'prieres': 'Prières',
+	'potions': 'Potions (recettes)',
+	'competence_apprise': 'Compétence apprise',
+	'enseignant_numero': 'Enseignant',
+	'personnage_mort': 'Mort du personnage',
+	'circonstances_mort': 'Circonstances de la mort',
+	'sorti_du_jeu': 'Sortie du jeu',
+	'sorti_details': 'Détails de la sortie',
+	'eleves': 'Enseignements donnés',
+	'constructions': 'Constructions',
+	'renommee': 'Renommée',
+	'precisions': 'Précisions',
+	'autres': 'Autres informations'
+} %}
+
+{% if declarant %}
+	<p class="text-muted">Déclarez ici ce que votre personnage a vécu pendant l'opus. Vous pouvez compléter et modifier votre retour tant qu'un organisateur n'a pas pris le relais. Rien n'est appliqué à votre personnage avant la validation.</p>
+{% else %}
+	{% set declaresParLeJoueur = suiviDeclaration|filter(s => s.joueur > 0) %}
+	{% if declaresParLeJoueur|length > 0 %}
+		<div class="alert alert-info">
+			<strong>Déclaré par le joueur</strong> :
+			{% for champ, s in declaresParLeJoueur %}
+				{{ libellesChamps[champ] ?? champ }} ({{ s.joueur }}{% if s.en_attente > 0 %}, {{ s.en_attente }} en attente de confirmation{% endif %}){% if not loop.last %}, {% endif %}
+			{% endfor %}
+		</div>
+	{% endif %}
+{% endif %}
+
+<h6>Ce que j'ai appris</h6>
+{% if formContenuJoueur is defined and formContenuJoueur %}
+	{{ form_start(formContenuJoueur, {'attr': {'data-lm-unsaved': ''}}) }}
+	{{ form_widget(formContenuJoueur) }}
+	{{ form_end(formContenuJoueur) }}
+{% elseif contenuJoueur is defined %}
+	<ul>
+		<li>Sorts : {{ contenuJoueur.sorts|map(s => s.label)|join(', ') ?: 'aucun' }}</li>
+		<li>Prières : {{ contenuJoueur.prieres|map(p => p.label)|join(', ') ?: 'aucune' }}</li>
+		<li>Potions : {{ contenuJoueur.potions|map(p => p.label)|join(', ') ?: 'aucune' }}</li>
+		<li>Compétence apprise : {% if contenuJoueur.competenceApprise %}{{ contenuJoueur.competenceApprise.label }} (enseignant n° {{ contenuJoueur.enseignantNumero ?: '?' }}){% else %}aucune{% endif %}</li>
+		{% if contenuJoueur.personnageMort %}
+			<li class="lm-anomalie"><i class="fa fa-skull"></i> Le personnage est mort pendant cet opus{% if contenuJoueur.circonstancesMort %} ({{ contenuJoueur.circonstancesMort }}){% endif %}</li>
+		{% endif %}
+	</ul>
+{% endif %}
+
+<hr>
+
+<h6>Mon retour</h6>
+{% if formDeclaration is defined and formDeclaration %}
+	{{ form_start(formDeclaration, {'attr': {'data-lm-unsaved': ''}}) }}
+	{{ form_widget(formDeclaration) }}
+	{{ form_end(formDeclaration) }}
+{% elseif declaration is defined %}
+	<dl class="row mb-0">
+		<dt class="col-sm-4">Sorti du jeu</dt>
+		<dd class="col-sm-8">{{ declaration.sortiDuJeu ? 'Oui' : 'Non' }}{% if declaration.sortiDetails %} : {{ declaration.sortiDetails|nl2br }}{% endif %}</dd>
+		{% for libelle, texte in {'Enseignements donnés': declaration.eleves, 'Constructions': declaration.constructions, 'Gains et pertes de renommée': declaration.renommee, 'Précisions diverses': declaration.precisions, 'Autres informations': declaration.autres} %}
+			<dt class="col-sm-4">{{ libelle }}</dt>
+			<dd class="col-sm-8">{{ texte ? texte|nl2br : '-' }}</dd>
+		{% endfor %}
+	</dl>
+{% endif %}
