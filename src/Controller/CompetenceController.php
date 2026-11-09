@@ -148,10 +148,7 @@ class CompetenceController extends AbstractController
 
                 return true;
             }
-            $availableCompetences = $this->personnageService->getAvailableCompetences(
-                $personnage,
-                $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value),
-            );
+            $availableCompetences = $this->personnageService->getAvailableCompetences($personnage, $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value));
             if ($availableCompetences->contains($competence)) {
                 $this->setCan(static::CAN_READ, true);
 

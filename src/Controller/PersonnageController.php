@@ -235,10 +235,7 @@ class PersonnageController extends AbstractController
         if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
             return $r;
         }
-        $availableCompetences = $personnageService->getAvailableCompetences(
-            $personnage,
-            $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value),
-        );
+        $availableCompetences = $personnageService->getAvailableCompetences($personnage, $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value));
         $referer = $request->headers->get('referer');
 
         if (0 === $availableCompetences->count()) {

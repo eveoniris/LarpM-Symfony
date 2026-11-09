@@ -1608,8 +1608,7 @@ class PersonnageService
         // ou pour progresser dans une famille que le personnage possède déjà
         if (!$avecSecretes) {
             $availableCompetences = $availableCompetences->filter(
-                fn (Competence $competence): bool => !$competence->isSecret()
-                    || $this->knownCompetenceFamily($personnage, $competence->getCompetenceFamily()),
+                fn (Competence $competence): bool => !$competence->isSecret() || $this->knownCompetenceFamily($personnage, $competence->getCompetenceFamily()),
             );
         }
 

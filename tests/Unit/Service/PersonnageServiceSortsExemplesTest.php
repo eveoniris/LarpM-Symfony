@@ -55,7 +55,7 @@ class PersonnageServiceSortsExemplesTest extends TestCase
     private function service(): PersonnageService
     {
         // getSortsExemples n'utilise aucune dépendance du service
-        return new ReflectionClass(PersonnageService::class)->newInstanceWithoutConstructor();
+        return (new ReflectionClass(PersonnageService::class))->newInstanceWithoutConstructor();
     }
 
     private function sort(string $label, int $niveau, bool $secret): Sort
