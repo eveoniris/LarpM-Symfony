@@ -72,10 +72,12 @@ class GroupeSecondaireSecretVisibiliteTest extends WebTestCase
         $type->setLabel('Confrérie');
         $this->em->persist($type);
 
-        foreach ([
+        $groupes = [
             ['Guilde publique',   false],
             ['Cercle des ombres', true],
-        ] as [$label, $secret]) {
+        ];
+
+        foreach ($groupes as [$label, $secret]) {
             $group = new SecondaryGroup();
             $group->setLabel($label);
             $group->setDescription('Description du groupe.');
