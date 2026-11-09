@@ -20,6 +20,7 @@ use App\Service\CompteursEnveloppe;
 use App\Service\DecisionsDeclaration;
 use App\Service\DepouillementContenuService;
 use App\Service\DepouillementDeclarationService;
+use App\Service\DepouillementDecisionService;
 use App\Service\DepouillementService;
 use App\Service\PiecesAttendues;
 use App\Service\EtiquetteSaisie;
@@ -92,6 +93,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
         DepouillementGroupeService $groupeService,
         PiecesAttendues $piecesAttendues,
         DepouillementDeclarationService $declarationService,
+        DepouillementDecisionService $decisionService,
     ): Response {
         $this->verifier($gn, $depouillement);
 
@@ -131,7 +133,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
             'formEtiquette' => $this->formulaireEtiquette($depouillement, $etape),
             'avertissementGroupe' => $this->avertissementGroupe($depouillement, $depouillementService),
             ...$this->contenuJoueur($depouillement, $etape, $contenuService, $piecesAttendues),
-            ...$this->declaration($depouillement, $etape, $declarationService),
+            ...$this->declaration($depouillement, $etape, $declarationService, $decisionService),
             ...$this->contenuGroupe($depouillement, $etape, $groupeService),
         ]);
     }
@@ -230,7 +232,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
      *
      * @return array<string, mixed>
      */
-    private function declaration(Depouillement $depouillement, DepouillementEtape $etape, DepouillementDeclarationService $declarationService): array
+    private function declaration(Depouillement $depouillement, DepouillementEtape $etape, DepouillementDeclarationService $declarationService, DepouillementDecisionService $decisionService): array
     {
         if (!\in_array($etape, [DepouillementEtape::DECLARATION, DepouillementEtape::RECAPITULATIF], strict: true) || DepouillementType::JOUEUR !== $depouillement->getType()) {
             return [];
@@ -246,6 +248,8 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
                 ])
                 : null,
             'suiviDeclaration' => DecisionsDeclaration::resume(DecisionsDeclaration::depuis($depouillement->getDonnees())),
+            'lignesDeclaration' => $decisionService->lignes($depouillement),
+            'peutDecider' => $this->saisissable($depouillement) && !$this->declarant($depouillement),
         ];
     }
 

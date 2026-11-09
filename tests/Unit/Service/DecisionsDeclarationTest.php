@@ -75,4 +75,28 @@ class DecisionsDeclarationTest extends TestCase
     {
         static::assertSame(['source' => 'depouilleur', 'etat' => 'confirme'], DecisionsDeclaration::lire([], 'sorts', 99));
     }
+
+    public function testUneDecisionGardeLaSourceEtNoteQuiADecide(): void
+    {
+        $maintenant = new DateTimeImmutable('2026-11-09');
+        $decisions = DecisionsDeclaration::suivre([], ['sorts' => []], ['sorts' => [4]], new AuteurDeclaration(true, 10, $maintenant));
+        $decisions = DecisionsDeclaration::decider($decisions, 'sorts', '4', DecisionsDeclaration::ETAT_REFUSE, new AuteurDeclaration(false, 11, $maintenant), ['libelle' => 'Boule de feu']);
+
+        $entree = DecisionsDeclaration::entree($decisions, 'sorts', '4');
+        static::assertSame('joueur', $entree['source'] ?? null);
+        static::assertSame('refuse', $entree['etat'] ?? null);
+        static::assertSame(11, $entree['decide_par'] ?? null);
+        static::assertSame('Boule de feu', $entree['libelle'] ?? null);
+
+        // Remis en attente : le libellé de secours disparaît.
+        $decisions = DecisionsDeclaration::decider($decisions, 'sorts', '4', DecisionsDeclaration::ETAT_EN_ATTENTE, new AuteurDeclaration(false, 11, $maintenant));
+        static::assertArrayNotHasKey('libelle', DecisionsDeclaration::entree($decisions, 'sorts', '4') ?? []);
+    }
+
+    public function testDeciderSurUnElementSansEntreeLeCreeCommeVenuDuDepouillement(): void
+    {
+        $decisions = DecisionsDeclaration::decider([], 'potions', '9', DecisionsDeclaration::ETAT_CONFIRME, new AuteurDeclaration(false, 11, new DateTimeImmutable()));
+
+        static::assertSame(['source' => 'depouilleur', 'etat' => 'confirme'], DecisionsDeclaration::lire($decisions, 'potions', 9));
+    }
 }
