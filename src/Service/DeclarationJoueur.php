@@ -51,7 +51,7 @@ final class DeclarationJoueur
     public static function depuisTableau(array $donnees): self
     {
         $declaration = new self();
-        $declaration->sortiDuJeu = (bool) ($donnees['sorti_du_jeu'] ?? false);
+        $declaration->sortiDuJeu = true === ($donnees['sorti_du_jeu'] ?? false);
         $declaration->sortiDetails = self::texte($donnees['sorti_details'] ?? null);
         $declaration->eleves = self::texte($donnees['eleves'] ?? null);
         $declaration->constructions = self::texte($donnees['constructions'] ?? null);

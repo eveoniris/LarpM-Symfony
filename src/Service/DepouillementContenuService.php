@@ -53,7 +53,7 @@ readonly class DepouillementContenuService
         $apres = $this->serialiseur->versTableau($contenu, $this->statuts($contenu));
 
         $decisions = DecisionsDeclaration::suivre(
-            $depouillement->getDonnees()['decisions'] ?? [],
+            DecisionsDeclaration::depuis($depouillement->getDonnees()),
             $this->valeursSuivies(\is_array($avant) ? $avant : []),
             $this->valeursSuivies($apres),
             new AuteurDeclaration($parJoueur, (int) $utilisateur->getId(), new DateTimeImmutable()),
@@ -125,7 +125,7 @@ readonly class DepouillementContenuService
     /**
      * Ce que le joueur peut déclarer dans le contenu (apprentissages et mort) : ce sont ces valeurs dont on suit la provenance.
      *
-     * @param array<string, mixed> $contenu
+     * @param array<array-key, mixed> $contenu
      *
      * @return array<string, mixed>
      */

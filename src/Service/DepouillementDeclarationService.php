@@ -57,7 +57,7 @@ readonly class DepouillementDeclarationService
         }
 
         $decisions = DecisionsDeclaration::suivre(
-            $depouillement->getDonnees()['decisions'] ?? [],
+            DecisionsDeclaration::depuis($depouillement->getDonnees()),
             \is_array($avant) ? $avant : [],
             $apres,
             new AuteurDeclaration($parJoueur, (int) $utilisateur->getId(), new DateTimeImmutable()),

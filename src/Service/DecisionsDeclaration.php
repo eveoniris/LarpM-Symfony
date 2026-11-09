@@ -28,18 +28,34 @@ final class DecisionsDeclaration
     public const string ELEMENT_UNIQUE = '_';
 
     /**
+     * Les décisions gardées dans les données d'un dossier (vides pour un dossier qui n'en a pas encore).
+     *
+     * @param array<array-key, mixed> $donnees données du dossier
+     *
+     * @return array<string, array<string, array<string, mixed>>>
+     */
+    public static function depuis(array $donnees): array
+    {
+        /** @var array<string, array<string, array<string, mixed>>> $decisions */
+        $decisions = $donnees['decisions'] ?? [];
+
+        return $decisions;
+    }
+
+    /**
      * Met à jour les décisions d'après ce qui a changé : un élément ajouté ou modifié reçoit la source de l'auteur, un élément
      * retiré perd sa décision.
      *
      * @param array<string, array<string, array<string, mixed>>> $decisions
-     * @param array<string, mixed>                               $avant     valeurs suivies avant l'enregistrement (liste d'identifiants ou valeur simple)
-     * @param array<string, mixed>                               $apres     valeurs suivies après l'enregistrement
+     * @param array<array-key, mixed>                            $avant     valeurs suivies avant l'enregistrement (liste d'identifiants ou valeur simple)
+     * @param array<array-key, mixed>                            $apres     valeurs suivies après l'enregistrement
      *
      * @return array<string, array<string, array<string, mixed>>>
      */
     public static function suivre(array $decisions, array $avant, array $apres, AuteurDeclaration $auteur): array
     {
-        foreach (array_unique([...array_keys($avant), ...array_keys($apres)]) as $champ) {
+        foreach (array_unique([...array_keys($avant), ...array_keys($apres)]) as $cle) {
+            $champ = (string) $cle;
             $ancien = $avant[$champ] ?? null;
             $nouveau = $apres[$champ] ?? null;
 
@@ -149,7 +165,7 @@ final class DecisionsDeclaration
     private static function retirer(array $decisions, string $champ, string $element): array
     {
         unset($decisions[$champ][$element]);
-        if ([] === ($decisions[$champ] ?? [])) {
+        if (isset($decisions[$champ]) && [] === $decisions[$champ]) {
             unset($decisions[$champ]);
         }
 
@@ -161,7 +177,14 @@ final class DecisionsDeclaration
      */
     private static function liste(mixed $valeur): array
     {
-        return \is_array($valeur) ? array_values($valeur) : [];
+        $elements = [];
+        foreach (\is_array($valeur) ? $valeur : [] as $element) {
+            if (\is_int($element) || \is_string($element)) {
+                $elements[] = $element;
+            }
+        }
+
+        return $elements;
     }
 
     /**

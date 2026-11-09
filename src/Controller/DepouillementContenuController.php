@@ -13,6 +13,7 @@ use App\Form\Depouillement\ContenuJoueurType;
 use App\Form\Depouillement\DeclarationJoueurType;
 use App\Service\ContenuGroupe;
 use App\Service\ContenuJoueur;
+use App\Service\DeclarationJoueur;
 use App\Service\DepouillementContenuService;
 use App\Service\DepouillementDeclarationService;
 use App\Service\DepouillementGroupeService;
@@ -103,8 +104,11 @@ final class DepouillementContenuController extends AbstractDepouillementControll
             return $retour;
         }
 
+        /** @var DeclarationJoueur $declaration */
+        $declaration = $form->getData();
+
         try {
-            $declarationService->enregistrer($depouillement, $form->getData(), $this->utilisateur(), $this->declarant($depouillement));
+            $declarationService->enregistrer($depouillement, $declaration, $this->utilisateur(), $this->declarant($depouillement));
         } catch (ContenuInvalideException $exception) {
             $this->addFlash('error', $exception->getMessage());
 

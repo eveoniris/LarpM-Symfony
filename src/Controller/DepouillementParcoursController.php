@@ -245,7 +245,7 @@ final class DepouillementParcoursController extends AbstractDepouillementControl
                     'action' => $this->generateUrl('depouillement.declaration', ['gn' => $depouillement->getGn()->getId(), 'depouillement' => $depouillement->getId()]),
                 ])
                 : null,
-            'suiviDeclaration' => DecisionsDeclaration::resume($depouillement->getDonnees()['decisions'] ?? []),
+            'suiviDeclaration' => DecisionsDeclaration::resume(DecisionsDeclaration::depuis($depouillement->getDonnees())),
         ];
     }
 

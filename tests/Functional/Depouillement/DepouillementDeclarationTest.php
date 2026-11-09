@@ -8,6 +8,9 @@ use App\Entity\Depouillement;
 use App\Entity\Gn;
 use App\Entity\User;
 use App\Enum\DepouillementType;
+use App\Service\DecisionsDeclaration;
+use App\Service\DepouillementContenuService;
+use App\Service\DepouillementDeclarationService;
 use App\Service\DepouillementService;
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\GroupeFactory;
@@ -51,15 +54,22 @@ class DepouillementDeclarationTest extends WebTestCase
         return '/gn/' . $gn->getId() . '/depouillement/' . $dossier->getId() . '/' . $suite;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    private function donnees(Depouillement $dossier): array
+    private function recharger(Depouillement $dossier): Depouillement
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $em->clear();
+        $recharge = $em->find(Depouillement::class, $dossier->getId());
+        static::assertInstanceOf(Depouillement::class, $recharge);
 
-        return $em->find(Depouillement::class, $dossier->getId())->getDonnees();
+        return $recharge;
+    }
+
+    /**
+     * @return array{source: string, etat: string}
+     */
+    private function decision(Depouillement $dossier, string $champ): array
+    {
+        return DecisionsDeclaration::lire(DecisionsDeclaration::depuis($this->recharger($dossier)->getDonnees()), $champ);
     }
 
     public function testLeJoueurEntreParLaDeclarationEtNeVoitPasLeContenuPhysique(): void
@@ -124,7 +134,7 @@ class DepouillementDeclarationTest extends WebTestCase
         $client->request($methode, $this->url($gn, $dossier, $suite));
 
         static::assertResponseRedirects('/access_denied');
-        static::assertArrayNotHasKey('contenu_joueur', $this->donnees($dossier));
+        static::assertArrayNotHasKey('contenu_joueur', $this->recharger($dossier)->getDonnees());
     }
 
     public function testLeTexteLibreDuJoueurAttendUneConfirmation(): void
@@ -135,18 +145,17 @@ class DepouillementDeclarationTest extends WebTestCase
 
         $crawler = $client->request('GET', $this->url($gn, $dossier, 'etape/declaration'));
         $form = $crawler->selectButton('Enregistrer mon retour')->form();
-        $form['declaration_joueur[sortiDuJeu]']->tick();
+        $form->setValues(['declaration_joueur[sortiDuJeu]' => '1']);
         $form['declaration_joueur[renommee]'] = '+2 pour un discours';
         $client->submit($form);
 
         static::assertResponseRedirects($this->url($gn, $dossier, 'etape/declaration'));
-        $donnees = $this->donnees($dossier);
-        static::assertSame('+2 pour un discours', $donnees['declaration']['renommee']);
-        static::assertTrue($donnees['declaration']['sorti_du_jeu']);
-        static::assertSame('joueur', $donnees['decisions']['renommee']['_']['source']);
-        static::assertSame('en_attente', $donnees['decisions']['renommee']['_']['etat']);
-        static::assertSame('en_attente', $donnees['decisions']['sorti_du_jeu']['_']['etat']);
-        static::assertArrayNotHasKey('precisions', $donnees['decisions']);
+        $declaration = static::getContainer()->get(DepouillementDeclarationService::class)->lire($this->recharger($dossier));
+        static::assertSame('+2 pour un discours', $declaration->renommee);
+        static::assertTrue($declaration->sortiDuJeu);
+        static::assertSame(['source' => 'joueur', 'etat' => 'en_attente'], $this->decision($dossier, 'renommee'));
+        static::assertSame('en_attente', $this->decision($dossier, 'sorti_du_jeu')['etat']);
+        static::assertArrayNotHasKey('precisions', DecisionsDeclaration::depuis($this->recharger($dossier)->getDonnees()));
     }
 
     public function testLaMortDeclareeParLeJoueurAttendUneConfirmationSansCouperLaPreselection(): void
@@ -157,16 +166,16 @@ class DepouillementDeclarationTest extends WebTestCase
 
         $crawler = $client->request('GET', $this->url($gn, $dossier, 'etape/declaration'));
         $form = $crawler->selectButton('Enregistrer ce que j\'ai appris')->form();
-        $form['contenu_joueur[personnageMort]']->tick();
+        $form->setValues(['contenu_joueur[personnageMort]' => '1']);
         $form['contenu_joueur[circonstancesMort]'] = 'Tombé à la bataille';
         $client->submit($form);
 
         static::assertResponseRedirects($this->url($gn, $dossier, 'etape/declaration'));
-        $donnees = $this->donnees($dossier);
-        static::assertTrue($donnees['contenu_joueur']['personnage_mort']);
-        static::assertSame('en_attente', $donnees['decisions']['personnage_mort']['_']['etat']);
+        $contenu = static::getContainer()->get(DepouillementContenuService::class)->lireContenuJoueur($this->recharger($dossier));
+        static::assertTrue($contenu->personnageMort);
+        static::assertSame('en_attente', $this->decision($dossier, 'personnage_mort')['etat']);
         // Le dépouilleur qui reprendra le dossier verra encore les actions pré-sélectionnées d'après les ressources trouvées.
-        static::assertFalse($donnees['contenu_joueur']['actions_decidees']);
+        static::assertFalse($contenu->actionsDecidees);
     }
 
     public function testLeStaffCompleteSansChangerLaProvenanceDuJoueur(): void
@@ -186,10 +195,8 @@ class DepouillementDeclarationTest extends WebTestCase
         $form['declaration_joueur[precisions]'] = 'Maladie constatée';
         $client->submit($form);
 
-        $decisions = $this->donnees($dossier)['decisions'];
-        static::assertSame('joueur', $decisions['renommee']['_']['source']);
-        static::assertSame('depouilleur', $decisions['precisions']['_']['source']);
-        static::assertSame('confirme', $decisions['precisions']['_']['etat']);
+        static::assertSame('joueur', $this->decision($dossier, 'renommee')['source']);
+        static::assertSame(['source' => 'depouilleur', 'etat' => 'confirme'], $this->decision($dossier, 'precisions'));
     }
 
     public function testApresLaRepriseLeJoueurNePeutPlusDeclarer(): void
