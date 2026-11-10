@@ -39,7 +39,7 @@ abstract class BasePriere
     protected int $niveau;
 
     #[ORM\ManyToOne(targetEntity: Sphere::class, inversedBy: 'prieres')]
-    #[ORM\JoinColumn(name: 'sphere_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'sphere_id', referencedColumnName: 'id', nullable: false)]
     protected Sphere $sphere;
 
     /** @var Collection<int, Personnage> */
@@ -186,7 +186,7 @@ abstract class BasePriere
     /**
      * Get Sphere entity (many to one).
      */
-    public function getSphere(): ?Sphere
+    public function getSphere(): Sphere
     {
         return $this->sphere;
     }
@@ -194,7 +194,7 @@ abstract class BasePriere
     /**
      * Set Sphere entity (many to one).
      */
-    public function setSphere(?Sphere $sphere = null): static
+    public function setSphere(Sphere $sphere): static
     {
         $this->sphere = $sphere;
 

@@ -72,7 +72,7 @@ class PrieresCorriger extends Command
                         $action['action'],
                         $action['niveau'],
                         $action['priere']?->getLabel() ?? '-',
-                        $action['priere']?->getSphere()?->getLabel() ?? '-',
+                        $action['priere']?->getSphere()->getLabel() ?? '-',
                         $action['motif'],
                     ];
 

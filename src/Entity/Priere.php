@@ -38,7 +38,7 @@ class Priere extends BasePriere
 
     public function getFullLabel(): string
     {
-        return $this->getSphere()?->getLabel() . ' - ' . $this->getNiveau() . ' - ' . $this->getLabel();
+        return $this->getSphere()->getLabel() . ' - ' . $this->getNiveau() . ' - ' . $this->getLabel();
     }
 
     protected function afterUpload(FileUploader $fileUploader): FileUploader

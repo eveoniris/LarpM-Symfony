@@ -146,7 +146,7 @@ class ContenuJoueurType extends AbstractType
             ])
             ->add('prieres', EntityType::class, [
                 ...$this->liste(Priere::class, 'Prières apprises pendant le jeu'),
-                'choice_label' => static fn (Priere $priere): string => \sprintf('%s - %s (niveau %d)', $priere->getSphere()?->getLabel() ?? 'Sans sphère', $priere->getLabel(), $priere->getNiveau()),
+                'choice_label' => static fn (Priere $priere): string => \sprintf('%s - %s (niveau %d)', $priere->getSphere()->getLabel(), $priere->getLabel(), $priere->getNiveau()),
             ])
             ->add('potions', EntityType::class, [
                 ...$this->liste(Potion::class, 'Potions (recettes) apprises pendant le jeu'),
