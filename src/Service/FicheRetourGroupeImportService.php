@@ -187,6 +187,12 @@ class FicheRetourGroupeImportService
      */
     private function extractGroupeNumero(array $data, string $gnLabel): ?int
     {
+        // Colonne dédiée (entier seul) : prioritaire sur le libellé « n° Nom » de la colonne groupe concerné.
+        $m = [];
+        if (1 === preg_match('/^\s*(\d+)\s*$/', (string) ($data['groupe numero'] ?? ''), $m)) {
+            return (int) $m[1];
+        }
+
         $groupeKey = null;
         foreach (array_keys($data) as $key) {
             if (str_contains($key, 'groupe')) {

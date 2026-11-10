@@ -51,6 +51,7 @@ readonly class RetourExportService
         'Poisson',
         'Vin',
         "Commentaire concernant l'enveloppe",
+        'groupe_numero',
     ];
 
     // @mago-expect lint:excessive-parameter-list
@@ -107,6 +108,7 @@ readonly class RetourExportService
                 $fiche->getPoisson(),
                 $fiche->getVin(),
                 self::texte($fiche->getCommentaire()),
+                (int) $groupeGn->getGroupe()->getNumero(),
             ];
         }
 

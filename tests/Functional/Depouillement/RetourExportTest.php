@@ -156,4 +156,24 @@ class RetourExportTest extends WebTestCase
         static::assertStringContainsString('Joueur (état civil)', (string) $this->client->getResponse()->getContent());
         static::assertStringContainsString('Alice Dupontel', (string) $this->client->getResponse()->getContent());
     }
+
+    public function testLaColonneGroupeNumeroEstPrioritaireALImport(): void
+    {
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $fiche = FicheRetourGroupeFactory::createOne(['groupeGn' => $this->groupeGn, 'submitted_at' => new \DateTime('2026-06-01 14:00:00')]);
+        $numero = (int) $this->groupeGn->getGroupe()->getNumero();
+        static::assertContains('groupe_numero', RetourExportService::ENTETES_FICHES);
+
+        // Le libellé du groupe est inutilisable (aucun numéro) : seule la colonne dédiée permet de retrouver le groupe.
+        $chemin = (string) tempnam(sys_get_temp_dir(), 'fiche');
+        file_put_contents($chemin, "Groupe concerné,Sel,groupe_numero\nLibellé sans numéro,42,{$numero}\n");
+        $fiche->setSel(0);
+        $em->flush();
+        $resultat = static::getContainer()
+            ->get(FicheRetourGroupeImportService::class)
+            ->import(new UploadedFile($chemin, 'fiches.csv', 'text/csv', null, true), $this->gn, UserFactory::createOne());
+
+        static::assertSame(1, $resultat['imported']);
+        static::assertSame(42, $fiche->getSel());
+    }
 }

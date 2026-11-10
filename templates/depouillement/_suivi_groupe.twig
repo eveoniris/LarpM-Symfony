@@ -21,7 +21,7 @@
 					{% set participant = ligne.participant %}
 					<tr>
 						<td>{{ participant.user ? participant.user.username : '-' }}</td>
-						<td>n° {{ participant.personnage.id }} {{ participant.personnage.publicName }}</td>
+						<td>n° {{ participant.personnage.id }} <a href="{{ path('personnage.detail', {'personnage': participant.personnage.id}) }}">{{ participant.personnage.publicName }}</a></td>
 						<td>
 							{% if ligne.dossier %}
 								<a href="{{ path('depouillement.etape', {'gn': gn.id, 'depouillement': ligne.dossier.id, 'etape': 'recapitulatif'}) }}">{{ ligne.dossier.statut.label }}</a>

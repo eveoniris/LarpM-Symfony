@@ -78,11 +78,21 @@
 					<dd class="col-sm-8">{{ depouillement.numero }}</dd>
 					{% if depouillement.groupeGn %}
 						<dt class="col-sm-4">Groupe</dt>
-						<dd class="col-sm-8">{{ depouillement.groupeGn.groupe.nom }}</dd>
+						<dd class="col-sm-8">
+							{{ depouillement.groupeGn.groupe.nom }}
+							{% if is_granted('DEPOUILLEMENT_VALIDER', gn) %}
+								<a href="{{ path('groupe.detail.tab', {'groupe': depouillement.groupeGn.groupe.id, 'tab': 'membres', 'gn': gn.id, 'groupeGn': depouillement.groupeGn.id}) }}" class="ms-2"><i class="fa fa-users"></i> Membres</a>
+							{% endif %}
+						</dd>
 					{% endif %}
 					{% if depouillement.participant %}
 						<dt class="col-sm-4">Joueur</dt>
-						<dd class="col-sm-8">{{ depouillement.participant.user ? depouillement.participant.user.username : '-' }}</dd>
+						<dd class="col-sm-8">
+							{{ depouillement.participant.user ? depouillement.participant.user.username : '-' }}
+							{% if depouillement.participant.personnage and is_granted('DEPOUILLEMENT_VALIDER', gn) %}
+								<a href="{{ path('personnage.detail', {'personnage': depouillement.participant.personnage.id}) }}" class="ms-2"><i class="fa fa-user"></i> Fiche du personnage</a>
+							{% endif %}
+						</dd>
 						<dt class="col-sm-4">Groupe du joueur</dt>
 						<dd class="col-sm-8">{% if depouillement.participant.groupeGn %}n° {{ depouillement.participant.groupeGn.groupe.numero }} - {{ depouillement.participant.groupeGn.groupe.nom }}{% else %}-{% endif %}</dd>
 					{% endif %}
