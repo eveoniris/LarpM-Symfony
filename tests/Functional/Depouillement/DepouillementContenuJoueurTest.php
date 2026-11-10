@@ -71,6 +71,9 @@ class DepouillementContenuJoueurTest extends WebTestCase
         static::assertSelectorCount(24, 'details input[type=number]');
         static::assertSelectorTextNotContains('body', 'Action validée');
         static::assertSelectorExists('input[name="contenu_joueur[personnageMort]"]');
+        static::assertSelectorExists('select[name="contenu_joueur[langues][]"]');
+        static::assertSelectorExists('select[name="contenu_joueur[connaissances][]"]');
+        static::assertSelectorExists('select[name="contenu_joueur[technologies][]"]');
 
         $client->request('GET', $this->actions($depouillement));
         static::assertResponseIsSuccessful();
