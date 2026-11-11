@@ -77,7 +77,10 @@ class ConceptionServiceTest extends KernelTestCase
         $autre = $this->inscrit($gn, genre: 2);
         $depouillement = $this->enveloppe($gn, $moi);
 
-        $conception = $this->service->enregistrer($depouillement, (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 20);
+        $conception = $this->service->enregistrer($depouillement, (string) $autre->getId(), UserFactory::createOne());
+        static::assertStringContainsString('Conception enregistrée', $depouillement->getHistories()->last()->getMotif());
+        $this->service->tirer($conception, UserFactory::createOne(), static fn (): int => 20);
+        static::assertStringContainsString('Tirage demandé par le staff', $depouillement->getHistories()->last()->getMotif());
 
         static::assertSame(20, $conception->getTirage());
         static::assertSame(ConceptionIssue::JUMEAUX, $conception->getIssue());
@@ -87,7 +90,6 @@ class ConceptionServiceTest extends KernelTestCase
         static::assertTrue($conception->isSimulation());
         static::assertSame([], $conception->getAnomalies());
         static::assertCount(1, $depouillement->getConceptions());
-        static::assertStringContainsString('Conception enregistrée', $depouillement->getHistories()->last()->getMotif());
     }
 
     public function testUneConceptionReelleNEstPasUneSimulation(): void
@@ -96,7 +98,8 @@ class ConceptionServiceTest extends KernelTestCase
         $moi = $this->inscrit($gn);
         $autre = $this->inscrit($gn, genre: 2);
 
-        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi, false), (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 7);
+        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi, false), (string) $autre->getId(), UserFactory::createOne());
+        $this->service->tirer($conception, UserFactory::createOne(), static fn (): int => 7);
 
         static::assertFalse($conception->isSimulation());
         static::assertSame(ConceptionIssue::FILLE, $conception->getIssue());
@@ -139,7 +142,8 @@ class ConceptionServiceTest extends KernelTestCase
         $humain->addEspece(EspeceFactory::createOne(['nom' => 'Humain']));
         $this->em->flush();
 
-        $conception = $this->service->enregistrer($this->enveloppe($gn, $sansEspece), (string) $humain->getId(), UserFactory::createOne(), static fn (): int => 9);
+        $conception = $this->service->enregistrer($this->enveloppe($gn, $sansEspece), (string) $humain->getId(), UserFactory::createOne());
+        $this->service->tirer($conception, UserFactory::createOne(), static fn (): int => 9);
 
         static::assertSame(9, $conception->getTirage());
         static::assertSame([], $conception->getAnomalies());
@@ -153,7 +157,8 @@ class ConceptionServiceTest extends KernelTestCase
         $autre->addEspece(EspeceFactory::createOne(['nom' => 'Ombrelin']));
         $this->em->flush();
 
-        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 12);
+        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne());
+        $this->service->tirer($conception, UserFactory::createOne(), static fn (): int => 12);
 
         static::assertSame(12, $conception->getTirage());
         static::assertSame([], $conception->getAnomalies());
@@ -182,7 +187,8 @@ class ConceptionServiceTest extends KernelTestCase
         $moi = $this->inscrit($gn);
         $autre = $this->inscrit($gn, genre: 2);
 
-        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), '00' . $autre->getId() . ' Conan', UserFactory::createOne(), static fn (): int => 12);
+        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), '00' . $autre->getId() . ' Conan', UserFactory::createOne());
+        $this->service->tirer($conception, UserFactory::createOne(), static fn (): int => 12);
 
         static::assertSame($autre->getId(), $conception->getParent2()->getId());
     }
@@ -192,7 +198,7 @@ class ConceptionServiceTest extends KernelTestCase
         $gn = GnFactory::createOne();
         $moi = $this->inscrit($gn);
         $autre = $this->inscrit($gn, genre: 2);
-        $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 8);
+        $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne());
 
         $this->expectException(ConceptionInvalideException::class);
         $this->expectExceptionMessage('déjà enregistrée');
@@ -263,7 +269,8 @@ class ConceptionServiceTest extends KernelTestCase
         $moi = $this->inscrit($gn);
         $autre = $this->inscrit($gn, genre: 2);
         $depouillement = $this->enveloppe($gn, $moi);
-        $conception = $this->service->enregistrer($depouillement, (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 8);
+        $conception = $this->service->enregistrer($depouillement, (string) $autre->getId(), UserFactory::createOne());
+        $this->service->tirer($conception, UserFactory::createOne(), static fn (): int => 8);
 
         $this->service->supprimer($conception, UserFactory::createOne());
 
@@ -276,10 +283,42 @@ class ConceptionServiceTest extends KernelTestCase
         $gn = GnFactory::createOne();
         $moi = $this->inscrit($gn);
         $autre = $this->inscrit($gn, genre: 2);
-        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne(), static fn (): int => 8);
+        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne());
+        $this->service->tirer($conception, UserFactory::createOne(), static fn (): int => 8);
         $conception->setStatut(ConceptionStatut::A_GERER_PLUS_TARD);
 
         $this->expectException(ConceptionInvalideException::class);
         $this->service->supprimer($conception, UserFactory::createOne());
+    }
+
+    public function testLeTirageEstAUneSeuleFoisEtALaDemandeDuStaff(): void
+    {
+        $gn = GnFactory::createOne();
+        $moi = $this->inscrit($gn);
+        $autre = $this->inscrit($gn, genre: 2);
+        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne(), nomPropose: '  Aldric ');
+
+        static::assertNull($conception->getTirage());
+        static::assertSame('Aldric', $conception->getNomPropose());
+
+        $this->service->tirer($conception, UserFactory::createOne(), static fn (): int => 20);
+        static::assertSame(20, $conception->getTirage());
+        static::assertSame(ConceptionIssue::JUMEAUX, $conception->getIssue());
+
+        $this->expectException(ConceptionInvalideException::class);
+        $this->expectExceptionMessage('déjà fait');
+        $this->service->tirer($conception, UserFactory::createOne(), static fn (): int => 3);
+    }
+
+    public function testAucunTirageTantQuUneAnomalieEstSignalee(): void
+    {
+        $gn = GnFactory::createOne();
+        $moi = $this->inscrit($gn, 45);
+        $autre = $this->inscrit($gn, 30, 2);
+        $conception = $this->service->enregistrer($this->enveloppe($gn, $moi), (string) $autre->getId(), UserFactory::createOne());
+
+        $this->expectException(ConceptionInvalideException::class);
+        $this->expectExceptionMessage('anomalie');
+        $this->service->tirer($conception, UserFactory::createOne(), static fn (): int => 10);
     }
 }
