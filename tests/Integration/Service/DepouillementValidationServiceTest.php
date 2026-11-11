@@ -92,10 +92,12 @@ class DepouillementValidationServiceTest extends KernelTestCase
         $reel = $this->aValider(simulation: false);
         $this->service->valider($reel, UserFactory::createOne());
         static::assertSame([], $reel->getDonnees()['application'] ?? null);
+        static::assertTrue($reel->getDonnees()['fin_opus_applique']);
 
         $simulation = $this->aValider(simulation: true);
         $this->service->valider($simulation, UserFactory::createOne());
         static::assertArrayNotHasKey('application', $simulation->getDonnees());
+        static::assertArrayNotHasKey('fin_opus_applique', $simulation->getDonnees());
     }
 
     public function testLaValidationEcritUnEvenementSommaireQuiRenvoieALHistorique(): void

@@ -116,3 +116,9 @@ wargame), puis test de forme des exports, puis étape 8.
 - Renommée déclarée par le joueur (`DeclarationJoueur::renommee`) : texte libre, jamais appliquée. Pour l'appliquer il faut un champ entier, une décision confirmée par le staff et une clé stable par ligne dans l'explication.
 - Reprise des données : les soies déjà validées avant ce correctif ont laissé `personnage.renomme` en retard de 1 (les fiches affichent la bonne valeur, car `getRenomme()` somme l'historique, mais les statistiques lisent la colonne). Recalcul possible par SQL après simulation.
 - Rouvrir un dossier validé rejouerait gemme, sel, fourrure et fruits (non idempotents) : à protéger avant de permettre la réouverture.
+
+## Suivi 2026-11-11 : renommée déclarée et rejeu protégé
+
+- Champ numérique `renommee_points` (-20 à 20) dans la déclaration du joueur, décision confirmer/refuser comme les autres champs. Appliqué à la validation (DepouillementSavoirsService) seulement si confirmé, une fois par GN (explication `LH<id> - Renommée déclarée`), colonne `personnage.renomme` mise à jour.
+- Marque `fin_opus_applique` posée à la validation (hors simulation) : DepouillementFinOpusService ne rejoue plus gemme, sel, fourrure, fruits ni décès si elle est présente. La réouverture d'un dossier validé reste interdite ; cette protection prépare une future réouverture.
+- Reste : recalcul SQL de `personnage.renomme` pour les soies validées avant le correctif (simulation puis validation).

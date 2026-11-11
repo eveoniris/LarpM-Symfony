@@ -119,6 +119,7 @@ readonly class DepouillementValidationService
 
         $donnees = $depouillement->getDonnees();
         $donnees['application'] = $ajoutes;
+        $donnees[DepouillementFinOpusService::MARQUE_APPLIQUE] = true;
         $depouillement->setDonnees($donnees);
     }
 

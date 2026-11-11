@@ -208,6 +208,25 @@ class DepouillementFinOpusServiceTest extends KernelTestCase
         static::assertContains('décès (le personnage est déjà mort)', $resultat->ignores);
     }
 
+    public function testUnDossierDejaAppliqueNeRejouePasLesActionsNonIdempotentes(): void
+    {
+        $contenu = new ContenuJoueur();
+        $contenu->gemmeUtilise = true;
+        $contenu->gemmeJointes = true;
+        $contenu->gemmePieces = 1;
+        [$depouillement, $personnage] = $this->enveloppe($contenu);
+
+        $this->service->appliquer($depouillement);
+        static::assertSame(15, $personnage->getRichesse());
+
+        $depouillement->setDonnees([...$depouillement->getDonnees(), DepouillementFinOpusService::MARQUE_APPLIQUE => true]);
+        $resultat = $this->service->appliquer($depouillement);
+
+        static::assertFalse($resultat->applique);
+        static::assertSame([], $resultat->ajoutes);
+        static::assertSame(15, $personnage->getRichesse());
+    }
+
     public function testUneSimulationNEcritRien(): void
     {
         $contenu = new ContenuJoueur();

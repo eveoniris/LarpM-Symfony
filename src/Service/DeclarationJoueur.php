@@ -24,13 +24,16 @@ final class DeclarationJoueur
     /** Gains et pertes de renommée, en texte libre. */
     public ?string $renommee = null;
 
+    /** Renommée gagnée (ou perdue si négatif) par le personnage, appliquée à la validation une fois confirmée par un responsable. */
+    public ?int $renommeePoints = null;
+
     /** Maladies, folies et autres précisions, en texte libre. */
     public ?string $precisions = null;
 
     public ?string $autres = null;
 
     /**
-     * @return array<string, bool|string|null>
+     * @return array<string, bool|int|string|null>
      */
     public function versTableau(): array
     {
@@ -40,6 +43,7 @@ final class DeclarationJoueur
             'eleves' => $this->eleves,
             'constructions' => $this->constructions,
             'renommee' => $this->renommee,
+            'renommee_points' => $this->renommeePoints,
             'precisions' => $this->precisions,
             'autres' => $this->autres,
         ];
@@ -56,6 +60,8 @@ final class DeclarationJoueur
         $declaration->eleves = self::texte($donnees['eleves'] ?? null);
         $declaration->constructions = self::texte($donnees['constructions'] ?? null);
         $declaration->renommee = self::texte($donnees['renommee'] ?? null);
+        $points = $donnees['renommee_points'] ?? null;
+        $declaration->renommeePoints = \is_int($points) && 0 !== $points ? $points : null;
         $declaration->precisions = self::texte($donnees['precisions'] ?? null);
         $declaration->autres = self::texte($donnees['autres'] ?? null);
 

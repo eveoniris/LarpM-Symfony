@@ -7,11 +7,13 @@ namespace App\Form\Depouillement;
 use App\Service\DeclarationJoueur;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\Range;
 
 /**
  * Ce que le joueur déclare de son retour de jeu en texte libre (les responsables le lisent et le traitent), en plus de ce qu'il a appris.
@@ -37,6 +39,14 @@ class DeclarationJoueurType extends AbstractType
 
         foreach ($textes as $nom => [$libelle, $aide]) {
             $builder->add($nom, TextareaType::class, $this->texte($libelle, 4, $aide));
+            if ('renommee' === $nom) {
+                $builder->add('renommeePoints', IntegerType::class, [
+                    'label' => 'Renommée de mon personnage (points)',
+                    'required' => false,
+                    'help' => 'Total gagné (positif) ou perdu (négatif) pendant l\'opus. Appliqué à la validation, une fois confirmé par un organisateur.',
+                    'constraints' => [new Range(min: -20, max: 20)],
+                ]);
+            }
         }
 
         $builder->add('submit', SubmitType::class, ['label' => 'Enregistrer mon retour']);

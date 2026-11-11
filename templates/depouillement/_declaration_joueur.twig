@@ -16,6 +16,7 @@
 	'eleves': 'Enseignements donnés',
 	'constructions': 'Constructions',
 	'renommee': 'Renommée',
+	'renommee_points': 'Renommée (points)',
 	'precisions': 'Précisions',
 	'autres': 'Autres informations'
 } %}
@@ -114,6 +115,8 @@
 	<dl class="row mb-0">
 		<dt class="col-sm-4">Sorti du jeu</dt>
 		<dd class="col-sm-8">{{ declaration.sortiDuJeu ? 'Oui' : 'Non' }}{% if declaration.sortiDetails %} : {{ declaration.sortiDetails|nl2br }}{% endif %}</dd>
+		<dt class="col-sm-4">Renommée (points)</dt>
+		<dd class="col-sm-8">{{ declaration.renommeePoints ?? '-' }}</dd>
 		{% for libelle, texte in {'Enseignements donnés': declaration.eleves, 'Constructions': declaration.constructions, 'Gains et pertes de renommée': declaration.renommee, 'Précisions diverses': declaration.precisions, 'Autres informations': declaration.autres} %}
 			<dt class="col-sm-4">{{ libelle }}</dt>
 			<dd class="col-sm-8">{{ texte ? texte|nl2br : '-' }}</dd>

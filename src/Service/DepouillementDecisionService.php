@@ -58,6 +58,7 @@ readonly class DepouillementDecisionService
         'eleves' => 'declaration',
         'constructions' => 'declaration',
         'renommee' => 'declaration',
+        'renommee_points' => 'declaration',
         'precisions' => 'declaration',
         'autres' => 'declaration',
     ];
@@ -78,6 +79,7 @@ readonly class DepouillementDecisionService
         'eleves' => 'Enseignements donnés',
         'constructions' => 'Constructions',
         'renommee' => 'Renommée',
+        'renommee_points' => 'Renommée (points)',
         'precisions' => 'Précisions',
         'autres' => 'Autres informations',
     ];
