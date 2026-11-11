@@ -182,24 +182,26 @@ class DepouillementSavoirsServiceTest extends KernelTestCase
         static::assertTrue($this->service->appliquer($depouillement)->estVide());
     }
 
-    public function testUneSourceAutrePreciseeEstEnregistreeSurLaLangue(): void
+    public function testChaqueLangueGardeSaPropreSource(): void
     {
         $contenu = $this->contenuComplet();
-        $contenu->sourceLangue = 'AUTRE';
-        $contenu->sourceLangueAutre = '  Récompense de quête  ';
+        $quete = LangueFactory::createOne();
+        $contenu->langues[] = $quete;
+        $contenu->sourcesLangues = [(int) $quete->getId() => '  Récompense de quête  '];
         [$depouillement, $personnage] = $this->enveloppe($contenu, false);
 
         $this->service->appliquer($depouillement);
         $this->em->flush();
 
-        static::assertSame(['Récompense de quête'], $this->nombres($this->recharger($personnage))['sources']);
+        $sources = $this->nombres($this->recharger($personnage))['sources'];
+        sort($sources);
+        static::assertSame(['JEU', 'Récompense de quête'], $sources);
     }
 
-    public function testAutreSansPrecisionRetombeSurLaSourceJeu(): void
+    public function testUneSourceVideRetombeSurLaSourceJeu(): void
     {
         $contenu = $this->contenuComplet();
-        $contenu->sourceLangue = 'AUTRE';
-        $contenu->sourceLangueAutre = '   ';
+        $contenu->sourcesLangues = [(int) $contenu->langues[0]->getId() => '   '];
         [$depouillement, $personnage] = $this->enveloppe($contenu, false);
 
         $this->service->appliquer($depouillement);

@@ -53,7 +53,7 @@ readonly class DepouillementSavoirsService
 
         $resultat->applique = !$depouillement->isSimulation();
         foreach ($contenu->langues as $langue) {
-            $this->langue($personnage, $langue, $contenu->sourceLangueEffective(), $resultat);
+            $this->langue($personnage, $langue, $contenu->sourceDeLangue($langue), $resultat);
         }
 
         foreach ($contenu->connaissances as $connaissance) {

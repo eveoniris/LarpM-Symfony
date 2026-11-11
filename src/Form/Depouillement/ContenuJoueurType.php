@@ -22,6 +22,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -155,21 +156,7 @@ class ContenuJoueurType extends AbstractType
             ])
             // Seules les langues, connaissances et technologies non secrètes sont proposées : une secrète se signale dans « Je ne trouve pas ».
             ->add('langues', EntityType::class, $this->liste(Langue::class, 'Langues apprises pendant le jeu', nonSecret: true))
-            ->add('sourceLangue', ChoiceType::class, [
-                'label' => 'Comment les langues ont-elles été apprises ?',
-                'choices' => ['Apprises en jeu' => 'JEU', 'Autre (à préciser)' => 'AUTRE'],
-                'expanded' => false,
-                'required' => true,
-                'empty_data' => 'JEU',
-            ])
-            ->add('sourceLangueAutre', TextType::class, [
-                'label' => 'Source précisée',
-                'required' => false,
-                'empty_data' => '',
-                'help' => 'Si « Autre » : par exemple bonus de jeu de rôle, récompense de quête, maître. 45 caractères au plus.',
-                'constraints' => [new Length(max: 45)],
-                'attr' => ['maxlength' => 45],
-            ])
+            ->add('sourcesLangues', FormType::class, ['label' => false, 'required' => false])
             ->add('connaissances', EntityType::class, $this->liste(Connaissance::class, 'Connaissances apprises pendant le jeu', nonSecret: true))
             ->add('technologies', EntityType::class, $this->liste(Technologie::class, 'Technologies apprises pendant le jeu', nonSecret: true))
             ->add('enseignantTechnologieNumero', IntegerType::class, [
@@ -198,6 +185,34 @@ class ContenuJoueurType extends AbstractType
                 'help' => 'Sort, prière, potion, ingrédient ou ressource absent des listes : décrivez-le ici, un orga sera sollicité et la remarque est ajoutée aux remarques du dépouillement.',
                 'attr' => ['rows' => 2],
             ]);
+
+        $this->ajouterSourcesLangues($builder);
+    }
+
+    /**
+     * Une ligne par langue déjà enregistrée dans le dossier : le texte précise une source particulière (bonus de jeu de rôle,
+     * récompense de quête, maître...), vide veut dire apprentissage ordinaire en jeu. Une langue qu'on vient d'ajouter à la liste
+     * reçoit sa ligne après l'enregistrement.
+     */
+    private function ajouterSourcesLangues(FormBuilderInterface $builder): void
+    {
+        $contenu = $builder->getData();
+        if (!$contenu instanceof ContenuJoueur) {
+            return;
+        }
+
+        $sources = $builder->get('sourcesLangues');
+        foreach ($contenu->langues as $langue) {
+            $sources->add((string) $langue->getId(), TextType::class, [
+                'label' => 'Source de la langue ' . $langue->getLabel(),
+                'required' => false,
+                'empty_data' => '',
+                'property_path' => '[' . (int) $langue->getId() . ']',
+                'help' => 'Vide : apprise en jeu. Sinon précisez (par exemple « récompense de quête »).',
+                'constraints' => [new Length(max: 45)],
+                'attr' => ['maxlength' => 45],
+            ]);
+        }
     }
 
     private function ajouterActions(FormBuilderInterface $builder): void

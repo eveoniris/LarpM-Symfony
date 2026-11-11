@@ -65,10 +65,11 @@
 		{{ form_row(f.prieres) }}
 		{{ form_row(f.potions) }}
 		{{ form_row(f.langues) }}
-		<div class="row g-2">
-			<div class="col-12 col-md-5">{{ form_row(f.sourceLangue) }}</div>
-			<div class="col-12 col-md-7">{{ form_row(f.sourceLangueAutre) }}</div>
-		</div>
+		{% if f.sourcesLangues|length > 0 %}
+			<div class="ms-md-3">{{ form_widget(f.sourcesLangues) }}</div>
+		{% else %}
+			<p class="form-text mt-n2">Pour préciser la source d'une langue (bonus, récompense, maître...), enregistrez d'abord la langue : une ligne apparaît ensuite pour chacune.</p>
+		{% endif %}
 		{{ form_row(f.connaissances) }}
 		{{ form_row(f.technologies) }}
 		{{ form_row(f.enseignantTechnologieNumero) }}

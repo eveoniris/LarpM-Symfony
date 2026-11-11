@@ -59,20 +59,21 @@ final class ContenuJoueur
     /** @var list<Langue> langues apprises pendant le jeu (non secrètes) */
     public array $langues = [];
 
-    /** Source des langues apprises : « JEU » (apprentissage ordinaire) ou « AUTRE » (précisée dans sourceLangueAutre). */
-    public string $sourceLangue = 'JEU';
-
-    /** Source libre des langues (bonus en jeu, récompense de quête...), utilisée quand sourceLangue vaut « AUTRE ». */
-    public string $sourceLangueAutre = '';
+    /**
+     * Source particulière de certaines langues (bonus de jeu de rôle, récompense de quête, maître...), par identifiant de langue.
+     * Vide ou absente : apprentissage ordinaire en jeu (source « JEU »).
+     *
+     * @var array<int, string>
+     */
+    public array $sourcesLangues = [];
 
     /**
-     * Source enregistrée sur la langue : « JEU » par défaut, ou le texte libre (45 caractères au plus, taille de la colonne) quand
-     * « Autre » est choisi et précisé.
+     * Source enregistrée sur la langue : « JEU » par défaut, ou le texte libre (45 caractères au plus, taille de la colonne).
      */
-    public function sourceLangueEffective(): string
+    public function sourceDeLangue(Langue $langue): string
     {
-        $texte = trim($this->sourceLangueAutre);
-        if ('AUTRE' !== $this->sourceLangue || '' === $texte) {
+        $texte = trim($this->sourcesLangues[(int) $langue->getId()] ?? '');
+        if ('' === $texte) {
             return LangueSourceType::JEU->value;
         }
 
