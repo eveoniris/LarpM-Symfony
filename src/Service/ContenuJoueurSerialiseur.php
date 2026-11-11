@@ -51,6 +51,8 @@ readonly class ContenuJoueurSerialiseur
             'prieres' => $this->ids($contenu->prieres),
             'potions' => $this->ids($contenu->potions),
             'langues' => $this->ids($contenu->langues),
+            'source_langue' => $contenu->sourceLangue,
+            'source_langue_autre' => $contenu->sourceLangueAutre,
             'connaissances' => $this->ids($contenu->connaissances),
             'technologies' => $this->ids($contenu->technologies),
             'enseignant_technologie_numero' => $contenu->enseignantTechnologieNumero,
@@ -99,6 +101,8 @@ readonly class ContenuJoueurSerialiseur
         $contenu->prieres = $this->entites(Priere::class, $donnees['prieres'] ?? []);
         $contenu->potions = $this->entites(Potion::class, $donnees['potions'] ?? []);
         $contenu->langues = $this->entites(Langue::class, $donnees['langues'] ?? []);
+        $contenu->sourceLangue = 'AUTRE' === ($donnees['source_langue'] ?? null) ? 'AUTRE' : 'JEU';
+        $contenu->sourceLangueAutre = (string) ($donnees['source_langue_autre'] ?? '');
         $contenu->connaissances = $this->entites(Connaissance::class, $donnees['connaissances'] ?? []);
         $contenu->technologies = $this->entites(Technologie::class, $donnees['technologies'] ?? []);
         $contenu->enseignantTechnologieNumero = null === ($donnees['enseignant_technologie_numero'] ?? null) ? null : (int) $donnees['enseignant_technologie_numero'];

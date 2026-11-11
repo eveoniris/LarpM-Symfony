@@ -181,4 +181,30 @@ class DepouillementSavoirsServiceTest extends KernelTestCase
 
         static::assertTrue($this->service->appliquer($depouillement)->estVide());
     }
+
+    public function testUneSourceAutrePreciseeEstEnregistreeSurLaLangue(): void
+    {
+        $contenu = $this->contenuComplet();
+        $contenu->sourceLangue = 'AUTRE';
+        $contenu->sourceLangueAutre = '  Récompense de quête  ';
+        [$depouillement, $personnage] = $this->enveloppe($contenu, false);
+
+        $this->service->appliquer($depouillement);
+        $this->em->flush();
+
+        static::assertSame(['Récompense de quête'], $this->nombres($this->recharger($personnage))['sources']);
+    }
+
+    public function testAutreSansPrecisionRetombeSurLaSourceJeu(): void
+    {
+        $contenu = $this->contenuComplet();
+        $contenu->sourceLangue = 'AUTRE';
+        $contenu->sourceLangueAutre = '   ';
+        [$depouillement, $personnage] = $this->enveloppe($contenu, false);
+
+        $this->service->appliquer($depouillement);
+        $this->em->flush();
+
+        static::assertSame([LangueSourceType::JEU->value], $this->nombres($this->recharger($personnage))['sources']);
+    }
 }

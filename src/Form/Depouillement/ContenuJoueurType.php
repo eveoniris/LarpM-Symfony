@@ -28,6 +28,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Count;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Range;
 
 /**
@@ -154,6 +155,21 @@ class ContenuJoueurType extends AbstractType
             ])
             // Seules les langues, connaissances et technologies non secrètes sont proposées : une secrète se signale dans « Je ne trouve pas ».
             ->add('langues', EntityType::class, $this->liste(Langue::class, 'Langues apprises pendant le jeu', nonSecret: true))
+            ->add('sourceLangue', ChoiceType::class, [
+                'label' => 'Comment les langues ont-elles été apprises ?',
+                'choices' => ['Apprises en jeu' => 'JEU', 'Autre (à préciser)' => 'AUTRE'],
+                'expanded' => false,
+                'required' => true,
+                'empty_data' => 'JEU',
+            ])
+            ->add('sourceLangueAutre', TextType::class, [
+                'label' => 'Source précisée',
+                'required' => false,
+                'empty_data' => '',
+                'help' => 'Si « Autre » : par exemple bonus de jeu de rôle, récompense de quête, maître. 45 caractères au plus.',
+                'constraints' => [new Length(max: 45)],
+                'attr' => ['maxlength' => 45],
+            ])
             ->add('connaissances', EntityType::class, $this->liste(Connaissance::class, 'Connaissances apprises pendant le jeu', nonSecret: true))
             ->add('technologies', EntityType::class, $this->liste(Technologie::class, 'Technologies apprises pendant le jeu', nonSecret: true))
             ->add('enseignantTechnologieNumero', IntegerType::class, [

@@ -10,7 +10,6 @@ use App\Entity\Langue;
 use App\Entity\Personnage;
 use App\Entity\Technologie;
 use App\Enum\DepouillementType;
-use App\Enum\LangueSourceType;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -54,7 +53,7 @@ readonly class DepouillementSavoirsService
 
         $resultat->applique = !$depouillement->isSimulation();
         foreach ($contenu->langues as $langue) {
-            $this->langue($personnage, $langue, $resultat);
+            $this->langue($personnage, $langue, $contenu->sourceLangueEffective(), $resultat);
         }
 
         foreach ($contenu->connaissances as $connaissance) {
@@ -68,7 +67,7 @@ readonly class DepouillementSavoirsService
         return $resultat;
     }
 
-    private function langue(Personnage $personnage, Langue $langue, ResultatApprentissages $resultat): void
+    private function langue(Personnage $personnage, Langue $langue, string $source, ResultatApprentissages $resultat): void
     {
         $libelle = 'langue ' . $langue->getLabel();
         if ($personnage->isKnownLanguage($langue)) {
@@ -82,7 +81,7 @@ readonly class DepouillementSavoirsService
             return;
         }
 
-        $ligne = $personnage->addLangueSource($langue, LangueSourceType::JEU);
+        $ligne = $personnage->addLangueSource($langue, $source);
         if (null !== $ligne) {
             $this->entityManager->persist($ligne);
         }
