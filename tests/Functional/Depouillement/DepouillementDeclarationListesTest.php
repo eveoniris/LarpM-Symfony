@@ -8,6 +8,7 @@ use App\Entity\Connaissance;
 use App\Entity\Depouillement;
 use App\Entity\Gn;
 use App\Entity\User;
+use App\Enum\DepouillementStatut;
 use App\Enum\DepouillementType;
 use App\Service\DecisionsDeclaration;
 use App\Service\DepouillementContenuService;
@@ -121,6 +122,25 @@ class DepouillementDeclarationListesTest extends WebTestCase
         static::assertInstanceOf(Depouillement::class, $recharge);
         $contenu = static::getContainer()->get(DepouillementContenuService::class)->lireContenuJoueur($recharge);
         static::assertSame('Récompense de quête', $contenu->sourceDeLangue($contenu->langues[0]));
+    }
+
+    public function testLeJoueurVoitCeQuiEstDejaAjouteAsaFicheApresValidation(): void
+    {
+        $client = static::createClient();
+        [$gn, $user, $dossier] = $this->dossierDeJoueur();
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $url = '/gn/' . $gn->getId() . '/depouillement/' . $dossier->getId() . '/etape/declaration';
+        $client->loginUser($user);
+
+        $dossier->setDonnees([...$dossier->getDonnees(), 'application' => ['langue Aquilonien']]);
+        $em->flush();
+        $client->request('GET', $url);
+        static::assertSelectorNotExists('[data-testid="deja-applique"]');
+
+        $dossier->setStatut(DepouillementStatut::VALIDE);
+        $em->flush();
+        $client->request('GET', $url);
+        static::assertSelectorTextContains('[data-testid="deja-applique"]', 'langue Aquilonien');
     }
 
     public function testLesElementsSecretsNeSontPasProposes(): void

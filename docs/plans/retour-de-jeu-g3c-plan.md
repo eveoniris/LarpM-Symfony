@@ -73,8 +73,8 @@ PR #89 à #94 mergées, puis commits `ce1a9b09` et `818d33b0` (liens, `groupe_nu
 |---|---|---|
 | 0 Fichier mémoire | FAIT | |
 | 1 Socle (dossier joueur, relais, provenance, accès, tests) | FAIT | |
-| 2 Retour joueur (parcours et champs) | PARTIEL | Descendants (aucun champ côté joueur) ; lecture seule de ce que l'enveloppe a déjà appliqué |
-| 3 Validation et application | PARTIEL | Appliquer les descendants en Conception en attente ; vérifier l'explication de renommée « LH<gn> - motif » |
+| 2 Retour joueur (parcours et champs) | FAIT | Bloc « Déjà ajouté à votre fiche » en lecture seule après validation (donnees.application : apprentissages et savoirs déclarés) ; descendants = étape Conceptions (nom envisagé, tirage à la demande du staff) |
+| 3 Validation et application | PARTIEL | Renommée de la soie : colonne personnage.renomme maintenant mise à jour. Renommée DÉCLARÉE par le joueur : texte libre, consignée jamais appliquée (champ entier + décision confirmée à définir) ; sortie du jeu idem |
 | 4 Retour de groupe (titres, ordres, validation wargame) | PARTIEL | EN ATTENTE du responsable wargame : phases d'ordres qui s'ouvrent une à une (les 3 champs restent affichés), champ constructions (n° expert) |
 | 5 Liens, compteur, clôture | FAIT | Compteur reçus/attendus, clôture avec motif, fiche personnage vers retour (staff bêta), dossier vers fiche et membres, suivi vers fiche |
 | 6 API joueur et groupe | FAIT | |
@@ -109,3 +109,10 @@ wargame), puis test de forme des exports, puis étape 8.
 3. Nouvelles constructions : le groupe déclare-t-il un numéro d'expert, et qui le valide ?
 4. Qui est le chef de groupe pour saisir les ordres, et comment reprendre les titres du GN précédent ?
 5. Les exports par personnage (sans joueur) suffisent-ils, ou faut-il l'import du retour joueur corrigé en tableur (phase 2) ?
+
+## Constats du 2026-11-11 sur la renommée (à décider)
+
+- Explication de la soie : `LH<id du GN> - Soie` (id technique, pas un numéro lisible). Idempotente. À garder ou passer à un numéro lisible ?
+- Renommée déclarée par le joueur (`DeclarationJoueur::renommee`) : texte libre, jamais appliquée. Pour l'appliquer il faut un champ entier, une décision confirmée par le staff et une clé stable par ligne dans l'explication.
+- Reprise des données : les soies déjà validées avant ce correctif ont laissé `personnage.renomme` en retard de 1 (les fiches affichent la bonne valeur, car `getRenomme()` somme l'historique, mais les statistiques lisent la colonne). Recalcul possible par SQL après simulation.
+- Rouvrir un dossier validé rejouerait gemme, sel, fourrure et fruits (non idempotents) : à protéger avant de permettre la réouverture.

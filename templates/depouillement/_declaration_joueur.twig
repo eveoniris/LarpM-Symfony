@@ -95,6 +95,16 @@
 
 <hr>
 
+{% set dejaApplique = depouillement.donnees.application|default([]) %}
+{% if dejaApplique|length > 0 and not depouillement.statut.isEditable %}
+	<div class="alert alert-success small" data-testid="deja-applique">
+		<strong><i class="fa fa-check"></i> Déjà ajouté à votre fiche par la validation :</strong>
+		<ul class="mb-0">
+			{% for ligne in dejaApplique %}<li>{{ ligne }}</li>{% endfor %}
+		</ul>
+	</div>
+{% endif %}
+
 <h6>Mon retour</h6>
 {% if formDeclaration is defined and formDeclaration %}
 	{{ form_start(formDeclaration, {'attr': {'data-lm-unsaved': ''}}) }}

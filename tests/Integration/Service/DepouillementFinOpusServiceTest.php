@@ -116,6 +116,8 @@ class DepouillementFinOpusServiceTest extends KernelTestCase
         static::assertCount(1, $renommes);
         static::assertSame(1, $renommes[0]->getRenomme());
         static::assertStringEndsWith('- Soie', (string) $renommes[0]->getExplication());
+        // La colonne lue par les statistiques suit l'historique.
+        static::assertSame(1, (int) $this->em->getConnection()->fetchOne('SELECT renomme FROM personnage WHERE id = ?', [$personnage->getId()]));
     }
 
     public function testLaGemmeConvertitLesPiecesDOrEnArgentAvecPlafond(): void

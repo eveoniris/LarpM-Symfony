@@ -87,6 +87,17 @@ class DepouillementValidationServiceTest extends KernelTestCase
         static::assertSame(DepouillementStatut::VALIDE, $historique->getStatutApres());
     }
 
+    public function testLaValidationConsigneCeQuiEstAppliqueSaufEnSimulation(): void
+    {
+        $reel = $this->aValider(simulation: false);
+        $this->service->valider($reel, UserFactory::createOne());
+        static::assertSame([], $reel->getDonnees()['application'] ?? null);
+
+        $simulation = $this->aValider(simulation: true);
+        $this->service->valider($simulation, UserFactory::createOne());
+        static::assertArrayNotHasKey('application', $simulation->getDonnees());
+    }
+
     public function testLaValidationEcritUnEvenementSommaireQuiRenvoieALHistorique(): void
     {
         $depouillement = $this->aValider(simulation: false);

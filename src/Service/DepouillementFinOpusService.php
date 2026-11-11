@@ -143,6 +143,8 @@ readonly class DepouillementFinOpusService
 
         $resultat->ajoutes[] = 'renommée +1 (soie)';
         if ($resultat->applique) {
+            // La colonne personnage.renomme est lue par les statistiques : elle suit l'historique.
+            $personnage->addRenomme(1);
             $this->entityManager->persist(
                 (new RenommeHistory())
                     ->setRenomme(1)
