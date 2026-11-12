@@ -82,6 +82,14 @@
                                        href="{{ path('personnage.export', {'personnage':personnage.id, 'qrCode':1}) }}"><i
                                                 class="fa fa-qrcode"
                                                 aria-hidden="true"></i><span class="d-block d-md-none" style="font-size:0.6rem;line-height:1">QR Code</span></a>
+                                    {% set dernierParticipant = personnage.lastParticipant %}
+                                    {% if dernierParticipant and is_granted('ROLE_BETA_TEST') and is_granted('DEPOUILLEMENT_VALIDER', dernierParticipant.gn) %}
+                                        <a class="btn btn-secondary d-flex flex-column align-items-center" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                           title="Retour de jeu de ce personnage"
+                                           href="{{ path('depouillement.retour_participant', {'gn': dernierParticipant.gn.id, 'participant': dernierParticipant.id}) }}"><i
+                                                    class="fa fa-clipboard-list"
+                                                    aria-hidden="true"></i><span class="d-block d-md-none" style="font-size:0.6rem;line-height:1">Retour</span></a>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>

@@ -22,12 +22,14 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Count;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Range;
 
 /**
@@ -146,7 +148,7 @@ class ContenuJoueurType extends AbstractType
             ])
             ->add('prieres', EntityType::class, [
                 ...$this->liste(Priere::class, 'Prières apprises pendant le jeu'),
-                'choice_label' => static fn (Priere $priere): string => \sprintf('%s - %s (niveau %d)', $priere->getSphere()?->getLabel() ?? 'Sans sphère', $priere->getLabel(), $priere->getNiveau()),
+                'choice_label' => static fn (Priere $priere): string => \sprintf('%s - %s (niveau %d)', $priere->getSphere()->getLabel(), $priere->getLabel(), $priere->getNiveau()),
             ])
             ->add('potions', EntityType::class, [
                 ...$this->liste(Potion::class, 'Potions (recettes) apprises pendant le jeu'),
@@ -154,6 +156,7 @@ class ContenuJoueurType extends AbstractType
             ])
             // Seules les langues, connaissances et technologies non secrètes sont proposées : une secrète se signale dans « Je ne trouve pas ».
             ->add('langues', EntityType::class, $this->liste(Langue::class, 'Langues apprises pendant le jeu', nonSecret: true))
+            ->add('sourcesLangues', FormType::class, ['label' => false, 'required' => false])
             ->add('connaissances', EntityType::class, $this->liste(Connaissance::class, 'Connaissances apprises pendant le jeu', nonSecret: true))
             ->add('technologies', EntityType::class, $this->liste(Technologie::class, 'Technologies apprises pendant le jeu', nonSecret: true))
             ->add('enseignantTechnologieNumero', IntegerType::class, [
@@ -182,6 +185,34 @@ class ContenuJoueurType extends AbstractType
                 'help' => 'Sort, prière, potion, ingrédient ou ressource absent des listes : décrivez-le ici, un orga sera sollicité et la remarque est ajoutée aux remarques du dépouillement.',
                 'attr' => ['rows' => 2],
             ]);
+
+        $this->ajouterSourcesLangues($builder);
+    }
+
+    /**
+     * Une ligne par langue déjà enregistrée dans le dossier : le texte précise une source particulière (bonus de jeu de rôle,
+     * récompense de quête, maître...), vide veut dire apprentissage ordinaire en jeu. Une langue qu'on vient d'ajouter à la liste
+     * reçoit sa ligne après l'enregistrement.
+     */
+    private function ajouterSourcesLangues(FormBuilderInterface $builder): void
+    {
+        $contenu = $builder->getData();
+        if (!$contenu instanceof ContenuJoueur) {
+            return;
+        }
+
+        $sources = $builder->get('sourcesLangues');
+        foreach ($contenu->langues as $langue) {
+            $sources->add((string) $langue->getId(), TextType::class, [
+                'label' => 'Source de la langue ' . $langue->getLabel(),
+                'required' => false,
+                'empty_data' => '',
+                'property_path' => '[' . (int) $langue->getId() . ']',
+                'help' => 'Vide : apprise en jeu. Sinon précisez (par exemple « récompense de quête »).',
+                'constraints' => [new Length(max: 45)],
+                'attr' => ['maxlength' => 45],
+            ]);
+        }
     }
 
     private function ajouterActions(FormBuilderInterface $builder): void

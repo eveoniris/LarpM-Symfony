@@ -1,6 +1,6 @@
 # G3c : retour de jeu déclaré par le joueur et le groupe, en complément du dépouillement
 
-Écrit le 2026-11-09. Rien n'est codé. Ce plan précise et remplace les décisions de conception de `retour-de-jeu-joueur-plan.md`
+Écrit le 2026-11-09. Statut au 2026-11-10 : étapes 1, 5, 6 faites, 2, 3, 4 et 7 partielles, 8 non faite (voir « Suivi d'avancement »). Ce plan précise et remplace les décisions de conception de `retour-de-jeu-joueur-plan.md`
 (qui garde l'inventaire du code et le détail de l'export CSV). Module de départ : le dépouillement d'enveloppes
 (`depouillement-enveloppe-reprise.md`), déjà sur `main` et derrière `ROLE_BETA_TEST`.
 
@@ -64,28 +64,35 @@
    Incohérence = anomalie signalée sans bloquer ; règle ferme non respectée (enseignant non Expert) = non appliqué.
 7. **Maladies, folies, constructions** : texte libre, non appliqué, tant que le modèle n'est pas défini (étape 10 du dépouillement en attente).
 
-## Étapes
+## Suivi d'avancement (audit du code sur main, 2026-11-10)
 
-0. Fichier mémoire de suivi (`retour-de-jeu-g3c-plan.md`) : fait.
-1. Socle : le joueur crée ou reprend son propre dossier (`depouilleur` pouvant être le joueur), notion de prise de relais, provenance
-   et décision par ligne déclarée dans `donnees`, accès propriétaire, tests d'accès (un joueur ne voit que le sien, un autre joueur
-   reçoit 403, lecture seule après la reprise par un tiers). Aucune nouvelle clé d'unicité.
-2. Retour joueur sur le site : parcours, champs manquants (sorti du jeu, langues, connaissances, technologies, recettes, renommée,
-   constructions, enseignements, précisions), lecture seule de ce que l'enveloppe a déjà appliqué.
-3. Validation et application (scénariste et wargame), historique, simulation.
-4. Retour de groupe : titres, ordres, phases, validation wargame de chaque phase.
-5. Liens fiche PJ vers retour PJ et retour vers fiche, compteur « reçus / attendus » par groupe, clôture « pas de retour » ou
-   « n'a pas participé » avec motif (voir « Ajouts demandés le 2026-10-26 » de `retour-de-jeu-joueur-plan.md`).
-6. API joueur et groupe pour l'app mobile (routes `/api/joueur/...`, propriétaire seulement, verrou de groupe, même contrôle que le site).
-7. Export CSV (fiches de groupe symétriques de l'import, puis retours joueurs) et test d'aller-retour.
-8. Ouverture aux joueurs : retrait de `ROLE_BETA_TEST` sur ces routes seulement, fenêtre de saisie par GN.
+PR #89 à #94 mergées, puis commits `ce1a9b09` et `818d33b0` (liens, `groupe_numero`, export sans joueur). Rien n'est déployé en prod
+à cette date. Module toujours derrière `ROLE_BETA_TEST`.
+
+| Étape | Statut | Reste à faire |
+|---|---|---|
+| 0 Fichier mémoire | FAIT | |
+| 1 Socle (dossier joueur, relais, provenance, accès, tests) | FAIT | |
+| 2 Retour joueur (parcours et champs) | FAIT | Bloc « Déjà ajouté à votre fiche » en lecture seule après validation (donnees.application : apprentissages et savoirs déclarés) ; descendants = étape Conceptions (nom envisagé, tirage à la demande du staff) |
+| 3 Validation et application | PARTIEL | Renommée de la soie : colonne personnage.renomme maintenant mise à jour. Renommée DÉCLARÉE par le joueur : texte libre, consignée jamais appliquée (champ entier + décision confirmée à définir) ; sortie du jeu idem |
+| 4 Retour de groupe (titres, ordres, validation wargame) | PARTIEL | EN ATTENTE du responsable wargame : phases d'ordres qui s'ouvrent une à une (les 3 champs restent affichés), champ constructions (n° expert) |
+| 5 Liens, compteur, clôture | FAIT | Compteur reçus/attendus, clôture avec motif, fiche personnage vers retour (staff bêta), dossier vers fiche et membres, suivi vers fiche |
+| 6 API joueur et groupe | FAIT | |
+| 7 Export CSV | PARTIEL | `groupe_numero` FAIT ; colonne joueur retirée par défaut, état civil réservé ADMIN/GESTION avec `?etat_civil=1` FAIT ; reste : test de forme des retours joueurs, import du retour joueur (phase 2, optionnel) |
+| 8 Ouverture aux joueurs | NON FAIT | Fenêtre de saisie par GN, retrait de `ROLE_BETA_TEST`. Décision utilisateur requise |
+
+Décision du 2026-11-10 : les exports identifient le personnage (numéro, nom ou surnom), jamais le joueur ; l'état civil est une colonne
+optionnelle pour les rôles de gestion. Le wargame contacte les joueurs avec ses autres droits.
+
+Ordre conseillé pour la suite : descendants (2 et 3), puis phases d'ordres et constructions (après réunion avec le responsable
+wargame), puis test de forme des exports, puis étape 8.
 
 ## Questions encore ouvertes
 
 - Tranché le 2026-11-09 : structuré quand c'est géré par une entité ou une règle, le reste en texte libre géré par les responsables ;
   le joueur modifie tant qu'aucun autre acteur n'a pris le relais, puis lecture seule (ajouts d'information complémentaire à voir plus tard).
 - Qui est « chef de groupe » dans les données, et comment s'applique la liste des titres du GN précédent ? À vérifier dans le code.
-- Phases d'ordres de conquête sur un dossier de groupe unique : chaque phase porte sa propre validation wargame dans `donnees`
+- À VOIR AVEC LE RESPONSABLE WARGAME (non tranché) : phases d'ordres de conquête sur un dossier de groupe unique, chaque phase porte sa propre validation wargame dans `donnees`
   (à détailler à l'étape 4).
 
 ## Pièges (hérités du dépouillement)
@@ -94,3 +101,24 @@
 - Pas de `Co-Authored-By`, pas de tiret cadratin dans les ajouts, mago (format puis lint) avant commit.
 - Test local : le conteneur monte `F:\dev\LarpM-Symfony` ; les worktrees ne sont pas montés (copier les fichiers pour tester).
 - Le test `ApiRoutesMethodsTest` remplace chaque `{placeholder}` par 1 et exige 401 sans jeton : valider les valeurs dans le contrôleur.
+
+## Questions à poser au responsable wargame
+
+1. Phases d'ordres : combien de phases par GN, et à quel moment chacune s'ouvre-t-elle (après validation de la précédente, ou à date fixe) ?
+2. La phase suivante n'est-elle ouverte que s'il reste des ordres à donner, ou toujours ?
+3. Nouvelles constructions : le groupe déclare-t-il un numéro d'expert, et qui le valide ?
+4. Qui est le chef de groupe pour saisir les ordres, et comment reprendre les titres du GN précédent ?
+5. Les exports par personnage (sans joueur) suffisent-ils, ou faut-il l'import du retour joueur corrigé en tableur (phase 2) ?
+
+## Constats du 2026-11-11 sur la renommée (à décider)
+
+- Explication de la soie : `LH<id du GN> - Soie` (id technique, pas un numéro lisible). Idempotente. À garder ou passer à un numéro lisible ?
+- Renommée déclarée par le joueur (`DeclarationJoueur::renommee`) : texte libre, jamais appliquée. Pour l'appliquer il faut un champ entier, une décision confirmée par le staff et une clé stable par ligne dans l'explication.
+- Reprise des données : les soies déjà validées avant ce correctif ont laissé `personnage.renomme` en retard de 1 (les fiches affichent la bonne valeur, car `getRenomme()` somme l'historique, mais les statistiques lisent la colonne). Recalcul possible par SQL après simulation.
+- Rouvrir un dossier validé rejouerait gemme, sel, fourrure et fruits (non idempotents) : à protéger avant de permettre la réouverture.
+
+## Suivi 2026-11-11 : renommée déclarée et rejeu protégé
+
+- Champ numérique `renommee_points` (-20 à 20) dans la déclaration du joueur, décision confirmer/refuser comme les autres champs. Appliqué à la validation (DepouillementSavoirsService) seulement si confirmé, une fois par GN (explication `LH<id> - Renommée déclarée`), colonne `personnage.renomme` mise à jour.
+- Marque `fin_opus_applique` posée à la validation (hors simulation) : DepouillementFinOpusService ne rejoue plus gemme, sel, fourrure, fruits ni décès si elle est présente. La réouverture d'un dossier validé reste interdite ; cette protection prépare une future réouverture.
+- Reste : recalcul SQL de `personnage.renomme` pour les soies validées avant le correctif (simulation puis validation).

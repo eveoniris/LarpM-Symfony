@@ -33,7 +33,7 @@ class DepouillementHeritierTest extends WebTestCase
         return UserFactory::createOne(['username' => 'scenar', 'roles' => ['ROLE_USER', 'ROLE_BETA_TEST', 'ROLE_SCENARISTE']]);
     }
 
-    private function conception(Gn $gn, bool $simulation = false): Conception
+    private function conception(Gn $gn, bool $simulation = false, bool $tire = true, ?string $nomPropose = null): Conception
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $conception = (new Conception())
@@ -41,8 +41,11 @@ class DepouillementHeritierTest extends WebTestCase
             ->setParent1(PersonnageFactory::createOne())
             ->setParent2(PersonnageFactory::createOne())
             ->setSimulation($simulation)
-            ->setTirage(12)
-            ->setIssue(ConceptionIssue::GARCON);
+            ->setNomPropose($nomPropose);
+        if ($tire) {
+            $conception->setTirage(12)->setIssue(ConceptionIssue::GARCON);
+        }
+
         $em->persist($conception);
         $em->flush();
 
@@ -155,5 +158,25 @@ class DepouillementHeritierTest extends WebTestCase
         static::assertNull($heritier?->getUser());
         static::assertSame(0, $heritier->getAgeReel());
         static::assertSame(10, $heritier->getXp());
+    }
+
+    public function testLeStaffTireLeD20ALaDemandeEtLeNomProposePrerempliLHeritier(): void
+    {
+        $client = static::createClient();
+        $gn = GnFactory::createOne();
+        $conception = $this->conception($gn, tire: false, nomPropose: 'Aldric');
+        $client->loginUser($this->scenariste());
+
+        $crawler = $client->request('GET', \sprintf($this->conceptions(), $gn->getId()));
+        static::assertSelectorTextContains('body', 'Pas encore de tirage');
+        static::assertSelectorTextContains('body', 'Nom envisagé par les joueurs : Aldric');
+        static::assertSame('Aldric', $crawler->filter('input[name$="[premier][nom]"]')->attr('value'));
+
+        $client->submit($crawler->selectButton('Tirer le d20 (suggestion)')->form());
+        $client->followRedirect();
+
+        static::assertSelectorTextContains('body', 'Tirage :');
+        static::assertSelectorTextNotContains('body', 'Pas encore de tirage');
+        static::assertNotNull(static::getContainer()->get(EntityManagerInterface::class)->find(Conception::class, $conception->getId())->getTirage());
     }
 }

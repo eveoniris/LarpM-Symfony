@@ -14,6 +14,7 @@ use App\Entity\Ressource;
 use App\Entity\Sort;
 use App\Entity\Technologie;
 use App\Enum\ActionFinOpus;
+use App\Enum\LangueSourceType;
 
 /**
  * Ce que le dépouilleur constate dans une enveloppe de joueur (rempli directement par le formulaire).
@@ -57,6 +58,27 @@ final class ContenuJoueur
 
     /** @var list<Langue> langues apprises pendant le jeu (non secrètes) */
     public array $langues = [];
+
+    /**
+     * Source particulière de certaines langues (bonus de jeu de rôle, récompense de quête, maître...), par identifiant de langue.
+     * Vide ou absente : apprentissage ordinaire en jeu (source « JEU »).
+     *
+     * @var array<int, string>
+     */
+    public array $sourcesLangues = [];
+
+    /**
+     * Source enregistrée sur la langue : « JEU » par défaut, ou le texte libre (45 caractères au plus, taille de la colonne).
+     */
+    public function sourceDeLangue(Langue $langue): string
+    {
+        $texte = trim($this->sourcesLangues[(int) $langue->getId()] ?? '');
+        if ('' === $texte) {
+            return LangueSourceType::JEU->value;
+        }
+
+        return mb_substr($texte, start: 0, length: 45);
+    }
 
     /** @var list<Connaissance> connaissances apprises pendant le jeu (non secrètes) */
     public array $connaissances = [];

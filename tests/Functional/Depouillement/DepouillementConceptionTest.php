@@ -63,11 +63,11 @@ class DepouillementConceptionTest extends WebTestCase
 
         $crawler = $client->request('GET', $this->contenu($depouillement));
         static::assertSelectorTextContains('body', 'Aucune conception signalée');
-        $client->submit($crawler->selectButton('Enregistrer la conception')->form(['partenaire' => (string) $numeroPartenaire]));
+        $client->submit($crawler->selectButton('Enregistrer la conception')->form(['partenaire' => (string) $numeroPartenaire, 'nom_propose' => 'Aldric']));
         static::assertResponseRedirects();
         $crawler = $client->followRedirect();
 
-        static::assertSelectorTextContains('body', 'Tirage :');
+        static::assertSelectorTextNotContains('body', 'Tirage :');
         static::assertCount(1, static::getContainer()->get(EntityManagerInterface::class)->getRepository(Conception::class)->findAll());
 
         $client->submit($crawler->selectButton('Retirer')->form());

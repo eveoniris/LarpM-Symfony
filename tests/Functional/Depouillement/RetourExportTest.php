@@ -14,10 +14,13 @@ use App\Service\DepouillementService;
 use App\Service\FicheRetourGroupeImportService;
 use App\Service\RetourExportService;
 use App\Service\RetourGroupe;
+use App\Tests\Factory\EtatCivilFactory;
 use App\Tests\Factory\FicheRetourGroupeFactory;
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\GroupeFactory;
 use App\Tests\Factory\GroupeGnFactory;
+use App\Tests\Factory\ParticipantFactory;
+use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
@@ -122,5 +125,55 @@ class RetourExportTest extends WebTestCase
         static::assertResponseIsSuccessful();
         static::assertStringStartsWith("\xEF\xBB\xBF", (string) $client->getResponse()->getContent());
         static::assertStringContainsString('text/csv', (string) $client->getResponse()->headers->get('Content-Type'));
+    }
+
+    public function testLEtatCivilDuJoueurEstReserveAuxRolesDeGestion(): void
+    {
+        $joueur = UserFactory::createOne(['etatCivil' => EtatCivilFactory::createOne(['nom' => 'Dupontel', 'prenom' => 'Alice'])]);
+        $personnage = PersonnageFactory::createOne(['user' => $joueur]);
+        ParticipantFactory::createOne(['user' => $joueur, 'gn' => $this->gn, 'groupeGn' => $this->groupeGn, 'personnage' => $personnage]);
+        $staff = $this->wargame();
+        static::getContainer()
+            ->get(DepouillementService::class)
+            ->ouvrirReel($this->gn, DepouillementType::JOUEUR, (string) $personnage->getId(), $staff);
+        $url = '/gn/' . (int) $this->gn->getId() . '/export/retours-joueurs.csv';
+
+        // Par défaut : aucune donnée sur le joueur, même pour un wargame et même si on la demande.
+        $lignes = static::getContainer()->get(RetourExportService::class)->retoursJoueurs($this->gn);
+        static::assertNotContains('Joueur (état civil)', $lignes[0]);
+        static::assertCount(2, $lignes);
+
+        $this->client->loginUser($staff);
+        $this->client->request('GET', $url . '?etat_civil=1');
+        static::assertResponseIsSuccessful();
+        static::assertStringNotContainsString('Dupontel', (string) $this->client->getResponse()->getContent());
+
+        // Gestion : la colonne apparaît seulement sur demande explicite.
+        $this->client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_BETA_TEST', 'ROLE_WARGAME', 'ROLE_GESTION']]));
+        $this->client->request('GET', $url);
+        static::assertStringNotContainsString('Dupontel', (string) $this->client->getResponse()->getContent());
+        $this->client->request('GET', $url . '?etat_civil=1');
+        static::assertStringContainsString('Joueur (état civil)', (string) $this->client->getResponse()->getContent());
+        static::assertStringContainsString('Alice Dupontel', (string) $this->client->getResponse()->getContent());
+    }
+
+    public function testLaColonneGroupeNumeroEstPrioritaireALImport(): void
+    {
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $fiche = FicheRetourGroupeFactory::createOne(['groupeGn' => $this->groupeGn, 'submitted_at' => new \DateTime('2026-06-01 14:00:00')]);
+        $numero = (int) $this->groupeGn->getGroupe()->getNumero();
+        static::assertContains('groupe_numero', RetourExportService::ENTETES_FICHES);
+
+        // Le libellé du groupe est inutilisable (aucun numéro) : seule la colonne dédiée permet de retrouver le groupe.
+        $chemin = (string) tempnam(sys_get_temp_dir(), 'fiche');
+        file_put_contents($chemin, "Groupe concerné,Sel,groupe_numero\nLibellé sans numéro,42,{$numero}\n");
+        $fiche->setSel(0);
+        $em->flush();
+        $resultat = static::getContainer()
+            ->get(FicheRetourGroupeImportService::class)
+            ->import(new UploadedFile($chemin, 'fiches.csv', 'text/csv', null, true), $this->gn, UserFactory::createOne());
+
+        static::assertSame(1, $resultat['imported']);
+        static::assertSame(42, $fiche->getSel());
     }
 }

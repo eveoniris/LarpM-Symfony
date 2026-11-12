@@ -51,6 +51,7 @@ readonly class RetourExportService
         'Poisson',
         'Vin',
         "Commentaire concernant l'enveloppe",
+        'groupe_numero',
     ];
 
     // @mago-expect lint:excessive-parameter-list
@@ -107,6 +108,7 @@ readonly class RetourExportService
                 $fiche->getPoisson(),
                 $fiche->getVin(),
                 self::texte($fiche->getCommentaire()),
+                (int) $groupeGn->getGroupe()->getNumero(),
             ];
         }
 
@@ -159,12 +161,12 @@ readonly class RetourExportService
     /**
      * @return list<list<string|int>>
      */
-    public function retoursJoueurs(Gn $gn): array
+    public function retoursJoueurs(Gn $gn, bool $avecEtatCivil = false): array
     {
+        $noms = [];
         $lignes = [[
             'Personnage n°',
             'Personnage',
-            'Joueur',
             'Groupe',
             'Statut',
             'Sorti du jeu',
@@ -189,12 +191,13 @@ readonly class RetourExportService
 
         foreach ($this->dossiers($gn, DepouillementType::JOUEUR) as $dossier) {
             $participant = $dossier->getParticipant();
+            $etat = $participant?->getUser()?->getEtatCivil();
+            $noms[] = $etat ? self::texte(trim((string) $etat->getPrenom() . ' ' . (string) $etat->getNom())) : '';
             $contenu = $this->contenu->lireContenuJoueur($dossier);
             $declaration = $this->declaration->lire($dossier);
             $lignes[] = [
                 $dossier->getNumero(),
                 self::texte($participant?->getPersonnage()?->getPublicName()),
-                self::texte($participant?->getUser()?->getUsername()),
                 self::texte($participant?->getGroupeGn()?->getGroupe()->getNom()),
                 $dossier->getStatut()->label(),
                 $declaration->sortiDuJeu ? 'oui' : 'non',
@@ -216,6 +219,24 @@ readonly class RetourExportService
                 self::texte($declaration->autres),
                 self::texte($contenu->introuvables),
             ];
+        }
+
+        return $avecEtatCivil ? $this->ajouterEtatCivil($lignes, $noms) : $lignes;
+    }
+
+    /**
+     * Insère la colonne « Joueur (état civil) » après « Personnage ». Réservée aux rôles de gestion (voir le contrôleur).
+     *
+     * @param list<list<string|int>> $lignes
+     * @param list<string> $noms
+     *
+     * @return list<list<string|int>>
+     */
+    private function ajouterEtatCivil(array $lignes, array $noms): array
+    {
+        foreach ($lignes as $i => $ligne) {
+            array_splice($ligne, offset: 2, length: 0, replacement: [0 === $i ? 'Joueur (état civil)' : $noms[$i - 1] ?? '']);
+            $lignes[$i] = $ligne;
         }
 
         return $lignes;

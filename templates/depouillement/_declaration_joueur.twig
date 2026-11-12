@@ -16,6 +16,7 @@
 	'eleves': 'Enseignements donnés',
 	'constructions': 'Constructions',
 	'renommee': 'Renommée',
+	'renommee_points': 'Renommée (points)',
 	'precisions': 'Précisions',
 	'autres': 'Autres informations'
 } %}
@@ -95,6 +96,16 @@
 
 <hr>
 
+{% set dejaApplique = depouillement.donnees.application|default([]) %}
+{% if dejaApplique|length > 0 and not depouillement.statut.isEditable %}
+	<div class="alert alert-success small" data-testid="deja-applique">
+		<strong><i class="fa fa-check"></i> Déjà ajouté à votre fiche par la validation :</strong>
+		<ul class="mb-0">
+			{% for ligne in dejaApplique %}<li>{{ ligne }}</li>{% endfor %}
+		</ul>
+	</div>
+{% endif %}
+
 <h6>Mon retour</h6>
 {% if formDeclaration is defined and formDeclaration %}
 	{{ form_start(formDeclaration, {'attr': {'data-lm-unsaved': ''}}) }}
@@ -104,6 +115,8 @@
 	<dl class="row mb-0">
 		<dt class="col-sm-4">Sorti du jeu</dt>
 		<dd class="col-sm-8">{{ declaration.sortiDuJeu ? 'Oui' : 'Non' }}{% if declaration.sortiDetails %} : {{ declaration.sortiDetails|nl2br }}{% endif %}</dd>
+		<dt class="col-sm-4">Renommée (points)</dt>
+		<dd class="col-sm-8">{{ declaration.renommeePoints ?? '-' }}</dd>
 		{% for libelle, texte in {'Enseignements donnés': declaration.eleves, 'Constructions': declaration.constructions, 'Gains et pertes de renommée': declaration.renommee, 'Précisions diverses': declaration.precisions, 'Autres informations': declaration.autres} %}
 			<dt class="col-sm-4">{{ libelle }}</dt>
 			<dd class="col-sm-8">{{ texte ? texte|nl2br : '-' }}</dd>

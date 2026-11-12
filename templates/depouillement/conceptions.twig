@@ -29,8 +29,18 @@
 			</div>
 			<div class="card-body">
 				<p class="mb-1">
-					{% if c.tirage is not null %}Tirage : <strong>{{ c.tirage }}</strong>, {{ c.issue.label }}{% else %}Pas de tirage (âge d'un parent){% endif %}
+					{% if c.tirage is not null %}Tirage : <strong>{{ c.tirage }}</strong>, {{ c.issue.label }}
+					{% elseif c.anomalies|length > 0 %}Pas de tirage possible (anomalie signalée)
+					{% else %}Pas encore de tirage
+						{% if c.statut.value == 'en_attente' and not c.simulation %}
+							<form method="post" class="d-inline ms-2" action="{{ path('depouillement.conception.tirer', {'gn': gn.id, 'conception': c.id}) }}">
+								<input type="hidden" name="_token" value="{{ csrf_token('conception_decision_' ~ c.id) }}">
+								<button type="submit" class="btn btn-sm btn-outline-primary"><i class="fa fa-dice-d20"></i> Tirer le d20 (suggestion)</button>
+							</form>
+						{% endif %}
+					{% endif %}
 				</p>
+				{% if c.nomPropose %}<p class="mb-1">Nom envisagé par les joueurs : <strong>{{ c.nomPropose }}</strong></p>{% endif %}
 				{% if c.note %}<p class="mb-1">Note des joueurs : {{ c.note|nl2br }}</p>{% endif %}
 				{% for anomalie in c.anomalies %}<div class="small lm-anomalie"><i class="fa fa-triangle-exclamation"></i> {{ anomalie }}</div>{% endfor %}
 				{% if c.remarque %}<p class="mb-1">Remarque : {{ c.remarque|nl2br }}</p>{% endif %}

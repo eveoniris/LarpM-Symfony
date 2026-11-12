@@ -1,10 +1,10 @@
-{# Conceptions d'héritier signalées dans une enveloppe de joueur. Le tirage (d20) est fait à l'enregistrement et jamais refait ;
+{# Conceptions d'héritier signalées dans une enveloppe de joueur. Le tirage (d20) est demandé plus tard par le staff, une seule fois ;
    le scénariste décide ensuite de la suite. Formulaires séparés du formulaire de contenu (pas d'imbrication).
    Variables : depouillement, gn, modifiable #}
 
 <h6>Conceptions d'héritier</h6>
 <p class="text-muted small">
-	Si le joueur déclare une conception, saisissez le numéro de personnage de son partenaire. Le tirage est fait une seule fois, le scénariste décide ensuite de la création de l'héritier.
+	Si le joueur déclare une conception, saisissez le numéro de personnage de son partenaire. Le scénariste décide ensuite de la création de l'héritier (le nom envisagé sert à préremplir sa fiche).
 </p>
 
 {% if depouillement.conceptions|length > 0 %}
@@ -37,6 +37,10 @@
 			<input type="text" id="conception-partenaire" name="partenaire" class="form-control" inputmode="numeric" required>
 		</div>
 		<div class="col-12 col-md-8">
+			<label for="conception-nom" class="form-label">Nom envisagé pour l'enfant <span class="text-muted">(facultatif)</span></label>
+			<input type="text" id="conception-nom" name="nom_propose" class="form-control" maxlength="100">
+		</div>
+		<div class="col-12">
 			<label for="conception-note" class="form-label">Note complémentaire des joueurs pour cette conception <span class="text-muted">(facultative)</span></label>
 			<textarea id="conception-note" name="note" class="form-control" rows="2" maxlength="2000" placeholder="Ce que les joueurs précisent (circonstances, souhaits, rappel utile au scénariste)"></textarea>
 		</div>

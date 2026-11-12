@@ -10,6 +10,7 @@ use App\Exception\ConceptionInvalideException;
 use App\Form\Depouillement\HeritiersType;
 use App\Repository\ConceptionRepository;
 use App\Security\Voter\DepouillementVoter;
+use App\Service\ConceptionService;
 use App\Service\HeritierSaisie;
 use App\Service\HeritierService;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -78,6 +79,29 @@ final class DepouillementHeritierController extends AbstractDepouillementControl
         return $this->ecran($gn, $conceptionRepository, $formFactory, $form, $conception);
     }
 
+    #[Route('/gn/{gn}/conceptions/{conception}/tirer', name: 'depouillement.conception.tirer', requirements: ['gn' => '\d+', 'conception' => '\d+'], methods: ['POST'])]
+    public function tirerAction(Request $request, Gn $gn, Conception $conception, ConceptionService $conceptionService): Response
+    {
+        $this->verifierConception($gn, $conception);
+        $retour = $this->redirectToRoute('depouillement.conceptions', ['gn' => $gn->getId()], 303);
+
+        if (!$this->jetonValide($request, 'conception_decision_' . $conception->getId())) {
+            return $retour;
+        }
+
+        try {
+            $conceptionService->tirer($conception, $this->utilisateur());
+        } catch (ConceptionInvalideException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $retour;
+        }
+
+        $this->addFlash('success', 'Tirage fait : c\'est une suggestion, la décision reste la vôtre.');
+
+        return $retour;
+    }
+
     #[Route('/gn/{gn}/conceptions/{conception}/plus-tard', name: 'depouillement.conception.plus_tard', requirements: ['gn' => '\d+', 'conception' => '\d+'], methods: ['POST'])]
     public function plusTardAction(Request $request, Gn $gn, Conception $conception, HeritierService $heritierService): Response
     {
@@ -141,9 +165,20 @@ final class DepouillementHeritierController extends AbstractDepouillementControl
         return $formFactory->createNamed(
             'heritiers_' . $conception->getId(),
             HeritiersType::class,
-            ['premier' => new HeritierSaisie(), 'second' => new HeritierSaisie()],
+            ['premier' => $this->premierHeritier($conception), 'second' => new HeritierSaisie()],
             ['action' => $this->generateUrl('depouillement.conception.heritiers', ['gn' => $conception->getGn()->getId(), 'conception' => $conception->getId()])],
         );
+    }
+
+    /**
+     * Le nom envisagé par les joueurs préremplit le premier héritier ; le scénariste reste libre de le changer.
+     */
+    private function premierHeritier(Conception $conception): HeritierSaisie
+    {
+        $saisie = new HeritierSaisie();
+        $saisie->nom = $conception->getNomPropose() ?? '';
+
+        return $saisie;
     }
 
     private function ecran(Gn $gn, ConceptionRepository $conceptionRepository, FormFactoryInterface $formFactory, ?FormInterface $formEnErreur = null, ?Conception $conceptionEnErreur = null): Response

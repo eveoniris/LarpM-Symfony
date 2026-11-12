@@ -54,6 +54,8 @@ readonly class DepouillementValidationService
             ->setStatutApres(DepouillementStatut::VALIDE)
             ->setMotif($this->motif($depouillement, new ResultatValidation($apprentissages, $finOpus, new ResultatApprentissages(), $savoirs, $titres)));
 
+        $this->consignerApplication($depouillement, [...$apprentissages->ajoutes, ...$savoirs->ajoutes]);
+
         $depouillement
             ->setStatut(DepouillementStatut::VALIDE)
             ->setValidatedAt(new DateTime())
@@ -100,6 +102,25 @@ readonly class DepouillementValidationService
 
         $this->entityManager->flush();
         $this->journaliser($depouillement, $historique, $validateur, 'renvoi');
+    }
+
+    /**
+     * Garde dans le dossier ce que la validation a ajouté à la fiche (apprentissages et savoirs que le joueur avait déclarés), pour
+     * le lui montrer en lecture seule. Jamais les anomalies, ni ce qui vient du contenu de l'enveloppe (réservé au staff). Rien pour
+     * une simulation.
+     *
+     * @param list<string> $ajoutes
+     */
+    private function consignerApplication(Depouillement $depouillement, array $ajoutes): void
+    {
+        if ($depouillement->isSimulation()) {
+            return;
+        }
+
+        $donnees = $depouillement->getDonnees();
+        $donnees['application'] = $ajoutes;
+        $donnees[DepouillementFinOpusService::MARQUE_APPLIQUE] = true;
+        $depouillement->setDonnees($donnees);
     }
 
     private function motif(Depouillement $depouillement, ResultatValidation $resultat): ?string

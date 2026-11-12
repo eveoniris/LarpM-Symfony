@@ -34,7 +34,13 @@ final class DepouillementConceptionController extends AbstractDepouillementContr
         }
 
         try {
-            $conception = $conceptionService->enregistrer($depouillement, $request->request->getString('partenaire'), $this->utilisateur(), note: $request->request->getString('note'));
+            $conception = $conceptionService->enregistrer(
+                $depouillement,
+                $request->request->getString('partenaire'),
+                $this->utilisateur(),
+                note: $request->request->getString('note'),
+                nomPropose: $request->request->getString('nom_propose'),
+            );
         } catch (ConceptionInvalideException $exception) {
             $this->addFlash('error', $exception->getMessage());
 
@@ -43,9 +49,9 @@ final class DepouillementConceptionController extends AbstractDepouillementContr
 
         $this->addFlash(
             'success',
-            null === $conception->getTirage()
-                ? 'Conception enregistrée : pas de tirage possible (voir l\'anomalie), le scénariste décidera.'
-                : 'Conception enregistrée, le tirage est fait : le scénariste décidera de la suite.',
+            [] === $conception->getAnomalies()
+                ? 'Conception enregistrée : le scénariste décidera de la suite.'
+                : 'Conception enregistrée (voir l\'anomalie signalée) : le scénariste décidera de la suite.',
         );
 
         return $retour;

@@ -116,6 +116,8 @@ class DepouillementFinOpusServiceTest extends KernelTestCase
         static::assertCount(1, $renommes);
         static::assertSame(1, $renommes[0]->getRenomme());
         static::assertStringEndsWith('- Soie', (string) $renommes[0]->getExplication());
+        // La colonne lue par les statistiques suit l'historique.
+        static::assertSame(1, (int) $this->em->getConnection()->fetchOne('SELECT renomme FROM personnage WHERE id = ?', [$personnage->getId()]));
     }
 
     public function testLaGemmeConvertitLesPiecesDOrEnArgentAvecPlafond(): void
@@ -204,6 +206,25 @@ class DepouillementFinOpusServiceTest extends KernelTestCase
         $mort->setVivant(false);
         $resultat = $this->service->appliquer($reel);
         static::assertContains('décès (le personnage est déjà mort)', $resultat->ignores);
+    }
+
+    public function testUnDossierDejaAppliqueNeRejouePasLesActionsNonIdempotentes(): void
+    {
+        $contenu = new ContenuJoueur();
+        $contenu->gemmeUtilise = true;
+        $contenu->gemmeJointes = true;
+        $contenu->gemmePieces = 1;
+        [$depouillement, $personnage] = $this->enveloppe($contenu);
+
+        $this->service->appliquer($depouillement);
+        static::assertSame(15, $personnage->getRichesse());
+
+        $depouillement->setDonnees([...$depouillement->getDonnees(), DepouillementFinOpusService::MARQUE_APPLIQUE => true]);
+        $resultat = $this->service->appliquer($depouillement);
+
+        static::assertFalse($resultat->applique);
+        static::assertSame([], $resultat->ajoutes);
+        static::assertSame(15, $personnage->getRichesse());
     }
 
     public function testUneSimulationNEcritRien(): void

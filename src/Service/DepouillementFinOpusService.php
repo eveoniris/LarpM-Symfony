@@ -33,6 +33,9 @@ readonly class DepouillementFinOpusService
     /** 1 pièce d'or vaut 10 pièces d'argent (la richesse de la fiche est en pièces d'argent). */
     public const int PIECES_ARGENT_PAR_PIECE_OR = 10;
 
+    /** Clé des données du dossier posée par la validation quand les actions de fin d'Opus ont été écrites sur la fiche. */
+    public const string MARQUE_APPLIQUE = 'fin_opus_applique';
+
     public function __construct(
         private EntityManagerInterface $entityManager,
         private DepouillementContenuService $contenuService,
@@ -45,6 +48,13 @@ readonly class DepouillementFinOpusService
     {
         $resultat = new ResultatApprentissages('Actions de fin d\'Opus', 'Aucune action de fin d\'Opus à appliquer.');
         if (DepouillementType::JOUEUR !== $depouillement->getType()) {
+            return $resultat;
+        }
+
+        // Gemme, sel, fourrure, fruits et décès ne sont pas idempotents : un dossier dont les actions ont déjà été appliquées ne les rejoue jamais.
+        if (true === ($depouillement->getDonnees()[self::MARQUE_APPLIQUE] ?? false)) {
+            $resultat->ignores[] = 'actions de fin d\'Opus (déjà appliquées lors d\'une validation précédente)';
+
             return $resultat;
         }
 
@@ -143,6 +153,8 @@ readonly class DepouillementFinOpusService
 
         $resultat->ajoutes[] = 'renommée +1 (soie)';
         if ($resultat->applique) {
+            // La colonne personnage.renomme est lue par les statistiques : elle suit l'historique.
+            $personnage->addRenomme(1);
             $this->entityManager->persist(
                 (new RenommeHistory())
                     ->setRenomme(1)

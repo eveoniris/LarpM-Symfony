@@ -11,7 +11,9 @@ use App\Entity\Personnage;
 use App\Enum\DepouillementType;
 use App\Enum\LangueSourceType;
 use App\Service\ContenuJoueur;
+use App\Service\DeclarationJoueur;
 use App\Service\DepouillementContenuService;
+use App\Service\DepouillementDeclarationService;
 use App\Service\DepouillementDecisionService;
 use App\Service\DepouillementSavoirsService;
 use App\Tests\Factory\GnFactory;
@@ -180,5 +182,77 @@ class DepouillementSavoirsServiceTest extends KernelTestCase
         [$depouillement] = $this->enveloppe(new ContenuJoueur(), false);
 
         static::assertTrue($this->service->appliquer($depouillement)->estVide());
+    }
+
+    public function testChaqueLangueGardeSaPropreSource(): void
+    {
+        $contenu = $this->contenuComplet();
+        $quete = LangueFactory::createOne();
+        $contenu->langues[] = $quete;
+        $contenu->sourcesLangues = [(int) $quete->getId() => '  Récompense de quête  '];
+        [$depouillement, $personnage] = $this->enveloppe($contenu, false);
+
+        $this->service->appliquer($depouillement);
+        $this->em->flush();
+
+        $sources = $this->nombres($this->recharger($personnage))['sources'];
+        sort($sources);
+        static::assertSame(['JEU', 'Récompense de quête'], $sources);
+    }
+
+    public function testUneSourceVideRetombeSurLaSourceJeu(): void
+    {
+        $contenu = $this->contenuComplet();
+        $contenu->sourcesLangues = [(int) $contenu->langues[0]->getId() => '   '];
+        [$depouillement, $personnage] = $this->enveloppe($contenu, false);
+
+        $this->service->appliquer($depouillement);
+        $this->em->flush();
+
+        static::assertSame([LangueSourceType::JEU->value], $this->nombres($this->recharger($personnage))['sources']);
+    }
+
+    public function testLaRenommeeDeclareeNEstAppliqueeQueConfirmeeEtUneSeuleFois(): void
+    {
+        [$depouillement, $personnage] = $this->enveloppe(new ContenuJoueur(), false);
+        $joueur = UserFactory::createOne();
+        $declaration = new DeclarationJoueur();
+        $declaration->renommeePoints = 3;
+        static::getContainer()->get(DepouillementDeclarationService::class)->enregistrer($depouillement, $declaration, $joueur, true);
+        $avant = $personnage->getRenomme();
+
+        // Déclarée par le joueur, pas encore confirmée : rien n'est appliqué.
+        $resultat = $this->service->appliquer($depouillement);
+        static::assertSame([], $resultat->ajoutes);
+        static::assertStringContainsString('non confirmée', $resultat->ignores[0]);
+        static::assertSame($avant, $personnage->getRenomme());
+
+        static::getContainer()->get(DepouillementDecisionService::class)->decider($depouillement, 'renommee_points', '_', DepouillementDecisionService::CONFIRMER, UserFactory::createOne());
+        $resultat = $this->service->appliquer($depouillement);
+        $this->em->flush();
+        static::assertSame(['renommée +3 (déclarée)'], $resultat->ajoutes);
+        static::assertSame(3, (int) $this->em->getConnection()->fetchOne('SELECT COALESCE(SUM(renomme), 0) FROM renomme_history WHERE personnage_id = ?', [$personnage->getId()]));
+        static::assertSame($avant + 3, (int) $this->em->getConnection()->fetchOne('SELECT renomme FROM personnage WHERE id = ?', [$personnage->getId()]));
+
+        // Rejouer ne donne rien de plus.
+        $resultat = $this->service->appliquer($depouillement);
+        $this->em->flush();
+        static::assertSame([], $resultat->ajoutes);
+        static::assertSame(1, (int) $this->em->getConnection()->fetchOne('SELECT COUNT(*) FROM renomme_history WHERE personnage_id = ?', [$personnage->getId()]));
+    }
+
+    public function testLaRenommeeDeclareeRefuseeNEstJamaisAppliquee(): void
+    {
+        [$depouillement, $personnage] = $this->enveloppe(new ContenuJoueur(), false);
+        $declaration = new DeclarationJoueur();
+        $declaration->renommeePoints = -2;
+        static::getContainer()->get(DepouillementDeclarationService::class)->enregistrer($depouillement, $declaration, UserFactory::createOne(), true);
+        static::getContainer()->get(DepouillementDecisionService::class)->decider($depouillement, 'renommee_points', '_', DepouillementDecisionService::REFUSER, UserFactory::createOne());
+        $avant = $personnage->getRenomme();
+
+        $resultat = $this->service->appliquer($depouillement);
+
+        static::assertTrue($resultat->estVide());
+        static::assertSame($avant, $personnage->getRenomme());
     }
 }

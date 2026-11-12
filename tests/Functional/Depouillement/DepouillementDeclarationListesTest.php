@@ -8,6 +8,7 @@ use App\Entity\Connaissance;
 use App\Entity\Depouillement;
 use App\Entity\Gn;
 use App\Entity\User;
+use App\Enum\DepouillementStatut;
 use App\Enum\DepouillementType;
 use App\Service\DecisionsDeclaration;
 use App\Service\DepouillementContenuService;
@@ -94,6 +95,52 @@ class DepouillementDeclarationListesTest extends WebTestCase
         static::assertSame(['source' => 'joueur', 'etat' => 'en_attente'], DecisionsDeclaration::lire($decisions, 'langues', (int) $langue->getId()));
         static::assertSame('en_attente', DecisionsDeclaration::lire($decisions, 'connaissances', (int) $connaissance->getId())['etat']);
         static::assertSame('en_attente', DecisionsDeclaration::lire($decisions, 'technologies', (int) $technologie->getId())['etat']);
+    }
+
+    public function testLaSourceDUneLangueSePreciseApresSonEnregistrement(): void
+    {
+        $client = static::createClient();
+        [$gn, $user, $dossier] = $this->dossierDeJoueur();
+        $langue = LangueFactory::createOne(['secret' => false]);
+        $idLangue = (int) $langue->getId();
+        $client->loginUser($user);
+        $url = '/gn/' . $gn->getId() . '/depouillement/' . $dossier->getId() . '/etape/declaration';
+
+        $crawler = $client->request('GET', $url);
+        static::assertSelectorNotExists('input[name^="contenu_joueur[sourcesLangues]"]');
+        $client->submit($crawler->selectButton('Enregistrer ce que j\'ai appris')->form(['contenu_joueur[langues]' => [(string) $idLangue]]));
+        static::assertResponseRedirects();
+
+        $crawler = $client->request('GET', $url);
+        static::assertSelectorExists('input[name="contenu_joueur[sourcesLangues][' . $idLangue . ']"]');
+        $client->submit($crawler->selectButton('Enregistrer ce que j\'ai appris')->form(['contenu_joueur[sourcesLangues][' . $idLangue . ']' => 'Récompense de quête']));
+        static::assertResponseRedirects();
+
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->clear();
+        $recharge = $em->find(Depouillement::class, $dossier->getId());
+        static::assertInstanceOf(Depouillement::class, $recharge);
+        $contenu = static::getContainer()->get(DepouillementContenuService::class)->lireContenuJoueur($recharge);
+        static::assertSame('Récompense de quête', $contenu->sourceDeLangue($contenu->langues[0]));
+    }
+
+    public function testLeJoueurVoitCeQuiEstDejaAjouteAsaFicheApresValidation(): void
+    {
+        $client = static::createClient();
+        [$gn, $user, $dossier] = $this->dossierDeJoueur();
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $url = '/gn/' . $gn->getId() . '/depouillement/' . $dossier->getId() . '/etape/declaration';
+        $client->loginUser($user);
+
+        $dossier->setDonnees([...$dossier->getDonnees(), 'application' => ['langue Aquilonien']]);
+        $em->flush();
+        $client->request('GET', $url);
+        static::assertSelectorNotExists('[data-testid="deja-applique"]');
+
+        $dossier->setStatut(DepouillementStatut::VALIDE);
+        $em->flush();
+        $client->request('GET', $url);
+        static::assertSelectorTextContains('[data-testid="deja-applique"]', 'langue Aquilonien');
     }
 
     public function testLesElementsSecretsNeSontPasProposes(): void

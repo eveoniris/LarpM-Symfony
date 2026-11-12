@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\Gn;
 use App\Service\RetourExportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -35,9 +36,12 @@ final class GnExportRetourController extends AbstractController
     #[Route('/gn/{gn}/export/retours-joueurs.csv', name: 'gn.export.retours_joueurs', requirements: ['gn' => '\d+'], methods: ['GET'])]
     #[IsGranted('ROLE_BETA_TEST', message: 'Fonctionnalité en cours de test.')]
     #[IsGranted('ROLE_WARGAME')]
-    public function retoursJoueursAction(Gn $gn, RetourExportService $export): Response
+    public function retoursJoueursAction(Gn $gn, RetourExportService $export, Request $request): Response
     {
-        return $this->csv($export, $export->retoursJoueurs($gn), 'retours_joueurs', $gn);
+        // L'état civil du joueur n'est exporté que sur demande explicite et pour les rôles de gestion.
+        $etatCivil = $request->query->getBoolean('etat_civil') && ($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_GESTION'));
+
+        return $this->csv($export, $export->retoursJoueurs($gn, $etatCivil), 'retours_joueurs', $gn);
     }
 
     /**

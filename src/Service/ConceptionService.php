@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
  * fois et consigne le résultat. La décision (créer l'héritier ou non) revient ensuite au scénariste.
  */
 // @mago-expect lint:cyclomatic-complexity
+// @mago-expect lint:too-many-methods
 readonly class ConceptionService
 {
     public function __construct(
@@ -35,12 +36,11 @@ readonly class ConceptionService
 
     /**
      * @param string                         $numeroPartenaire numéro de personnage du partenaire, tel que saisi
-     * @param (callable(int, int): int)|null $sourceTirage     source de nombres du d20 (tests)
      * @param string|null $note note complémentaire précisée par les joueurs pour cette conception
      *
      * @throws ConceptionInvalideException
      */
-    public function enregistrer(Depouillement $depouillement, string $numeroPartenaire, User $utilisateur, ?callable $sourceTirage = null, ?string $note = null): Conception
+    public function enregistrer(Depouillement $depouillement, string $numeroPartenaire, User $utilisateur, ?string $note = null, ?string $nomPropose = null): Conception
     {
         if (DepouillementType::JOUEUR !== $depouillement->getType()) {
             throw new ConceptionInvalideException('Une conception se signale dans une enveloppe de joueur.');
@@ -76,6 +76,7 @@ readonly class ConceptionService
             ->setSimulation($depouillement->isSimulation())
             ->setAnomalies($anomalies)
             ->setNote(null === $note || '' === trim($note) ? null : trim($note))
+            ->setNomPropose(null === $nomPropose || '' === trim($nomPropose) ? null : mb_substr(trim($nomPropose), start: 0, length: 100))
             ->setCreePar($utilisateur);
 
         // Parent non humain : échec d'office, sans tirage.
@@ -83,11 +84,7 @@ readonly class ConceptionService
             $conception->setIssue(ConceptionIssue::ECHEC);
         }
 
-        if ([] === $anomalies) {
-            $tirage = $this->regles->tirer($sourceTirage);
-            $conception->setTirage($tirage)->setIssue($this->regles->issue($tirage));
-        }
-
+        // Le d20 n'est plus tiré ici : c'est une aide pour le staff, qui le demande depuis l'écran des conceptions (voir tirer()).
         $depouillement->addConception($conception);
         $depouillement->addHistory(
             (new DepouillementHistory())
@@ -97,6 +94,46 @@ readonly class ConceptionService
         );
         $depouillement->touch();
         $this->entityManager->persist($conception);
+        $this->entityManager->flush();
+
+        return $conception;
+    }
+
+    /**
+     * Tire le d20 à la demande du staff (simple suggestion). Une seule fois par conception, jamais refait.
+     *
+     * @param (callable(int, int): int)|null $sourceTirage source de nombres du d20 (tests)
+     *
+     * @throws ConceptionInvalideException
+     */
+    public function tirer(Conception $conception, User $staff, ?callable $sourceTirage = null): Conception
+    {
+        if (!$conception->getStatut()->estEnAttente()) {
+            throw new ConceptionInvalideException('Le scénariste a déjà décidé : le tirage n\'est plus possible.');
+        }
+
+        if (null !== $conception->getTirage()) {
+            throw new ConceptionInvalideException('Le tirage est déjà fait pour cette conception.');
+        }
+
+        if ([] !== $conception->getAnomalies()) {
+            throw new ConceptionInvalideException('Pas de tirage possible tant qu\'une anomalie est signalée (âge, genre ou espèce d\'un parent).');
+        }
+
+        $tirage = $this->regles->tirer($sourceTirage);
+        $conception->setTirage($tirage)->setIssue($this->regles->issue($tirage));
+
+        $depouillement = $conception->getDepouillement();
+        if (null !== $depouillement) {
+            $depouillement->addHistory(
+                (new DepouillementHistory())
+                    ->setUser($staff)
+                    ->setActionType(DepouillementHistory::ACTION_MISE_A_JOUR)
+                    ->setMotif(\sprintf('Tirage demandé par le staff : %s, %s', $this->couple($conception), $this->resumeTirage($conception))),
+            );
+            $depouillement->touch();
+        }
+
         $this->entityManager->flush();
 
         return $conception;
@@ -181,10 +218,13 @@ readonly class ConceptionService
 
     private function resume(Conception $conception): string
     {
-        $suite = null === $conception->getTirage()
-            ? 'pas de tirage (âge)'
-            : \sprintf('tirage %d, %s', $conception->getTirage(), $conception->getIssue()?->label());
+        return \sprintf('Conception enregistrée : %s, %s', $this->couple($conception), $this->resumeTirage($conception));
+    }
 
-        return \sprintf('Conception enregistrée : %s, %s', $this->couple($conception), $suite);
+    private function resumeTirage(Conception $conception): string
+    {
+        return null === $conception->getTirage()
+            ? 'pas de tirage pour l\'instant'
+            : \sprintf('tirage %d, %s', $conception->getTirage(), $conception->getIssue()?->label());
     }
 }

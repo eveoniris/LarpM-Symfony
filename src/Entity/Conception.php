@@ -65,6 +65,10 @@ class Conception
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $note = null;
 
+    /** Nom envisagé par les joueurs pour l'enfant : sert uniquement à préremplir la création de l'héritier par le scénariste. */
+    #[ORM\Column(type: Types::STRING, length: 100, nullable: true)]
+    private ?string $nomPropose = null;
+
     /** Raison ou note du scénariste (par exemple pourquoi il gère la création plus tard). */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $remarque = null;
@@ -203,6 +207,18 @@ class Conception
     public function setAnomalies(array $anomalies): static
     {
         $this->anomalies = $anomalies;
+
+        return $this;
+    }
+
+    public function getNomPropose(): ?string
+    {
+        return $this->nomPropose;
+    }
+
+    public function setNomPropose(?string $nomPropose): static
+    {
+        $this->nomPropose = $nomPropose;
 
         return $this;
     }

@@ -51,6 +51,7 @@ readonly class ContenuJoueurSerialiseur
             'prieres' => $this->ids($contenu->prieres),
             'potions' => $this->ids($contenu->potions),
             'langues' => $this->ids($contenu->langues),
+            'sources_langues' => $this->sources($contenu),
             'connaissances' => $this->ids($contenu->connaissances),
             'technologies' => $this->ids($contenu->technologies),
             'enseignant_technologie_numero' => $contenu->enseignantTechnologieNumero,
@@ -99,6 +100,10 @@ readonly class ContenuJoueurSerialiseur
         $contenu->prieres = $this->entites(Priere::class, $donnees['prieres'] ?? []);
         $contenu->potions = $this->entites(Potion::class, $donnees['potions'] ?? []);
         $contenu->langues = $this->entites(Langue::class, $donnees['langues'] ?? []);
+        $contenu->sourcesLangues = [];
+        foreach ((array) ($donnees['sources_langues'] ?? []) as $id => $source) {
+            $contenu->sourcesLangues[(int) $id] = (string) $source;
+        }
         $contenu->connaissances = $this->entites(Connaissance::class, $donnees['connaissances'] ?? []);
         $contenu->technologies = $this->entites(Technologie::class, $donnees['technologies'] ?? []);
         $contenu->enseignantTechnologieNumero = null === ($donnees['enseignant_technologie_numero'] ?? null) ? null : (int) $donnees['enseignant_technologie_numero'];
@@ -144,6 +149,24 @@ readonly class ContenuJoueurSerialiseur
         }
 
         return $ids;
+    }
+
+    /**
+     * Sources particulières des langues encore déclarées (une source orpheline d'une langue retirée n'est pas conservée).
+     *
+     * @return array<int, string>
+     */
+    private function sources(ContenuJoueur $contenu): array
+    {
+        $sources = [];
+        foreach ($contenu->langues as $langue) {
+            $source = trim($contenu->sourcesLangues[(int) $langue->getId()] ?? '');
+            if ('' !== $source) {
+                $sources[(int) $langue->getId()] = mb_substr($source, start: 0, length: 45);
+            }
+        }
+
+        return $sources;
     }
 
     /**
