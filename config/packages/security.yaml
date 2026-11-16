@@ -23,6 +23,10 @@ security:
                 check_path: /api/login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            # Anti force brute : 5 échecs par identifiant et IP, 5 x plus par IP seule, sur 15 minutes
+            login_throttling:
+                max_attempts: 5
+                interval: '15 minutes'
 
         api_token_refresh:
             pattern: ^/api/token/refresh
@@ -46,6 +50,10 @@ security:
                 check_path: app_login
                 enable_csrf: true
             custom_authenticator: App\Security\AppAuthenticator
+            # Anti force brute : 5 échecs par identifiant et IP, 5 x plus par IP seule, sur 15 minutes
+            login_throttling:
+                max_attempts: 5
+                interval: '15 minutes'
             access_denied_handler: App\Security\AccessDeniedHandler
             logout:
                 path: app_logout
