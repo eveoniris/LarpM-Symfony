@@ -14,7 +14,13 @@
     </ol>
 
     {% if isAdmin or canManage or isSelfUser or canReadSecret %}
-        <div class="m-2 d-flex justify-content-end">
+        <div class="m-2 d-flex justify-content-end gap-2">
+            {% if isSelfUser or is_granted('ROLE_ADMIN') %}
+                <a class="btn btn-secondary" id="lien-connexions"
+                   href="{{ path('user.connexions', {'user': user.id}) }}"><span
+                        class="fa fa-history" style="margin-right: 5px;"></span>
+                    {{ isSelfUser ? 'Mes connexions' : 'Connexions' }}</a>
+            {% endif %}
             <a class="btn btn-secondary"
                href="{{ path('user.personnage.list', {'user': user.id}) }}"><span
                     class="fa fa-users" style="margin-right: 5px;"></span>

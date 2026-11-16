@@ -24,4 +24,34 @@ class LoginHistoryRepository extends ServiceEntityRepository
     {
         return $this->findBy(['user' => $user], ['date' => 'DESC', 'id' => 'DESC'], $limit);
     }
+
+    /**
+     * Id de la première connexion réussie pour chaque empreinte d'un utilisateur.
+     *
+     * Sert à repérer un nouvel appareil : une connexion est « nouvelle » quand son id est le premier
+     * de son empreinte, sauf pour la toute première connexion du compte.
+     *
+     * @return array<string, int> empreinte => id
+     */
+    public function firstSuccessIdByFingerprint(User $user): array
+    {
+        /** @var list<array{fingerprint: string, firstId: int|string}> $rows */
+        $rows = $this
+            ->createQueryBuilder('l')
+            ->select('l.fingerprint AS fingerprint', 'MIN(l.id) AS firstId')
+            ->where('l.user = :user')
+            ->andWhere('l.success = true')
+            ->andWhere('l.fingerprint IS NOT NULL')
+            ->groupBy('l.fingerprint')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getArrayResult();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[$row['fingerprint']] = (int) $row['firstId'];
+        }
+
+        return $result;
+    }
 }
