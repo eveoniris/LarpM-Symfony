@@ -7,6 +7,7 @@ namespace App\EventListener;
 use App\Entity\LoginHistory;
 use App\Entity\User;
 use App\Enum\LoginMethod;
+use App\Security\LoginFingerprint;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -48,6 +49,7 @@ final readonly class LoginHistorySubscriber implements EventSubscriberInterface
     public function __construct(
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
+        private LoginFingerprint $fingerprint,
     ) {
     }
 
@@ -137,7 +139,8 @@ final readonly class LoginHistorySubscriber implements EventSubscriberInterface
     {
         return (new LoginHistory($method, $success))
             ->setIp($request->getClientIp())
-            ->setUserAgent($request->headers->get('User-Agent'));
+            ->setUserAgent($request->headers->get('User-Agent'))
+            ->setFingerprint($this->fingerprint->compute($request));
     }
 
     /** BadCredentialsException devient bad_credentials, CustomUserMessageAuthenticationException custom_user_message... */

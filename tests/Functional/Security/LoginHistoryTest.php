@@ -37,6 +37,7 @@ class LoginHistoryTest extends WebTestCase
         static::assertSame($user->getId(), $entries[0]->getUser()?->getId());
         static::assertSame('127.0.0.1', $entries[0]->getIp());
         static::assertSame('Test-Agent/1.0', $entries[0]->getUserAgent());
+        static::assertMatchesRegularExpression('/^[0-9a-f]{64}$/', (string) $entries[0]->getFingerprint());
     }
 
     public function testMauvaisMotDePasseEstEnregistreAvecLUtilisateur(): void
