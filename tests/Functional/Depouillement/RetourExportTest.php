@@ -9,6 +9,8 @@ use App\Entity\Gn;
 use App\Entity\GroupeGn;
 use App\Entity\User;
 use App\Enum\DepouillementType;
+use App\Service\DeclarationJoueur;
+use App\Service\DepouillementDeclarationService;
 use App\Service\DepouillementRetourGroupeService;
 use App\Service\DepouillementService;
 use App\Service\FicheRetourGroupeImportService;
@@ -155,6 +157,46 @@ class RetourExportTest extends WebTestCase
         $this->client->request('GET', $url . '?etat_civil=1');
         static::assertStringContainsString('Joueur (état civil)', (string) $this->client->getResponse()->getContent());
         static::assertStringContainsString('Alice Dupontel', (string) $this->client->getResponse()->getContent());
+    }
+
+    public function testLExportDesRetoursJoueursARempliCommeLEnTete(): void
+    {
+        $joueur = UserFactory::createOne();
+        $personnage = PersonnageFactory::createOne(['user' => $joueur]);
+        ParticipantFactory::createOne(['user' => $joueur, 'gn' => $this->gn, 'groupeGn' => $this->groupeGn, 'personnage' => $personnage]);
+        $staff = $this->wargame();
+        $dossier = static::getContainer()
+            ->get(DepouillementService::class)
+            ->ouvrirReel($this->gn, DepouillementType::JOUEUR, (string) $personnage->getId(), $staff);
+        $declaration = new DeclarationJoueur();
+        $declaration->renommeePoints = -2;
+        $declaration->constructions = '=HYPERLINK("http://x")';
+        $declaration->autres = "Ligne 1\nLigne 2, avec \"guillemets\"";
+        static::getContainer()->get(DepouillementDeclarationService::class)->enregistrer($dossier, $declaration, $staff, false);
+        $export = static::getContainer()->get(RetourExportService::class);
+
+        $lignes = $export->retoursJoueurs($this->gn);
+
+        // Autant de cellules que d'en-têtes, sur chaque ligne.
+        static::assertCount(2, $lignes);
+        static::assertCount(\count($lignes[0]), $lignes[1]);
+        $ligne = array_combine($lignes[0], $lignes[1]);
+        static::assertSame((string) $personnage->getId(), (string) $ligne['Personnage n°']);
+        static::assertSame(-2, $ligne['Renommée (points)']);
+        static::assertSame('\'=HYPERLINK("http://x")', $ligne['Constructions']);
+
+        // Le CSV se relit à l'identique, y compris retours à la ligne, virgules et guillemets.
+        $flux = fopen('php://temp', 'r+');
+        fwrite($flux, substr($export->csv($lignes), 3));
+        rewind($flux);
+        $relu = [];
+        while (false !== ($cellules = fgetcsv($flux, null, ',', '"', ''))) {
+            $relu[] = $cellules;
+        }
+        fclose($flux);
+        static::assertCount(2, $relu);
+        static::assertSame($lignes[0], $relu[0]);
+        static::assertSame("Ligne 1\nLigne 2, avec \"guillemets\"", array_combine($relu[0], $relu[1])['Autres informations']);
     }
 
     public function testLaColonneGroupeNumeroEstPrioritaireALImport(): void
