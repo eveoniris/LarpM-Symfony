@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Enum\LogActionType;
+use App\Security\IpAnonymizer;
 use App\Service\OrderBy;
 use DateTimeImmutable;
+use Generator;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 
+// @mago-expect lint:too-many-methods
 class LogActionRepository extends BaseRepository
 {
     /** @param string|array<int|string, string|array<string, mixed>|null>|null $attributes */
@@ -137,6 +140,61 @@ class LogActionRepository extends BaseRepository
             ->getEntityManager()
             ->getConnection()
             ->executeStatement($sql . ' LIMIT :limit', $params, $types);
+    }
+
+    /** Nombre d'IP qui seraient modifiées par l'anonymisation des logs antérieurs à la date. */
+    public function countIpsToAnonymize(DateTimeImmutable $before): int
+    {
+        return iterator_count($this->ipsToAnonymize($before));
+    }
+
+    /**
+     * Anonymise les IP des logs antérieurs à la date (voir IpAnonymizer) et renvoie le nombre de lignes modifiées.
+     *
+     * Aucune colonne « déjà anonymisée » : on ne réécrit que les lignes dont l'IP change, donc la commande est
+     * idempotente. SQL natif volontaire : contourne les écouteurs Doctrine.
+     */
+    public function anonymizeIpsOlderThan(DateTimeImmutable $before): int
+    {
+        $connection = $this->getEntityManager()->getConnection();
+        $changed = 0;
+
+        foreach ($this->ipsToAnonymize($before) as $id => $anonymized) {
+            $connection->executeStatement('UPDATE log_action SET ip = :ip WHERE id = :id', ['ip' => $anonymized, 'id' => $id]);
+            ++$changed;
+        }
+
+        return $changed;
+    }
+
+    /**
+     * Parcourt les logs anciens par id croissant, par lots (curseur sur l'id), et produit id => IP anonymisée
+     * pour ceux dont l'IP doit changer (null si l'IP est invalide).
+     *
+     * @return Generator<int, string|null>
+     */
+    private function ipsToAnonymize(DateTimeImmutable $before, int $batchSize = 5000): Generator
+    {
+        $connection = $this->getEntityManager()->getConnection();
+        $select = 'SELECT id, ip FROM log_action WHERE date < :before AND ip IS NOT NULL AND id > :last ORDER BY id LIMIT :limit';
+        $lastId = 0;
+
+        do {
+            /** @var list<array{id: int|string, ip: string}> $rows */
+            $rows = $connection->fetchAllAssociative(
+                $select,
+                ['before' => $before->format('Y-m-d H:i:s'), 'last' => $lastId, 'limit' => $batchSize],
+                ['before' => ParameterType::STRING, 'last' => ParameterType::INTEGER, 'limit' => ParameterType::INTEGER],
+            );
+
+            foreach ($rows as $row) {
+                $lastId = (int) $row['id'];
+                $anonymized = IpAnonymizer::anonymize($row['ip']);
+                if ($anonymized !== $row['ip']) {
+                    yield $lastId => $anonymized;
+                }
+            }
+        } while (\count($rows) === $batchSize);
     }
 
     public function getLastAgingActionDate(): ?int

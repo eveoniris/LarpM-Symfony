@@ -23,5 +23,8 @@ class LegalPageTest extends WebTestCase
         static::assertSelectorExists('#journal-connexion');
         static::assertSelectorTextContains('body', 'anonymisée au bout de 30 jours');
         static::assertSelectorTextContains('body', 'supprimée au bout de 12 mois');
+        static::assertSelectorExists('#journal-actions');
+        static::assertSelectorTextContains('#journal-actions + p', 'anonymisée au bout de 6 mois');
+        static::assertSelectorTextContains('#journal-actions + p', 'supprimée au bout de 5 ans');
     }
 }
