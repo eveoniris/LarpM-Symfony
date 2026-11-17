@@ -6,6 +6,9 @@ namespace App\Repository;
 
 use App\Enum\LogActionType;
 use App\Service\OrderBy;
+use DateTimeImmutable;
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 
@@ -88,6 +91,52 @@ class LogActionRepository extends BaseRepository
             static fn (array $row): string => (string) $row['type'],
             $this->createQueryBuilder('la')->select('DISTINCT la.type AS type')->orderBy('la.type')->getQuery()->getScalarResult(),
         );
+    }
+
+    /**
+     * Nombre de logs antérieurs à la date, hors types protégés (jamais purgés).
+     *
+     * @param list<string> $protectedTypes valeurs de LogActionType à conserver
+     */
+    public function countOlderThan(DateTimeImmutable $before, array $protectedTypes): int
+    {
+        $queryBuilder = $this
+            ->createQueryBuilder('la')
+            ->select('COUNT(la.id)')
+            ->where('la.date < :before')
+            ->setParameter('before', $before);
+
+        if ([] !== $protectedTypes) {
+            $queryBuilder->andWhere('la.type NOT IN (:protected)')->setParameter('protected', $protectedTypes);
+        }
+
+        return (int) $queryBuilder->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * Supprime au plus $limit logs antérieurs à la date, hors types protégés.
+     *
+     * SQL natif volontaire : contourne les écouteurs Doctrine (pas de log de la suppression de logs)
+     * et le LIMIT garde chaque transaction courte sur une table volumineuse.
+     *
+     * @param list<string> $protectedTypes valeurs de LogActionType à conserver
+     */
+    public function deleteBatchOlderThan(DateTimeImmutable $before, array $protectedTypes, int $limit): int
+    {
+        $sql = 'DELETE FROM log_action WHERE date < :before';
+        $params = ['before' => $before->format('Y-m-d H:i:s'), 'limit' => $limit];
+        $types = ['before' => ParameterType::STRING, 'limit' => ParameterType::INTEGER];
+
+        if ([] !== $protectedTypes) {
+            $sql .= ' AND type NOT IN (:protected)';
+            $params['protected'] = $protectedTypes;
+            $types['protected'] = ArrayParameterType::STRING;
+        }
+
+        return (int) $this
+            ->getEntityManager()
+            ->getConnection()
+            ->executeStatement($sql . ' LIMIT :limit', $params, $types);
     }
 
     public function getLastAgingActionDate(): ?int
