@@ -80,14 +80,18 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
      */
     public function getAncestors(): Collection
     {
-        /** @var ArrayCollection<int, Territoire> $ancestors */
-        $ancestors = new ArrayCollection();
-        if ($this->getTerritoire()) {
-            $ancestors[] = $this->getTerritoire();
-            $ancestors = new ArrayCollection(array_merge($ancestors->toArray(), $this->getTerritoire()->getAncestors()->toArray()));
+        // Itératif et protégé contre une parenté circulaire (la récursion épuisait la mémoire)
+        /** @var list<Territoire> $ancestors */
+        $ancestors = [];
+        $vus = [spl_object_id($this) => true];
+        $current = $this->getTerritoire();
+        while (null !== $current && !isset($vus[spl_object_id($current)]) && \count($ancestors) < 50) {
+            $vus[spl_object_id($current)] = true;
+            $ancestors[] = $current;
+            $current = $current->getTerritoire();
         }
 
-        return $ancestors;
+        return new ArrayCollection($ancestors);
     }
 
     /**
