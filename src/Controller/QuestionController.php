@@ -90,6 +90,7 @@ class QuestionController extends AbstractController
     /**
      * Détail d'une question.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     #[Route('/question/{question}/detail', name: 'question.detail')]
     public function detailAction(
         Request $request,
@@ -105,6 +106,7 @@ class QuestionController extends AbstractController
     /**
      * Liste des question.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA))]
     #[Route('/question', name: 'question')]
     public function indexAction(Request $request, QuestionRepository $repository): Response
     {

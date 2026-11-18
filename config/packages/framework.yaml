@@ -3,6 +3,13 @@ framework:
     secret: '%env(APP_SECRET)%'
     http_method_override: false
     handle_all_throwables: true
+
+    # IP réelle du client derrière un reverse proxy / répartiteur de charge.
+    # SYMFONY_TRUSTED_PROXIES (liste d'IP/CIDR séparés par des virgules, ou REMOTE_ADDR
+    # pour faire confiance au proxy direct) est vide par défaut : aucun changement tant
+    # qu'il n'est pas renseigné. Les en-têtes X-Forwarded-* ne sont lus que pour ces proxies.
+    trusted_proxies: '%env(default::SYMFONY_TRUSTED_PROXIES)%'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port']
     php_errors:
     form:
         csrf_protection:

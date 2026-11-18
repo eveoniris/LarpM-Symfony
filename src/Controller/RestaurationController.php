@@ -92,6 +92,7 @@ class RestaurationController extends AbstractController
     /**
      * Détail d'un lieu de restauration.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::GESTION))]
     #[Route('/restauration/detail/{id}', name: 'restauration.detail')]
     public function detailAction(Request $request, #[MapEntity] Restauration $restauration): Response
     {
@@ -139,6 +140,7 @@ class RestaurationController extends AbstractController
     /**
      * Liste des restaurations.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::GESTION))]
     #[Route('/restauration/list', name: 'restauration.list')]
     public function listAction(Request $request, RestaurationRepository $repository): Response
     {

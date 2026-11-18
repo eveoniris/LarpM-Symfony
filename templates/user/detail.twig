@@ -14,7 +14,13 @@
     </ol>
 
     {% if isAdmin or canManage or isSelfUser or canReadSecret %}
-        <div class="m-2 d-flex justify-content-end">
+        <div class="m-2 d-flex justify-content-end gap-2">
+            {% if isSelfUser or is_granted('ROLE_ADMIN') %}
+                <a class="btn btn-secondary" id="lien-connexions"
+                   href="{{ path('user.connexions', {'user': user.id}) }}"><span
+                        class="fa fa-history" style="margin-right: 5px;"></span>
+                    {{ isSelfUser ? 'Mes connexions' : 'Connexions' }}</a>
+            {% endif %}
             <a class="btn btn-secondary"
                href="{{ path('user.personnage.list', {'user': user.id}) }}"><span
                     class="fa fa-users" style="margin-right: 5px;"></span>
@@ -240,5 +246,39 @@
 
     </div>
 
+    {% if diagnosticIp is defined and diagnosticIp is not null %}
+        <div class="well well-sm" id="diagnostic-ip">
+            <h4><span class="fa fa-stethoscope"></span> Diagnostic IP (super admin)</h4>
+            <p class="text-muted">
+                Décrit <strong>votre requête actuelle</strong>, pas celle de {{ user.displayName }}.
+                Sert à renseigner <code>SYMFONY_TRUSTED_PROXIES</code>.
+            </p>
+            <table class="table table-sm table-condensed">
+                <tbody>
+                <tr><th>IP client retenue (getClientIp)</th><td><code>{{ diagnosticIp.clientIp ?? '-' }}</code></td></tr>
+                <tr><th>REMOTE_ADDR (connexion directe)</th><td><code>{{ diagnosticIp.remoteAddr ?? '-' }}</code></td></tr>
+                <tr><th>X-Forwarded-For</th><td><code>{{ diagnosticIp.forwardedFor ?? '-' }}</code></td></tr>
+                <tr><th>X-Forwarded-Proto</th><td><code>{{ diagnosticIp.forwardedProto ?? '-' }}</code></td></tr>
+                <tr><th>X-Forwarded-Host</th><td><code>{{ diagnosticIp.forwardedHost ?? '-' }}</code></td></tr>
+                <tr><th>SYMFONY_TRUSTED_PROXIES (env)</th><td><code>{{ diagnosticIp.envValue != '' ? diagnosticIp.envValue : '(vide)' }}</code></td></tr>
+                <tr><th>Proxies de confiance actifs</th><td><code>{{ diagnosticIp.trustedProxies is empty ? '(aucun)' : diagnosticIp.trustedProxies|join(', ') }}</code></td></tr>
+                <tr><th>REMOTE_ADDR est un proxy de confiance</th><td>{{ diagnosticIp.remoteAddrTrusted ? 'oui' : 'non' }}</td></tr>
+                <tr><th>User-Agent</th><td><code>{{ diagnosticIp.userAgent ?? '-' }}</code></td></tr>
+                </tbody>
+            </table>
+            {% if diagnosticIp.forwardedFor and not diagnosticIp.remoteAddrTrusted %}
+                <div class="alert alert-warning mb-0">
+                    Un en-tête <code>X-Forwarded-For</code> est présent mais ignoré : <code>REMOTE_ADDR</code>
+                    n'est pas déclaré comme proxy de confiance. Si <code>REMOTE_ADDR</code> est celui du répartiteur,
+                    ajoutez-le (IP/CIDR) à <code>SYMFONY_TRUSTED_PROXIES</code>.
+                </div>
+            {% elseif not diagnosticIp.forwardedFor and diagnosticIp.clientIp == diagnosticIp.remoteAddr %}
+                <div class="alert alert-info mb-0">
+                    Aucun <code>X-Forwarded-For</code> : si cette IP est la vôtre, rien à configurer.
+                    Si c'est une IP de serveur OVH, le répartiteur n'envoie pas l'en-tête et l'IP réelle est inaccessible.
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
 
 {% endblock %}

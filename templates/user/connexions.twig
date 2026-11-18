@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ isSelf ? 'Mes connexions' : 'Connexions de ' ~ user.displayName }}{% endblock %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : user.displayName, 'route' : path('user.detail', {'user': user.id})},
+            {'name' : isSelf ? 'Mes connexions' : 'Connexions'},
+        ]
+    } %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>{{ isSelf ? 'Mes connexions' : 'Connexions de ' ~ user.displayName }}</h5>
+        </div>
+        <p class="text-muted mb-0">
+            Les {{ limit }} dernières tentatives de connexion, réussies ou non. Une connexion marquée
+            « nouvel appareil » vient d'un navigateur jamais vu sur ce compte.
+            {% if isSelf %}Si vous ne reconnaissez pas une connexion, changez votre mot de passe.{% endif %}
+            Les adresses IP sont anonymisées (dernier octet masqué) après 30 jours et l'historique est supprimé après 12 mois.
+        </p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th class="text-center">Date</th>
+                <th class="text-center">Résultat</th>
+                <th class="text-center">Méthode</th>
+                <th class="text-center">Adresse IP</th>
+                <th>Navigateur</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set methodLabels = {'web': 'Formulaire', 'remember_me': 'Se souvenir de moi', 'api_jwt': 'API', 'switch_user': 'Impersonation'} %}
+            {% for entry in entries %}
+                <tr>
+                    <td class="text-center align-middle text-nowrap">{{ entry.date|date('d/m/Y H:i:s') }}</td>
+                    <td class="text-center align-middle">
+                        {% if entry.success %}
+                            <span class="badge bg-success">Réussie</span>
+                            {% if entry.id in newDeviceIds %}<span class="badge bg-warning text-dark">Nouvel appareil</span>{% endif %}
+                        {% else %}
+                            <span class="badge bg-danger">Échec</span>
+                            {% if entry.failureReason == 'too_many_login_attempts' %}
+                                <small class="text-muted d-block">Bloquée (trop d'essais)</small>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="text-center align-middle">{{ methodLabels[entry.method.value] }}</td>
+                    <td class="text-center align-middle">
+                        {% if entry.ip %}<code>{{ entry.ip }}</code>{% else %}-{% endif %}
+                        {% if entry.ipAnonymized %}<small class="text-muted d-block">anonymisée</small>{% endif %}
+                    </td>
+                    <td class="align-middle" title="{{ entry.userAgent }}">{% if entry.userAgent %}{{ entry.userAgent|length > 90 ? entry.userAgent|slice(0, 90) ~ '…' : entry.userAgent }}{% else %}-{% endif %}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" class="text-center text-muted">Aucune connexion enregistrée.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

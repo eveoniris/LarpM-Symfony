@@ -46,6 +46,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\IpUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -1326,7 +1327,7 @@ class UserController extends AbstractController
      */
     #[Route('/user/{user}', name: 'user.view', requirements: ['user' => Requirement::DIGITS])]
     #[Route('/user/{user}', name: 'user.detail', requirements: ['user' => Requirement::DIGITS])]
-    public function viewAction(#[MapEntity] User $user): Response
+    public function viewAction(#[MapEntity] User $user, Request $request): Response
     {
         if (!$user->isEnabled() && !$this->isGranted('ROLE_ADMIN')) {
             throw new NotFoundHttpException('That User is disabled (pending email confirmation).');
@@ -1335,7 +1336,34 @@ class UserController extends AbstractController
         $this->setCan(self::CAN_READ_SECRET, $this->isGranted(Role::SCENARISTE->value));
         $this->setCan(self::CAN_MANAGE, $this->isGranted(Role::ADMIN->value) || $this->isGranted(Role::ORGA->value) || $user->getId() === $this->getUser()?->getId());
 
-        return $this->render('user/detail.twig', ['user' => $user]);
+        return $this->render('user/detail.twig', [
+            'user' => $user,
+            'diagnosticIp' => $this->isGranted('ROLE_SUPER_ADMIN') ? $this->buildIpDiagnostic($request) : null,
+        ]);
+    }
+
+    /**
+     * Diagnostic de la résolution de l'IP client (réservé aux super admins).
+     * Décrit la requête courante de la personne qui consulte la page.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildIpDiagnostic(Request $request): array
+    {
+        $remoteAddr = $request->server->get('REMOTE_ADDR');
+        $trustedProxies = Request::getTrustedProxies();
+
+        return [
+            'clientIp' => $request->getClientIp(),
+            'remoteAddr' => $remoteAddr,
+            'forwardedFor' => $request->headers->get('X-Forwarded-For'),
+            'forwardedProto' => $request->headers->get('X-Forwarded-Proto'),
+            'forwardedHost' => $request->headers->get('X-Forwarded-Host'),
+            'trustedProxies' => $trustedProxies,
+            'remoteAddrTrusted' => null !== $remoteAddr && [] !== $trustedProxies && IpUtils::checkIp($remoteAddr, $trustedProxies),
+            'envValue' => $_SERVER['SYMFONY_TRUSTED_PROXIES'] ?? $_ENV['SYMFONY_TRUSTED_PROXIES'] ?? '',
+            'userAgent' => $request->headers->get('User-Agent'),
+        ];
     }
 
     /**
