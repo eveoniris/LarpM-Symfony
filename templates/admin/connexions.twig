@@ -1,0 +1,130 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Connexions{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Connexions' },
+        ]
+    } %}
+
+    {% set methodLabels = {'web': 'Formulaire', 'remember_me': 'Se souvenir de moi', 'api_jwt': 'API', 'switch_user': 'Impersonation'} %}
+    {% set reasonLabels = {'bad_credentials': 'Identifiants incorrects', 'too_many_login_attempts': 'Bloquée (trop d\'essais)'} %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Connexions de tous les utilisateurs</h5>
+        </div>
+        <p class="text-muted">
+            Tentatives de connexion, réussies ou non, de la plus récente à la plus ancienne. Les adresses IP sont anonymisées
+            (dernier octet masqué) après 30 jours et les lignes supprimées après 12 mois. Cliquez sur une adresse IP pour voir
+            tout ce qui vient d'elle.
+        </p>
+
+        <form method="get" action="{{ path('admin.connexions') }}" class="row g-2 align-items-end" data-turbo="false">
+            <div class="col-12 col-md-3">
+                <label for="f-q" class="form-label mb-0">Recherche</label>
+                <input type="search" id="f-q" name="q" value="{{ filters.q }}" class="form-control" placeholder="Identifiant, IP, navigateur">
+            </div>
+            <div class="col-6 col-md-2">
+                <label for="f-result" class="form-label mb-0">Résultat</label>
+                <select id="f-result" name="result" class="form-select">
+                    <option value="">Tous</option>
+                    <option value="success"{% if filters.result == 'success' %} selected{% endif %}>Réussies</option>
+                    <option value="failure"{% if filters.result == 'failure' %} selected{% endif %}>Échecs</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label for="f-method" class="form-label mb-0">Méthode</label>
+                <select id="f-method" name="method" class="form-select">
+                    <option value="">Toutes</option>
+                    {% for method in methods %}
+                        <option value="{{ method.value }}"{% if filters.method == method.value %} selected{% endif %}>{{ methodLabels[method.value] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label for="f-reason" class="form-label mb-0">Raison d'échec</label>
+                <select id="f-reason" name="reason" class="form-select">
+                    <option value="">Toutes</option>
+                    {% for reason in reasons %}
+                        <option value="{{ reason }}"{% if filters.reason == reason %} selected{% endif %}>{{ reasonLabels[reason] ?? reason }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-6 col-md-3">
+                <label for="f-ip" class="form-label mb-0">Adresse IP exacte</label>
+                <input type="text" id="f-ip" name="ip" value="{{ filters.ip }}" class="form-control" inputmode="text" autocomplete="off">
+            </div>
+            <div class="col-6 col-md-2">
+                <label for="f-from" class="form-label mb-0">Du</label>
+                <input type="date" id="f-from" name="from" value="{{ filters.from }}" class="form-control">
+            </div>
+            <div class="col-6 col-md-2">
+                <label for="f-to" class="form-label mb-0">Au</label>
+                <input type="date" id="f-to" name="to" value="{{ filters.to }}" class="form-control">
+            </div>
+            <div class="col-12 col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-secondary">Filtrer</button>
+                <a href="{{ path('admin.connexions') }}" class="btn btn-outline-secondary">Réinitialiser</a>
+            </div>
+        </form>
+    </div>
+
+    {% include '_partials/pagination.html.twig' %}
+
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th class="text-center">Date</th>
+                <th class="text-center">Compte</th>
+                <th class="text-center">Identifiant saisi</th>
+                <th class="text-center">Résultat</th>
+                <th class="text-center">Méthode</th>
+                <th class="text-center">Adresse IP</th>
+                <th>Navigateur</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entry in paginator %}
+                <tr>
+                    <td class="text-center align-middle text-nowrap">{{ entry.date|date('d/m/Y H:i:s') }}</td>
+                    <td class="text-center align-middle">
+                        {% if entry.user %}
+                            <a href="{{ path('user.detail', {'user': entry.user.id}) }}">{{ entry.user.name }}</a>
+                            <a href="{{ path('user.connexions', {'user': entry.user.id}) }}" class="small d-block">ses connexions</a>
+                        {% else %}
+                            <em class="text-muted">Compte inconnu</em>
+                        {% endif %}
+                    </td>
+                    <td class="text-center align-middle">{{ entry.identifier ?: '-' }}</td>
+                    <td class="text-center align-middle">
+                        {% if entry.success %}
+                            <span class="badge bg-success">Réussie</span>
+                        {% else %}
+                            <span class="badge bg-danger">Échec</span>
+                            <small class="text-muted d-block">{{ reasonLabels[entry.failureReason] ?? entry.failureReason }}</small>
+                        {% endif %}
+                    </td>
+                    <td class="text-center align-middle">{{ methodLabels[entry.method.value] }}</td>
+                    <td class="text-center align-middle">
+                        {% if entry.ip %}
+                            <a href="{{ path('admin.connexions', {'ip': entry.ip}) }}"><code>{{ entry.ip }}</code></a>
+                            {% if entry.ipAnonymized %}<small class="text-muted d-block">anonymisée</small>{% endif %}
+                        {% else %}-{% endif %}
+                    </td>
+                    <td class="align-middle" title="{{ entry.userAgent }}">{% if entry.userAgent %}{{ entry.userAgent|length > 70 ? entry.userAgent|slice(0, 70) ~ '…' : entry.userAgent }}{% else %}-{% endif %}</td>
+                </tr>
+            {% else %}
+                {% include '_partials/noResultTableRow.twig' %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% include '_partials/pagination.html.twig' %}
+
+{% endblock %}
