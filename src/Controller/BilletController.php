@@ -6,10 +6,12 @@ namespace App\Controller;
 
 use App\Entity\Billet;
 use App\Entity\Gn;
+use App\Enum\Role;
 use App\Form\BilletDeleteType;
 use App\Form\BilletType;
 use App\Repository\BilletRepository;
 use App\Repository\ParticipantRepository;
+use App\Security\MultiRolesExpression;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -26,6 +28,7 @@ class BilletController extends AbstractController
     /**
      * Liste des billets.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::GESTION))]
     #[Route('/billet/list', name: 'billet.list')]
     public function listAction(Request $request, BilletRepository $billetRepository): Response
     {
@@ -79,6 +82,7 @@ class BilletController extends AbstractController
     /**
      * Détail d'un billet.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::GESTION))]
     #[Route('/billet/{billet}/detail', name: 'billet.detail')]
     public function detailAction(Request $request, #[MapEntity] Billet $billet): Response
     {
@@ -153,6 +157,7 @@ class BilletController extends AbstractController
     /**
      * Liste des utilisateurs ayant ce billet.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::GESTION))]
     #[Route('/billet/{billet}/participants', name: 'billet.participants')]
     public function participantsAction(
         Request $request,
