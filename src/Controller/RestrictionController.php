@@ -95,6 +95,7 @@ class RestrictionController extends AbstractController
     /**
      * Détail d'une restriction alimentaire.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::GESTION))]
     #[Route('/restriction/detail/{id}', name: 'restriction.detail')]
     public function detailAction(Request $request, #[MapEntity] Restriction $restriction): Response
     {
@@ -104,6 +105,7 @@ class RestrictionController extends AbstractController
     /**
      * Télécharger la liste des restrictions alimentaires.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::GESTION))]
     #[Route('/restriction/download', name: 'restriction.download')]
     public function downloadAction(Request $request, RestrictionRepository $repository): void
     {
@@ -141,6 +143,7 @@ class RestrictionController extends AbstractController
     /**
      * Liste des restrictions.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::GESTION))]
     #[Route('/restriction/list', name: 'restriction.list')]
     public function listAction(Request $request, RestrictionRepository $repository): Response
     {
@@ -156,6 +159,7 @@ class RestrictionController extends AbstractController
     /**
      * Imprimer la liste des restrictions.
      */
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::GESTION))]
     #[Route('/restriction/print', name: 'restriction.print')]
     public function printAction(Request $request, RestrictionRepository $repository): Response
     {
