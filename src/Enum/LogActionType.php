@@ -65,4 +65,7 @@ enum LogActionType: string
 
     /** Ajout en masse par un admin (data : type, valeur, motif, personnage_ids). */
     case AJOUT_MASSE = 'ajout_masse';
+
+    /** Refus d'accès d'un utilisateur connecté à une ressource précise, du type incrément d'id dans l'URL (data : route, url, message). */
+    case NO_ACCESS = 'no_access';
 }
