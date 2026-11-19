@@ -17,6 +17,9 @@ enum LogActionType: string
     case ENTITY_ADD = 'entity_add';
     case XP_ADD = 'xp_add';
     case XP_USE = 'xp_use';
+
+    /** Retrait d'un gain d'XP depuis l'historique (data : mode soft ou hard, motif, xp retiré). */
+    case XP_RETRAIT = 'xp_retrait';
     case ADD_DOMAINE_MAGIE = 'add_domaine_magie';
     case ADD_SORT = 'add_sort';
     case REMVOVE_SORT = 'remove_sort';
