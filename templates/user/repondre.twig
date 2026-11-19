@@ -19,7 +19,7 @@
                 <div class="list-group-item">
                     <div class="list-group-item-heading">
                         <u>{{ message.title }}</u>&nbsp;envoyé
-                        par&nbsp;<strong>{{ message.userRelatedByAuteur.personnage.publicName }}</strong><br/>
+                        par&nbsp;<strong>{{ message.auteurLabel }}</strong><br/>
                         <em>Envoyé le {{ message.creationDate|date('Y-m-d H:i:s') }}</em>
                     </div>
                     <div class="list-group-item-text">
