@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use DateTime;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -34,6 +35,10 @@ abstract class BaseExperienceGain
 
     #[Column(type: Types::INTEGER)]
     protected int $xp_gain;
+
+    /** Suppression logique : date du retrait par un admin (le gain reste dans l'historique, hors du solde). */
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?DateTimeInterface $deleted_at = null;
 
     #[ManyToOne(targetEntity: Personnage::class, inversedBy: 'experienceGains')]
     #[JoinColumn(name: 'personnage_id', referencedColumnName: 'id', nullable: false)]
@@ -97,5 +102,17 @@ abstract class BaseExperienceGain
     public function getPersonnage(): Personnage
     {
         return $this->personnage;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deleted_at;
+    }
+
+    public function setDeletedAt(?DateTimeInterface $deleted_at): static
+    {
+        $this->deleted_at = $deleted_at;
+
+        return $this;
     }
 }
