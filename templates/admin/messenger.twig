@@ -1,0 +1,49 @@
+{% extends "base.html.twig" %}
+
+{% block title %}File d'envoi des e-mails{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">File d'envoi des e-mails</li>
+    </ol>
+
+    <p>
+        En attente d'envoi : <strong>{{ attente is null ? 'inconnu' : attente }}</strong>
+        - En échec : <strong>{{ total }}</strong>
+    </p>
+    <p class="text-muted">Le worker part au passage du cron (toutes les heures). Un message en échec a déjà été retenté 3 fois.</p>
+
+    {% if echecs|length == 0 %}
+        <div class="alert alert-success">Aucun message en échec.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr><th>#</th><th>Type</th><th>Destinataire(s)</th><th>Date</th><th>Erreur</th><th></th></tr>
+                </thead>
+                <tbody>
+                {% for e in echecs %}
+                    <tr>
+                        <td>{{ e.id }}</td>
+                        <td>{{ e.classe|split('\\')|last }}</td>
+                        <td>{{ e.destinataires|join(', ') }}</td>
+                        <td>{{ e.date ? e.date|date('d/m/Y H:i') : '' }}</td>
+                        <td>{{ e.erreur|slice(0, 200) }}</td>
+                        <td class="text-nowrap">
+                            {% for action, libelle in {'rejouer': 'Rejouer', 'supprimer': 'Supprimer'} %}
+                                <form method="post" class="d-inline" action="{{ path('admin.messenger.action', {id: e.id, action: action}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('messenger_' ~ e.id) }}">
+                                    <button class="btn btn-sm btn-outline-secondary" type="submit">{{ libelle }}</button>
+                                </form>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+{% endblock body %}
