@@ -27,13 +27,13 @@ class MessageMasseResolverTest extends KernelTestCase
                 $vivant->getId(),
                 $mort->getId(),
                 $orphelin->getId(),
-                999999,
+                999_999,
             ]);
 
         static::assertCount(1, $cibles->destinataires, 'un seul message par joueur, mort compris');
         static::assertCount(2, $cibles->destinataires[$joueur->getId()]->personnages);
         static::assertSame([$orphelin->getId()], $cibles->sansUser);
-        static::assertSame([999999], $cibles->introuvables);
+        static::assertSame([999_999], $cibles->introuvables);
     }
 
     public function testParIdentifiantsUtilisateur(): void
@@ -43,9 +43,9 @@ class MessageMasseResolverTest extends KernelTestCase
 
         $cibles = self::getContainer()
             ->get(MessageMasseResolver::class)
-            ->resolve(MessageMasseResolver::TYPE_USER, [$joueur->getId(), 888888]);
+            ->resolve(MessageMasseResolver::TYPE_USER, [$joueur->getId(), 888_888]);
 
         static::assertSame([$joueur->getId()], array_keys($cibles->destinataires));
-        static::assertSame([888888], $cibles->introuvables);
+        static::assertSame([888_888], $cibles->introuvables);
     }
 }
