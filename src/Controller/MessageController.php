@@ -128,6 +128,16 @@ class MessageController extends AbstractController
         #[MapEntity]
         Message $message,
     ): RedirectResponse|Response {
+        if ($message->getUserRelatedByDestinataire() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas répondre à ce message.');
+        }
+
+        if ($message->isSystem()) {
+            $this->addFlash('error', 'Ce message est un message système, il n\'accepte pas de réponse.');
+
+            return $this->redirectToRoute('messagerie');
+        }
+
         $reponse = new Message();
 
         $reponse->setUserRelatedByAuteur($this->getUser());

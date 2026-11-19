@@ -45,8 +45,8 @@ class BaseMessage
     protected bool $archived = false;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'messageRelatedByAuteurs')]
-    #[ORM\JoinColumn(name: 'auteur', referencedColumnName: 'id', nullable: false)]
-    protected User $userRelatedByAuteur;
+    #[ORM\JoinColumn(name: 'auteur', referencedColumnName: 'id', nullable: true)]
+    protected ?User $userRelatedByAuteur = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'messageRelatedByDestinataires')]
     #[ORM\JoinColumn(name: 'destinataire', referencedColumnName: 'id', nullable: false)]

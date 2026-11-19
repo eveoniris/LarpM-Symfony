@@ -37,7 +37,7 @@
                                 data-bs-toggle="collapse"
                                 data-bs-target="#collapse{{ loop.index }}" aria-expanded="true"
                                 aria-controls="collapse{{ loop.index }}">
-                            <span class="p-2">De {{ message.userRelatedByAuteur.personnage ? message.userRelatedByAuteur.personnage.publicName : message.userRelatedByAuteur.userName }}</span>
+                            <span class="p-2">De {{ message.auteurLabel }}</span>
                             <span class="p-2 flex-grow-1"><strong>{{ message.title }}</strong></span>
                             <span class="p-2">Le {{ message.creationDate|date('Y-m-d H:i:s') }}</span>
                         </button>
@@ -48,11 +48,13 @@
                             {{ message.text|markdown_to_html }}
                             <div class="btn-toolbar justify-content-center my-2" role="toolbar">
                                 <div class="btn-group" role="group">
+{% if not message.system %}
                                     <a href="{{ path('message.response', {'message': message.id}) }}"
                                        class="btn btn-secondary"
                                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="Répondre"><i
                                                 class="fa fa-reply" aria-hidden="true"></i>
                                         Répondre</a>
+{% endif %}
                                     <a href=" {{ path('message.archive', {'message': message.id}) }}"
                                        class="message_archiver btn btn-secondary"
                                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="Archiver"><i

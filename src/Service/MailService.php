@@ -39,13 +39,23 @@ final class MailService
         ?User $auteur = null,
         bool $notify = true,
     ): void {
-        $message = new Message();
-
         if (null === $auteur) {
             $securityUser = $this->security->getUser();
             $auteur = $securityUser instanceof User ? $securityUser : null;
         }
 
+        $this->persistMessage($destinataire, $msg, $sujet, $auteur, $notify);
+    }
+
+    /** Message système : aucun auteur, affiché « Équipe de gestion », sans réponse possible. */
+    public function newSystemMessage(User $destinataire, string $msg, ?string $sujet = null, bool $notify = true): void
+    {
+        $this->persistMessage($destinataire, $msg, $sujet, null, $notify);
+    }
+
+    private function persistMessage(User $destinataire, string $msg, ?string $sujet, ?User $auteur, bool $notify): void
+    {
+        $message = new Message();
         $message->setTitle($sujet ?: 'Nouveau message');
         $message->setText($msg);
         $message->setUserRelatedByAuteur($auteur);
@@ -74,7 +84,7 @@ final class MailService
                 ->getTemplatedEmail(
                     'user/email/message.twig',
                     ['message' => $message->getText(), 'uiBeta' => $destinataire->isUiBeta()],
-                    $message->getTitle() ?: 'Nouveau message de ' . $message->getUserRelatedByAuteur()?->getDisplayName(),
+                    $message->getTitle() ?: 'Nouveau message de ' . ($message->getUserRelatedByAuteur()?->getDisplayName() ?? Message::SYSTEM_AUTEUR_LABEL),
                 )
                 // TODO ->locale($user->getLocal())
                 ->to($email),
