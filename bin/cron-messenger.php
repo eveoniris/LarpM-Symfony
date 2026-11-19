@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 // Cron OVH : le formulaire n'accepte qu'un fichier PHP sans argument, on fixe donc la commande ici.
 // Planification : langage PHP 8.5, fichier larpmanager/bin/cron-messenger.php, à la fréquence la plus courte
-// autorisée par l'hébergement (idéalement toutes les 5 minutes).
+// autorisée par l'hébergement (toutes les heures sur OVH : le champ minute est grisé, d'où une limite de 25 min / 1000 messages par passage).
 // Consomme la file "async" (e-mails de messages) puis s'arrête : un seul passage borné en temps et en nombre.
 // MESSENGER_TIME_LIMIT doit rester inférieur à l'intervalle du cron pour éviter deux workers simultanés.
 // Les échecs sont rejoués 3 fois puis rangés dans la file "failed" (voir messenger:failed:show).
@@ -12,9 +12,9 @@ declare(strict_types=1);
 use App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 
-const MESSENGER_TIME_LIMIT = 240;
+const MESSENGER_TIME_LIMIT = 1500;
 
-const MESSENGER_MESSAGE_LIMIT = 200;
+const MESSENGER_MESSAGE_LIMIT = 1000;
 
 const MESSENGER_MEMORY_LIMIT = '128M';
 
