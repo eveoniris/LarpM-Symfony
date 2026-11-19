@@ -1,0 +1,97 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Ajouts en masse{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">Ajouts en masse</li>
+    </ol>
+
+    {% for erreur in erreurs %}
+        <div class="alert alert-danger">{{ erreur }}</div>
+    {% endfor %}
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        <input type="hidden" name="_token" value="{{ csrf_token('ajout_masse') }}">
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-3">
+                <label class="form-label" for="am-type">Opération</label>
+                <select class="form-select" id="am-type" name="type">
+                    {% for t in types %}
+                        <option value="{{ t.value }}" {{ demande.type == t ? 'selected' }}>{{ t.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="am-valeur">Valeur (année pour la chronologie)</label>
+                <input class="form-control" id="am-valeur" name="valeur" inputmode="numeric" value="{{ demande.valeurBrute }}">
+            </div>
+            <div class="col-md-5">
+                <label class="form-label" for="am-motif">Motif (100 caractères max pour l'XP)</label>
+                <input class="form-control" id="am-motif" name="motif" value="{{ demande.motif }}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="am-date">Date</label>
+                <input class="form-control" type="date" id="am-date" name="date" value="{{ demande.dateBrute }}">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="am-ids">Numéros de personnage</label>
+            <textarea class="form-control" id="am-ids" name="ids" rows="5" placeholder="12, 45, 78 (ou une colonne collée depuis Excel)">{{ ids }}</textarea>
+            <label class="form-label mt-2" for="am-fichier">ou fichier CSV / texte (une colonne, sans en-tête)</label>
+            <input class="form-control" type="file" id="am-fichier" name="fichier" accept=".csv,.txt">
+        </div>
+
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="am-prevenir" name="prevenir" value="1" {{ prevenir ? 'checked' }}>
+            <label class="form-check-label" for="am-prevenir">Envoyer un message au joueur (un message par joueur, tous ses personnages listés)</label>
+        </div>
+        <div class="mb-3">
+            <textarea class="form-control tinymce" name="texte" rows="8">{{ texte }}</textarea>
+            <div class="form-text">Variables : <code>{type}</code> <code>{valeur}</code> <code>{motif}</code> <code>{personnages}</code></div>
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" id="am-mail" name="mail" value="1" {{ mail ? 'checked' }}>
+                <label class="form-check-label" for="am-mail">Avec notification par e-mail (mise en file)</label>
+            </div>
+        </div>
+
+        {% if analyse is not null and analyse.morts|length > 0 %}
+            <div class="alert alert-warning">
+                <strong>Personnages morts :</strong> l'XP n'est pas ajoutée sans votre accord. Cochez ceux qui la reçoivent malgré tout ;
+                pour les autres, une mention « à attribuer au prochain personnage » est écrite dans leur biographie privée.
+                <ul class="list-unstyled mb-0 mt-2">
+                    {% for p in analyse.morts %}
+                        <li>
+                            <label>
+                                <input type="checkbox" name="morts[]" value="{{ p.id }}">
+                                n° {{ p.id }} - {{ p.nom }}
+                            </label>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <button class="btn btn-secondary" type="submit" name="action" value="simuler">Simuler</button>
+        {% if analyse is not null and (analyse.applicables|length > 0 or analyse.morts|length > 0) %}
+            <button class="btn btn-primary" type="submit" name="action" value="appliquer">Appliquer</button>
+        {% endif %}
+    </form>
+
+    {% if analyse is not null %}
+        <hr>
+        <h5>Simulation</h5>
+        <p>{{ analyse.applicables|length }} personnage(s) concerné(s) directement, {{ analyse.morts|length }} mort(s) à trancher.</p>
+        {% if analyse.introuvables|length > 0 %}
+            <div class="alert alert-warning">Numéros introuvables : {{ analyse.introuvables|join(', ') }}</div>
+        {% endif %}
+        <p>
+            {% for p in analyse.applicables %}n° {{ p.id }} {{ p.nom }}{{ not loop.last ? ', ' }}{% endfor %}
+        </p>
+    {% endif %}
+
+{% endblock body %}
