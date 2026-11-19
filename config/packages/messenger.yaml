@@ -24,10 +24,19 @@ framework:
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
 
-# when@test:
-#    framework:
-#        messenger:
-#            transports:
-#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
-#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
-#                async: 'in-memory://'
+# Le DSN d'env peut être fixé par le conteneur Docker (variable réelle, prioritaire sur les .env) :
+# on surcharge donc le transport par environnement ici.
+when@dev:
+    framework:
+        messenger:
+            transports:
+                # Envoi immédiat en dev (Mailpit) sans worker. Pour tester la vraie file : retirer ce bloc
+                # puis lancer `php bin/console messenger:consume async -vv`.
+                async: 'sync://'
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                # File en mémoire : aucune écriture en base, rien à consommer.
+                async: 'in-memory://'
