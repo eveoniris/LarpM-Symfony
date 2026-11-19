@@ -62,4 +62,7 @@ enum LogActionType: string
 
     /** Envoi de messages en masse par un admin (data : type d'ids, nombre de messages, titre, auteur). */
     case MESSAGE_MASSE = 'message_masse';
+
+    /** Ajout en masse par un admin (data : type, valeur, motif, personnage_ids). */
+    case AJOUT_MASSE = 'ajout_masse';
 }
