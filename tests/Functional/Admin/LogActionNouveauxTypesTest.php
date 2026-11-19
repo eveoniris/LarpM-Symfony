@@ -41,12 +41,13 @@ class LogActionNouveauxTypesTest extends WebTestCase
 
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_ADMIN']]));
 
-        foreach ([
+        $attendus = [
             'message_masse' => 'marqueur-message-masse',
             'ajout_masse' => 'marqueur-ajout-masse',
             'no_access' => 'marqueur-no-access',
             'xp_retrait' => 'marqueur-retrait',
-        ] as $valeur => $marqueur) {
+        ];
+        foreach ($attendus as $valeur => $marqueur) {
             $crawler = $client->request('GET', '/admin/action/logs?typeAction=' . $valeur);
             static::assertResponseIsSuccessful($valeur);
             static::assertStringContainsString($marqueur, $crawler->text(), $valeur);
