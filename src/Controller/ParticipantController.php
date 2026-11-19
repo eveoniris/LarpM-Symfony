@@ -842,7 +842,6 @@ class ParticipantController extends AbstractController
         SecondaryGroup $groupeSecondaire,
     ): RedirectResponse|Response {
         $personnage = $participant->getPersonnage();
-        $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
 
         if (!$personnage) {
             $this->addFlash('error', 'Vous devez avoir créé un personnage !');
@@ -858,13 +857,9 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
         }
 
-        return $this->render('groupeSecondaire/detail.twig', [
-            'groupeSecondaire' => $groupeSecondaire,
-            'membre' => $membre,
-            'isAdmin' => $isAdmin,
-            'participant' => $participant,
-            'gn' => $participant->getGn(),
-        ]);
+        // La page de détail est passée en onglets : elle attend `tab`, `tabs` et `tabCounts` que seul
+        // GroupeSecondaireController::detailAction fournit (sinon LoaderError « tab/.twig »).
+        return $this->redirectToRoute('groupeSecondaire.detail', ['groupeSecondaire' => $groupeSecondaire->getId()], 303);
     }
 
     /**
