@@ -1,0 +1,89 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Messages en masse{% endblock title %}
+
+{% block body %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li class="active">Messages en masse</li>
+    </ol>
+
+    {% for erreur in erreurs %}
+        <div class="alert alert-danger">{{ erreur }}</div>
+    {% endfor %}
+
+    <form method="post" novalidate>
+        <input type="hidden" name="_token" value="{{ csrf_token('messages_masse') }}">
+
+        <div class="mb-3">
+            <label class="form-label" for="mm-type">Type d'identifiants</label>
+            <select class="form-select" id="mm-type" name="type">
+                <option value="personnage" {{ saisie.type == 'personnage' ? 'selected' }}>Numéros de personnage (un message par joueur)</option>
+                <option value="user" {{ saisie.type == 'user' ? 'selected' }}>Identifiants utilisateur</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="mm-ids">Liste d'identifiants</label>
+            <textarea class="form-control" id="mm-ids" name="ids" rows="5" placeholder="12, 45, 78 (ou une colonne collée depuis Excel)">{{ saisie.ids }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="mm-titre">Titre</label>
+            <input class="form-control" id="mm-titre" name="titre" maxlength="255" value="{{ saisie.titre }}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="mm-texte">Message</label>
+            <textarea class="form-control tinymce" id="mm-texte" name="texte" rows="9">{{ saisie.texte }}</textarea>
+            <div class="form-text">La variable <code>{personnages}</code> est remplacée par la liste des personnages du joueur (nom et numéro).</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="mm-auteur">Expéditeur</label>
+            <select class="form-select" id="mm-auteur" name="auteur">
+                <option value="systeme" {{ saisie.auteur == 'systeme' ? 'selected' }}>Équipe de gestion (message système, sans réponse possible)</option>
+                <option value="moi" {{ saisie.auteur == 'moi' ? 'selected' }}>En mon nom</option>
+            </select>
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="mm-notify" name="notify" value="1" {{ saisie.notify ? 'checked' }}>
+            <label class="form-check-label" for="mm-notify">Envoyer aussi une notification par e-mail (mise en file, partie au prochain passage du cron)</label>
+        </div>
+
+        <button class="btn btn-secondary" type="submit" name="action" value="simuler">Simuler</button>
+        {% if cibles is not null and cibles.destinataires|length > 0 %}
+            <button class="btn btn-primary" type="submit" name="action" value="envoyer">Envoyer {{ cibles.destinataires|length }} message(s)</button>
+        {% endif %}
+    </form>
+
+    {% if cibles is not null %}
+        <hr>
+        <h5>Simulation</h5>
+        <p>{{ cibles.destinataires|length }} joueur(s) recevraient le message.</p>
+        {% if cibles.sansUser|length > 0 %}
+            <div class="alert alert-warning">Personnages sans joueur (aucun message) : {{ cibles.sansUser|join(', ') }}</div>
+        {% endif %}
+        {% if cibles.introuvables|length > 0 %}
+            <div class="alert alert-warning">Identifiants introuvables : {{ cibles.introuvables|join(', ') }}</div>
+        {% endif %}
+        <table class="table table-sm">
+            <thead><tr><th>Joueur</th><th>Personnages</th></tr></thead>
+            <tbody>
+            {% for d in cibles.destinataires %}
+                <tr>
+                    <td>{{ d.user.username }}</td>
+                    <td>{% for p in d.personnages %}{{ p.nom }} (n° {{ p.id }}){{ not loop.last ? ', ' }}{% endfor %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% if apercu is not null %}
+            <h6>Aperçu pour le premier joueur</h6>
+            <div class="card"><div class="card-body">{{ apercu|raw }}</div></div>
+        {% endif %}
+    {% endif %}
+
+{% endblock body %}

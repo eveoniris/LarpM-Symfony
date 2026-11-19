@@ -59,4 +59,7 @@ enum LogActionType: string
 
     /** Trigger de choix (potion, sort...) recréé par une commande de réparation. */
     case TRIGGER_REPARATION = 'trigger_reparation';
+
+    /** Envoi de messages en masse par un admin (data : type d'ids, nombre de messages, titre, auteur). */
+    case MESSAGE_MASSE = 'message_masse';
 }
