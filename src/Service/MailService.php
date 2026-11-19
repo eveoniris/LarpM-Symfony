@@ -78,17 +78,13 @@ final class MailService
             return; // unable to send
         }
 
+        $notification = $this->getTemplatedEmail('user/email/message.twig', ['message' => $message->getText(), 'uiBeta' => $destinataire->isUiBeta()]);
+        // Le gabarit impose un sujet générique : on le remplace par le titre du message (ou l'expéditeur à défaut).
+        $notification->subject($message->getTitle() ?: 'Nouveau message de ' . ($message->getUserRelatedByAuteur()?->getDisplayName() ?? Message::SYSTEM_AUTEUR_LABEL));
+
         // Notification de message : mise en file (worker cron), un envoi massif ne bloque pas la requête.
-        $this->asyncMailer->send(
-            $this
-                ->getTemplatedEmail(
-                    'user/email/message.twig',
-                    ['message' => $message->getText(), 'uiBeta' => $destinataire->isUiBeta()],
-                    $message->getTitle() ?: 'Nouveau message de ' . ($message->getUserRelatedByAuteur()?->getDisplayName() ?? Message::SYSTEM_AUTEUR_LABEL),
-                )
-                // TODO ->locale($user->getLocal())
-                ->to($email),
-        );
+        // TODO ->locale($user->getLocal())
+        $this->asyncMailer->send($notification->to($email));
     }
 
     /** @param array<string, mixed> $context */
