@@ -26,11 +26,12 @@
 
     <div class="table-responsive">
     <table class="table table-sm table-striped table-bordered table-hover">
-        {% include '_partials/thead.twig' with  { 'route': 'technologie.list', 'rows': [
+        {% include '_partials/thead.twig' with  { 'route': 'xp.gain', 'rows': [
             {'name' : 'Date', 'field' : 'operation_date', 'css' : 'text-center'},
             {'name' : 'Experience', 'field' : 'xp_gain', 'css' : 'text-center'},
             {'name' : 'Personnage', 'field' : 'personnage.id', 'css' : 'text-center'},
-            {'name' : 'Competence', 'field' : 'competence.id', 'css' : 'text-center'},
+            {'name' : 'Explication', 'field' : 'explanation', 'css' : 'text-center'},
+            {'name' : 'Retrait', 'css' : 'text-center'},
         ]} %}
         <tbody>
         {% for xp in paginator %}
@@ -43,7 +44,21 @@
                     </a>
                 </td>
                 <td class="align-middle col-3">
-                    {{ xp.explanation }}
+                    {% if xp.deleted %}<del>{{ xp.explanation }}</del> <span class="badge bg-secondary">retiré le {{ xp.deletedAt|date('d/m/Y') }}</span>{% else %}{{ xp.explanation }}{% endif %}
+                </td>
+                <td class="align-middle text-nowrap">
+                    {% if not xp.deleted %}
+                        <form method="post" action="{{ path('xp.gain.retirer', {gain: xp.id}) }}" class="d-flex gap-1"
+                              onsubmit='return confirm("Retirer ce gain d’XP et corriger le solde du personnage ?");'>
+                            <input type="hidden" name="_token" value="{{ csrf_token('xp_retrait_' ~ xp.id) }}">
+                            <input class="form-control form-control-sm" name="motif" placeholder="Motif du retrait" required maxlength="200">
+                            <select class="form-select form-select-sm" name="mode">
+                                <option value="soft">Garder l'historique</option>
+                                <option value="hard">Supprimer la ligne</option>
+                            </select>
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Retirer</button>
+                        </form>
+                    {% endif %}
                 </td>
             </tr>
         {% else %}

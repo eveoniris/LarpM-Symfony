@@ -316,6 +316,17 @@ class Personnage extends BasePersonnage implements Stringable
     }
 
     /**
+     * Gains d'XP comptés (ceux retirés par un admin restent en base mais sont écartés).
+     *
+     * @return Collection<int, ExperienceGain>
+     */
+    #[Override]
+    public function getExperienceGains(): Collection
+    {
+        return $this->experienceGains->filter(static fn (ExperienceGain $gain): bool => !$gain->isDeleted());
+    }
+
+    /**
      * Triggers non consommés (les triggers supprimés logiquement restent dans l'historique).
      *
      * @return Collection<int, PersonnageTrigger>

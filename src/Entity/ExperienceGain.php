@@ -9,6 +9,11 @@ use Doctrine\ORM\Mapping\Entity;
 #[Entity]
 class ExperienceGain extends BaseExperienceGain
 {
+    public function isDeleted(): bool
+    {
+        return null !== $this->deleted_at;
+    }
+
     /** @return array<string, mixed> */
     public function toLog(): array
     {

@@ -627,7 +627,7 @@ class StatsService
                     INNER JOIN experience_gain eg ON perso.id = eg.personnage_id
                     INNER JOIN groupe_gn ggn ON p.groupe_gn_id = ggn.id
                     INNER JOIN groupe g ON ggn.groupe_id = g.id
-                    WHERE p.gn_id = 7 and explanation NOT LIKE 'Suppression de la compétence %'
+                    WHERE p.gn_id = 7 and explanation NOT LIKE 'Suppression de la compétence %' AND eg.deleted_at IS NULL
                     GROUP BY perso.id, perso.nom, g.id, ggn.id
                     HAVING sum(xp_gain) >= 50
                     ORDER BY total DESC
@@ -806,6 +806,7 @@ class StatsService
                        SUM(eg.xp_gain) AS xp_total
                 FROM experience_gain eg
                 WHERE eg.explanation NOT LIKE '%Suppression de la compétence%'
+                  AND eg.deleted_at IS NULL
                 GROUP BY eg.personnage_id
             ),
             morts AS (
