@@ -28,6 +28,7 @@ final class MailService
         private readonly MailerInterface $mailer,
         private readonly UrlGeneratorInterface $router,
         private readonly Security $security,
+        private readonly AsyncMailer $asyncMailer,
     ) {
     }
 
@@ -67,7 +68,8 @@ final class MailService
             return; // unable to send
         }
 
-        $this->mailer->send(
+        // Notification de message : mise en file (worker cron), un envoi massif ne bloque pas la requête.
+        $this->asyncMailer->send(
             $this
                 ->getTemplatedEmail(
                     'user/email/message.twig',
