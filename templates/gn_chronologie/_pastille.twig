@@ -24,6 +24,9 @@
                 {{ chrono.suivant.label }}
             </a>
         {% endif %}
+        {% if chrono.dateJeu %}
+            <div class="dropdown-item-text"><small class="d-block text-body-secondary">Date en jeu</small>{{ chrono.dateJeu.libelle }}</div>
+        {% endif %}
         {% if jalon %}
             <div class="dropdown-item-text lm-chrono-jalon" data-niveau="{{ jalon.niveau }}">
                 <strong>{{ jalon.libelle }}</strong> : {{ jalon.date|date('d/m/Y') }} (J-{{ jalon.jours }})

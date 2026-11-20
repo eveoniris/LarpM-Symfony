@@ -66,6 +66,14 @@ class BaseGn
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?DateTime $date_verrouillage = null;
 
+    /** Début réel de l'écoulement du temps de jeu avant ce GN (défaut : fin du GN précédent). */
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?DateTime $date_temps_jeu_debut = null;
+
+    /** Fin réelle de l'écoulement du temps de jeu avant ce GN (défaut : début de ce GN). */
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?DateTime $date_temps_jeu_fin = null;
+
     #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $adresse = null;
 
@@ -271,6 +279,30 @@ class BaseGn
     public function getDateVerrouillage(): ?DateTime
     {
         return $this->date_verrouillage;
+    }
+
+    public function setDateTempsJeuDebut(?DateTime $date): static
+    {
+        $this->date_temps_jeu_debut = $date;
+
+        return $this;
+    }
+
+    public function getDateTempsJeuDebut(): ?DateTime
+    {
+        return $this->date_temps_jeu_debut;
+    }
+
+    public function setDateTempsJeuFin(?DateTime $date): static
+    {
+        $this->date_temps_jeu_fin = $date;
+
+        return $this;
+    }
+
+    public function getDateTempsJeuFin(): ?DateTime
+    {
+        return $this->date_temps_jeu_fin;
     }
 
     public function setAdresse(?string $adresse): static

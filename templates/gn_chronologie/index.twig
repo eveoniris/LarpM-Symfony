@@ -16,9 +16,20 @@
             </div>
         {% endif %}
 
+        {% if dateJeu %}
+            <p class="mb-4"><span class="text-body-secondary">Date en jeu aujourd'hui :</span> <strong>{{ dateJeu.libelle }}</strong></p>
+        {% endif %}
+
         <ol class="lm-timeline lm-timeline--vertical">
             {% for item in opus %}
                 {% set gn = item.gn %}
+                {% if loop.index0 == indexMaintenant and item.etat != 'active' %}
+                    <li class="lm-opus lm-maintenant" data-state="active">
+                        <span class="lm-opus-name">Aujourd'hui</span>
+                        <span class="lm-opus-date">{{ 'now'|date('d/m/Y') }}</span>
+                        {% if dateJeu %}<span class="lm-opus-game">{{ dateJeu.libelle }}</span>{% endif %}
+                    </li>
+                {% endif %}
                 <li class="lm-opus" data-state="{{ item.etat == 'future' ? 'next' : item.etat }}"{% if item.etat == 'active' or item.etat == 'next' %} id="courant"{% endif %}>
                     <a class="lm-opus-name" href="{{ path('gn.detail', {'gn': gn.id}) }}">{{ gn.label }}</a>
                     <span class="lm-opus-date">
@@ -32,6 +43,13 @@
             {% else %}
                 <li class="lm-opus"><span class="lm-opus-date">Aucun jeu enregistré.</span></li>
             {% endfor %}
+            {% if indexMaintenant == opus|length %}
+                <li class="lm-opus lm-maintenant" data-state="active">
+                        <span class="lm-opus-name">Aujourd'hui</span>
+                        <span class="lm-opus-date">{{ 'now'|date('d/m/Y') }}</span>
+                        {% if dateJeu %}<span class="lm-opus-game">{{ dateJeu.libelle }}</span>{% endif %}
+                    </li>
+            {% endif %}
         </ol>
     </div>
     <script>document.getElementById('courant')?.scrollIntoView({block: 'center'});</script>

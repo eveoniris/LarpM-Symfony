@@ -22,6 +22,7 @@ final readonly class GnChronologieService
 
     public function __construct(
         private GnRepository $gnRepository,
+        private GnDateJeuCalculator $dateJeuCalculator,
     ) {
     }
 
@@ -30,9 +31,11 @@ final readonly class GnChronologieService
      *
      * @return array{
      *     opus: list<array{gn: Gn, etat: string}>,
+     *     indexMaintenant: int,
      *     precedent: ?Gn,
      *     suivant: ?Gn,
-     *     jalon: ?array{libelle: string, date: DateTimeInterface, jours: int, niveau: string, gn: Gn}
+     *     jalon: ?array{libelle: string, date: DateTimeInterface, jours: int, niveau: string, gn: Gn},
+     *     dateJeu: ?array{annee: float, estimation: bool, libelle: string}
      * }
      */
     public function construire(?DateTimeImmutable $now = null): array
@@ -45,6 +48,7 @@ final readonly class GnChronologieService
 
         $precedent = null;
         $suivant = null;
+        $actif = null;
         $opus = [];
         foreach ($gns as $gn) {
             $fin = $gn->getDateFin() ?? $gn->getDateDebut();
@@ -53,6 +57,7 @@ final readonly class GnChronologieService
                 $precedent = $gn;
             } elseif ($gn->getDateDebut() <= $now) {
                 $etat = 'active';
+                $actif = $gn;
             } else {
                 $etat = null === $suivant ? 'next' : 'future';
                 $suivant ??= $gn;
@@ -62,9 +67,11 @@ final readonly class GnChronologieService
 
         return [
             'opus' => $opus,
+            'indexMaintenant' => \count(array_filter($opus, static fn (array $o): bool => 'done' === $o['etat'])),
             'precedent' => $precedent,
             'suivant' => $suivant,
             'jalon' => $this->prochainJalon($gns, $now),
+            'dateJeu' => $this->dateJeuCalculator->calculer($gns, $precedent, $suivant, $actif, $now),
         ];
     }
 
