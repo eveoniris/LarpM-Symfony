@@ -4,7 +4,12 @@
 
 {% block body %}
     <div class="container py-3" style="max-width: 760px">
-        <h1 class="h3 mb-3">Chronologie des jeux</h1>
+        <div class="lm-page-head mb-3">
+            <h1 class="h3 mb-1">Chronologie des jeux</h1>
+            {% if dateJeu %}
+                <p class="mb-0"><span class="text-body-secondary">Date en jeu aujourd'hui :</span> <strong>{{ dateJeu.libelle }}</strong></p>
+            {% endif %}
+        </div>
 
         {% if jalon %}
             <div class="lm-echeance mb-4" data-niveau="{{ jalon.niveau }}">
@@ -16,11 +21,8 @@
             </div>
         {% endif %}
 
-        {% if dateJeu %}
-            <p class="mb-4"><span class="text-body-secondary">Date en jeu aujourd'hui :</span> <strong>{{ dateJeu.libelle }}</strong></p>
-        {% endif %}
-
-        <ol class="lm-timeline lm-timeline--vertical">
+        <div class="lm-carte-verre">
+        <ol class="lm-timeline lm-timeline--vertical mb-0">
             {% for item in opus %}
                 {% set gn = item.gn %}
                 {% if loop.index0 == indexMaintenant and item.etat != 'active' %}
@@ -51,6 +53,7 @@
                     </li>
             {% endif %}
         </ol>
+        </div>
     </div>
     <script>document.getElementById('courant')?.scrollIntoView({block: 'center'});</script>
 {% endblock body %}
