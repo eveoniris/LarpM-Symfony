@@ -41,6 +41,12 @@
                     {% if gn.dateVerrouillage and item.etat in ['next', 'future', 'active'] %}
                         <span class="lm-opus-lock">Verrouillage des modifications : {{ gn.dateVerrouillage|date('d/m/Y') }}</span>
                     {% endif %}
+                    {% for etape in item.etapes %}
+                        <span class="lm-opus-etape" data-visibilite="{{ etape.visibilite.value }}">
+                            {{ etape.datePrevue|date('d/m/Y') }} · {{ etape.libelle }}
+                            {% if etape.visibilite.value != 'public' %}<em>({{ etape.visibilite.value }})</em>{% endif %}
+                        </span>
+                    {% endfor %}
                 </li>
             {% else %}
                 <li class="lm-opus"><span class="lm-opus-date">Aucun jeu enregistré.</span></li>

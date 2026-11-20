@@ -202,6 +202,11 @@
 .lm-timeline--vertical .lm-opus-name:hover { text-decoration: underline; }
 .lm-opus-lock { display: block; font-size: .78rem; color: var(--lm-warn-text); }
 
+.lm-opus-etape { display: block; font-size: .78rem; color: var(--lm-muted); }
+.lm-opus-etape[data-visibilite="secret"] { color: var(--lm-warn-text); }
+.lm-opus-etape[data-visibilite="technique"] { color: var(--lm-err-text); }
+.lm-opus-etape em { font-style: normal; opacity: .8; }
+
 /* Échéance : info, jaune à 14 jours, rouge à 3 jours */
 .lm-echeance { display: flex; align-items: center; gap: var(--lm-s3); padding: var(--lm-s3); border-radius: var(--lm-radius-lg);
                border: 1px solid var(--lm-line); border-left: 4px solid var(--lm-info, var(--lm-line)); background: var(--lm-surface); }
