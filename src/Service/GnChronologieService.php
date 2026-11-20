@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Gn;
+use App\Entity\GnTimelineStep;
+use App\Enum\Role;
 use App\Repository\GnRepository;
+use App\Repository\GnTimelineStepRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * Chronologie des GN : liste des jeux, intervalle courant (inter-jeu) et prochain jalon public.
@@ -23,6 +27,9 @@ final readonly class GnChronologieService
     public function __construct(
         private GnRepository $gnRepository,
         private GnDateJeuCalculator $dateJeuCalculator,
+        private GnJalonCalculator $jalonCalculator,
+        private GnTimelineStepRepository $stepRepository,
+        private Security $security,
     ) {
     }
 
@@ -30,7 +37,7 @@ final readonly class GnChronologieService
      * Construit la chronologie à la date donnée.
      *
      * @return array{
-     *     opus: list<array{gn: Gn, etat: string}>,
+     *     opus: list<array{gn: Gn, etat: string, etapes: list<GnTimelineStep>}>,
      *     indexMaintenant: int,
      *     precedent: ?Gn,
      *     suivant: ?Gn,
@@ -45,6 +52,14 @@ final readonly class GnChronologieService
         /** @var list<Gn> $gns */
         $gns = $this->gnRepository->findBy([], ['date_debut' => 'ASC']);
         $gns = array_values(array_filter($gns, static fn (Gn $gn): bool => null !== $gn->getDateDebut()));
+
+        $toutes = $this->stepRepository->findAllOrdered();
+        $visibles = [];
+        foreach ($toutes as $etape) {
+            if ($etape->getVisibilite()->estVisible(fn (Role $role): bool => $this->security->isGranted($role->value))) {
+                $visibles[$etape->getGn()?->getId()][] = $etape;
+            }
+        }
 
         $precedent = null;
         $suivant = null;
@@ -62,7 +77,7 @@ final readonly class GnChronologieService
                 $etat = null === $suivant ? 'next' : 'future';
                 $suivant ??= $gn;
             }
-            $opus[] = ['gn' => $gn, 'etat' => $etat];
+            $opus[] = ['gn' => $gn, 'etat' => $etat, 'etapes' => $visibles[$gn->getId()] ?? []];
         }
 
         return [
@@ -70,7 +85,7 @@ final readonly class GnChronologieService
             'indexMaintenant' => \count(array_filter($opus, static fn (array $o): bool => 'done' === $o['etat'])),
             'precedent' => $precedent,
             'suivant' => $suivant,
-            'jalon' => $this->prochainJalon($gns, $now),
+            'jalon' => $this->jalonCalculator->prochain($gns, $toutes, $now),
             'dateJeu' => $this->dateJeuCalculator->calculer($gns, $precedent, $suivant, $actif, $now),
         ];
     }
@@ -85,34 +100,5 @@ final readonly class GnChronologieService
             $jours <= self::SEUIL_AVERTISSEMENT => 'warn',
             default => 'info',
         };
-    }
-
-    /**
-     * Prochain jalon public à venir : verrouillage, puis début du jeu.
-     *
-     * @param list<Gn> $gns
-     *
-     * @return ?array{libelle: string, date: DateTimeInterface, jours: int, niveau: string, gn: Gn}
-     */
-    private function prochainJalon(array $gns, DateTimeImmutable $now): ?array
-    {
-        $jalons = [];
-        foreach ($gns as $gn) {
-            if (null !== $gn->getDateVerrouillage()) {
-                $jalons[] = ['libelle' => 'Verrouillage des modifications', 'date' => $gn->getDateVerrouillage(), 'gn' => $gn];
-            }
-            $jalons[] = ['libelle' => 'Début du jeu', 'date' => $gn->getDateDebut(), 'gn' => $gn];
-        }
-
-        $jalons = array_filter($jalons, static fn (array $j): bool => $j['date'] >= $now);
-        if ([] === $jalons) {
-            return null;
-        }
-
-        usort($jalons, static fn (array $a, array $b): int => $a['date'] <=> $b['date']);
-        $j = $jalons[0];
-        $jours = (int) $now->setTime(0, 0)->diff(DateTimeImmutable::createFromInterface($j['date'])->setTime(0, 0))->format('%a');
-
-        return $j + ['jours' => $jours, 'niveau' => self::niveau($jours)];
     }
 }
