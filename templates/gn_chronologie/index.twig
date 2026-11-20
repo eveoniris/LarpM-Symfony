@@ -1,0 +1,38 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Chronologie des jeux{% endblock title %}
+
+{% block body %}
+    <div class="container py-3" style="max-width: 760px">
+        <h1 class="h3 mb-3">Chronologie des jeux</h1>
+
+        {% if jalon %}
+            <div class="lm-echeance mb-4" data-niveau="{{ jalon.niveau }}">
+                <span class="lm-echeance-jours">J-{{ jalon.jours }}</span>
+                <span>
+                    <strong>{{ jalon.libelle }}</strong> - {{ jalon.gn.label }}<br>
+                    <small>{{ jalon.date|date('d/m/Y à H:i') }}</small>
+                </span>
+            </div>
+        {% endif %}
+
+        <ol class="lm-timeline lm-timeline--vertical">
+            {% for item in opus %}
+                {% set gn = item.gn %}
+                <li class="lm-opus" data-state="{{ item.etat == 'future' ? 'next' : item.etat }}"{% if item.etat == 'active' or item.etat == 'next' %} id="courant"{% endif %}>
+                    <a class="lm-opus-name" href="{{ path('gn.detail', {'gn': gn.id}) }}">{{ gn.label }}</a>
+                    <span class="lm-opus-date">
+                        {{ gn.dateDebut|date('d/m/Y') }}{% if gn.dateFin %} au {{ gn.dateFin|date('d/m/Y') }}{% endif %}
+                    </span>
+                    {% if gn.dateJeu %}<span class="lm-opus-game">{{ gn.dateJeu }} en jeu</span>{% endif %}
+                    {% if gn.dateVerrouillage and item.etat in ['next', 'future', 'active'] %}
+                        <span class="lm-opus-lock">Verrouillage des modifications : {{ gn.dateVerrouillage|date('d/m/Y') }}</span>
+                    {% endif %}
+                </li>
+            {% else %}
+                <li class="lm-opus"><span class="lm-opus-date">Aucun jeu enregistré.</span></li>
+            {% endfor %}
+        </ol>
+    </div>
+    <script>document.getElementById('courant')?.scrollIntoView({block: 'center'});</script>
+{% endblock body %}

@@ -1,0 +1,35 @@
+{# Pastille de chronologie du header (bêta) : intervalle courant, prochain jalon public et alerte d'échéance. #}
+{% set chrono = gn_chronologie() %}
+{% set jalon = chrono.jalon %}
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle lm-chrono" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+       {% if jalon %}data-niveau="{{ jalon.niveau }}"{% endif %}>
+        {% if jalon %}
+            <span class="lm-chrono-jours">J-{{ jalon.jours }}</span>
+            <span class="lm-chrono-txt">{{ jalon.libelle }}</span>
+        {% else %}
+            Chronologie
+        {% endif %}
+    </a>
+    <div class="dropdown-menu lm-chrono-menu">
+        {% if chrono.precedent %}
+            <a class="dropdown-item" href="{{ path('gn.detail', {'gn': chrono.precedent.id}) }}">
+                <small class="d-block text-body-secondary">Dernier jeu · {{ chrono.precedent.dateFin|date('d/m/Y') }}</small>
+                {{ chrono.precedent.label }}
+            </a>
+        {% endif %}
+        {% if chrono.suivant %}
+            <a class="dropdown-item" href="{{ path('gn.detail', {'gn': chrono.suivant.id}) }}">
+                <small class="d-block text-body-secondary">Prochain jeu · {{ chrono.suivant.dateDebut|date('d/m/Y') }}</small>
+                {{ chrono.suivant.label }}
+            </a>
+        {% endif %}
+        {% if jalon %}
+            <div class="dropdown-item-text lm-chrono-jalon" data-niveau="{{ jalon.niveau }}">
+                <strong>{{ jalon.libelle }}</strong> : {{ jalon.date|date('d/m/Y') }} (J-{{ jalon.jours }})
+            </div>
+        {% endif %}
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="{{ path('gn.chronologie') }}">Voir toute la chronologie</a>
+    </div>
+</li>

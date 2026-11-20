@@ -306,7 +306,8 @@
                     <strong>Quand ?</strong>
                     <p>Du {{ gn.dateDebut|date('d-m-Y') }} au {{ gn.dateFin|date('d-m-Y') }}.<br/>
                         L'accueil des joueurs débutera le {{ gn.dateInstallationJoueur|date('d-m-Y') }}
-                        à {{ gn.dateInstallationJoueur|date('H:i') }} heure.</p>
+                        à {{ gn.dateInstallationJoueur|date('H:i') }} heure.
+                        {% if gn.dateVerrouillage %}<br/>Les modifications seront verrouillées le {{ gn.dateVerrouillage|date('d-m-Y') }}.{% endif %}</p>
 
                     {% if app.user.uiBeta %}
                         <div class="d-flex flex-wrap gap-2">

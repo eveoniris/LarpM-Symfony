@@ -60,6 +60,10 @@ class GnType extends AbstractType
                 'label' => 'Date limite pour libérer le site',
                 'required' => false,
             ])
+            ->add('dateVerrouillage', DateTimeType::class, [
+                'label' => 'Date de verrouillage des modifications (affichée aux joueurs)',
+                'required' => false,
+            ])
             ->add('adresse', TextareaType::class, [
                 'label' => 'Adresse du site',
                 'required' => false,

@@ -62,6 +62,10 @@ class BaseGn
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?DateTime $date_fin_orga = null;
 
+    /** Date à partir de laquelle les modifications de fiches sont verrouillées (jalon public). */
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?DateTime $date_verrouillage = null;
+
     #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $adresse = null;
 
@@ -255,6 +259,18 @@ class BaseGn
     public function getDateFinOrga(): ?DateTime
     {
         return $this->date_fin_orga;
+    }
+
+    public function setDateVerrouillage(?DateTime $date_verrouillage): static
+    {
+        $this->date_verrouillage = $date_verrouillage;
+
+        return $this;
+    }
+
+    public function getDateVerrouillage(): ?DateTime
+    {
+        return $this->date_verrouillage;
     }
 
     public function setAdresse(?string $adresse): static
