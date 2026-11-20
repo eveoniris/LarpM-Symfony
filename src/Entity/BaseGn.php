@@ -62,6 +62,18 @@ class BaseGn
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?DateTime $date_fin_orga = null;
 
+    /** Date à partir de laquelle les modifications de fiches sont verrouillées (jalon public). */
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?DateTime $date_verrouillage = null;
+
+    /** Début réel de l'écoulement du temps de jeu avant ce GN (défaut : fin du GN précédent). */
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?DateTime $date_temps_jeu_debut = null;
+
+    /** Fin réelle de l'écoulement du temps de jeu avant ce GN (défaut : début de ce GN). */
+    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?DateTime $date_temps_jeu_fin = null;
+
     #[Column(type: Types::STRING, length: 45, nullable: true)]
     protected ?string $adresse = null;
 
@@ -255,6 +267,42 @@ class BaseGn
     public function getDateFinOrga(): ?DateTime
     {
         return $this->date_fin_orga;
+    }
+
+    public function setDateVerrouillage(?DateTime $date_verrouillage): static
+    {
+        $this->date_verrouillage = $date_verrouillage;
+
+        return $this;
+    }
+
+    public function getDateVerrouillage(): ?DateTime
+    {
+        return $this->date_verrouillage;
+    }
+
+    public function setDateTempsJeuDebut(?DateTime $date): static
+    {
+        $this->date_temps_jeu_debut = $date;
+
+        return $this;
+    }
+
+    public function getDateTempsJeuDebut(): ?DateTime
+    {
+        return $this->date_temps_jeu_debut;
+    }
+
+    public function setDateTempsJeuFin(?DateTime $date): static
+    {
+        $this->date_temps_jeu_fin = $date;
+
+        return $this;
+    }
+
+    public function getDateTempsJeuFin(): ?DateTime
+    {
+        return $this->date_temps_jeu_fin;
     }
 
     public function setAdresse(?string $adresse): static
