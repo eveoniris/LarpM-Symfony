@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\GnTimelineStatut;
+use App\Enum\GnTimelineType;
 use App\Enum\GnTimelineVisibilite;
 use App\Repository\GnTimelineStepRepository;
 use DateTimeImmutable;
@@ -13,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Étape de la chronologie d'un GN (jalon d'information ou, plus tard, action planifiée).
  */
+// @mago-expect lint:too-many-properties
 #[ORM\Entity(repositoryClass: GnTimelineStepRepository::class)]
 #[ORM\Table(name: 'gn_timeline_step')]
 #[ORM\Index(name: 'idx_gn_timeline_step_date', columns: ['date_prevue'])]
@@ -38,6 +41,27 @@ class GnTimelineStep
 
     #[ORM\Column(length: 20, enumType: GnTimelineVisibilite::class)]
     private GnTimelineVisibilite $visibilite = GnTimelineVisibilite::PUBLIC;
+
+    #[ORM\Column(length: 30, enumType: GnTimelineType::class, options: ['default' => 'info'])]
+    private GnTimelineType $type = GnTimelineType::INFO;
+
+    /** Le cron exécute l'étape quand elle est échue (refusé pour les types non autorisés en automatique). */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $auto = false;
+
+    #[ORM\Column(length: 20, enumType: GnTimelineStatut::class, options: ['default' => 'a_faire'])]
+    private GnTimelineStatut $statut = GnTimelineStatut::A_FAIRE;
+
+    #[ORM\Column(name: 'executed_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $executedAt = null;
+
+    /** Compte rendu de la dernière exécution (succès ou message d'erreur). */
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $resultat = null;
+
+    /** Paramètre numérique de l'action (XP à donner pour XP_PARTICIPATION). */
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    private ?int $xp = null;
 
     public function __construct()
     {
@@ -105,6 +129,64 @@ class GnTimelineStep
     public function setVisibilite(GnTimelineVisibilite $visibilite): static
     {
         $this->visibilite = $visibilite;
+
+        return $this;
+    }
+
+    public function getType(): GnTimelineType
+    {
+        return $this->type;
+    }
+
+    public function setType(GnTimelineType $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function isAuto(): bool
+    {
+        return $this->auto;
+    }
+
+    public function setAuto(bool $auto): static
+    {
+        $this->auto = $auto;
+
+        return $this;
+    }
+
+    public function getStatut(): GnTimelineStatut
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(GnTimelineStatut $statut): static
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getExecutedAt(): ?DateTimeImmutable
+    {
+        return $this->executedAt;
+    }
+
+    public function getResultat(): ?string
+    {
+        return $this->resultat;
+    }
+
+    public function getXp(): ?int
+    {
+        return $this->xp;
+    }
+
+    public function setXp(?int $xp): static
+    {
+        $this->xp = $xp;
 
         return $this;
     }
