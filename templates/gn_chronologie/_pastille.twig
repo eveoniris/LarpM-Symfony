@@ -1,8 +1,8 @@
 {# Pastille de chronologie du header (bêta) : intervalle courant, prochain jalon public et alerte d'échéance. #}
 {% set chrono = gn_chronologie() %}
 {% set jalon = chrono.jalon %}
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle lm-chrono" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+<div class="dropdown d-flex align-items-center me-2">
+    <a class="nav-link dropdown-toggle lm-chrono text-nowrap" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
        {% if jalon %}data-niveau="{{ jalon.niveau }}"{% endif %}>
         {% if jalon %}
             <span class="lm-chrono-jours">J-{{ jalon.jours }}</span>
@@ -11,7 +11,7 @@
             Chronologie
         {% endif %}
     </a>
-    <div class="dropdown-menu lm-chrono-menu">
+    <div class="dropdown-menu dropdown-menu-end lm-chrono-menu">
         {% if chrono.precedent %}
             <a class="dropdown-item" href="{{ path('gn.detail', {'gn': chrono.precedent.id}) }}">
                 <small class="d-block text-body-secondary">Dernier jeu · {{ chrono.precedent.dateFin|date('d/m/Y') }}</small>
@@ -35,4 +35,4 @@
         <div class="dropdown-divider"></div>
         <a class="dropdown-item" href="{{ path('gn.chronologie') }}">Voir toute la chronologie</a>
     </div>
-</li>
+</div>
