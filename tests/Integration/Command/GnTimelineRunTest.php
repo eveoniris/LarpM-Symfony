@@ -17,7 +17,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Psr\Log\NullLogger;
-use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -56,27 +55,7 @@ class GnTimelineRunTest extends KernelTestCase
 
     private function executeur(GnTimelineType $type, ?string $erreur = null): GnTimelineExecutor
     {
-        $handler = new class($type, $erreur) implements GnTimelineHandlerInterface {
-            public function __construct(
-                private readonly GnTimelineType $type,
-                private readonly ?string $erreur,
-            ) {
-            }
-
-            public function type(): GnTimelineType
-            {
-                return $this->type;
-            }
-
-            public function executer(GnTimelineStep $etape): string
-            {
-                if (null !== $this->erreur) {
-                    throw new RuntimeException($this->erreur);
-                }
-
-                return 'fait';
-            }
-        };
+        $handler = new FauxGnTimelineHandler($type, $erreur);
 
         return new GnTimelineExecutor([$handler], static::getContainer()->get(Connection::class), $this->em, static::getContainer()->get(GnTimelineStepRepository::class), new NullLogger());
     }
