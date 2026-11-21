@@ -25,6 +25,7 @@ use App\Repository\UserRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\CarteAlchimisteService;
 use App\Service\FicheRetourGroupeImportService;
+use App\Service\GnLockService;
 use App\Service\GroupeService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
@@ -464,6 +465,7 @@ class GnController extends AbstractController
         PersonnageSecondaireRepository $personnageSecondaireRepository,
         ParticipantRepository $participantRepository,
         LangueRepository $langueRepository,
+        GnLockService $gnLockService,
         #[MapEntity]
         Gn $gn,
     ): RedirectResponse|Response {
@@ -478,19 +480,7 @@ class GnController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Lock de base
-            $gnRepository->lockAllGroup($gn);
-
-            $this->personnageService->lockGnSetDefaultCharacter($gn);
-            $this->personnageService->lockGnSetDefaultLangue($gn);
-            $this->personnageService->lockGnSetDefaultSecondCharacter($gn);
-            // Ces méthodes sont des générateurs : sans itération leur corps ne s'exécute pas
-            foreach ($this->personnageService->lockGnGiveNoblityGnRenomme($gn) as $_) {
-            }
-            foreach ($this->personnageService->lockGnGiveLiteratureGnBonus($gn) as $_) {
-            }
-            foreach ($this->personnageService->lockGnGiveSanctuaireGnEffect() as $_) {
-            }
+            $gnLockService->verrouiller($gn);
 
             $this->addFlash('success', 'Le gn a été verrouillé.');
 
