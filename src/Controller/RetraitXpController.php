@@ -29,11 +29,22 @@ final class RetraitXpController extends AbstractController
         if ('' === $motif) {
             $this->addFlash('danger', 'Le motif du retrait est obligatoire.');
 
-            return $this->redirectToRoute('xp.gain');
+            return $this->retour($request);
         }
 
         $retire = $service->retirer($gain, $request->request->getString('mode'), $motif);
         $this->addFlash($retire ? 'success' : 'warning', $retire ? 'Gain d\'XP retiré, solde du personnage corrigé.' : 'Retrait impossible (déjà retiré ou mode inconnu).');
+
+        return $this->retour($request);
+    }
+
+    /** Retour à la page d'origine (chemin local uniquement, pas d'URL externe), sinon à l'historique admin. */
+    private function retour(Request $request): Response
+    {
+        $retour = $request->request->getString('retour');
+        if (str_starts_with($retour, '/') && !str_starts_with($retour, '//') && !str_contains($retour, '\\')) {
+            return $this->redirect($retour);
+        }
 
         return $this->redirectToRoute('xp.gain');
     }

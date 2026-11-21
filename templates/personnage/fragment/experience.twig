@@ -18,94 +18,114 @@
         </a>
     </div>
     <div class="collapse" id="xpHistory">
+        <div class="xp-historique">
+            {# Un bloc par section : titre + tableau dans un seul contour arrondi (pas de bordure propre au tableau) #}
+            <section class="border rounded-2 overflow-hidden mb-3">
+                <h6 class="mb-0 fw-bold text-center py-2 bg-body-secondary border-bottom">Gains</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead>
+                        <tr>
+                            <th class="col-md-3">Date</th>
+                            <th class="col-md-1">Quantité</th>
+                            <th>Raison</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% set totalXpGain = 0 %}
+                        {% for historique in personnage.experienceGains %}
+                            {% set totalXpGain = totalXpGain + historique.xpGain %}
+                            <tr>
+                                <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
+                                <td>+{{ historique.xpGain }}</td>
+                                <td>
+                                    {{ historique.explanation }}
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        <details class="mt-1">
+                                            <summary class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i> Retirer</summary>
+                                            <form method="post" action="{{ path('xp.gain.retirer', {gain: historique.id}) }}" class="d-grid gap-1 mt-1" style="max-width: 18rem"
+                                                  onsubmit='return confirm("Retirer ce gain d’XP et corriger le solde du personnage ?");'>
+                                                <input type="hidden" name="_token" value="{{ csrf_token('xp_retrait_' ~ historique.id) }}">
+                                                <input type="hidden" name="retour" value="{{ app.request.requestUri }}">
+                                                <input class="form-control form-control-sm" name="motif" placeholder="Motif du retrait" required maxlength="200">
+                                                <select class="form-select form-select-sm" name="mode">
+                                                    <option value="soft">Garder l'historique</option>
+                                                    <option value="hard">Supprimer la ligne</option>
+                                                </select>
+                                                <button class="btn btn-sm btn-danger" type="submit">Confirmer le retrait</button>
+                                            </form>
+                                        </details>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        <tr class="fw-bold">
+                            <td>Total</td>
+                            <td>{{ totalXpGain }}</td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-        <div class="list-group">
-            <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
-                Gains</h6>
-            <div class="table-responsive">
-            <table class="table table-sm table-striped table-bordered m-0 rounded-2">
-                <thead>
-                <tr>
-                    <th class="col-md-3">Date</th>
-                    <th class="col-md-1">Quantité</th>
-                    <th>Raison</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% set totalXpGain = 0 %}
-                {% for historique in personnage.experienceGains %}
-                    {% set totalXpGain = totalXpGain + historique.xpGain %}
-                    <tr>
-                        <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
-                        <td>+{{ historique.xpGain }}</td>
-                        <td>{{ historique.explanation }}</td>
-                    </tr>
-                {% endfor %}
-                <tr>
-                    <td>Total</td>
-                    <td>{{ totalXpGain }}</td>
-                    <td></td>
-                </tr>
-                </tbody>
-            </table>
-            </div>{# /table-responsive gains #}
+            <section class="border rounded-2 overflow-hidden mb-3">
+                <h6 class="mb-0 fw-bold text-center py-2 bg-body-secondary border-bottom">Usages</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead>
+                        <tr>
+                            <th class="col-md-3">Date</th>
+                            <th class="col-md-1">Quantité</th>
+                            <th>Compétence</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% set totalXpUse = 0 %}
+                        {% for historique in personnage.experienceUsages %}
+                            {% set totalXpUse = totalXpUse + historique.xpUse %}
+                            <tr>
+                                <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
+                                <td>-{{ historique.xpUse }}</td>
+                                <td>{{ historique.competence.label }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr class="fw-bold">
+                            <td>Total</td>
+                            <td>{{ totalXpUse }}</td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-            <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
-                Usages</h6>
-            <div class="table-responsive">
-            <table class="table table-sm table-striped table-bordered m-0 rounded-2">
-                <thead>
-                <tr>
-                    <th class="col-md-3">Date</th>
-                    <th class="col-md-1">Quantité</th>
-                    <th>Compétence</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% set totalXpUse = 0 %}
-                {% for historique in personnage.experienceUsages %}
-                    {% set totalXpUse = totalXpUse + historique.xpUse %}
-                    <tr>
-                        <td>{{ historique.operationDate|date("Y-m-d H:i:s") }}</td>
-                        <td>-{{ historique.xpUse }}</td>
-                        <td>{{ historique.competence.label }}</td>
-                    </tr>
-                {% endfor %}
-                <tr>
-                    <td>Total</td>
-                    <td>{{ totalXpUse }}</td>
-                    <td></td>
-                </tr>
-                </tbody>
-            </table>
-            </div>{# /table-responsive usages #}
-
-            <h6 class="mb-0 fw-bold text-center list-group-item list-group-item-secondary">
-                Apprentissages</h6>
-            <div class="table-responsive">
-            <table class="table table-sm table-striped table-bordered m-0 rounded-2">
-                <thead>
-                <tr>
-                    <th class="col-md-3">Date</th>
-                    <th class="col-md-1">Quantité</th>
-                    <th>Compétence</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for apprentissage in personnage.apprentissages %}
-                    <tr>
-                        <td>{{ apprentissage.createdAt|date("Y-m-d H:i:s") }}</td>
-                        <td>1</td>
-                        <td class="">
-                            <div>{{ apprentissage.competence.label }} <a href="{{ path('personnage.apprentissage.detail', {'personnage': personnage.id, 'apprentissage':apprentissage.id}) }}" class="btn btn-sm btn-secondary"><i
-                                            class="fa fa-eye"></i></a></div>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            </div>{# /table-responsive apprentissages #}
-
+            <section class="border rounded-2 overflow-hidden">
+                <h6 class="mb-0 fw-bold text-center py-2 bg-body-secondary border-bottom">Apprentissages</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead>
+                        <tr>
+                            <th class="col-md-3">Date</th>
+                            <th class="col-md-1">Quantité</th>
+                            <th>Compétence</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for apprentissage in personnage.apprentissages %}
+                            <tr>
+                                <td>{{ apprentissage.createdAt|date("Y-m-d H:i:s") }}</td>
+                                <td>1</td>
+                                <td>
+                                    <div>{{ apprentissage.competence.label }} <a href="{{ path('personnage.apprentissage.detail', {'personnage': personnage.id, 'apprentissage':apprentissage.id}) }}" class="btn btn-sm btn-secondary"><i
+                                                    class="fa fa-eye"></i></a></div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </div>
     </div>
 </div>
