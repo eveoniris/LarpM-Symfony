@@ -73,6 +73,23 @@ class RetraitXpTest extends WebTestCase
         static::assertNotEmpty($em->getRepository(LogAction::class)->findBy(['type' => LogActionType::XP_RETRAIT->value]));
     }
 
+    public function testRetourPageOrigineSeulementLocal(): void
+    {
+        $client = static::createClient();
+        $personnage = PersonnageFactory::createOne(['xp' => 40]);
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_ADMIN']]));
+        $client->request('GET', '/admin/xp/gain');
+
+        $cas = ['/personnage/12/competences' => '/personnage/12/competences', 'https://evil.example/x' => '/admin/xp/gain', '//evil.example' => '/admin/xp/gain'];
+        foreach ($cas as $retour => $attendu) {
+            $gain = ExperienceGainFactory::createOne(['personnage' => $personnage, 'xp_gain' => 1]);
+            $crawler = $client->request('GET', '/admin/xp/gain');
+            $token = $crawler->filter(\sprintf('form[action$="/admin/xp/gain/%d/retirer"] input[name=_token]', $gain->getId()))->attr('value');
+            $client->request('POST', \sprintf('/admin/xp/gain/%d/retirer', $gain->getId()), ['_token' => $token, 'mode' => 'soft', 'motif' => 'test', 'retour' => $retour]);
+            static::assertResponseRedirects($attendu, null, $retour);
+        }
+    }
+
     public function testMotifObligatoire(): void
     {
         $client = static::createClient();
