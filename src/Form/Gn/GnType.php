@@ -60,6 +60,18 @@ class GnType extends AbstractType
                 'label' => 'Date limite pour libérer le site',
                 'required' => false,
             ])
+            ->add('dateVerrouillage', DateTimeType::class, [
+                'label' => 'Date de verrouillage des modifications (affichée aux joueurs)',
+                'required' => false,
+            ])
+            ->add('dateTempsJeuDebut', DateTimeType::class, [
+                'label' => "Le temps de jeu s'écoule à partir du (défaut : fin du GN précédent)",
+                'required' => false,
+            ])
+            ->add('dateTempsJeuFin', DateTimeType::class, [
+                'label' => "Le temps de jeu s'écoule jusqu'au (défaut : début de ce GN)",
+                'required' => false,
+            ])
             ->add('adresse', TextareaType::class, [
                 'label' => 'Adresse du site',
                 'required' => false,

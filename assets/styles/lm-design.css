@@ -194,6 +194,32 @@
   .lm-inter::before { display: none; }
 }
 
+/* Chronologie verticale (page) : même composant, toujours en colonne */
+.lm-timeline--vertical { flex-direction: column; overflow: visible; padding-left: 28px; border-left: 2px solid var(--lm-line); margin-left: 8px; }
+.lm-timeline--vertical .lm-opus { width: auto; text-align: left; padding: 0 0 var(--lm-s4, 20px) var(--lm-s3); }
+.lm-timeline--vertical .lm-opus::before { left: -37px; top: 2px; margin-left: 0; }
+.lm-timeline--vertical .lm-opus-name { color: inherit; text-decoration: none; }
+.lm-timeline--vertical .lm-opus-name:hover { text-decoration: underline; }
+.lm-opus-lock { display: block; font-size: .78rem; color: var(--lm-warn-text); }
+
+.lm-opus-etape { display: block; font-size: .78rem; color: var(--lm-muted); }
+.lm-opus-etape[data-visibilite="secret"] { color: var(--lm-warn-text); }
+.lm-opus-etape[data-visibilite="technique"] { color: var(--lm-err-text); }
+.lm-opus-etape em { font-style: normal; opacity: .8; }
+
+/* Échéance : info, jaune à 14 jours, rouge à 3 jours */
+.lm-echeance { display: flex; align-items: center; gap: var(--lm-s3); padding: var(--lm-s3); border-radius: var(--lm-radius-lg);
+               border: 1px solid var(--lm-line); border-left: 4px solid var(--lm-info, var(--lm-line)); background: var(--lm-surface); }
+.lm-echeance-jours { font: 700 1.3rem var(--lm-font-display); font-variant-numeric: tabular-nums; }
+.lm-echeance[data-niveau="warn"] { border-left-color: var(--lm-warn); background: color-mix(in srgb, var(--lm-warn) 12%, var(--lm-surface)); }
+.lm-echeance[data-niveau="err"] { border-left-color: var(--lm-err); background: color-mix(in srgb, var(--lm-err) 12%, var(--lm-surface)); }
+.lm-chrono[data-niveau="warn"] .lm-chrono-jours { color: var(--lm-warn-text); font-weight: 700; }
+.lm-chrono[data-niveau="err"] .lm-chrono-jours { color: var(--lm-err-text); font-weight: 700; }
+.lm-chrono-jours { font-variant-numeric: tabular-nums; margin-right: .35em; }
+.lm-chrono-jalon[data-niveau="warn"] { color: var(--lm-warn-text); }
+.lm-chrono-jalon[data-niveau="err"] { color: var(--lm-err-text); }
+.lm-chrono-menu { min-width: 260px; }
+
 /* Membre de groupe : ligne compacte */
 .lm-member { display: grid; grid-template-columns: 44px 1fr auto; gap: var(--lm-s3); align-items: center; padding: var(--lm-s2) var(--lm-s3);
              border-bottom: 1px solid var(--lm-line); }

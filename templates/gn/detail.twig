@@ -44,6 +44,11 @@
                         <i class="fa-solid fa-ticket"></i>
                         Billets</a>
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                       title="Étapes de la chronologie"
+                       href="{{ path('gn.etapes',{'gn': gn.id}) }}">
+                        <i class="fa-solid fa-timeline"></i>
+                        Étapes</a>
+                    <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Modifier le Grandeur Nature"
                        href="{{ path('gn.update',{'gn': gn.id}) }}">
                         <i class="fa-solid fa-edit"></i>
@@ -306,7 +311,8 @@
                     <strong>Quand ?</strong>
                     <p>Du {{ gn.dateDebut|date('d-m-Y') }} au {{ gn.dateFin|date('d-m-Y') }}.<br/>
                         L'accueil des joueurs débutera le {{ gn.dateInstallationJoueur|date('d-m-Y') }}
-                        à {{ gn.dateInstallationJoueur|date('H:i') }} heure.</p>
+                        à {{ gn.dateInstallationJoueur|date('H:i') }} heure.
+                        {% if gn.dateVerrouillage %}<br/>Les modifications seront verrouillées le {{ gn.dateVerrouillage|date('d-m-Y') }}.{% endif %}</p>
 
                     {% if app.user.uiBeta %}
                         <div class="d-flex flex-wrap gap-2">

@@ -1,0 +1,16 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Modifier une étape{% endblock title %}
+
+{% block body %}
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="{{ path('gn.etapes', {'gn': etape.gn.id}) }}">Étapes de {{ etape.gn.label }}</a></li>
+        <li class="active">Modifier</li>
+    </ol>
+
+    <div class="well bs-component">
+        <div class="header"><h5>Modifier l'étape</h5></div>
+        {{ form(form) }}
+    </div>
+{% endblock body %}

@@ -1,0 +1,65 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Chronologie des jeux{% endblock title %}
+
+{% block body %}
+    <div class="container py-3" style="max-width: 760px">
+        <div class="lm-page-head mb-3">
+            <h1 class="h3 mb-1">Chronologie des jeux</h1>
+            {% if dateJeu %}
+                <p class="mb-0"><span class="text-body-secondary">Date en jeu aujourd'hui :</span> <strong>{{ dateJeu.libelle }}</strong></p>
+            {% endif %}
+        </div>
+
+        {% if jalon %}
+            <div class="lm-echeance mb-4" data-niveau="{{ jalon.niveau }}">
+                <span class="lm-echeance-jours">J-{{ jalon.jours }}</span>
+                <span>
+                    <strong>{{ jalon.libelle }}</strong> - {{ jalon.gn.label }}<br>
+                    <small>{{ jalon.date|date('d/m/Y à H:i') }}</small>
+                </span>
+            </div>
+        {% endif %}
+
+        <div class="lm-carte-verre">
+        <ol class="lm-timeline lm-timeline--vertical mb-0">
+            {% for item in opus %}
+                {% set gn = item.gn %}
+                {% if loop.index0 == indexMaintenant and item.etat != 'active' %}
+                    <li class="lm-opus lm-maintenant" data-state="active">
+                        <span class="lm-opus-name">Aujourd'hui</span>
+                        <span class="lm-opus-date">{{ 'now'|date('d/m/Y') }}</span>
+                        {% if dateJeu %}<span class="lm-opus-game">{{ dateJeu.libelle }}</span>{% endif %}
+                    </li>
+                {% endif %}
+                <li class="lm-opus" data-state="{{ item.etat == 'future' ? 'next' : item.etat }}"{% if item.etat == 'active' or item.etat == 'next' %} id="courant"{% endif %}>
+                    <a class="lm-opus-name" href="{{ path('gn.detail', {'gn': gn.id}) }}">{{ gn.label }}</a>
+                    <span class="lm-opus-date">
+                        {{ gn.dateDebut|date('d/m/Y') }}{% if gn.dateFin %} au {{ gn.dateFin|date('d/m/Y') }}{% endif %}
+                    </span>
+                    {% if gn.dateJeu %}<span class="lm-opus-game">{{ gn.dateJeu }} en jeu</span>{% endif %}
+                    {% if gn.dateVerrouillage and item.etat in ['next', 'future', 'active'] %}
+                        <span class="lm-opus-lock">Verrouillage des modifications : {{ gn.dateVerrouillage|date('d/m/Y') }}</span>
+                    {% endif %}
+                    {% for etape in item.etapes %}
+                        <span class="lm-opus-etape" data-visibilite="{{ etape.visibilite.value }}">
+                            {{ etape.datePrevue|date('d/m/Y') }} · {{ etape.libelle }}
+                            {% if etape.visibilite.value != 'public' %}<em>({{ etape.visibilite.value }})</em>{% endif %}
+                        </span>
+                    {% endfor %}
+                </li>
+            {% else %}
+                <li class="lm-opus"><span class="lm-opus-date">Aucun jeu enregistré.</span></li>
+            {% endfor %}
+            {% if indexMaintenant == opus|length %}
+                <li class="lm-opus lm-maintenant" data-state="active">
+                        <span class="lm-opus-name">Aujourd'hui</span>
+                        <span class="lm-opus-date">{{ 'now'|date('d/m/Y') }}</span>
+                        {% if dateJeu %}<span class="lm-opus-game">{{ dateJeu.libelle }}</span>{% endif %}
+                    </li>
+            {% endif %}
+        </ol>
+        </div>
+    </div>
+    <script>document.getElementById('courant')?.scrollIntoView({block: 'center'});</script>
+{% endblock body %}
