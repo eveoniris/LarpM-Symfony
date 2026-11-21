@@ -719,6 +719,7 @@
     <div class="lm-formbar"><button class="lm-btn lm-btn--danger" type="button">Supprimer</button><div class="lm-actions"><button class="lm-btn" type="button">Annuler</button><button class="lm-btn lm-btn--primary" type="submit">Enregistrer</button></div></div>
   </form>
   <p class="doc-note">Libellé au-dessus, une colonne, erreur sous le champ avec la correction attendue. La barre d'actions est toujours en bas : destructif à gauche, annuler puis valider à droite.</p>
+  <p class="doc-note"><b>Fond des formulaires.</b> Un formulaire ne se pose jamais directement sur la photo de fond : il est dans une carte (<code>.lm-card</code>, <code>.well</code>) ou porte <code>.lm-formcard</code> (fond de carte, bordure, 16 px de marge interne, 24 px dès 768 px). Les champs sont <em>en creux</em> : fond de page (<code>--lm-field-bg</code>) plus sombre que la carte, bordure un cran plus marquée. Les groupes de champs (<code>fieldset</code> + <code>legend</code>) ont un filet et un titre en petites capitales. Pour exclure un formulaire : <code>.lm-bare</code>. Les formulaires Symfony (attribut <code>name</code>) hors carte reçoivent ce fond automatiquement.</p>
 </section>
 
 <!-- ===================== 7. GABARITS ===================== -->

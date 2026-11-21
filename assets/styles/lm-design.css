@@ -56,6 +56,7 @@
   --lm-font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
   --lm-s1: 4px; --lm-s2: 8px; --lm-s3: 12px; --lm-s4: 16px; --lm-s5: 24px; --lm-s6: 32px;
   --lm-radius: 6px; --lm-radius-lg: 10px;
+  --lm-field-bg: var(--lm-bg); /* champs en creux : plus sombres que la carte qui les porte */
   --lm-touch: 44px;
   --lm-member-actions-w: 21rem; /* largeur de la colonne d'actions des membres */
   color-scheme: dark;
@@ -506,13 +507,13 @@ html[data-ui="beta"] .list-group {
   --bs-list-group-border-radius: var(--lm-radius);
 }
 html[data-ui="beta"] .form-control, html[data-ui="beta"] .form-select {
-  background-color: var(--lm-raised); color: var(--lm-fg); border-color: var(--lm-line);
+  background-color: var(--lm-field-bg); color: var(--lm-fg); border-color: var(--lm-line);
 }
 html[data-ui="beta"] .form-control:focus, html[data-ui="beta"] .form-select:focus {
   border-color: var(--lm-accent); box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--lm-accent) 25%, transparent);
 }
 html[data-ui="beta"] .ts-control, html[data-ui="beta"] .ts-dropdown {
-  background: var(--lm-raised); border-color: var(--lm-line); color: var(--lm-fg);
+  background: var(--lm-field-bg); border-color: color-mix(in srgb, var(--lm-line) 70%, var(--lm-muted)); color: var(--lm-fg);
 }
 html[data-ui="beta"] .ts-control input, html[data-ui="beta"] .ts-control .item { color: var(--lm-fg); }
 html[data-ui="beta"] .pagination {
@@ -867,3 +868,35 @@ html[data-ui="beta"] .lm-anomalie { color: var(--lm-warn-text); }
 .lm-anomalie .fa, .lm-anomalie .fa-solid { margin-right: .25rem; }
 .lm-table tr.lm-row-anomalie > td { background: color-mix(in srgb, var(--lm-warn) 12%, transparent); }
 .lm-table tr.lm-row-anomalie > td:first-child { box-shadow: inset 3px 0 0 var(--lm-warn); }
+
+/* ---------- Formulaires Symfony de la bêta : un fond propre pour détacher les champs ----------
+   Un formulaire généré par form_start() (attribut name) posé directement sur le fond de page prend le
+   fond des cartes. Pas de second cadre s'il est déjà dans une carte, un panneau, une modale ou la barre
+   de navigation. Pour l'exclure : classe .lm-bare. */
+html[data-ui="beta"] form:is([name], .lm-formcard):not(.lm-bare):has(.form-control, .form-select, .form-check, textarea):not(.card form, .lm-card form, .well form, .panel form, .modal form, .navbar form) {
+  background: var(--lm-surface); border: 1px solid var(--lm-line); border-radius: var(--lm-radius-lg);
+  padding: var(--lm-s4); margin-bottom: var(--lm-s4);
+}
+@media (min-width: 768px) {
+  html[data-ui="beta"] form:is([name], .lm-formcard):not(.lm-bare):has(.form-control, .form-select, .form-check, textarea):not(.card form, .lm-card form, .well form, .panel form, .modal form, .navbar form) { padding: var(--lm-s5); }
+}
+/* Champs : bordure un peu plus marquée que celle des cartes pour bien se détacher du fond */
+html[data-ui="beta"] .form-control, html[data-ui="beta"] .form-select {
+  border-color: color-mix(in srgb, var(--lm-line) 70%, var(--lm-muted));
+}
+html[data-ui="beta"] .form-control:focus, html[data-ui="beta"] .form-select:focus { border-color: var(--lm-accent); }
+html[data-ui="beta"] .form-label, html[data-ui="beta"] label.control-label, html[data-ui="beta"] form label.required { font-weight: 600; font-size: .9rem; }
+html[data-ui="beta"] .form-text, html[data-ui="beta"] .help-block { color: var(--lm-muted); font-size: .82rem; }
+/* Groupes de champs : filet et titre en petites capitales, comme les cadres de rôle */
+html[data-ui="beta"] form fieldset {
+  border: 1px solid var(--lm-line); border-radius: var(--lm-radius); padding: var(--lm-s3) var(--lm-s4) var(--lm-s4);
+  margin-bottom: var(--lm-s4); background: color-mix(in srgb, var(--lm-raised) 35%, transparent);
+}
+html[data-ui="beta"] form fieldset > legend {
+  float: none; width: auto; padding: 0 var(--lm-s2); margin: 0; font: 700 .78rem var(--lm-font-body);
+  letter-spacing: .08em; text-transform: uppercase; color: var(--lm-muted);
+}
+/* Barre d'actions : filet de séparation au-dessus des boutons de fin de formulaire */
+html[data-ui="beta"] form[name] > .btn-toolbar:last-child, html[data-ui="beta"] form[name] > .form-actions:last-child {
+  padding-top: var(--lm-s4); border-top: 1px solid var(--lm-line);
+}
