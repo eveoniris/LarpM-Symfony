@@ -13,7 +13,7 @@
         <div class="alert alert-danger">{{ erreur }}</div>
     {% endfor %}
 
-    <form method="post" enctype="multipart/form-data" novalidate>
+    <form class="lm-formcard" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" name="_token" value="{{ csrf_token('ajout_masse') }}">
 
         <div class="row g-3 mb-3">
