@@ -48,10 +48,6 @@
                     </ul>
                 </li>
 
-                {% if app.user and app.user.uiBeta %}
-                    {% include 'gn_chronologie/_pastille.twig' %}
-                {% endif %}
-
                 {# Menus reservé aux admins #}
                 {% if is_granted('ROLE_REDACTEUR', app.user) or is_granted('ROLE_ADMIN', app.user) %}
                     <li class="nav-item dropdown">
@@ -322,6 +318,11 @@
                    href="{{ impersonation_exit_path(path('homepage') ) }}">
                     <i class="fa fa-people-arrows text-danger"></i>
                 </a>
+            {% endif %}
+
+            {# Chronologie des GN (bêta) : juste avant le choix du personnage actif #}
+            {% if app.user and app.user.uiBeta %}
+                {% include 'gn_chronologie/_pastille.twig' %}
             {% endif %}
 
             {% if app.user and personnageService.hasPersonnages > 0 %}

@@ -16,7 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class GnChronologieController extends AbstractController
 {
     #[Route('/gn-chronologie', name: 'gn.chronologie')]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    #[IsGranted('ROLE_USER')]
     public function indexAction(GnChronologieService $chronologieService): Response
     {
         $user = $this->getUser();
