@@ -12,6 +12,8 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
 #[Group('rulebook')]
+#[Group('XP-06')]
+#[Group('XP-05')]
 #[Group('unit')]
 final class XpReportCalculateurTest extends TestCase
 {

@@ -9,6 +9,7 @@ use App\Entity\Classe;
 use App\Entity\Conception;
 use App\Entity\DepouillementHistory;
 use App\Entity\ExperienceGain;
+use App\Entity\Gn;
 use App\Entity\Personnage;
 use App\Entity\PersonnageChronologie;
 use App\Entity\PersonnageLignee;
@@ -88,6 +89,91 @@ readonly class HeritierService
         $this->entityManager->flush();
 
         return $heritiers;
+    }
+
+    /**
+     * Création directe d'un héritier depuis un personnage mort, hors conception (ex. mort en jeu avant la conception
+     * enregistrée). L'héritier reçoit l'XP de création du dernier GN actif, puis le bonus d'XP du défunt (moitié),
+     * transmis ensuite par XpReportService.
+     *
+     * @throws ConceptionInvalideException
+     */
+    public function creerDepuisParent(Personnage $parent, ?Personnage $autreParent, HeritierSaisie $saisie): Personnage
+    {
+        if ('' === trim($saisie->nom) || null === $saisie->genre || null === $saisie->territoire) {
+            throw new ConceptionInvalideException('L\'héritier doit avoir un nom, un genre et une origine.');
+        }
+
+        $age = $this->entityManager->getRepository(Age::class)->findOneBy(['label' => ConceptionRegles::AGE_HERITIER]);
+        $classe = $this->entityManager->getRepository(Classe::class)->findOneBy(['secrete' => true]);
+        if (!$age instanceof Age || !$classe instanceof Classe) {
+            throw new ConceptionInvalideException('La tranche d\'âge « Enfant héritier » ou la classe secrète est introuvable (migrations non exécutées ?).');
+        }
+
+        // XP de création de base : celui du dernier GN actif (pas d'XP de naissance spécifique).
+        $gn = $this->entityManager->getRepository(Gn::class)->findCurrentActive();
+        $xpCreation = $gn?->getXpCreation() ?? 0;
+
+        // Bonus lié à l'âge : celui de la première tranche d'âge jouable (création autorisée, valeur minimale la plus basse).
+        $agesJouables = $this->entityManager->getRepository(Age::class)->findBy(['enableCreation' => true], ['minimumValue' => 'ASC'], 1);
+        $xpBonusAge = ($agesJouables[0] ?? null)?->getBonus() ?? 0;
+
+        $heritier = (new Personnage())
+            ->setNom(trim($saisie->nom))
+            ->setGenre($saisie->genre)
+            ->setTerritoire($saisie->territoire)
+            ->setAge($age)
+            ->setAgeReel(0)
+            ->setClasse($classe)
+            ->setBracelet(false)
+            ->setXp($xpCreation + $xpBonusAge);
+        $this->entityManager->persist($heritier);
+
+        if ($xpBonusAge > 0) {
+            $this->entityManager->persist(
+                (new ExperienceGain())
+                    ->setExplanation(XpReportCalculateur::LIBELLE_BONUS_AGE)
+                    ->setOperationDate(new DateTime())
+                    ->setPersonnage($heritier)
+                    ->setXpGain($xpBonusAge),
+            );
+        }
+
+        if ($xpCreation > 0) {
+            $this->entityManager->persist(
+                (new ExperienceGain())
+                    ->setExplanation(XpReportCalculateur::LIBELLE_CREATION)
+                    ->setOperationDate(new DateTime())
+                    ->setPersonnage($heritier)
+                    ->setXpGain($xpCreation),
+            );
+        }
+
+        if (null !== $gn?->getDateJeu()) {
+            $this->entityManager->persist(
+                (new PersonnageChronologie())
+                    ->setAnnee($gn->getDateJeu())
+                    ->setEvenement('Naissance')
+                    ->setPersonnage($heritier),
+            );
+        }
+
+        $this->entityManager->persist(
+            (new PersonnageLignee())
+                ->setPersonnage($heritier)
+                ->setParent1($parent)
+                ->setParent2($autreParent)
+                ->setLignee($saisie->lignee),
+        );
+
+        $langue = $saisie->territoire->getLangue();
+        $personnageLangue = null === $langue ? null : $heritier->addLangueSource($langue, LangueSourceType::ORIGINE);
+        if (null !== $personnageLangue) {
+            $this->entityManager->persist($personnageLangue);
+        }
+        $this->entityManager->flush();
+
+        return $heritier;
     }
 
     /**

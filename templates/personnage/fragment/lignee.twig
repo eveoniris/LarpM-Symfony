@@ -82,6 +82,38 @@
                         Ce personnage n'a pas de lignée.
                     </p>
                 {% endif %}
+                {% set heritiersXp = xp_report_heritiers(personnage) %}
+                {% set bonusRecu = xp_report_recu(personnage) %}
+                {% if bonusRecu %}
+                    <li class="list-group-item">
+                        <strong>Bonus d'XP reçu :</strong> {{ bonusRecu.xpReporte }} XP
+                        ({{ bonusRecu.mode == 'moitie' ? 'moitié, héritier' : 'tiers' }}) à la mort de
+                        <a href="{{ path('personnage.detail', {'personnage': bonusRecu.personnageMort.id}) }}">{{ bonusRecu.personnageMort.identity(false) }}</a>
+                    </li>
+                {% endif %}
+                {% if heritiersXp|length > 0 %}
+                    <li class="list-group-item">
+                        <strong>Héritiers et bonus d'XP :</strong>
+                        <ul>
+                            {% for ligne in heritiersXp %}
+                                <li>
+                                    <a href="{{ path('personnage.detail', {'personnage': ligne.personnage.id}) }}">{{ ligne.personnage.identity(false) }}</a>
+                                    {% if ligne.gnEcoules is not null %}
+                                        <span class="badge {{ ligne.ageOk ? 'bg-success' : 'bg-secondary' }}">{{ ligne.gnEcoules }} GN depuis la conception</span>
+                                    {% endif %}
+                                    {% if ligne.servi %}
+                                        <span class="badge bg-info text-dark">bonus de {{ ligne.servi.xpReporte }} XP reçu de {{ ligne.servi.personnageMort.identity(false) }}</span>
+                                    {% elseif not personnage.vivant %}
+                                        <span class="badge bg-warning text-dark">bonus non transmis</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        {% if not personnage.vivant and is_granted('ROLE_SCENARISTE') %}
+                            <a class="btn btn-sm btn-secondary" href="{{ path('personnage.xp.report.admin', {personnage: personnage.id}) }}">Bonus d'XP à la mort</a>
+                        {% endif %}
+                    </li>
+                {% endif %}
                 {% if descendants|length > 0 %}
                     <li class="list-group-item">
                         <strong>Enfants :</strong>

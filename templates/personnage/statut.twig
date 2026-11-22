@@ -9,6 +9,20 @@
         <div class="header">
             <h5>Statut du personnage</h5>
         </div>
+        {% if xpReport is defined and xpReport %}
+            <div class="alert alert-warning">
+                <strong>Ce personnage est mort et a transmis son bonus d'XP</strong> ({{ xpReport.xpReporte }} XP à
+                {{ xpReport.personnageBeneficiaire.identity(false) }}). Il ne peut pas revenir à la vie, de quelque façon que ce soit.
+                {% if is_granted('ROLE_ADMIN') %}
+                    En tant qu'administrateur, vous pouvez l'autoriser : cela retire le bonus au destinataire (cochez la confirmation et indiquez un motif).
+                {% else %}
+                    Seul un administrateur peut l'autoriser, en retirant ce bonus.
+                {% endif %}
+            </div>
+        {% endif %}
         {{ form(form) }}
+        {% if not personnage.vivant and is_granted('ROLE_SCENARISTE') %}
+            <p class="mt-3"><a class="btn btn-secondary" href="{{ path('personnage.xp.report.admin', {personnage: personnage.id}) }}">Bonus d'XP à la mort</a></p>
+        {% endif %}
     </div>
 {% endblock body %}

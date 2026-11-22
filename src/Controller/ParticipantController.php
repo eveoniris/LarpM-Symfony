@@ -63,6 +63,10 @@ use App\Security\MultiRolesExpression;
 use App\Service\CarteAlchimisteService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
+use App\Service\XpReportCalculateur;
+use App\Service\XpReportEligibilite;
+use App\Service\XpReportException;
+use App\Service\XpReportService;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -73,6 +77,7 @@ use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -1256,6 +1261,8 @@ class ParticipantController extends AbstractController
         Request $request,
         Participant $participant,
         PersonnageService $personnageService,
+        XpReportEligibilite $xpReportEligibilite,
+        XpReportService $xpReportService,
     ): RedirectResponse|Response {
         $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
 
@@ -1307,7 +1314,26 @@ class ParticipantController extends AbstractController
             'choices' => array_unique($classes),
             'placeholder' => '— Choisir une classe —',
             'constraints' => [new NotBlank(message: 'Veuillez choisir une classe.')],
-        ])->add('save', SubmitType::class, [
+        ]);
+
+        // Bonus d'XP d'un personnage mort du même joueur : proposé tant qu'il en reste un à récupérer.
+        $mortsDisponibles = null === $participant->getUser() ? [] : $xpReportEligibilite->mortsDisponibles($participant->getUser());
+        if ([] !== $mortsDisponibles) {
+            $choixMorts = [];
+            foreach ($mortsDisponibles as $ligne) {
+                $choixMorts[\sprintf('%s : %d XP', $ligne['mort']->getIdentity(withId: false), $ligne['tiers'])] = $ligne['mort']->getId();
+            }
+            $form->add('xpReportMort', ChoiceType::class, [
+                'label' => 'Récupérer le bonus d\'XP d\'un personnage mort (tiers de ses XP acquis en jeu)',
+                'help' => 'Opération définitive : un mort ne transmet son bonus qu\'une fois.',
+                'choices' => $choixMorts,
+                'placeholder' => 'Ne pas récupérer de bonus',
+                'required' => false,
+                'mapped' => false,
+            ]);
+        }
+
+        $form->add('save', SubmitType::class, [
             'label' => 'Valider mon personnage',
             'attr' => ['onclick' => "return confirm('Confirmez vous le personnage ?')"],
         ]);
@@ -1456,6 +1482,7 @@ class ParticipantController extends AbstractController
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
+            $this->recupererBonusMort($form, $personnage, $user, $xpReportService);
 
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
@@ -1471,6 +1498,26 @@ class ParticipantController extends AbstractController
             'ages' => $ages,
             'territoires' => $territoires,
         ]);
+    }
+
+    /** Applique, après la création, le bonus d'XP du mort choisi dans le formulaire (tiers). */
+    private function recupererBonusMort(FormInterface $form, Personnage $personnage, User $joueur, XpReportService $xpReportService): void
+    {
+        if (!$form->has('xpReportMort') || !$form->get('xpReportMort')->getData()) {
+            return;
+        }
+
+        $mort = $this->entityManager->find(Personnage::class, (int) $form->get('xpReportMort')->getData());
+        if (null === $mort || $mort->getUser()?->getId() !== $joueur->getId()) {
+            return;
+        }
+
+        try {
+            $report = $xpReportService->reporter($mort, $personnage, XpReportCalculateur::MODE_TIERS, $this->getUser() instanceof User ? $this->getUser() : null);
+            $this->addFlash('success', \sprintf('%d XP de %s ont été ajoutés à votre nouveau personnage.', $report->getXpReporte(), $mort->getIdentity(withId: false)));
+        } catch (XpReportException $exception) {
+            $this->addFlash('warning', 'Bonus d\'XP non appliqué : ' . $exception->getMessage());
+        }
     }
 
     /**
