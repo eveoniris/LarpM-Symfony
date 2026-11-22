@@ -164,6 +164,29 @@ class XpReportScenaristeTest extends WebTestCase
         static::assertNotNull($em->getRepository(PersonnageLignee::class)->findOneBy(['personnage' => $heritier]));
     }
 
+    public function testLaBiographieListeLesHeritiersEtLeStatutDuBonus(): void
+    {
+        $client = static::createClient();
+        $mort = $this->mort(UserFactory::createOne());
+        $heritier = PersonnageFactory::createOne(['user' => null, 'xp' => 20]);
+        $this->lier($heritier, $mort);
+        $client->loginUser($this->scenariste());
+        EspeceFactory::findOrCreate(['nom' => 'Humain']);
+
+        $crawler = $client->request('GET', \sprintf('/personnage/%d/detail/biographie', $mort->getId()));
+        static::assertResponseIsSuccessful();
+        static::assertStringContainsString('Héritiers et bonus d\'XP', $crawler->text());
+        static::assertStringContainsString('bonus non transmis', $crawler->text());
+
+        $crawler = $this->page($client, $mort);
+        $this->poster($client, $crawler, $heritier->getId(), ['forcer' => '1', 'motif' => 'Test']);
+
+        $crawler = $client->request('GET', \sprintf('/personnage/%d/detail/biographie', $heritier->getId()));
+        static::assertStringContainsString('Bonus d\'XP reçu', $crawler->text());
+        $crawler = $client->request('GET', \sprintf('/personnage/%d/detail/biographie', $mort->getId()));
+        static::assertStringContainsString('bonus de 4 XP reçu', $crawler->text());
+    }
+
     public function testUnJoueurSimpleNAPasAcces(): void
     {
         $client = static::createClient();
