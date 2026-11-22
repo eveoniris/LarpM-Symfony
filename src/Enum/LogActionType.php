@@ -20,6 +20,12 @@ enum LogActionType: string
 
     /** Retrait d'un gain d'XP depuis l'historique (data : mode soft ou hard, motif, xp retiré). */
     case XP_RETRAIT = 'xp_retrait';
+
+    /** Report du bonus d'XP d'un personnage mort vers un autre (data : mort, bénéficiaire, mode, montant). */
+    case XP_REPORT = 'xp_report';
+
+    /** Annulation d'un report d'XP à la mort (data : mort, bénéficiaire, montant retiré, motif). */
+    case XP_REPORT_ANNULE = 'xp_report_annule';
     case ADD_DOMAINE_MAGIE = 'add_domaine_magie';
     case ADD_SORT = 'add_sort';
     case REMVOVE_SORT = 'remove_sort';
