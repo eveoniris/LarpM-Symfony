@@ -15,7 +15,11 @@ enum GnTimelineType: string
     /** Donne l'XP de participation aux personnages des participants du GN. */
     case XP_PARTICIPATION = 'xp_participation';
 
-    /** Verrouille les groupes du GN et applique les effets de fin d'édition (même chaîne que « Verrouiller » sur la fiche GN). */
+    /**
+     * Verrouille les groupes du GN et applique les effets de fin d'édition, même chaîne que « Verrouiller » sur la fiche GN :
+     * personnages et langues par défaut, renommée des nobles experts, trigger de littérature, effet des sanctuaires.
+     * Ces gains de compétence sont volontairement inclus ici ; à séparer en étapes distinctes si les règles changent.
+     */
     case VERROUILLAGE = 'verrouillage';
 
     /** Vieillit tous les personnages (global, pas lié au GN). Manuel uniquement. */
@@ -26,7 +30,7 @@ enum GnTimelineType: string
         return match ($this) {
             self::INFO => 'Information (aucune action)',
             self::XP_PARTICIPATION => 'XP de participation',
-            self::VERROUILLAGE => 'Verrouillage des groupes et effets associés',
+            self::VERROUILLAGE => 'Verrouillage des groupes + effets de compétence (renommée, littérature, sanctuaires)',
             self::VIEILLISSEMENT => 'Vieillissement de tous les personnages',
         };
     }
