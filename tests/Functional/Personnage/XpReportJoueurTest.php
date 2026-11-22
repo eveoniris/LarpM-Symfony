@@ -24,6 +24,7 @@ use Symfony\Component\DomCrawler\Crawler;
 
 #[Group('functional')]
 #[Group('rulebook')]
+#[Group('XP-05')]
 class XpReportJoueurTest extends WebTestCase
 {
     /** Mort avec 8 XP acquis en jeu : tiers 3. */

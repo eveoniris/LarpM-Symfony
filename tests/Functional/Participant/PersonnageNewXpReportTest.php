@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
 #[Group('rulebook')]
+#[Group('XP-05')]
 class PersonnageNewXpReportTest extends WebTestCase
 {
     private function participant(object $joueur): Participant

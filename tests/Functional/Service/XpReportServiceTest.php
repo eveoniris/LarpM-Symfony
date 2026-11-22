@@ -28,6 +28,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 // @mago-expect lint:too-many-methods
 #[Group('functional')]
 #[Group('rulebook')]
+#[Group('XP-06')]
+#[Group('XP-05')]
 final class XpReportServiceTest extends KernelTestCase
 {
     private function service(): XpReportService

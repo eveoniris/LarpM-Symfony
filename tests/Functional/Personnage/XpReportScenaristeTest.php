@@ -30,6 +30,8 @@ use Symfony\Component\DomCrawler\Crawler;
 // @mago-expect lint:too-many-methods
 #[Group('functional')]
 #[Group('rulebook')]
+#[Group('XP-07')]
+#[Group('XP-06')]
 class XpReportScenaristeTest extends WebTestCase
 {
     private function scenariste(): User
