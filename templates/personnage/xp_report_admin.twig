@@ -78,6 +78,26 @@
                     </form>
                 {% endfor %}
 
+                <details class="border rounded-2 p-2 mb-2">
+                    <summary>Créer un nouvel héritier de {{ personnage.identity(false) }} et lui transmettre {{ montants.moitie }} XP</summary>
+                    <form method="post" action="{{ path('personnage.xp.report.admin.heritier', {personnage: personnage.id}) }}"
+                          class="row g-2 align-items-end mt-1" data-lm-plain
+                          onsubmit="return confirm('Créer cet héritier et lui transmettre {{ montants.moitie }} XP ? Cette opération est définitive.');">
+                        <input type="hidden" name="_token" value="{{ jeton }}">
+                        <div class="col-md-4"><label class="form-label" for="heritier-nom">Nom</label>
+                            <input type="text" id="heritier-nom" name="nom" class="form-control form-control-sm" required maxlength="100"></div>
+                        <div class="col-md-2"><label class="form-label" for="heritier-genre">Genre</label>
+                            <select id="heritier-genre" name="genre" class="form-select form-select-sm" required>
+                                {% for genre in genres %}<option value="{{ genre.id }}">{{ genre.label }}</option>{% endfor %}
+                            </select></div>
+                        <div class="col-md-4"><label class="form-label" for="heritier-territoire">Origine</label>
+                            <select id="heritier-territoire" name="territoire" class="form-select form-select-sm" required>
+                                {% for territoire in territoires %}<option value="{{ territoire.id }}">{{ territoire.nom }}</option>{% endfor %}
+                            </select></div>
+                        <div class="col-md-2"><button type="submit" class="btn btn-sm btn-primary">Créer</button></div>
+                    </form>
+                </details>
+
                 <h6 class="mt-3">Autres personnages du même joueur{% if personnage.user %} ({{ personnage.user.displayName }}){% endif %}</h6>
                 {% if candidats is empty %}
                     <p class="text-muted small">Aucun autre personnage vivant sans bonus.</p>

@@ -10,7 +10,12 @@ use App\Entity\User;
 use App\Entity\XpReport;
 use App\Service\XpReportCalculateur;
 use App\Service\XpReportHeritiers;
+use App\Service\ConceptionRegles;
+use App\Tests\Factory\AgeFactory;
+use App\Tests\Factory\ClasseFactory;
 use App\Tests\Factory\EspeceFactory;
+use App\Tests\Factory\GenreFactory;
+use App\Tests\Factory\TerritoireFactory;
 use App\Tests\Factory\ExperienceGainFactory;
 use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\PersonnageFactory;
@@ -121,6 +126,37 @@ class XpReportScenaristeTest extends WebTestCase
         static::assertSame(XpReportCalculateur::MODE_MOITIE, $report->getMode());
         static::assertSame(4, $report->getXpReporte());
         static::assertSame(24, $em->find(Personnage::class, $heritier->getId())->getXp());
+    }
+
+    public function testCreationDUnHeritierDepuisLeDefuntLuiTransmetLaMoitie(): void
+    {
+        $client = static::createClient();
+        $mort = $this->mort(UserFactory::createOne());
+        $client->loginUser($this->scenariste());
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        AgeFactory::findOrCreate(['label' => ConceptionRegles::AGE_HERITIER]);
+        ClasseFactory::findOrCreate(['secrete' => true]);
+        $genre = GenreFactory::findOrCreate(['label' => 'Masculin']);
+        $territoire = TerritoireFactory::createOne();
+
+        $crawler = $this->page($client, $mort);
+        $token = $crawler->filter('input[name=_token]')->first()->attr('value');
+        $client->request('POST', \sprintf('/personnage/%d/xp-report/scenariste/heritier', $mort->getId()), [
+            '_token' => $token,
+            'nom' => 'Petit Conan',
+            'genre' => $genre->getId(),
+            'territoire' => $territoire->getId(),
+        ]);
+
+        static::assertResponseRedirects();
+        $em->clear();
+        $report = $em->getRepository(XpReport::class)->findOneBy([]);
+        static::assertNotNull($report);
+        static::assertSame(XpReportCalculateur::MODE_MOITIE, $report->getMode());
+        $heritier = $report->getPersonnageBeneficiaire();
+        static::assertSame('Petit Conan', $heritier->getNom());
+        static::assertSame(4, $heritier->getXp());
+        static::assertNotNull($em->getRepository(PersonnageLignee::class)->findOneBy(['personnage' => $heritier]));
     }
 
     public function testUnJoueurSimpleNAPasAcces(): void

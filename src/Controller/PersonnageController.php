@@ -2579,9 +2579,12 @@ class PersonnageController extends AbstractController
             $confirme = $form->has('confirmerRetraitBonus') && (bool) $form->get('confirmerRetraitBonus')->getData();
             if (!$estAdmin || !$confirme || '' === $motifRetrait) {
                 $this->entityManager->refresh($personnage);
-                $this->addFlash('danger', $estAdmin
-                    ? 'Ce personnage a transmis son bonus d\'XP : confirmez son retrait et indiquez un motif pour le ressusciter.'
-                    : 'Ce personnage est mort et a transmis son bonus d\'XP : il ne peut pas revenir à la vie. Seul un administrateur peut l\'autoriser, en retirant le bonus.');
+                $this->addFlash(
+                    'danger',
+                    $estAdmin
+                        ? 'Ce personnage a transmis son bonus d\'XP : confirmez son retrait et indiquez un motif pour le ressusciter.'
+                        : 'Ce personnage est mort et a transmis son bonus d\'XP : il ne peut pas revenir à la vie. Seul un administrateur peut l\'autoriser, en retirant le bonus.',
+                );
 
                 return $this->redirectToRoute('personnage.statut', ['personnage' => $personnage->getId()], 303);
             }

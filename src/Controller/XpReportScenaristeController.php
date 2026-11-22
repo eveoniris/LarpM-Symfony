@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Genre;
 use App\Entity\Personnage;
+use App\Entity\Territoire;
 use App\Entity\User;
 use App\Entity\XpReport;
 use App\Enum\Role;
 use App\Repository\XpReportRepository;
+use App\Exception\ConceptionInvalideException;
+use App\Service\HeritierSaisie;
+use App\Service\HeritierService;
 use App\Service\XpReportCalculateur;
 use App\Service\XpReportEligibilite;
 use App\Service\XpReportException;
@@ -61,6 +66,8 @@ final class XpReportScenaristeController extends AbstractController
             'heritiers' => $heritiersLignes,
             'candidats' => $candidats,
             'gnMinimum' => XpReportHeritiers::GN_MINIMUM,
+            'genres' => $this->entityManager->getRepository(Genre::class)->findAll(),
+            'territoires' => $this->entityManager->getRepository(Territoire::class)->findBy([], ['nom' => 'ASC']),
         ]);
     }
 
@@ -126,6 +133,45 @@ final class XpReportScenaristeController extends AbstractController
             $report = $service->reporter($personnage, $cible, $mode, $this->getUser() instanceof User ? $this->getUser() : null, $forcer, $motif);
             $this->addFlash('success', \sprintf('%d XP de %s ont été transmis à %s.', $report->getXpReporte(), $personnage->getIdentity(withId: false), $cible->getIdentity(withId: false)));
         } catch (XpReportException $exception) {
+            $this->addFlash('danger', $exception->getMessage());
+        }
+
+        return $retour;
+    }
+
+    #[Route('/personnage/{personnage}/xp-report/scenariste/heritier', name: 'personnage.xp.report.admin.heritier', requirements: ['personnage' => '\d+'], methods: ['POST'])]
+    public function creerHeritierAction(
+        Request $request,
+        HeritierService $heritierService,
+        XpReportService $service,
+        XpReportRepository $repository,
+        #[MapEntity]
+        Personnage $personnage,
+    ): Response {
+        $this->verifierJeton($request, $personnage);
+        $retour = $this->redirectToRoute('personnage.xp.report.admin', ['personnage' => $personnage->getId()], 303);
+
+        if ($personnage->getVivant() || $repository->findOneByMort($personnage) instanceof XpReport) {
+            $this->addFlash('danger', 'Création impossible : le personnage est vivant ou son bonus est déjà transmis.');
+
+            return $retour;
+        }
+
+        $saisie = new HeritierSaisie();
+        $saisie->nom = $request->request->getString('nom');
+        $saisie->genre = $this->entityManager->find(Genre::class, $request->request->getInt('genre'));
+        $saisie->territoire = $this->entityManager->find(Territoire::class, $request->request->getInt('territoire'));
+
+        try {
+            $heritier = $heritierService->creerDepuisParent($personnage, null, $saisie);
+            $report = $service->reporter($personnage, $heritier, XpReportCalculateur::MODE_MOITIE, $this->getUser() instanceof User ? $this->getUser() : null);
+            $this->addFlash('success', \sprintf(
+                'Héritier %s créé, avec %d XP transmis par %s.',
+                $heritier->getIdentity(withId: false),
+                $report->getXpReporte(),
+                $personnage->getIdentity(withId: false),
+            ));
+        } catch (ConceptionInvalideException|XpReportException $exception) {
             $this->addFlash('danger', $exception->getMessage());
         }
 

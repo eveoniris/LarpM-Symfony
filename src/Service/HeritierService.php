@@ -91,6 +91,53 @@ readonly class HeritierService
     }
 
     /**
+     * Création directe d'un héritier depuis un personnage mort, hors conception (ex. mort en jeu avant la conception
+     * enregistrée). L'héritier naît sans XP : c'est le bonus d'XP du défunt (moitié) qui le dote, transmis ensuite par
+     * XpReportService.
+     *
+     * @throws ConceptionInvalideException
+     */
+    public function creerDepuisParent(Personnage $parent, ?Personnage $autreParent, HeritierSaisie $saisie): Personnage
+    {
+        if ('' === trim($saisie->nom) || null === $saisie->genre || null === $saisie->territoire) {
+            throw new ConceptionInvalideException('L\'héritier doit avoir un nom, un genre et une origine.');
+        }
+
+        $age = $this->entityManager->getRepository(Age::class)->findOneBy(['label' => ConceptionRegles::AGE_HERITIER]);
+        $classe = $this->entityManager->getRepository(Classe::class)->findOneBy(['secrete' => true]);
+        if (!$age instanceof Age || !$classe instanceof Classe) {
+            throw new ConceptionInvalideException('La tranche d\'âge « Enfant héritier » ou la classe secrète est introuvable (migrations non exécutées ?).');
+        }
+
+        $heritier = (new Personnage())
+            ->setNom(trim($saisie->nom))
+            ->setGenre($saisie->genre)
+            ->setTerritoire($saisie->territoire)
+            ->setAge($age)
+            ->setAgeReel(0)
+            ->setClasse($classe)
+            ->setBracelet(false)
+            ->setXp(0);
+        $this->entityManager->persist($heritier);
+        $this->entityManager->persist(
+            (new PersonnageLignee())
+                ->setPersonnage($heritier)
+                ->setParent1($parent)
+                ->setParent2($autreParent)
+                ->setLignee($saisie->lignee),
+        );
+
+        $langue = $saisie->territoire->getLangue();
+        $personnageLangue = null === $langue ? null : $heritier->addLangueSource($langue, LangueSourceType::ORIGINE);
+        if (null !== $personnageLangue) {
+            $this->entityManager->persist($personnageLangue);
+        }
+        $this->entityManager->flush();
+
+        return $heritier;
+    }
+
+    /**
      * Le scénariste gérera la création lui-même plus tard dans le jeu : la remarque est obligatoire (choix consigné).
      *
      * @throws ConceptionInvalideException
