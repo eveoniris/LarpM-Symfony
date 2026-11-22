@@ -138,6 +138,7 @@ class XpReportScenaristeTest extends WebTestCase
         ClasseFactory::findOrCreate(['secrete' => true]);
         $genre = GenreFactory::findOrCreate(['label' => 'Masculin']);
         $territoire = TerritoireFactory::createOne();
+        GnFactory::createOne(['actif' => true, 'xp_creation' => 10, 'date_debut' => new DateTime('+1 year'), 'date_fin' => new DateTime('+1 year +3 days')]);
 
         $crawler = $this->page($client, $mort);
         $token = $crawler->filter('input[name=_token]')->first()->attr('value');
@@ -155,7 +156,8 @@ class XpReportScenaristeTest extends WebTestCase
         static::assertSame(XpReportCalculateur::MODE_MOITIE, $report->getMode());
         $heritier = $report->getPersonnageBeneficiaire();
         static::assertSame('Petit Conan', $heritier->getNom());
-        static::assertSame(4, $heritier->getXp());
+        // 10 XP de création (dernier GN actif) + 4 XP de bonus.
+        static::assertSame(14, $heritier->getXp());
         static::assertNotNull($em->getRepository(PersonnageLignee::class)->findOneBy(['personnage' => $heritier]));
     }
 

@@ -9,6 +9,7 @@ use App\Entity\Classe;
 use App\Entity\Conception;
 use App\Entity\DepouillementHistory;
 use App\Entity\ExperienceGain;
+use App\Entity\Gn;
 use App\Entity\Personnage;
 use App\Entity\PersonnageChronologie;
 use App\Entity\PersonnageLignee;
@@ -92,8 +93,8 @@ readonly class HeritierService
 
     /**
      * Création directe d'un héritier depuis un personnage mort, hors conception (ex. mort en jeu avant la conception
-     * enregistrée). L'héritier naît sans XP : c'est le bonus d'XP du défunt (moitié) qui le dote, transmis ensuite par
-     * XpReportService.
+     * enregistrée). L'héritier reçoit l'XP de création du dernier GN actif, puis le bonus d'XP du défunt (moitié),
+     * transmis ensuite par XpReportService.
      *
      * @throws ConceptionInvalideException
      */
@@ -109,6 +110,10 @@ readonly class HeritierService
             throw new ConceptionInvalideException('La tranche d\'âge « Enfant héritier » ou la classe secrète est introuvable (migrations non exécutées ?).');
         }
 
+        // XP de création de base : celui du dernier GN actif (pas d'XP de naissance spécifique).
+        $gn = $this->entityManager->getRepository(Gn::class)->findCurrentActive();
+        $xpCreation = $gn?->getXpCreation() ?? 0;
+
         $heritier = (new Personnage())
             ->setNom(trim($saisie->nom))
             ->setGenre($saisie->genre)
@@ -117,8 +122,28 @@ readonly class HeritierService
             ->setAgeReel(0)
             ->setClasse($classe)
             ->setBracelet(false)
-            ->setXp(0);
+            ->setXp($xpCreation);
         $this->entityManager->persist($heritier);
+
+        if ($xpCreation > 0) {
+            $this->entityManager->persist(
+                (new ExperienceGain())
+                    ->setExplanation(XpReportCalculateur::LIBELLE_CREATION)
+                    ->setOperationDate(new DateTime())
+                    ->setPersonnage($heritier)
+                    ->setXpGain($xpCreation),
+            );
+        }
+
+        if (null !== $gn?->getDateJeu()) {
+            $this->entityManager->persist(
+                (new PersonnageChronologie())
+                    ->setAnnee($gn->getDateJeu())
+                    ->setEvenement('Naissance')
+                    ->setPersonnage($heritier),
+            );
+        }
+
         $this->entityManager->persist(
             (new PersonnageLignee())
                 ->setPersonnage($heritier)
