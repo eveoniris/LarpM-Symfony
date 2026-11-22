@@ -142,6 +142,8 @@ class LitteratureTriggersTest extends KernelTestCase
         self::assertStringContainsString('un sort de niveau Apprenti', $gains[0][1]);
         self::assertStringContainsString('une nouvelle recette de potion de niveau Apprenti', $gains[0][1]);
 
+        // les triggers créés ne sont pas ajoutés à la collection en mémoire : on la recharge, comme un nouveau passage du cron
+        $this->tags($personnage);
         $lancer($gn2);
         self::assertCount(1, $gains, 'un rejeu ne redonne rien et ne renvoie aucun message');
     }
