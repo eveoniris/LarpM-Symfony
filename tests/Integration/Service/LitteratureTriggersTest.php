@@ -28,6 +28,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  *
  * DAMA bundle wraps each test in a DB transaction and rolls back automatically.
  */
+// @mago-expect lint:too-many-methods
 #[Group('integration')]
 class LitteratureTriggersTest extends KernelTestCase
 {
@@ -112,6 +113,39 @@ class LitteratureTriggersTest extends KernelTestCase
         self::assertCount(2, $this->tags($personnage), 'le premier GN ne cumule pas avec le trigger d\'achat');
         $this->lock($gn1);
         self::assertCount(2, $this->tags($personnage), 'idempotent');
+    }
+
+    public function testLeRappelDeGainNEstAppeleQuePourUnGainReellementDonne(): void
+    {
+        $personnage = PersonnageFactory::createOne(['xp' => 1000]);
+        $this->buy($personnage, 2);
+        $gn1 = GnFactory::createOne();
+        $gn2 = GnFactory::createOne();
+        ParticipantFactory::createOne(['gn' => $gn1, 'personnage' => $personnage, 'user' => UserFactory::createOne()]);
+        ParticipantFactory::createOne(['gn' => $gn2, 'personnage' => $personnage, 'user' => UserFactory::createOne()]);
+
+        $gains = [];
+        $rappel = static function (Personnage $p, string $competence, string $gain) use (&$gains): void {
+            $gains[] = [$competence, $gain];
+        };
+        $lancer = function (Gn $gn) use ($rappel): void {
+            foreach ($this->personnageService->lockGnGiveLiteratureGnBonus($gn, true, $rappel) as $_) {
+            }
+        };
+
+        $lancer($gn1);
+        self::assertSame([], $gains, "le premier GN est absorbé par l'achat : aucun gain à annoncer");
+
+        $lancer($gn2);
+        self::assertCount(1, $gains);
+        self::assertSame('Littérature', $gains[0][0]);
+        self::assertStringContainsString('un sort de niveau Apprenti', $gains[0][1]);
+        self::assertStringContainsString('une nouvelle recette de potion de niveau Apprenti', $gains[0][1]);
+
+        // les triggers créés ne sont pas ajoutés à la collection en mémoire : on la recharge, comme un nouveau passage du cron
+        $this->tags($personnage);
+        $lancer($gn2);
+        self::assertCount(1, $gains, 'un rejeu ne redonne rien et ne renvoie aucun message');
     }
 
     public function testGnSuivantDonneUnNouveauChoix(): void

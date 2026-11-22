@@ -12,6 +12,7 @@ use App\Repository\GnTimelineStepRepository;
 use App\Service\GnTimeline\GnTimelineExecutor;
 use App\Service\GnTimeline\GnTimelineHandlerInterface;
 use App\Tests\Factory\GnFactory;
+use DateTime;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,6 +37,8 @@ class GnTimelineRunTest extends KernelTestCase
         self::bootKernel();
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
         $this->gn = GnFactory::createOne();
+        // le verrouillage d'une étape suit la date de verrouillage du GN
+        $this->gn->setDateVerrouillage(new DateTime('-1 day'));
     }
 
     private function etape(GnTimelineType $type, bool $auto, string $date, ?int $xp = null): GnTimelineStep
@@ -79,10 +82,27 @@ class GnTimelineRunTest extends KernelTestCase
         $ids = $this->idsEchus($this->executeur(GnTimelineType::VERROUILLAGE));
 
         $this->assertContains($due->getId(), $ids);
-        $this->assertNotContains($vieillissement->getId(), $ids);
+        $this->assertContains($vieillissement->getId(), $ids);
         $this->assertNotContains($manuelle->getId(), $ids);
         $this->assertNotContains($future->getId(), $ids);
         $this->assertNotContains($info->getId(), $ids);
+    }
+
+    public function testUnVerrouillageSansDateDeGnOuAVenirResteManuel(): void
+    {
+        $this->gn->setDateVerrouillage(null);
+        $sansDate = $this->etape(GnTimelineType::VERROUILLAGE, true, '-1 day');
+        $this->assertNull($sansDate->getDateEffective());
+
+        $this->gn->setDateVerrouillage(new DateTime('+3 days'));
+        $this->em->flush();
+
+        $ids = $this->idsEchus($this->executeur(GnTimelineType::VERROUILLAGE));
+        $this->assertNotContains($sansDate->getId(), $ids, "la date propre de l'étape est ignorée pour un verrouillage");
+
+        $this->gn->setDateVerrouillage(new DateTime('-1 hour'));
+        $this->em->flush();
+        $this->assertContains($sansDate->getId(), $this->idsEchus($this->executeur(GnTimelineType::VERROUILLAGE)));
     }
 
     public function testUneEtapeNEstExecuteeQuUneFoisEtLeResultatEstEnregistre(): void

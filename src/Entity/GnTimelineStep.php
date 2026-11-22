@@ -21,6 +21,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(name: 'idx_gn_timeline_step_date', columns: ['date_prevue'])]
 class GnTimelineStep
 {
+    /** Valeurs par défaut de la commande app:vieillir-personnages. */
+    public const int ANNEES_DEFAUT = 5;
+
+    public const int AGE_MORT_DEFAUT = 60;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(options: ['unsigned' => true])]
@@ -36,8 +41,8 @@ class GnTimelineStep
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(name: 'date_prevue', type: Types::DATETIME_IMMUTABLE)]
-    private DateTimeImmutable $datePrevue;
+    #[ORM\Column(name: 'date_prevue', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $datePrevue;
 
     #[ORM\Column(length: 20, enumType: GnTimelineVisibilite::class)]
     private GnTimelineVisibilite $visibilite = GnTimelineVisibilite::PUBLIC;
@@ -63,9 +68,56 @@ class GnTimelineStep
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $xp = null;
 
+    /** Années ajoutées à l'âge des personnages (VIEILLISSEMENT, 5 par défaut). */
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    private ?int $annees = null;
+
+    /** Âge à partir duquel un personnage peut mourir de vieillesse (VIEILLISSEMENT, 60 par défaut). */
+    #[ORM\Column(name: 'age_mort', type: Types::INTEGER, nullable: true)]
+    private ?int $ageMort = null;
+
     public function __construct()
     {
         $this->datePrevue = new DateTimeImmutable();
+    }
+
+    /**
+     * Date retenue pour l'étape : pour un verrouillage, la date de verrouillage du GN (null si le GN n'en a pas, l'étape est alors
+     * manuelle) ; sinon la date prévue saisie.
+     */
+    public function getDateEffective(): ?DateTimeImmutable
+    {
+        if (GnTimelineType::VERROUILLAGE === $this->type) {
+            $date = $this->gn?->getDateVerrouillage();
+
+            return null === $date ? null : DateTimeImmutable::createFromInterface($date);
+        }
+
+        return $this->datePrevue;
+    }
+
+    public function getAnnees(): ?int
+    {
+        return $this->annees;
+    }
+
+    public function setAnnees(?int $annees): static
+    {
+        $this->annees = $annees;
+
+        return $this;
+    }
+
+    public function getAgeMort(): ?int
+    {
+        return $this->ageMort;
+    }
+
+    public function setAgeMort(?int $ageMort): static
+    {
+        $this->ageMort = $ageMort;
+
+        return $this;
     }
 
     public function getId(): ?int
@@ -109,12 +161,12 @@ class GnTimelineStep
         return $this;
     }
 
-    public function getDatePrevue(): DateTimeImmutable
+    public function getDatePrevue(): ?DateTimeImmutable
     {
         return $this->datePrevue;
     }
 
-    public function setDatePrevue(DateTimeImmutable $datePrevue): static
+    public function setDatePrevue(?DateTimeImmutable $datePrevue): static
     {
         $this->datePrevue = $datePrevue;
 
