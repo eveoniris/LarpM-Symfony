@@ -4,7 +4,7 @@
  * - 3 actions ou moins : toutes visibles ; 4 ou plus : action principale + bouton « Actions » (menu) ;
  * - action destructive en rouge, séparée dans le menu ;
  * - sous 640 px, la ligne devient une carte et les actions passent dans un menu « ⋯ ».
- * Un tableau est ignoré s'il contient des cellules fusionnées ou n'a pas d'en-tête.
+ * Un tableau est ignoré s'il contient des cellules fusionnées, n'a pas d'en-tête, est dans un formulaire ou dans un bloc [data-lm-plain].
  * Gère aussi « Afficher plus » ([data-lm-more]) : paquets de 25 lignes et recherche côté client.
  */
 const DESTRUCTIVE = /supprim|delete|retirer|remove|refus|reject|d[ée]sinscri/i;
@@ -130,7 +130,7 @@ function wrapCell(td) {
 
 function enhance(table) {
     const head = table.tHead;
-    if (!head || head.rows.length !== 1 || table.querySelector('[colspan], [rowspan]') || table.closest('form')) {
+    if (!head || head.rows.length !== 1 || table.querySelector('[colspan], [rowspan]') || table.closest('form') || table.closest('[data-lm-plain]')) {
         return;
     }
     const ths = Array.from(head.rows[0].cells);

@@ -90,7 +90,7 @@
 <div class="doc">
 
 <header class="doc-head">
-  <div class="doc-kicker">Guide de style · v0.32 · Bootstrap 5.3</div>
+  <div class="doc-kicker">Guide de style · v0.33 · Bootstrap 5.3</div>
   <h1>Template de design LarpManager</h1>
   <p class="doc-lead">Référence unique pour les couleurs, les rôles d'information, les composants et les gabarits de page. Chaque bloc ci-dessous est utilisable tel quel avec <code>lm-design.css</code> et se transpose en widgets Flutter ou React Native à partir des mêmes tokens.</p>
   
@@ -564,6 +564,74 @@
     <li>Sur mobile, la frise devient verticale. Sur la fiche d'un personnage ou d'un groupe, les participations propres sont marquées (un nœud plein = présent à cet opus).</li>
     <li>Les années en jeu et les nombres de joueurs ci-dessus sont des exemples. Les dates réelles viennent de la liste des GN.</li>
   </ul>
+
+  <h3>Page « Chronologie des jeux » : bandeau d'échéance et frise verticale (bêta)</h3>
+  <p class="doc-note">Page <code>/gn-chronologie</code>, réservée aux comptes en interface bêta. La frise est verticale (mobile d'abord) dans une carte sur verre dépoli (<code>lm-carte-verre</code>), sous un en-tête <code>lm-page-head</code>. Le bandeau d'échéance annonce le prochain jalon public : verrouillage des modifications, étape publique ou début du jeu.</p>
+  <div class="sample lm-stack">
+    <div class="lm-echeance" data-niveau="warn">
+      <span class="lm-echeance-jours">J-12</span>
+      <span><strong>Verrouillage des modifications</strong> - LH8<br><small>15/07/2027 à 00:00</small></span>
+    </div>
+    <div class="lm-echeance" data-niveau="err">
+      <span class="lm-echeance-jours">J-2</span>
+      <span><strong>Verrouillage des modifications</strong> - LH8<br><small>15/07/2027 à 00:00</small></span>
+    </div>
+    <div class="lm-carte-verre">
+      <ol class="lm-timeline lm-timeline--vertical" style="margin-bottom:0">
+        <li class="lm-opus" data-state="done"><a class="lm-opus-name" href="#">LH7</a><span class="lm-opus-date">02/08/2025 au 10/08/2025</span><span class="lm-opus-game">1 305 en jeu</span></li>
+        <li class="lm-opus lm-maintenant" data-state="active"><span class="lm-opus-name">Aujourd'hui</span><span class="lm-opus-date">01/07/2027</span><span class="lm-opus-game">environ 1 309</span></li>
+        <li class="lm-opus" data-state="next"><a class="lm-opus-name" href="#">LH8</a><span class="lm-opus-date">07/08/2027 au 15/08/2027</span><span class="lm-opus-game">1 310 en jeu</span>
+          <span class="lm-opus-lock">Verrouillage des modifications : 15/07/2027</span>
+          <span class="lm-opus-etape" data-visibilite="public">20/07/2027 · Envoi des enveloppes</span>
+          <span class="lm-opus-etape" data-visibilite="secret">25/07/2027 · Relecture des fiches <em>(secret)</em></span>
+          <span class="lm-opus-etape" data-visibilite="technique">30/07/2027 · Vieillissement <em>(technique)</em></span>
+        </li>
+      </ol>
+    </div>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li><b>Seuils d'alerte</b> : neutre au-delà de 14 jours, ambre (<code>data-niveau="warn"</code>) à 14 jours ou moins, rouge (<code>data-niveau="err"</code>) à 3 jours ou moins. Mêmes jetons <code>--lm-warn</code> et <code>--lm-err</code> que les cadres de rôle.</li>
+    <li><b>Visibilité d'une étape</b> : public (texte neutre, visible de tous les comptes bêta), secret (ambre, scénaristes, orgas, règles, wargame) et technique (rouge, administrateurs). Le libellé de visibilité est répété entre parenthèses pour les non publiques, la couleur seule ne suffit pas.</li>
+    <li><b>Nœud « Aujourd'hui »</b> : plein cuivre avec halo, placé entre le dernier opus passé et le prochain, avec la date en jeu estimée (« environ » tant que le prochain opus n'a pas de date de jeu).</li>
+    <li>Le nom d'un opus est un lien vers sa fiche GN ; la page fait défiler l'opus courant au centre à l'ouverture.</li>
+  </ul>
+
+  <h3>Pastille d'échéance dans le menu (bêta)</h3>
+  <p class="doc-note">Placée juste avant le bouton du personnage actif. Elle affiche le temps restant avant le prochain jalon public et s'ouvre sur l'intervalle courant (dernier jeu, prochain jeu, date en jeu, jalon) avec un lien vers la page complète.</p>
+  <div class="sample" style="display:flex;gap:var(--lm-s5);flex-wrap:wrap;align-items:flex-start">
+    <div class="lm-stack">
+      <p class="doc-note" style="margin:0">Neutre (plus de 14 jours)</p>
+      <span class="nav-link lm-chrono text-nowrap" data-niveau="info"><span class="lm-chrono-jours">J-45</span><span class="lm-chrono-txt">Verrouillage des modifications</span></span>
+    </div>
+    <div class="lm-stack">
+      <p class="doc-note" style="margin:0">Alerte à 14 jours</p>
+      <span class="nav-link lm-chrono text-nowrap" data-niveau="warn"><span class="lm-chrono-jours">J-12</span><span class="lm-chrono-txt">Verrouillage des modifications</span></span>
+    </div>
+    <div class="lm-stack">
+      <p class="doc-note" style="margin:0">Urgent à 3 jours</p>
+      <span class="nav-link lm-chrono text-nowrap" data-niveau="err"><span class="lm-chrono-jours">J-2</span><span class="lm-chrono-txt">Verrouillage des modifications</span></span>
+    </div>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li>Sans jalon à venir, la pastille affiche simplement « Chronologie ».</li>
+    <li>Sur mobile, le texte du jalon reste sur une ligne (<code>text-nowrap</code>) : le décompte « J-N » passe en premier, car c'est lui qui porte l'urgence.</li>
+    <li>Composants dans <code>lm-design.css</code> : <code>lm-chrono</code>, <code>lm-chrono-jours</code>, <code>lm-chrono-menu</code>, <code>lm-echeance</code>, <code>lm-timeline--vertical</code>, <code>lm-opus-lock</code>, <code>lm-opus-etape</code>.</li>
+  </ul>
+
+  <h3>Étapes de la chronologie : badges de statut (administration)</h3>
+  <p class="doc-note">Écran <code>/gn/{gn}/etapes</code> (administrateurs). Un type d'action (XP de participation, verrouillage, vieillissement) porte un statut et peut être exécuté à la main ; une étape d'information n'en a pas.</p>
+  <div class="sample" style="display:flex;gap:var(--lm-s3);flex-wrap:wrap;align-items:center">
+    <span class="lm-badge" data-role="warn">À faire</span>
+    <span class="lm-badge" data-role="warn">En cours</span>
+    <span class="lm-badge" data-role="ok">Exécutée</span>
+    <span class="lm-badge" data-role="err">Erreur</span>
+    <span class="lm-badge" data-role="warn">auto</span>
+  </div>
+  <ul class="doc-rules" style="margin-top:1rem">
+    <li><b>Statut</b> : ambre pour à faire et en cours, vert pour exécutée, rouge pour erreur (le détail de l'erreur est dans l'infobulle).</li>
+    <li><b>Auto</b> : badge ambre à côté du type quand le cron l'exécute à la date prévue ; jamais proposé pour le vieillissement.</li>
+    <li>Le bouton « Exécuter maintenant » (jaune, icône lecture) demande toujours une confirmation, car l'action modifie les données du jeu.</li>
+  </ul>
 </section>
 
 <!-- ===================== 4f. GROUPES TRANSVERSES ===================== -->
@@ -885,10 +953,11 @@
 <!-- ===================== 11. HISTORIQUE ===================== -->
 <section class="doc-sec">
   <h2 id="sec-11">11. Historique des versions</h2>
-  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque mise à jour de la page ; le numéro de publication de la copie en ligne peut différer. Version actuelle : <b>v0.32</b>.</p>
+  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque mise à jour de la page ; le numéro de publication de la copie en ligne peut différer. Version actuelle : <b>v0.33</b>.</p>
   <div class="lm-table-wrap"><table class="lm-table">
     <thead><tr><th>Version</th><th>Contenu</th></tr></thead>
     <tbody>
+      <tr><td>v0.33</td><td>Chronologie des jeux (§4e) : pastille d'échéance du menu (<code>lm-chrono</code>, jaune à 14 jours, rouge à 3 jours), bandeau d'échéance (<code>lm-echeance</code>), frise verticale (<code>lm-timeline--vertical</code>) avec date en jeu, verrouillage et étapes selon leur visibilité (public, secret, technique).</td></tr>
       <tr><td>v0.32</td><td>Filtre « participation à un GN » : liste déroulante « Tous les GN » dans le panneau Filtres (<code>/personnage/list</code>, filtre serveur, puce « GN : … ») et à côté de la recherche locale « Afficher plus » (membres d'un groupe secondaire, filtre côté client via <code>data-gn</code>).</td></tr>
       <tr><td>v0.31</td><td>Boutons Bootstrap hérités en bêta : contours (cuivre, gris, vert, ambre, rouge, pourpre) et pleins (succès, alerte, danger) à fond de verre ; liste déroulante au-dessus de la carte suivante ; anomalies non bloquantes en ambre ; fenêtre de confirmation modale.</td></tr>
       <tr><td>v0.30</td><td>Tableaux de liste : le cadre arrondi découpe le contenu (dernière ligne sans filet carré, survol arrondi) ; cellules d'en-tête dans le corps rendues comme des cellules ; en carte mobile, le contenu d'une cellule reste groupé (icône collée à son texte, valeurs alignées à droite).</td></tr>
