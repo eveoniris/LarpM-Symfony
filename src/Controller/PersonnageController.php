@@ -46,6 +46,7 @@ use App\Entity\Technologie;
 use App\Entity\Territoire;
 use App\Entity\Token;
 use App\Entity\User;
+use App\Entity\XpReport;
 use App\Enum\ChronologyType;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
@@ -94,6 +95,7 @@ use App\Repository\SortRepository;
 use App\Repository\TechnologieRepository;
 use App\Repository\TerritoireRepository;
 use App\Repository\UserRepository;
+use App\Repository\XpReportRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\CarteAlchimisteService;
 use App\Service\CompetenceService;
@@ -101,6 +103,9 @@ use App\Service\EspeceBonusService;
 use App\Service\PersonnageVisibilityService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
+use App\Service\XpReportCalculateur;
+use App\Service\XpReportException;
+use App\Service\XpReportService;
 use Carbon\Carbon;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -113,9 +118,11 @@ use RuntimeException;
 use SensitiveParameter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File;
@@ -2528,18 +2535,66 @@ class PersonnageController extends AbstractController
      */
     #[Route('/{personnage}/statut', name: 'statut')]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
-    public function adminStatutAction(Request $request, #[MapEntity] Personnage $personnage): RedirectResponse|Response
-    {
+    public function adminStatutAction(
+        Request $request,
+        XpReportRepository $xpReportRepository,
+        XpReportCalculateur $xpReportCalculateur,
+        XpReportService $xpReportService,
+        #[MapEntity]
+        Personnage $personnage,
+    ): RedirectResponse|Response {
         $participant = $this->getParticipant($personnage, $request);
         if ($r = $this->checkPersonnageGroupeLock($personnage, $participant)) {
             return $r;
         }
 
-        $form = $this->createForm(PersonnageStatutType::class, $personnage)->add('submit', SubmitType::class, [
+        // Un mort dont le bonus d'XP est transmis ne revient pas à la vie, sauf décision d'un administrateur
+        // qui retire alors le bonus (motif obligatoire).
+        $xpReport = $personnage->getVivant() ? null : $xpReportRepository->findOneByMort($personnage);
+        $estAdmin = $this->isGranted(Role::ADMIN->value);
+
+        $form = $this->createForm(PersonnageStatutType::class, $personnage);
+        if ($xpReport instanceof XpReport && $estAdmin) {
+            $form
+                ->add('confirmerRetraitBonus', CheckboxType::class, [
+                    'mapped' => false,
+                    'required' => false,
+                    'label' => \sprintf('Je confirme le retrait du bonus de %d XP transmis à %s', $xpReport->getXpReporte(), $xpReport->getPersonnageBeneficiaire()->getIdentity(withId: false)),
+                ])
+                ->add('motifRetraitBonus', TextType::class, [
+                    'mapped' => false,
+                    'required' => false,
+                    'label' => 'Motif du retrait du bonus (obligatoire pour ressusciter)',
+                ]);
+        }
+        $form->add('submit', SubmitType::class, [
             'label' => 'Valider',
         ]);
 
         $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid() && $xpReport instanceof XpReport && $personnage->getVivant()) {
+            // Résurrection demandée alors que le bonus a été transmis.
+            $motifRetrait = $form->has('motifRetraitBonus') ? trim((string) $form->get('motifRetraitBonus')->getData()) : '';
+            $confirme = $form->has('confirmerRetraitBonus') && (bool) $form->get('confirmerRetraitBonus')->getData();
+            if (!$estAdmin || !$confirme || '' === $motifRetrait) {
+                $this->entityManager->refresh($personnage);
+                $this->addFlash('danger', $estAdmin
+                    ? 'Ce personnage a transmis son bonus d\'XP : confirmez son retrait et indiquez un motif pour le ressusciter.'
+                    : 'Ce personnage est mort et a transmis son bonus d\'XP : il ne peut pas revenir à la vie. Seul un administrateur peut l\'autoriser, en retirant le bonus.');
+
+                return $this->redirectToRoute('personnage.statut', ['personnage' => $personnage->getId()], 303);
+            }
+
+            try {
+                $xpReportService->annuler($xpReport, $this->getUser() instanceof User ? $this->getUser() : null, 'Résurrection du personnage : ' . $motifRetrait);
+            } catch (XpReportException $exception) {
+                $this->entityManager->refresh($personnage);
+                $this->addFlash('danger', $exception->getMessage());
+
+                return $this->redirectToRoute('personnage.statut', ['personnage' => $personnage->getId()], 303);
+            }
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $personnage = $form->getData();
@@ -2559,12 +2614,20 @@ class PersonnageController extends AbstractController
 
             $this->addFlash('success', 'Le statut du personnage a été modifié');
 
+            // Mort sans report : le scénariste décide tout de suite du bonus d'XP.
+            if (!$personnage->getVivant() && null === $xpReportRepository->findOneByMort($personnage) && $xpReportCalculateur->montants($personnage)[XpReportCalculateur::MODE_TIERS] > 0) {
+                $this->addFlash('info', 'Ce personnage laisse un bonus d\'XP : choisissez son destinataire.');
+
+                return $this->redirectToRoute('personnage.xp.report.admin', ['personnage' => $personnage->getId()], 303);
+            }
+
             return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         return $this->render('personnage/statut.twig', [
             'personnage' => $personnage,
             'form' => $form->createView(),
+            'xpReport' => $xpReport,
         ]);
     }
 

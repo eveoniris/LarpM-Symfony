@@ -73,6 +73,30 @@ final readonly class XpReportEligibilite
     }
 
     /**
+     * Personnages vivants du joueur qui n'ont encore reçu aucun bonus, avec l'indication qu'ils ont déjà participé
+     * (le scénariste peut alors forcer le report). Sert à l'écran du scénariste.
+     *
+     * @return list<array{personnage: Personnage, aParticipe: bool}>
+     */
+    public function candidatsDuJoueur(User $joueur): array
+    {
+        /** @var list<Personnage> $vivants */
+        $vivants = $this->entityManager
+            ->createQueryBuilder()
+            ->select('p')
+            ->from(Personnage::class, 'p')
+            ->where('p.user = :joueur')
+            ->andWhere('p.vivant = true')
+            ->andWhere('NOT EXISTS (SELECT 1 FROM ' . XpReport::class . ' r WHERE r.personnageBeneficiaire = p)')
+            ->orderBy('p.id', 'ASC')
+            ->setParameter('joueur', $joueur)
+            ->getQuery()
+            ->getResult();
+
+        return array_map(fn (Personnage $personnage): array => ['personnage' => $personnage, 'aParticipe' => $this->participation->aDejaParticipe($personnage)], $vivants);
+    }
+
+    /**
      * Personnages vivants du joueur qui peuvent recevoir un bonus.
      *
      * @return list<Personnage>

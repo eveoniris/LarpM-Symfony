@@ -1,0 +1,111 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Bonus d'XP à la mort - {{ personnage.publicName }}{% endblock title %}
+
+{% block body %}
+    {% include 'personnage/fragment/breadcrumb.twig' with {'name': "Bonus d'XP à la mort"} %}
+
+    {% set jeton = csrf_token('xp_report_admin_' ~ personnage.id) %}
+
+    <div class="well">
+        <div class="header">
+            <h5>Bonus d'XP à la mort de {{ personnage.identity(false) }}</h5>
+        </div>
+
+        {% if personnage.vivant %}
+            <div class="alert alert-warning">Ce personnage est vivant : son bonus ne peut être transmis qu'après sa mort.
+                <a href="{{ path('personnage.statut', {personnage: personnage.id}) }}">Changer son statut</a></div>
+        {% else %}
+            <p>
+                XP acquis en jeu : <strong>{{ montants.base }}</strong>
+                (hors création, bonus d'âge, naissance d'héritier et bonus déjà reçus).
+                Au tiers : <strong>{{ montants.tiers }} XP</strong>. À la moitié, pour un héritier : <strong>{{ montants.moitie }} XP</strong>.
+            </p>
+
+            {% if report %}
+                <div class="alert alert-success">
+                    <strong>Bonus transmis</strong> : {{ report.xpReporte }} XP ({{ report.mode == 'moitie' ? 'moitié, héritier' : 'tiers' }})
+                    à <a href="{{ path('personnage.detail', {personnage: report.personnageBeneficiaire.id}) }}">{{ report.personnageBeneficiaire.identity(false) }}</a>
+                    le {{ report.createdAt|date('d/m/Y') }}{% if report.force %} (forcé : {{ report.motif }}){% endif %}.
+                    Un mort dont le bonus est transmis ne peut plus revenir à la vie, sauf décision d'un administrateur qui retire alors ce bonus.
+                </div>
+                <form method="post" action="{{ path('personnage.xp.report.admin.annuler', {personnage: personnage.id}) }}" class="row g-2 align-items-end"
+                      onsubmit="return confirm('Annuler ce report ? Le bonus sera retiré au destinataire.');">
+                    <input type="hidden" name="_token" value="{{ jeton }}">
+                    <div class="col-md-8">
+                        <label class="form-label" for="annuler-motif">Annuler le report (erreur de saisie) : motif obligatoire</label>
+                        <input type="text" id="annuler-motif" name="motif" class="form-control" required maxlength="200">
+                    </div>
+                    <div class="col-md-4"><button type="submit" class="btn btn-danger">Annuler le report</button></div>
+                </form>
+            {% elseif montants.tiers == 0 %}
+                <div class="alert alert-info">Ce personnage n'a aucun XP acquis en jeu : rien à transmettre.</div>
+            {% else %}
+                <div class="alert alert-info">Bonus disponible : il n'a pas encore été transmis.</div>
+
+                <h6 class="mt-3">Héritiers</h6>
+                {% if heritiers is empty %}
+                    <p class="text-muted small">Aucun héritier connu (conception en jeu ou lien de lignée).</p>
+                {% endif %}
+                {% for ligne in heritiers %}
+                    {% set heritier = ligne.personnage %}
+                    <form method="post" action="{{ path('personnage.xp.report.admin.reporter', {personnage: personnage.id}) }}"
+                          class="border rounded-2 p-2 mb-2" data-lm-plain
+                          onsubmit="return confirm('Transmettre {{ montants.moitie }} XP à {{ heritier.identity(false)|e('js') }} ? Cette opération est définitive.');">
+                        <input type="hidden" name="_token" value="{{ jeton }}">
+                        <input type="hidden" name="cible" value="{{ heritier.id }}">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <a href="{{ path('personnage.detail', {personnage: heritier.id}) }}">{{ heritier.identity(false) }}</a>
+                            {% if ligne.conception %}
+                                <span class="badge {{ ligne.ageOk ? 'bg-success' : 'bg-warning text-dark' }}">{{ ligne.gnEcoules }} GN écoulé{{ ligne.gnEcoules > 1 ? 's' : '' }} depuis la conception (minimum {{ gnMinimum }})</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">conception inconnue (lien de lignée)</span>
+                            {% endif %}
+                            {% if heritier.user %}<span class="text-muted small">joué par {{ heritier.user.displayName }}</span>{% endif %}
+                        </div>
+                        {% if ligne.servi %}
+                            <div class="small text-muted mt-1">Cet héritier a déjà reçu un bonus de {{ ligne.servi.personnageMort.identity(false) }}.</div>
+                        {% else %}
+                            <div class="row g-2 align-items-end mt-1">
+                                <div class="col-md-2">
+                                    <div class="form-check"><input type="checkbox" class="form-check-input" name="forcer" value="1" id="forcer-{{ heritier.id }}">
+                                        <label class="form-check-label" for="forcer-{{ heritier.id }}">Forcer</label></div>
+                                </div>
+                                <div class="col-md-6"><input type="text" name="motif" class="form-control form-control-sm" placeholder="Motif (obligatoire pour forcer : âge non confirmé ou déjà participé)" maxlength="200"></div>
+                                <div class="col-md-4"><button type="submit" class="btn btn-sm btn-primary">Transmettre {{ montants.moitie }} XP (héritier)</button></div>
+                            </div>
+                        {% endif %}
+                    </form>
+                {% endfor %}
+
+                <h6 class="mt-3">Autres personnages du même joueur{% if personnage.user %} ({{ personnage.user.displayName }}){% endif %}</h6>
+                {% if candidats is empty %}
+                    <p class="text-muted small">Aucun autre personnage vivant sans bonus.</p>
+                {% endif %}
+                {% for ligne in candidats %}
+                    {% set cible = ligne.personnage %}
+                    <form method="post" action="{{ path('personnage.xp.report.admin.reporter', {personnage: personnage.id}) }}"
+                          class="border rounded-2 p-2 mb-2" data-lm-plain
+                          onsubmit="return confirm('Transmettre {{ montants.tiers }} XP à {{ cible.identity(false)|e('js') }} ? Cette opération est définitive.');">
+                        <input type="hidden" name="_token" value="{{ jeton }}">
+                        <input type="hidden" name="cible" value="{{ cible.id }}">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <a href="{{ path('personnage.detail', {personnage: cible.id}) }}">{{ cible.identity(false) }}</a>
+                            {% if ligne.aParticipe %}<span class="badge bg-warning text-dark">a déjà participé à un GN</span>{% endif %}
+                        </div>
+                        <div class="row g-2 align-items-end mt-1">
+                            {% if ligne.aParticipe %}
+                                <div class="col-md-2">
+                                    <div class="form-check"><input type="checkbox" class="form-check-input" name="forcer" value="1" id="forcer-{{ cible.id }}">
+                                        <label class="form-check-label" for="forcer-{{ cible.id }}">Forcer</label></div>
+                                </div>
+                                <div class="col-md-6"><input type="text" name="motif" class="form-control form-control-sm" placeholder="Motif (obligatoire pour forcer)" maxlength="200"></div>
+                            {% endif %}
+                            <div class="col-md-4"><button type="submit" class="btn btn-sm btn-primary">Transmettre {{ montants.tiers }} XP (tiers)</button></div>
+                        </div>
+                    </form>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock body %}
