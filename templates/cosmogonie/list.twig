@@ -18,7 +18,7 @@
 
         {% include '_partials/formListSearch.twig' with
             {
-                'canAdd': {'title': 'Ajouter une entrée', 'path': path('cosmogonie.add')},
+                'canAdd': is_granted('ROLE_COHERENCE') ? {'title': 'Ajouter une entrée', 'path': path('cosmogonie.add')} : null,
                 'actionPath' : path('cosmogonie.list')
             } %}
     </div>
@@ -46,18 +46,22 @@
                 <td class="col-1">
                     <div class="btn-toolbar float-end" role="toolbar">
                         <div class="btn-group-vertical" role="group">
+                            {% if is_granted('ROLE_COHERENCE') %}
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Modifier"
                                href="{{ path('cosmogonie.update',{'cosmogonie':cosmogonie.id}) }}"><i
                                         class="fa fa-pencil"></i> Modifier</a>
+                            {% endif %}
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Détail"
                                href="{{ path('cosmogonie.detail',{'cosmogonie':cosmogonie.id}) }}"><i
                                         class="fa fa-eye"></i> Detail</a>
+                            {% if is_granted('ROLE_COHERENCE') %}
                             <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                title="Supprimer"
                                href="{{ path('cosmogonie.delete',{'cosmogonie':cosmogonie.id}) }}"><i
                                         class="fa fa-eraser"></i> Supprimer</a>
+                            {% endif %}
                         </div>
                     </div>
                 </td>
