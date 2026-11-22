@@ -136,7 +136,8 @@ class XpReportScenaristeTest extends WebTestCase
         $mort = $this->mort(UserFactory::createOne());
         $client->loginUser($this->scenariste());
         $em = static::getContainer()->get(EntityManagerInterface::class);
-        AgeFactory::findOrCreate(['label' => ConceptionRegles::AGE_HERITIER]);
+        AgeFactory::findOrCreate(['label' => ConceptionRegles::AGE_HERITIER, 'enableCreation' => false, 'bonus' => 99]);
+        AgeFactory::createOne(['label' => 'Jeune adulte', 'enableCreation' => true, 'minimumValue' => -100, 'bonus' => 3]);
         ClasseFactory::findOrCreate(['secrete' => true]);
         $genre = GenreFactory::findOrCreate(['label' => 'Masculin']);
         $territoire = TerritoireFactory::createOne();
@@ -158,8 +159,8 @@ class XpReportScenaristeTest extends WebTestCase
         static::assertSame(XpReportCalculateur::MODE_MOITIE, $report->getMode());
         $heritier = $report->getPersonnageBeneficiaire();
         static::assertSame('Petit Conan', $heritier->getNom());
-        // 10 XP de création (dernier GN actif) + 4 XP de bonus.
-        static::assertSame(14, $heritier->getXp());
+        // 10 XP de création (dernier GN actif) + 3 XP de bonus d'âge (premier âge jouable) + 4 XP de bonus.
+        static::assertSame(17, $heritier->getXp());
         static::assertNotNull($em->getRepository(PersonnageLignee::class)->findOneBy(['personnage' => $heritier]));
     }
 

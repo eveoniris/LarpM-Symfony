@@ -114,6 +114,10 @@ readonly class HeritierService
         $gn = $this->entityManager->getRepository(Gn::class)->findCurrentActive();
         $xpCreation = $gn?->getXpCreation() ?? 0;
 
+        // Bonus lié à l'âge : celui de la première tranche d'âge jouable (création autorisée, valeur minimale la plus basse).
+        $agesJouables = $this->entityManager->getRepository(Age::class)->findBy(['enableCreation' => true], ['minimumValue' => 'ASC'], 1);
+        $xpBonusAge = ($agesJouables[0] ?? null)?->getBonus() ?? 0;
+
         $heritier = (new Personnage())
             ->setNom(trim($saisie->nom))
             ->setGenre($saisie->genre)
@@ -122,8 +126,18 @@ readonly class HeritierService
             ->setAgeReel(0)
             ->setClasse($classe)
             ->setBracelet(false)
-            ->setXp($xpCreation);
+            ->setXp($xpCreation + $xpBonusAge);
         $this->entityManager->persist($heritier);
+
+        if ($xpBonusAge > 0) {
+            $this->entityManager->persist(
+                (new ExperienceGain())
+                    ->setExplanation(XpReportCalculateur::LIBELLE_BONUS_AGE)
+                    ->setOperationDate(new DateTime())
+                    ->setPersonnage($heritier)
+                    ->setXpGain($xpBonusAge),
+            );
+        }
 
         if ($xpCreation > 0) {
             $this->entityManager->persist(
