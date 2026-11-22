@@ -25,7 +25,8 @@ final class GnTimelineStepType extends AbstractType
         $builder
             ->add('libelle', TextType::class, ['label' => 'Libellé'])
             ->add('datePrevue', DateTimeType::class, [
-                'label' => 'Date prévue',
+                'label' => 'Date prévue (ignorée pour un verrouillage : date de verrouillage du GN)',
+                'required' => false,
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
             ])
@@ -39,8 +40,18 @@ final class GnTimelineStepType extends AbstractType
                 'required' => false,
                 'attr' => ['min' => 1],
             ])
+            ->add('annees', IntegerType::class, [
+                'label' => 'Vieillissement : années à ajouter (5 par défaut)',
+                'required' => false,
+                'attr' => ['min' => 1],
+            ])
+            ->add('ageMort', IntegerType::class, [
+                'label' => 'Vieillissement : âge à partir duquel on peut mourir de vieillesse (60 par défaut)',
+                'required' => false,
+                'attr' => ['min' => 1],
+            ])
             ->add('auto', CheckboxType::class, [
-                'label' => 'Exécuter automatiquement (cron) quand la date est passée. Impossible pour le vieillissement.',
+                'label' => 'Exécuter automatiquement (cron) quand la date est passée. Un verrouillage sans date de verrouillage sur le GN reste manuel.',
                 'required' => false,
             ])
             ->add('visibilite', EnumType::class, [

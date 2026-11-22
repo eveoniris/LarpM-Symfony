@@ -7,9 +7,9 @@ namespace App\Controller;
 use App\Entity\Gn;
 use App\Entity\GnTimelineStep;
 use App\Form\Gn\GnTimelineStepType;
-use App\Enum\GnTimelineType;
 use App\Repository\GnTimelineStepRepository;
 use App\Service\GnTimeline\GnTimelineExecutor;
+use App\Service\GnTimeline\GnTimelineStepVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
@@ -30,12 +30,17 @@ final class GnTimelineStepController extends AbstractController
         Gn $gn,
         GnTimelineStepRepository $repository,
         EntityManagerInterface $entityManager,
+        GnTimelineStepVerifier $verifier,
     ): Response {
-        $etape = (new GnTimelineStep())->setGn($gn);
+        // valeurs de vieillissement pré-saisies (celles de la commande app:vieillir-personnages)
+        $etape = (new GnTimelineStep())
+            ->setGn($gn)
+            ->setAnnees(GnTimelineStep::ANNEES_DEFAUT)
+            ->setAgeMort(GnTimelineStep::AGE_MORT_DEFAUT);
         $form = $this->createForm(GnTimelineStepType::class, $etape);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid() && $this->verifier($form, $etape)) {
+        if ($form->isSubmitted() && $form->isValid() && $this->verifier($verifier, $form, $etape)) {
             $entityManager->persist($etape);
             $entityManager->flush();
             $this->addFlash('success', "L'étape a été ajoutée.");
@@ -51,12 +56,16 @@ final class GnTimelineStepController extends AbstractController
     }
 
     #[Route('/gn/etape/{etape}/update', name: 'gn.etape.update')]
-    public function updateAction(Request $request, GnTimelineStep $etape, EntityManagerInterface $entityManager): Response
-    {
+    public function updateAction(
+        Request $request,
+        GnTimelineStep $etape,
+        EntityManagerInterface $entityManager,
+        GnTimelineStepVerifier $verifier,
+    ): Response {
         $form = $this->createForm(GnTimelineStepType::class, $etape);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid() && $this->verifier($form, $etape)) {
+        if ($form->isSubmitted() && $form->isValid() && $this->verifier($verifier, $form, $etape)) {
             $entityManager->flush();
             $this->addFlash('success', "L'étape a été mise à jour.");
 
@@ -91,22 +100,15 @@ final class GnTimelineStepController extends AbstractController
     }
 
     /**
-     * Règles de cohérence : XP obligatoire pour l'XP de participation, pas d'exécution automatique pour les types risqués.
+     * Règles de cohérence (voir GnTimelineStepVerifier) : les erreurs sont rattachées aux champs du formulaire.
      */
-    private function verifier(FormInterface $form, GnTimelineStep $etape): bool
+    private function verifier(GnTimelineStepVerifier $verifier, FormInterface $form, GnTimelineStep $etape): bool
     {
-        if (GnTimelineType::XP_PARTICIPATION === $etape->getType() && ($etape->getXp() ?? 0) <= 0) {
-            $form->get('xp')->addError(new FormError("Indiquez l'XP à donner (supérieur à 0)."));
-
-            return false;
+        $erreurs = $verifier->verifier($etape);
+        foreach ($erreurs as $champ => $message) {
+            $form->get($champ)->addError(new FormError($message));
         }
 
-        if ($etape->isAuto() && !$etape->getType()->autoAutorise()) {
-            $form->get('auto')->addError(new FormError("Ce type d'étape ne peut pas être exécuté automatiquement."));
-
-            return false;
-        }
-
-        return true;
+        return [] === $erreurs;
     }
 }

@@ -29,6 +29,6 @@ final readonly class VerrouillageHandler implements GnTimelineHandlerInterface
         $gn = $etape->getGn() ?? throw new LogicException('Étape sans GN.');
         $this->gnLockService->verrouiller($gn);
 
-        return \sprintf('Groupes de %s verrouillés, effets de fin d\'édition appliqués.', $gn->getLabel());
+        return \sprintf('Groupes de %s verrouillés ; gains de compétence appliqués (renommée des nobles experts, littérature, sanctuaires).', $gn->getLabel());
     }
 }

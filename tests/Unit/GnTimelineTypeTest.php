@@ -17,9 +17,9 @@ final class GnTimelineTypeTest extends TestCase
         $this->assertTrue(GnTimelineType::VIEILLISSEMENT->estAction());
     }
 
-    public function testLeVieillissementEtLInfoNeSontJamaisAutomatiques(): void
+    public function testSeulLInfoNEstJamaisAutomatique(): void
     {
-        $this->assertFalse(GnTimelineType::VIEILLISSEMENT->autoAutorise());
+        $this->assertTrue(GnTimelineType::VIEILLISSEMENT->autoAutorise());
         $this->assertFalse(GnTimelineType::INFO->autoAutorise());
         $this->assertTrue(GnTimelineType::XP_PARTICIPATION->autoAutorise());
         $this->assertTrue(GnTimelineType::VERROUILLAGE->autoAutorise());

@@ -9,6 +9,7 @@ use App\Tests\Factory\GroupeFactory;
 use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\TerritoireFactory;
 use App\Tests\Factory\UserFactory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -295,5 +296,73 @@ class UniversAndReglesAccessTest extends WebTestCase
         $client->request('GET', '/territoire/add');
 
         static::assertNotSame(200, $client->getResponse()->getStatusCode());
+    }
+
+    // -------------------------------------------------------------------------
+    // Univers scénaristes : lecture scénariste, écriture cohérence uniquement
+    // -------------------------------------------------------------------------
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function pagesLectureScenaristes(): iterable
+    {
+        yield 'cosmogonie' => ['/cosmogonie'];
+        yield 'chronologie du monde' => ['/chronologie-monde'];
+        yield 'échelle de puissance' => ['/echelle-puissance'];
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function pagesEcritureCoherence(): iterable
+    {
+        yield 'cosmogonie' => ['/cosmogonie/add'];
+        yield 'âge' => ['/chronologie-monde/age/add'];
+        yield 'entrée de chronologie' => ['/chronologie-monde/entree/add'];
+        yield 'créature' => ['/echelle-puissance/add'];
+    }
+
+    #[DataProvider('pagesLectureScenaristes')]
+    public function testPagesUniversLisiblesParScenaristeEtCoherence(string $url): void
+    {
+        foreach (['ROLE_SCENARISTE', 'ROLE_COHERENCE'] as $role) {
+            $client = static::createClient();
+            $client->loginUser(UserFactory::createOne(['roles' => [$role]]));
+            $client->request('GET', $url);
+
+            static::assertResponseIsSuccessful($url . ' / ' . $role);
+            static::ensureKernelShutdown();
+        }
+    }
+
+    #[DataProvider('pagesLectureScenaristes')]
+    public function testPagesUniversRefuseesAUnSimpleJoueur(string $url): void
+    {
+        $client = static::createClient();
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER']]));
+        $client->request('GET', $url);
+
+        static::assertNotSame(200, $client->getResponse()->getStatusCode());
+    }
+
+    #[DataProvider('pagesEcritureCoherence')]
+    public function testEcritureUniversInterditeAuScenariste(string $url): void
+    {
+        $client = static::createClient();
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_SCENARISTE']]));
+        $client->request('GET', $url);
+
+        static::assertNotSame(200, $client->getResponse()->getStatusCode());
+    }
+
+    #[DataProvider('pagesEcritureCoherence')]
+    public function testEcritureUniversAutoriseeALaCoherence(string $url): void
+    {
+        $client = static::createClient();
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_COHERENCE']]));
+        $client->request('GET', $url);
+
+        static::assertResponseIsSuccessful();
     }
 }

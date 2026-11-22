@@ -20,10 +20,13 @@
                 <tbody>
                 {% for etape in etapes %}
                     <tr>
-                        <td>{{ etape.datePrevue|date('d/m/Y H:i') }}</td>
+                        <td>
+                            {% if etape.dateEffective %}{{ etape.dateEffective|date('d/m/Y H:i') }}{% else %}<span class="text-body-secondary">Date de verrouillage du GN non définie : étape manuelle</span>{% endif %}
+                            {% if etape.type.value == 'verrouillage' %}<small class="d-block text-body-secondary">Date du GN</small>{% endif %}
+                        </td>
                         <td>{{ etape.libelle }}</td>
                         <td>
-                            {{ etape.type.label }}{% if etape.type.value == 'xp_participation' and etape.xp %} ({{ etape.xp }} XP){% endif %}
+                            {{ etape.type.label }}{% if etape.type.value == 'xp_participation' and etape.xp %} ({{ etape.xp }} XP){% endif %}{% if etape.type.value == 'vieillissement' %} (+{{ etape.annees ?? 5 }} ans, mort dès {{ etape.ageMort ?? 60 }} ans){% endif %}
                             {% if etape.auto %}<span class="lm-badge" data-role="warn" title="Exécutée par le cron quand la date est passée">auto</span>{% endif %}
                         </td>
                         <td>

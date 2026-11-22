@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Entity\Gn;
 use App\Entity\GnTimelineStep;
+use App\Enum\GnTimelineType;
 use App\Enum\Role;
 use App\Repository\GnRepository;
 use App\Repository\GnTimelineStepRepository;
@@ -56,7 +57,12 @@ final readonly class GnChronologieService
         $toutes = $this->stepRepository->findAllOrdered();
         $visibles = [];
         foreach ($toutes as $etape) {
-            if ($etape->getVisibilite()->estVisible(fn (Role $role): bool => $this->security->isGranted($role->value))) {
+            // la date de verrouillage du GN est déjà affichée à part : l'étape de verrouillage ne doit pas la doubler
+            if (
+                GnTimelineType::VERROUILLAGE !== $etape->getType()
+                && null !== $etape->getDatePrevue()
+                && $etape->getVisibilite()->estVisible(fn (Role $role): bool => $this->security->isGranted($role->value))
+            ) {
                 $visibles[$etape->getGn()?->getId()][] = $etape;
             }
         }

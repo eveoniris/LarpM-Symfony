@@ -23,7 +23,7 @@ class CosmogonieController extends AbstractController
 {
     #[Route(name: 'index')]
     #[Route(name: 'list')]
-    #[IsGranted(new MultiRolesExpression(Role::CARTOGRAPHE, Role::SCENARISTE))]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::COHERENCE))]
     public function indexAction(Request $request, PagerService $pagerService, CosmogonieRepository $repository): Response
     {
         $pagerService->setRequest($request)->setRepository($repository);
@@ -42,14 +42,13 @@ class CosmogonieController extends AbstractController
     }
 
     #[Route('/{cosmogonie}/detail', name: 'detail', requirements: ['cosmogonie' => Requirement::DIGITS])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::COHERENCE))]
     public function detailAction(#[MapEntity] Cosmogonie $cosmogonie): Response
     {
-        $isAdmin = $this->isGranted(Role::CARTOGRAPHE->value) || $this->isGranted(Role::SCENARISTE->value);
-
         return $this->render('cosmogonie/detail.twig', [
             'cosmogonie' => $cosmogonie,
-            'isAdmin' => $isAdmin,
+            'isAdmin' => true,
+            'canEdit' => $this->isGranted(Role::COHERENCE->value),
         ]);
     }
 
