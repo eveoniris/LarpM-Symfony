@@ -1,0 +1,80 @@
+{% extends "base.html.twig" %}
+
+{# Interface bêta (lm-design) : les composants lm-* s'ajoutent à Bootstrap, les autres comptes gardent le rendu Bootstrap. #}
+{% set beta = app.user is not null and app.user.uiBeta %}
+{% set peutEcrire = is_granted('ROLE_COHERENCE') %}
+
+{% block title %}Échelle de puissance{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Échelle de puissance'}]} %}
+
+	<header class="lm-page-head mb-3">
+		<h1 class="lm-page-title h4 mb-1">Échelle de puissance des créatures</h1>
+		<p class="lm-meta mb-0">Puissance relative exprimée en équivalent XP, pour aider à rédiger les BG. Page réservée aux scénaristes{% if peutEcrire %}, modifiable par la cohérence{% endif %}.</p>
+		{% if peutEcrire %}
+			<p class="mt-2 mb-0">
+				<a href="{{ path('puissance.add') }}" class="{{ beta ? 'lm-btn lm-btn--primary' : 'btn btn-primary' }}">Ajouter une créature</a>
+			</p>
+		{% endif %}
+	</header>
+
+	<div class="{{ beta ? 'lm-filters' : 'row g-2' }} mb-3">
+		<input type="search" id="puissance-recherche" class="{{ beta ? 'lm-field lm-search' : 'form-control col' }}" placeholder="Rechercher une créature" aria-label="Rechercher une créature">
+		<select id="puissance-famille" class="{{ beta ? 'lm-field' : 'form-select' }}" style="max-width: 280px" aria-label="Filtrer par famille">
+			<option value="">Toutes les familles</option>
+			{% for famille in familles %}<option value="{{ famille|lower }}">{{ famille }}</option>{% endfor %}
+		</select>
+	</div>
+
+	<div class="{{ beta ? 'lm-table-wrap' : 'table-responsive' }}">
+		<table class="{{ beta ? 'lm-table lm-table--cards' : 'table table-sm table-striped table-bordered' }}" id="puissance-table">
+			<thead>
+				<tr>
+					<th>Créature</th>
+					<th>Famille / précision</th>
+					<th class="num">Équivalent XP</th>
+					{% if peutEcrire %}<th></th>{% endif %}
+				</tr>
+			</thead>
+			<tbody>
+				{% for creature in creatures %}
+					<tr data-nom="{{ creature.nom|lower }}" data-famille="{{ creature.famille|default('')|lower }}">
+						<td class="lm-cell-main" data-label="Créature">{{ creature.nom }}{% if creature.notes %}<div class="lm-meta">{{ creature.notes }}</div>{% endif %}</td>
+						<td data-label="Famille">{{ creature.famille ?: '-' }}</td>
+						<td class="num" data-label="XP">{% if beta %}<span class="lm-badge">{{ creature.xp }} XP</span>{% else %}{{ creature.xp }}{% endif %}</td>
+						{% if peutEcrire %}
+							<td class="text-nowrap" data-label="">
+								<a href="{{ path('puissance.update', {'creature': creature.id}) }}" class="{{ beta ? 'lm-btn lm-btn--ghost lm-btn--sm' : 'btn btn-sm btn-secondary' }}">Modifier</a>
+								<a href="{{ path('puissance.delete', {'creature': creature.id}) }}" class="{{ beta ? 'lm-btn lm-btn--danger lm-btn--sm' : 'btn btn-sm btn-secondary' }}">Supprimer</a>
+							</td>
+						{% endif %}
+					</tr>
+				{% else %}
+					<tr><td colspan="4" class="lm-meta">Aucune créature n'est encore saisie.</td></tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<script>
+		(function () {
+			var q = document.getElementById('puissance-recherche');
+			var f = document.getElementById('puissance-famille');
+			var lignes = document.querySelectorAll('#puissance-table tbody tr[data-nom]');
+			function filtrer() {
+				var texte = q.value.trim().toLowerCase();
+				var famille = f.value;
+				lignes.forEach(function (tr) {
+					var ok = (!texte || tr.dataset.nom.indexOf(texte) !== -1 || tr.dataset.famille.indexOf(texte) !== -1)
+						&& (!famille || tr.dataset.famille === famille);
+					tr.hidden = !ok;
+				});
+			}
+			q.addEventListener('input', filtrer);
+			f.addEventListener('change', filtrer);
+		})();
+	</script>
+
+{% endblock body %}

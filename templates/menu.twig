@@ -106,9 +106,17 @@
                             </li>
                             <li><a class="dropdown-item" href="{{ path('espece.list') }}">Espèces, races, créatures</a>
                             </li>
-                            {# hide for now <li><a class="dropdown-item" href="{{ path('cosmogonie.list') }}">Cosmogonie</a> </li>#}
                             <li><a class="dropdown-item" href="{{ path('autreMonde.list') }}">Autres mondes</a>
                             </li>
+                        {% endif %}
+                        {# Lecture scénaristes, écriture cohérence #}
+                        {% if is_granted('ROLE_SCENARISTE', app.user) or is_granted('ROLE_COHERENCE', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('cosmogonie.list') }}">Cosmogonie</a></li>
+                            <li><a class="dropdown-item" href="{{ path('frise.index') }}">Chronologie du monde</a></li>
+                            <li><a class="dropdown-item" href="{{ path('puissance.index') }}">Échelle de puissance</a></li>
                         {% endif %}
                     </ul>
                 </li>
