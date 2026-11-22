@@ -61,4 +61,21 @@ class PersonnageNewXpReportTest extends WebTestCase
         static::assertResponseIsSuccessful();
         static::assertCount(0, $crawler->filter('select[name$="[xpReportMort]"]'));
     }
+
+    public function testLaRouteOrgaProposeAussiLeBonusDUnMort(): void
+    {
+        $client = static::createClient();
+        $joueur = UserFactory::createOne();
+        $mort = PersonnageFactory::createOne(['user' => $joueur, 'vivant' => false]);
+        ExperienceGainFactory::createOne(['personnage' => $mort, 'explanation' => 'Participation', 'xp_gain' => 8]);
+        $participant = $this->participant($joueur);
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_ORGA']]));
+
+        $crawler = $client->request('GET', \sprintf('/participant/%d/personnageNew/admin', $participant->getId()));
+
+        static::assertResponseIsSuccessful();
+        $options = $crawler->filter('select[name$="[xpReportMort]"] option');
+        static::assertCount(2, $options);
+        static::assertStringContainsString('3 XP', $options->eq(1)->text());
+    }
 }

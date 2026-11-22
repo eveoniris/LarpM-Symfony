@@ -182,6 +182,8 @@ class ParticipantController extends AbstractController
         Request $request,
         Participant $participant,
         PersonnageService $personnageService,
+        XpReportEligibilite $xpReportEligibilite,
+        XpReportService $xpReportService,
     ): RedirectResponse|Response {
         $groupeGn = $participant->getGroupeGn();
         $groupe = $groupeGn->getGroupe();
@@ -198,7 +200,9 @@ class ParticipantController extends AbstractController
             'choices' => array_unique($classes),
             'placeholder' => '— Choisir une classe —',
             'constraints' => [new NotBlank(message: 'Veuillez choisir une classe.')],
-        ])->add('save', SubmitType::class, ['label' => 'Valider le personnage']);
+        ]);
+        $this->ajouterChampBonusMort($form, $participant->getUser(), $xpReportEligibilite);
+        $form->add('save', SubmitType::class, ['label' => 'Valider le personnage']);
 
         $form->handleRequest($request);
 
@@ -295,6 +299,9 @@ class ParticipantController extends AbstractController
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre personnage a été sauvegardé.');
+            if ($participant->getUser() instanceof User) {
+                $this->recupererBonusMort($form, $personnage, $participant->getUser(), $xpReportService);
+            }
 
             return $this->redirectToRoute('gn.participants.withoutperso', ['gn' => $groupeGn->getGn()->getId()], 303);
         }
@@ -1317,21 +1324,7 @@ class ParticipantController extends AbstractController
         ]);
 
         // Bonus d'XP d'un personnage mort du même joueur : proposé tant qu'il en reste un à récupérer.
-        $mortsDisponibles = null === $participant->getUser() ? [] : $xpReportEligibilite->mortsDisponibles($participant->getUser());
-        if ([] !== $mortsDisponibles) {
-            $choixMorts = [];
-            foreach ($mortsDisponibles as $ligne) {
-                $choixMorts[\sprintf('%s : %d XP', $ligne['mort']->getIdentity(withId: false), $ligne['tiers'])] = $ligne['mort']->getId();
-            }
-            $form->add('xpReportMort', ChoiceType::class, [
-                'label' => 'Récupérer le bonus d\'XP d\'un personnage mort (tiers de ses XP acquis en jeu)',
-                'help' => 'Opération définitive : un mort ne transmet son bonus qu\'une fois.',
-                'choices' => $choixMorts,
-                'placeholder' => 'Ne pas récupérer de bonus',
-                'required' => false,
-                'mapped' => false,
-            ]);
-        }
+        $this->ajouterChampBonusMort($form, $participant->getUser(), $xpReportEligibilite);
 
         $form->add('save', SubmitType::class, [
             'label' => 'Valider mon personnage',
@@ -1497,6 +1490,28 @@ class ParticipantController extends AbstractController
             'participant' => $participant,
             'ages' => $ages,
             'territoires' => $territoires,
+        ]);
+    }
+
+    /** Ajoute au formulaire le choix du bonus d'XP d'un personnage mort du joueur, s'il en reste un à récupérer. */
+    private function ajouterChampBonusMort(FormInterface $form, ?User $joueur, XpReportEligibilite $xpReportEligibilite): void
+    {
+        $mortsDisponibles = null === $joueur ? [] : $xpReportEligibilite->mortsDisponibles($joueur);
+        if ([] === $mortsDisponibles) {
+            return;
+        }
+
+        $choixMorts = [];
+        foreach ($mortsDisponibles as $ligne) {
+            $choixMorts[\sprintf('%s : %d XP', $ligne['mort']->getIdentity(withId: false), $ligne['tiers'])] = $ligne['mort']->getId();
+        }
+        $form->add('xpReportMort', ChoiceType::class, [
+            'label' => 'Récupérer le bonus d\'XP d\'un personnage mort (tiers de ses XP acquis en jeu)',
+            'help' => 'Opération définitive : un mort ne transmet son bonus qu\'une fois.',
+            'choices' => $choixMorts,
+            'placeholder' => 'Ne pas récupérer de bonus',
+            'required' => false,
+            'mapped' => false,
         ]);
     }
 
