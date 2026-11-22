@@ -64,6 +64,7 @@ use App\Repository\RenommeHistoryRepository;
 use App\Repository\TechnologieRepository;
 use ArrayIterator;
 use DateTime;
+use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -1847,7 +1848,10 @@ class PersonnageService
     }
 
     /** Attribut 2 pts de renommé pour les nobles experts */
-    public function lockGnGiveNoblityGnRenomme(?Gn $gn = null, int $pts = 2, bool $asGenerator = false): Generator
+    /**
+     * @param ?Closure(Personnage, string, string): void $onGain appelée pour chaque gain réellement donné (personnage, compétence, gain)
+     */
+    public function lockGnGiveNoblityGnRenomme(?Gn $gn = null, int $pts = 2, bool $asGenerator = false, ?Closure $onGain = null): Generator
     {
         $gnRepository = $this->entityManager->getRepository(Gn::class);
         /** @var ParticipantRepository $participantRepository */
@@ -1880,6 +1884,7 @@ class PersonnageService
             $this->competenceService->setPersonnage($personnage)->addRenomme($pts, $explication);
             $this->logger->info(\sprintf('Add %d points to personnage %d', $pts, $personnage->getId()));
             $this->entityManager->flush();
+            $onGain?->__invoke($personnage, 'Noblesse', \sprintf('%d points de renommée', $pts));
 
             if ($asGenerator) {
                 yield $i;
@@ -1895,7 +1900,10 @@ class PersonnageService
     }
 
     /** Don des effets compétences littérature par GN */
-    public function lockGnGiveLiteratureGnBonus(?Gn $gn = null, bool $asGenerator = false): Generator
+    /**
+     * @param ?Closure(Personnage, string, string): void $onGain appelée pour chaque gain réellement donné (personnage, compétence, gain)
+     */
+    public function lockGnGiveLiteratureGnBonus(?Gn $gn = null, bool $asGenerator = false, ?Closure $onGain = null): Generator
     {
         $gnRepository = $this->entityManager->getRepository(Gn::class);
         /** @var ParticipantRepository $participantRepository */
@@ -1926,6 +1934,7 @@ class PersonnageService
                 $alreadyGiven = static fn (TriggerType $tag): bool => $personnage
                     ->getAllPersonnageTriggers()
                     ->exists(static fn (int $key, PersonnageTrigger $trigger): bool => $trigger->getTag() === $tag && $trigger->getGn()?->getId() === $gn->getId());
+                $donnes = [];
                 foreach ([$sortTag, $potionTag] as $tag) {
                     if ($alreadyGiven($tag)) {
                         continue;
@@ -1942,9 +1951,14 @@ class PersonnageService
                     }
 
                     $this->addPersonnageTrigger($personnage, $tag, false, $gn);
+                    $donnes[] = str_replace('permet de choisir ', '', $tag->getDescription());
                 }
                 $this->entityManager->flush();
                 $this->logger->info(\sprintf('Add %s and %s choice to personnage %d', $sortTag->value, $potionTag->value, $personnage->getId()));
+
+                if ([] !== $donnes && null !== $onGain) {
+                    $onGain($personnage, 'Littérature', 'la possibilité de choisir ' . implode(' et ', $donnes));
+                }
 
                 if ($asGenerator) {
                     yield $i;
@@ -2368,7 +2382,7 @@ class PersonnageService
         $this->logger->info('Check if personnage die from an old age');
         $i = 0;
         foreach ($personnageRepository->findAllElder($maxAge) as $personnage) {
-            if ($this->checkDieOfOldAge($personnage)) {
+            if ($this->checkDieOfOldAge($personnage, $maxAge)) {
                 ++$i;
             }
 

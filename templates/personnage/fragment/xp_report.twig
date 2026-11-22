@@ -1,0 +1,29 @@
+{# Scénariste : accès à la gestion du bonus d'XP d'un personnage mort. #}
+{% if not personnage.vivant and is_granted('ROLE_SCENARISTE') %}
+    <div class="mb-2">
+        <a class="btn btn-sm btn-outline-secondary" href="{{ path('personnage.xp.report.admin', {personnage: personnage.id}) }}"><i class="fa-solid fa-ghost"></i> Bonus d'XP à la mort</a>
+    </div>
+{% endif %}
+{# Récupération du bonus d'XP d'un personnage mort (tiers), réservée au joueur propriétaire du personnage. #}
+{% if app.user and personnage.user and app.user.id == personnage.user.id %}
+    {% set morts = xp_report_morts_pour(personnage) %}
+    {% if morts is not empty %}
+        <div class="alert alert-info" data-lm-plain>
+            <h6 class="mb-2"><i class="fa-solid fa-ghost"></i> Bonus d'XP d'un personnage mort</h6>
+            <p class="small mb-2">
+                Un de vos personnages est mort : vous pouvez récupérer le tiers de ses XP acquis en jeu (arrondi au supérieur)
+                sur ce personnage, tant qu'il n'a pas participé à un GN. Cette opération est définitive, un mort ne transmet son bonus qu'une fois
+                et un personnage ne le reçoit qu'une fois.
+            </p>
+            {% for ligne in morts %}
+                <form method="post" action="{{ path('personnage.xp.report', {personnage: personnage.id}) }}" class="d-flex flex-wrap align-items-center gap-2 mb-1"
+                      onsubmit="return confirm('Récupérer {{ ligne.tiers }} XP de {{ ligne.mort.identity(false)|e('js') }} sur {{ personnage.identity(false)|e('js') }} ? Cette opération est définitive.');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('xp_report_' ~ personnage.id) }}">
+                    <input type="hidden" name="mort" value="{{ ligne.mort.id }}">
+                    <span>{{ ligne.mort.identity(false) }} : <strong>{{ ligne.tiers }} XP</strong></span>
+                    <button type="submit" class="btn btn-sm btn-primary">Récupérer ce bonus</button>
+                </form>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endif %}

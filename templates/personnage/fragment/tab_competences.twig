@@ -9,6 +9,7 @@
     </div>
 
     <div class="col-md-6">
+        {% include 'personnage/fragment/xp_report.twig' with {'personnage': personnage} %}
         {% include 'personnage/fragment/experience.twig' with {'personnage': personnage, 'participant': participant, css: 'panel'} %}
         {% include 'personnage/fragment/technique.twig' with {'personnage': personnage, 'participant': participant, css: 'panel'} %}
         {% include 'personnage/fragment/trigger.twig' with {'personnage': personnage, 'participant': participant} %}

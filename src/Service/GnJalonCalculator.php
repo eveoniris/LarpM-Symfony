@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Entity\Gn;
 use App\Entity\GnTimelineStep;
+use App\Enum\GnTimelineType;
 use App\Enum\GnTimelineVisibilite;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -34,7 +35,7 @@ final class GnJalonCalculator
         }
 
         foreach ($etapes as $etape) {
-            if (GnTimelineVisibilite::PUBLIC === $etape->getVisibilite() && null !== $etape->getGn()) {
+            if (GnTimelineVisibilite::PUBLIC === $etape->getVisibilite() && null !== $etape->getGn() && null !== $etape->getDatePrevue() && GnTimelineType::VERROUILLAGE !== $etape->getType()) {
                 $jalons[] = ['libelle' => $etape->getLibelle(), 'date' => $etape->getDatePrevue(), 'gn' => $etape->getGn()];
             }
         }
