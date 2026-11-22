@@ -22,7 +22,7 @@ enum GnTimelineType: string
      */
     case VERROUILLAGE = 'verrouillage';
 
-    /** Vieillit tous les personnages (global, pas lié au GN). Manuel uniquement. */
+    /** Vieillit tous les personnages (global, pas lié au GN) ; années et âge de mort réglables sur l'étape. */
     case VIEILLISSEMENT = 'vieillissement';
 
     public function getLabel(): string
@@ -41,13 +41,14 @@ enum GnTimelineType: string
     }
 
     /**
-     * Le cron ne peut lancer que les actions peu risquées et idempotentes ; le vieillissement est global et reste manuel.
+     * Le cron ne lance que les actions idempotentes. Le vieillissement l'est aussi (garde-fou sur la date de jeu dans
+     * PersonnageService::vieillirTous), mais il est global et définitif : à n'activer qu'en connaissance de cause.
      */
     public function autoAutorise(): bool
     {
         return match ($this) {
-            self::XP_PARTICIPATION, self::VERROUILLAGE => true,
-            self::INFO, self::VIEILLISSEMENT => false,
+            self::XP_PARTICIPATION, self::VERROUILLAGE, self::VIEILLISSEMENT => true,
+            self::INFO => false,
         };
     }
 }
