@@ -1,0 +1,69 @@
+{% extends "base.html.twig" %}
+
+{# Interface bêta (lm-design) : les composants lm-* s'ajoutent à Bootstrap, les autres comptes gardent le rendu Bootstrap. #}
+{% set beta = app.user is not null and app.user.uiBeta %}
+{% set peutEcrire = is_granted('ROLE_COHERENCE') %}
+
+{% block title %}Chronologie du monde{% endblock title %}
+
+{% block body %}
+
+	{% include '_partials/breadcrumb.twig' with {'items' : [{'name' : 'Chronologie du monde'}]} %}
+
+	<header class="lm-page-head mb-3">
+		<h1 class="lm-page-title h4 mb-1">Chronologie du monde</h1>
+		<p class="lm-meta mb-0">Les âges du monde et les peuples qui s'y succèdent. Page réservée aux scénaristes{% if peutEcrire %}, modifiable par la cohérence{% endif %}.</p>
+		{% if peutEcrire %}
+			<p class="lm-actions mt-2 mb-0">
+				<a href="{{ path('frise.age.add') }}" class="{{ beta ? 'lm-btn lm-btn--primary' : 'btn btn-primary' }}">Ajouter un âge</a>
+				<a href="{{ path('frise.entree.add') }}" class="{{ beta ? 'lm-btn lm-btn--ghost' : 'btn btn-secondary' }}">Ajouter une entrée</a>
+			</p>
+		{% endif %}
+	</header>
+
+	{% if ages is empty %}
+		<p class="lm-meta">Aucun âge n'est encore saisi.</p>
+	{% endif %}
+
+	<div class="row g-3 flex-nowrap overflow-x-auto pb-2" role="list" aria-label="Âges du monde, du plus ancien au plus récent">
+		{% for age in ages %}
+			<div class="col-10 col-md-5 col-xl-3" role="listitem" style="min-width: 240px">
+				<section class="{{ beta ? 'lm-card' : 'card' }} h-100">
+					<div class="{{ beta ? 'lm-card-head' : 'card-header' }}">
+						<div>
+							<h2 class="{{ beta ? 'lm-card-title' : 'h6 mb-0' }}">{{ age.nom }}</h2>
+							{% if age.periode %}<div class="lm-meta">{{ age.periode }}</div>{% endif %}
+						</div>
+						{% if peutEcrire %}
+							<span class="lm-actions">
+								<a href="{{ path('frise.age.update', {'age': age.id}) }}" class="{{ beta ? 'lm-btn lm-btn--ghost lm-btn--sm' : 'btn btn-sm btn-secondary' }}" title="Modifier l'âge">Modifier</a>
+							</span>
+						{% endif %}
+					</div>
+					<div class="{{ beta ? 'lm-card-body' : 'card-body' }}">
+						{% for entree in age.entrees %}
+							<div class="mb-3">
+								<div class="d-flex justify-content-between gap-2">
+									<strong>{{ entree.titre }}</strong>
+									{% if peutEcrire %}
+										<span class="text-nowrap">
+											<a href="{{ path('frise.entree.update', {'entree': entree.id}) }}" title="Modifier"><i class="fa fa-pencil"></i></a>
+											<a href="{{ path('frise.entree.delete', {'entree': entree.id}) }}" title="Supprimer"><i class="fa fa-eraser"></i></a>
+										</span>
+									{% endif %}
+								</div>
+								{% if entree.notes %}<div class="lm-meta">{{ entree.notes|markdown_to_html }}</div>{% endif %}
+							</div>
+						{% else %}
+							<p class="lm-meta mb-0">Rien de noté pour cet âge.</p>
+						{% endfor %}
+						{% if peutEcrire %}
+							<a href="{{ path('frise.entree.add', {'age': age.id}) }}" class="small">+ Ajouter ici</a>
+						{% endif %}
+					</div>
+				</section>
+			</div>
+		{% endfor %}
+	</div>
+
+{% endblock body %}
