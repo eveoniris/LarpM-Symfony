@@ -247,8 +247,11 @@
     </div>
 
     {% if diagnosticIp is defined and diagnosticIp is not null %}
-        <div class="well well-sm" id="diagnostic-ip">
-            <h4><span class="fa fa-stethoscope"></span> Diagnostic IP (super admin)</h4>
+        <div class="card border-danger mb-3" data-role="admin" id="diagnostic-ip">
+            <div class="card-header py-1">
+                <i class="fa fa-stethoscope text-danger" style="margin-right: 5px;"></i>Diagnostic IP (super admin)
+            </div>
+            <div class="card-body">
             <p class="text-muted">
                 Décrit <strong>votre requête actuelle</strong>, pas celle de {{ user.displayName }}.
                 Sert à renseigner <code>SYMFONY_TRUSTED_PROXIES</code>.
@@ -278,6 +281,7 @@
                     Si c'est une IP de serveur OVH, le répartiteur n'envoie pas l'en-tête et l'IP réelle est inaccessible.
                 </div>
             {% endif %}
+            </div>
         </div>
     {% endif %}
 
