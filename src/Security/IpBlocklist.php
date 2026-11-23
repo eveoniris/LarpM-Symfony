@@ -91,6 +91,15 @@ class IpBlocklist
         $this->invalidate();
     }
 
+    /**
+     * Attente aléatoire sur les chemins refusés, pour qu'un blocage ne se devine pas à un temps de réponse
+     * plus court que l'envoi réel d'un mail ou le contrôle d'un mot de passe.
+     */
+    public function equalizeDelay(int $minMs = 250, int $maxMs = 600): void
+    {
+        usleep(random_int($minMs, $maxMs) * 1000);
+    }
+
     public function invalidate(): void
     {
         $this->cache->deleteItem(self::CACHE_KEY);

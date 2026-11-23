@@ -41,6 +41,7 @@ use InvalidArgumentException;
 use SensitiveParameter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use App\Security\IpBlocklist;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -430,9 +431,14 @@ class UserController extends AbstractController
      * que la validation d'unicité de l'email.
      */
     #[Route('/user/register/resend-confirmation', name: 'user.register.resend', methods: ['POST'])]
-    public function resendRegisterConfirmationAction(Request $request): RedirectResponse
+    public function resendRegisterConfirmationAction(Request $request, IpBlocklist $ipBlocklist): RedirectResponse
     {
         $email = (string) $request->request->get('email');
+        if ($ipBlocklist->isBlocked($request->getClientIp())) {
+            $ipBlocklist->equalizeDelay();
+            $email = '';
+        }
+
         if ($email !== '') {
             $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
             if ($user) {
@@ -698,6 +704,7 @@ class UserController extends AbstractController
         Request $request,
         MailerInterface $mailer,
         ContainerBagInterface $params,
+        IpBlocklist $ipBlocklist,
     ): RedirectResponse|Response {
         if (false !== $this->isGranted('ROLE_USER') && null !== $this->getUser()?->getId()) {
             $this->addFlash('alert', 'Vous êtes déjà connecté');
@@ -726,6 +733,14 @@ class UserController extends AbstractController
         $error = null;
         if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->getData();
+
+            // IP bloquée : même réponse qu'un envoi réussi, sans rien envoyer.
+            if ($ipBlocklist->isBlocked($request->getClientIp())) {
+                $ipBlocklist->equalizeDelay();
+                $this->addFlash('alert', 'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.');
+
+                return $this->redirectToRoute('app_login');
+            }
 
             $repo = $entityManager->getRepository(User::class);
             $user = $repo->findOneBy(['email' => $email]);
@@ -1103,12 +1118,22 @@ class UserController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
         Security $security,
+        IpBlocklist $ipBlocklist,
     ): RedirectResponse|Response {
         $form = $this->createForm(UserRegisterType::class);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // IP bloquée : même écran qu'une inscription réussie, sans créer de compte ni envoyer de mail.
+            if ($ipBlocklist->isBlocked($request->getClientIp())) {
+                $ipBlocklist->equalizeDelay();
+
+                return $this->render('user/register-confirmation-sent.twig', [
+                    'email' => $form->get('email')->getData(),
+                ]);
+            }
+
             try {
                 /** @var User $user */
                 $user = $form->getData();
