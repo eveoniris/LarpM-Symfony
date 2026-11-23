@@ -17,6 +17,20 @@ final class GnTimelineTypeTest extends TestCase
         $this->assertTrue(GnTimelineType::VIEILLISSEMENT->estAction());
     }
 
+    public function testEtapesLourdesEtTechniques(): void
+    {
+        foreach ([GnTimelineType::XP_PARTICIPATION, GnTimelineType::VERROUILLAGE, GnTimelineType::VIEILLISSEMENT] as $type) {
+            $this->assertTrue($type->estLourde(), $type->value);
+        }
+        foreach ([GnTimelineType::INFO, GnTimelineType::VERROUILLAGE_STRICT, GnTimelineType::DEVERROUILLAGE] as $type) {
+            $this->assertFalse($type->estLourde(), $type->value);
+        }
+        $this->assertTrue(GnTimelineType::VERROUILLAGE_STRICT->estTechnique());
+        $this->assertTrue(GnTimelineType::DEVERROUILLAGE->estTechnique());
+        $this->assertFalse(GnTimelineType::VERROUILLAGE->estTechnique());
+        $this->assertTrue(GnTimelineType::DEVERROUILLAGE->autoAutorise());
+    }
+
     public function testSeulLInfoNEstJamaisAutomatique(): void
     {
         $this->assertTrue(GnTimelineType::VIEILLISSEMENT->autoAutorise());

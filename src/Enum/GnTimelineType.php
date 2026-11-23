@@ -25,6 +25,12 @@ enum GnTimelineType: string
     /** Vieillit tous les personnages (global, pas lié au GN) ; années et âge de mort réglables sur l'étape. */
     case VIEILLISSEMENT = 'vieillissement';
 
+    /** Verrouille strictement les groupes du GN (admins seuls) : étape technique, sans effet de compétence, date propre. */
+    case VERROUILLAGE_STRICT = 'verrouillage_strict';
+
+    /** Déverrouille tous les groupes du GN (souple et strict), à placer après l'XP de participation et le vieillissement. */
+    case DEVERROUILLAGE = 'deverrouillage';
+
     public function getLabel(): string
     {
         return match ($this) {
@@ -32,7 +38,27 @@ enum GnTimelineType: string
             self::XP_PARTICIPATION => 'XP de participation',
             self::VERROUILLAGE => 'Verrouillage des groupes + effets de compétence (renommée, littérature, sanctuaires)',
             self::VIEILLISSEMENT => 'Vieillissement de tous les personnages',
+            self::VERROUILLAGE_STRICT => 'Verrouillage strict des groupes (admins seuls)',
+            self::DEVERROUILLAGE => 'Déverrouillage des groupes',
         };
+    }
+
+    /**
+     * Étape qui traite un gros volume (tous les participants ou tous les personnages) : le cron n'en lance qu'une par
+     * exécution, et les étapes suivantes attendent.
+     */
+    public function estLourde(): bool
+    {
+        return match ($this) {
+            self::XP_PARTICIPATION, self::VERROUILLAGE, self::VIEILLISSEMENT => true,
+            self::INFO, self::VERROUILLAGE_STRICT, self::DEVERROUILLAGE => false,
+        };
+    }
+
+    /** Étape technique réservée aux admins : visibilité forcée à « technique ». */
+    public function estTechnique(): bool
+    {
+        return self::VERROUILLAGE_STRICT === $this || self::DEVERROUILLAGE === $this;
     }
 
     public function estAction(): bool
@@ -47,7 +73,7 @@ enum GnTimelineType: string
     public function autoAutorise(): bool
     {
         return match ($this) {
-            self::XP_PARTICIPATION, self::VERROUILLAGE, self::VIEILLISSEMENT => true,
+            self::XP_PARTICIPATION, self::VERROUILLAGE, self::VIEILLISSEMENT, self::VERROUILLAGE_STRICT, self::DEVERROUILLAGE => true,
             self::INFO => false,
         };
     }

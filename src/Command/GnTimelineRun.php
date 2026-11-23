@@ -16,7 +16,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * Point d'entrée du cron OVH : exécute les étapes de chronologie marquées « auto », échues et encore à faire.
  *
- * Sans `--apply`, la commande liste seulement les étapes concernées. Le vieillissement n'est jamais lancé par le cron.
+ * Sans `--apply`, la commande liste seulement les étapes concernées. Une seule étape lourde est lancée par exécution
+ * (les suivantes attendent le passage suivant du cron).
  */
 #[AsCommand(name: 'app:gn-timeline:run', description: 'Exécute les étapes automatiques échues de la chronologie des GN (simulation sans --apply)')]
 final class GnTimelineRun extends Command

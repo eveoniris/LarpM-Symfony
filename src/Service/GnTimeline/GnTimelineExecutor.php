@@ -42,13 +42,31 @@ final readonly class GnTimelineExecutor
     }
 
     /**
-     * Étapes automatiques échues et encore à faire (types autorisés en automatique uniquement).
+     * Étapes automatiques échues et encore à faire (types autorisés en automatique uniquement), dans l'ordre de leur
+     * date puis de leur création. Une étape lourde (XP, vieillissement, verrouillage complet) ferme la liste : les
+     * suivantes, lourdes ou non, attendent l'exécution suivante pour que chaque gros traitement passe seul.
      *
      * @return list<GnTimelineStep>
      */
     public function echues(DateTimeImmutable $now): array
     {
-        return array_values(array_filter($this->stepRepository->findAutoAFaireAvant($now), static fn (GnTimelineStep $e): bool => $e->getType()->autoAutorise()));
+        $etapes = array_values(array_filter($this->stepRepository->findAutoAFaireAvant($now), static fn (GnTimelineStep $e): bool => $e->getType()->autoAutorise()));
+        usort(
+            $etapes,
+            static fn (GnTimelineStep $a, GnTimelineStep $b): int => (
+                [$a->getDateEffective()?->getTimestamp() ?? \PHP_INT_MAX, $a->getId()] <=> [$b->getDateEffective()?->getTimestamp() ?? \PHP_INT_MAX, $b->getId()]
+            ),
+        );
+
+        $retenues = [];
+        foreach ($etapes as $etape) {
+            $retenues[] = $etape;
+            if ($etape->getType()->estLourde()) {
+                break;
+            }
+        }
+
+        return $retenues;
     }
 
     /**

@@ -25,6 +25,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 /**
  * Cron de la chronologie : sélection des étapes automatiques échues, exécution unique et compte rendu.
  */
+// @mago-expect lint:too-many-methods
 #[Group('integration')]
 class GnTimelineRunTest extends KernelTestCase
 {
@@ -82,10 +83,39 @@ class GnTimelineRunTest extends KernelTestCase
         $ids = $this->idsEchus($this->executeur(GnTimelineType::VERROUILLAGE));
 
         $this->assertContains($due->getId(), $ids);
-        $this->assertContains($vieillissement->getId(), $ids);
+        // une seule étape lourde par exécution : le vieillissement attend le passage suivant
+        $this->assertNotContains($vieillissement->getId(), $ids);
         $this->assertNotContains($manuelle->getId(), $ids);
         $this->assertNotContains($future->getId(), $ids);
         $this->assertNotContains($info->getId(), $ids);
+    }
+
+    public function testUneSeuleEtapeLourdeParExecutionDansLOrdreDesDates(): void
+    {
+        $xp = $this->etape(GnTimelineType::XP_PARTICIPATION, true, '-3 days', 3);
+        $vieillissement = $this->etape(GnTimelineType::VIEILLISSEMENT, true, '-2 days');
+        $deverrouillage = $this->etape(GnTimelineType::DEVERROUILLAGE, true, '-1 day');
+        $executeur = $this->executeur(GnTimelineType::XP_PARTICIPATION);
+
+        $this->assertSame([$xp->getId()], $this->idsEchus($executeur), "l'XP passe seule, le reste attend");
+
+        $executeur->executer($xp);
+        $this->assertSame([$vieillissement->getId()], $this->idsEchus($executeur));
+
+        $this->executeur(GnTimelineType::VIEILLISSEMENT)->executer($vieillissement);
+        $this->assertSame([$deverrouillage->getId()], $this->idsEchus($executeur), 'le déverrouillage vient en dernier');
+    }
+
+    public function testLesEtapesLegeresAvantUneEtapeLourdeSontConservees(): void
+    {
+        $strict = $this->etape(GnTimelineType::VERROUILLAGE_STRICT, true, '-3 days');
+        $xp = $this->etape(GnTimelineType::XP_PARTICIPATION, true, '-2 days', 3);
+        $deverrouillage = $this->etape(GnTimelineType::DEVERROUILLAGE, true, '-1 day');
+
+        $ids = $this->idsEchus($this->executeur(GnTimelineType::XP_PARTICIPATION));
+
+        $this->assertSame([$strict->getId(), $xp->getId()], $ids);
+        $this->assertNotContains($deverrouillage->getId(), $ids);
     }
 
     public function testUnVerrouillageSansDateDeGnOuAVenirResteManuel(): void
