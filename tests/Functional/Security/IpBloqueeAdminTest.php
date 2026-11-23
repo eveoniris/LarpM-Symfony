@@ -88,6 +88,54 @@ class IpBloqueeAdminTest extends WebTestCase
         static::assertFalse(static::getContainer()->get(IpBlocklist::class)->isBlocked(self::IP), 'Un admin ne peut pas bloquer sa propre IP.');
     }
 
+    public function testListeEtDeblocage(): void
+    {
+        $client = static::createClient();
+        $this->admin($client);
+        static::getContainer()->get(IpBlocklist::class)->block(self::IP, null, 'motif visible');
+
+        $crawler = $client->request('GET', '/admin/ip-bloquees');
+        static::assertResponseIsSuccessful();
+        static::assertSelectorTextContains('table', self::IP . '/32');
+        static::assertSelectorTextContains('table', 'motif visible');
+
+        $client->submit($crawler->filter('table form')->first()->form());
+
+        static::assertResponseRedirects('/admin/ip-bloquees');
+        static::assertFalse(static::getContainer()->get(IpBlocklist::class)->isBlocked(self::IP));
+        static::assertNotEmpty(static::getContainer()->get(EntityManagerInterface::class)->getRepository(LogAction::class)->findBy(['type' => LogActionType::IP_DEBLOCAGE->value]));
+    }
+
+    public function testListeInterditeAuxNonAdmins(): void
+    {
+        $client = static::createClient();
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_ORGA']]));
+
+        $client->request('GET', '/admin/ip-bloquees');
+
+        static::assertResponseRedirects('/access_denied');
+    }
+
+    public function testFicheUtilisateurSignaleUneIpBloquee(): void
+    {
+        $client = static::createClient();
+        $cible = UserFactory::createOne();
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->persist(
+            (new LoginHistory(LoginMethod::WEB, false))
+                ->setIp(self::IP)
+                ->setUser($cible),
+        );
+        $entityManager->flush();
+        static::getContainer()->get(IpBlocklist::class)->block(self::IP);
+        $this->admin($client);
+
+        $client->request('GET', '/user/' . $cible->getId() . '/connexions');
+
+        static::assertResponseIsSuccessful();
+        static::assertSelectorTextContains('.alert-danger', self::IP);
+    }
+
     public function testRedirectionExterneIgnoree(): void
     {
         $client = static::createClient();

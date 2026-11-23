@@ -23,6 +23,16 @@
         </p>
     </div>
 
+    {% if blockedIps|default([]) is not empty and is_granted('ROLE_ADMIN') %}
+        <div class="alert alert-danger" role="alert" data-role="admin">
+            <i class="fa fa-ban"></i>
+            {{ blockedIps|length > 1 ? 'Ces adresses récentes de ce compte sont bloquées' : 'Cette adresse récente de ce compte est bloquée' }} :
+            {% for blockedIp in blockedIps %}<code>{{ blockedIp }}</code>{% if not loop.last %}, {% endif %}{% endfor %}.
+            Si l'adresse est partagée, ce joueur ne peut plus se connecter.
+            <a href="{{ path('admin.ip.list') }}" class="alert-link">Gérer les IP bloquées</a>
+        </div>
+    {% endif %}
+
     <div class="table-responsive">
         <table class="table table-sm table-striped table-bordered table-hover">
             <thead>

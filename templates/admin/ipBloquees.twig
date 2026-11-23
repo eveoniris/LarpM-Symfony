@@ -1,0 +1,67 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Adresses IP bloquées{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items' :
+        [
+            {'name' : 'Connexions', 'route' : path('admin.connexions')},
+            {'name' : 'Adresses IP bloquées'},
+        ]
+    } %}
+
+    <div class="card border-danger mb-3" data-role="admin">
+        <div class="card-header py-1">
+            <i class="fa fa-ban text-danger" style="margin-right: 5px;"></i>Adresses IP bloquées
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-0">
+                Une adresse bloquée ne peut plus se connecter (le message reste « identifiants invalides »), et ne reçoit
+                ni mail de mot de passe oublié, ni mail d'inscription ou de confirmation, sans que l'écran le montre.
+                Un blocage expire toujours (un an au plus) et peut être levé ici. Attention aux adresses partagées
+                (lieu de jeu, Wi-Fi commun, réseau mobile) : elles bloquent tous leurs utilisateurs. Pour bloquer une
+                adresse, utilisez le bouton « Bloquer » à côté d'une IP dans <a href="{{ path('admin.connexions') }}">Connexions</a>.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th class="text-center">Adresse ou plage</th>
+                <th class="text-center">Motif</th>
+                <th class="text-center">Bloquée par</th>
+                <th class="text-center">Le</th>
+                <th class="text-center">Expire le</th>
+                <th class="text-center">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entry in entries %}
+                <tr{% if not entry.isActive(now) %} class="text-muted"{% endif %}>
+                    <td class="text-center align-middle"><a href="{{ path('admin.connexions', {'ip': entry.cidr|split('/')|first}) }}"><code>{{ entry.cidr }}</code></a></td>
+                    <td class="align-middle">{{ entry.motif ?? '-' }}</td>
+                    <td class="text-center align-middle">{{ entry.createdBy ? entry.createdBy.displayName : '-' }}</td>
+                    <td class="text-center align-middle">{{ entry.createdAt|date('d/m/Y H:i') }}</td>
+                    <td class="text-center align-middle">
+                        {{ entry.expiresAt|date('d/m/Y H:i') }}
+                        {% if not entry.isActive(now) %}<small class="d-block">expirée</small>{% endif %}
+                    </td>
+                    <td class="text-center align-middle">
+                        <form method="post" action="{{ path('admin.ip.debloquer', {'ipBloquee': entry.id}) }}"
+                              onsubmit="return confirm('Débloquer {{ entry.cidr|e('js') }} ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('ip_bloquer') }}">
+                            <button type="submit" class="btn btn-sm btn-secondary">Débloquer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="text-center text-muted">Aucune adresse bloquée.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

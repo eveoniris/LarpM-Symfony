@@ -4,17 +4,23 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\IpBloquee;
 use App\Entity\LogAction;
 use App\Entity\User;
 use App\Enum\LogActionType;
+use App\Repository\IpBloqueeRepository;
 use App\Security\IpBlocklist;
 use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
@@ -63,6 +69,44 @@ final class IpBloqueeController extends AbstractController
         }
 
         return $this->redirect($this->safeRedirect($request->request->getString('redirect')));
+    }
+
+    #[Route('/admin/ip-bloquees', name: 'admin.ip.list', methods: ['GET'])]
+    public function listAction(IpBloqueeRepository $repository): Response
+    {
+        return $this->render('admin/ipBloquees.twig', [
+            'entries' => $repository->findBy([], ['expiresAt' => 'DESC']),
+            'now' => new DateTimeImmutable(),
+        ]);
+    }
+
+    #[Route('/admin/ip-bloquees/{ipBloquee}/debloquer', name: 'admin.ip.debloquer', requirements: ['ipBloquee' => Requirement::DIGITS], methods: ['POST'])]
+    public function debloquerAction(
+        #[MapEntity]
+        IpBloquee $ipBloquee,
+        Request $request,
+        IpBlocklist $ipBlocklist,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse {
+        if (!$this->isCsrfTokenValid(self::CSRF_ID, $request->request->getString('_token'))) {
+            throw new AccessDeniedHttpException('Jeton CSRF invalide.');
+        }
+
+        $cidr = $ipBloquee->getCidr();
+        $ipBlocklist->unblock($ipBloquee);
+
+        $user = $this->getUser();
+        $logAction = new LogAction();
+        $logAction->setDate(new DateTime());
+        $logAction->setType(LogActionType::IP_DEBLOCAGE);
+        $logAction->setUser($user instanceof User ? $user : null);
+        $logAction->setData(['cidr' => $cidr]);
+        $entityManager->persist($logAction);
+        $entityManager->flush();
+
+        $this->addFlash('success', \sprintf('Adresse %s débloquée.', $cidr));
+
+        return $this->redirectToRoute('admin.ip.list');
     }
 
     /** Retour sur la page d'origine, limité aux chemins du site (pas de redirection ouverte). */
