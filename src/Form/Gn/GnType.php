@@ -56,10 +56,6 @@ class GnType extends AbstractType
                 'label' => 'Date et heure du début de l\'accueil des joueurs',
                 'required' => false,
             ])
-            ->add('dateFinOrga', DateTimeType::class, [
-                'label' => 'Date limite pour libérer le site',
-                'required' => false,
-            ])
             ->add('dateVerrouillage', DateTimeType::class, [
                 'label' => 'Date de verrouillage des modifications (affichée aux joueurs)',
                 'required' => false,
