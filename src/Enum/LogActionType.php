@@ -78,6 +78,12 @@ enum LogActionType: string
     /** Trigger de choix (potion, sort...) recréé par une commande de réparation. */
     case TRIGGER_REPARATION = 'trigger_reparation';
 
+    /** Blocage d'une adresse IP par un administrateur (data : plage, motif, durée en jours, expiration). */
+    case IP_BLOCAGE = 'ip_blocage';
+
+    /** Déblocage d'une adresse IP par un administrateur (data : plage). */
+    case IP_DEBLOCAGE = 'ip_deblocage';
+
     /** Envoi de messages en masse par un admin (data : type d'ids, nombre de messages, titre, auteur). */
     case MESSAGE_MASSE = 'message_masse';
 

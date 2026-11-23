@@ -1,0 +1,20 @@
+{# Bouton « Bloquer cette IP » (admin). Paramètre : ip. Pas pour une IP anonymisée ou absente. #}
+{% if ip and is_granted('ROLE_ADMIN') %}
+    <details class="mt-1 text-start" data-role="admin">
+        <summary class="small text-danger" style="cursor: pointer;"><i class="fa fa-ban"></i> Bloquer</summary>
+        <form method="post" action="{{ path('admin.ip.bloquer') }}" class="mt-1 d-flex flex-column gap-1"
+              onsubmit="return confirm('Bloquer {{ ip|e('js') }} sur la connexion, le mot de passe oublié et l\'inscription ?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('ip_bloquer') }}">
+            <input type="hidden" name="ip" value="{{ ip }}">
+            <input type="hidden" name="redirect" value="{{ app.request.requestUri }}">
+            <select name="days" class="form-select form-select-sm" aria-label="Durée du blocage">
+                <option value="1">24 heures</option>
+                <option value="7" selected>7 jours</option>
+                <option value="30">30 jours</option>
+                <option value="365">1 an</option>
+            </select>
+            <input type="text" name="motif" maxlength="255" class="form-control form-control-sm" placeholder="Motif (facultatif)">
+            <button type="submit" class="btn btn-sm btn-danger">Bloquer cette IP</button>
+        </form>
+    </details>
+{% endif %}

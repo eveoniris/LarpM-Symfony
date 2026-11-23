@@ -53,7 +53,7 @@
                     <td class="text-center align-middle">{{ methodLabels[entry.method.value] }}</td>
                     <td class="text-center align-middle">
                         {% if entry.ip %}<code>{{ entry.ip }}</code>{% else %}-{% endif %}
-                        {% if entry.ipAnonymized %}<small class="text-muted d-block">anonymisée</small>{% endif %}
+                        {% if entry.ipAnonymized %}<small class="text-muted d-block">anonymisée</small>{% else %}{% include '_partials/ip_bloquer.twig' with {'ip': entry.ip} only %}{% endif %}
                     </td>
                     <td class="align-middle" title="{{ entry.userAgent }}">{% if entry.userAgent %}{{ entry.userAgent|length > 90 ? entry.userAgent|slice(0, 90) ~ '…' : entry.userAgent }}{% else %}-{% endif %}</td>
                 </tr>

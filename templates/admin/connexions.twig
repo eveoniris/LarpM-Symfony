@@ -113,7 +113,7 @@
                     <td class="text-center align-middle">
                         {% if entry.ip %}
                             <a href="{{ path('admin.connexions', {'ip': entry.ip}) }}"><code>{{ entry.ip }}</code></a>
-                            {% if entry.ipAnonymized %}<small class="text-muted d-block">anonymisée</small>{% endif %}
+                            {% if entry.ipAnonymized %}<small class="text-muted d-block">anonymisée</small>{% else %}{% include '_partials/ip_bloquer.twig' with {'ip': entry.ip} only %}{% endif %}
                         {% else %}-{% endif %}
                     </td>
                     <td class="align-middle" title="{{ entry.userAgent }}">{% if entry.userAgent %}{{ entry.userAgent|length > 70 ? entry.userAgent|slice(0, 70) ~ '…' : entry.userAgent }}{% else %}-{% endif %}</td>
