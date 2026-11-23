@@ -59,9 +59,6 @@ class BaseGn
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?DateTime $date_installation_joueur = null;
 
-    #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?DateTime $date_fin_orga = null;
-
     /** Date à partir de laquelle les modifications de fiches sont verrouillées (jalon public). */
     #[Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?DateTime $date_verrouillage = null;
@@ -255,18 +252,6 @@ class BaseGn
     public function getDateInstallationJoueur(): ?DateTime
     {
         return $this->date_installation_joueur;
-    }
-
-    public function setDateFinOrga(?DateTime $date_fin_orga): static
-    {
-        $this->date_fin_orga = $date_fin_orga;
-
-        return $this;
-    }
-
-    public function getDateFinOrga(): ?DateTime
-    {
-        return $this->date_fin_orga;
     }
 
     public function setDateVerrouillage(?DateTime $date_verrouillage): static

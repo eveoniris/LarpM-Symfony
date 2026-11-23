@@ -25,6 +25,7 @@ class DiagnosticIpTest extends WebTestCase
         static::assertResponseIsSuccessful();
         static::assertSelectorExists('#diagnostic-ip');
         static::assertSelectorTextContains('#diagnostic-ip', 'REMOTE_ADDR');
+        static::assertSelectorExists('#diagnostic-ip[data-role="admin"]');
     }
 
     public function testAdminSimpleNeVoitPasLeDiagnostic(): void

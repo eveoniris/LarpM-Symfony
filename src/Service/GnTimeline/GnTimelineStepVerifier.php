@@ -6,6 +6,7 @@ namespace App\Service\GnTimeline;
 
 use App\Entity\GnTimelineStep;
 use App\Enum\GnTimelineType;
+use App\Enum\GnTimelineVisibilite;
 
 /**
  * Règles de cohérence d'une étape de chronologie : date, paramètres propres au type, exécution automatique.
@@ -34,6 +35,10 @@ final class GnTimelineStepVerifier
             if ($etape->getAnnees() < 1 || $etape->getAgeMort() < 1) {
                 $erreurs['annees'] = "Les années et l'âge doivent être supérieurs à 0.";
             }
+        }
+
+        if ($type->estTechnique()) {
+            $etape->setVisibilite(GnTimelineVisibilite::TECHNIQUE);
         }
 
         if (GnTimelineType::XP_PARTICIPATION === $type && ($etape->getXp() ?? 0) <= 0) {

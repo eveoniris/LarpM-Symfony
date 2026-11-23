@@ -1,0 +1,102 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Integration\Service;
+
+use App\Entity\GnTimelineStep;
+use App\Entity\Groupe;
+use App\Enum\GnTimelineType;
+use App\Enum\GnTimelineVisibilite;
+use App\Repository\GnRepository;
+use App\Service\GnLockService;
+use App\Service\GnTimeline\DeverrouillageHandler;
+use App\Service\GnTimeline\GnTimelineStepVerifier;
+use App\Service\GnTimeline\VerrouillageStrictHandler;
+use DateTimeImmutable;
+use App\Tests\Factory\GnFactory;
+use App\Tests\Factory\GroupeFactory;
+use App\Tests\Factory\GroupeGnFactory;
+use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\Group;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+
+/**
+ * Niveaux de verrouillage des groupes d'un GN : souple, strict, assouplissement, déverrouillage.
+ */
+#[Group('integration')]
+class GnLockNiveauxTest extends KernelTestCase
+{
+    public function testLesEtapesStrictEtDeverrouillageAgissentSurLesGroupes(): void
+    {
+        self::bootKernel();
+        $repository = static::getContainer()->get(GnRepository::class);
+        $gn = GnFactory::createOne();
+        GroupeGnFactory::createOne(['gn' => $gn, 'groupe' => GroupeFactory::createOne(['lock' => false])]);
+        $etape = (new GnTimelineStep())
+            ->setGn($gn)
+            ->setType(GnTimelineType::VERROUILLAGE_STRICT);
+
+        $service = static::getContainer()->get(GnLockService::class);
+        (new VerrouillageStrictHandler($service))->executer($etape);
+        static::assertSame(1, $repository->compterVerrous($gn)['stricts']);
+
+        (new DeverrouillageHandler($service))->executer($etape);
+        static::assertSame(['total' => 1, 'verrouilles' => 0, 'stricts' => 0], $repository->compterVerrous($gn));
+    }
+
+    public function testLeVerificateurForceLaVisibiliteTechniquePourLesEtapesDeVerrou(): void
+    {
+        $verificateur = new GnTimelineStepVerifier();
+        foreach ([GnTimelineType::VERROUILLAGE_STRICT, GnTimelineType::DEVERROUILLAGE] as $type) {
+            $etape = (new GnTimelineStep())
+                ->setType($type)
+                ->setVisibilite(GnTimelineVisibilite::PUBLIC)
+                ->setDatePrevue(new DateTimeImmutable());
+
+            static::assertSame([], $verificateur->verifier($etape));
+            static::assertSame(GnTimelineVisibilite::TECHNIQUE, $etape->getVisibilite());
+        }
+
+        $sansDate = (new GnTimelineStep())
+            ->setType(GnTimelineType::DEVERROUILLAGE)
+            ->setDatePrevue(null);
+        static::assertArrayHasKey('datePrevue', $verificateur->verifier($sansDate));
+    }
+
+    public function testSoupleStrictAssouplirEtDeverrouiller(): void
+    {
+        self::bootKernel();
+        $service = static::getContainer()->get(GnLockService::class);
+        $repository = static::getContainer()->get(GnRepository::class);
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+
+        $gn = GnFactory::createOne();
+        $groupe = GroupeFactory::createOne(['lock' => false]);
+        GroupeGnFactory::createOne(['gn' => $gn, 'groupe' => $groupe]);
+
+        static::assertSame(['total' => 1, 'verrouilles' => 0, 'stricts' => 0], $repository->compterVerrous($gn));
+
+        $service->verrouillerSouple($gn);
+        static::assertSame(['total' => 1, 'verrouilles' => 1, 'stricts' => 0], $repository->compterVerrous($gn));
+
+        $service->verrouillerStrict($gn);
+        static::assertSame(['total' => 1, 'verrouilles' => 1, 'stricts' => 1], $repository->compterVerrous($gn));
+
+        // Un verrouillage souple planifié ne rétrograde pas un strict posé par un admin
+        $service->verrouillerSouple($gn);
+        static::assertSame(1, $repository->compterVerrous($gn)['stricts']);
+
+        $service->assouplir($gn);
+        static::assertSame(['total' => 1, 'verrouilles' => 1, 'stricts' => 0], $repository->compterVerrous($gn));
+
+        $service->verrouillerStrict($gn);
+        $service->deverrouiller($gn);
+        static::assertSame(['total' => 1, 'verrouilles' => 0, 'stricts' => 0], $repository->compterVerrous($gn));
+
+        $em->clear();
+        $frais = $em->find(Groupe::class, $groupe->getId());
+        static::assertFalse($frais->getLock());
+        static::assertFalse($frais->isLockStrict());
+    }
+}

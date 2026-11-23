@@ -9,6 +9,7 @@ use App\Entity\Groupe;
 use App\Entity\GroupeGn;
 use App\Entity\Loi;
 use App\Entity\Personnage;
+use App\Enum\LogActionType;
 use App\Enum\Role;
 use App\Form\FicheRetourGroupe\FicheRetourGroupeImportType;
 use App\Form\Gn\GnDeleteType;
@@ -1179,6 +1180,44 @@ class GnController extends AbstractController
         return $this->render('gn/update.twig', [
             'gn' => $gn,
             'form' => $form->createView(),
+            'verrous' => $gnRepository->compterVerrous($gn),
         ]);
+    }
+
+    /**
+     * Bascule manuelle du niveau de verrouillage des groupes du GN (admins seulement) : ouvert, souple, strict.
+     */
+    #[Route('/{gn}/verrou-niveau', name: 'verrou.niveau', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function verrouNiveauAction(
+        Request $request,
+        GnLockService $gnLockService,
+        #[MapEntity]
+        Gn $gn,
+    ): RedirectResponse {
+        if (!$this->isCsrfTokenValid('gn_verrou_' . $gn->getId(), (string) $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $niveau = (string) $request->request->get('niveau');
+        match ($niveau) {
+            'strict' => $gnLockService->verrouillerStrict($gn),
+            'souple' => $this->passerEnSouple($gnLockService, $gn),
+            'ouvert' => $gnLockService->deverrouiller($gn),
+            default => throw $this->createNotFoundException('Niveau de verrouillage inconnu.'),
+        };
+
+        $this->log(['gn' => $gn->getId(), 'label' => $gn->getLabel(), 'niveau' => $niveau], LogActionType::GN_VERROU_NIVEAU);
+        $this->entityManager->flush();
+        $this->addFlash('success', \sprintf('Groupes du GN : niveau « %s » appliqué.', $niveau));
+
+        return $this->redirectToRoute('gn.update', ['gn' => $gn->getId()], 303);
+    }
+
+    /** Souple : verrouille les groupes ouverts et relâche le niveau strict. */
+    private function passerEnSouple(GnLockService $gnLockService, Gn $gn): void
+    {
+        $gnLockService->verrouillerSouple($gn);
+        $gnLockService->assouplir($gn);
     }
 }

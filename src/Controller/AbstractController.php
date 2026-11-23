@@ -74,6 +74,9 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         self::IS_MEMBRE => false,
     ];
 
+    /** @var array<string, true> Messages d'information de verrou déjà ajoutés pendant cette requête */
+    private array $flashesDeLaRequete = [];
+
     public function __construct(
         protected EntityManagerInterface $entityManager,
         protected RequestStack $requestStack,
@@ -168,6 +171,25 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         }
 
         if ($this->isGranted(Role::ADMIN->value)) {
+            $this->addFlashUneFois(
+                'info',
+                $groupe->isLockStrict()
+                    ? 'Verrouillage strict actif : seuls les admins peuvent modifier ce groupe. Vous n\'êtes pas bloqué.'
+                    : 'Verrouillage actif : les joueurs et chefs de groupe ne peuvent plus modifier. Vous n\'êtes pas bloqué.',
+            );
+
+            return null;
+        }
+
+        // Verrouillage souple : un scénariste peut modifier, avec alerte et trace
+        if (!$groupe->isLockStrict() && $this->isGranted(Role::SCENARISTE->value)) {
+            $this->addFlashUneFois(
+                'warning',
+                'Le groupe est verrouillé : vos modifications ne seront pas portées dans les enveloppes remises aux joueurs. '
+                . 'Remontez-les à la gestion, ou assurez-vous qu\'elles restent sans incidence.',
+            );
+            $this->tracerModificationSousVerrou($groupe);
+
             return null;
         }
 
@@ -190,6 +212,42 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         // throw new AccessDeniedHttpException(implode('<br />', $renderMsg));
 
         return $this->redirectToRoute($route, $routeParams, 303);
+    }
+
+    /** Un même message n'est affiché qu'une fois par requête (plusieurs contrôles de verrou par page). */
+    private function addFlashUneFois(string $type, string $message): void
+    {
+        $cle = $type . '|' . $message;
+        if (\array_key_exists($cle, $this->flashesDeLaRequete)) {
+            return;
+        }
+
+        $this->flashesDeLaRequete[$cle] = true;
+        $this->addFlash($type, $message);
+    }
+
+    /**
+     * Trace d'une modification de scénariste sous verrouillage souple : seulement pour les requêtes qui modifient
+     * (POST, PUT, DELETE...), pas pour la simple consultation d'un formulaire.
+     */
+    private function tracerModificationSousVerrou(Groupe $groupe): void
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        if (null === $request || $request->isMethodSafe()) {
+            return;
+        }
+
+        $this->log(
+            [
+                'groupe' => $groupe->getId(),
+                'nom' => $groupe->getNom(),
+                'route' => $request->attributes->get('_route'),
+                'url' => $request->getRequestUri(),
+                'methode' => $request->getMethod(),
+            ],
+            LogActionType::MODIFICATION_SOUS_VERROU,
+            flush: true,
+        );
     }
 
     /**

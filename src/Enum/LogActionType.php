@@ -58,6 +58,15 @@ enum LogActionType: string
     case GROUPE_UNLOCK = 'groupe_unlock';
 
     /**
+     * Modification faite par un scénariste sur un groupe, un participant ou un personnage sous verrouillage souple
+     * (data : route, url, méthode, groupe). Non portée dans les enveloppes remises aux joueurs.
+     */
+    case MODIFICATION_SOUS_VERROU = 'modification_sous_verrou';
+
+    /** Passage du verrouillage souple au verrouillage strict d'un GN, ou retour (data : gn, niveau). */
+    case GN_VERROU_NIVEAU = 'gn_verrou_niveau';
+
+    /**
      * Modification de la chaîne de personnages d'une participation : principal,
      * substitution, relève ou archétype de secours.
      */

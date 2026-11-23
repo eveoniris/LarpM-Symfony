@@ -41,6 +41,30 @@ final readonly class GnLockService
         }
     }
 
+    /** Verrouillage souple seul, sans les effets de compétence ni les messages (bascule manuelle). */
+    public function verrouillerSouple(Gn $gn): void
+    {
+        $this->gnRepository->lockAllGroup($gn);
+    }
+
+    /** Verrouillage strict (admins seuls) de tous les groupes du GN. */
+    public function verrouillerStrict(Gn $gn): void
+    {
+        $this->gnRepository->lockStrictAllGroup($gn);
+    }
+
+    /** Retour du strict au souple : le verrouillage reste actif, les scénaristes peuvent de nouveau modifier. */
+    public function assouplir(Gn $gn): void
+    {
+        $this->gnRepository->relaxStrictAllGroup($gn);
+    }
+
+    /** Déverrouillage complet des groupes du GN (niveaux souple et strict). */
+    public function deverrouiller(Gn $gn): void
+    {
+        $this->gnRepository->unlockAllGroup($gn);
+    }
+
     /**
      * Message système au joueur pour chaque gain de compétence réellement donné (un rejeu ne redonne rien, donc ne renvoie rien).
      *

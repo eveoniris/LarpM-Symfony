@@ -140,29 +140,60 @@ class GnRepository extends BaseRepository
         return $personnageRepository->createQueryBuilder('perso')->innerJoin('perso.gn', 'gn')->where('gn.id = :gnid')->setParameter('gnid', $gn->getId());
     }
 
+    /**
+     * Répartition des verrous des groupes du GN.
+     *
+     * @return array{total: int, verrouilles: int, stricts: int}
+     */
+    public function compterVerrous(Gn $gn): array
+    {
+        $ligne = $this->entityManager->getConnection()->fetchAssociative('SELECT COUNT(g.id) AS total, COALESCE(SUM(g.`lock`), 0) AS verrouilles, COALESCE(SUM(g.`lock` AND g.lock_strict), 0) AS stricts'
+        . ' FROM groupe g INNER JOIN groupe_gn ggn ON g.id = ggn.groupe_id WHERE ggn.gn_id = :gnid', ['gnid' => $gn->getId()]);
+
+        return [
+            'total' => (int) ($ligne['total'] ?? 0),
+            'verrouilles' => (int) ($ligne['verrouilles'] ?? 0),
+            'stricts' => (int) ($ligne['stricts'] ?? 0),
+        ];
+    }
+
+    /** Verrouillage souple : ne touche pas au niveau strict déjà posé par un admin. */
     public function lockAllGroup(Gn $gn): Result
     {
-        return $this->toggleLock($gn, true);
+        return $this->toggleLock($gn, 'g.`lock` = 1');
     }
 
+    /** Verrouillage strict : seuls les admins peuvent modifier. */
+    public function lockStrictAllGroup(Gn $gn): Result
+    {
+        return $this->toggleLock($gn, 'g.`lock` = 1, g.lock_strict = 1');
+    }
+
+    /** Retour du strict au souple (le verrouillage reste actif). */
+    public function relaxStrictAllGroup(Gn $gn): Result
+    {
+        return $this->toggleLock($gn, 'g.lock_strict = 0');
+    }
+
+    /** Déverrouillage complet, quel que soit le niveau. */
     public function unlockAllGroup(Gn $gn): Result
     {
-        return $this->toggleLock($gn, false);
+        return $this->toggleLock($gn, 'g.`lock` = 0, g.lock_strict = 0');
     }
 
-    private function toggleLock(Gn $gn, bool $lock): Result
+    /** @param string $set Clause SET constante (jamais issue d'une saisie) */
+    private function toggleLock(Gn $gn, string $set): Result
     {
         $connection = $this->entityManager->getConnection();
 
         $sql = <<<SQL
              UPDATE groupe g
              INNER JOIN groupe_gn AS ggn ON g.id = ggn.groupe_id
-             SET `lock` = :lockvalue
+             SET {$set}
              WHERE ggn.gn_id = :gnid
             SQL;
 
         $statement = $connection->prepare($sql);
-        $statement->bindValue('lockvalue', $lock ? 1 : 0);
         $statement->bindValue('gnid', $gn->getId());
 
         return $statement->executeQuery();
