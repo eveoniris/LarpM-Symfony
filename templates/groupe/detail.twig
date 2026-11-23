@@ -17,6 +17,8 @@
 
     {% include '_partials/breadcrumb.twig' with {'items' :breadcrumb} %}
 
+    {% include '_partials/verrou_groupe.twig' with {'groupe': groupe} %}
+
     <div class="d-flex justify-content-end">
         <div class="w-auto mb-2 p-0">
             {% if is_granted('ROLE_SCENARISTE', app.user) %}

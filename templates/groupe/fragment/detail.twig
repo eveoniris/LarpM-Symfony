@@ -450,11 +450,17 @@
                             sessions de jeu</a><br/>
                         <div id="groupe_lock" class="m-2">
                             {% if groupe.lock %}
-                                Le groupe est <strong class="text-warning">verouillé aux modifications PJ</strong>.
-                                <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
-                                   title="Ouvrir le groupe"
-                                   href="{{ path('groupe.unlock', {'groupe' : groupe.id}) }}"><i
-                                            class="fa fa-pencil"></i> déverouiller</a>
+                                {% if groupe.lockStrict %}
+                                    Le groupe est <strong class="text-danger">verrouillé strictement</strong> (admins seuls).
+                                {% else %}
+                                    Le groupe est <strong class="text-warning">verouillé aux modifications PJ</strong>.
+                                {% endif %}
+                                {% if not groupe.lockStrict or is_granted('ROLE_ADMIN') %}
+                                    <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"
+                                       title="Ouvrir le groupe"
+                                       href="{{ path('groupe.unlock', {'groupe' : groupe.id}) }}"><i
+                                                class="fa fa-pencil"></i> déverouiller</a>
+                                {% endif %}
                             {% else %}
                                 Le groupe est <strong class="text-success">ouvert aux modifications PJ</strong>.
                                 <a class="btn btn-secondary" data-toggle="tooltip" data-placement="top"

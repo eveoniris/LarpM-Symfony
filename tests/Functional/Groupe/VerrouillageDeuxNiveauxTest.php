@@ -7,7 +7,9 @@ namespace App\Tests\Functional\Groupe;
 use App\Entity\Groupe;
 use App\Entity\LogAction;
 use App\Enum\LogActionType;
+use App\Tests\Factory\GnFactory;
 use App\Tests\Factory\GroupeFactory;
+use App\Tests\Factory\GroupeGnFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Group;
@@ -17,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  * Verrouillage à deux niveaux des groupes : souple (scénariste autorisé, avec alerte et trace) et strict (admins seuls).
  */
 #[Group('functional')]
+// @mago-expect lint:too-many-methods
 class VerrouillageDeuxNiveauxTest extends WebTestCase
 {
     public function testSouplePermetAuScenaristeEtTraceLaModification(): void
@@ -98,6 +101,57 @@ class VerrouillageDeuxNiveauxTest extends WebTestCase
         $frais = $this->groupe($groupe->getId());
         static::assertFalse($frais->getLock());
         static::assertFalse($frais->isLockStrict());
+    }
+
+    public function testBandeauSurLaFicheGroupePourLeScenaristeSousVerrouSouple(): void
+    {
+        $client = static::createClient();
+        $groupe = GroupeFactory::createOne(['lock' => true]);
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_SCENARISTE']]));
+
+        $client->request('GET', '/groupe/' . $groupe->getId());
+
+        static::assertResponseIsSuccessful();
+        static::assertStringContainsString('ne seront pas portées dans les enveloppes', (string) $client->getResponse()->getContent());
+    }
+
+    public function testBasculeAdminSansJetonCsrfRefusee(): void
+    {
+        $client = static::createClient();
+        $gn = GnFactory::createOne();
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_ADMIN']]));
+
+        $client->request('POST', '/gn/' . $gn->getId() . '/verrou-niveau', ['niveau' => 'strict']);
+
+        static::assertResponseRedirects('/access_denied');
+    }
+
+    public function testBasculeAdminAvecJetonPasseEnStrict(): void
+    {
+        $client = static::createClient();
+        $gn = GnFactory::createOne();
+        $groupe = GroupeFactory::createOne(['lock' => false]);
+        GroupeGnFactory::createOne(['gn' => $gn, 'groupe' => $groupe]);
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_ADMIN']]));
+
+        $crawler = $client->request('GET', '/gn/' . $gn->getId() . '/update');
+        $jeton = $crawler->filter('#gn_verrou input[name=_token]')->attr('value');
+        $client->request('POST', '/gn/' . $gn->getId() . '/verrou-niveau', ['niveau' => 'strict', '_token' => $jeton]);
+
+        static::assertResponseRedirects('/gn/' . $gn->getId() . '/update');
+        $frais = $this->groupe($groupe->getId());
+        static::assertTrue($frais->isLockStrict());
+    }
+
+    public function testScenaristeNeVoitPasLaBasculeSurLaPageGn(): void
+    {
+        $client = static::createClient();
+        $gn = GnFactory::createOne();
+        $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_USER', 'ROLE_ORGA']]));
+
+        $crawler = $client->request('GET', '/gn/' . $gn->getId() . '/update');
+
+        static::assertCount(0, $crawler->filter('#gn_verrou'));
     }
 
     private function passerEnStrict(int $groupeId): void
