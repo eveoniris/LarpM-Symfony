@@ -61,6 +61,13 @@ class BaseGroupe
     #[Column(name: '`lock`', type: Types::BOOLEAN)]
     protected bool $lock;
 
+    /**
+     * Verrouillage strict : seuls les admins peuvent modifier (les scénaristes sont aussi bloqués).
+     * Implique `lock`.
+     */
+    #[Column(name: 'lock_strict', type: Types::BOOLEAN, options: ['default' => false])]
+    protected bool $lockStrict = false;
+
     #[Column(type: Types::INTEGER, nullable: true)]
     protected ?int $richesse = null;
 
@@ -608,6 +615,18 @@ class BaseGroupe
     public function setLock(bool $lock): static
     {
         $this->lock = $lock;
+
+        return $this;
+    }
+
+    public function isLockStrict(): bool
+    {
+        return $this->lock && $this->lockStrict;
+    }
+
+    public function setLockStrict(bool $lockStrict): static
+    {
+        $this->lockStrict = $lockStrict;
 
         return $this;
     }
