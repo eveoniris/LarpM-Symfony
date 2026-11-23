@@ -15,4 +15,34 @@
 		'title': 'Modification d\'un grandeur nature',
 		'form' : form}) }}
 
+	{% if is_granted('ROLE_ADMIN') and verrous is defined %}
+		<div class="card mt-3" id="gn_verrou">
+			<div class="card-header">Verrouillage des groupes du GN</div>
+			<div class="card-body">
+				<p>
+					{% if verrous.total == 0 %}
+						Aucun groupe n'est rattaché à ce GN.
+					{% elseif verrous.stricts > 0 %}
+						<strong class="text-danger">Strict</strong> : {{ verrous.stricts }} groupe(s) sur {{ verrous.total }}.
+						Seuls les admins peuvent modifier ; les scénaristes sont bloqués.
+					{% elseif verrous.verrouilles > 0 %}
+						<strong class="text-warning">Souple</strong> : {{ verrous.verrouilles }} groupe(s) sur {{ verrous.total }}.
+						Les joueurs sont bloqués ; les scénaristes peuvent modifier (modifications tracées, non portées dans les enveloppes).
+					{% else %}
+						<strong class="text-success">Ouvert</strong> : les {{ verrous.total }} groupe(s) sont modifiables.
+					{% endif %}
+				</p>
+				<form method="post" action="{{ path('gn.verrou.niveau', {'gn': gn.id}) }}" class="d-flex flex-wrap gap-2">
+					<input type="hidden" name="_token" value="{{ csrf_token('gn_verrou_' ~ gn.id) }}">
+					<button class="btn btn-secondary" name="niveau" value="souple" type="submit">Verrouiller (souple)</button>
+					<button class="btn btn-danger" name="niveau" value="strict" type="submit">Verrouiller (strict, admins seuls)</button>
+					<button class="btn btn-outline-secondary" name="niveau" value="ouvert" type="submit">Déverrouiller tout</button>
+				</form>
+				<p class="text-muted small mt-2">
+					Cette bascule ne donne aucun gain de compétence. Le verrouillage complet (avec effets) reste l'étape « Verrouillage » de la chronologie.
+				</p>
+			</div>
+		</div>
+	{% endif %}
+
 {% endblock body %}

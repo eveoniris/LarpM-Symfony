@@ -6,6 +6,8 @@
 
     {% include 'personnage/fragment/breadcrumb.twig' %}
 
+    {% include '_partials/verrou_groupe.twig' with {'groupe': personnage.lastParticipantGnGroupe} %}
+
     {% set isAdmin = is_granted('ROLE_REGLE', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_SCENARISTE', app.user) %}
 
     <div class="panel mb-0 border-bottom-0">

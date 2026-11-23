@@ -1,0 +1,30 @@
+{#
+    Bandeau d'information sur le verrouillage d'un groupe, pour le personnel (scénaristes et admins).
+    Paramètre : groupe (peut être nul). Rien n'est affiché pour les joueurs ni si le groupe est ouvert.
+#}
+{% if groupe is defined and groupe is not null and groupe.lock and (is_granted('ROLE_SCENARISTE') or is_granted('ROLE_ADMIN')) %}
+    {% if groupe.lockStrict %}
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="alert alert-danger" role="alert" id="verrou_info">
+                <strong>Verrouillage strict actif.</strong> Seuls les admins peuvent modifier ce groupe, ses participants et ses personnages.
+                Vous n'êtes pas bloqué.
+            </div>
+        {% else %}
+            <div class="alert alert-danger" role="alert" id="verrou_info">
+                <strong>Verrouillage strict actif.</strong> Seuls les admins peuvent modifier ce groupe, ses participants et ses personnages.
+                Remontez toute demande de modification à la gestion.
+            </div>
+        {% endif %}
+    {% else %}
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="alert alert-info" role="alert" id="verrou_info">
+                <strong>Groupe verrouillé.</strong> Les joueurs et chefs de groupe ne peuvent plus modifier. Vous n'êtes pas bloqué.
+            </div>
+        {% else %}
+            <div class="alert alert-warning" role="alert" id="verrou_info">
+                <strong>Groupe verrouillé.</strong> Vos modifications sont possibles mais tracées, et ne seront pas portées dans les enveloppes
+                remises aux joueurs. Remontez-les à la gestion, ou assurez-vous qu'elles restent sans incidence.
+            </div>
+        {% endif %}
+    {% endif %}
+{% endif %}

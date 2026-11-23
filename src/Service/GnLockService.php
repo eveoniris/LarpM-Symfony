@@ -41,6 +41,12 @@ final readonly class GnLockService
         }
     }
 
+    /** Verrouillage souple seul, sans les effets de compétence ni les messages (bascule manuelle). */
+    public function verrouillerSouple(Gn $gn): void
+    {
+        $this->gnRepository->lockAllGroup($gn);
+    }
+
     /** Verrouillage strict (admins seuls) de tous les groupes du GN. */
     public function verrouillerStrict(Gn $gn): void
     {
