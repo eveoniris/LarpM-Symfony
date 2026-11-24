@@ -727,7 +727,7 @@ class PersonnageController extends AbstractController
         if ($personnage->isKnownPotion($potion)) {
             $this->addFlash('warning', $nomPotion . ' est déjà connue par ce personnage.');
 
-            return $this->redirectToRoute('personnage.admin.detail', ['personnage' => $personnage->getId()], 303);
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
         }
 
         $personnage->addPotion($potion);
@@ -5100,6 +5100,7 @@ class PersonnageController extends AbstractController
     }
 
     #[Route('/vieillir', name: 'vieillir')]
+    #[IsGranted(Role::ADMIN->value)]
     public function vieillirAction(Request $request, AgeRepository $ageRepository): RedirectResponse|Response
     {
         $form = $this

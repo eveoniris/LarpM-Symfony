@@ -109,7 +109,26 @@ security:
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api/admin, roles: ROLE_API_READ }
         - { path: ^/api,       roles: [ IS_AUTHENTICATED_FULLY, IS_AUTHENTICATED_REMEMBERED ] }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # Pages publiques (visiteur non connecté). Toute nouvelle page publique doit être ajoutée ici
+        # ET dans tests/Functional/Security/MatriceAccesAnonymeTest.php.
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/(login|logout|legal|access_denied)$, roles: PUBLIC_ACCESS }
+        # Inscription, confirmation d'adresse, mot de passe oublié
+        - { path: ^/user/register(/|$), roles: PUBLIC_ACCESS }
+        - { path: ^/user/forgot$, roles: PUBLIC_ACCESS }
+        - { path: ^/user/reset-password/, roles: PUBLIC_ACCESS }
+        - { path: ^/user/\d+/(confirm/|resend-confirmation$), roles: PUBLIC_ACCESS }
+        # Webhook Discord (appelé par les serveurs Discord, sans session)
+        - { path: ^/discord/interactions$, roles: PUBLIC_ACCESS }
+        # Règles du jeu et carte du monde, lisibles par les futurs joueurs
+        - { path: ^/(classe|competence|religion|rule)$, roles: PUBLIC_ACCESS }
+        - { path: ^/classe/\d+/image/, roles: PUBLIC_ACCESS }
+        - { path: ^/religion/\d+/blason$, roles: PUBLIC_ACCESS }
+        - { path: ^/rule/\d+(/detail|/document)?$, roles: PUBLIC_ACCESS }
+        - { path: ^/world$, roles: PUBLIC_ACCESS }
+        - { path: ^/world/[a-z]+\.json$, roles: PUBLIC_ACCESS }
+        # Tout le reste exige d'être connecté (les contrôleurs affinent ensuite par rôle).
+        - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:

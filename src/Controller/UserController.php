@@ -866,22 +866,6 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/user/like', name: 'user.like')]
-    public function likeAction(User $user): RedirectResponse
-    {
-        if ($user === $this->getUser()) {
-            $this->addFlash('error', 'Désolé ... Avez vous vraiment cru que cela allait fonctionner ? un peu de patience !');
-        } else {
-            $user->addCoeur();
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
-            // NOTIFY $app['notify']->coeur($this->getUser(), $User);
-            $this->addFlash('success', 'Votre coeur a été envoyé !');
-        }
-
-        return $this->redirectToRoute('User.view', ['id' => $user->getId()]);
-    }
-
     #[Route('/user/new/step1', name: 'user.new-step1')]
     public function newUserStep1Action(EntityManagerInterface $entityManager): Response
     {

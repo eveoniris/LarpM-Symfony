@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Enum\Role;
 use App\Form\Groupe\GroupeSecondaireTypeType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * LarpManager\Controllers\GroupeSecondaireTypeController.
@@ -21,6 +23,7 @@ class GroupeSecondaireTypeController extends AbstractController
      * Ajoute un type de groupe secondaire.
      */
     #[Route('/groupeSecondaireType/add', name: 'groupeSecondaireType.add')]
+    #[IsGranted(Role::ROLE_GROUPE_TRANSVERSE->value)]
     public function adminAddAction(Request $request, EntityManagerInterface $entityManager): Response
     {
         $groupeSecondaireType = new \App\Entity\SecondaryGroupType();

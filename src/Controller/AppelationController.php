@@ -101,7 +101,7 @@ class AppelationController extends AbstractController
                 $entityManager->flush();
                 $this->addFlash('success', 'L\'appelation a été supprimée.');
 
-                return $this->redirectToRoute('appelation', [], 303);
+                return $this->redirectToRoute('appelation.index', [], 303);
             }
         }
 
