@@ -34,6 +34,17 @@ class IpBloqueeRepository extends ServiceEntityRepository
         return array_column($rows, 'cidr');
     }
 
+    public function countExpiredBefore(DateTimeImmutable $before): int
+    {
+        return (int) $this
+            ->createQueryBuilder('b')
+            ->select('COUNT(b.id)')
+            ->where('b.expiresAt < :before')
+            ->setParameter('before', $before)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     /** Supprime les blocages expirés avant la date, renvoie le nombre de lignes supprimées. */
     public function deleteExpiredBefore(DateTimeImmutable $before): int
     {
