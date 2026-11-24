@@ -8,6 +8,7 @@ use App\Entity\LoginHistory;
 use App\Entity\User;
 use App\Enum\LoginMethod;
 use App\Repository\LoginHistoryRepository;
+use App\Security\IpBlocklist;
 use DateTimeImmutable;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,13 +22,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * Historique des connexions d'un compte : visible par son propriétaire (« Mes connexions ») et par les administrateurs.
  */
 #[IsGranted('IS_AUTHENTICATED_REMEMBERED')]
+// @mago-expect lint:cyclomatic-complexity
 final class LoginHistoryController extends AbstractController
 {
     private const int LIMIT = 100;
     private const int ADMIN_LIMIT = 50;
 
     #[Route('/user/{user}/connexions', name: 'user.connexions', requirements: ['user' => Requirement::DIGITS])]
-    public function listAction(#[MapEntity] User $user, LoginHistoryRepository $repository): Response
+    public function listAction(#[MapEntity] User $user, LoginHistoryRepository $repository, IpBlocklist $ipBlocklist): Response
     {
         $current = $this->getUser();
         $isSelf = $current instanceof User && $current->getId() === $user->getId();
@@ -48,7 +50,19 @@ final class LoginHistoryController extends AbstractController
             $newDeviceIds[] = $entry->getId();
         }
 
+        // Réservé aux admins : IP récentes de ce compte qui sont actuellement bloquées (IP partagée possible).
+        $blockedIps = [];
+        if ($this->isGranted('ROLE_ADMIN')) {
+            foreach ($entries as $entry) {
+                $ip = $entry->getIp();
+                if (null !== $ip && !$entry->isIpAnonymized() && !\in_array($ip, $blockedIps, strict: true) && $ipBlocklist->isBlocked($ip)) {
+                    $blockedIps[] = $ip;
+                }
+            }
+        }
+
         return $this->render('user/connexions.twig', [
+            'blockedIps' => $blockedIps,
             'user' => $user,
             'isSelf' => $isSelf,
             'entries' => $entries,

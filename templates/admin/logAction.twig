@@ -69,6 +69,7 @@
                 <td class="text-center align-middle col-1">
                     {% if logAction.ip %}
                         <span>{{ logAction.ip|highlight(pagerService.searchValue) }}</span>
+                        {% include '_partials/ip_bloquer.twig' with {'ip': logAction.ip} only %}
                         {% if logAction.userAgent %}
                             <br><small class="text-muted" title="{{ logAction.userAgent }}">{{ logAction.userAgent|slice(0, 30) }}{% if logAction.userAgent|length > 30 %}…{% endif %}</small>
                         {% endif %}

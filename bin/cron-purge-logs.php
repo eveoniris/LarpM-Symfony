@@ -5,7 +5,7 @@ declare(strict_types=1);
 // Cron OVH : le formulaire n'accepte qu'un fichier PHP sans argument, on fixe donc les commandes ici.
 // Planification : langage PHP 8.5, fichier larpmanager/bin/cron-purge-logs.php, une fois par jour.
 // Enchaîne les rétentions : refus d'accès (error_acces.log, 31 jours), historique de connexion (IP anonymisées à 30 jours, lignes supprimées
-// à 12 mois) puis log_action (lignes de plus de 5 ans). Le code retour est le plus élevé des deux.
+// à 12 mois), log_action (lignes de plus de 5 ans) puis les blocages d'IP expirés depuis plus de 30 jours. Le code retour est le plus élevé.
 // Pour une simulation (aucune suppression), mettre PURGE_LOGS_APPLY à false.
 
 use App\Kernel;
@@ -16,7 +16,7 @@ use Symfony\Component\Runtime\RunnerInterface;
 
 const PURGE_LOGS_APPLY = true;
 
-const PURGE_LOGS_COMMANDS = ['app:login-history:purger', 'app:log-action:purger', 'app:acces-log:purger'];
+const PURGE_LOGS_COMMANDS = ['app:login-history:purger', 'app:log-action:purger', 'app:acces-log:purger', 'app:ip-bloquee:purger'];
 
 require_once dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
