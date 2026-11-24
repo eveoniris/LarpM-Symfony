@@ -100,6 +100,8 @@ security:
     # Note: Only the *first* matching rule is applied
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
+        # Assistant d'installation hérité : jamais accessible sans super admin (double la garde du contrôleur).
+        - { path: ^/install, roles: ROLE_SUPER_ADMIN }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/client/token, roles: PUBLIC_ACCESS }

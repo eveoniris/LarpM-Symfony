@@ -39,7 +39,8 @@ class Photo extends BasePhoto
             $image->resize($image->getSize()->widen(480));
             $image->save($fileUploader->getStoredFileWithPath());
         } catch (RuntimeException $e) {
-            dump($e);
+            // Redimensionnement facultatif : en cas d'échec on garde l'image telle quelle.
+            error_log('Photo : redimensionnement impossible : ' . $e->getMessage());
         }
 
         $this->setCreationDate(new DateTime('NOW'));
@@ -66,7 +67,8 @@ class Photo extends BasePhoto
             $image->resize($image->getSize()->widen(480));
             $image->save($path . $this->getFilename());
         } catch (RuntimeException $e) {
-            dump($e);
+            // Redimensionnement facultatif : en cas d'échec on garde l'image telle quelle.
+            error_log('Photo : redimensionnement impossible : ' . $e->getMessage());
         }
     }
 

@@ -20,8 +20,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Yaml\Dumper;
 
+/**
+ * Assistant d'installation hérité, réservé au super admin.
+ * Doublé par une règle access_control ^/install dans config/packages/security.yaml.
+ */
+#[IsGranted('ROLE_SUPER_ADMIN')]
 class InstallController extends AbstractController
 {
     private function loadUserTables(\Doctrine\DBAL\Connection $connection, string $dir): void
@@ -45,12 +51,6 @@ class InstallController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
     ): RedirectResponse|Response {
-        // $app['security.access_rules'] dans le bootstrap definit deja ce comportement, ce check n'est la que
-        // comme double securite
-        if (!$this->isGranted('ROLE_ADMIN')) {
-            return $this->redirectToRoute('user.app_login');
-        }
-
         if ('POST' === $request->getMethod()) {
             $this->loadLarpManagerTables($entityManager->getConnection(), 'docker/db/');
 
@@ -280,7 +280,7 @@ class InstallController extends AbstractController
             $entityManager->flush();
 
             // création de l'utilisateur admin
-            return $this->redirectToRoute('install_create_user');
+            return $this->redirectToRoute('install.create-user');
         }
 
         return $this->render('install/index.twig', ['form' => $form->createView()]);

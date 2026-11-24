@@ -4059,6 +4059,7 @@ class PersonnageController extends AbstractController
      * Gestion des objets lié à un personnage.
      */
     #[Route('/{personnage}/items', name: 'items')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function itemAction(Request $request, #[MapEntity] Personnage $personnage): RedirectResponse|Response
     {
         $participant = $this->getParticipant($personnage, $request);

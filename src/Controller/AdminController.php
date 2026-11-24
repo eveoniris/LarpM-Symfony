@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Personnage;
 use App\Enum\LogActionType;
 use App\Repository\ExperienceGainRepository;
 use App\Repository\ExperienceUsageRepository;
 use App\Repository\LogActionRepository;
 use App\Repository\PersonnageRepository;
 use App\Repository\UserRepository;
-use App\Service\ConditionsService;
 use App\Service\LogReaderService;
 use App\Service\OrderBy;
 use App\Service\PagerService;
@@ -240,55 +238,6 @@ class AdminController extends AbstractController
             'paginator' => $paginator,
             'orderDir' => $this->getRequestOrderDir(),
         ]);
-    }
-
-    public function testConditions(
-        PersonnageRepository $personnageRepository,
-        ConditionsService $conditionsService,
-    ): Response {
-        /** @var Personnage|null $personnage */
-        $personnage = $personnageRepository->findOneBy(['id' => 4608]);
-        if (!$personnage) {
-            dd('NOT FOUND');
-        }
-
-        dump($conditionsService->isValidConditions(
-            $personnage,
-            [
-                'TYPE' => 'CLASSE',
-                'VALUE' => 21,
-            ],
-            $this,
-        ));
-
-        dump($conditionsService->isValidConditions(
-            $personnage,
-            [
-                [
-                    'TYPE' => 'CLASSE',
-                    'VALUE' => 21,
-                ],
-            ],
-            $this,
-        ));
-
-        dump($conditionsService->isValidConditions(
-            $personnage,
-            [
-                'AND',
-                [
-                    'TYPE' => 'CLASSE',
-                    'VALUE' => 21,
-                ],
-                [
-                    'TYPE' => 'RELIGION',
-                    'VALUE' => 5,
-                ],
-            ],
-            $this,
-        ));
-
-        dd('END');
     }
 
     #[Route('/admin/xp/gain', name: 'xp.gain')]
