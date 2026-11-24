@@ -72,6 +72,28 @@ class IpBloqueeTest extends WebTestCase
         $this->nettoyer($blocklist);
     }
 
+    public function testMotDePasseOublieLimiteLesEnvoisParAdresse(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        // Les compteurs survivent entre deux exécutions (cache fichier) : adresse et IP uniques à chaque run.
+        $adresse = 'limite-' . bin2hex(random_bytes(4)) . '@example.com';
+        $client->setServerParameter('REMOTE_ADDR', '45.33.' . random_int(1, 254) . '.' . random_int(1, 254));
+        UserFactory::createOne(['email' => $adresse]);
+
+        $envoyes = 0;
+        for ($i = 0; $i < 5; ++$i) {
+            $client->request('GET', '/user/forgot');
+            $client->submitForm('Envoyer une réinitialisation de votre mot de passe', ['user_forgot_password[email]' => $adresse]);
+            static::assertResponseRedirects('/login');
+            // Le collecteur de mails est propre à chaque requête : on cumule.
+            $envoyes += \count(static::getMailerMessages());
+        }
+
+        // 3 envois par heure et par adresse : les 2 suivants sont simulés.
+        static::assertSame(3, $envoyes);
+    }
+
     public function testRenvoiDeConfirmationNenvoieRienEnIpBloquee(): void
     {
         $client = static::createClient();
