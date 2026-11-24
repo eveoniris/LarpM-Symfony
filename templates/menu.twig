@@ -61,19 +61,13 @@
                                 <li><a class="dropdown-item" href="{{ path('billet.list') }}">Billets</a></li>
                                 <li><a class="dropdown-item" href="{{ path('user.list') }}">Utilisateurs</a>
                                 </li>
-                                <li><a class="dropdown-item" href="{{ path('admin.connexions') }}">Connexions</a></li>
-                                <li><a class="dropdown-item" href="{{ path('admin.ip.list') }}">IP bloquées</a></li>
                                 <li><a class="dropdown-item" href="{{ path('restriction.list') }}">Restrictions
                                         alimentaires</a></li>
                                 <li><a class="dropdown-item" href="{{ path('restauration.list') }}">Lieux de
                                         restauration</a></li>
-                                <li><a class="dropdown-item" href="{{ path('right.list') }}">Liste des
-                                        droits</a></li>
                                 <li><a class="dropdown-item" href="{{ path('statistique') }}">Statistiques</a></li>
-                                <li><a class="dropdown-item" href="{{ path('admin') }}">Administration</a></li>
                                 <li><a class="dropdown-item" href="{{ path('admin.rappels') }}">Rappels</a></li>
-                                <li><a class="dropdown-item" href="{{ path('discord.admin') }}">Bot Discord</a></li>
-                                <li><a class="dropdown-item" href="{{ path('api.client.admin') }}">Applications API</a></li>
+                                <li><a class="dropdown-item" href="{{ path('admin.messages.masse') }}">Messages en masse</a></li>
                                 <li><a class="dropdown-item" href="{{ path('question') }}">Questions</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
@@ -277,22 +271,47 @@
                     </li>
                 {% endif %}
 
-                {% if is_granted('ROLE_STATISTIQUE', app.user) %}
+                {# Technique : liens d'administration technique du site, ROLE_ADMIN seul #}
+                {% if is_granted('ROLE_ADMIN', app.user) %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
-                            Larp
+                            Technique
                         </a>
                         <ul class="dropdown-menu">
-                            {% if is_granted('ROLE_ADMIN', app.user) %}
-                                <li><a class="dropdown-item" href="{{ path('install') }}">Tableau de bord</a></li>
-                                <li><a class="dropdown-item" href="{{ path('xp.gain') }}">Gain XP</a></li>
-                                <li><a class="dropdown-item" href="{{ path('xp.usage') }}">Usage XP</a></li>
-                                <li><a class="dropdown-item" href="{{ path('admin.masse') }}">Ajouts en masse</a></li>
-                                <li><a class="dropdown-item" href="{{ path('admin.action.logs') }}">Log action</a></li>
-                                <li><a class="dropdown-item" href="{{ path('admin.messages.masse') }}">Messages en masse</a></li>
-                                <li><a class="dropdown-item" href="{{ path('admin.messenger') }}">File d'envoi des e-mails</a></li>
-                            {% endif %}
+                            <li><h6 class="dropdown-header">Sécurité</h6></li>
+                            <li><a class="dropdown-item" href="{{ path('admin.connexions') }}">Connexions</a></li>
+                            <li><a class="dropdown-item" href="{{ path('admin.ip.list') }}">IP bloquées</a></li>
+                            <li><a class="dropdown-item" href="{{ path('right.list') }}">Liste des droits</a></li>
+                            <li><a class="dropdown-item" href="{{ path('admin.action.logs') }}">Log action</a></li>
+                            <li><h6 class="dropdown-header">Intégrations</h6></li>
+                            <li><a class="dropdown-item" href="{{ path('discord.admin') }}">Bot Discord</a></li>
+                            <li><a class="dropdown-item" href="{{ path('api.client.admin') }}">Applications API</a></li>
+                            <li><h6 class="dropdown-header">Exploitation</h6></li>
+                            <li><a class="dropdown-item" href="{{ path('admin') }}">Administration</a></li>
+                            <li><a class="dropdown-item" href="{{ path('install') }}">Tableau de bord</a></li>
+                            <li><a class="dropdown-item" href="{{ path('admin.messenger') }}">File d'envoi des e-mails</a></li>
+                            <li><h6 class="dropdown-header">Données</h6></li>
+                            <li><a class="dropdown-item" href="{{ path('admin.masse') }}">Ajouts en masse</a></li>
+                            <li><a class="dropdown-item" href="{{ path('xp.gain') }}">Gain XP</a></li>
+                            <li><a class="dropdown-item" href="{{ path('xp.usage') }}">Usage XP</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{{ path('stats.list') }}">Statistique</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                {% elseif is_granted('ROLE_STATISTIQUE', app.user) %}
+                    {# Rôle Statistique sans être admin : un seul lien #}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Statistiques
+                        </a>
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ path('stats.list') }}">Statistique</a></li>
                         </ul>
                     </li>
