@@ -43,11 +43,19 @@
                     </h6>
                     <div class="list-group list-group-flush mb-2">
                         {% for action in visibleActions %}
-                            <a href="{{ action.path }}"
-                               class="list-group-item list-group-item-action{% if group.danger is defined and group.danger %} list-group-item-danger{% endif %}"
-                               data-turbo="false">
-                                {{ action.label }}
-                            </a>
+                            {% set itemClass = 'list-group-item list-group-item-action' ~ ((group.danger is defined and group.danger) ? ' list-group-item-danger' : '') %}
+                            {% if action.csrf is defined %}
+                                {# Action qui modifie des données : POST avec jeton CSRF #}
+                                <form method="post" action="{{ action.path }}" data-turbo="false"
+                                      {% if action.confirm is defined %}onsubmit="return confirm('{{ action.confirm|e('js') }}');"{% endif %}>
+                                    <input type="hidden" name="_token" value="{{ csrf_token(action.csrf) }}">
+                                    <button type="submit" class="{{ itemClass }}">{{ action.label }}</button>
+                                </form>
+                            {% else %}
+                                <a href="{{ action.path }}" class="{{ itemClass }}" data-turbo="false">
+                                    {{ action.label }}
+                                </a>
+                            {% endif %}
                         {% endfor %}
                     </div>
                 {% endif %}

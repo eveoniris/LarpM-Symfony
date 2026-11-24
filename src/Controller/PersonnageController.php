@@ -4750,10 +4750,16 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    #[Route('/{personnage}/releve/delete', name: 'releve.delete', methods: ['GET'])]
+    #[Route('/{personnage}/releve/delete', name: 'releve.delete', methods: ['POST'])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
-    public function releveDeleteAction(#[MapEntity] Personnage $personnage): RedirectResponse
+    public function releveDeleteAction(Request $request, #[MapEntity] Personnage $personnage): RedirectResponse
     {
+        if (!$this->isCsrfTokenValid('releve_delete_' . $personnage->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide, merci de réessayer.');
+
+            return $this->redirectToRoute('personnage.detail', ['personnage' => $personnage->getId()], 303);
+        }
+
         $participants = $this->entityManager->getRepository(Participant::class)->findBy(['personnageReleve' => $personnage]);
 
         if ([] === $participants) {

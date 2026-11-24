@@ -475,10 +475,16 @@ class GroupeGnController extends AbstractController
     /**
      * Accepte une demande (invitation acceptée par le joueur, ou candidature acceptée par le responsable).
      */
-    #[Route('/groupeGn/demande/{demande}/accept', name: 'groupeGn.demande.accept')]
-    public function demandeAcceptAction(EntityManagerInterface $entityManager, GroupeGnDemande $demande): RedirectResponse
-    {
+    #[Route('/groupeGn/demande/{demande}/accept', name: 'groupeGn.demande.accept', methods: ['POST'])]
+    public function demandeAcceptAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        GroupeGnDemande $demande,
+    ): RedirectResponse {
         $this->canRespondToDemande($demande, throw: true);
+        if (!$this->isDemandeTokenValid($request, $demande)) {
+            return $this->redirectAfterDemande($demande);
+        }
 
         $participant = $demande->getParticipant();
         $groupeGn = $demande->getGroupeGn();
@@ -525,10 +531,16 @@ class GroupeGnController extends AbstractController
     /**
      * Refuse une demande (invitation déclinée par le joueur, ou candidature refusée par le responsable).
      */
-    #[Route('/groupeGn/demande/{demande}/refuse', name: 'groupeGn.demande.refuse')]
-    public function demandeRefuseAction(EntityManagerInterface $entityManager, GroupeGnDemande $demande): RedirectResponse
-    {
+    #[Route('/groupeGn/demande/{demande}/refuse', name: 'groupeGn.demande.refuse', methods: ['POST'])]
+    public function demandeRefuseAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        GroupeGnDemande $demande,
+    ): RedirectResponse {
         $this->canRespondToDemande($demande, throw: true);
+        if (!$this->isDemandeTokenValid($request, $demande)) {
+            return $this->redirectAfterDemande($demande);
+        }
 
         $participant = $demande->getParticipant();
         $groupeGn = $demande->getGroupeGn();
@@ -542,6 +554,17 @@ class GroupeGnController extends AbstractController
         $this->addFlash('success', 'La demande a été refusée.');
 
         return $this->redirectAfterDemande($demande, $groupeGn);
+    }
+
+    private function isDemandeTokenValid(Request $request, GroupeGnDemande $demande): bool
+    {
+        if ($this->isCsrfTokenValid('groupegn_demande_' . $demande->getId(), (string) $request->request->get('_token'))) {
+            return true;
+        }
+
+        $this->addFlash('error', 'Jeton de sécurité invalide, merci de réessayer.');
+
+        return false;
     }
 
     /**
@@ -815,7 +838,7 @@ class GroupeGnController extends AbstractController
 
             $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
-            if ($redirect) {
+            if (\is_string($redirect) && $this->isCheminLocal($redirect)) {
                 return $this->redirect($redirect);
             }
 

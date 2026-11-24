@@ -135,8 +135,7 @@ class DiscordController extends AbstractController
         }
 
         $retour = $request->request->getString('retour');
-        // Redirection interne uniquement (pas de //hote ni de schéma).
-        if (str_starts_with($retour, '/') && !str_starts_with($retour, '//')) {
+        if ($this->isCheminLocal($retour)) {
             return $this->redirect($retour);
         }
 
