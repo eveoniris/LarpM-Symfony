@@ -41,6 +41,8 @@ use InvalidArgumentException;
 use SensitiveParameter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use App\Security\IpBlocklist;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -430,9 +432,17 @@ class UserController extends AbstractController
      * que la validation d'unicité de l'email.
      */
     #[Route('/user/register/resend-confirmation', name: 'user.register.resend', methods: ['POST'])]
-    public function resendRegisterConfirmationAction(Request $request): RedirectResponse
-    {
+    public function resendRegisterConfirmationAction(
+        Request $request,
+        IpBlocklist $ipBlocklist,
+        RateLimiterFactoryInterface $registerIpLimiter,
+    ): RedirectResponse {
         $email = (string) $request->request->get('email');
+        if ($ipBlocklist->isBlocked($request->getClientIp()) || !$registerIpLimiter->create((string) $request->getClientIp())->consume()->isAccepted()) {
+            $ipBlocklist->equalizeDelay();
+            $email = '';
+        }
+
         if ($email !== '') {
             $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
             if ($user) {
@@ -698,6 +708,9 @@ class UserController extends AbstractController
         Request $request,
         MailerInterface $mailer,
         ContainerBagInterface $params,
+        IpBlocklist $ipBlocklist,
+        RateLimiterFactoryInterface $forgotPasswordIpLimiter,
+        RateLimiterFactoryInterface $forgotPasswordEmailLimiter,
     ): RedirectResponse|Response {
         if (false !== $this->isGranted('ROLE_USER') && null !== $this->getUser()?->getId()) {
             $this->addFlash('alert', 'Vous êtes déjà connecté');
@@ -726,6 +739,18 @@ class UserController extends AbstractController
         $error = null;
         if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->getData();
+
+            // IP bloquée ou trop de demandes (par IP, par adresse) : même réponse qu'un envoi réussi, sans rien envoyer.
+            if (
+                $ipBlocklist->isBlocked($request->getClientIp())
+                || !$forgotPasswordIpLimiter->create((string) $request->getClientIp())->consume()->isAccepted()
+                || !$forgotPasswordEmailLimiter->create(mb_strtolower(\is_array($email) ? (string) ($email['email'] ?? '') : (string) $email))->consume()->isAccepted()
+            ) {
+                $ipBlocklist->equalizeDelay();
+                $this->addFlash('alert', 'Les instructions pour enregistrer votre mot de passe ont été envoyé par mail.');
+
+                return $this->redirectToRoute('app_login');
+            }
 
             $repo = $entityManager->getRepository(User::class);
             $user = $repo->findOneBy(['email' => $email]);
@@ -1098,17 +1123,29 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/register ', name: 'user.register')]
+    // @mago-expect lint:excessive-parameter-list
     public function registerAction(
         EntityManagerInterface $entityManager,
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
         Security $security,
+        IpBlocklist $ipBlocklist,
+        RateLimiterFactoryInterface $registerIpLimiter,
     ): RedirectResponse|Response {
         $form = $this->createForm(UserRegisterType::class);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // IP bloquée ou trop d'inscriptions : même écran qu'une inscription réussie, sans compte ni mail.
+            if ($ipBlocklist->isBlocked($request->getClientIp()) || !$registerIpLimiter->create((string) $request->getClientIp())->consume()->isAccepted()) {
+                $ipBlocklist->equalizeDelay();
+
+                return $this->render('user/register-confirmation-sent.twig', [
+                    'email' => $form->get('email')->getData(),
+                ]);
+            }
+
             try {
                 /** @var User $user */
                 $user = $form->getData();
@@ -1180,6 +1217,7 @@ class UserController extends AbstractController
      * @throws NotFoundHttpException
      */
     #[Route('/user/reset-password/{token}', name: 'user.reset-password')]
+    // @mago-expect lint:excessive-parameter-list
     public function resetPasswordAction(
         UserRepository $userRepository,
         Request $request,

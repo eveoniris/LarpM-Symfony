@@ -23,6 +23,16 @@
         </p>
     </div>
 
+    {% if blockedIps|default([]) is not empty and is_granted('ROLE_ADMIN') %}
+        <div class="alert alert-danger" role="alert" data-role="admin">
+            <i class="fa fa-ban"></i>
+            {{ blockedIps|length > 1 ? 'Ces adresses récentes de ce compte sont bloquées' : 'Cette adresse récente de ce compte est bloquée' }} :
+            {% for blockedIp in blockedIps %}<code>{{ blockedIp }}</code>{% if not loop.last %}, {% endif %}{% endfor %}.
+            Si l'adresse est partagée, ce joueur ne peut plus se connecter.
+            <a href="{{ path('admin.ip.list') }}" class="alert-link">Gérer les IP bloquées</a>
+        </div>
+    {% endif %}
+
     <div class="table-responsive">
         <table class="table table-sm table-striped table-bordered table-hover">
             <thead>
@@ -53,7 +63,7 @@
                     <td class="text-center align-middle">{{ methodLabels[entry.method.value] }}</td>
                     <td class="text-center align-middle">
                         {% if entry.ip %}<code>{{ entry.ip }}</code>{% else %}-{% endif %}
-                        {% if entry.ipAnonymized %}<small class="text-muted d-block">anonymisée</small>{% endif %}
+                        {% if entry.ipAnonymized %}<small class="text-muted d-block">anonymisée</small>{% else %}{% include '_partials/ip_bloquer.twig' with {'ip': entry.ip} only %}{% endif %}
                     </td>
                     <td class="align-middle" title="{{ entry.userAgent }}">{% if entry.userAgent %}{{ entry.userAgent|length > 90 ? entry.userAgent|slice(0, 90) ~ '…' : entry.userAgent }}{% else %}-{% endif %}</td>
                 </tr>

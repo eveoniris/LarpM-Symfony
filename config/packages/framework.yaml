@@ -22,6 +22,22 @@ framework:
         cookie_samesite: lax
         cookie_httponly: true
 
+    # Limiteurs de débit des envois de mail publics (mot de passe oublié, inscription, renvoi de confirmation).
+    # Au-delà de la limite, la réponse est celle d'un envoi réussi, sans rien envoyer (comme une IP bloquée).
+    rate_limiter:
+        forgot_password_ip:
+            policy: sliding_window
+            limit: 5
+            interval: '1 hour'
+        forgot_password_email:
+            policy: sliding_window
+            limit: 3
+            interval: '1 hour'
+        register_ip:
+            policy: sliding_window
+            limit: 10
+            interval: '1 hour'
+
     #esi: true
     #fragments: true
 
