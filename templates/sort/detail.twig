@@ -34,7 +34,7 @@
                     {% if participant is defined and sort.documentUrl %}
                         <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                            title="Télécharger le document associé à ce sort"
-                           href="{{ path('participant.sort.document',{'sort':sort.id, 'participant':participant.id, 'document':sort.documentUrl}) }}"><i
+                           href="{{ path('personnage.sort.document', {'personnage': participant.personnage.id, 'sort': sort.id}) }}"><i
                                     class="fa fa-download"></i> Document</a>
                     {% endif %}
                     {% if isAdmin %}

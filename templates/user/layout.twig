@@ -13,7 +13,7 @@
             <div class="container-fluid">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <button type="button" class="navbar-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#bs-example-navbar-collapse-1">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -28,14 +28,14 @@
                         <li><a href="{{ path('user.list') }}">List users</a></li>
                         {% if app.user %}
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                                     Hello, {{ app.user.displayName }}!
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="{{ path('user') }}"><span class="glyphicon glyphicon-user"></span> View your profile</a></li>
-                                    <li><a href="{{ path('user.edit', { id: app.user.id }) }}"><span class="glyphicon glyphicon-edit"></span> Edit your profile</a></li>
-                                    <li><a href="{{ path('user.logout') }}"><span class="glyphicon glyphicon-off"></span> Sign out</a></li>
+                                    <li><a href="{{ path('user') }}"><span class="fa-solid fa-user"></span> View your profile</a></li>
+                                    <li><a href="{{ path('user.edit', { id: app.user.id }) }}"><span class="fa-solid fa-pen-to-square"></span> Edit your profile</a></li>
+                                    <li><a href="{{ path('user.logout') }}"><span class="fa-solid fa-power-off"></span> Sign out</a></li>
                                 </ul>
                             </li>
                         {% else %}

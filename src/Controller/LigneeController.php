@@ -114,7 +114,7 @@ class LigneeController extends AbstractController
         }
         $this->addFlash('error', 'La lignee n\'a pas été trouvée.');
 
-        return $this->redirectToRoute('lignee');
+        return $this->redirectToRoute('lignee.list');
     }
 
     /**

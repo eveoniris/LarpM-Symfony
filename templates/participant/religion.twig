@@ -17,7 +17,7 @@
 				<div class="rows clearfix">
 					<div class="col-md-2">
 						{% if religion.blason %}
-		      				<img width="160" src="{{ path('blason.get', {'blason' : religion.blason }) }}" />
+		      				<img width="160" src="{{ path('religion.blason', {'religion': religion.id}) }}" />
 		      			{% endif %}
 				    </div>
 				    <div class="col-md-10">

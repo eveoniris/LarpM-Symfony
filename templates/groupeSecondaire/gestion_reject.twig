@@ -15,7 +15,7 @@
     </ol>
 
     <div class="well bs-component">
-        {{ form_start(form, {"attr": {"action": path('participant.groupeSecondaire.reject', {'participant': participant.id, 'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}) }}
+        {{ form_start(form, {"attr": {"action": path('participant.groupeSecondaire.postulant.reject', {'participant': participant.id, 'groupeSecondaire': groupeSecondaire.id, 'postulant': postulant.id}) }}) }}
         <fieldset>
             <legend>Refus d'un postulant</legend>
 

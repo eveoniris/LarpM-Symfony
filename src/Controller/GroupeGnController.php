@@ -669,10 +669,13 @@ class GroupeGnController extends AbstractController
 
             $this->addFlash('success', 'Vos modifications ont été enregistré.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', [
-                'groupeGn' => $groupeGn->getId(),
-                'groupe' => $groupeGn->getGroupe()->getId(),
-            ]);
+            return $this->redirectToRoute(
+                'groupe.detail',
+                [
+                    'groupe' => $groupeGn->getGroupe()->getId(),
+                ],
+                303,
+            );
         }
 
         return $this->render('groupeGn/placeAvailable.twig', [

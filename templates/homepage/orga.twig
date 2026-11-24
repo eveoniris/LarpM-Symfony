@@ -18,7 +18,7 @@
 				{% if is_granted('ROLE_SCENARISTE', app.user) %}
 					{% if app.user.groupeScenariste|length > 0 %}				
 						<div class="dropdown">
-						  <button class="btn btn-default dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						  <button class="btn btn-default dropdown-toggle"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						    Scénariste : Groupes dont vous avez la charge
 						    <span class="caret"></span>
 						  </button>
