@@ -14,12 +14,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
+    public function __construct(
+        private readonly RateLimiterFactoryInterface $forgotPasswordEmailLimiter,
+    ) {
+    }
+
     #[Route(path: '/access_denied', name: 'access_denied')]
     public function denied(): Response
     {
@@ -40,7 +46,10 @@ class SecurityController extends AbstractController
 
         // Handle password renew
         if ($user = $userRepository->findOneBy(['email' => $authenticationUtils->getLastUsername(), 'pwd' => null])) {
-            $this->sendRenewMail($user, $entityManager, $mailer, $params, $userRepository);
+            // Même limite que « mot de passe oublié » : l'affichage répété de /login n'envoie pas un mail à chaque fois.
+            if ($this->forgotPasswordEmailLimiter->create(mb_strtolower($user->getEmail()))->consume()->isAccepted()) {
+                $this->sendRenewMail($user, $entityManager, $mailer, $params, $userRepository);
+            }
             $error['messageKey'] = "Migration de compte: Vous devez renouveler votre mot de passe. les instructions pour réinitialiser votre mot de passe vous ont été envoyés.<br />
                           Si vous ne recevez pas de mail d'ici quelques minutes, vérifiez votre dossier spam ou poubelle.<br />
 		                  L'expéditeur est " . $params->get('fromEmailAddress');

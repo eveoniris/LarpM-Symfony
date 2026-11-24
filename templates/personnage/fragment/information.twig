@@ -16,7 +16,7 @@
             {'path': path('personnage.transfert', {'personnage': personnage.id}), 'label': 'Transférer le personnage'},
         ] %}
         {% set adminDangerActions = adminDangerActions|merge([
-            {'path': path('personnage.releve.delete', {'personnage': personnage.id}), 'label': 'Supprimer le personnage de relève'},
+            {'path': path('personnage.releve.delete', {'personnage': personnage.id}), 'label': 'Supprimer le personnage de relève', 'csrf': 'releve_delete_' ~ personnage.id, 'confirm': 'Supprimer le personnage de relève ?'},
         ]) %}
         {% set adminDangerActions = adminDangerActions|merge([
             {'path': path('personnage.delete', {'personnage': personnage.id}), 'label': 'Supprimer'},

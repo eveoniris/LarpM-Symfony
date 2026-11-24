@@ -16,6 +16,7 @@ use App\Tests\Factory\GroupeGnFactory;
 use App\Tests\Factory\ParticipantFactory;
 use App\Tests\Factory\UserFactory;
 use PHPUnit\Framework\Attributes\Group;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
@@ -65,6 +66,25 @@ class GroupeDemandeTest extends WebTestCase
             'joueur' => $joueur,
             'joueurParticipant' => $joueurParticipant,
         ];
+    }
+
+    /**
+     * Envoie la réponse (POST) avec le jeton CSRF affiché sur la page du joueur ou de gestion du groupe.
+     * Sans bouton visible (utilisateur sans droit), un jeton factice est envoyé : le contrôle d'accès passe avant.
+     */
+    private function repondre(KernelBrowser $client, int $demandeId, string $reponse): void
+    {
+        $demande = GroupeGnDemandeFactory::find($demandeId);
+        $page = $demande->isInvitation()
+            ? '/participant/' . $demande->getParticipant()->getId() . '/index'
+            : '/groupeGn/' . $demande->getGroupeGn()->getGroupe()->getId() . '/list/';
+        $url = '/groupeGn/demande/' . $demandeId . '/' . $reponse;
+
+        $crawler = $client->request('GET', $page);
+        $champ = $crawler->filter(\sprintf('form[action$="%s"] input[name=_token]', $url));
+        $jeton = $champ->count() > 0 ? (string) $champ->attr('value') : 'invalide';
+
+        $client->request('POST', $url, ['_token' => $jeton]);
     }
 
     // -------------------------------------------------------------------------
@@ -126,7 +146,7 @@ class GroupeDemandeTest extends WebTestCase
         ]);
 
         $client->loginUser($ctx['joueur']);
-        $client->request('GET', '/groupeGn/demande/' . $demande->getId() . '/accept');
+        $this->repondre($client, $demande->getId(), 'accept');
 
         static::assertResponseRedirects();
         static::assertSame(0, GroupeGnDemandeFactory::count());
@@ -147,7 +167,7 @@ class GroupeDemandeTest extends WebTestCase
         ]);
 
         $client->loginUser($ctx['joueur']);
-        $client->request('GET', '/groupeGn/demande/' . $demande->getId() . '/refuse');
+        $this->repondre($client, $demande->getId(), 'refuse');
 
         static::assertResponseRedirects();
         static::assertSame(0, GroupeGnDemandeFactory::count());
@@ -168,7 +188,7 @@ class GroupeDemandeTest extends WebTestCase
 
         $intrus = UserFactory::createOne(['roles' => ['ROLE_USER']]);
         $client->loginUser($intrus);
-        $client->request('GET', '/groupeGn/demande/' . $demande->getId() . '/accept');
+        $this->repondre($client, $demande->getId(), 'accept');
 
         static::assertResponseRedirects('/access_denied');
         static::assertSame(1, GroupeGnDemandeFactory::count());
@@ -207,7 +227,7 @@ class GroupeDemandeTest extends WebTestCase
         ]);
 
         $client->loginUser($ctx['chef']);
-        $client->request('GET', '/groupeGn/demande/' . $demande->getId() . '/accept');
+        $this->repondre($client, $demande->getId(), 'accept');
 
         static::assertResponseRedirects();
         static::assertSame(0, GroupeGnDemandeFactory::count());
@@ -237,7 +257,7 @@ class GroupeDemandeTest extends WebTestCase
         static::assertSame(2, GroupeGnDemandeFactory::count());
 
         $client->loginUser($ctx['joueur']);
-        $client->request('GET', '/groupeGn/demande/' . $invitation->getId() . '/accept');
+        $this->repondre($client, $invitation->getId(), 'accept');
 
         static::assertResponseRedirects();
         // Le joueur ayant rejoint un groupe, toutes ses demandes sont purgées.

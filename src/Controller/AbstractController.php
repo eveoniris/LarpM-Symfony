@@ -708,6 +708,15 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         $flush && $this->entityManager->flush();
     }
 
+    /**
+     * Cible de retour limitée aux chemins du site : refuse les URL absolues, //hote et les \ que
+     * les navigateurs traitent comme des /.
+     */
+    protected function isCheminLocal(?string $cible): bool
+    {
+        return null !== $cible && str_starts_with($cible, '/') && !str_starts_with($cible, '//') && !str_contains($cible, '\\') && !preg_match('/[\x00-\x1F]/', $cible);
+    }
+
     protected function redirectToReferer(Request $request): ?RedirectResponse
     {
         $referer = $request->headers->get('referer');

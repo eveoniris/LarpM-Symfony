@@ -10,6 +10,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -35,10 +36,19 @@ final class ApiClientTokenController extends AbstractController
         new OA\Property(property: 'token', type: 'string'),
     ]))]
     #[OA\Response(response: 401, description: 'Identifiants invalides ou application révoquée')]
-    public function token(Request $request, ApiClientManager $manager, JWTTokenManagerInterface $jwt): JsonResponse
-    {
+    #[OA\Response(response: 429, description: 'Trop de tentatives depuis cette adresse, réessayer plus tard')]
+    public function token(
+        Request $request,
+        ApiClientManager $manager,
+        JWTTokenManagerInterface $jwt,
+        RateLimiterFactoryInterface $apiClientTokenIpLimiter,
+    ): JsonResponse {
+        if (!$apiClientTokenIpLimiter->create((string) $request->getClientIp())->consume()->isAccepted()) {
+            return new JsonResponse(['message' => 'Trop de tentatives, réessayez plus tard'], 429);
+        }
+
         /** @var mixed $data */
-        $data = json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), associative: true);
         $clientId = \is_array($data) && \is_string($data['client_id'] ?? null) ? $data['client_id'] : '';
         $secret = \is_array($data) && \is_string($data['client_secret'] ?? null) ? $data['client_secret'] : '';
 

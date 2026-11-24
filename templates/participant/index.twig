@@ -213,8 +213,8 @@
                                 {% if demande.message %}<br/><em>&laquo;&nbsp;{{ demande.message }}&nbsp;&raquo;</em>{% endif %}
                             </p>
                             <div class="clearfix mb-3">
-                                <a class="btn btn-primary" href="{{ path('groupeGn.demande.accept', {'demande': demande.id}) }}">Accepter</a>
-                                <a class="btn btn-secondary" href="{{ path('groupeGn.demande.refuse', {'demande': demande.id}) }}">Refuser</a>
+                                <form method="post" action="{{ path('groupeGn.demande.accept', {'demande': demande.id}) }}" class="d-inline"><input type="hidden" name="_token" value="{{ csrf_token('groupegn_demande_' ~ demande.id) }}"><button type="submit" class="btn btn-primary">Accepter</button></form>
+                                <form method="post" action="{{ path('groupeGn.demande.refuse', {'demande': demande.id}) }}" class="d-inline"><input type="hidden" name="_token" value="{{ csrf_token('groupegn_demande_' ~ demande.id) }}"><button type="submit" class="btn btn-secondary">Refuser</button></form>
                             </div>
                         {% endfor %}
                     </div>

@@ -112,7 +112,7 @@ final class IpBloqueeController extends AbstractController
     /** Retour sur la page d'origine, limité aux chemins du site (pas de redirection ouverte). */
     private function safeRedirect(string $target): string
     {
-        if (str_starts_with($target, '/') && !str_starts_with($target, '//') && !str_contains($target, '\\')) {
+        if ($this->isCheminLocal($target)) {
             return $target;
         }
 
