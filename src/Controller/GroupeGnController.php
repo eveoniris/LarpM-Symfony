@@ -167,6 +167,8 @@ class GroupeGnController extends AbstractController
         Groupe $groupe,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
+        $this->canManageGroup($groupeGn, throw: true);
+
         $form = $this->createForm(GroupeGnOrdreType::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -420,6 +422,10 @@ class GroupeGnController extends AbstractController
         Participant $participant,
     ): RedirectResponse|Response {
         $this->canManageGroup($groupeGn, throw: true);
+        // Le participant doit appartenir à cette session de groupe (sinon un chef retirerait le joueur d'un autre groupe).
+        if ($participant->getGroupeGn()?->getId() !== $groupeGn->getId()) {
+            throw $this->createNotFoundException();
+        }
 
         $form = $this->createFormBuilder()->add('submit', SubmitType::class, ['label' => 'Retirer'])->getForm();
 
@@ -677,6 +683,7 @@ class GroupeGnController extends AbstractController
         EntityManagerInterface $entityManager,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
+        $this->canManageGroup($groupeGn, throw: true);
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
         $form = $this->createForm(GroupeGnPlaceAvailableType::class, $groupeGn)->add('submit', SubmitType::class, [
@@ -713,6 +720,7 @@ class GroupeGnController extends AbstractController
      * Choisir le responsable.
      */
     #[Route('/groupeGn/{groupe}/responsable/{groupeGn}/', name: 'groupeGn.responsable')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function responsableAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -889,6 +897,7 @@ class GroupeGnController extends AbstractController
         $this->setCan(self::CAN_WRITE, $isResponsable || $isSuzerain);
         $this->setCan(self::CAN_READ, $isMembre || $isSuzerain);
 
-        $this->checkHasAccess($roles, fn () => $this->can(self::CAN_READ));
+        // Seul appelant : la modification de la session (updateAction), donc droit d'écriture (responsable ou suzerain).
+        $this->checkHasAccess($roles, fn () => $this->can(self::CAN_WRITE));
     }
 }

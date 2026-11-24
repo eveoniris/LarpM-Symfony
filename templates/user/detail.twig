@@ -57,7 +57,8 @@
                         </div>
                     </div>
 
-                {% else %}
+                {% elseif isSelfUser or canManage or is_granted('ROLE_ORGA') %}
+                    {# Adresse réservée à l'utilisateur lui-même et à l'équipe #}
                     <div class="text-muted">
                         {{ user.email }}
                     </div>

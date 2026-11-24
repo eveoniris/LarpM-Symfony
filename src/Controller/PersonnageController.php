@@ -4395,6 +4395,7 @@ class PersonnageController extends AbstractController
      * Méthode de base pour tout le monde.
      */
     #[Route('/{personnage}/add', name: 'add')]
+    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
     public function newAction(Request $request): RedirectResponse|Response
     {
         $personnage = new Personnage();

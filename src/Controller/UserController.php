@@ -811,6 +811,12 @@ class UserController extends AbstractController
     #[Route('/user/{gn}/participe', name: 'user.gn.participe')]
     public function gnParticipeAction(Request $request, Gn $gn): RedirectResponse|Response
     {
+        if ($gn->isPast() || $this->getUser()?->takePart($gn)) {
+            $this->addFlash('info', $gn->isPast() ? 'Le jeu est terminé, il n\'est plus possible d\'y participer.' : 'Vous participez déjà à ce jeu.');
+
+            return $this->redirectToRoute('homepage', [], 303);
+        }
+
         $form = $this->createFormBuilder($gn)->getForm();
 
         $form->handleRequest($request);
@@ -844,6 +850,12 @@ class UserController extends AbstractController
     #[Route('/user/{gn}/validationci', name: 'user.gn.validationci')]
     public function gnValidCiAction(Request $request, Gn $gn): RedirectResponse|Response
     {
+        if (null === $this->getUser()?->getParticipant($gn)) {
+            $this->addFlash('info', 'Vous ne participez pas à ce jeu.');
+
+            return $this->redirectToRoute('homepage', [], 303);
+        }
+
         $form = $this->createFormBuilder()->getForm();
 
         $form->handleRequest($request);
