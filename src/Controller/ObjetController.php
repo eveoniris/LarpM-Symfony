@@ -95,6 +95,7 @@ class ObjetController extends AbstractController
      * Lier un objet de jeu à un groupe/personnage/lieu.
      */
     #[Route('/{item}/link', name: 'link')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function linkAction(Request $request, Item $item): RedirectResponseAlias|Response
     {
         $form = $this->createForm(ItemLinkType::class, $item);
@@ -128,6 +129,7 @@ class ObjetController extends AbstractController
      * Création d'un nouvel objet de jeu.
      */
     #[Route('/new/{objet}', name: 'new')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function newAction(Request $request, #[MapEntity] Objet $objet): RedirectResponseAlias|Response
     {
         $item = new Item();
@@ -188,6 +190,7 @@ class ObjetController extends AbstractController
      * Impression d'une etiquette.
      */
     #[Route('/{item}/print', name: 'print')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function printAction(#[MapEntity] Item $item): Response
     {
         return $this->render('objet/print.twig', [
@@ -199,6 +202,7 @@ class ObjetController extends AbstractController
      * Impression de toutes les etiquettes.
      */
     #[Route('/print-all', name: 'print-all')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function printAllAction(ItemRepository $itemRepository): Response
     {
         return $this->render('objet/printAll.twig', [
@@ -207,6 +211,7 @@ class ObjetController extends AbstractController
     }
 
     #[Route('/print-csv', name: 'print-csv')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function printCsvAction(ItemRepository $itemRepository): StreamedResponse
     {
         return $this->sendCsv('eveoniris_game_item_' . date('Ymd'), repository: $itemRepository);
@@ -216,6 +221,7 @@ class ObjetController extends AbstractController
      * Impression de tous les objets avec photo.
      */
     #[Route('/print-photo', name: 'print-photo')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function printPhotoAction(ItemRepository $itemRepository): Response
     {
         return $this->render('objet/printPhoto.twig', [
@@ -227,6 +233,7 @@ class ObjetController extends AbstractController
      * Mise à jour d'un objet de jeu.
      */
     #[Route('/{item}/update', name: 'update')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::REGLE, Role::SCENARISTE))]
     public function updateAction(Request $request, #[MapEntity] Item $item): RedirectResponseAlias|Response
     {
         $form = $this->createForm(ItemType::class, $item);
