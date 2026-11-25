@@ -173,6 +173,9 @@ class DebriefingController extends AbstractController
             [Role::SCENARISTE],
             fn () => $this->groupeService->isUserIsGroupeResponsable($debriefing->getGroupe()) || $this->groupeService->isUserIsGroupeMember($debriefing->getGroupe()),
         );
+        if (!$this->groupeService->isVisibleForCurrentUser($debriefing)) {
+            throw $this->createAccessDeniedException();
+        }
 
         return $this->render('debriefing/detail.twig', [
             'debriefing' => $debriefing,
@@ -195,6 +198,9 @@ class DebriefingController extends AbstractController
             [Role::SCENARISTE],
             fn () => $this->groupeService->isUserIsGroupeResponsable($debriefing->getGroupe()) || $this->groupeService->isUserIsGroupeMember($debriefing->getGroupe()),
         );
+        if (!$this->groupeService->isVisibleForCurrentUser($debriefing)) {
+            throw $this->createAccessDeniedException();
+        }
 
         $document = $debriefing->getDocumentUrl();
         $file = self::DOC_PATH . $document;
