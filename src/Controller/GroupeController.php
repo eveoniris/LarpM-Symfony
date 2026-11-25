@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Background;
 use App\Entity\FicheRetourGroupe;
 use App\Entity\FicheRetourGroupeHistory;
 use App\Entity\Gn;
@@ -21,7 +20,6 @@ use App\Entity\Ressource;
 use App\Entity\Territoire;
 use App\Enum\LogActionType;
 use App\Enum\Role;
-use App\Form\BackgroundType;
 use App\Form\FicheRetourGroupe\FicheRetourGroupeType;
 use App\Form\Groupe\GroupeCompositionType;
 use App\Form\Groupe\GroupeDescriptionType;
@@ -100,36 +98,6 @@ class GroupeController extends AbstractController
             ],
             entityCallback: $entityCallback,
         );
-    }
-
-    /**
-     * Ajout d'un background à un groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    public function addBackgroundAction(Request $request): RedirectResponse|Response
-    {
-        $id = $request->query->get('index');
-        $groupe = $this->entityManager->find(Groupe::class, $id);
-
-        $background = new Background();
-        $background->setGroupe($groupe);
-
-        $form = $this->createForm(BackgroundType::class, $background)->add('save', SubmitType::class, [
-            'label' => 'Sauvegarder',
-        ]);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->addFlash('success', 'Le background du groupe a été créé');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()], 303);
-        }
-
-        return $this->render('groupe/background/add.twig', [
-            'groupe' => $groupe,
-            'form' => $form->createView(),
-        ]);
     }
 
     /**
@@ -320,24 +288,6 @@ class GroupeController extends AbstractController
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
-    }
-
-    /**
-     * rendre disponible un groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    // TODO
-    public function availableAction(
-        Request $request,
-        Groupe $groupe,
-    ): RedirectResponse {
-        $groupe->setFree(true);
-        $this->entityManager->persist($groupe);
-        $this->entityManager->flush();
-
-        $this->addFlash('success', 'Le groupe est maintenant disponible. Il pourra être réservé par un joueur');
-
-        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
     }
 
     /**
@@ -590,43 +540,6 @@ class GroupeController extends AbstractController
             'groupe' => $groupe,
             'form' => $form->createView(),
         ]);
-    }
-
-    /**
-     * Exportation de la liste des groupes au format CSV.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    public function exportAction(Request $request): void
-    {
-        $repo = $this->entityManager->getRepository(Groupe::class);
-        $groupes = $repo->findAll();
-
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=eveoniris_groupe_' . date('Ymd') . '.csv');
-        header('Pragma: no-cache');
-        header('Expires: 0');
-
-        $output = fopen('php://output', 'w');
-        \assert(false !== $output);
-
-        // header
-        fputcsv(
-            $output,
-            [
-                'nom',
-                'description',
-                'code',
-                'creation_date',
-            ],
-            ',',
-        );
-
-        foreach ($groupes as $groupe) {
-            fputcsv($output, $groupe->getExportValue(), ',');
-        }
-
-        fclose($output);
-        exit;
     }
 
     /**
@@ -1320,22 +1233,6 @@ class GroupeController extends AbstractController
         return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
     }
 
-    /**
-     * rendre indisponible un groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    // TODO
-    public function unvailableAction(Groupe $groupe): RedirectResponse
-    {
-        $groupe->setFree(false);
-        $this->entityManager->persist($groupe);
-        $this->entityManager->flush();
-
-        $this->addFlash('success', 'Le groupe est maintenant réservé. Il ne pourra plus être réservé par un joueur');
-
-        return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()]);
-    }
-
     #[IsGranted('ROLE_SCENARISTE')]
     #[Route('/update/{groupe}', name: 'update')]
     public function updateAction(Request $request, #[MapEntity] Groupe $groupe): RedirectResponse|Response
@@ -1448,50 +1345,6 @@ class GroupeController extends AbstractController
         return $this->render('groupe/update.twig', [
             'groupe' => $groupe,
             'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * Gestion des membres du groupe.
-     */
-    // TODO (no route ? Deprecated ?)
-    /**
-     * Mise à jour du background d'un groupe.
-     */
-    #[IsGranted('ROLE_SCENARISTE')]
-    public function updateBackgroundAction(Request $request): RedirectResponse|Response
-    {
-        $id = $request->query->get('index');
-        $groupe = $this->entityManager->find(Groupe::class, $id);
-
-        /** @phpstan-ignore argument.templateType */
-        $form = $this->createForm(BackgroundType::class, $groupe->getBackground())->add('save', SubmitType::class, [
-            'label' => 'Sauvegarder',
-        ]);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $background = $form->getData();
-
-            $this->entityManager->persist($background);
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Le background du groupe a été mis à jour');
-
-            return $this->redirectToRoute('groupe.detail', ['groupe' => $groupe->getId()], 303);
-        }
-
-        return $this->render('groupe/background/update.twig', [
-            'groupe' => $groupe,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    public function usersAction(Request $request, Groupe $groupe): Response
-    {
-        return $this->render('groupe/users.twig', [
-            'groupe' => $groupe,
         ]);
     }
 

@@ -212,14 +212,6 @@ class PersonnageController extends AbstractController
         ],
     ];
 
-    /**
-     * Page d'accueil de gestion des personnage.
-     */
-    public function accueilAction(Request $request): Response
-    {
-        return $this->render('personnage/accueil.twig', []);
-    }
-
     #[Route('/admin/{personnage}/detail', name: 'legacy.detail', requirements: ['personnage' => Requirement::DIGITS])]
     #[IsGranted(Role::USER->value)]
     public function actionLegacyDetail(#[MapEntity] Personnage $personnage): RedirectResponse

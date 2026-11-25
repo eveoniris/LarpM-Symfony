@@ -140,12 +140,4 @@ class RessourceController extends AbstractController
     ): Response|RedirectResponse {
         return $this->render('ressource/detail.twig', ['ressource' => $ressource]);
     }
-
-    public function detailExportAction(Request $request, EntityManagerInterface $entityManager): void
-    {
-    }
-
-    public function exportAction(Request $request, EntityManagerInterface $entityManager): void
-    {
-    }
 }

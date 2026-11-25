@@ -17,14 +17,12 @@ use App\Entity\Territoire;
 use App\Entity\User;
 use App\Enum\LogActionType;
 use App\Enum\Role;
-use App\Form\Entity\ListSearch;
 use App\Form\EtatCivilType;
 use App\Form\Personnage\PersonnageType;
 use App\Form\User\UserForgotPasswordType;
 use App\Form\User\UserNewPasswordType;
 use App\Form\User\UserNewType;
 use App\Form\User\UserPersonnageDefaultType;
-use App\Form\UserFindType;
 use App\Form\UserRegisterType;
 use App\Form\UserRestrictionType;
 use App\Manager\FedegnManager;
@@ -35,7 +33,6 @@ use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Carbon\Carbon;
 use DateTime;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use SensitiveParameter;
@@ -140,66 +137,6 @@ class UserController extends AbstractController
             query: $userRepository->getEmailsByRole($role),
             header: ['Prénom', 'Nom', 'Email'],
         );
-    }
-
-    public function adminListActionOld(Request $request, UserRepository $userRepository): Response
-    {
-        $type = null;
-        $value = null;
-
-        $userSearch = new ListSearch();
-        $form = $this->createForm(UserFindType::class, $userSearch);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $type = $data->getType();
-            $value = $data->getValue();
-        }
-
-        /** Sample with QUERY
-         * $query = $userRepository->createQueryBuilder('u')
-         * ->orderBy('u.'.$orderBy, $orderDir);.
-         *
-         * if ($type) {
-         * $query->where($type.' = :type');
-         * $query->setParameter('type', $value);
-         * }
-         * $paginator = $userRepository->findPaginatedQuery(
-         * $query->getQuery()
-         * );
-         */
-        $alias = UserRepository::getEntityAlias();
-
-        $criterias = [];
-        if (!empty($value)) {
-            if (empty($type) || '*' === $type) {
-                if (is_numeric($value)) {
-                    $criterias[] = Criteria::create()->where(Criteria::expr()->contains($alias . '.id', $value));
-                } else {
-                    $criterias[] = Criteria::create()
-                        ->where(Criteria::expr()->contains($alias . '.username', $value))
-                        ->orWhere(Criteria::expr()->contains($alias . '.email', $value))
-                        ->orWhere(Criteria::expr()->contains($alias . '.roles', $value))/*->orWhere(
-                     * Criteria::expr()?->contains('ec'.'.nom', $value)
-                     * )->orWhere(
-                     * Criteria::expr()?->contains('ec'.'.prenom', $value)
-                     * )*/
-                    ;
-                }
-            } else {
-                $criterias[] = Criteria::create()->andWhere(Criteria::expr()->contains($alias . '.' . $type, $value));
-            }
-        }
-
-        $orderBy = $this->getRequestOrder(defOrderBy: 'username', alias: $alias, allowedFields: $userRepository->getFieldNames());
-
-        $paginator = $userRepository->getPaginator(limit: $this->getRequestLimit(), page: $this->getRequestPage(), orderBy: $orderBy, alias: $alias, criterias: $criterias);
-
-        return $this->render('user/list.twig', [
-            'paginator' => $paginator,
-            'form' => $form->createView(),
-        ]);
     }
 
     /**
@@ -1338,19 +1275,6 @@ class UserController extends AbstractController
 
         return $this->render('user/restriction.twig', [
             'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * TODO
-     * Affiche la liste des billets de l'utilisateur.
-     */
-    public function userHasBilletListAction(): Response
-    {
-        $userHasBillets = $this->getUser()?->getUserHasBillets();
-
-        return $this->render('userHasBillet/list.twig', [
-            'UserHasBillets' => $userHasBillets,
         ]);
     }
 

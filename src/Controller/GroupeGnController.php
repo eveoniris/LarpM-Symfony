@@ -82,34 +82,6 @@ class GroupeGnController extends AbstractController
     }
 
     /**
-     * Détail d'un groupe.
-     */
-    // #[Route('/groupeGn/{groupeGn}/detail', name: 'groupeGn.detail')]
-    // #[Route('/groupeGn/{groupeGn}', name: 'groupeGn.groupe')]
-    public function groupeAction(Request $request, #[MapEntity] GroupeGn $groupeGn): Response
-    {
-        $participant = $this->getUser()?->getParticipant($groupeGn->getGn());
-
-        if (!$participant) {
-            $this->redirectToRoute('app_login');
-        }
-
-        $canManage = $this->canManageGroup($groupeGn);
-        $canSeePrivateDetail = $canManage || $this->canSeeGroup($groupeGn);
-
-        return $this->render('groupe/detail.twig', [
-            'groupe' => $groupeGn->getGroupe(),
-            'tab' => $request->query->get('tab', 'detail'),
-            'participant' => $participant,
-            'groupeGn' => $groupeGn,
-            'canSeePrivateDetail' => $canSeePrivateDetail,
-            'canManage' => $canManage,
-            'isAdmin' => $this->isGranted(Role::SCENARISTE, Role::ORGA),
-            'gn' => $groupeGn->getGn(),
-        ]);
-    }
-
-    /**
      * Responsable d'une session : responsable de la session (groupe_gn), sinon responsable du groupe.
      */
     protected function getResponsableUser(?GroupeGn $groupeGn = null): ?User

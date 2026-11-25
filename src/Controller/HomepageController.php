@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Annonce;
 use App\Entity\Gn;
-use App\Entity\Langue;
 use App\Entity\Territoire;
-use App\Entity\User;
 use App\Repository\TerritoireRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -16,7 +13,6 @@ use Exception;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use OpenApi\Attributes as OA;
@@ -81,14 +77,6 @@ class HomepageController extends AbstractController
     }
 
     /**
-     * Affiche une page récapitulatif des événements.
-     */
-    public function evenementAction(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        return $this->render('evenement.twig');
-    }
-
-    /**
      * Fourni la liste des fiefs.
      */
     #[Route('/world/fiefs.json', name: 'world.fiefs.json')]
@@ -136,153 +124,6 @@ class HomepageController extends AbstractController
         $results = $query->getResult();
 
         return new JsonResponse($results, empty($results) ? 204 : 200);
-    }
-
-    /**
-     * Fourni la liste des groupes.
-     */
-    public function groupesAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
-        // recherche le prochain GN
-        $gnRepo = $entityManager->getRepository(Gn::class);
-        $gn = $gnRepo->findNext();
-
-        $groupeGnList = $gn->getGroupeGns();
-
-        $groupes = [];
-        foreach ($groupeGnList as $groupeGn) {
-            $groupe = $groupeGn->getGroupe();
-            if (true === $groupe->getPj()) {
-                $geom = null;
-                if ($groupe->getTerritoires()->count() > 0) {
-                    $territoire = $groupe->getTerritoires()->first();
-                    $geom = $territoire->getGeojson();
-                }
-
-                // mettre en surbrillance le groupe de l'utilisateur
-                $highlight = false;
-                if ($this->getUser()) {
-                    foreach ($this->getUser()->getParticipants() as $participant) {
-                        if (!($participant->getGn() == $gn && $participant->getGroupeGn())) {
-                            continue;
-                        }
-
-                        if ($participant->getGroupeGn()->getGroupe() == $groupe) {
-                            $highlight = true;
-                            break;
-                        }
-                    }
-                }
-
-                $groupes[] = [
-                    'id' => $groupe->getId(),
-                    'nom' => $groupe->getNom(),
-                    'geom' => $geom,
-                    'highlight' => $highlight,
-                ];
-            }
-        }
-
-        return new JsonResponse($groupes);
-    }
-
-    public function indexAction(): RedirectResponse|Response
-    {
-        if (!$this->getUser()) {
-            return $this->notConnectedIndexAction();
-        }
-
-        if (!$this->getUser()->getEtatCivil()) {
-            return $this->redirectToRoute('newUser.step1', [], 303);
-        }
-
-        $repoAnnonce = $this->entityManager->getRepository(Annonce::class);
-        $annonces = $repoAnnonce->findBy(['archive' => false, 'gn' => null], ['update_date' => 'DESC']);
-
-        /** @var User $user */
-        $user = $this->getUser();
-
-        return $this->render('homepage/index.twig', [
-            'annonces' => $annonces,
-            'participants' => $user->getParticipants(),
-            'user' => $user,
-        ]);
-    }
-
-    public function notConnectedIndexAction(): Response
-    {
-        return $this->render('homepage/not_connected.twig');
-    }
-
-    /**
-     * Fourni la liste des langues.
-     */
-    public function languesAction(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $langueList = $entityManager->getRepository(Langue::class)->findAll();
-
-        $langues = [];
-        foreach ($langueList as $langue) {
-            if (0 == $langue->getDiffusion()) {
-                continue;
-            } // ne pas transmettre aux joueurs la liste des langues anciennes
-
-            // construction du geojson de la langue (utilisation en tant que langue principale)
-            $geojson = '{ "type": "FeatureCollection", "features": [';
-
-            $first = true;
-            $geoJsonPrincipalCount = 0;
-            foreach ($langue->getTerritoires() as $territoire) {
-                $geom = $territoire->getGeojson();
-
-                if ($geom) {
-                    if (!$first) {
-                        $geojson .= ',';
-                    }
-
-                    $geojson .= $geom;
-                    $first = false;
-                    ++$geoJsonPrincipalCount;
-                }
-            }
-
-            $geojson .= ']}';
-            $geoJsonPrincipal = $geojson;
-
-            // construction du geoJson de la langue (utilisation en tant que langue secondaire)
-            $geojson = '{ "type": "FeatureCollection", "features": [';
-            $first = true;
-            $geoJsonSecondaireCount = 0;
-            foreach ($langue->getTerritoireSecondaires() as $territoire) {
-                $geom = $territoire->getGeojson();
-
-                if ($geom) {
-                    if (!$first) {
-                        $geojson .= ',';
-                    }
-
-                    $geojson .= $geom;
-                    $first = false;
-                    ++$geoJsonSecondaireCount;
-                }
-            }
-
-            $geojson .= ']}';
-            $geoJsonSecondaire = $geojson;
-
-            $langues[] = [
-                'id' => $langue->getId(),
-                'label' => $langue->getLabel(),
-                'description' => $langue->getDescription(),
-                'diffusion' => $langue->getDiffusion(),
-                'geomPrincipal' => $geoJsonPrincipal,
-                'geomSecondaire' => $geoJsonSecondaire,
-                'geomPrincipalCount' => $geoJsonPrincipalCount,
-                'geomSecondaireCount' => $geoJsonSecondaireCount,
-            ];
-        }
-
-        return new JsonResponse($langues);
     }
 
     /**
