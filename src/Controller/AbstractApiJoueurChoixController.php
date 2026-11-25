@@ -40,7 +40,7 @@ abstract class AbstractApiJoueurChoixController extends AbstractController
         if (!$user instanceof User || $personnage->getUser() !== $user) {
             return $this->json(['error' => 'Accès refusé'], 403);
         }
-        if (true === $personnage->getLastParticipantGnGroupe()?->getLock()) {
+        if ($personnage->isModificationVerrouillee()) {
             return $this->json(['error' => 'Le groupe est verrouillé : il n\'est plus possible de modifier ce personnage.', 'code' => 'groupe_verrouille'], 403);
         }
 

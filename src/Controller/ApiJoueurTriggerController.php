@@ -55,7 +55,7 @@ final class ApiJoueurTriggerController extends AbstractController
         }
 
         return $this->json([
-            'verrouille' => true === $personnage->getLastParticipantGnGroupe()?->getLock(),
+            'verrouille' => $personnage->isModificationVerrouillee(),
             'triggers' => $triggers,
         ]);
     }

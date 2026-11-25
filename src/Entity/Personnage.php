@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use DateTimeInterface;
+use DateTimeImmutable;
 use App\Enum\BonusPeriode;
 use App\Enum\CompetenceFamilyType;
 use App\Enum\DocumentType;
@@ -785,6 +787,22 @@ class Personnage extends BasePersonnage implements Stringable
         return $lastParticipantGnGroupe instanceof Groupe
             ? $lastParticipantGnGroupe->getNom()
             : 'N\'est pas lié à un groupe';
+    }
+
+    /**
+     * Les achats et choix du personnage sont-ils bloqués ? Oui si le groupe de sa dernière participation est
+     * verrouillé ; sans groupe, dès que la date de verrouillage de ce GN est passée.
+     */
+    public function isModificationVerrouillee(?DateTimeInterface $maintenant = null): bool
+    {
+        $groupe = $this->getLastParticipantGnGroupe();
+        if (null !== $groupe) {
+            return true === $groupe->getLock();
+        }
+
+        $dateVerrouillage = $this->getLastParticipant()?->getGn()?->getDateVerrouillage();
+
+        return null !== $dateVerrouillage && $dateVerrouillage <= ($maintenant ?? new DateTimeImmutable());
     }
 
     /**
