@@ -173,13 +173,13 @@ class CompetenceController extends AbstractController
     ): BinaryFileResponse|Response {
         // on ne peut télécharger que les documents des compétences que l'on connait
         if (!$this->getUser()) {
-            return $this->render('security/denied.html.twig');
+            throw $this->createAccessDeniedException();
         }
 
         $hasCompetence = $competenceRepository->userHasCompetence($this->getUser(), $competence); // $this->getUser()->getPersonnages()->getCompetences()->contains($competence)
 
         if (!$hasCompetence && !$this->isGranted(Role::REGLE->value)) {
-            return $this->render('security/denied.html.twig');
+            throw $this->createAccessDeniedException();
         }
 
         return $this->sendDocument($competence);
