@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Security\Voter;
 
-use App\Entity\BaseInterJeu;
+use App\Entity\InterJeu;
 use App\Entity\User;
 use App\Enum\Role;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -36,13 +36,13 @@ class InterJeuVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return \in_array($attribute, [self::VIEW, self::PROPOSE, self::MANAGE], strict: true) && $subject instanceof BaseInterJeu;
+        return \in_array($attribute, [self::VIEW, self::PROPOSE, self::MANAGE], strict: true) && $subject instanceof InterJeu;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, #[\SensitiveParameter] TokenInterface $token, ?Vote $vote = null): bool
     {
         $user = $token->getUser();
-        if (!$user instanceof User || !$subject instanceof BaseInterJeu) {
+        if (!$user instanceof User || !$subject instanceof InterJeu) {
             return false;
         }
 
