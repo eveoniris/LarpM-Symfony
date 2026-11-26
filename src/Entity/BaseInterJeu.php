@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Enum\InterJeuEtat;
+use App\Enum\InterJeuParticipantStatut;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -14,9 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\OneToMany;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'inter_jeu')]
@@ -46,16 +45,18 @@ abstract class BaseInterJeu
     #[Column(name: 'chronologie_generee', type: Types::BOOLEAN, options: ['default' => false])]
     protected bool $chronologieGeneree = false;
 
-    /** @var Collection<int, Personnage> */
-    #[ManyToMany(targetEntity: Personnage::class)]
-    #[JoinTable(name: 'inter_jeu_personnage')]
-    #[JoinColumn(name: 'inter_jeu_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
-    protected Collection $personnages;
+    /** @var Collection<int, InterJeuPersonnage> */
+    #[OneToMany(targetEntity: InterJeuPersonnage::class, mappedBy: 'interJeu', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    protected Collection $participations;
+
+    /** @var Collection<int, InterJeuOrga> */
+    #[OneToMany(targetEntity: InterJeuOrga::class, mappedBy: 'interJeu', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    protected Collection $orgas;
 
     public function __construct()
     {
-        $this->personnages = new ArrayCollection();
+        $this->participations = new ArrayCollection();
+        $this->orgas = new ArrayCollection();
         $this->dateReel = new DateTime();
     }
 
@@ -124,24 +125,110 @@ abstract class BaseInterJeu
         return $this;
     }
 
-    /** @return Collection<int, Personnage> */
-    public function getPersonnages(): Collection
+    /**
+     * Toutes les participations, quel que soit leur statut (liste de gestion).
+     *
+     * @return Collection<int, InterJeuPersonnage>
+     */
+    public function getParticipations(): Collection
     {
-        return $this->personnages;
+        return $this->participations;
     }
 
-    public function addPersonnage(Personnage $personnage): static
+    public function getParticipation(Personnage $personnage): ?InterJeuPersonnage
     {
-        if (!$this->personnages->contains($personnage)) {
-            $this->personnages->add($personnage);
+        foreach ($this->participations as $participation) {
+            if ($participation->getPersonnage() === $personnage) {
+                return $participation;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Personnages inscrits uniquement : ce sont eux qui comptent (statistiques, impressions, chronologie).
+     *
+     * @return Collection<int, Personnage>
+     */
+    public function getPersonnages(): Collection
+    {
+        return $this->participations
+            ->filter(static fn (InterJeuPersonnage $participation): bool => $participation->isInscrit())
+            ->map(static fn (InterJeuPersonnage $participation): Personnage => $participation->getPersonnage());
+    }
+
+    public function countByStatut(InterJeuParticipantStatut $statut): int
+    {
+        return $this->participations
+            ->filter(static fn (InterJeuPersonnage $participation): bool => $participation->getStatut() === $statut)
+            ->count();
+    }
+
+    public function countPropositions(): int
+    {
+        return $this->participations
+            ->filter(static fn (InterJeuPersonnage $participation): bool => $participation->hasProposition())
+            ->count();
+    }
+
+    /**
+     * Ajoute le personnage, ou met à jour son statut s'il est déjà dans la liste.
+     */
+    public function addPersonnage(Personnage $personnage, InterJeuParticipantStatut $statut = InterJeuParticipantStatut::INSCRIT): InterJeuPersonnage
+    {
+        $participation = $this->getParticipation($personnage);
+        if (null === $participation) {
+            $participation = new InterJeuPersonnage($this, $personnage, $statut);
+            $this->participations->add($participation);
+        } else {
+            $participation->setStatut($statut);
+        }
+
+        return $participation;
+    }
+
+    public function removePersonnage(Personnage $personnage): static
+    {
+        $participation = $this->getParticipation($personnage);
+        if (null !== $participation) {
+            $this->participations->removeElement($participation);
         }
 
         return $this;
     }
 
-    public function removePersonnage(Personnage $personnage): static
+    /** @return Collection<int, InterJeuOrga> */
+    public function getOrgas(): Collection
     {
-        $this->personnages->removeElement($personnage);
+        return $this->orgas;
+    }
+
+    public function getOrga(User $user): ?InterJeuOrga
+    {
+        foreach ($this->orgas as $orga) {
+            if ($orga->getUser()->getId() === $user->getId()) {
+                return $orga;
+            }
+        }
+
+        return null;
+    }
+
+    public function addOrga(User $user, ?User $validePar = null): InterJeuOrga
+    {
+        $orga = $this->getOrga($user);
+        if (null === $orga) {
+            $orga = new InterJeuOrga($this, $user, $validePar);
+            $this->orgas->add($orga);
+        }
+
+        return $orga;
+    }
+
+    public function removeOrga(InterJeuOrga $orga): static
+    {
+        $this->orgas->removeElement($orga);
 
         return $this;
     }

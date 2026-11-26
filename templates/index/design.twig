@@ -90,7 +90,7 @@
 <div class="doc">
 
 <header class="doc-head">
-  <div class="doc-kicker">Guide de style · v0.33 · Bootstrap 5.3</div>
+  <div class="doc-kicker">Guide de style · v0.34 · Bootstrap 5.3</div>
   <h1>Template de design LarpManager</h1>
   <p class="doc-lead">Référence unique pour les couleurs, les rôles d'information, les composants et les gabarits de page. Chaque bloc ci-dessous est utilisable tel quel avec <code>lm-design.css</code> et se transpose en widgets Flutter ou React Native à partir des mêmes tokens.</p>
   
@@ -865,6 +865,25 @@
     </tbody>
   </table></div>
 
+  <h3>Titres de section dans un menu déroulant</h3>
+  <div class="lm-grid-2">
+    <div class="sample">
+      <ul class="dropdown-menu show position-static" style="min-width:12rem">
+        <li><h6 class="lm-menu-section">Sécurité</h6></li>
+        <li><a class="dropdown-item" href="#">Connexions</a></li>
+        <li><a class="dropdown-item" href="#">IP bloquées</a></li>
+        <li><h6 class="lm-menu-section">Intégrations</h6></li>
+        <li><a class="dropdown-item" href="#">Bot Discord</a></li>
+      </ul>
+    </div>
+    <ul class="doc-rules">
+      <li>Un menu déroulant long se découpe en sections avec <code>&lt;h6 class="lm-menu-section"&gt;</code>, pas avec <code>.dropdown-header</code> de Bootstrap (retrait et gris clair : lu comme un sous-menu).</li>
+      <li>Le titre est aligné sur les liens, en petites capitales espacées et en gras, en cuivre (bêta) ou en couleur de texte appuyée (hors bêta), avec un filet au-dessus ; pas de filet sur la première section.</li>
+      <li>Un <code>.dropdown-divider</code> reste réservé à un lien isolé en fin de menu (exemple : « Statistique » dans Technique).</li>
+      <li>Règle dans <code>style.css</code> (thèmes hors bêta, couleurs Bootstrap) et dans <code>lm-design.css</code> (bêta et guide autonome, jetons lm).</li>
+    </ul>
+  </div>
+
   <h3>Collisions repérées dans le menu actuel</h3>
   <div class="lm-stack">
     <div class="lm-callout" data-role="warn"><p class="lm-callout-title"><svg class="lm-ico"><use href="#i-warn"/></svg>Personnage actif</p>
@@ -953,10 +972,11 @@
 <!-- ===================== 11. HISTORIQUE ===================== -->
 <section class="doc-sec">
   <h2 id="sec-11">11. Historique des versions</h2>
-  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque mise à jour de la page ; le numéro de publication de la copie en ligne peut différer. Version actuelle : <b>v0.33</b>.</p>
+  <p class="doc-note">Le numéro de version du guide (<code>v0.N</code>) est incrémenté à chaque mise à jour de la page ; le numéro de publication de la copie en ligne peut différer. Version actuelle : <b>v0.34</b>.</p>
   <div class="lm-table-wrap"><table class="lm-table">
     <thead><tr><th>Version</th><th>Contenu</th></tr></thead>
     <tbody>
+      <tr><td>v0.34</td><td>Menus déroulants (§8) : titres de section <code>lm-menu-section</code> (petites capitales, filet, alignés sur les liens) à la place de <code>.dropdown-header</code>, appliqués au menu Technique dans les deux interfaces.</td></tr>
       <tr><td>v0.33</td><td>Chronologie des jeux (§4e) : pastille d'échéance du menu (<code>lm-chrono</code>, jaune à 14 jours, rouge à 3 jours), bandeau d'échéance (<code>lm-echeance</code>), frise verticale (<code>lm-timeline--vertical</code>) avec date en jeu, verrouillage et étapes selon leur visibilité (public, secret, technique).</td></tr>
       <tr><td>v0.32</td><td>Filtre « participation à un GN » : liste déroulante « Tous les GN » dans le panneau Filtres (<code>/personnage/list</code>, filtre serveur, puce « GN : … ») et à côté de la recherche locale « Afficher plus » (membres d'un groupe secondaire, filtre côté client via <code>data-gn</code>).</td></tr>
       <tr><td>v0.31</td><td>Boutons Bootstrap hérités en bêta : contours (cuivre, gris, vert, ambre, rouge, pourpre) et pleins (succès, alerte, danger) à fond de verre ; liste déroulante au-dessus de la carte suivante ; anomalies non bloquantes en ambre ; fenêtre de confirmation modale.</td></tr>

@@ -1,0 +1,114 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ interJeu.nom }}{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': 'Mes inter-jeux', 'route': path('inter.orga.list')},
+        {'name': interJeu.nom}
+    ]} %}
+
+    <div class="well well-sm">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5>{{ interJeu.nom }} <small>(année {{ interJeu.anneeJeu }}, le {{ interJeu.dateReel|date('d/m/Y') }})</small></h5>
+            <div class="btn-group flex-wrap" role="group">
+                <a class="btn btn-sm btn-secondary" href="{{ path('inter.statistiques', {'inter': interJeu.id}) }}">
+                    <i class="fa fa-chart-bar"></i> Statistiques
+                </a>
+                <a class="btn btn-sm btn-secondary" href="{{ path('inter.statistiques.csv', {'inter': interJeu.id}) }}">
+                    <i class="fa fa-file-csv"></i> Exporter en CSV
+                </a>
+                {% if gestionnaire %}
+                    <a class="btn btn-sm btn-secondary" href="{{ path('inter.personnages', {'inter': interJeu.id}) }}">
+                        <i class="fa fa-pencil"></i> Gérer les participants
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="mt-2">
+            {% for statut in statuts %}
+                <span class="badge {{ statut.badgeClass }}">{{ statut.label }} : {{ interJeu.countByStatut(statut) }}</span>
+            {% endfor %}
+        </div>
+        {% if peutProposer %}
+            <p class="text-muted small mb-0 mt-2">
+                Les changements de liste sont des propositions : la gestion des inter-jeux les valide avant qu'ils ne s'appliquent.
+            </p>
+        {% endif %}
+    </div>
+
+    {% if peutProposer %}
+        <div class="well well-sm">
+            <div class="header">
+                <h5>Proposer un participant</h5>
+            </div>
+            <form method="post" class="d-flex gap-2 align-items-end flex-wrap"
+                  action="{{ path('inter.proposition.ajout', {'inter': interJeu.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('proposition_ajout_' ~ interJeu.id) }}">
+                <div>
+                    <label for="proposition-personnage" class="form-label">Identifiant du personnage</label>
+                    <input type="text" inputmode="numeric" pattern="[0-9]+" required
+                           id="proposition-personnage" name="personnage" class="form-control form-control-sm">
+                </div>
+                <button type="submit" class="btn btn-sm btn-secondary">Proposer l'ajout</button>
+            </form>
+        </div>
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                <th class="text-center">#</th>
+                <th>Nom</th>
+                <th>Classe</th>
+                <th>Statut</th>
+                {% if peutProposer %}
+                    <th>Proposer un statut</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for participation in interJeu.participations %}
+                {% set personnage = participation.personnage %}
+                <tr>
+                    {# Ajout proposé non validé : ni nom ni classe (pas de lecture de noms par identifiant) #}
+                    {% set masque = participation.ajoutPropose and not gestionnaire %}
+                    <td class="text-center">{{ personnage.id }}</td>
+                    <td>{{ masque ? 'Ajout proposé' : personnage.nom }}</td>
+                    <td>{{ not masque and personnage.classe ? personnage.classe.labelMasculin : '' }}</td>
+                    <td>
+                        <span class="badge {{ participation.statut.badgeClass }}">{{ participation.statut.label }}</span>
+                        {% if participation.hasProposition %}
+                            <small class="text-muted">proposé : {{ participation.statutPropose.label|lower }}, en attente de validation</small>
+                        {% endif %}
+                    </td>
+                    {% if peutProposer %}
+                        <td>
+                            <form method="post" class="d-flex gap-1 align-items-center"
+                                  action="{{ path('inter.proposition.statut', {'inter': interJeu.id, 'personnage': personnage.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('proposition_statut_' ~ interJeu.id ~ '_' ~ personnage.id) }}">
+                                {% if participation.ajoutPropose %}
+                                    <input type="hidden" name="statut" value="en_attente">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Retirer la proposition</button>
+                                {% else %}
+                                    <select name="statut" class="form-select form-select-sm w-auto" aria-label="Statut proposé pour le personnage {{ personnage.id }}">
+                                        {% for statut in statuts %}
+                                            <option value="{{ statut.value }}" {{ statut == (participation.statutPropose ?? participation.statut) ? 'selected' }}>{{ statut.label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">Proposer</button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% else %}
+                <tr><td colspan="{{ peutProposer ? 5 : 4 }}" class="text-center">Aucun participant.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock body %}

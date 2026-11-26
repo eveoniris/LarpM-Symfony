@@ -75,9 +75,17 @@ class InterJeuCrudTest extends WebTestCase
         $em->flush();
 
         $client->loginUser($user);
+        // Sans jeton CSRF, rien n'est retiré
         $client->request('POST', '/inter-jeu/' . $interJeu->getId() . '/personnage/' . $personnage->getId() . '/remove');
+        static::assertResponseRedirects('/inter-jeu/' . $interJeu->getId() . '/personnages');
+        static::assertCount(1, $em->find(InterJeu::class, $interJeu->getId())->getParticipations());
+
+        $crawler = $client->request('GET', '/inter-jeu/' . $interJeu->getId() . '/personnages');
+        $client->submit($crawler->selectButton('Retirer')->form());
 
         static::assertResponseRedirects('/inter-jeu/' . $interJeu->getId() . '/personnages');
+        $em->clear();
+        static::assertCount(0, $em->find(InterJeu::class, $interJeu->getId())->getParticipations());
     }
 
     public function testChronologieButtonAppearsWhenDatePassed(): void

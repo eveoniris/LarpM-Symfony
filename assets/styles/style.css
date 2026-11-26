@@ -390,3 +390,22 @@ th.rotate > div > span {
 .lm-confirm-actions .btn { min-height: 44px; }
 /* Anomalie non bloquante, hors interface bêta (la version bêta la redéfinit dans lm-design.css) */
 html:not([data-ui="beta"]) .lm-anomalie { color: #8a5a00; }
+
+/* Titre de section dans un menu déroulant (menu Technique) : aligné sur les liens, en petites capitales
+   espacées, plus contrasté que les liens et séparé par un filet, pour ne pas ressembler à un sous-menu.
+   Couleurs Bootstrap ici ; l'interface bêta les remplace par les jetons lm dans lm-design.css. */
+.dropdown-menu .lm-menu-section {
+  display: block;
+  margin: .35rem 0 .1rem;
+  padding: .45rem var(--bs-dropdown-item-padding-x, 1rem) .2rem;
+  border-top: 1px solid var(--bs-dropdown-divider-bg, var(--bs-border-color));
+  font-family: inherit;
+  font-size: .72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--bs-emphasis-color, inherit);
+  white-space: nowrap;
+}
+.dropdown-menu li:first-child > .lm-menu-section { margin-top: 0; border-top: 0; padding-top: .25rem; }
