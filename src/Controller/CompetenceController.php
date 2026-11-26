@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Competence;
-use App\Entity\CompetenceFamily;
 use App\Entity\Gn;
-use App\Entity\Level;
-use App\Entity\Personnage;
 use App\Enum\LevelType;
 use App\Enum\Role;
 use App\Form\CompetenceType;
 use App\Repository\CompetenceRepository;
 use App\Repository\LevelRepository;
 use App\Security\MultiRolesExpression;
+use App\Service\Competence\CompetenceFicheService;
 use App\Service\PagerService;
 use App\Service\PersonnageService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,36 +35,11 @@ class CompetenceController extends AbstractController
      */
     #[Route('/competence/add', name: 'add')]
     #[IsGranted('ROLE_REGLE')]
-    public function addAction(Request $request): RedirectResponse|Response
+    public function addAction(Request $request, CompetenceFicheService $competenceFicheService): RedirectResponse|Response
     {
-        $competence = new Competence();
-
-        // l'identifiant de la famille de competence peux avoir été passé en paramètre
-        // pour initialiser le formulaire avec une valeur par défaut.
-
-        // TODO : dans ce cas, il ne faut proposer que les niveaux pour lesquels une compétence
-        // n'a pas été défini pour cette famille
-        // voir si réalisable dans le Forma
-
-        $competenceFamilyId = $request->query->get('competenceFamily');
-        $levelIndex = $request->query->get('level');
-
-        if ($competenceFamilyId) {
-            $competenceFamily = $this->entityManager->find(CompetenceFamily::class, $competenceFamilyId);
-            if ($competenceFamily) {
-                $competence->setCompetenceFamily($competenceFamily);
-            }
-        }
-
-        if ($levelIndex) {
-            /** @var LevelRepository $repo */
-            $repo = $this->entityManager->getRepository(Level::class);
-            /** @var Level|null $level */
-            $level = $repo->findOneBy(['index' => (int) $levelIndex + 1]);
-            if ($level) {
-                $competence->setLevel($level);
-            }
-        }
+        // La famille et le niveau peuvent être passés en paramètre pour préremplir le formulaire.
+        // TODO : dans ce cas, ne proposer que les niveaux encore libres pour cette famille.
+        $competence = $competenceFicheService->nouvelle($request->query->get('competenceFamily'), $request->query->get('level'));
 
         return $this->handleCreateOrUpdate($request, $competence, CompetenceType::class);
     }
@@ -137,25 +110,19 @@ class CompetenceController extends AbstractController
      */
     #[Route('/{competence}', name: 'detail')]
     #[IsGranted('ROLE_USER')]
-    public function detailAction(#[MapEntity] Competence $competence): Response
-    {
-        $this->checkHasAccess([Role::REGLE], function () use ($competence): bool {
-            if (!($personnage = $this->getPersonnage())) {
+    public function detailAction(
+        #[MapEntity]
+        Competence $competence,
+        CompetenceFicheService $competenceFicheService,
+    ): Response {
+        $this->checkHasAccess([Role::REGLE], function () use ($competence, $competenceFicheService): bool {
+            $droit = $competenceFicheService->droitLecture($this->getPersonnage(), $competence, $this->isGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA)));
+            if (null === $droit) {
                 return false;
             }
-            if ($personnage->isKnownCompetence($competence)) {
-                $this->setCan(static::CAN_READ_PRIVATE, true);
+            $this->setCan($droit, true);
 
-                return true;
-            }
-            $availableCompetences = $this->personnageService->getAvailableCompetences($personnage, $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value));
-            if ($availableCompetences->contains($competence)) {
-                $this->setCan(static::CAN_READ, true);
-
-                return true;
-            }
-
-            return false;
+            return true;
         });
 
         return $this->render('competence/detail.twig', ['competence' => $competence]);
@@ -329,23 +296,13 @@ class CompetenceController extends AbstractController
     #[IsGranted('ROLE_REGLE')]
     public function personnagesExportAction(
         Request $request,
-        CompetenceRepository $competenceRepository,
+        CompetenceFicheService $competenceFicheService,
         #[MapEntity]
         Competence $competence,
         #[MapEntity]
         ?Gn $gn = null,
     ): Response {
-        $rows = [];
-        /** @var Personnage $personnage */
-        foreach ($competenceRepository->getPersonnages($competence, $gn)->getQuery()->toIterable() as $personnage) {
-            $rows[] = [
-                'id' => $personnage->getId(),
-                'personnage' => $personnage->getFullName(),
-                'groupe' => $personnage->getLastParticipantGnGroupe()?->getNom() ?? '',
-                'joueur' => $personnage->getUser()?->getFullName() ?? '',
-                'vivant' => $personnage->getVivant() ? 'oui' : 'non',
-            ];
-        }
+        $rows = $competenceFicheService->lignesExportPersonnages($competence, $gn);
 
         if ('json' === $request->query->get('format')) {
             return new JsonResponse($rows);
