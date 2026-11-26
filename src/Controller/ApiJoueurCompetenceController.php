@@ -138,6 +138,6 @@ final class ApiJoueurCompetenceController extends AbstractController
 
     private function isLocked(Personnage $personnage): bool
     {
-        return true === $personnage->getLastParticipantGnGroupe()?->getLock();
+        return $personnage->isModificationVerrouillee();
     }
 }
