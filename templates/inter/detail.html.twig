@@ -10,11 +10,11 @@
     ]} %}
 
     <div class="well well-sm">
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between flex-wrap gap-2">
             <h4>{{ interJeu.nom }}</h4>
 
             <div class="btn-toolbar d-flex justify-content-center" role="toolbar">
-                <div class="btn-group" role="group">
+                <div class="btn-group flex-wrap" role="group">
                     <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Participants"
                        href="{{ path('inter.personnages', {'inter': interJeu.id}) }}">
