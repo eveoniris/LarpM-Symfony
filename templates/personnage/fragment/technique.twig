@@ -35,6 +35,11 @@
                         <div class="list-group-item">La liste est vide</div>
                     {% endfor %}
                 </div>
+                <form method="post" class="mb-3" action="{{ path('personnage.token.add', {'personnage': personnage.id}) }}"
+                      onsubmit="return confirm('Ajouter un jeton de vieillesse ? Le personnage prend 5 ans et peut changer d'âge, voire mourir.');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('personnage_token_add_' ~ personnage.id) }}">
+                    <button type="submit" class="btn btn-sm btn-secondary"><i class="fa fa-hourglass-half"></i> Ajouter un jeton de vieillesse</button>
+                </form>
 
                 <h6>Apprentissage</h6>
                 <div class="list-group mb-2">

@@ -82,23 +82,19 @@ use App\Form\TriggerType as TriggerFormType;
 use App\Form\TrombineType;
 use App\Manager\GroupeManager;
 use App\Repository\AgeRepository;
-use App\Repository\CompetenceRepository;
 use App\Repository\ConnaissanceRepository;
 use App\Repository\DomaineRepository;
 use App\Repository\GnRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\PersonnageApprentissageRepository;
-use App\Repository\PersonnageRepository;
 use App\Repository\PotionRepository;
 use App\Repository\PriereRepository;
 use App\Repository\SortRepository;
 use App\Repository\TechnologieRepository;
-use App\Repository\TerritoireRepository;
 use App\Repository\UserRepository;
 use App\Repository\XpReportRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\CarteAlchimisteService;
-use App\Service\CompetenceService;
 use App\Service\EspeceBonusService;
 use App\Service\PersonnageVisibilityService;
 use App\Service\PagerService;
@@ -134,6 +130,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -2629,8 +2627,9 @@ class PersonnageController extends AbstractController
     /**
      * Ajoute un jeton vieillesse au personnage.
      */
-    #[Route('/{personnage}/addToken', name: 'token.add')]
+    #[Route('/{personnage}/addToken', name: 'token.add', methods: ['POST'])]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
+    #[IsCsrfTokenValid(new Expression('"personnage_token_add_" ~ args["personnage"].getId()'))]
     public function adminTokenAddAction(Request $request, #[MapEntity] Personnage $personnage): RedirectResponse
     {
         $participant = $this->getParticipant($personnage, $request);
@@ -2638,8 +2637,7 @@ class PersonnageController extends AbstractController
             return $r;
         }
 
-        $token = $request->query->get('token');
-        $token = $this->entityManager->getRepository(Token::class)->findOneByTag($token);
+        $token = $this->entityManager->getRepository(Token::class)->findOneByTag('VIEILLESSE');
 
         // donne un jeton vieillesse
         $personnageHasToken = new PersonnageHasToken();
@@ -3893,41 +3891,6 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    #[Route('/fixpriest', name: 'fix.priest')]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
-    public function fixAction(PersonnageRepository $pr): Response
-    {
-        $ids = [
-            // List of priest with no prayer
-        ];
-
-        /** @var Personnage $personnage */
-        foreach ($pr->findByIds($ids) as $personnage) {
-            $religion = $personnage->getMainReligion();
-
-            if (!$religion) {
-                continue;
-            }
-
-            foreach ($religion->getSpheres() as $sphere) {
-                /** @var Priere $priere */
-                foreach ($sphere->getPrieres() as $priere) {
-                    if (!(!$personnage->hasPriere($priere) && 1 === $priere->getNiveau())) {
-                        continue;
-                    }
-
-                    $priere->addPersonnage($personnage);
-                    $personnage->addPriere($priere);
-                    $this->entityManager->persist($personnage);
-                    $this->entityManager->persist($priere);
-                }
-                $this->entityManager->flush();
-            }
-        }
-
-        return $this->render('personnage/list.twig', []);
-    }
-
     /**
      * Obtenir le document lié à une priere.
      */
@@ -4546,70 +4509,6 @@ class PersonnageController extends AbstractController
             'form' => $form->createView(),
             'personnage' => $personnage,
             'competence' => $lastCompetence,
-        ]);
-    }
-
-    #[Route('/{personnage}/competence/test', name: 'test.competence')]
-    #[IsGranted(Role::ADMIN->value)]
-    public function testAction(
-        Request $request,
-        PersonnageService $personnageService,
-        CompetenceService $competenceService,
-        #[MapEntity]
-        Personnage $personnage,
-        CompetenceRepository $competenceRepository,
-        TerritoireRepository $territoireRepository,
-    ): Response {
-        /** @var Competence|null $protectionApprenti */
-        $protectionApprenti = $competenceRepository->findOneBy(['id' => 117]);
-        /** @var Competence|null $ressistanceApp */
-        $ressistanceApp = $competenceRepository->findOneBy(['id' => 122]);
-        /** @var Competence|null $agiliteApprenti */
-        $agiliteApprenti = $competenceRepository->findOneBy(['id' => 1]);
-        /** @var Competence|null $richesseApprenti */
-        $richesseApprenti = $competenceRepository->findOneBy(['id' => 127]);
-
-        $data = '<br />Richesse<br />';
-        if ($richesseApprenti) {
-            $data .= $personnageService->getCompetenceCout($personnage, $richesseApprenti);
-        }
-
-        $data .= '<br />Resistance<br />';
-        if ($ressistanceApp) {
-            $data .= $personnageService->getCompetenceCout($personnage, $ressistanceApp);
-        }
-
-        $data .= '<br />Agilite<br />';
-        if ($agiliteApprenti) {
-            $data .= $personnageService->getCompetenceCout($personnage, $agiliteApprenti);
-        }
-
-        $data .= '<br />Protection<br />';
-        if ($agiliteApprenti) {
-            $data .= $personnageService->getCompetenceCout($personnage, $agiliteApprenti);
-        }
-
-        $a = [
-            'min' => 1,
-            'condition' => [
-                [
-                    'type' => 'COMPETENCE_FAMILLE',
-                    'value' => 'PROTECTION',
-                ],
-            ],
-        ];
-
-        /* dump(json_encode($a));
-         * dump(
-         * $competenceService
-         * ->setPersonnage($personnage)
-         * ->setCompetence($protectionApprenti)
-         * ->getCompetenceCout(),
-         * );*/
-
-        return $this->render('personnage/test.twig', [
-            'personnage' => $personnage,
-            'data' => $data,
         ]);
     }
 

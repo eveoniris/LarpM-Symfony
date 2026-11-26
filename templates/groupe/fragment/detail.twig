@@ -18,6 +18,9 @@
                            title="Choisir le scénariste"
                            href="{{ path('groupe.scenariste', {'groupe': groupe.id}) }}"><i class="fa fa-pencil"></i>
                         </a>
+                        <a class="btn btn-secondary ms-1" title="Restauration du groupe"
+                           href="{{ path('groupe.restauration', {'groupe': groupe.id}) }}"><i class="fa fa-utensils"></i>
+                            Restauration</a>
                     </div>
                 {% endif %}
 
