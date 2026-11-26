@@ -1,0 +1,106 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Statistiques - {{ interJeu.nom }}{% endblock title %}
+
+{% block body %}
+
+    {% if gestionnaire %}
+        {% include '_partials/breadcrumb.twig' with {'items': [
+            {'name': 'Liste des inter-jeux', 'route': path('inter.list')},
+            {'name': interJeu.nom, 'route': path('inter.detail', {'inter': interJeu.id})},
+            {'name': 'Statistiques'}
+        ]} %}
+    {% else %}
+        {% include '_partials/breadcrumb.twig' with {'items': [
+            {'name': 'Mes inter-jeux', 'route': path('inter.orga.list')},
+            {'name': interJeu.nom, 'route': path('inter.consultation', {'inter': interJeu.id})},
+            {'name': 'Statistiques'}
+        ]} %}
+    {% endif %}
+
+    <div class="well well-sm">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5>Statistiques de {{ interJeu.nom }} <small>({{ stats.inscrits }} inscrit(s))</small></h5>
+            <div class="btn-group flex-wrap" role="group">
+                <a class="btn btn-sm btn-secondary" href="{{ path(gestionnaire ? 'inter.personnages' : 'inter.consultation', {'inter': interJeu.id}) }}">
+                    <i class="fa fa-users"></i> Participants
+                </a>
+                <a class="btn btn-sm btn-secondary" href="{{ path('inter.statistiques.csv', {'inter': interJeu.id}) }}">
+                    <i class="fa fa-file-csv"></i> Exporter en CSV
+                </a>
+            </div>
+        </div>
+        <p class="text-muted small mb-0 mt-2">
+            Personnages inscrits et vivants uniquement. Un personnage compte une fois par famille de compétence,
+            à son niveau le plus haut. L'export CSV donne une ligne par personnage et une colonne par famille.
+        </p>
+    </div>
+
+    <div class="row g-3">
+        {% for famille in stats.cles %}
+            <div class="col-sm-6 col-lg-4">
+                <div class="well well-sm h-100">
+                    <div class="header d-flex justify-content-between align-items-baseline">
+                        <h5>{{ famille.label }}</h5>
+                        <span class="fs-4 fw-bold">{{ famille.total }}</span>
+                    </div>
+                    <table class="table table-sm table-bordered mb-2">
+                        <tbody>
+                        {% for index, niveau in niveaux %}
+                            {% if famille.niveaux[index] is defined and (famille.niveaux[index] > 0 or index <= 4) %}
+                                <tr>
+                                    <td>{{ niveau }}</td>
+                                    <td class="text-center col-3">{{ famille.niveaux[index] }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if famille.personnages is not empty %}
+                        <details>
+                            <summary class="small">Voir les {{ famille.total }} personnage(s)</summary>
+                            <ul class="small mb-0 mt-1">
+                                {% for personnage in famille.personnages %}
+                                    <li>#{{ personnage.personnageId }} {{ personnage.nom }} ({{ personnage.niveau }})</li>
+                                {% endfor %}
+                            </ul>
+                        </details>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="well well-sm mt-3">
+        <div class="header">
+            <h5>Toutes les familles de compétences</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-sm table-hover">
+                <thead>
+                <tr>
+                    <th>Famille</th>
+                    <th class="text-center">Personnages</th>
+                    {% for niveau in niveaux %}
+                        <th class="text-center">{{ niveau }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for famille in stats.familles %}
+                    <tr>
+                        <td>{{ famille.label }}</td>
+                        <td class="text-center fw-bold">{{ famille.total }}</td>
+                        {% for index, niveau in niveaux %}
+                            <td class="text-center">{{ famille.niveaux[index] ?: '' }}</td>
+                        {% endfor %}
+                    </tr>
+                {% else %}
+                    <tr><td colspan="{{ 2 + niveaux|length }}" class="text-center">Aucune compétence chez les inscrits.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock body %}

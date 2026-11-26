@@ -32,7 +32,6 @@ use App\Enum\LevelType;
 use App\Enum\LogActionType;
 use App\Enum\PersonnageRoleType;
 use App\Enum\Role;
-use App\Enum\TriggerType;
 use App\Form\DeleteType;
 use App\Form\FindJoueurType;
 use App\Form\Groupe\GroupeInscriptionType;
@@ -2285,68 +2284,6 @@ class ParticipantController extends AbstractController
 
         return $this->render('rule/list.twig', [
             'regles' => $regles,
-            'participant' => $participant,
-        ]);
-    }
-
-    /**
-     * Choix d'une nouvelle description de religion.
-     */
-    public function religionDescriptionAction(
-        Request $request,
-        #[MapEntity]
-        Participant $participant,
-        PersonnageService $personnageService,
-    ): RedirectResponse|Response {
-        $this->hasAccess($participant);
-
-        $personnage = $participant->getPersonnage();
-
-        if (!$personnage) {
-            $this->addFlash('error', 'Vous devez avoir créé un personnage !');
-
-            return $this->redirectToRoute('gn.detail', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        if (!$personnage->hasTrigger(TriggerType::PRETRISE_INITIE)) {
-            $this->addFlash('error', 'Désolé, vous ne pouvez pas choisir de descriptif de religion supplémentaire.');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        $availableDescriptionReligion = $personnageService->getAvailableDescriptionReligion($personnage);
-
-        $form = $this->createFormBuilder()->add('religion', 'entity', [
-            'required' => true,
-            'label' => 'Choisissez votre nouveau descriptif religion',
-            'multiple' => false,
-            'expanded' => true,
-            'class' => Religion::class,
-            'choices' => $availableDescriptionReligion,
-            'choice_label' => 'label',
-        ])->add('save', SubmitType::class, ['label' => 'Valider'])->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $religion = $data['religion'];
-
-            $personnage->addReligion($religion);
-
-            $trigger = $personnage->getTrigger(TriggerType::PRETRISE_INITIE);
-            $trigger->consume((string) $religion);
-
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Vos modifications ont été enregistrées.');
-
-            return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
-        }
-
-        return $this->render('personnage/descriptionReligion.twig', [
-            'form' => $form->createView(),
-            'personnage' => $personnage,
             'participant' => $participant,
         ]);
     }

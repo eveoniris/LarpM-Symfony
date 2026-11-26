@@ -55,7 +55,7 @@ class GenreController extends AbstractController
             $this->addFlash('success', 'Le genre a été ajouté.');
 
             if ($form->get('save') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save')->isClicked()) {
-                return $this->redirectToRoute('genre', [], 303);
+                return $this->redirectToRoute('genre.index', [], 303);
             }
 
             if ($form->get('save_continue') instanceof \Symfony\Component\Form\ClickableInterface && $form->get('save_continue')->isClicked()) {
@@ -85,7 +85,7 @@ class GenreController extends AbstractController
         $this->addFlash('error', 'Le genre n\'a pas été trouvé.');
         $this->createNotFoundException(); // Todo render 404 ?
 
-        return $this->redirectToRoute('genre');
+        return $this->redirectToRoute('genre.index');
     }
 
     /**
@@ -118,7 +118,7 @@ class GenreController extends AbstractController
                 $this->addFlash('success', 'Le genre a été supprimé.');
             }
 
-            return $this->redirectToRoute('genre');
+            return $this->redirectToRoute('genre.index');
         }
 
         return $this->render('genre/update.twig', [

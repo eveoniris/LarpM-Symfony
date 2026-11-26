@@ -18,6 +18,9 @@
                            title="Choisir le scénariste"
                            href="{{ path('groupe.scenariste', {'groupe': groupe.id}) }}"><i class="fa fa-pencil"></i>
                         </a>
+                        <a class="btn btn-secondary ms-1" title="Restauration du groupe"
+                           href="{{ path('groupe.restauration', {'groupe': groupe.id}) }}"><i class="fa fa-utensils"></i>
+                            Restauration</a>
                     </div>
                 {% endif %}
 
@@ -119,7 +122,7 @@
                 <div class="header"><h5>Jeu stratégique</h5></div>
                 <div class="card-body">
                     {% if groupe.jeuStrategique %}
-                        <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+                        <span class="fa-solid fa-circle-check" aria-hidden="true"></span>
                         participe au jeu stratégique.
                     {% else %}
                         ne participe pas au jeu stratégique.
@@ -131,7 +134,7 @@
                 <div class="header"><h5>Jeu maritime</h5></div>
                 <div class="card-body">
                     {% if groupe.jeuMaritime %}
-                        <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+                        <span class="fa-solid fa-circle-check" aria-hidden="true"></span>
                         participe au jeu maritime.
                     {% else %}
                         ne participe pas au jeu maritime.

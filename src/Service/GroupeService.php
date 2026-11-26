@@ -750,6 +750,11 @@ readonly class GroupeService
                 continue;
             }
 
+            // « Seuls les scénaristes peuvent voir ceci »
+            if ($data->getVisibility()?->isPrivate()) {
+                continue;
+            }
+
             // Owner For a specific GN
             if (!isset($groupeOwnerForGn[$data->getGn()?->getId()]) && $data->getVisibility()?->isGroupeOwner()) {
                 continue;
@@ -774,6 +779,16 @@ readonly class GroupeService
     /**
      * @return ArrayCollection<int, Debriefing>
      */
+    /**
+     * Un élément (background, debriefing) ouvert par son id doit respecter la même visibilité que dans les listes.
+     */
+    public function isVisibleForCurrentUser(Background|Debriefing $data): bool
+    {
+        $groupe = $data->getGroupe();
+
+        return null !== $groupe && !$this->filterVisibilityForCurrentUser($groupe, new ArrayCollection([$data]))->isEmpty();
+    }
+
     public function getGroupeDebriefingsVisibleForCurrentUser(Groupe $groupe): ArrayCollection
     {
         return $this->filterVisibilityForCurrentUser($groupe, $groupe->getDebriefings());

@@ -37,6 +37,7 @@
 						{% if peutEcrire %}
 							<span class="lm-actions">
 								<a href="{{ path('frise.age.update', {'age': age.id}) }}" class="{{ beta ? 'lm-btn lm-btn--ghost lm-btn--sm' : 'btn btn-sm btn-secondary' }}" title="Modifier l'âge">Modifier</a>
+								<a href="{{ path('frise.age.delete', {'age': age.id}) }}" class="{{ beta ? 'lm-btn lm-btn--ghost lm-btn--sm' : 'btn btn-sm btn-danger' }}" title="Supprimer l'âge et ses entrées">Supprimer</a>
 							</span>
 						{% endif %}
 					</div>

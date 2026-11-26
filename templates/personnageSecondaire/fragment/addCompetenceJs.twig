@@ -17,7 +17,7 @@
 	}
 
 	function addCompetenceFormDeleteLink($competenceFormLi) {
-		let $removeFormA = $('<span class="input-group-btn"><a class="btn btn-link" href="#"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a></span>');
+		let $removeFormA = $('<span class="input-group-btn"><a class="btn btn-link" href="#"><span class="fa-solid fa-circle-xmark" aria-hidden="true"></span></a></span>');
 		$('select',$competenceFormLi).wrap('<div class="input-group"></div>');
 		$('select',$competenceFormLi).after($removeFormA);
 

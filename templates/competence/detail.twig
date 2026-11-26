@@ -43,10 +43,13 @@
                                title="Télécharger le document associé"
                                href="{{ path('competence.document',{'competence':competence.id}) }}"><i
                                     class="fa fa-download"></i> Document</a>
-                            <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                               title="Supprimer le document"
-                               href="{{ path('competence.delete',{'competence':competence.id}) }}"><i
-                                    class="fa fa-file-excel"></i> Supprimer document</a>
+                            <form method="post" class="d-inline"
+                                  action="{{ path('competence.document.remove', {'competence': competence.id}) }}"
+                                  onsubmit="return confirm('Retirer le document de cette compétence ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('competence_document_remove_' ~ competence.id) }}">
+                                <button type="submit" class="btn btn-sm btn-secondary" title="Retirer le document">
+                                    <i class="fa fa-file-excel"></i> Supprimer document</button>
+                            </form>
                         {% endif %}
                         <a class="btn btn-sm btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                            title="Modifier"

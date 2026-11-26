@@ -86,10 +86,15 @@ class DataFormatterService
                         }
 
                         try {
-                            $string = \sprintf('<a href="%s" id="entity_%s">%s</a>', $this->urlGenerator->generate($codeKey . '.detail', [$codeKey => $value]), $value, $prettyValue);
+                            $string = \sprintf(
+                                '<a href="%s" id="entity_%s">%s</a>',
+                                $this->e($this->urlGenerator->generate($codeKey . '.detail', [$codeKey => $value])),
+                                $this->e($value),
+                                $this->e($prettyValue),
+                            );
                         } catch (Exception $e) {
                             $this->logger->warning($e);
-                            $string = $prettyValue;
+                            $string = $this->e($prettyValue);
                         }
 
                         return $string;
@@ -98,7 +103,7 @@ class DataFormatterService
             }
 
             // Formatage de la clé
-            $output .= $displayKey . ': ';
+            $output .= $this->e($displayKey) . ': ';
 
             // Application du décorateur si disponible
             if (isset($this->decorators[$key]) && !\is_array($value)) {
@@ -128,9 +133,17 @@ class DataFormatterService
         }
 
         if (\is_string($value)) {
-            return '"' . $value . '"';
+            return '"' . $this->e($value) . '"';
         }
 
-        return (string) $value;
+        return $this->e($value);
+    }
+
+    /**
+     * Le résultat est affiché en |raw dans le journal admin : toute donnée saisie (nom, texte) est échappée.
+     */
+    private function e(mixed $value): string
+    {
+        return htmlspecialchars(\is_scalar($value) ? (string) $value : '', \ENT_QUOTES | \ENT_SUBSTITUTE, encoding: 'UTF-8');
     }
 }

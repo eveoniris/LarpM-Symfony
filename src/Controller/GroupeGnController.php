@@ -82,34 +82,6 @@ class GroupeGnController extends AbstractController
     }
 
     /**
-     * Détail d'un groupe.
-     */
-    // #[Route('/groupeGn/{groupeGn}/detail', name: 'groupeGn.detail')]
-    // #[Route('/groupeGn/{groupeGn}', name: 'groupeGn.groupe')]
-    public function groupeAction(Request $request, #[MapEntity] GroupeGn $groupeGn): Response
-    {
-        $participant = $this->getUser()?->getParticipant($groupeGn->getGn());
-
-        if (!$participant) {
-            $this->redirectToRoute('app_login');
-        }
-
-        $canManage = $this->canManageGroup($groupeGn);
-        $canSeePrivateDetail = $canManage || $this->canSeeGroup($groupeGn);
-
-        return $this->render('groupe/detail.twig', [
-            'groupe' => $groupeGn->getGroupe(),
-            'tab' => $request->query->get('tab', 'detail'),
-            'participant' => $participant,
-            'groupeGn' => $groupeGn,
-            'canSeePrivateDetail' => $canSeePrivateDetail,
-            'canManage' => $canManage,
-            'isAdmin' => $this->isGranted(Role::SCENARISTE, Role::ORGA),
-            'gn' => $groupeGn->getGn(),
-        ]);
-    }
-
-    /**
      * Responsable d'une session : responsable de la session (groupe_gn), sinon responsable du groupe.
      */
     protected function getResponsableUser(?GroupeGn $groupeGn = null): ?User
@@ -167,6 +139,8 @@ class GroupeGnController extends AbstractController
         Groupe $groupe,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
+        $this->canManageGroup($groupeGn, throw: true);
+
         $form = $this->createForm(GroupeGnOrdreType::class, $groupeGn, ['groupeGnId' => $groupeGn->getId()])->add('submit', SubmitType::class, ['label' => 'Enregistrer']);
 
         $form->handleRequest($request);
@@ -420,6 +394,10 @@ class GroupeGnController extends AbstractController
         Participant $participant,
     ): RedirectResponse|Response {
         $this->canManageGroup($groupeGn, throw: true);
+        // Le participant doit appartenir à cette session de groupe (sinon un chef retirerait le joueur d'un autre groupe).
+        if ($participant->getGroupeGn()?->getId() !== $groupeGn->getId()) {
+            throw $this->createNotFoundException();
+        }
 
         $form = $this->createFormBuilder()->add('submit', SubmitType::class, ['label' => 'Retirer'])->getForm();
 
@@ -475,10 +453,16 @@ class GroupeGnController extends AbstractController
     /**
      * Accepte une demande (invitation acceptée par le joueur, ou candidature acceptée par le responsable).
      */
-    #[Route('/groupeGn/demande/{demande}/accept', name: 'groupeGn.demande.accept')]
-    public function demandeAcceptAction(EntityManagerInterface $entityManager, GroupeGnDemande $demande): RedirectResponse
-    {
+    #[Route('/groupeGn/demande/{demande}/accept', name: 'groupeGn.demande.accept', methods: ['POST'])]
+    public function demandeAcceptAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        GroupeGnDemande $demande,
+    ): RedirectResponse {
         $this->canRespondToDemande($demande, throw: true);
+        if (!$this->isDemandeTokenValid($request, $demande)) {
+            return $this->redirectAfterDemande($demande);
+        }
 
         $participant = $demande->getParticipant();
         $groupeGn = $demande->getGroupeGn();
@@ -525,10 +509,16 @@ class GroupeGnController extends AbstractController
     /**
      * Refuse une demande (invitation déclinée par le joueur, ou candidature refusée par le responsable).
      */
-    #[Route('/groupeGn/demande/{demande}/refuse', name: 'groupeGn.demande.refuse')]
-    public function demandeRefuseAction(EntityManagerInterface $entityManager, GroupeGnDemande $demande): RedirectResponse
-    {
+    #[Route('/groupeGn/demande/{demande}/refuse', name: 'groupeGn.demande.refuse', methods: ['POST'])]
+    public function demandeRefuseAction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        GroupeGnDemande $demande,
+    ): RedirectResponse {
         $this->canRespondToDemande($demande, throw: true);
+        if (!$this->isDemandeTokenValid($request, $demande)) {
+            return $this->redirectAfterDemande($demande);
+        }
 
         $participant = $demande->getParticipant();
         $groupeGn = $demande->getGroupeGn();
@@ -542,6 +532,17 @@ class GroupeGnController extends AbstractController
         $this->addFlash('success', 'La demande a été refusée.');
 
         return $this->redirectAfterDemande($demande, $groupeGn);
+    }
+
+    private function isDemandeTokenValid(Request $request, GroupeGnDemande $demande): bool
+    {
+        if ($this->isCsrfTokenValid('groupegn_demande_' . $demande->getId(), (string) $request->request->get('_token'))) {
+            return true;
+        }
+
+        $this->addFlash('error', 'Jeton de sécurité invalide, merci de réessayer.');
+
+        return false;
     }
 
     /**
@@ -654,6 +655,7 @@ class GroupeGnController extends AbstractController
         EntityManagerInterface $entityManager,
         GroupeGn $groupeGn,
     ): RedirectResponse|Response {
+        $this->canManageGroup($groupeGn, throw: true);
         $participant = $this->getUser()->getParticipant($groupeGn->getGn());
 
         $form = $this->createForm(GroupeGnPlaceAvailableType::class, $groupeGn)->add('submit', SubmitType::class, [
@@ -669,10 +671,13 @@ class GroupeGnController extends AbstractController
 
             $this->addFlash('success', 'Vos modifications ont été enregistré.');
 
-            return $this->redirectToRoute('groupe.groupe.detail', [
-                'groupeGn' => $groupeGn->getId(),
-                'groupe' => $groupeGn->getGroupe()->getId(),
-            ]);
+            return $this->redirectToRoute(
+                'groupe.detail',
+                [
+                    'groupe' => $groupeGn->getGroupe()->getId(),
+                ],
+                303,
+            );
         }
 
         return $this->render('groupeGn/placeAvailable.twig', [
@@ -687,6 +692,7 @@ class GroupeGnController extends AbstractController
      * Choisir le responsable.
      */
     #[Route('/groupeGn/{groupe}/responsable/{groupeGn}/', name: 'groupeGn.responsable')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function responsableAction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -812,7 +818,7 @@ class GroupeGnController extends AbstractController
 
             $this->addFlash('success', 'La participation au jeu a été enregistré.');
 
-            if ($redirect) {
+            if (\is_string($redirect) && $this->isCheminLocal($redirect)) {
                 return $this->redirect($redirect);
             }
 
@@ -863,6 +869,7 @@ class GroupeGnController extends AbstractController
         $this->setCan(self::CAN_WRITE, $isResponsable || $isSuzerain);
         $this->setCan(self::CAN_READ, $isMembre || $isSuzerain);
 
-        $this->checkHasAccess($roles, fn () => $this->can(self::CAN_READ));
+        // Seul appelant : la modification de la session (updateAction), donc droit d'écriture (responsable ou suzerain).
+        $this->checkHasAccess($roles, fn () => $this->can(self::CAN_WRITE));
     }
 }

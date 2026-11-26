@@ -42,7 +42,7 @@ final class RetraitXpController extends AbstractController
     private function retour(Request $request): Response
     {
         $retour = $request->request->getString('retour');
-        if (str_starts_with($retour, '/') && !str_starts_with($retour, '//') && !str_contains($retour, '\\')) {
+        if ($this->isCheminLocal($retour)) {
             return $this->redirect($retour);
         }
 

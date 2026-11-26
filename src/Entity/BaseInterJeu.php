@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\OneToMany;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'inter_jeu')]
@@ -46,16 +44,18 @@ abstract class BaseInterJeu
     #[Column(name: 'chronologie_generee', type: Types::BOOLEAN, options: ['default' => false])]
     protected bool $chronologieGeneree = false;
 
-    /** @var Collection<int, Personnage> */
-    #[ManyToMany(targetEntity: Personnage::class)]
-    #[JoinTable(name: 'inter_jeu_personnage')]
-    #[JoinColumn(name: 'inter_jeu_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'personnage_id', referencedColumnName: 'id')]
-    protected Collection $personnages;
+    /** @var Collection<int, InterJeuPersonnage> */
+    #[OneToMany(targetEntity: InterJeuPersonnage::class, mappedBy: 'interJeu', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    protected Collection $participations;
+
+    /** @var Collection<int, InterJeuOrga> */
+    #[OneToMany(targetEntity: InterJeuOrga::class, mappedBy: 'interJeu', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    protected Collection $orgas;
 
     public function __construct()
     {
-        $this->personnages = new ArrayCollection();
+        $this->participations = new ArrayCollection();
+        $this->orgas = new ArrayCollection();
         $this->dateReel = new DateTime();
     }
 
@@ -124,26 +124,20 @@ abstract class BaseInterJeu
         return $this;
     }
 
-    /** @return Collection<int, Personnage> */
-    public function getPersonnages(): Collection
+    /**
+     * Toutes les participations, quel que soit leur statut (liste de gestion).
+     *
+     * @return Collection<int, InterJeuPersonnage>
+     */
+    public function getParticipations(): Collection
     {
-        return $this->personnages;
+        return $this->participations;
     }
 
-    public function addPersonnage(Personnage $personnage): static
+    /** @return Collection<int, InterJeuOrga> */
+    public function getOrgas(): Collection
     {
-        if (!$this->personnages->contains($personnage)) {
-            $this->personnages->add($personnage);
-        }
-
-        return $this;
-    }
-
-    public function removePersonnage(Personnage $personnage): static
-    {
-        $this->personnages->removeElement($personnage);
-
-        return $this;
+        return $this->orgas;
     }
 
     public function isDateReelPassed(): bool

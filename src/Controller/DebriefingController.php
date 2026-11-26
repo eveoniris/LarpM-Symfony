@@ -94,10 +94,11 @@ class DebriefingController extends AbstractController
         // Si un document est fourni, l'enregistrer
         if (null !== $documentFile) {
             $filename = $documentFile->getClientOriginalName();
-            $extension = pathinfo((string) $filename, \PATHINFO_EXTENSION);
+            // Type détecté sur le contenu du fichier, pas l'extension annoncée par le navigateur.
+            $extension = 'pdf';
 
-            if ('pdf' !== $extension) {
-                $this->addFlash('error', 'Désolé, votre document n\'est pas valide. Vérifiez le format de votre document (' . $extension . '), seuls les .pdf sont acceptés.');
+            if ('application/pdf' !== $documentFile->getMimeType()) {
+                $this->addFlash('error', 'Désolé, votre document n\'est pas valide : seuls les fichiers PDF sont acceptés.');
 
                 return false;
             }
@@ -172,6 +173,9 @@ class DebriefingController extends AbstractController
             [Role::SCENARISTE],
             fn () => $this->groupeService->isUserIsGroupeResponsable($debriefing->getGroupe()) || $this->groupeService->isUserIsGroupeMember($debriefing->getGroupe()),
         );
+        if (!$this->groupeService->isVisibleForCurrentUser($debriefing)) {
+            throw $this->createAccessDeniedException();
+        }
 
         return $this->render('debriefing/detail.twig', [
             'debriefing' => $debriefing,
@@ -194,12 +198,15 @@ class DebriefingController extends AbstractController
             [Role::SCENARISTE],
             fn () => $this->groupeService->isUserIsGroupeResponsable($debriefing->getGroupe()) || $this->groupeService->isUserIsGroupeMember($debriefing->getGroupe()),
         );
+        if (!$this->groupeService->isVisibleForCurrentUser($debriefing)) {
+            throw $this->createAccessDeniedException();
+        }
 
         $document = $debriefing->getDocumentUrl();
         $file = self::DOC_PATH . $document;
 
         $response = new BinaryFileResponse($file);
-        $response->headers->set('Content-Type', 'text/pdf');
+        $response->headers->set('Content-Type', 'application/pdf');
         $response->headers->set('Content-length', (string) filesize($file));
         $response->headers->set('Content-Disposition', 'attachment; filename="' . $debriefing->getPrintTitre() . '.pdf"');
 

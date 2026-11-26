@@ -21,6 +21,10 @@
                 'canAdd': {'title': 'Ajouter une merveille', 'path': path('merveille.add')},
                 'actionPath' : path('merveille.list')
             } %}
+        <div class="mb-2">
+            <a class="btn btn-sm btn-secondary" href="{{ path('merveille.print') }}"><i class="fa fa-print"></i>
+                Imprimer les merveilles actives</a>
+        </div>
     </div>
 
     {% include '_partials/pagination.html.twig' %}

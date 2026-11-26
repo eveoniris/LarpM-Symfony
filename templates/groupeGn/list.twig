@@ -137,8 +137,8 @@
 									{% if demande.message %}<em>&laquo;&nbsp;{{ demande.message }}&nbsp;&raquo;</em>{% endif %}
 								</span>
 								<span class="btn-group" role="group">
-									<a class="btn btn-secondary btn-sm text-success" href="{{ path('groupeGn.demande.accept', {'demande': demande.id}) }}" data-toggle="tooltip" data-placement="top" title="Accepter"><i class="fa fa-check"></i></a>
-									<a class="btn btn-secondary btn-sm text-danger" href="{{ path('groupeGn.demande.refuse', {'demande': demande.id}) }}" data-toggle="tooltip" data-placement="top" title="Refuser"><i class="fa fa-remove"></i></a>
+									<form method="post" action="{{ path('groupeGn.demande.accept', {'demande': demande.id}) }}" class="d-inline"><input type="hidden" name="_token" value="{{ csrf_token('groupegn_demande_' ~ demande.id) }}"><button type="submit" class="btn btn-secondary btn-sm text-success" data-toggle="tooltip" data-placement="top" title="Accepter"><i class="fa fa-check"></i></button></form>
+									<form method="post" action="{{ path('groupeGn.demande.refuse', {'demande': demande.id}) }}" class="d-inline"><input type="hidden" name="_token" value="{{ csrf_token('groupegn_demande_' ~ demande.id) }}"><button type="submit" class="btn btn-secondary btn-sm text-danger" data-toggle="tooltip" data-placement="top" title="Refuser"><i class="fa fa-remove"></i></button></form>
 								</span>
 							</li>
 						{% endfor %}

@@ -37,6 +37,11 @@ framework:
             policy: sliding_window
             limit: 10
             interval: '1 hour'
+        # Échange client_id / client_secret de l'API : limite les essais de secret par IP.
+        api_client_token_ip:
+            policy: sliding_window
+            limit: 20
+            interval: '15 minutes'
 
     #esi: true
     #fragments: true
@@ -49,3 +54,7 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+        # Les compteurs persistent entre deux exécutions (pool fichier) et tous les tests partagent 127.0.0.1.
+        rate_limiter:
+            api_client_token_ip:
+                limit: 100

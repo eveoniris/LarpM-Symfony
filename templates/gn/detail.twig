@@ -181,6 +181,31 @@
                                                 Scénaristes</a></li>
                                     </ul>
                                 </div>
+                                {% if is_granted('ROLE_ORGA') %}
+                                <div class="col-md-12 mt-2">
+                                    <ul class="list-group">
+                                        <li class="list-group-item header bg-body-secondary rounded-bottom-0">
+                                            Impression et préparation
+                                        </li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.print.perso', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-print"></i>
+                                                Fiches personnages (enveloppes)</a></li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.print.inter', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-print"></i>
+                                                Fiches inter-GN</a></li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.renom', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-star"></i>
+                                                Personnages renommés</a></li>
+                                        <li class="list-group-item d-inline-block"><a
+                                                href="{{ path('gn.lock', {'gn': gn.id}) }}"><i
+                                                    class="fa fa-lock"></i>
+                                                Verrouillage manuel</a></li>
+                                    </ul>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

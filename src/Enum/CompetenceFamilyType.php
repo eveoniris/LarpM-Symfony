@@ -157,6 +157,7 @@ enum CompetenceFamilyType: string
             self::SPYING->value => 'Espionnage',
             self::FORGE->value => 'Forge',
             self::HEALING->value => 'Guérison',
+            self::HERBALISM->value => 'Herboristerie',
             self::LITERATURE->value => 'Littérature',
             self::MAGIC->value => 'Magie',
             self::NOBILITY->value => 'Noblesse',

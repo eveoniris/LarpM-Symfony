@@ -119,6 +119,10 @@ class BackgroundController extends AbstractController
             throw new AccessDeniedHttpException();
         }
 
+        if (!$this->groupeService->isVisibleForCurrentUser($background)) {
+            throw new AccessDeniedHttpException();
+        }
+
         return $this->render('background/detail.twig', [
             'background' => $background,
         ]);

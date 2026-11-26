@@ -439,24 +439,7 @@ class GnController extends AbstractController
         ]);
     }
 
-    #[Route('/user', name: 'user.list')]
-    #[IsGranted(new MultiRolesExpression(Role::ORGA), message: 'You are not allowed to access to this.')]
-    public function listUserAction(Request $request, GnRepository $gnRepository): Response
-    {
-        $page = $request->query->getInt('page', 1);
-        $limit = 10;
-
-        $paginator = $gnRepository->findPaginated($page, $limit);
-
-        return $this->render('gn/list.twig', [
-            'paginator' => $paginator,
-            'limit' => $limit,
-            'page' => $page,
-            'isAdmin' => $this->isGranted('ROLE_ORGA') || $this->isGranted('ROLE_ADMIN'),
-        ]);
-    }
-
-    #[Route('/{gn}/lock', name: 'gn.lock')]
+    #[Route('/{gn}/lock', name: 'lock')]
     #[IsGranted('ROLE_ORGA')]
     public function lockAction(
         Request $request,
