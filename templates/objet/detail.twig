@@ -43,6 +43,7 @@
                 Détail de {{ item.label }}
                 <div class="float-end">
                     <a href="{{ path('item.update', {'item': item.id}) }}" class="btn btn-primary" role="button">Modifier</a>
+                    <a href="{{ path('item.link', {'item': item.id}) }}" class="btn btn-secondary" role="button">Lier à un groupe, personnage ou lieu</a>
                     <a href="{{ path('item.delete', {'item': item.id}) }}" class="btn btn-danger" role="button">Supprimer</a>
                 </div>
             </h3>

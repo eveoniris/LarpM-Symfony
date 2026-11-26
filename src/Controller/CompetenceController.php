@@ -25,6 +25,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/competence', name: 'competence.')]
@@ -108,7 +110,7 @@ class CompetenceController extends AbstractController
     /**
      * Detail d'une compétence.
      */
-    #[Route('/{competence}', name: 'detail')]
+    #[Route('/{competence}', name: 'detail', requirements: ['competence' => Requirement::DIGITS])]
     #[IsGranted('ROLE_USER')]
     public function detailAction(
         #[MapEntity]
@@ -203,23 +205,11 @@ class CompetenceController extends AbstractController
     /**
      * Liste du matériel necessaire par compétence.
      */
-    #[Route('/competence/materiel', name: 'materiel')]
+    #[Route('/materiel', name: 'materiel')]
     #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
     public function materielAction(CompetenceRepository $competenceRepository): Response
     {
         return $this->render('competence/materiel.twig', ['competences' => $competenceRepository->findAllOrderedByLabel()]);
-    }
-
-    /**
-     * Liste des perso ayant cette compétence.
-     */
-    #[Route('/perso', name: 'perso')]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::REGLE, Role::ORGA), message: 'You are not allowed to access to this.')]
-    public function persoAction(Request $request): Response
-    {
-        $competence = $request->query->get('competence');
-
-        return $this->render('competence/perso.twig', ['competence' => $competence]);
     }
 
     #[Route('/{competence}/personnages', name: 'personnages', requirements: ['competence' => Requirement::DIGITS])]
@@ -319,9 +309,11 @@ class CompetenceController extends AbstractController
      * Retire le document d'une competence.
      */
     #[IsGranted('ROLE_REGLE')]
-    #[Route('/remove-document', name: 'document.remove')]
+    #[Route('/{competence}/remove-document', name: 'document.remove', requirements: ['competence' => Requirement::DIGITS], methods: ['POST'])]
+    #[IsCsrfTokenValid(new Expression('"competence_document_remove_" ~ args["competence"].getId()'))]
     public function removeDocumentAction(
         EntityManagerInterface $entityManager,
+        #[MapEntity]
         Competence $competence,
     ): RedirectResponse {
         $competence->setDocumentUrl(null);
@@ -330,7 +322,7 @@ class CompetenceController extends AbstractController
         $entityManager->flush();
         $this->addFlash('success', 'La compétence a été mise à jour.');
 
-        return $this->redirectToRoute('competence.list', [], 303);
+        return $this->redirectToRoute('competence.detail', ['competence' => $competence->getId()], 303);
     }
 
     /**
