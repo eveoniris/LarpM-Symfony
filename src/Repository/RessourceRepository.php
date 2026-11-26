@@ -33,18 +33,6 @@ class RessourceRepository extends BaseRepository
     }
 
     /**
-     * Fourni la liste des ressources par ordre alphabétique.
-     *
-     * @return list<\App\Entity\Ressource>
-     */
-    public function findAllOrderByLabel()
-    {
-        $query = $this->getEntityManager()->createQuery('SELECT r FROM App\Entity\Ressource r ORDER BY r.label ASC');
-
-        return $query->getResult();
-    }
-
-    /**
      * Fourni la liste des ressources communes.
      *
      * @return list<\App\Entity\Ressource>

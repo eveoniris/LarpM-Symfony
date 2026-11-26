@@ -26,13 +26,6 @@
                 constant('App\\Enum\\CompetenceFamilyType::POLITICAL'),
                 constant('App\\Enum\\LevelType::APPRENTICE'),
             ) %}
-                {# disabled (le jeu politique n'est plus utilisé)
-            {% set hasOne = true %}
-            <div class="list-group-item">
-                <a href="{{ path('participant.politique', {'participant': participant.id}) }}">
-                    Voir les liens politiques entre les différents fiefs
-                </a>
-            </div> #}
             {% endif %}
 
             {% for loi in personnageService.lois(personnage) %}

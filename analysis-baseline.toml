@@ -3969,7 +3969,7 @@ count = 1
 [[issues]]
 file = "src/Controller/RuleController.php"
 code = "mixed-return-statement"
-message = "Could not infer a precise return type for function `{closure:src/Controller/RuleController.php:83:31}`. Saw type `mixed`."
+message = "Could not infer a precise return type for function `{closure:src/Controller/RuleController.php:44:31}`. Saw type `mixed`."
 count = 1
 
 [[issues]]

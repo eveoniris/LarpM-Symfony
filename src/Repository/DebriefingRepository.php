@@ -12,30 +12,6 @@ class DebriefingRepository extends BaseRepository
     /**
      * Trouve les debriefing correspondant aux critères de recherche.
      */
-    /*public function findCount(array $criteria = [])
-     * {
-     * $qb = $this->getEntityManager()->createQueryBuilder();
-     *
-     * $qb->select($qb->expr()->count('d'));
-     * $qb->from(\App\Entity\Debriefing::class, 'd');
-     *
-     * foreach ($criteria as $criter) {
-     * $qb->andWhere('?1');
-     * $qb->setParameter(1, $criter);
-     * }
-     *
-     * return $qb->getQuery()->getSingleScalarResult();
-     * }*/
-    /*
-     * public function findList(?string $type, $value, array $order = [], int $limit = 50, int $offset = 0)
-     * {
-     * $qb = $this->getQueryBuilder($type, $value, $order);
-     * $qb->setFirstResult($offset);
-     * $qb->setMaxResults($limit);
-     * $qb->orderBy('d.'.$order['by'], $order['dir']);
-     *
-     * return $qb->getQuery();
-     * }*/
 
     /** @param array<string, string> $order */
     protected function getQueryBuilder(?string $type, mixed $value, array $order = []): QueryBuilder

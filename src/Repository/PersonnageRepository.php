@@ -430,26 +430,6 @@ LEFT JOIN p2.participants pa2
                 OrderBy::ASC => [$alias . '.nom' => OrderBy::ASC],
                 OrderBy::DESC => [$alias . '.nom' => OrderBy::DESC],
             ],
-            /* 'email' => [
-             * OrderBy::ASC => ['email' => OrderBy::ASC],
-             * OrderBy::DESC => ['email' => OrderBy::DESC],
-             * ],
-             * 'username' => [
-             * OrderBy::ASC => ['username' => OrderBy::ASC],
-             * OrderBy::DESC => ['username' => OrderBy::DESC],
-             * ],*/
-            /*  'etatCivil.nom' => [
-             * OrderBy::ASC => ['etatCivil.nom' => OrderBy::ASC],
-             * OrderBy::DESC => ['etatCivil.nom' => OrderBy::DESC],
-             * ],
-             * 'etatCivil.prenom' => [
-             * OrderBy::ASC => ['etatCivil.prenom' => OrderBy::ASC],
-             * OrderBy::DESC => ['etatCivil.prenom' => OrderBy::DESC],
-             * ],
-             * 'nomPrenom' => [
-             * OrderBy::ASC => ['nomPrenom' => OrderBy::ASC],
-             * OrderBy::DESC => ['nomPrenom' => OrderBy::DESC],
-             * ],*/
         ];
     }
 
@@ -474,23 +454,6 @@ LEFT JOIN p2.participants pa2
     public function alive(QueryBuilder $query, bool $vivant = true): QueryBuilder
     {
         return $query->andWhere($this->alias . '.vivant = :vivant')->setParameter('vivant', $vivant);
-    }
-
-    /**
-     * Personnages vivants des utilisateurs ayant une participation au GN donné (tous leurs personnages, pas
-     * seulement celui lié à cette participation).
-     * Règle LH7
-     * Modification LH8 : on limite au groupeGn, on garde la méthode si le gameplay vient à changer ou autre usage.
-     */
-    public function findVivantsParticipantsAuGn(Gn $gn): QueryBuilder
-    {
-        return $this
-            ->createQueryBuilder('p')
-            ->andWhere('p.vivant = :vivant')
-            ->andWhere('EXISTS (SELECT 1 FROM App\Entity\Participant parti WHERE parti.user = p.user AND parti.gn = :gnid)')
-            ->setParameter('vivant', true)
-            ->setParameter('gnid', $gn->getId())
-            ->orderBy('p.nom', 'ASC');
     }
 
     /**

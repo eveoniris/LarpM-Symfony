@@ -22,15 +22,6 @@ class GroupeRepository extends BaseRepository
     }
 
     /**
-     * Trouve tous les groupes de PJ classé par numéro.
-     */
-    /** @return list<Groupe> */
-    public function findAllPj(): array
-    {
-        return $this->getEntityManager()->createQuery('SELECT g FROM App\Entity\Groupe g WHERE g.pj = true ORDER BY g.numero ASC')->getResult();
-    }
-
-    /**
      * Recherche d'une liste de groupe.
      */
     /** @param array<string, string> $order */

@@ -62,14 +62,6 @@ class GroupeGnType extends AbstractType
                     'required' => false,
                     'label' => 'Nombre de place disponible',
                 ])
-                /*->add('jeuStrategique', CheckboxType::class, [
-                 * 'label' => 'Participe au jeu stratégique',
-                 * 'required' => false,
-                 * ])
-                 * ->add('jeuMaritime', CheckboxType::class, [
-                 * 'label' => 'Participe au jeu maritime',
-                 * 'required' => false,
-                 * ])*/
                 ->add('agents', IntegerType::class, [
                     'label' => "Nombre d'agents",
                     'required' => false,

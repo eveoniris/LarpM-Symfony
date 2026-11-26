@@ -56,27 +56,6 @@
                     {% endfor %}
                 </div>
 
-                {# On utilise plus la divinité principale en enveloppe
-                {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD')) %}
-                    <div class="list-group-item">
-                        {% set enoughReligion = 0 %}
-                        <h6 class="list-group-item-heading">Divinité principale :</h6>
-                        {% for religion in personnage.personnagesReligions %}
-                            {% if religion.religionLevel.index >= 2 %}
-                                {% set enoughReligion = 1 %}
-                                <div class="list-group-item-text">
-                                    <strong>{{ religion.religion }}</strong>
-                                    ({{ religion.religionLevel.label }})
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                        {% if enoughReligion == 0 %}
-                            <div class="list-group-item-text">CE PRÊTRE N'A PAS ASSEZ DE FERVEUR</div>
-                        {% endif %}
-                    </div>
-                {% endif %}
-                #}
-
                 <div class="list-group-item">
                     <h6 class="list-group-item-heading">Lié aux langues :</h6>
                     {% if personnage.bracelet == 1 %}

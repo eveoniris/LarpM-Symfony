@@ -7,9 +7,7 @@ namespace App\Repository;
 use App\Entity\Construction;
 use App\Entity\Territoire;
 use App\Service\OrderBy;
-use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 
 class TerritoireRepository extends BaseRepository
@@ -109,40 +107,6 @@ class TerritoireRepository extends BaseRepository
         $qb->orderBy($defaultEntityAlias . $order['by'], $order['dir']);
 
         return $qb->getQuery();
-    }
-
-    /**
-     * Trouve le nombre de fiefs correspondant aux critères de recherche.
-     *
-     * @param array<string, mixed> $criteria
-     */
-    public function findFiefsCount(array $criteria = []): int
-    {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-
-        $qb->select($qb->expr()->count('distinct t'));
-        $qb->from(Territoire::class, 't');
-        if (\array_key_exists('groupe', $criteria)) {
-            $qb->join('t.groupe', 'tgr');
-        }
-
-        $qb->join('t.territoire', 'tpr');
-        $qb->join('tpr.territoire', 'tp');
-        $qb->andWhere('t.territoire IS NOT NULL');
-        $qb->andWhere('tp.territoire IS NULL');
-
-        $count = 0;
-        foreach ($criteria as $key => $value) {
-            if ('t.nom' == $key) {
-                $qb->andWhere($key . \sprintf(' LIKE %%?%d%%', $count))->setParameter('' . $count, $value);
-            } else {
-                $qb->andWhere($key . (' = ?' . $count))->setParameter('' . $count, $value);
-            }
-
-            ++$count;
-        }
-
-        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     /**
@@ -270,44 +234,5 @@ class TerritoireRepository extends BaseRepository
             'description' => $this->translator->trans('Description', domain: 'repository'),
             'nom' => $this->translator->trans('Nom', domain: 'repository'),
         ];
-    }
-
-    public function getTerritoiresWithSiblings(
-        ?string $search = null,
-        ?int $paysId = null,
-        ?int $provinceId = null,
-    ): NativeQuery {
-        // TODO filter by groupe, province, region, pays ?
-        $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('id', 'territoire_id', 'integer');
-        $rsm->addScalarResult('nom', 'territoire_nom', 'string');
-        $rsm->addScalarResult('t2_id', 'province_id', 'integer');
-        $rsm->addScalarResult('t2_nom', 'province_nom', 'string');
-        $rsm->addScalarResult('t3_id', 'pays_id', 'integer');
-        $rsm->addScalarResult('t3_nom', 'pays_nom', 'string');
-        $rsm->addScalarResult('depth', 'depth', 'integer');
-
-        /* @noinspection SqlNoDataSourceInspection */
-        return $this->entityManager->createNativeQuery(<<<SQL
-             SELECT
-                t.id  AS id,
-                t.nom AS nom,
-
-                COALESCE(t2.id, t.id)  AS t2_id,
-                COALESCE(t2.nom, t.nom) AS t2_nom,
-
-                COALESCE(t3.id, t2.id, t.id)  AS t3_id,
-                COALESCE(t3.nom, t2.nom, t.nom) AS t3_nom,
-
-                CASE
-                    WHEN t3.id IS NOT NULL THEN 3
-                    WHEN t2.id IS NOT NULL THEN 2
-                    ELSE 1
-                END AS depth
-            FROM territoire t
-            LEFT JOIN territoire t2 ON t2.id = t.territoire_id
-            LEFT JOIN territoire t3 ON t3.id = t2.territoire_id
-            ORDER BY t.id;
-            SQL, $rsm);
     }
 }

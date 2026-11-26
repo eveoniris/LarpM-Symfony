@@ -148,28 +148,6 @@
                 <br/>
             {% endfor %}
         </td>
-        {#
-        <td class="print-center">
-            <ul>
-                {% set bracelets = [] %}
-                {% if personnage.bracelet %}
-                    Géré par l'interprète du personnage
-                {% else %}
-                    {% for ligneLangue in personnageService.allLanguesUnique(personnage) %}{% set personnageLangue = ligneLangue.principal %}
-                        {% if personnageLangue.langue.diffusion > 0 and personnageLangue.langue.secret == 0 %}
-                            {% set mykey = personnageLangue.langue.groupeLangue.couleur %}
-                            {% if mykey not in bracelets|keys %}
-                                {% set bracelets = bracelets|merge({(mykey): (personnageLangue.langue.label)}) %}
-                                <strong>Bracelet {{ personnageLangue.langue.groupeLangue.couleur }}</strong><br/>
-                            {% endif %}
-                        {% endif %}
-                    {% else %}
-                        Aucun bracelet
-                    {% endfor %}
-                {% endif %}
-            </ul>
-        </td>
-        #}
         {% if personnage.membres|length > 0 %}
             <td class="print-center">
                 {% for membre in personnage.membres %}
@@ -246,50 +224,6 @@
     </tbody>
 </table>
 </div>
-
-{#
-<div class="table-responsive">
-<table>
-    <thead>
-    <tr>
-         <th>Inventaire</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>
-            {% for document in personnage.documents %}
-                {{ document.code }} - {{ document.titre }}<br/>
-            {% endfor %}
-
-            {% for item in personnage.items %}
-                {{ item.numero }} - {{ item.label }}<br/>
-            {% endfor %}
-            {% if personnage.materiel %}{{ personnage.materiel }}<br/>{% endif %}
-
-            {% for personnageIngredient in personnage.personnageIngredients %}
-                {{ personnageIngredient.nombre }} - {{ personnageIngredient.ingredient }}<br/>
-            {% endfor %}
-
-            {% for personnageRessource in personnage.personnageRessources %}
-                {{ personnageRessource.nombre }} - {{ personnageRessource.ressource }}<br/>
-            {% endfor %}
-
-            {{ personnage.richesse|default(0) }} pièces d'argent<br/>
-
-            {% for technologie in personnage.technologies %}
-                Technologie - {{ technologie.label }}<br/>
-            {% endfor %}
-
-            {% if personnage.isSensible %}Brassard jaune avec un poing gravé<br/>.{% endif %}
-        </td>
-
-
-    </tr>
-    </tbody>
-</table>
-</div>
-#}
 
 {% if false and participant.personnageSecondaire %}
     <br/>

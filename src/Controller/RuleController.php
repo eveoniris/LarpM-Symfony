@@ -28,45 +28,6 @@ class RuleController extends AbstractController
     public function addAction(Request $request): RedirectResponse|Response
     {
         return $this->handleCreateOrUpdate($request, new Rule(), RuleType::class);
-
-        /* OLD
-         * $form = $this->createForm(RuleType::class, [])
-         * ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
-         *
-         * $form->handleRequest($request);
-         *
-         * if ($form->isSubmitted() && $form->isValid()) {
-         * $data = $form->getData();
-         * $files = $request->files->get($form->getName());
-         *
-         * $path = __DIR__.'/../../private/rules/';
-         * $filename = $files['rule']->getClientOriginalName();
-         * $extension = $files['rule']->guessExtension();
-         *
-         * if (!$extension || 'pdf' !== $extension) {
-         * $this->addFlash('error', 'Désolé, votre fichier ne semble pas valide (vérifiez le format de votre fichier)');
-         *
-         * return $this->redirectToRoute('rules', [], 303);
-         * }
-         *
-         * $ruleFilename = hash('md5', $this->getUser()->getUsername().$filename.time()).'.'.$extension;
-         *
-         * $files['rule']->move($path, $filename);
-         *
-         * $rule = new Rule();
-         * $rule->setLabel($data['label']);
-         * $rule->setDescription($data['description']);
-         * $rule->setUrl($filename);
-         *
-         * $this->entityManager->persist($rule);
-         * $this->entityManager->flush();
-         *
-         * $this->addFlash('success', 'Votre fichier a été enregistrée');
-         * }
-         *
-         * return $this->render('rule/add.twig', [
-         * 'form' => $form->createView(),
-         * ]);*/
     }
 
     /** @param array<int, array<string, string|null>> $breadcrumb @param array<string, string> $routes @param array<string, string> $msg */
@@ -190,24 +151,5 @@ class RuleController extends AbstractController
     public function updateAction(Request $request, #[MapEntity] Rule $rule): Response
     {
         return $this->handleCreateOrUpdate($request, $rule, RuleType::class);
-
-        /* Old
-         * $form = $this->createForm(RuleUpdateType::class, $rule)
-         * ->add('envoyer', SubmitType::class, ['label' => 'Envoyer']);
-         *
-         * $form->handleRequest($request);
-         *
-         * if ($form->isSubmitted() && $form->isValid()) {
-         * $rule = $form->getData();
-         * $this->entityManager->persist($rule);
-         * $this->entityManager->flush();
-         *
-         * $this->addFlash('success', 'Vos modifications été enregistrées');
-         * }
-         *
-         * return $this->render('rule/update.twig', [
-         * 'form' => $form->createView(),
-         * 'rule' => $rule,
-         * ]);*/
     }
 }

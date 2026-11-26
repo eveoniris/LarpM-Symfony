@@ -814,11 +814,6 @@ readonly class GroupeService
         return $lois;
     }
 
-    public function getNbRessourcesBase(): int
-    {
-        return 3;
-    }
-
     public function getNextSessionGn(): ?Gn
     {
         return $this->entityManager->getRepository(Gn::class)->findNext();
@@ -904,17 +899,6 @@ readonly class GroupeService
 
         foreach ($user->getPersonnages() as $personnage) {
             if ($personnage->getId() === $suzerain->getId()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public function hasPersonnageInSecondaryGroup(SecondaryGroup $secondaryGroup, ?User $user = null): bool
-    {
-        foreach ($user?->getPersonnages() as $personnage) {
-            if ($this->isInSecondaryGroup($secondaryGroup, $personnage)) {
                 return true;
             }
         }

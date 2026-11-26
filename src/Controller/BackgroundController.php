@@ -43,13 +43,6 @@ class BackgroundController extends AbstractController
             'label' => 'Visibilité',
             'choice_label' => 'label',
             'class' => VisibilityType::class,
-            /*'choices' => [
-             'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
-             'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
-             'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
-             'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
-             'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-             ],*/
         ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);
@@ -227,13 +220,6 @@ class BackgroundController extends AbstractController
             'label' => 'Visibilité',
             'choice_label' => 'label',
             'class' => VisibilityType::class,
-            /*'choices' => [
-             'Seuls les scénaristes peuvent voir ceci' => 'PRIVATE',
-             'Tous les joueurs peuvent voir ceci' => 'PUBLIC',
-             'Seuls les membres du groupe peuvent voir ceci' => 'GROUPE_MEMBER',
-             'Seul le chef de groupe peut voir ceci' => 'GROUPE_OWNER',
-             'Seul l\'auteur peut voir ceci' => 'AUTHOR',
-             ],*/
         ])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
         $form->handleRequest($request);

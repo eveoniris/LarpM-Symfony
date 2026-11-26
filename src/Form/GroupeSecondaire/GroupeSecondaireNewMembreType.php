@@ -25,11 +25,6 @@ class GroupeSecondaireNewMembreType extends AbstractType
             'class' => Personnage::class,
             'autocomplete' => true,
             'query_builder' => static fn (EntityRepository $er) => $er->createQueryBuilder('p')->orderBy('p.nom', 'ASC'),
-            // 'attr' => [
-            //    //'class' => 'selectpicker',
-            //    'data-live-search' => 'true',
-            //    'placeholder' => 'Personnage',
-            // ],
             'choice_label' => 'idName',
             'mapped' => false,
         ])->add('submit', SubmitType::class, ['label' => 'Ajouter']);

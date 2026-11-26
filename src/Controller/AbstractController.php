@@ -638,25 +638,6 @@ abstract class AbstractController extends \Symfony\Bundle\FrameworkBundle\Contro
         ]);
     }
 
-    /*
-     * Sample
-     *
-     * For a modal confirm button :
-     * ->add('delete', ButtonType::class, [
-     *     'label' => 'Supprimer',
-     *     'attr' => [
-     *         'value' => 'Submit',
-     *         'data-bs-toggle' => 'modal',
-     *         'data-bs-target' => '#mainModal',
-     *         'data-bs-title' => 'Confirmation',
-     *         'data-bs-body' => 'Confirmez-vous vouloir supprimer cette entrée ?',
-     *         'data-bs-action' => $this->generateUrl('age.delete', ['age' => $age->getId()]),
-     *         'class' => 'btn btn-secondary btn-confirm-conf',
-     *     ],
-     * ]
-     * );
-     */
-
     /**
      * Précise le contexte de la suppression d'une entité (avant le flush) : DeletionLogListener
      * fusionne ces informations dans l'entrée log_action unique de la suppression.

@@ -307,16 +307,6 @@ class ParticipantRepository extends BaseRepository
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getPersonnagesAlive(Participant $participant): QueryBuilder
-    {
-        /** @var PersonnageRepository $personnageRepository */
-        $personnageRepository = $this->entityManager->getRepository(Personnage::class);
-
-        $queryBuilder = $this->getPersonnages($participant);
-
-        return $personnageRepository->alive($queryBuilder, true);
-    }
-
     public function getPersonnages(Participant $participant): QueryBuilder
     {
         /** @var PersonnageRepository $personnageRepository */
@@ -326,21 +316,6 @@ class ParticipantRepository extends BaseRepository
 
         return $personnageRepository->user($queryBuilder, $participant->getUser());
     }
-
-    /*public function sortAttributes(string $alias = null): array
-     * {
-     * $alias ??= static::getEntityAlias();
-     *
-     * dump(1);
-     *
-     * return [
-     * //'groupe' => [OrderBy::ASC => ['groupe' => OrderBy::ASC], OrderBy::DESC => ['groupe' => OrderBy::DESC]],
-     * ...parent::sortAttributes($alias),
-     * // using alias like "scriptwriter" require another template loop due to the added $query->select() entity
-     * //'user.username' => [OrderBy::ASC => ['user.username' => OrderBy::ASC], OrderBy::DESC => ['user.username' => OrderBy::DESC]],
-     * //'player.username' => [OrderBy::ASC => ['player.username' => OrderBy::ASC], OrderBy::DESC => ['player.username' => OrderBy::DESC]],
-     * ];
-     * }*/
 
     public function gn(QueryBuilder $query, Gn $gn): QueryBuilder
     {

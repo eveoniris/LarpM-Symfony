@@ -586,14 +586,6 @@ class Personnage extends BasePersonnage implements Stringable
         $fileUploader->upload($this->file, $folderType, $docType, null, $this->getFilenameMaxLength());
 
         // Try Rezise
-        /*
-         * try {
-         * $image = (new Imagine())->open($fileUploader->getStoredFileWithPath());
-         * $image->resize($image->getSize()->widen(480));
-         * $image->save($fileUploader->getStoredFileWithPath());
-         * } catch (\RuntimeException $e) {
-         * dump($e);
-         * }*/
 
         $this->setTrombineUrl($fileUploader->getStoredFileName());
 

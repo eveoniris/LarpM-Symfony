@@ -11,23 +11,12 @@ use App\Entity\Participant;
 use App\Entity\Personnage;
 use App\Entity\Postulant;
 use App\Entity\SecondaryGroup;
-use App\Entity\User;
 use App\Service\OrderBy;
 use Doctrine\ORM\QueryBuilder;
 use SensitiveParameter;
 
 class SecondaryGroupRepository extends BaseRepository
 {
-    /**
-     * Trouve tous les groupes secondaire publics.
-     *
-     * @return list<SecondaryGroup>
-     */
-    public function findAllPublic(): array
-    {
-        return $this->getEntityManager()->createQuery('SELECT g FROM App\Entity\SecondaryGroup g WHERE g.secret = false or g.secret is null')->getResult();
-    }
-
     /**
      * Compte les groupes secondaires correspondants aux critères de recherche.
      */
@@ -179,33 +168,6 @@ class SecondaryGroupRepository extends BaseRepository
         ];
     }
 
-    public function userCanSeeSecret(User $user, SecondaryGroup $secondaryGroup): bool
-    {
-        $query = $this->getEntityManager()->createQuery(<<<DQL
-            SELECT MAX(sg) as exists
-            FROM App\Entity\User u
-            INNER JOIN u.personnages as p
-            INNER JOIN p.secondaryGroups as sg
-            INNER JOIN sg.membres as m
-            WHERE u.id = :uid AND sg.id = :sgid AND m.secret = 1
-            DQL);
-
-        return (bool) $query->setParameter('uid', $user->getId())->setParameter('sgid', $secondaryGroup->getId())->getSingleScalarResult();
-    }
-
-    public function userIsGroupLeader(User $user, SecondaryGroup $secondaryGroup): bool
-    {
-        $query = $this->getEntityManager()->createQuery(<<<DQL
-            SELECT MAX(sg) as exists
-            FROM App\Entity\User u
-            INNER JOIN u.personnages as p
-            INNER JOIN p.secondaryGroups as sg
-            WHERE u.id = :uid AND sg.id = :sgid
-            DQL);
-
-        return (bool) $query->setParameter('uid', $user->getId())->setParameter('sgid', $secondaryGroup->getId())->getSingleScalarResult();
-    }
-
     /** @return list<int> */
     public function getMembershipGroupIds(int $personnageId): array
     {
@@ -253,21 +215,6 @@ class SecondaryGroupRepository extends BaseRepository
             ->orWhere($this->alias . '.secret = 1 AND (' . $this->alias . '.personnage = :personnageId OR m.personnage = :personnageId)')
             ->orWhere($this->alias . '.secret IS NULL OR ' . $this->alias . '.secret = false')
             ->setParameter('personnageId', $personnagesId);
-    }
-
-    /** @return array<int, array<string, mixed>> */
-    public function visibleForUser(User $user): array
-    {
-        $query = $this->getEntityManager()->createQuery(<<<DQL
-            SELECT DISTINCT sg
-            FROM App\Entity\User u
-            INNER JOIN App\Entity\Personnage p
-            LEFT JOIN App\Entity\SecondaryGroup sg
-            LEFT JOIN App\Entity\membre m
-            WHERE u.id = :uid AND (sg.id IS NOT NULL OR m.id IS NOT NULL)
-            DQL);
-
-        return $query->setParameter('uid', $user->getId())->getScalarResult();
     }
 
     /**
