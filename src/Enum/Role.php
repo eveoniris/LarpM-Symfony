@@ -25,6 +25,7 @@ enum Role: string
     case USER = 'ROLE_USER';
     case ROLE_GROUPE_TRANSVERSE = 'ROLE_GROUPE_TRANSVERSE';
     case INTER_JEU = 'ROLE_INTER_JEU';
+    case ORGA_INTER = 'ROLE_ORGA_INTER';
     case STATISTIQUE = 'ROLE_STATISTIQUE';
     case BETA_TEST = 'ROLE_BETA_TEST';
 
@@ -53,6 +54,7 @@ enum Role: string
             self::ROLE_GROUPE_TRANSVERSE->value => 'Gestion groupe transverse',
             self::TERRITOIRE->value => 'Gestion des territoires',
             self::INTER_JEU->value => 'Gestion des inter-jeux',
+            self::ORGA_INTER->value => 'Orga externe d\'inter-jeu : consultation et propositions (attribué automatiquement avec l\'accès à un inter-jeu)',
             self::GESTION->value => 'Gestion des données',
             self::STATISTIQUE->value => 'Accès au module Statistique',
             self::BETA_TEST->value => 'Bêta-testeur : accès aux développements en cours (attribué par le super admin uniquement)',

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\InterJeu;
+use App\Enum\InterJeuParticipantStatut;
 use App\Enum\Role;
 use App\Security\MultiRolesExpression;
 use App\Service\PrintService;
@@ -41,8 +42,9 @@ final class InterPrintController extends AbstractController
     private function getPersonnageIds(InterJeu $inter): array
     {
         $rows = $this->entityManager
-            ->createQuery('SELECT p.id FROM App\Entity\InterJeu i JOIN i.personnages p WHERE i = :inter ORDER BY p.id ASC')
+            ->createQuery('SELECT IDENTITY(ip.personnage) AS id FROM App\Entity\InterJeuPersonnage ip WHERE ip.interJeu = :inter AND ip.statut = :statut ORDER BY id ASC')
             ->setParameter('inter', $inter)
+            ->setParameter('statut', InterJeuParticipantStatut::INSCRIT->value)
             ->getScalarResult();
 
         return array_map('intval', array_column($rows, 'id'));

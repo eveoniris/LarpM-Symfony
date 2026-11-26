@@ -1,0 +1,68 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Orgas externes - {{ interJeu.nom }}{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': 'Liste des inter-jeux', 'route': path('inter.list')},
+        {'name': interJeu.nom, 'route': path('inter.detail', {'inter': interJeu.id})},
+        {'name': 'Orgas externes'}
+    ]} %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Orgas externes de {{ interJeu.nom }}</h5>
+        </div>
+        <p class="text-muted small">
+            Un orga externe (autre association) consulte la liste des participants et les statistiques de cet inter-jeu,
+            et propose des changements que vous validez depuis la page des participants. Il ne voit ni les comptes,
+            ni l'état civil, ni les fiches de personnage. Lui donner accès vaut validation ; le rôle
+            <code>ROLE_ORGA_INTER</code> lui est attribué automatiquement pour afficher le menu « Mes inter-jeux ».
+        </p>
+        <form method="post" class="d-flex gap-2 align-items-end flex-wrap" action="{{ path('inter.orgas', {'inter': interJeu.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('inter_orgas_' ~ interJeu.id) }}">
+            <div>
+                <label for="orga-user" class="form-label">Identifiant ou e-mail du compte</label>
+                <input type="text" required id="orga-user" name="user" class="form-control form-control-sm">
+            </div>
+            <button type="submit" class="btn btn-sm btn-secondary">Donner l'accès</button>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                <th class="text-center">#</th>
+                <th>Compte</th>
+                <th>Accès donné le</th>
+                <th>Par</th>
+                <th class="text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for orga in interJeu.orgas %}
+                <tr>
+                    <td class="text-center">{{ orga.user.id }}</td>
+                    <td>{{ orga.user.username }}</td>
+                    <td>{{ orga.createdAt|date('d/m/Y') }}</td>
+                    <td>{{ orga.validePar ? orga.validePar.username : '' }}</td>
+                    <td class="text-center">
+                        <form method="post" action="{{ path('inter.orga.remove', {'inter': interJeu.id, 'orga': orga.id}) }}"
+                              onsubmit="return confirm('Retirer l\'accès de {{ orga.user.username|e('js') }} ?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('remove_orga_' ~ orga.id) }}">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="fa fa-minus-circle"></i> Retirer l'accès
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" class="text-center">Aucun orga externe.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock body %}

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Enum\InterJeuParticipantStatut;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -29,6 +31,12 @@ class InterJeuPersonnagesImportType extends AbstractType
             'constraints' => [
                 new File(mimeTypes: ['text/csv', 'text/plain', 'application/csv']),
             ],
+        ])->add('statut', EnumType::class, [
+            'label' => 'Statut par défaut (si la colonne statut est absente)',
+            'class' => InterJeuParticipantStatut::class,
+            'choice_label' => static fn (InterJeuParticipantStatut $statut): string => $statut->getLabel(),
+            'data' => InterJeuParticipantStatut::INSCRIT,
+            'required' => true,
         ]);
     }
 

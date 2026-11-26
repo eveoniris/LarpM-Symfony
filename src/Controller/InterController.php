@@ -7,13 +7,12 @@ namespace App\Controller;
 use App\Entity\InterJeu;
 use App\Entity\Personnage;
 use App\Entity\PersonnageChronologie;
+use App\Enum\InterJeuParticipantStatut;
 use App\Enum\Role;
 use App\Form\InterJeuPersonnageAddType;
-use App\Form\InterJeuPersonnagesImportType;
 use App\Form\InterJeuType;
 use App\Repository\GnRepository;
 use App\Repository\InterJeuRepository;
-use App\Repository\PersonnageRepository;
 use App\Security\MultiRolesExpression;
 use App\Service\PagerService;
 use App\Service\StatsService;
@@ -26,6 +25,11 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+/**
+ * Gestion des inter-jeux : réservée au rôle INTER_JEU (seul en écriture) et aux admins.
+ * La consultation par les orgas externes passe par InterConsultationController, leurs accès par InterOrgaController ;
+ * l'import, les statuts et la validation des propositions par InterParticipantController.
+ */
 #[IsGranted(new MultiRolesExpression(Role::INTER_JEU, Role::ADMIN))]
 #[Route('/inter-jeu', name: 'inter.')]
 class InterController extends AbstractController
@@ -105,6 +109,7 @@ class InterController extends AbstractController
 
         return $this->render('inter/detail.html.twig', [
             'interJeu' => $inter,
+            'statuts' => InterJeuParticipantStatut::cases(),
             'chronologieDisponible' => $inter->canGenereteChronologie(),
             'classes' => $hasParticipants ? $statsService->getClassesInterJeu($inter)->getResult() : [],
             'competences' => $hasParticipants ? $statsService->getCompetenceInterJeu($inter)->getResult() : [],
@@ -116,6 +121,7 @@ class InterController extends AbstractController
     {
         return $this->render('inter/personnages.html.twig', [
             'interJeu' => $inter,
+            'statuts' => InterJeuParticipantStatut::cases(),
         ]);
     }
 
@@ -128,9 +134,11 @@ class InterController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Personnage $personnage */
             $personnage = $form->get('personnage')->getData();
-            $inter->addPersonnage($personnage);
+            /** @var InterJeuParticipantStatut $statut */
+            $statut = $form->get('statut')->getData();
+            $inter->addPersonnage($personnage, $statut)->annulerProposition();
             $this->entityManager->flush();
-            $this->addFlash('success', 'Le personnage a été ajouté à l\'inter-jeu.');
+            $this->addFlash('success', \sprintf('Le personnage a été ajouté à l\'inter-jeu (%s).', $statut->getLabel()));
 
             return $this->redirectToRoute('inter.personnages', ['inter' => $inter->getId()], 303);
         }
@@ -141,67 +149,15 @@ class InterController extends AbstractController
         ]);
     }
 
-    #[Route('/{inter}/personnages/import', name: 'personnages.import', requirements: ['inter' => Requirement::DIGITS])]
-    public function personnagesImportAction(
-        Request $request,
-        InterJeu $inter,
-        PersonnageRepository $personnageRepository,
-    ): RedirectResponse|Response {
-        $form = $this->createForm(InterJeuPersonnagesImportType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $ids = [];
-
-            $idsRaw = $form->get('ids')->getData();
-            if ($idsRaw) {
-                foreach (explode(',', (string) $idsRaw) as $part) {
-                    $trimmed = trim($part);
-                    if ('' !== $trimmed && ctype_digit($trimmed)) {
-                        $ids[] = (int) $trimmed;
-                    }
-                }
-            }
-
-            /** @var ?\Symfony\Component\HttpFoundation\File\UploadedFile $file */
-            $file = $form->get('fichier')->getData();
-            if ($file) {
-                $handle = fopen($file->getPathname(), 'r');
-                if ($handle) {
-                    while (false !== ($line = fgetcsv($handle))) {
-                        $val = trim((string) ($line[0] ?? ''));
-                        if ('' !== $val && ctype_digit($val)) {
-                            $ids[] = (int) $val;
-                        }
-                    }
-                    fclose($handle);
-                }
-            }
-
-            $added = 0;
-            foreach (array_unique($ids) as $id) {
-                $personnage = $personnageRepository->find($id);
-                if ($personnage) {
-                    $inter->addPersonnage($personnage);
-                    ++$added;
-                }
-            }
-
-            $this->entityManager->flush();
-            $this->addFlash('success', sprintf('%d personnage(s) ajouté(s) à l\'inter-jeu.', $added));
+    #[Route('/{inter}/personnage/{personnage}/remove', name: 'personnage.remove', requirements: ['inter' => Requirement::DIGITS, 'personnage' => Requirement::DIGITS], methods: ['POST'])]
+    public function personnageRemoveAction(Request $request, InterJeu $inter, Personnage $personnage): RedirectResponse
+    {
+        if (!$this->isCsrfTokenValid('remove_personnage_' . $personnage->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide, recommencez.');
 
             return $this->redirectToRoute('inter.personnages', ['inter' => $inter->getId()], 303);
         }
 
-        return $this->render('inter/personnages_import.html.twig', [
-            'interJeu' => $inter,
-            'form' => $form->createView(),
-        ]);
-    }
-
-    #[Route('/{inter}/personnage/{personnage}/remove', name: 'personnage.remove', requirements: ['inter' => Requirement::DIGITS, 'personnage' => Requirement::DIGITS], methods: ['POST'])]
-    public function personnageRemoveAction(InterJeu $inter, Personnage $personnage): RedirectResponse
-    {
         $inter->removePersonnage($personnage);
         $this->entityManager->flush();
         $this->addFlash('success', 'Le personnage a été retiré de l\'inter-jeu.');
@@ -236,11 +192,12 @@ class InterController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $batchSize = 50;
             $i = 0;
+            // Inscrits uniquement : les désistés et les personnages en attente n'ont pas participé
             foreach ($inter->getPersonnages() as $personnage) {
                 $chronologie = new PersonnageChronologie();
                 $chronologie->setPersonnage($personnage);
                 $chronologie->setAnnee($inter->getAnneeJeu());
-                $chronologie->setEvenement(sprintf('Participation à %s', $inter->getNom()));
+                $chronologie->setEvenement(\sprintf('Participation à %s', $inter->getNom()));
                 $this->entityManager->persist($chronologie);
                 if ((++$i % $batchSize) === 0) {
                     $this->entityManager->flush();
@@ -249,7 +206,7 @@ class InterController extends AbstractController
 
             $inter->setChronologieGeneree(true);
             $this->entityManager->flush();
-            $this->addFlash('success', 'La chronologie a été générée pour tous les participants.');
+            $this->addFlash('success', 'La chronologie a été générée pour tous les participants inscrits.');
 
             return $this->redirectToRoute('inter.detail', ['inter' => $inter->getId()], 303);
         }

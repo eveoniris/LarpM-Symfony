@@ -1,0 +1,53 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Mes inter-jeux{% endblock title %}
+
+{% block body %}
+
+    {% include '_partials/breadcrumb.twig' with {'items': [
+        {'name': 'Mes inter-jeux'}
+    ]} %}
+
+    <div class="well well-sm">
+        <div class="header">
+            <h5>Mes inter-jeux</h5>
+        </div>
+        <p class="text-muted small mb-0">
+            Inter-jeux auxquels la gestion des inter-jeux vous a donné accès : consultation des participants
+            et des statistiques, propositions de changement de liste.
+        </p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                <th>Inter-jeu</th>
+                <th>Date</th>
+                <th>État</th>
+                <th class="text-center">Inscrits</th>
+                <th class="text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for acces in acces %}
+                {% set interJeu = acces.interJeu %}
+                <tr>
+                    <td><a href="{{ path('inter.consultation', {'inter': interJeu.id}) }}">{{ interJeu.nom }}</a></td>
+                    <td>{{ interJeu.dateReel|date('d/m/Y') }}</td>
+                    <td>{{ interJeu.etat.label }}</td>
+                    <td class="text-center">{{ interJeu.personnages|length }}</td>
+                    <td class="text-center">
+                        <a class="btn btn-sm btn-secondary" href="{{ path('inter.statistiques', {'inter': interJeu.id}) }}">
+                            <i class="fa fa-chart-bar"></i> Statistiques
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" class="text-center">Aucun accès pour le moment. Demandez-le à la gestion des inter-jeux.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock body %}

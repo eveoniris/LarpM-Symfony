@@ -199,12 +199,16 @@ class StatsService
             FROM inter_jeu_personnage ijp
                      INNER JOIN personnage pp ON ijp.personnage_id = pp.id
                      INNER JOIN classe c ON pp.classe_id = c.id
-            WHERE ijp.inter_jeu_id = :interid
+            WHERE ijp.inter_jeu_id = :interid AND ijp.statut = 'inscrit'
             GROUP BY c.id, c.label_masculin
             ORDER BY total DESC, c.label_masculin
             SQL, $rsm)->setParameter('interid', $inter->getId());
     }
 
+    /**
+     * Répartition des compétences des inscrits : un personnage compte une fois par famille,
+     * à son niveau le plus haut (la base garde une ligne par niveau acquis).
+     */
     public function getCompetenceInterJeu(InterJeu $inter): NativeQuery
     {
         $rsm = new ResultSetMapping();
@@ -214,17 +218,75 @@ class StatsService
 
         /* @noinspection SqlNoDataSourceInspection */
         return $this->entityManager->createNativeQuery(<<<SQL
-            SELECT COUNT(cpt.id) as total, cf.label as competence, l.label as niveau
+            SELECT COUNT(*) as total, t.competence, l.label as niveau
+            FROM ({$this->sqlNiveauMaxInterJeu()}) t
+                     INNER JOIN `level` l ON l.`index` = t.niveauMax
+            GROUP BY t.competence, l.`index`, l.label
+            ORDER BY t.competence, l.`index`
+            SQL, $rsm)->setParameter('interid', $inter->getId());
+    }
+
+    /**
+     * Niveau maximum par personnage inscrit et par famille de compétence (personnages vivants).
+     *
+     * Colonnes : personnageId, nom, classe, familleId, competence, niveauMax, niveau.
+     */
+    public function getPersonnagesCompetencesInterJeu(InterJeu $inter): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('personnageId', 'personnageId', 'integer');
+        $rsm->addScalarResult('nom', 'nom', 'string');
+        $rsm->addScalarResult('classe', 'classe', 'string');
+        $rsm->addScalarResult('familleId', 'familleId', 'integer');
+        $rsm->addScalarResult('competence', 'competence', 'string');
+        $rsm->addScalarResult('niveauMax', 'niveauMax', 'integer');
+        $rsm->addScalarResult('niveau', 'niveau', 'string');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(<<<SQL
+            SELECT t.personnageId, t.nom, t.classe, t.familleId, t.competence, t.niveauMax, l.label as niveau
+            FROM ({$this->sqlNiveauMaxInterJeu()}) t
+                     INNER JOIN `level` l ON l.`index` = t.niveauMax
+            ORDER BY t.competence, t.niveauMax DESC, t.nom
+            SQL, $rsm)->setParameter('interid', $inter->getId());
+    }
+
+    /**
+     * Personnages inscrits et vivants (id, nom, classe), y compris ceux sans compétence, pour l'export.
+     */
+    public function getPersonnagesInscritsInterJeu(InterJeu $inter): NativeQuery
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('personnageId', 'personnageId', 'integer');
+        $rsm->addScalarResult('nom', 'nom', 'string');
+        $rsm->addScalarResult('classe', 'classe', 'string');
+        $rsm->addScalarResult('vivant', 'vivant', 'boolean');
+
+        /* @noinspection SqlNoDataSourceInspection */
+        return $this->entityManager->createNativeQuery(<<<SQL
+            SELECT pp.id as personnageId, pp.nom, c.label_masculin as classe, pp.vivant
             FROM inter_jeu_personnage ijp
                      INNER JOIN personnage pp ON ijp.personnage_id = pp.id
+                     LEFT JOIN classe c ON pp.classe_id = c.id
+            WHERE ijp.inter_jeu_id = :interid AND ijp.statut = 'inscrit' AND pp.vivant = 1
+            ORDER BY pp.id
+            SQL, $rsm)->setParameter('interid', $inter->getId());
+    }
+
+    private function sqlNiveauMaxInterJeu(): string
+    {
+        return <<<SQL
+            SELECT pp.id as personnageId, pp.nom, c.label_masculin as classe, cf.id as familleId, cf.label as competence, MAX(l.`index`) as niveauMax
+            FROM inter_jeu_personnage ijp
+                     INNER JOIN personnage pp ON ijp.personnage_id = pp.id
+                     LEFT JOIN classe c ON pp.classe_id = c.id
                      INNER JOIN personnages_competences pc ON pp.id = pc.personnage_id
                      INNER JOIN competence cpt ON pc.competence_id = cpt.id
                      INNER JOIN competence_family cf ON cpt.competence_family_id = cf.id
-                     INNER JOIN `level` l on cpt.level_id = l.id
-            WHERE ijp.inter_jeu_id = :interid and pp.vivant = 1
-            GROUP BY cpt.id, cf.label, l.index, l.label
-            ORDER BY cf.label, l.index, l.label
-            SQL, $rsm)->setParameter('interid', $inter->getId());
+                     INNER JOIN `level` l ON cpt.level_id = l.id
+            WHERE ijp.inter_jeu_id = :interid AND ijp.statut = 'inscrit' AND pp.vivant = 1 AND COALESCE(cpt.secret, 0) = 0
+            GROUP BY pp.id, pp.nom, c.label_masculin, cf.id, cf.label
+            SQL;
     }
 
     public function getConstructions(): NativeQuery

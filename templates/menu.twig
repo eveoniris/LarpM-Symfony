@@ -256,14 +256,19 @@
                     </li>
                 {% endif %}
 
-                {% if is_granted('ROLE_INTER_JEU', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+                {% if is_granted('ROLE_INTER_JEU', app.user) or is_granted('ROLE_ADMIN', app.user) or is_granted('ROLE_ORGA_INTER', app.user) %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
                             Inter-jeu
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ path('inter.list') }}">Liste</a></li>
+                            {% if is_granted('ROLE_INTER_JEU', app.user) or is_granted('ROLE_ADMIN', app.user) %}
+                                <li><a class="dropdown-item" href="{{ path('inter.list') }}">Liste</a></li>
+                            {% endif %}
+                            {% if is_granted('ROLE_ORGA_INTER', app.user) %}
+                                <li><a class="dropdown-item" href="{{ path('inter.orga.list') }}">Mes inter-jeux</a></li>
+                            {% endif %}
                         </ul>
                     </li>
                     <li>
@@ -279,19 +284,19 @@
                             Technique
                         </a>
                         <ul class="dropdown-menu">
-                            <li><h6 class="dropdown-header">Sécurité</h6></li>
+                            <li><h6 class="lm-menu-section">Sécurité</h6></li>
                             <li><a class="dropdown-item" href="{{ path('admin.connexions') }}">Connexions</a></li>
                             <li><a class="dropdown-item" href="{{ path('admin.ip.list') }}">IP bloquées</a></li>
                             <li><a class="dropdown-item" href="{{ path('right.list') }}">Liste des droits</a></li>
                             <li><a class="dropdown-item" href="{{ path('admin.action.logs') }}">Log action</a></li>
-                            <li><h6 class="dropdown-header">Intégrations</h6></li>
+                            <li><h6 class="lm-menu-section">Intégrations</h6></li>
                             <li><a class="dropdown-item" href="{{ path('discord.admin') }}">Bot Discord</a></li>
                             <li><a class="dropdown-item" href="{{ path('api.client.admin') }}">Applications API</a></li>
-                            <li><h6 class="dropdown-header">Exploitation</h6></li>
+                            <li><h6 class="lm-menu-section">Exploitation</h6></li>
                             <li><a class="dropdown-item" href="{{ path('admin') }}">Administration</a></li>
                             <li><a class="dropdown-item" href="{{ path('install') }}">Tableau de bord</a></li>
                             <li><a class="dropdown-item" href="{{ path('admin.messenger') }}">File d'envoi des e-mails</a></li>
-                            <li><h6 class="dropdown-header">Données</h6></li>
+                            <li><h6 class="lm-menu-section">Données</h6></li>
                             <li><a class="dropdown-item" href="{{ path('admin.masse') }}">Ajouts en masse</a></li>
                             <li><a class="dropdown-item" href="{{ path('xp.gain') }}">Gain XP</a></li>
                             <li><a class="dropdown-item" href="{{ path('xp.usage') }}">Usage XP</a></li>

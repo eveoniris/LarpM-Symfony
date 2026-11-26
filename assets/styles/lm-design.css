@@ -448,6 +448,14 @@ html[data-ui="beta"] .dropdown-menu {
   --bs-dropdown-link-active-bg: var(--lm-accent); --bs-dropdown-link-active-color: var(--lm-on-accent);
   --bs-dropdown-divider-bg: var(--lm-line);
 }
+/* Titre de section de menu (voir style.css) : cuivre, police du texte courant, filet aux jetons lm */
+.dropdown-menu .lm-menu-section {
+  display: block; margin: .35rem 0 .1rem; padding: .45rem var(--bs-dropdown-item-padding-x, 1rem) .2rem;
+  border-top: 1px solid var(--lm-line); font-family: var(--lm-font-body); font-size: .72rem; font-weight: 700;
+  line-height: 1.2; letter-spacing: .09em; text-transform: uppercase; color: var(--lm-accent); white-space: nowrap;
+}
+.dropdown-menu li:first-child > .lm-menu-section { margin-top: 0; border-top: 0; padding-top: .25rem; }
+html[data-ui="beta"] .dropdown-menu .lm-menu-section { font-family: var(--lm-font-body); letter-spacing: .09em; }
 
 /* --- Panneau latéral « Actions » (offcanvas) et listes d'actions --- */
 html[data-ui="beta"] .offcanvas {

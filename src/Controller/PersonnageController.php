@@ -1057,7 +1057,7 @@ class PersonnageController extends AbstractController
             // La suppression est tracée par DeletionLogListener ; on y ajoute les utilisateurs détachés
             $this->annotateDeletion($personnage, null, ['detached_user_ids' => $detachedUserIds]);
 
-            // inter_jeu_personnage est une jonction unidirectionnelle non gérée par Doctrine
+            // Participations aux inter-jeux (entité InterJeuPersonnage sans relation inverse sur Personnage)
             $this->entityManager->getConnection()->executeStatement('DELETE FROM inter_jeu_personnage WHERE personnage_id = :id', ['id' => $personnage->getId()]);
 
             $this->entityManager->remove($personnage);
