@@ -66,9 +66,18 @@ jobs:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_OAUTH_SECRET: ${{ secrets.DISCORD_OAUTH_SECRET }}
           JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
+          # Variable (pas un secret) : 1 pour appliquer la Content-Security-Policy, vide ou 0 pour le mode rapport.
+          CSP_ENFORCE: ${{ vars.CSP_ENFORCE }}
           RUN_MIGRATIONS: ${{ github.event.inputs.run_migrations || 'true' }}
           CLEAR_CACHE: ${{ github.event.inputs.clear_cache || 'true' }}
         run: |
+          # Sans APP_SECRET, la prod retomberait sur la valeur factice versionnée dans .env.
+          if [ -z "$APP_SECRET" ] || [ -z "$JWT_PASSPHRASE" ]; then
+            echo "::error::Les secrets GitHub APP_SECRET et JWT_PASSPHRASE doivent être définis"
+            exit 1
+          fi
+          case "$CSP_ENFORCE" in ''|0|1) ;; *) echo "::error::CSP_ENFORCE doit valoir 0 ou 1"; exit 1 ;; esac
+
           # Encode les secrets en base64 pour les transmettre sans risque de caractères
           # spéciaux/quoting. Vide si le secret n'est pas défini.
           MAILER_DSN_B64=$(printf '%s' "$MAILER_DSN" | base64 | tr -d '\n')
@@ -171,6 +180,9 @@ jobs:
               if [ -n "\$JWT_PASSPHRASE_B64" ]; then
                 printf "JWT_PASSPHRASE='%s'\n" "\$(printf '%s' "\$JWT_PASSPHRASE_B64" | base64 --decode)" >> .env.prod.local
               fi
+              # Content-Security-Policy : appliquée seulement si la variable GitHub CSP_ENFORCE vaut 1
+              # (valeur déjà contrôlée côté runner : vide, 0 ou 1).
+              printf 'CSP_ENFORCE=%s\n' '${CSP_ENFORCE:-0}' >> .env.prod.local
             fi
 
             echo "==> Dumping compiled env for production"
