@@ -45,11 +45,6 @@ final class FileUploader
         return $this->fileName;
     }
 
-    public function getSlugger(): SluggerInterface
-    {
-        return $this->slugger;
-    }
-
     public function getStoredFileWithPath(): string
     {
         return $this->getFilePath() . '/' . $this->getStoredFileName();

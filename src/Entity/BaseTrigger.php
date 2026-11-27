@@ -97,12 +97,6 @@ abstract class BaseTrigger
     /*
      * Set Personnage entity (many to one).
      */
-    /*public function setPersonnage(Personnage $personnage = null): static
-     * {
-     * $this->personnage = $personnage;
-     *
-     * return $this;
-     * }*/
     /*
      * Get Personnage entity (many to one).
      */

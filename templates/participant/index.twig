@@ -83,16 +83,6 @@
                                 class="fa fa-pencil" aria-hidden="true"></i> Modifier</a>
                     </li>
 
-                    {#
-                    <li class="list-group-item">
-                        <a href="{{ path('participant.retour', {'participant': participant.id}) }}">
-                            <i class="fa fa-check-square-o" aria-hidden="true"></i>
-                            Retour joueur
-                        </a>
-                        {% if participant.carteAlchiDansEnveloppe is not null or participant.enveloppePrecedentGn is not null %}
-                            <small class="text-muted"> (saisi)</small>
-                        {% endif %}
-                    </li> #}
                 </ul>
 
                 <div class="header">
@@ -101,37 +91,6 @@
 
                 {% include 'participant/fragment/chainePersonnages.twig' with {'participant': participant} %}
 
-                {#
-                <div class="header">
-                    <h5>Règles</h5>
-                </div>
-                <ul class="list-group">
-                    <li class="list-group-item"><a
-                            href="{{ path('participant.classe.list', {'participant': participant.id}) }}">Les
-                            classes</a></li>
-                    <li class="list-group-item"><a
-                            href="{{ path('personnage.detail', {'participant': participant.id, 'personnage': participant.personnage.id, 'tab': 'competence'}) }}">Les
-                            compétences</a></li>
-                    <li class="list-group-item"><a
-                            href="{{ path('participant.regle.list', {'participant': participant.id}) }}">Les règles</a>
-                    </li>
-                </ul>
-
-                <div class="header">
-                    <h5>Univers</h5>
-                </div>
-                <ul class="list-group">
-                    <li class="list-group-item"><a href="{{ path('world') }}">La carte</a></li>
-                    <li class="list-group-item"><a href="{{ path('gn.groupes', {'gn': participant.gn.id}) }}">Les
-                            groupes</a></li>
-                    <li class="list-group-item"><a
-                            href="{{ path('participant.groupeSecondaire.list', {'participant': participant.id}) }}">Les
-                            groupes secondaires</a></li>
-                    <li class="list-group-item"><a
-                            href="{{ path('participant.religion.list', {'participant': participant.id}) }}">Les
-                            religions</a></li>
-                </ul>
-                #}
                 <div class="header mt-2">
                     <h5>Billets</h5>
                 </div>

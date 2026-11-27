@@ -2,18 +2,6 @@
     <h2>#{{ personnage.identity }}</h2>
 </div>
 
-{# Not used anymore
-
-    {% if personnage.user %}
-        {% set participant = personnage.user.participants|last %}
-        <strong>Personnage Secondaire : </strong>
-        {% if participant.personnageSecondaire %}
-            {{ participant.personnageSecondaire.classe.label }}
-        {% else %}
-            PAS DE PERSONNAGE SECONDAIRE
-        {% endif %}
-    {% endif %} #}
-
 {# Restauration #}
 
 {% if participant is not defined %}
@@ -75,22 +63,6 @@
             {{ materielHtml }}
         </ul>
     {% endif %}
-
-    {# On utilise plus la divinité principal en impression d'enveloppe
-    {% if personnage.hasCompetence(constant('App\\Enum\\CompetenceFamilyType::PRIESTHOOD')) %}
-        {% set enoughReligion = 0 %}
-        {% for religion in personnage.personnagesReligions %}
-            {% if religion.religionLevel.index >= 2 %}
-                {% set enoughReligion = 1 %}
-                <strong>Divinité principale : </strong>{{ religion.religion }} ({{ religion.religionLevel.label }})<br/>
-                <br/>
-            {% endif %}
-        {% endfor %}
-        {% if enoughReligion == 0 %}
-            CE PRÊTRE N'A PAS ASSEZ DE FERVEUR
-        {% endif %}
-    {% endif %}
-    #}
 
     {% set materielHtml %}
         {% set bracelets = [] %}

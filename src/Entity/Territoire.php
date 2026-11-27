@@ -268,13 +268,6 @@ class Territoire extends BaseTerritoire implements JsonSerializable, Stringable
 
         foreach ($this->getTerritoires() as $territoire) {
             $nobles = array_unique(array_merge($nobles, $territoire->getNbrNoble()));
-
-            /*
-             * echo "<pre>";
-             * echo $territoire->getNom()." : ".count($territoire->getNbrNoble())."/".count($nobles);
-             * echo "</pre>";
-             * echo "<hr />";
-             */
         }
 
         return array_unique($nobles);

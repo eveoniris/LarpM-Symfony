@@ -18,25 +18,6 @@ use Doctrine\ORM\QueryBuilder;
 class ReligionRepository extends BaseRepository
 {
     /** @param array<int, mixed> $religionsLevels */
-    public function findAllEmail(Religion $religion, array $religionsLevels = []): \Doctrine\ORM\Query
-    {
-        $query = $this
-            ->createQueryBuilder(<<<DQL
-                SELECT u.email
-                 FROM App\Entity\PersonnagesReligions pr
-                INNER JOIN App\Entity\User u
-                INNER JOIN App\Entity\ReligionLevel rl
-                DQL)
-            ->andWhere("u.email <> '' AND u.email IS NOT NULL")
-            ->andWhere('r.id = :religionId')
-            ->setParameter(':religionId', $religion->getId());
-
-        $this->religionsLevels($query, $religionsLevels);
-
-        return $query->getQuery();
-    }
-
-    /** @param array<int, mixed> $religionsLevels */
     public function religionsLevels(QueryBuilder $query, array $religionsLevels): QueryBuilder
     {
         if (!empty($religionsLevels)) {

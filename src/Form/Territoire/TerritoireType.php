@@ -64,12 +64,6 @@ class TerritoireType extends AbstractType
                 'required' => false,
                 'class' => TerritoireStatut::class,
             ])
-            /*->add('statut', ChoiceType::class, [
-             * 'label' => 'Statut',
-             * 'required' => false,
-             * 'choices' => ['Normal' => 'Normal', 'Instable' => 'Instable'],
-             * ])/
-             */
             ->add('geojson', TextareaType::class, [
                 'label' => 'GeoJSON',
                 'required' => false,
@@ -211,17 +205,6 @@ class TerritoireType extends AbstractType
                 'label' => 'Autorisé en création de personnage',
                 'choices' => ['Oui' => true, 'Non' => false],
             ]);
-
-        /* Merveille are added from MerveilleForm
-         * ->add('merveilles', EntityType::class, [
-         * 'required' => false,
-         * 'label' => 'Merveille',
-         * 'class' => Merveille::class,
-         * 'multiple' => true,
-         * 'expanded' => true,
-         * 'mapped' => true,
-         * 'choice_label' => 'label',
-         * ])*/
     }
 
     /**

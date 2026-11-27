@@ -35,31 +35,6 @@ class LoiController extends AbstractController
 
             $loi->handleUpload($this->fileUploader);
 
-            /*
-             * $files = $request->files->get($form->getName());
-             *
-             * // Si un document est fourni, l'enregistrer
-             * if (null != $files['document']) {
-             * $path = __DIR__.'/../../private/documents/';
-             * $filename = $files['document']->getClientOriginalName();
-             * $extension = 'pdf';
-             *
-             * if (!$extension || 'pdf' !== $extension) {
-             * $this->addFlash(
-             * 'error',
-             * 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
-             * );
-             *
-             * return $this->redirectToRoute('loi.index', [], 303);
-             * }
-             *
-             * $documentFilename = hash('md5', $loi->getLabel().$filename.time()).'.'.$extension;
-             *
-             * $files['document']->move($path, $documentFilename);
-             *
-             * $loi->setDocumentUrl($documentFilename);
-             * }
-             */
             $entityManager->persist($loi);
             $entityManager->flush();
 
@@ -181,31 +156,6 @@ class LoiController extends AbstractController
             $loi = $form->getData();
 
             $loi->handleUpload($this->fileUploader);
-
-            /*
-             * $files = $request->files->get($form->getName());
-             *
-             * // Si un document est fourni, l'enregistrer
-             * if (null != $files['document']) {
-             * $path = __DIR__ . '/../../private/documents/';
-             * $filename = $files['document']->getClientOriginalName();
-             * $extension = 'pdf';
-             *
-             * if (!$extension || 'pdf' !== $extension) {
-             * $this->addFlash(
-             * 'error',
-             * 'Désolé, votre document ne semble pas valide (vérifiez le format de votre document)'
-             * );
-             *
-             * return $this->redirectToRoute('loi.index', [], 303);
-             * }
-             *
-             * $documentFilename = hash('md5', $loi->getLabel() . $filename . time()) . '.' . $extension;
-             *
-             * $files['document']->move($path, $documentFilename);
-             *
-             * $loi->setDocumentUrl($documentFilename);
-             * }*/
 
             $entityManager->persist($loi);
             $entityManager->flush();

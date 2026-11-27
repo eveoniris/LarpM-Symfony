@@ -86,11 +86,6 @@ class GeoJson
         return $earthRadius * $c;
     }
 
-    public function getMaxDistance(): float
-    {
-        return $this->maxDistance;
-    }
-
     public function setMaxDistance(float $maxDistance): static
     {
         $this->maxDistance = $maxDistance;

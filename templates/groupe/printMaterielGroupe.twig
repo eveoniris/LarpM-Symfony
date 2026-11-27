@@ -117,22 +117,6 @@
         </ul>
     {% endif %}
 
-    {#
-    <div>
-        <h4>Quête commerciale pour #{{ groupe.numero }} {{ groupe.nom }}</h4>
-        <p>La route commerciale doit partir de
-            <strong>{% if groupe.territoire %}{{ groupe.territoire.nom }}{% else %}INCONNU{% endif %}</strong> et
-            parvenir à <strong>{% if quete.cible %}{{ quete.cible.nom }}{% else %}INCONNU{% endif %}</strong></p>
-        <strong>Les ressources demandées sont :</strong>
-        <ul>
-            {% for ressource in quete.needs %}
-                <li>{{ ressource.label }}</li>
-            {% endfor %}
-        </ul>
-        <strong>Récompenses : </strong>{{ quete.recompenses|join(', ') }}
-    </div>
-    #}
-
     {% set allItems = groupeService.allItems(groupe) %}
     {% if allItems|length > 0 %}
         <strong>Objets de jeu</strong> ou étiquette à récupérer au PC Joueur sur présentation de cette feuille.

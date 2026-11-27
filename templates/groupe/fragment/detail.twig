@@ -116,33 +116,6 @@
             </div>
         {% endif %}
 
-        {# disabled for now #}
-        {% if false %}
-            <div class="card text-bg mb-3 overflow-auto">
-                <div class="header"><h5>Jeu stratégique</h5></div>
-                <div class="card-body">
-                    {% if groupe.jeuStrategique %}
-                        <span class="fa-solid fa-circle-check" aria-hidden="true"></span>
-                        participe au jeu stratégique.
-                    {% else %}
-                        ne participe pas au jeu stratégique.
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="card text-bg mb-3 overflow-auto">
-                <div class="header"><h5>Jeu maritime</h5></div>
-                <div class="card-body">
-                    {% if groupe.jeuMaritime %}
-                        <span class="fa-solid fa-circle-check" aria-hidden="true"></span>
-                        participe au jeu maritime.
-                    {% else %}
-                        ne participe pas au jeu maritime.
-                    {% endif %}
-                </div>
-            </div>
-        {% endif %}
-
         {% if canReadPrivate %}
             <div class="card text-bg mb-3 overflow-auto">
                 <div class="header"><h5>Economie</h5></div>
@@ -186,39 +159,6 @@
                         <div class="d-flex justify-content-end">
                             <a class="btn btn-secondary" href="{{ path('groupe.quete',{'groupe': groupe.id}) }}">
                                 <i class="fa fa-balance-scale" aria-hidden="true"></i> Générer une quête commerciale
-                            </a>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        {% endif %}
-
-        {# disabled for now #}
-        {% if false %}
-            <div class="card text-bg mb-3 overflow-auto">
-                <div class="header"><h5>Composition du groupe</h5></div>
-                <div class="card-body">
-                    <p class="list-group-item-text"><strong>Nombre de places
-                            : </strong>{{ groupe.placeTotal }}
-                    </p>
-
-                    {% if groupe.classes|length == 0 %}
-                        <i class="fa fa-exclamation-triangle"
-                           aria-hidden="true"></i> Attention, ce groupe n'a pas de classes définies.
-                    {% else %}
-                        <ul>
-                            {% for classe in groupe.classes %}
-                                <li>
-                                    <a href="{{ path('classe.detail', {'classe': classe.id}) }}">{{ classe.label }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-
-                    {% if is_granted('ROLE_SCENARISTE', app.user) %}
-                        <div class="d-flex justify-content-end mt-2">
-                            <a class="btn btn-secondary" href="{{ path('groupe.composition', {'groupe': groupe.id}) }}">
-                                <i class="fa fa-pencil"></i> Modifier la composition du groupe
                             </a>
                         </div>
                     {% endif %}

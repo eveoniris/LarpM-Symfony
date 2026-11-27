@@ -22,11 +22,6 @@ class TriggerType extends AbstractType
             'class' => TriggerTypeEnum::class,
             'label' => 'Tag',
         ]);
-
-        /*->add('tag', TextType::class, [
-         'required' => true,
-         'label' => 'Tag',
-         ]);*/
     }
 
     public function configureOptions(OptionsResolver $resolver): void
