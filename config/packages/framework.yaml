@@ -42,6 +42,11 @@ framework:
             policy: sliding_window
             limit: 20
             interval: '15 minutes'
+        # Rapports de violation CSP : une page peut en envoyer plusieurs, au-delà on ignore.
+        csp_rapport_ip:
+            policy: sliding_window
+            limit: 60
+            interval: '1 minute'
 
     #esi: true
     #fragments: true

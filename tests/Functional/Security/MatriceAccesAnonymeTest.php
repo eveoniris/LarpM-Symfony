@@ -40,6 +40,7 @@ class MatriceAccesAnonymeTest extends WebTestCase
         'user.confirm-email',
         'user.resend-confirmation',
         'discord.interactions',
+        'csp.rapport',
         'classe.index',
         'classe.list',
         'classe.image',
