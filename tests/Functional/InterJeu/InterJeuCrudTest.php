@@ -7,6 +7,7 @@ namespace App\Tests\Functional\InterJeu;
 use App\Entity\InterJeu;
 use App\Entity\PersonnageChronologie;
 use App\Enum\InterJeuEtat;
+use App\Enum\InterJeuParticipantStatut;
 use App\Tests\Factory\InterJeuFactory;
 use App\Tests\Factory\PersonnageFactory;
 use App\Tests\Factory\UserFactory;
@@ -169,5 +170,38 @@ class InterJeuCrudTest extends WebTestCase
         static::assertNotEmpty($entries);
         static::assertSame('Participation à Test Inter', $entries[0]->getEvenement());
         static::assertSame(1050, $entries[0]->getAnnee());
+    }
+
+    public function testChronologieIgnoreLesDesistesEtLesPersonnagesEnAttente(): void
+    {
+        $client = static::createClient();
+        $user = UserFactory::createOne(['roles' => ['ROLE_INTER_JEU']]);
+        $inscrit = PersonnageFactory::createOne();
+        $desiste = PersonnageFactory::createOne();
+        $enAttente = PersonnageFactory::createOne();
+        $interJeu = InterJeuFactory::createOne([
+            'dateReel' => new DateTime('-1 day'),
+            'nom' => 'Inter statuts',
+            'anneeJeu' => 1051,
+            'etat' => InterJeuEtat::TERMINE,
+        ]);
+
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $interJeuEntity = $em->find(InterJeu::class, $interJeu->getId());
+        $interJeuEntity->addPersonnage($em->find(\App\Entity\Personnage::class, $inscrit->getId()));
+        $interJeuEntity->addPersonnage($em->find(\App\Entity\Personnage::class, $desiste->getId()), InterJeuParticipantStatut::DESISTE);
+        $interJeuEntity->addPersonnage($em->find(\App\Entity\Personnage::class, $enAttente->getId()), InterJeuParticipantStatut::EN_ATTENTE);
+        $em->flush();
+
+        $client->loginUser($user);
+        $crawler = $client->request('GET', '/inter-jeu/' . $interJeu->getId() . '/chronologie');
+        $client->submit($crawler->selectButton('Confirmer la génération')->form());
+        static::assertResponseRedirects('/inter-jeu/' . $interJeu->getId());
+
+        $em->clear();
+        $repository = $em->getRepository(PersonnageChronologie::class);
+        static::assertCount(1, $repository->findBy(['personnage' => $inscrit->getId(), 'annee' => 1051]));
+        static::assertCount(0, $repository->findBy(['personnage' => $desiste->getId()]));
+        static::assertCount(0, $repository->findBy(['personnage' => $enAttente->getId()]));
     }
 }

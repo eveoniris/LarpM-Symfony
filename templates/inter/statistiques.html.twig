@@ -3,6 +3,7 @@
 {% block title %}Statistiques - {{ interJeu.nom }}{% endblock title %}
 
 {% block body %}
+    {% set beta = app.user is not null and app.user.uiBeta %}
 
     {% if gestionnaire %}
         {% include '_partials/breadcrumb.twig' with {'items': [
@@ -40,9 +41,11 @@
         {% for famille in stats.cles %}
             <div class="col-sm-6 col-lg-4">
                 <div class="well well-sm h-100">
-                    <div class="header d-flex justify-content-between align-items-baseline">
-                        <h5>{{ famille.label }}</h5>
-                        <span class="fs-4 fw-bold">{{ famille.total }}</span>
+                    <div class="header">
+                        <h5 class="d-flex justify-content-between align-items-center gap-2">
+                            {{ famille.label }}
+                            <span class="{{ beta ? 'lm-count' : 'badge text-bg-secondary' }}" title="Personnages">{{ famille.total }}</span>
+                        </h5>
                     </div>
                     <table class="table table-sm table-bordered mb-2">
                         <tbody>
@@ -55,6 +58,12 @@
                             {% endif %}
                         {% endfor %}
                         </tbody>
+                        <tfoot>
+                        <tr class="fw-bold">
+                            <td>Total</td>
+                            <td class="text-center col-3">{{ famille.total }}</td>
+                        </tr>
+                        </tfoot>
                     </table>
                     {% if famille.personnages is not empty %}
                         <details>
