@@ -32,26 +32,6 @@ class StrategieController extends AbstractController
 
         $paginator = $groupeRepo->findPaginatedQuery($territoires, 25, $this->getRequestPage());
 
-        /*$groupeRepo = $entityManager->getRepository('\\'.\App\Entity\Groupe::class);
-         * $groupes = $groupeRepo->findAll();
-         *
-         * foreach ($groupes as $groupe) {
-         * //  les groupes doivent participer au prochain GN
-         * if ($groupe->getGroupeGnById($gn->getId())) {
-         * foreach ($groupe->getTerritoires() as $territoire) {
-         * $territoires[] = $territoire;
-         * }
-         * }
-         * }
-         *
-         * // classement des résultats
-         * $iterator = $territoires->getIterator();
-         * $iterator->uasort(static function ($first, $second): int {
-         * return strcmp((string) $first->getNom(), (string) $second->getNom());
-         * });
-         * $territoires = new ArrayCollection(iterator_to_array($iterator));
-         * dump($territoires);*/
-
         return $this->render('strategie/index.twig', [
             'gn' => $gn,
             'paginator' => $paginator,

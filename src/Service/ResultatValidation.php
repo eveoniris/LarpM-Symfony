@@ -36,17 +36,6 @@ final readonly class ResultatValidation
         return [] === $this->parties();
     }
 
-    public function aDesAnomalies(): bool
-    {
-        foreach ($this->parties() as $partie) {
-            if ([] !== $partie->anomalies) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function resume(): string
     {
         return implode(' / ', array_map(static fn (ResultatApprentissages $partie): string => $partie->resume(), $this->parties()));

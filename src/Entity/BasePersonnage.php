@@ -814,18 +814,6 @@ abstract class BasePersonnage
         }
         unset($family);
 
-        /*
-         * $iterator = $this->competences->getIterator();
-         * $iterator->uasort(static function (Competence $a, Competence $b): int {
-         * $aC = $a->getCompetenceFamily()?->getLabel().'_'.$a->getLevel()?->getIndex();
-         * $bC = $b->getCompetenceFamily()?->getLabel().'_'.$b->getLevel()?->getIndex();
-         *
-         * return $aC <=> $bC;
-         * });
-         *
-         *
-         * return new ArrayCollection(iterator_to_array($iterator));
-         */
         ksort($families);
 
         foreach ($families as $family) {

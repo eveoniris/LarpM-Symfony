@@ -137,22 +137,6 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
         return $this->createQueryBuilder('u')->andWhere('u.confirmationToken = :val')->setParameter('val', $token)->getQuery()->getOneOrNullResult();
     }
 
-    /** @return list<User> */
-    public function findWithoutEtatCivil(): array
-    {
-        $query = $this->getEntityManager()->createQuery(<<<DQL
-            SELECT u
-            FROM App\Entity\User u
-            LEFT JOIN u.etatCivil ec
-            WHERE ec IS NULL
-               OR ec.nom IS NULL OR ec.nom = ''
-               OR ec.prenom IS NULL OR ec.prenom = ''
-            ORDER BY u.email ASC
-            DQL);
-
-        return $query->getResult();
-    }
-
     /**
      * @return list<User>
      */
@@ -169,27 +153,6 @@ class UserRepository extends BaseRepository implements PasswordUpgraderInterface
             ->distinct();
 
         return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * @return list<User>
-     */
-    public function findWithBilletForGnButIncompleteEtatCivil(Gn $gn): array
-    {
-        return $this->findParticipantsForGnButIncompleteEtatCivil($gn);
-    }
-
-    /** @return array<int, int> */
-    public function getPersonnagesIds(User $user): array
-    {
-        $query = $this->getEntityManager()->createQuery(<<<DQL
-            SELECT p.id
-            FROM App\Entity\User u
-            INNER JOIN App\Entity\Personnage p
-            WHERE u.id = :uid
-            DQL);
-
-        return $query->setParameter('uid', $user->getId())->getScalarResult();
     }
 
     /**

@@ -380,12 +380,6 @@ abstract class BaseGroupeGn
     /**
      * Set Personnage entity (many to one).
      */
-    /*public function setSuzerain(Personnage $suzerain = null): GroupeGn
-     * {
-     * $this->suzerain = $suzerain;
-     *
-     * return $this;
-     * }*/
 
     /**
      * Get Personnage entity (many to one).

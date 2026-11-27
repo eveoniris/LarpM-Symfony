@@ -12,7 +12,6 @@ use App\Entity\Personnage;
 use App\Entity\User;
 use App\Enum\LevelType;
 use App\Service\OrderBy;
-use ArrayIterator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
@@ -70,31 +69,6 @@ class CompetenceRepository extends BaseRepository
             ->andWhere('c.secret = 0 OR c.secret IS NULL')
             ->addOrderBy('cf.label')
             ->addOrderBy('l.index');
-    }
-
-    /**
-     * Fourni la liste des compétences de premier niveau.
-     *
-     * @return ArrayCollection<int, Competence>
-     */
-    public function getRootCompetences(): ArrayCollection
-    {
-        $rootCompetences = new ArrayCollection();
-
-        $repo = $this->entityManager->getRepository(CompetenceFamily::class);
-        $competenceFamilies = $repo->findAll();
-
-        foreach ($competenceFamilies as $competenceFamily) {
-            $competence = $competenceFamily->getFirstCompetence();
-            $rootCompetences->add($competence);
-        }
-
-        // trie des competences disponibles
-        /** @var ArrayIterator<int, mixed> $iterator */
-        $iterator = $rootCompetences->getIterator();
-        $iterator->uasort(static fn ($a, $b) => $a->getLabel() <=> $b->getLabel());
-
-        return new ArrayCollection(iterator_to_array($iterator));
     }
 
     public function level(QueryBuilder $query, LevelType|Level $level): QueryBuilder

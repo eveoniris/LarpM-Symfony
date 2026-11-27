@@ -558,47 +558,6 @@ class GroupeController extends AbstractController
             'pagerService' => $pagerService,
             'paginator' => $groupeRepository->searchPaginated($pagerService, null, true),
         ]);
-
-        /* OLD
-         * $order_by = $request->query->get('order_by') ?: 'numero';
-         * $order_dir = 'DESC' == $request->query->get('order_dir') ? 'DESC' : 'ASC';
-         * $limit = (int)($request->query->get('limit') ?: 50);
-         * $page = (int)($request->query->get('page') ?: 1);
-         * $offset = ($page - 1) * $limit;
-         * $type = null;
-         * $value = null;
-         *
-         * $form = $this->createForm(GroupeFindType::class);
-         *
-         * $form->handleRequest($request);
-         *
-         * if ($form->isSubmitted() && $form->isValid()) {
-         * $data = $form->getData();
-         * $type = $data['type'];
-         * $value = $data['search'];
-         * }
-         *
-         * $repo = $this->entityManager->getRepository(Groupe::class);
-         *
-         * $groupes = $repo->findList(
-         * $type,
-         * $value,
-         * $limit,
-         * $offset,
-         * ['by' => $order_by, 'dir' => $order_dir]
-         * );
-         *
-         * $paginator = $repo->findPaginatedQuery(
-         * $groupes,
-         * $this->getRequestLimit(),
-         * $this->getRequestPage()
-         * );
-         *
-         * return $this->render('groupe/list.twig', [
-         * 'form' => $form->createView(),
-         * 'paginator' => $paginator,
-         * ]);
-         */
     }
 
     /**

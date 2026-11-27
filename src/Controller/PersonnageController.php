@@ -291,23 +291,6 @@ class PersonnageController extends AbstractController
             if (!$service->hasErrors()) {
                 $this->addFlash('success', 'Votre personnage a été sauvegardé.');
 
-                /* already done in ADD COMPETENCE
-                 * $log = new LogAction();
-                 * $log->setDate(new \DateTime());
-                 * $log->setType(LogActionType::ADD_COMPETENCE);
-                 * $log->setUser($this->getUser());
-                 * $log->setData([
-                 * 'competence_id' => $competence->getId(),
-                 * 'personnage_id' => $personnage->getId(),
-                 * 'cost' => $personnageService->getCompetenceCout(
-                 * $personnage,
-                 * $competence,
-                 * ),
-                 * ]);
-                 * $this->entityManager->persist($log);
-                 * $this->entityManager->flush();
-                 */
-
                 return $this->redirectToRoute('personnage.detail.tab', ['personnage' => $personnage->getId(), 'tab' => 'competences'], 303);
             }
 
@@ -492,14 +475,6 @@ class PersonnageController extends AbstractController
 
                 return $this->redirectToRoute('gn.personnage', ['gn' => $participant->getGn()->getId()], 303);
             }
-            /*foreach ($personnage->getClasse()->getCompetenceFamilyCreations() as $competenceFamily) {
-             * $firstCompetence = $competenceFamily->getFirstCompetence();
-             * if ($firstCompetence) {
-             * $personnage->addCompetence($firstCompetence);
-             * $firstCompetence->addPersonnage($personnage);
-             * $this->entityManager->persist($firstCompetence);
-             * }
-             * }*/
 
             // Ajout des points d'expérience gagné grace à l'age
             $xpAgeBonus = $personnage->getAge()->getBonus();
@@ -2594,13 +2569,6 @@ class PersonnageController extends AbstractController
             $evenement = !$personnage->getVivant() ? 'Mort violente' : 'Résurrection';
 
             // TODO: Trouver comment avoir la date du GN
-            /*
-             $personnageChronologie = new \App\Entity\PersonnageChronologie();
-             $personnageChronologie->setAnnee($anneeGN);
-             $personnageChronologie->setEvenement($evenement);
-             $personnageChronologie->setPersonnage($personnage);
-             $this->entityManager->persist($personnageChronologie);
-             */
 
             $this->entityManager->persist($personnage);
             $this->entityManager->flush();
@@ -3781,15 +3749,6 @@ class PersonnageController extends AbstractController
     {
         // Fiche publique: Disabled for now
         // $isAdmin = $this->isGranted(Role::SCENARISTE->value) || $this->isGranted(Role::ORGA->value);
-        /*if (!$isAdmin && $personnage->getUser()?->getId() !== $this->getUser()?->getId()) {
-         * return $this->render(
-         * 'personnage/publicResume.twig',
-         * [
-         * 'personnage' => $personnage,
-         * 'participant' => $personnage->getLastParticipant(),
-         * ]
-         * );
-         * }*/
 
         // Fiche pour le PJ ou admin
         $this->hasAccess($personnage, [Role::SCENARISTE, Role::ORGA]);
@@ -3989,25 +3948,6 @@ class PersonnageController extends AbstractController
         }
 
         return $response;
-
-        /* OLD
-         * $trombine = $personnage->getTrombineUrl();
-         * $filename = $this->fileUploader->getDirectory(FolderType::Photos).$trombine;
-         *
-         * // Larpv1 temp
-         * if (!is_file($filename)) {
-         * $filename = $this->fileUploader->getDirectory(FolderType::Asset).'../../larpmanager/private/img/'.$trombine;
-         * }
-         *
-         * if (!is_file($filename)) {
-         * return $this->sendNoImageAvailable();
-         * }
-         *
-         * $response = new Response(file_get_contents($filename));
-         * $response->headers->set('Content-Type', 'image/png');
-         * $response->headers->set('cache-control', 'private');
-         *
-         * return $response; */
     }
 
     /**
@@ -4215,17 +4155,6 @@ class PersonnageController extends AbstractController
         // car elles ne sont pas en base mais calculées, ça compliquerait trop le sql
         $orderByCalculatedFields = new ArrayCollection(['pugilat', 'heroisme', 'user', 'hasAnomalie', 'status']);
         // TODO ?
-        /*if (false && $orderByCalculatedFields->contains($orderBy)) {
-         * // recherche basée uniquement sur les filtres
-         * $filteredPersonnages = $repo->findList($criteria)->getResult();
-         * // on applique le tri
-         * PersonnageManager::sort($filteredPersonnages, $orderBy, $isAsc);
-         * $personnages = new ArrayCollection($filteredPersonnages);
-         * // on découpe suivant la pagination demandée
-         * $personnages = $personnages->slice($offset, $limit);
-         *
-         * $paginator = new Paginator($personnages);
-         * }*/
         // else {
         // recherche et applique directement en sql filtres + tri + pagination
         $personnages = $repo->findList($criteria, ['by' => $orderBy, 'dir' => $orderDir], $limit, $offset);

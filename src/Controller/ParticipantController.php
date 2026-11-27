@@ -230,24 +230,6 @@ class ParticipantController extends AbstractController
 
                 return $this->redirectToRoute('homepage', [], 303);
             }
-            /*foreach ($personnage->getClasse()->getCompetenceFamilyCreations() as $competenceFamily) {
-             * $firstCompetence = $competenceFamily->getFirstCompetence();
-             * if ($firstCompetence) {
-             * $personnage->addCompetence($firstCompetence);
-             * $firstCompetence->addPersonnage($personnage);
-             * $this->entityManager->persist($firstCompetence);
-             * }
-             *
-             * if ('Noblesse' == $competenceFamily->getLabel()) {
-             * $personnage->addRenomme(2);
-             * $renomme_history = new RenommeHistory();
-             *
-             * $renomme_history->setRenomme(2);
-             * $renomme_history->setExplication('Compétence Noblesse niveau 1');
-             * $renomme_history->setPersonnage($personnage);
-             * $this->entityManager->persist($renomme_history);
-             * }
-             * }*/
 
             // Ajout des points d'expérience gagné grace à l'age
             $xpAgeBonus = $personnage->getAge()->getBonus();
@@ -574,13 +556,6 @@ class ParticipantController extends AbstractController
         $this->hasAccess($participant);
 
         // il faut un billet pour rejoindre un groupe
-        /* Commenté parce que ça gène la manière de faire d'Edaelle.
-         * if ( ! $participant->getBillet() )
-         * {
-         * $this->addFlash('error','Désolé, le joueur doit obtenir un billet avant de pouvoir rejoindre un groupe');
-         * return $this->redirectToRoute('gn.detail', array('gn' => $participant->getGn()->getId())),303);
-         * }
-         */
         $ancienGroupeGn = $participant->getGroupeGn();
         $form = $this->createForm(ParticipantGroupeType::class, $participant, ['gnId' => $participant->getGn()->getId()])->add('save', SubmitType::class, ['label' => 'Sauvegarder']);
 
@@ -1302,12 +1277,6 @@ class ParticipantController extends AbstractController
 
         $groupe = $groupeGn->getGroupe();
 
-        /*if (  ! $groupe->hasEnoughClasse($groupeGn->getGn()) )
-         * {
-         * $this->addFlash('error','Désolé, ce groupe ne contient plus de classes disponibles');
-         * return $this->redirectToRoute('participant.index', array('participant' => $participant->getId())),303);
-         * }*/
-
         $personnage = new Personnage();
         $classes = $this->entityManager->getRepository(Classe::class)->findAllCreation();
 
@@ -1395,25 +1364,6 @@ class ParticipantController extends AbstractController
 
                 return $this->redirectToRoute('homepage', [], 303);
             }
-            /*
-             * foreach ($personnage->getClasse()->getCompetenceFamilyCreations() as $competenceFamily) {
-             * $firstCompetence = $competenceFamily->getFirstCompetence();
-             * if ($firstCompetence) {
-             * $personnage->addCompetence($firstCompetence);
-             * $firstCompetence->addPersonnage($personnage);
-             * $this->entityManager->persist($firstCompetence);
-             * }
-             *
-             * if ('Noblesse' === $competenceFamily->getLabel()) {
-             * $personnage->addRenomme(2);
-             * $renomme_history = new RenommeHistory();
-             *
-             * $renomme_history->setRenomme(2);
-             * $renomme_history->setExplication('Compétence Noblesse niveau 1');
-             * $renomme_history->setPersonnage($personnage);
-             * $this->entityManager->persist($renomme_history);
-             * }
-             * }*/
 
             // Ajout des points d'expérience gagné grace à l'age du personnage ou perdu à cause de l'age du joueur
             $age_joueur = $participant->getAgeJoueur();

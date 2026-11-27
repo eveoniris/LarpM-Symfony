@@ -14,7 +14,6 @@ use App\Entity\Espece;
 use App\Entity\ExperienceGain;
 use App\Entity\Genre;
 use App\Entity\Gn;
-use App\Entity\Groupe;
 use App\Entity\GroupeGn;
 use App\Entity\GroupeLangue;
 use App\Entity\HeroismeHistory;
@@ -59,7 +58,6 @@ use App\Form\PersonnageFindType;
 use App\Repository\ParticipantRepository;
 use App\Service\Competence\LitteratureService;
 use App\Repository\PersonnageRepository;
-use App\Repository\ReligionRepository;
 use App\Repository\RenommeHistoryRepository;
 use App\Repository\TechnologieRepository;
 use ArrayIterator;
@@ -538,20 +536,6 @@ class PersonnageService
     }
 
     /**
-     * Récupére la liste de toutes les religions non connue du personnage, vue admin.
-     *
-     * @return ArrayCollection<int, Religion>
-     */
-    public function getAdminAvailableReligions(
-        Personnage $personnage,
-        #[SensitiveParameter]
-        bool $withSecret = false,
-    ): ?ArrayCollection {
-        // Pour le moment aucune différence entre vue user et vue admin
-        return $this->getAvailableReligions($personnage, $withSecret);
-    }
-
-    /**
      * Récupére la liste de toutes les religions non connues du personnage.
      *
      * @return ArrayCollection<int, Religion>
@@ -590,19 +574,6 @@ class PersonnageService
         return false;
     }
 
-    public function getPersonnagesCompetenceGn(Competence $competence, Gn $gn, bool $count = false): QueryBuilder|int
-    {
-        $q = $this->entityManager->getRepository(Competence::class)->getPersonnages($competence, $gn);
-
-        if ($count) {
-            assert($q instanceof QueryBuilder);
-
-            return (int) (clone $q)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
-        }
-
-        return $q;
-    }
-
     /**
      * @return Collection<int, Personnage>
      */
@@ -618,10 +589,6 @@ class PersonnageService
     {
         $all = new ArrayCollection();
         try {
-            /*$all = new ArrayCollection(
-             * $this->entityManager->getRepository(Personnage::class)
-             * ->findCompetencesOrdered($personnage),
-             * );*/
             foreach ($personnage->getCompetences() as $competence) {
                 // Handle Alchemy replace text
                 if ($competence->isAlchemy()) {
@@ -1835,15 +1802,6 @@ class PersonnageService
             return $this->entityManager->getRepository(Loi::class)->findAll();
         }
 
-        /* old rules
-         * if ($personnage->hasCompetenceLevel(CompetenceFamilyType::POLITICAL, LevelType::INITIATED)) {
-         * // @var Loi $loi
-         * foreach ($this->groupeService->getLois($personnage->getLastParticipantGnGroupe()) as $loi) {
-         * $lois->add($loi);
-         * }
-         * }
-         */
-
         return new ArrayCollection();
     }
 
@@ -2238,11 +2196,6 @@ class PersonnageService
             $this->entityManager->persist($personnage);
             $this->entityManager->persist($participant);
             $this->entityManager->flush();
-
-            /*if (++$cache > 50) {
-             $cache = 0;
-             $this->entityManager->flush();
-             }*/
         }
         $this->entityManager->flush();
     }
@@ -2337,11 +2290,6 @@ class PersonnageService
             }
         }
         $this->entityManager->flush();
-    }
-
-    public function getLastAnneeGn(Personnage $personnage): int
-    {
-        return $this->groupeService->getLastDoneSessionGn()?->getDateJeu() ?? $personnage->getLastParticipantGn()?->getDateJeu() ?? 1000;
     }
 
     /**
@@ -2630,20 +2578,6 @@ class PersonnageService
         return false;
     }
 
-    public function hasReligionSans(Personnage $personnage): bool
-    {
-        /** @var ReligionRepository $religionRepository */
-        $religionRepository = $this->entityManager->getRepository(Religion::class);
-        $qb = $religionRepository->createQueryBuilder('rl');
-        $religion = $qb
-            ->where($qb->expr()->eq($qb->expr()->lower('rl.label'), ':lbl'))
-            ->setParameter('lbl', 'sans')
-            ->getQuery()
-            ->getSingleResult();
-
-        return $religion && $this->knownReligion($personnage, $religion);
-    }
-
     /**
      * Langue connue du personnage, bonus (origine, groupe...) compris.
      */
@@ -2662,14 +2596,6 @@ class PersonnageService
     {
         // We currently only work on the competence level
         return $personnage->hasCompetenceLevel(CompetenceFamilyType::POLITICAL, LevelType::APPRENTICE);
-    }
-
-    public function isMemberOfGroup(Personnage $personnage, Groupe $groupe): bool
-    {
-        /** @var GroupeGn $groupeGn * */
-        $groupeGn = $groupe->getGroupeGns()->last();
-
-        return $groupeGn->getPersonnages()->contains($personnage);
     }
 
     /** @param array<string, mixed>|null $data */

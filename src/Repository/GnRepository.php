@@ -44,16 +44,6 @@ class GnRepository extends BaseRepository
 
         $result = [];
 
-        /*
-         * $query = $this->getEntityManager()->createQueryBuilder()
-         * ->select('c', 'p')
-         * ->from('App\Entity\Products', 'p')
-         * ->join('p.categories', 'c')
-         * ->where("c.slug = '$slug'")
-         * ->setMaxResults($limit)
-         * ->setFirstResult(($page * $limit) - $limit);
-         */
-
         $query = $this
             ->getEntityManager()
             ->getRepository(Gn::class)

@@ -195,30 +195,6 @@ final class PersonnageManager
     }
 
     /**
-     * Récupére la liste de toutes les religions non connue du personnage, vue admin.
-     */
-    /** @return ArrayCollection<int, Religion> */
-    public function getAdminAvailableReligions(
-        Personnage $personnage,
-        EntityManagerInterface $entityManager,
-    ): ArrayCollection {
-        $availableReligions = new ArrayCollection();
-
-        $repo = $entityManager->getRepository('\\' . Religion::class);
-        $religions = $repo->findAllOrderedByLabel();
-
-        foreach ($religions as $religion) {
-            if ($this->knownReligion($personnage, $religion)) {
-                continue;
-            }
-
-            $availableReligions->add($religion);
-        }
-
-        return $availableReligions;
-    }
-
-    /**
      * Fourni la dernière compétence acquise par un presonnage.
      */
     public function getLastCompetence(Personnage $personnage): ?Competence

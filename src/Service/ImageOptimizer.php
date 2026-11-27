@@ -21,11 +21,6 @@ class ImageOptimizer
         $this->projectDirectory = $projectDirectory;
     }
 
-    public function getImagine(string $projectDirectory): Imagine
-    {
-        return $this->imagine;
-    }
-
     public function resize(string $filename): void
     {
         $size = getimagesize($filename);

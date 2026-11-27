@@ -293,10 +293,6 @@ abstract class BaseRepository extends ServiceEntityRepository
             }
 
             $value = $this->getAttributeAsName($attribute);
-            /*
-             * if (str_contains($value, 'HIDDEN')) {
-             * $value = substr($value, 7);
-             * }*/
 
             $asAttributes[$value] = $this->getAttributeWhereName($attribute);
         }
