@@ -36,8 +36,6 @@ return [
     '@orchidjs/sifter' => ['version' => '1.1.0'],
     '@orchidjs/unicode-variants' => ['version' => '1.1.2'],
     'tom-select/dist/css/tom-select.default.min.css' => ['version' => '2.4.3', 'type' => 'css'],
-    'tom' => ['version' => '0.4.1'],
-    'rx' => ['version' => '4.1.0'],
     'tom-select/dist/css/tom-select.bootstrap5.css' => ['version' => '2.4.3', 'type' => 'css'],
     '@hotwired/turbo' => ['version' => '8.0.20'],
     '@fortawesome/fontawesome-free/css/all.css' => ['version' => '7.1.0', 'type' => 'css'],
