@@ -1107,6 +1107,7 @@ class ParticipantController extends AbstractController
      * Création d'un nouveau participant.
      */
     #[Route('/participant/new/{user}', name: 'participant.new')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function newAction(Request $request, #[MapEntity] User $user): RedirectResponse|Response
     {
         $participant = new Participant();
@@ -1271,6 +1272,13 @@ class ParticipantController extends AbstractController
 
         if ($participant->getPersonnage()) {
             $this->addFlash('error', 'Désolé, vous disposez déjà d\'un personnage.');
+
+            return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
+        }
+
+        // Limite de personnages vivants par joueur (le staff en est exempté)
+        if (!$personnageService->canCreatePersonnage($participant->getUser())) {
+            $this->addFlash('error', sprintf('Désolé, vous avez atteint le nombre maximum de %d personnages vivants.', PersonnageService::MAX_PER_USER));
 
             return $this->redirectToRoute('gn.detail', ['gn' => $groupeGn->getGn()->getId()], 303);
         }

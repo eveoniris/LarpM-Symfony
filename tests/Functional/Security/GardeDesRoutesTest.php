@@ -104,7 +104,6 @@ class GardeDesRoutesTest extends KernelTestCase
             'personnage.trombine',
             'technologie.detail',
             'technologie.document',
-            'user.personnage.add',
             'user.personnage.list',
             'user.personnageDefault',
         ],
