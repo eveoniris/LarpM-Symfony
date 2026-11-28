@@ -4274,40 +4274,6 @@ class PersonnageController extends AbstractController
         ]);
     }
 
-    /**
-     * Création d'un nouveau personnage.
-     * Méthode de base pour tout le monde.
-     */
-    #[Route('/{personnage}/add', name: 'add')]
-    #[IsGranted(new MultiRolesExpression(Role::SCENARISTE, Role::ORGA))]
-    public function newAction(Request $request): RedirectResponse|Response
-    {
-        $personnage = new Personnage();
-
-        $form = $this->createForm(PersonnageType::class, $personnage)->add('valider', SubmitType::class, [
-            'label' => 'Enregistrer',
-        ]);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $personnage = $form->getData();
-            $this->getUser()?->addPersonnage($personnage);
-            $this->entityManager->persist($this->getUser());
-            $this->entityManager->persist($personnage);
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'Votre personnage a été créé');
-
-            return $this->redirectToRoute('homepage', [], 303);
-        }
-
-        return $this->render('personnage/new.twig', [
-            'personnage' => $personnage,
-            'form' => $form->createView(),
-        ]);
-    }
-
     #[Route('/{personnage}/religion/description', name: 'religion.description')]
     public function religionDescriptionAction(
         Request $request,

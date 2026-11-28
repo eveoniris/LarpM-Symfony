@@ -39,6 +39,7 @@ use SensitiveParameter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use App\Security\IpBlocklist;
+use App\Security\MultiRolesExpression;
 use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
@@ -1013,15 +1014,18 @@ class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * Création d'un personnage assigné à un utilisateur, hors participation à un GN.
+     * Réservée au staff : un joueur crée son personnage depuis sa participation (groupe + billet).
+     */
     #[Route('/user/{user}/personnage/add', name: 'user.personnage.add')]
+    #[IsGranted(new MultiRolesExpression(Role::ORGA, Role::SCENARISTE))]
     public function personnagesAddAction(
         Request $request,
         #[MapEntity]
         User $user,
         PersonnageService $personnageService,
     ): RedirectResponse|Response {
-        $this->hasAccess($user, [Role::ORGA, Role::ADMIN]);
-
         $form = $this->createForm(PersonnageType::class, new Personnage());
 
         // Check if user can create new personnage; staff (admin/orga/scénariste/gestion) always can
@@ -1051,8 +1055,6 @@ class UserController extends AbstractController
             'territoires' => $this->entityManager->getRepository(Territoire::class)->findRoot(),
             'gn' => GroupeManager::getGnActif($this->entityManager),
         ]);
-
-        // $this->redirectToRoute('personnage.add');
     }
 
     #[Route('/user/register ', name: 'user.register')]

@@ -19,7 +19,7 @@
             {% include '_partials/formListSearch.twig' with
                 {
                     'canAdd': false,
-                    'actionPath' : path('user.personnage.add', {'user': user.id}),
+                    'actionPath' : path('user.personnage.list', {'user': user.id}),
                     'display' : true
                 } %}
         </div>
@@ -28,7 +28,7 @@
     <div class="d-flex justify-content-end">
         <div class="w-auto mb-2 p-0 btn-toolbar d-flex justify-content-between m-0 p-0" role="toolbar">
             <div class="btn-group m-0 p-0" role="group">
-                {% if personnageService.canCreatePersonnage(user) %}
+                {% if is_granted('ROLE_ORGA') or is_granted('ROLE_SCENARISTE') %}
                     <a class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                        title="Modifier"
                        href="{{ path('user.personnage.add', {'user': user.id}) }}"><i

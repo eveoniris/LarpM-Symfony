@@ -227,7 +227,7 @@
 
                     {% if canManage %}
                         <div class="m-2 d-flex justify-content-between">
-                            {% if personnageService.canCreatePersonnage(user) %}
+                            {% if is_granted('ROLE_ORGA') or is_granted('ROLE_SCENARISTE') %}
                                 <a class="btn btn-secondary"
                                    href="{{ path('user.personnage.add', {'user': user.id}) }}"><span
                                         class="fa fa-user" style="margin-right: 5px;"></span>
