@@ -16,8 +16,8 @@
                 <a class="btn btn-sm btn-secondary" href="{{ path('inter.statistiques', {'inter': interJeu.id}) }}">
                     <i class="fa fa-chart-bar"></i> Statistiques
                 </a>
-                <a class="btn btn-sm btn-secondary" href="{{ path('inter.statistiques.csv', {'inter': interJeu.id}) }}">
-                    <i class="fa fa-file-csv"></i> Exporter en CSV
+                <a class="btn btn-sm btn-secondary" href="{{ path('inter.statistiques.export.zip', {'inter': interJeu.id}) }}">
+                    <i class="fa fa-file-zipper"></i> Exporter les statistiques (zip)
                 </a>
                 {% if gestionnaire %}
                     <a class="btn btn-sm btn-secondary" href="{{ path('inter.personnages', {'inter': interJeu.id}) }}">

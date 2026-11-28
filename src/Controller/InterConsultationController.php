@@ -10,18 +10,18 @@ use App\Entity\Personnage;
 use App\Enum\InterJeuParticipantStatut;
 use App\Repository\PersonnageRepository;
 use App\Security\Voter\InterJeuVoter;
+use App\Service\InterJeuExportFichier;
 use App\Service\InterJeuStatistiqueService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Consultation d'un inter-jeu, partagée entre le rôle INTER_JEU et les orgas externes dont l'accès est validé :
- * statistiques (petit matériel), export CSV, liste des participants. Les orgas externes proposent des
+ * statistiques (petit matériel, exports dans InterExportController), liste des participants. Les orgas externes proposent des
  * changements de liste, que le rôle INTER_JEU valide depuis la page de gestion des participants.
  *
  * Exposition limitée aux personnages : identifiant, nom, classe, statut, niveaux de compétence.
@@ -45,37 +45,15 @@ final class InterConsultationController extends AbstractController
     #[IsGranted(InterJeuVoter::VIEW, subject: 'inter')]
     public function statistiquesAction(InterJeu $inter, InterJeuStatistiqueService $statistiqueService): Response
     {
+        $gestionnaire = $this->isGranted(InterJeuVoter::MANAGE, $inter);
+
         return $this->render('inter/statistiques.html.twig', [
             'interJeu' => $inter,
             'stats' => $statistiqueService->getStatistiques($inter),
             'niveaux' => InterJeuStatistiqueService::NIVEAUX,
-            'gestionnaire' => $this->isGranted(InterJeuVoter::MANAGE, $inter),
+            'gestionnaire' => $gestionnaire,
+            'tableaux' => InterJeuExportFichier::tableauxDisponibles($gestionnaire),
         ]);
-    }
-
-    #[Route('/{inter}/statistiques.csv', name: 'statistiques.csv', requirements: ['inter' => Requirement::DIGITS])]
-    #[IsGranted(InterJeuVoter::VIEW, subject: 'inter')]
-    public function statistiquesCsvAction(InterJeu $inter, InterJeuStatistiqueService $statistiqueService): StreamedResponse
-    {
-        $lignes = $statistiqueService->getLignesCsv($inter);
-
-        $response = new StreamedResponse(static function () use ($lignes): void {
-            $sortie = fopen('php://output', 'w');
-            if (!$sortie) {
-                return;
-            }
-            fwrite($sortie, "\xEF\xBB\xBF"); // BOM : accents lisibles dans Excel
-            foreach ($lignes as $ligne) {
-                fputcsv($sortie, $ligne, ';', '"', '');
-            }
-            fclose($sortie);
-        });
-
-        $nom = preg_replace('/[^A-Za-z0-9_-]+/', '-', $inter->getNom()) ?: 'inter-jeu';
-        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
-        $response->headers->set('Content-Disposition', \sprintf('attachment; filename="competences-%s.csv"', trim($nom, '-')));
-
-        return $response;
     }
 
     #[Route('/{inter}/consultation', name: 'consultation', requirements: ['inter' => Requirement::DIGITS])]

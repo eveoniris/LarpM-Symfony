@@ -72,7 +72,7 @@ class InterJeuStatutOrgaTest extends WebTestCase
         $cellules = $ligne->filter('td')->each(static fn ($td): string => trim($td->text()));
         static::assertSame(['Vol test', '2', '1', '1', '', '', ''], $cellules);
 
-        $this->client->request('GET', '/inter-jeu/' . $interJeu->getId() . '/statistiques.csv');
+        $this->client->request('GET', '/inter-jeu/' . $interJeu->getId() . '/statistiques/export/personnages.csv');
         static::assertResponseIsSuccessful();
         $csv = (string) $this->client->getInternalResponse()->getContent();
         $lignesCsv = array_values(array_filter(explode("\n", $csv), static fn (string $l): bool => str_contains($l, 'Voleur initie')));
@@ -88,7 +88,7 @@ class InterJeuStatutOrgaTest extends WebTestCase
         $p1 = PersonnageFactory::createOne();
         $p2 = PersonnageFactory::createOne();
 
-        $fichier = tempnam(sys_get_temp_dir(), 'ij') . '.csv';
+        $fichier = tempnam(sys_get_temp_dir(), prefix: 'ij') . '.csv';
         file_put_contents($fichier, "id;statut\n{$p1->getId()};désisté\n{$p2->getId()}\n999999;inscrit\n");
 
         $this->client->loginUser($gestionnaire);
@@ -229,10 +229,15 @@ class InterJeuStatutOrgaTest extends WebTestCase
         $em->flush();
 
         $this->client->loginUser($em->find(User::class, $orga->getId()));
-        $this->client->request('GET', '/inter-jeu/' . $interA->getId() . '/statistiques.csv');
+        $this->client->request('GET', '/inter-jeu/' . $interA->getId() . '/statistiques/export/familles-cles.csv');
         static::assertResponseIsSuccessful();
+        // Exports nominatifs réservés à la gestion des inter-jeux
+        foreach (['/statistiques/export/personnages.csv', '/statistiques/export/personnages-par-famille.csv', '/statistiques/export.zip?nominatif=1'] as $suffixe) {
+            $this->client->request('GET', '/inter-jeu/' . $interA->getId() . $suffixe);
+            static::assertResponseRedirects('/access_denied', message: $suffixe);
+        }
 
-        foreach (['/statistiques', '/statistiques.csv', '/consultation'] as $suffixe) {
+        foreach (['/statistiques', '/statistiques/export/familles-cles.csv', '/statistiques/export.zip', '/consultation'] as $suffixe) {
             $this->client->request('GET', '/inter-jeu/' . $interB->getId() . $suffixe);
             static::assertResponseRedirects('/access_denied', message: $suffixe);
         }
@@ -249,7 +254,7 @@ class InterJeuStatutOrgaTest extends WebTestCase
         $vivant = PersonnageFactory::createOne(['vivant' => true, 'nom' => '=HYPERLINK("x")']);
         $mort = PersonnageFactory::createOne(['vivant' => false, 'nom' => 'Personnage mort']);
 
-        $fichier = tempnam(sys_get_temp_dir(), 'ij') . '.csv';
+        $fichier = tempnam(sys_get_temp_dir(), prefix: 'ij') . '.csv';
         file_put_contents($fichier, "\xEF\xBB\xBF{$vivant->getId()}\r\n{$mort->getId()}\r\n");
 
         $this->client->loginUser($gestionnaire);
@@ -261,7 +266,7 @@ class InterJeuStatutOrgaTest extends WebTestCase
         $inter = $this->em()->find(InterJeu::class, $interJeu->getId());
         static::assertCount(2, $inter->getParticipations(), 'la 1re ligne avec BOM est importée');
 
-        $this->client->request('GET', '/inter-jeu/' . $interJeu->getId() . '/statistiques.csv');
+        $this->client->request('GET', '/inter-jeu/' . $interJeu->getId() . '/statistiques/export/personnages.csv');
         $csv = (string) $this->client->getInternalResponse()->getContent();
         static::assertStringNotContainsString('Personnage mort', $csv);
         static::assertStringContainsString("'=HYPERLINK", $csv, 'formule neutralisée');
