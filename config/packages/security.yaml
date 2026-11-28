@@ -120,6 +120,8 @@ security:
         - { path: ^/user/\d+/(confirm/|resend-confirmation$), roles: PUBLIC_ACCESS }
         # Webhook Discord (appelé par les serveurs Discord, sans session)
         - { path: ^/discord/interactions$, roles: PUBLIC_ACCESS }
+        # Rapports de violation CSP envoyés par les navigateurs, y compris depuis les pages publiques
+        - { path: ^/csp/rapport$, roles: PUBLIC_ACCESS }
         # Règles du jeu et carte du monde, lisibles par les futurs joueurs
         - { path: ^/(classe|competence|religion|rule)$, roles: PUBLIC_ACCESS }
         - { path: ^/classe/\d+/image/, roles: PUBLIC_ACCESS }
